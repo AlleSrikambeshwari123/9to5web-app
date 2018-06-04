@@ -1,0 +1,58 @@
+{
+  "name": "tropicalcore",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www"
+  },
+  "engines": {
+    "node": "6.10.0"
+  },
+  "dependencies": {
+    "@google/maps": "^0.4.6",
+    "body-parser": "~1.15.1",
+    "client-sessions": "^0.8.0",
+    "compass": "^0.1.1",
+    "cookie-parser": "~1.4.3",
+    "crypto-js": "^3.1.9-1",
+    "currency-formatter": "^1.3.1",
+    "debug": "~2.2.0",
+    "edge": "^6.5.1",
+    "ejs": "~2.4.1",
+    "ejs-mate": "^2.3.0",
+    "express": "~4.13.4",
+    "formidable": "^1.2.1",
+    "gulp": "^3.9.1",
+    "image-optim": "^3.0.0",
+    "imagemin": "^5.3.1",
+    "js-autocomplete": "^1.0.4",
+    "jsbarcode": "^3.8.0",
+    "jsonwebtoken": "^7.4.3",
+    "moment": "^2.19.1",
+    "morgan": "~1.7.0",
+    "redis": "^2.8.0",
+    "serve-favicon": "~2.3.0",
+    "socket.io": "^2.0.4"
+  },
+  "devDependencies": {
+    "babel": "^6.23.0",
+    "babel-cli": "^6.26.0",
+    "babel-polyfill": "^6.16.0",
+    "babel-preset-env": "^1.6.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-0": "^6.16.0",
+    "connect-livereload": "^0.6.0",
+    "gulp": "^3.9.1",
+    "gulp-autoprefixer": "^3.1.1",
+    "gulp-babel": "^6.1.2",
+    "gulp-concat": "^2.6.0",
+    "gulp-connect": "^5.0.0",
+    "gulp-declare": "^0.3.0",
+    "gulp-livereload": "^3.8.1",
+    "gulp-minify-css": "^1.2.4",
+    "gulp-plumber": "^1.1.0",
+    "gulp-sourcemaps": "^1.12.0",
+    "gulp-uglify": "^2.0.0",
+    "require-dir": "^0.3.2"
+  }
+}
