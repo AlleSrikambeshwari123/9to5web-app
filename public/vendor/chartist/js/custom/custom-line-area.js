@@ -2,11 +2,11 @@ var chart = new Chartist.Line('.lineArea', {
   labels: [1, 2, 3, 4, 5],
   series: [
     [
-      {meta: 'Visitors', value: 500 },
-      {meta: 'Visitors', value: 2000},
-      {meta: 'Visitors', value: 1900},
-      {meta: 'Visitors', value: 3000},
-      {meta: 'Visitors', value: 3500},
+      {meta: 'Packages', value: 500 },
+      {meta: 'Packages', value: 2000},
+      {meta: 'Packages', value: 1900},
+      {meta: 'Packages', value: 3000},
+      {meta: 'Packages', value: 3500},
     ]
   ]
 }, {

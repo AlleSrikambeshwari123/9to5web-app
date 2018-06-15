@@ -3,10 +3,10 @@ var chart = new Chartist.Line('.line-chart-sales', {
 	labels: [1, 2, 3, 4],
 	series: [
 		[
-			{meta: 'Sales', value: 200 },
-			{meta: 'Sales', value: 1250},
-			{meta: 'Sales', value: 700},
-			{meta: 'Sales', value: 1800}
+			{meta: 'Revenue', value: 200 },
+			{meta: 'Revenue', value: 1250},
+			{meta: 'Revenue', value: 700},
+			{meta: 'Revenue', value: 1800}
 		]
 	]
 }, {

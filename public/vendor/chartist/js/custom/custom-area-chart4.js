@@ -2,14 +2,14 @@ new Chartist.Line('.custom-area-chart4', {
 	labels: [1, 2, 3, 4, 5, 6, 7, 8],
   series: [
 		[
-			{meta: 'Visitors', value: 500 },
-			{meta: 'Visitors', value: 900},
-			{meta: 'Visitors', value: 700},
-			{meta: 'Visitors', value: 800},
-			{meta: 'Visitors', value: 500},
-			{meta: 'Visitors', value: 300},
-			{meta: 'Visitors', value: 500},
-			{meta: 'Visitors', value: 400},
+			{meta: 'Packages', value: 500 },
+			{meta: 'Packages', value: 900},
+			{meta: 'Packages', value: 700},
+			{meta: 'Packages', value: 800},
+			{meta: 'Packages', value: 500},
+			{meta: 'Packages', value: 300},
+			{meta: 'Packages', value: 500},
+			{meta: 'Packages', value: 400},
 		]
 	]
 }, {

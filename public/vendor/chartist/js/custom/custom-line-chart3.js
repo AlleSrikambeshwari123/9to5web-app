@@ -2,16 +2,16 @@ var chart = new Chartist.Line('.line-chart3', {
   labels: [1, 2, 3, 4],
   series: [
 		[
-			{meta: 'Visitors', value: 1680 },
-			{meta: 'Visitors', value: 550},
-			{meta: 'Visitors', value: 1200},
-			{meta: 'Visitors', value: 220}
+			{meta: 'Packages', value: 1680 },
+			{meta: 'Packages', value: 550},
+			{meta: 'Packages', value: 1200},
+			{meta: 'Packages', value: 220}
 		],
 		[
-      {meta: 'Sales', value: 350},
-      {meta: 'Sales', value: 2570},
-      {meta: 'Sales', value: 1950},
-      {meta: 'Sales', value: 3500},
+      {meta: 'Revenue', value: 350},
+      {meta: 'Revenue', value: 2570},
+      {meta: 'Revenue', value: 1950},
+      {meta: 'Revenue', value: 3500},
     ]
 	]
 }, {
