@@ -2,7 +2,7 @@
 <nav class="side-nav">
     <!-- BEGIN: side-nav-content -->
     <ul class="unifyMenu" id="unifyMenu">
-
+       <%if (RoleId ==1){%>
         <li class="active selected">
             <a href="#" class="has-arrow" aria-expanded="false">
                 <span class="has-icon">
@@ -12,23 +12,17 @@
             </a>
             <ul aria-expanded="false" class="collapse in">
                 <li>
-                    <a href='index.html' class="current-page">Admin Dashboard</a>
+                    <a href='/admin/' class="">Admin Dashboard</a>
                 </li>
                 <li>
-                    <a href='dashboard2.html'>Users</a>
+                    <a href='/admin/users'>Users</a>
                 </li>
               
             </ul>
         </li>
-        <li class="active ">
-            <a href="#" class="" aria-expanded="false">
-                <span class="has-icon">
-                    <i class="icon-laptop_windows"></i>
-                </span>
-                <span class="nav-title">Dashboard</span>
-            </a>
-           
-        </li>
+       <%}%>
+        
+     
         <li>
             <a href="#" class="has-arrow" aria-expanded="false">
                 <span class="has-icon">

@@ -11,7 +11,6 @@ export class UserService {
             var verifyUser  = {
                 username: username,
                 password:password
-
             };
             dataContext.getServiceProxy(SERVICE_KEY).authenticate(verifyUser,function(error,validUser){
                 resolve( validUser);
@@ -39,9 +38,39 @@ export class UserService {
             });
         });
     }
+    getRoles(){
+        return new Promise (function(resolve,reject){
+            dataContext.getServiceProxy(SERVICE_KEY).getUserRoles({},function(error,result){
+                if (error){
+                    reject(error);
+                }
+                resolve( result);
+            });
+        });
+    }
     getAllUsers(){
         return new Promise (function(resolve,reject){
             dataContext.getServiceProxy(SERVICE_KEY).getUsers({},function(error,result){
+                if (error){
+                    reject(error);
+                }
+                resolve( result);
+            });
+        });
+    }
+    removeUser(username){
+        return new Promise (function(resolve,reject){
+            dataContext.getServiceProxy(SERVICE_KEY).removeUser({username:username},function(error,result){
+                if (error){
+                    reject(error);
+                }
+                resolve( result);
+            });
+        });
+    }
+    enableUser(username,enabled){
+        return new Promise (function(resolve,reject){
+            dataContext.getServiceProxy(SERVICE_KEY).enableUser({username:username,enabled:enabled},function(error,result){
                 if (error){
                     reject(error);
                 }

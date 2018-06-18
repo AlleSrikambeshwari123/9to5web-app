@@ -17,6 +17,8 @@
 		<link rel="stylesheet" href="/fonts/icomoon/icomoon.css" />
 		<link rel="stylesheet" href="/css/main.css" />
 
+				<!-- Notify -->
+				<link rel="stylesheet" href="/vendor/notify/notify-flat.css" />
 		<!-- Other CSS includes plugins - Cleanedup unnecessary CSS -->
 		<!-- Chartist css -->
 		<link href="/vendor/chartist/css/chartist.min.css" rel="stylesheet" />
@@ -58,45 +60,17 @@
 						<div class="col-xl-5 col-lg-5 col-md-5 col-sm-3 col-4">
 							<ul class="header-actions">
 							
-								<li>
-									<a href="#" id="todos" data-toggle="dropdown" aria-haspopup="true">
-										<i class="icon-person_outline"></i>
-										<span class="count-label red"></span>
-									</a>
-									<div class="dropdown-menu dropdown-menu-right lg" aria-labelledby="todos">
-										<ul class="stats-widget">
-				              <li>
-				                <h4>$37895</h4>
-				                <p>Revenue <span>+2%</span></p>
-				                <div class="progress">
-													<div class="progress-bar" role="progressbar" aria-valuenow="87" aria-valuemin="0" aria-valuemax="100" style="width: 87%">
-														<span class="sr-only">87% Complete (success)</span>
-													</div>
-												</div>
-				              </li>
-				              <li>
-				                <h4>4,897</h4>
-				                <p>Packages this Month <span>+39%</span></p>
-				                <div class="progress">
-													<div class="progress-bar" role="progressbar" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100" style="width: 65%">
-														<span class="sr-only">65% Complete (success)</span>
-													</div>
-												</div>
-				              </li>
-				             
-				            </ul>
-				          </div>
-								</li>
+							
 								<li class="dropdown">
 									<a href="#" id="userSettings" class="user-settings" data-toggle="dropdown" aria-haspopup="true">
-										<img class="avatar" src="img/logo-square.jpg" alt="User Thumb" />
-										<span class="user-name">Stevan Thomas</span>
+										<img class="avatar" src="/img/logo-square.jpg" alt="User Thumb" />
+										<span class="user-name"><%=luser%></span>
 										<i class="icon-chevron-small-down"></i>
 									</a>
 									<div class="dropdown-menu lg dropdown-menu-right" aria-labelledby="userSettings">
 										
 										<div class="logout-btn">
-											<a href="login.html" class="btn btn-primary">Logout</a>
+											<a href="/logout" class="btn btn-primary">Logout</a>
 										</div>
 									</div>
 								</li>
@@ -114,8 +88,8 @@
 					<div class="side-content ">
 						<!-- BEGIN .user-profile -->
 						<div class="user-profile">
-							<img src="img/logo-square.jpg" class="profile-thumb" alt="User Thumb">
-							<h6 class="profile-name">Stevan Thomas</h6>
+							<img src="/img/logo-square.jpg" class="profile-thumb" alt="Tropical Express">
+							<h6 class="profile-name"><%=luser%></h6>
 							
 						</div>
 						<!-- END .user-profile -->
@@ -138,15 +112,13 @@
 										<i class="icon-laptop_windows"></i>
 									</div>
 									<div class="page-title">
-										<h5>Dashboard</h5>
+										<h5><%=title %></h5>
 										<h6 class="sub-heading">Welcome to Tropical Express Core 1.0</h6>
 									</div>
 								</div>
 								<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4">
 									<div class="right-actions">
-										<a href="#" class="btn btn-primary float-right" data-toggle="tooltip" data-placement="left" title="Download Reports">
-											<i class="icon-download4"></i>
-										</a>
+										
 									</div>
 								</div>
 							</div>
@@ -171,6 +143,13 @@
 			</footer>
 			<!-- END: .main-footer -->
 		</div>
+		<div class="notify-notifications">
+				<div id="notes" class="notify notify-notes"></div>
+				<div id="messages" class="notify notify-messages"></div>
+				<!-- Row start -->
+			
+				<!-- Row end -->
+			</div>
 		<!-- END: .app-wrap -->
 
 		<!-- jQuery first, then Tether, then other JS. -->
@@ -184,18 +163,12 @@
 		<!-- Slimscroll JS -->
 		<script src="/vendor/slimscroll/slimscroll.min.js"></script>
 		<script src="/vendor/slimscroll/custom-scrollbar.js"></script>
-
-		<!-- Chartist JS -->
-		<script src="/vendor/chartist/js/chartist.min.js"></script>
-		<script src="/vendor/chartist/js/chartist-tooltip.js"></script>
-		<script src="/vendor/chartist/js/custom/custom-line-chart.js"></script>
-		<script src="/vendor/chartist/js/custom/custom-line-chart1.js"></script>
-		<script src="/vendor/chartist/js/custom/custom-area-chart.js"></script>
-		<script src="/vendor/chartist/js/custom/donut-chart2.js"></script>
-		<script src="/vendor/chartist/js/custom/custom-line-chart4.js"></script>
-
+		<script src="/js/jquery.easing.1.3.js"></script>
+	
+		<script src="/vendor/notify/notify.js"></script>
+		<script src="/vendor/notify/notify-custom.js"></script>
 		<!-- Common JS -->
 		<script src="/js/common.js"></script>
-		
+		<%- block('scripts').toString() %>
 	</body>
 </html>
