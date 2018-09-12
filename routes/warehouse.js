@@ -36,5 +36,14 @@ router.get('/mlist',middleware(services.userService).requireAuthentication,(req,
        res.send(result.listing);
     });
 });
+router.get('/packages',middleware(services.userService).requireAuthentication,(req,res,next)=>{
+    var pageData = {}; 
+    pageData.title = "Add Packages"; 
+    pageData.luser = res.User.FirstName+ ' '+res.User.LastName;
+    pageData.RoleId = res.User.RoleId; 
+    res.render('pages/warehouse/add-package.ejs',pageData);
+});
+router.post('/packages',middleware(services.userService).requireAuthentication,(req,res,next)=>{
 
+});
 module.exports = router;
