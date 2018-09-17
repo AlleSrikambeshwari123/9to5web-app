@@ -5,12 +5,220 @@
   
         <div class='card'>
               <div class="card-header col-md-12">
-                 <h3> Manifrest M-<%=mid %> Data Entry</h3>
+                 <h3> Manifest M-<%=mid %> Data Entry</h3>
               </div>
               <div class="card-body">
-           
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item">
+                      <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true" aria-expanded="true">Manifest Details</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false" aria-expanded="false">Mail</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false" aria-expanded="false">Cargo</a>
+                    </li>
+                    <li class="nav-item hidden" style='display:none;'>
+                      <a class="nav-link hidden" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false" aria-expanded="false">HAZMAT</a>
+                    </li>
+                    <li class="nav-item " style='display:none;'>
+                      <a class="nav-link hidden" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false" aria-expanded="false">Ocean</a>
+                    </li>
+                  </ul>
+
+                  <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade active show" id="home" role="tabpanel" aria-labelledby="home-tab" aria-expanded="true">
+                        <div>
+                                <div class="clearfix">
+                                        <div class="btn-group custom-btn-group float-right" role="group">
+                                            
+                                            <button type="button" class="btn btn-primary btn-sm">Close Manifest</button>
+                                            <button type="button" class="btn btn-success btn-sm">Ship Manifest</button>
+                                            <button type="button" class="btn btn-dark btn-sm">Export Excel</button>
+                                            
+                                        </div>
+                                    </div>
+                        </div>
+
+                        <div class='row'>
+                            
+                            <div class='col-md-3'>
+                                <form method='post'>
+                                        <div class='form-group'>
+                                                <label>Manifest Type <span id='customerName' class='text-info title'></span></label>
+                                                <select class='form-control'>
+                                                    <option>Select Type</option>
+                                                    <option>CARGO</option>
+                                                    <option>HAZMAT</option>
+                                                    <option>OCEAN</option>
+                                                </select>
+                                            </div>
+        
+                                    <div class='form-group'>
+                                        <label class=''>AWB#</label>
+                                        <input type='text' class='form-control ' name='awb' id='awb' placeholder="AWB" />
+                                    </div>
+                                    <div class='form-group'>
+                                        <button class='btn btn-primary'><i class='fa fa-plus'></i> Save</button>
+                                        
+                                    </div>
+                                </form>
+                          </div>
+                          <div class='col-md-9'>
+                            <div class='row gutters pt-2 mt-4'>
+                            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6">
+								<div class="info-stats4">
+									<div class="icon-type pull-left">
+										<i class="icon-mail6"></i>
+									</div>
+									<div class="sale-num">
+										<h4>0</h4>
+										<p>Mail</p>
+									</div>
+								</div>
+                            </div>
+                            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6">
+								<div class="info-stats4 pull-left">
+									<div class="icon-type ">
+										<i class="icon-box"></i>
+									</div>
+									<div class="sale-num">
+										<h4>0</h4>
+										<p>Packages</p>
+									</div>
+								</div>
+								
+                            </div>
+                            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6">
+								<div class="info-stats4 pull-left">
+									<div class="icon-type ">
+										<i class="icon-warning4"></i>
+									</div>
+									<div class="sale-num">
+										<h4>0</h4>
+										<p>HAZMAT</p>
+									</div>
+								</div>
+								
+                            </div>
+                            </div>
+                           
+                          </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab" aria-expanded="false">
+                      <div class='row'>
+                          <div class='col-md-3'>
+                                <form method='post'>
+                                        <div class='form-group'>
+                                                <label>Bag </label>
+                                                <input type='text' class='form-control bag' name='bag' id='bag' required />
+                                            </div>
+                                    <div class='form-group'>
+                                        <label>SkyBox <span  class='text-info title customerName '></span></label>
+                                        <input type='text' class='form-control skybox' name='skybox'  required />
+                                    </div>
+                                    <div class='form-group'>
+                                        <label>Tracking #</label>
+                                        <input type='hidden' class='mid' value='<%=mid %>'/>
+                                        <input type='hidden' class='mtype' value='cargo'/>
+                                        <input type='text' class='form-control trackingNo' name='trackingNo'  required />
+                                    </div>
+                                    <div class='form-group'>
+                                        <label>Description</label>
+                                        <input type='text' class='form-control description' name='description' required />
+                                    </div>
+                                    <div class='form-group'>
+                                        <label>Shipper</label>
+                                        <input type='text' class='form-control shipper' name='shipper' />
+                                    </div>
+                                    <div class='form-group'>
+                                        <label>Value</label>
+                                        <input type='text' class='form-control package-value' name='value'  required />
+                                    </div>
+                                    <div class='form-group'>
+                                        <label>Pieces</label>
+                                        <input type='text' class='form-control pieces' name='pieces'  required />
+                                    </div>
+        
+                                    <div class='form-group'>
+                                        <label>Weight</label>
+                                        <input type='text' class='form-control weight ' name='weight'  />
+                                    </div>
+                                    <div class='form-group'>
+                                        <button class='btn btn-primary savePackage' type='button'><i class='fa fa-plus'></i> Save</button>
+                                    </div>
+                                </form>
+                          </div>
+                          <div class='col-md-9'>
+                              <table id='mailTable' class='table table-bordered table-inverse m-0'>
+                                 
+                              </table>
+                          </div>
+                      </div>
+                        
+                    </div>
+                    <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab" aria-expanded="false">
+                        <div class='row'>
+                            <div class='col-md-3'>
+                                  <form method='post'>
+                                          <div class='form-group'>
+                                                  <label>Skid </label>
+                                                  <input type='text' class='form-control' name='bag' id='bag' required />
+                                              </div>
+                                      <div class='form-group'>
+                                          <label>SkyBox <span id='' class='text-info title customerName'></span></label>
+                                          <input type='text' class='form-control skybox' name='skybox'  required />
+                                      </div>
+                                      <div class='form-group'>
+                                          <label>Tracking #</label>
+                                          <input type='hidden' class='mid' value='<%=mid %>'/>
+                                          <input type='hidden' class='mtype' value='cargo'/>
+                                          <input type='text' class='form-control trackingNo' name='trackingNo'  required />
+                                      </div>
+                                      <div class='form-group'>
+                                          <label>Description</label>
+                                          <input type='text' class='form-control description' name='description' required />
+                                      </div>
+                                      <div class='form-group'>
+                                          <label>Shipper</label>
+                                          <input type='text' class='form-control shipper' name='shipper' />
+                                      </div>
+                                      <div class='form-group'>
+                                          <label>Value</label>
+                                          <input type='text' class='form-control package-value' name='value'  required />
+                                      </div>
+                                      <div class='form-group'>
+                                          <label>Pieces</label>
+                                          <input type='text' class='form-control pieces' name='pieces'  required />
+                                      </div>
+          
+                                      <div class='form-group'>
+                                          <label>Weight</label>
+                                          <input type='text' class='form-control weight' name='weight'  />
+                                      </div>
+                                      <div class='form-group'>
+                                          <button class='btn btn-primary savePackage' type='button'><i class='fa fa-plus'></i> Save</button>
+                                      </div>
+                                  </form>
+                            </div>
+                            <div class='col-md-9'>
+                                <table id='js_table' class='table table-bordered table-inverse m-0'>
+                                  
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                  </div>
               </div>
   
         </div>
     </div>
   </div>
+  
+  <% block('scripts').append('<script src="/vendor/datatables/dataTables.min.js"></script>')%>
+  <% block('scripts').append('<script src="/vendor/datatables/dataTables.bootstrap.min.js"></script>')%>
+  
+  <% block('scripts').append('<script src="/vendor/datatables/custom/fixedHeader.js"></script>')%>
+  <% block('scripts').append('<script src="/js/packages/manifest-package.js"></script>')%>
+
