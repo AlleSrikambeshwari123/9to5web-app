@@ -8,35 +8,39 @@
                 <div class='row'>
                     <div class='col-md-4'>
                         <h4>Add Package</h4>
-                        <form>
+                        <form method='post'>
                             <div class='form-group'>
-                                <label>Tracking #</label>
-                                <input type='text' class='form-control' />
+                                <label>SkyBox <span id='customerName' class='text-info title'></span></label>
+                                <input type='text' class='form-control' name='skybox' id='skybox' required />
                             </div>
                             <div class='form-group'>
-                            <label>Description</label>
-                            <input type='text' class='form-control' />
-                        </div>
+                                <label>Tracking #</label>
+                                <input type='text' class='form-control' name='trackingNo' id='trackingNo' required />
+                            </div>
                             <div class='form-group'>
-                            <label>Shipper</label>
-                            <input type='text' class='form-control' />
-                        </div>
+                                <label>Description</label>
+                                <input type='text' class='form-control' name='description' id='description' required />
+                            </div>
                             <div class='form-group'>
-                            <label>Value</label>
-                            <input type='text' class='form-control' />
-                        </div>
+                                <label>Shipper</label>
+                                <input type='text' class='form-control' name='shipper' id='shipper' />
+                            </div>
                             <div class='form-group'>
-                            <label>Pieces</label>
-                            <input type='text' class='form-control' />
-                        </div>
-                        
+                                <label>Value</label>
+                                <input type='text' class='form-control' name='value' id='value' required />
+                            </div>
                             <div class='form-group'>
-                            <label>Weight</label>
-                            <input type='text' class='form-control' />
-                        </div>
-                        <div class='form-group'>
-                            <button class='btn btn-primary'><i class='fa fa-plus'></i> Save</button>
-                        </div>
+                                <label>Pieces</label>
+                                <input type='text' class='form-control' name='pieces' id='pieces' required />
+                            </div>
+
+                            <div class='form-group'>
+                                <label>Weight</label>
+                                <input type='text' class='form-control' name='weight' id='weight' />
+                            </div>
+                            <div class='form-group'>
+                                <button class='btn btn-primary'><i class='fa fa-plus'></i> Save</button>
+                            </div>
                         </form>
                     </div>
                     <div class='col-md-6'>
@@ -51,3 +55,5 @@
         </div>
     </div>
 </div>
+
+<% block('scripts').append('<script src="/js/packages/save-package.js"></script>')%>
