@@ -81,5 +81,5 @@ $('.task-list').on('click', 'li.list', function() {
 
 // Loading
 $(function() {
-	$("#loading-wrapper").fadeOut(5000);
+	$("#loading-wrapper").fadeOut(2000);
 });

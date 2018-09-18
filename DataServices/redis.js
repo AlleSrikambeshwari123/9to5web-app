@@ -13,10 +13,38 @@ var get = (key)=> {
         }); 
     });
 }
+var getKeys = (ptrn)=>{
+    return new Promise((resolve,reject)=>{
+        if (ptrn == null) reject(); 
+        client.keys(ptrn,(error,data)=>{
+                if (error ) reject(error); 
+                resolve(data)
+        }); 
+    });
+}
+var union = (arr)=>{
+    return new Promise((resolve,reject)=>{
+        if (arr == null) reject(); 
+        
+        client.sunion(arr,(error,data)=>{
+                if (error ) reject(error); 
+                resolve(data)
+        }); 
+    });
+}
 var set = (key,value)=> {
     return new Promise((resolve,reject)=>{
         if (key == null) reject(); 
         client.set(key,value,(error,data)=>{
+                if (error ) reject(error); 
+                resolve(data)
+        }); 
+    });
+}
+var srem = (key,value)=>{
+    return new Promise((resolve,reject)=>{
+        if (key == null) reject(); 
+        client.srem(key,value,(error,data)=>{
                 if (error ) reject(error); 
                 resolve(data)
         }); 
@@ -107,7 +135,10 @@ module.exports.getPackage = getPackage;
 module.exports.getNS  = getNSRecords;
 module.exports.setAdd = setAdd; 
 module.exports.del = delkey; 
+module.exports.union = union; 
+module.exports.getKeys = getKeys;
 module.exports.hmset = hashset; 
 module.exports.getMembers = getMembers; 
 module.exports.hgetall = hmgetall; 
+module.exports.srem = srem; 
 module.exports.client = client; 
