@@ -47,6 +47,13 @@ $(function () {
         }
 
     });
+    $("#rmPackage").click(function(){
+        var id = $(this).attr('data-id');
+        var type = $(this).attr('data-type');
+        console.log('type '+type);
+         deletePackage(id,type);
+         $(".close-del").trigger('click');
+    });
     //#endregion
 
     //#region FUNCTIONS
@@ -147,7 +154,7 @@ $(function () {
     }
     
   
- function displayCargoPackages(packages) {
+    function displayCargoPackages(packages) {
         if (cargoTable)
             cargoTable.destroy();
         
@@ -222,7 +229,7 @@ $(function () {
                 data: null,
                 render: function (data, type, row, meta) {
                     // console.log(data);
-                    return `<i class='icon-pencil3 edit' data-id='${data.trackingNo}' title='Edit' style='cursor:pointer;'></i> <i title='Delete' class='icon-trash rm' data-id='${data.trackingNo}' style='cursor:pointer;'></i>`;
+                    return `<i class='icon-pencil3 edit'  data-id='${data.trackingNo}' title='Edit' style='cursor:pointer;'></i> <i title='Delete' data-type='cargo' data-toggle='modal' data-target='#confirmPkgDel' class='icon-trash rm' data-id='${data.trackingNo}' style='cursor:pointer;'></i>`;
                 }
             },
 
@@ -244,10 +251,15 @@ $(function () {
             initComplete: function () {
                 $("#cargoTable").find(".edit").click(function(){
                     var id = $(this).attr('data-id'); 
+                    
                     loadPackage(id,$("#cargoPackageForm")); 
                 });
                 $("#cargoTable").find(".rm").click(function(){
-                    alert('deleting package');
+                    var id = $(this).attr('data-id'); 
+                    var type= $(this).attr('data-type'); 
+                    $("#rmPackage").attr('data-id',id); 
+                    $("#rmPackage").attr('data-type',type); 
+                   // deletePackage(id,"cargo");
                 });
             },
 
@@ -328,7 +340,7 @@ $(function () {
                 data: null,
                 render: function (data, type, row, meta) {
                     // console.log(data);
-                    return `<i class='icon-pencil3 edit' data-id='${data.trackingNo}' title='Edit' style='cursor:pointer;'></i> <i data-id='${data.trackingNo}' title='Delete' class='icon-trash rm' style='cursor:pointer;'></i>`;
+                    return `<i class='icon-pencil3 edit' data-id='${data.trackingNo}' title='Edit' style='cursor:pointer;'></i> <i data-type='mail' data-id='${data.trackingNo}' data-toggle='modal' data-target='#confirmPkgDel' title='Delete' class='icon-trash rm' style='cursor:pointer;'></i>`;
                 }
             },
 
@@ -354,7 +366,11 @@ $(function () {
                   
                 });
                 $("#mailTable").find(".rm").click(function(){
-                    alert('deleting package');
+                    var id = $(this).attr('data-id'); 
+                    var type= $(this).attr('data-type'); 
+                    $("#rmPackage").attr('data-id',id); 
+                    $("#rmPackage").attr('data-type',type); 
+                    //deletePackage(id,"mail");
                 });
             },
 
@@ -372,10 +388,17 @@ $(function () {
                     //clear the form 
                     //and build dataTable 
                     clearForm();
-                    displayMailPackages(result.packages);
-                    getManifestPackages(mid, 'cargo',function(cargoPackages){ 
+                    if (package.mtype =='mail')
+                    getManifestPackages(mid, 'mail',function(cargoPackages){ 
                         displayCargoPackages(cargoPackages);
                     });
+                    
+                        if (package.mtype =='cargo'){
+                            getManifestPackages(mid, 'cargo',function(cargoPackages){ 
+                                displayCargoPackages(cargoPackages);
+                            });
+                        }
+                    
                     console.log('saved');
                 }
             },
@@ -420,10 +443,18 @@ $(function () {
             data:{trackingNo:trackingNo,mid:$("#mid").val()},
             success: function(dResult){
                     if (type=='mail'){
-
+                     //refresh the package listing 
+                     console.log('refreshing mail');
+                     getManifestPackages(mid, 'mail',function(mailPackages){ 
+                        displayMailPackages(mailPackages);
+                    });
                     }
                     else if (type=="cargo"){
-
+                        // cargo 
+                        console.log('refreshing cargo');
+                        getManifestPackages(mid, 'cargo',function(cargoPackages){ 
+                            displayCargoPackages(cargoPackages);
+                        });
                     }
             },
             error:function(err){

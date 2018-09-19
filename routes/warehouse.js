@@ -20,12 +20,17 @@ router.get('/list-manifest', middleware(services.userService).requireAuthenticat
 
 });
 router.get('/m-packages/:manifestId', middleware(services.userService).requireAuthentication, function (req, res, next) {
+
+    var trackingNo = 'undefined';
+    var manifest = 19;
+    var manifestKey = "manifest:" + manifest + ":*";
+
     var pageData = {};
     pageData.title = "Manifest Packages";
     pageData.luser = res.User.FirstName + ' ' + res.User.LastName;
     pageData.RoleId = res.User.RoleId;
     pageData.mid = Number(req.params.manifestId);
-    console.log(pageData.mid);
+
 
     //we want to format the manifest number to 3 digits 
     res.render('pages/warehouse/manifest-packages', pageData);
@@ -73,53 +78,67 @@ router.post('/get-mpackages/', middleware(services.userService).requireAuthentic
     var body = req.body;
 
     var manifestKey = `manifest:${body.mid}:${body.mtype}:*`;
-    console.log(manifestKey); 
+    console.log(manifestKey);
     //so we get the keys 
     redis.getKeys(manifestKey).then((data) => {
-        console.log('matches'); 
-        console.log(data); 
+        console.log('matches');
+        console.log(data);
         redis.union(data).then(function (result) {
             console.log(result)
             //we need the actual packages now 
-            Promise.all(result.map(redis.getPackage)).then(function(packages){
-               // console.log(packages);
+            Promise.all(result.map(redis.getPackage)).then(function (packages) {
+                // console.log(packages);
                 res.send(packages);
             });
-            
+
         });
 
 
     });
 
 });
-router.get('/load-package/:trackNo',middleware(services.userService).requireAuthentication, (req, res, next) => {
-    var trackingNo = req.params.trackNo; 
-    redis.getPackage(trackingNo).then((package)=>{
-        res.send(package); 
-    }); 
+router.get('/load-package/:trackNo', middleware(services.userService).requireAuthentication, (req, res, next) => {
+    var trackingNo = req.params.trackNo;
+    redis.getPackage(trackingNo).then((package) => {
+        res.send(package);
+    });
 });
-router.post('/rm-package',middleware(services.userService).requireAuthentication, (req, res, next) => {
-    var trackingNo = req.body.trackNo;
-    var manifest = req.body.manifest; 
-    var manifestKey = "manifest:"+manifest+":*"; 
-    redis.del('package:'+ trackingNo).then(function(result){
-        redis.getKeys(manifestKey).then((kResult)=>{
+router.post('/rm-package', middleware(services.userService).requireAuthentication, (req, res, next) => {
+    var trackingNo = req.body.trackingNo;
+    
+    var manifest = req.body.mid;
+    var manifestKey = "manifest:" + manifest + ":*";
+    redis.del('packages:' + trackingNo).then(function (result) {
+        console.log(result);
+        redis.getKeys(manifestKey).then((kResult) => {
             //the list of all the sets ...we need to remove the key from each one 
-            kResult.array.forEach(element => {
-                redis.srem(element,trackingNo);
+            var keysCount = 0;  
+
+            kResult.forEach(element => {
+                console.log(`removing ${trackingNo} package manifest set ${element} `)
+                redis.srem(element, trackingNo).then(function (rResult) {
+                    console.log(rResult);
+                    console.log('removed');
+                    if (keysCount == kResult.length-1)
+                    res.send({
+                        deleted: true
+                    });
+                    keysCount ++; 
+
+                });
             });
         });
-        res.send({deleted:true}); 
+        
 
         //we also need to remove from any sets 
-    }); 
+    });
 
 });
 router.post('/save-package', middleware(services.userService).requireAuthentication, (req, res, next) => {
     var body = req.body;
     var package = {
-        skybox:body.skybox,
-        customer:body.customer.replace('-','').trim(),
+        skybox: body.skybox,
+        customer: body.customer.replace('-', '').trim(),
         trackingNo: body.tracking,
         description: body.description,
         shipper: body.shipper,
