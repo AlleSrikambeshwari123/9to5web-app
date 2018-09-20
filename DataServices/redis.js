@@ -63,7 +63,7 @@ var hashset = (key,value)=>{
 }
 var getPackage = (key)=> {
     return new Promise((resolve,reject)=>{
-        console.log('key = packages:' +key); 
+        //console.log('key = packages:' +key); 
         if (key == null) reject(); 
         client.hgetall('packages:'+key,(error,data)=>{
               
@@ -71,7 +71,7 @@ var getPackage = (key)=> {
                     reject(error); 
                     console.log(error);
                 } 
-                console.log(data);
+                //console.log(data);
                 resolve(data)
         }); 
     });
@@ -93,8 +93,8 @@ var getMembers = (key)=>{
                 if (error ) {reject(error);
                
                 } 
-                console.log('printing smembers')
-                console.log(data);
+                // console.log('printing smembers')
+                // console.log(data);
                 resolve(data)
         }); 
     });
@@ -128,6 +128,19 @@ var delkey = (key)=>{
     });
 }
 
+var sCard  = (key) => {
+    return new Promise((resolve,reject)=>{
+        
+        if (key == null) reject(); 
+        client.scard(key,(error,data)=>{
+                if (error ) reject(error); 
+                console.log('getting the size of '+key); 
+                console.log(data);
+                resolve(data)
+        }); 
+    });
+}
+
 
 module.exports.set = set;
 module.exports.get = get; 
@@ -141,4 +154,5 @@ module.exports.hmset = hashset;
 module.exports.getMembers = getMembers; 
 module.exports.hgetall = hmgetall; 
 module.exports.srem = srem; 
+module.exports.setSize = sCard; 
 module.exports.client = client; 

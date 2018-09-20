@@ -6,15 +6,14 @@
       <div class='card'>
             <div class="card-header col-md-12">
                     <div class='row'> 
-                        <div class='col-md-6'><button class='btn btn-primary btn-lg col-md-12 create-manifest ' data-type='1' >Cargo 1</button></div>
-                        <div class='col-md-6'><button class='btn btn-primary btn-lg col-md-12 create-manifest' data-type='1'>Cargo 2</button></div>
+                        <div class='col-md-6'><button class='btn btn-primary btn-lg col-md-12 create-manifest ' data-type='<%=typeId%>' ><%=ColLabel%> </button></div>
                          </div>
             </div>
             <div class="card-body">
                     <%if (listing.length > 0) {%>
                <table class="table m-0 mlisting">
                     <tr>
-                        <th>Manifest #</th>
+                        <th><%=ColLabel%> Manifest #</th>
                         <th>Manifest Status</th>
                         <th>Date Created </th>
                         <th>Created By</th>
@@ -24,11 +23,11 @@
                    <tbody id='data-listing'>
                     <% listing.forEach(function(manifest){ %>
                     <tr>
-                        <td><strong>M-00<%=manifest.ManifestId%></strong></td>
+                        <td><strong><%= inital%> -<%=manifest.ManifestId%></strong></td>
                         <td><%=manifest.StageName%></td>
                         <td><%=manifest.DateCreatedDisplay %></td>
                         <td><%=manifest.CreatedBy%></td>
-                        <td><a href='/warehouse/m-packages/<%=manifest.ManifestId%>' class='btn btn-sm btn-primary'>Manage</a> <button class='btn btn-danger btn-sm'>Delete</button></td>
+                        <td><a href='/warehouse/packages/<%=manifest.ManifestId%>' class='btn btn-sm btn-primary'>Manage</a> <button class='btn btn-danger btn-sm'>Delete</button></td>
                     </tr>
 
                     <%});%>
@@ -37,7 +36,7 @@
                <%}else {%>
                 <table class="table m-0 mlisting" style="display:none;">
                         <tr>
-                            <th>Manifest #</th>
+                            <th><%=ColLabel%> Manifest #</th>
                             <th>Manifest Status</th>
                             <th>Date Created </th>
                             <th>Created By</th>
@@ -56,4 +55,4 @@
       </div>
   </div>
 </div>
-<% block('scripts').append('<script src="/js/manifest.js"></script>')%>
+<% block('scripts').append('<script src="/js/other-manifest.js"></script>')%>

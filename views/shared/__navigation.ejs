@@ -2,7 +2,7 @@
 <nav class="side-nav">
     <!-- BEGIN: side-nav-content -->
     <ul class="unifyMenu" id="unifyMenu">
-       <%if (RoleId ==1){%>
+        <%if (RoleId ==1){%>
         <li class="active selected">
             <a href="#" class="has-arrow" aria-expanded="false">
                 <span class="has-icon">
@@ -17,29 +17,35 @@
                 <li>
                     <a href='/admin/users'>Users</a>
                 </li>
-              
+
             </ul>
         </li>
-       <%}%>
-       <li class="">
-        <a href="#" class="has-arrow" aria-expanded="false">
-            <span class="has-icon">
-                <i class="icon-storage"></i>
-            </span>
-            <span class="nav-title">Warehouse</span>
-        </a>
-        <ul aria-expanded="false" class="collapse in">
+        <%}%>
+        <li class="">
+            <a href="#" class="has-arrow" aria-expanded="false">
+                <span class="has-icon">
+                    <i class="icon-storage"></i>
+                </span>
+                <span class="nav-title">Warehouse</span>
+            </a>
+            <ul aria-expanded="false" class="collapse in">
                 <li>
-                        <a href='/warehouse/list-manifest' class="">Manfiest</a>
-                 </li>
-           
-            <li>
-                <a href='/warehouse/packages'>Add Packages</a>
-            </li>
-          
-        </ul>
-    </li>
-     
+                    <a href='/warehouse/packages'>Add Packages</a>
+                </li>
+                <li>
+                    <a href='/warehouse/list-manifest' class="">Manfiest</a>
+                </li>
+                <li>
+                    <a href='/warehouse/list-ocean' class="">Ocean</a>
+                </li>
+                <li>
+                    <a href='/warehouse/list-hazmat' class="">HAZMAT</a>
+                </li>
+                
+
+            </ul>
+        </li>
+
         <!-- <li>
             <a href="#" class="has-arrow" aria-expanded="false">
                 <span class="has-icon">
@@ -77,8 +83,8 @@
               
             </ul>
         </li> -->
-      
-      
+
+
         <li class="menu-header">
             --Account Options
         </li>
@@ -96,7 +102,7 @@
                 <li>
                     <a href='/logout'>Logout</a>
                 </li>
-              
+
             </ul>
         </li>
     </ul>

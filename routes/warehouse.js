@@ -10,7 +10,7 @@ router.get('/list-manifest', middleware(services.userService).requireAuthenticat
     pageData.title = "Manifest";
     pageData.luser = res.User.FirstName + ' ' + res.User.LastName;
     pageData.RoleId = res.User.RoleId;
-    services.manifestService.listAllManifest().then((result) => {
+    services.manifestService.listAllManifest(1).then((result) => {
         console.log('listing');
         console.log(result);
         pageData.listing = result.listing;
@@ -19,33 +19,96 @@ router.get('/list-manifest', middleware(services.userService).requireAuthenticat
     });
 
 });
-router.get('/m-packages/:manifestId', middleware(services.userService).requireAuthentication, function (req, res, next) {
+router.get('/list-ocean', middleware(services.userService).requireAuthentication, (req, res, next) => {
+    var pageData = {};
+    pageData.title = "Ocean";
+    pageData.luser = res.User.FirstName + ' ' + res.User.LastName;
+    pageData.RoleId = res.User.RoleId;
+    pageData.ColLabel = "Ocean"
+    pageData.inital = "O"
+    pageData.typeId = 2; 
+    services.manifestService.listAllManifest(2).then((result) => {
+        console.log('listing');
+        console.log(result);
+        pageData.listing = result.listing;
 
-    var trackingNo = 'undefined';
-    var manifest = 19;
-    var manifestKey = "manifest:" + manifest + ":*";
+        res.render('pages/warehouse/other-manifest', pageData);
+    });
+
+});
+router.get('/list-hazmat', middleware(services.userService).requireAuthentication, (req, res, next) => {
+    var pageData = {};
+    pageData.title = "HAZMAT";
+    pageData.luser = res.User.FirstName + ' ' + res.User.LastName;
+    pageData.RoleId = res.User.RoleId;
+    pageData.ColLabel = "HAZMAT"
+    pageData.inital = "H"
+    pageData.typeId = 3; 
+    services.manifestService.listAllManifest(3).then((result) => {
+        console.log('listing');
+        console.log(result);
+        pageData.listing = result.listing;
+
+        res.render('pages/warehouse/other-manifest', pageData);
+    });
+
+});
+
+router.get('/m-packages/:manifestId', middleware(services.userService).requireAuthentication, function (req, res, next) {
+   
 
     var pageData = {};
     pageData.title = "Manifest Packages";
     pageData.luser = res.User.FirstName + ' ' + res.User.LastName;
     pageData.RoleId = res.User.RoleId;
+    
     pageData.mid = Number(req.params.manifestId);
 
 
     //we want to format the manifest number to 3 digits 
     res.render('pages/warehouse/manifest-packages', pageData);
 });
+
+const sumFunction = (accumulator, currentValue) => accumulator + currentValue;
+router.get('/manifest-count/:mid/:mtype', middleware(services.userService).requireAuthentication, function (req, res, next) {
+    var mid = req.params.mid; 
+    var mtype = req.params.mtype; 
+    var manifestKeys = `manifest:${mid}:${mtype}:*` ; 
+  
+    var packageCount = 0; 
+  
+    
+    redis.getKeys(manifestKeys).then((keys)=>{
+        //foreach key get the cardinality of the set and add it 
+    
+        Promise.all(keys.map(redis.setSize)).then((sizes)=>{
+    
+            if(sizes.length>0){
+                var sumResult = {mtype:mtype,size:sizes.reduce(sumFunction)}
+                res.send(sumResult); 
+            }
+            else 
+                res.send({mtype:mtype,count:0}); 
+        }); 
+    }); 
+    
+}); 
+
 router.post('/create-manifest', middleware(services.userService).requireAuthentication, function (req, res, next) {
     console.log(res.User);
-    services.manifestService.createManfiest(res.User.Username).then((result) => {
+    var manifestType = Number(req.body.mtype); 
+    console.log(manifestType)
+    services.manifestService.createManfiest(res.User.Username,manifestType).then((result) => {
         res.send(result);
     });
 });
+
 router.get('/mlist', middleware(services.userService).requireAuthentication, (req, res, next) => {
     services.manifestService.listAllManifest().then((result) => {
         res.send(result.listing);
     });
 });
+
 router.get('/packages', middleware(services.userService).requireAuthentication, (req, res, next) => {
     var pageData = {};
     pageData.title = "Add Packages";
@@ -55,6 +118,7 @@ router.get('/packages', middleware(services.userService).requireAuthentication, 
 
 
 });
+
 router.post('/get-customer-info', middleware(services.userService).requireAuthentication, (req, res, next) => {
     //get customer information 
     var skybox = req.body.box;
@@ -74,15 +138,15 @@ router.post('/get-customer-info', middleware(services.userService).requireAuthen
     });
 
 });
+
 router.post('/get-mpackages/', middleware(services.userService).requireAuthentication, (req, res, next) => {
     var body = req.body;
 
     var manifestKey = `manifest:${body.mid}:${body.mtype}:*`;
-    console.log(manifestKey);
+    
     //so we get the keys 
     redis.getKeys(manifestKey).then((data) => {
-        console.log('matches');
-        console.log(data);
+        
         redis.union(data).then(function (result) {
             console.log(result)
             //we need the actual packages now 
@@ -97,12 +161,14 @@ router.post('/get-mpackages/', middleware(services.userService).requireAuthentic
     });
 
 });
+
 router.get('/load-package/:trackNo', middleware(services.userService).requireAuthentication, (req, res, next) => {
     var trackingNo = req.params.trackNo;
     redis.getPackage(trackingNo).then((package) => {
         res.send(package);
     });
 });
+
 router.post('/rm-package', middleware(services.userService).requireAuthentication, (req, res, next) => {
     var trackingNo = req.body.trackingNo;
     
@@ -134,6 +200,7 @@ router.post('/rm-package', middleware(services.userService).requireAuthenticatio
     });
 
 });
+
 router.post('/save-package', middleware(services.userService).requireAuthentication, (req, res, next) => {
     var body = req.body;
     var package = {
@@ -197,6 +264,7 @@ router.post('/save-package', middleware(services.userService).requireAuthenticat
 
     console.log(package);
 });
+
 router.post('/packages', middleware(services.userService).requireAuthentication, (req, res, next) => {
     var body = req.body;
     var package = {
@@ -210,5 +278,29 @@ router.post('/packages', middleware(services.userService).requireAuthentication,
     redis.hmset('packages:' + package.trackingNo, package);
     console.log(package);
     res.redirect('/warehouse/packages');
+});
+
+router.post('/close-manifest', middleware(services.userService).requireAuthentication, (req, res, next) => {
+   var mid = Number(req.body.mid); 
+
+   services.manifestService.closeManifest(mid,res.User.Username).then((mREsult)=>{
+       res.send(mREsult); 
+   }); 
+    
+});
+router.post('/ship-manifest', middleware(services.userService).requireAuthentication, (req, res, next) => {
+    var mid = Number(req.body.mid); 
+    var awb = req.body.awb; 
+    services.manifestService.shipManifest(mid,awb).then((mREsult)=>{
+        res.send(mREsult); 
+    }); 
+    
+});
+router.post('/export-manifest', middleware(services.userService).requireAuthentication, (req, res, next) => {
+
+    var mid = Number(req.body.mid); 
+    services.manifestService.exportExcel(mid).then((mREsult)=>{
+        res.download(mREsult.filename); 
+    }); 
 });
 module.exports = router;

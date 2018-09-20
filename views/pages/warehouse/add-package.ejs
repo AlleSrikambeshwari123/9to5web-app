@@ -1,59 +1,115 @@
 <% layout('./shared/__template')%>
 <div class='gutters'>
     <div class='col-xl-12 col-lg-6 col-md-12 col-sm-12'>
-
+        
 
         <div class='card'>
             <div class="card-header col-md-12">
-                <div class='row'>
-                    <div class='col-md-4'>
-                        <h4>Add Package</h4>
-                        <form method='post'>
-                            <div class='form-group'>
-                                <label>SkyBox <span id='customerName' class='text-info title'></span></label>
-                                <input type='text' class='form-control' name='skybox' id='skybox' required />
-                            </div>
-                            <div class='form-group'>
-                                <label>Tracking #</label>
-                                <input type='text' class='form-control' name='trackingNo' id='trackingNo' required />
-                            </div>
-                            <div class='form-group'>
-                                <label>Description</label>
-                                <input type='text' class='form-control' name='description' id='description' required />
-                            </div>
-                            <div class='form-group'>
-                                <label>Shipper</label>
-                                <input type='text' class='form-control' name='shipper' id='shipper' />
-                            </div>
-                            <div class='form-group'>
-                                <label>Value</label>
-                                <input type='text' class='form-control' name='value' id='value' required />
-                            </div>
-                            <div class='form-group'>
-                                <label>Pieces</label>
-                                <input type='text' class='form-control' name='pieces' id='pieces' required />
-                            </div>
-
-                            <div class='form-group'>
-                                <label>Weight</label>
-                                <input type='text' class='form-control' name='weight' id='weight' />
-                            </div>
-                            <div class='form-group'>
-                                <button class='btn btn-primary'><i class='fa fa-plus'></i> Save</button>
-                            </div>
-                        </form>
-                    </div>
-                    <div class='col-md-6'>
-                        <h4>Warehouse Package List</h4>
-                    </div>
-                </div>
+                <h3>  H-123 Data Entry</h3>
             </div>
             <div class="card-body">
+          
 
-            </div>
+                
+                    <div class="show" id="home" role="tabpanel" aria-labelledby="home-tab"
+                        aria-expanded="true">
+                        <div>
+                            <div class="clearfix">
+                                <div class="btn-group custom-btn-group float-right" role="group">
+
+                                    <button type="button" class="btn btn-primary btn-sm">Close Manifest</button>
+                                    <button type="button" class="btn btn-success btn-sm">Ship Manifest</button>
+                                    <button type="button" class="btn btn-dark btn-sm">Export Excel</button>
+
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                   
+                        <div class='row'>
+                            <div class='col-md-3'>
+                                <form method='post' id='PackageForm'>
+                                    <div class='form-group'>
+                                        <label id="containerLabel">Skid </label>
+                                        <input type='text' class='form-control bag' name='bag' id='bag' required />
+                                    </div>
+                                    <div class='form-group'>
+                                        <label>SkyBox <span class='text-info title customerName '></span></label>
+                                        <input type='text' class='form-control skybox' name='skybox' required />
+                                    </div>
+                                    <div class='form-group'>
+                                        <label>Tracking #</label>
+                                        
+                                        <input type='hidden' class='mtype' value='mail' />
+                                        <input type='text' class='form-control trackingNo' name='trackingNo' required />
+                                    </div>
+                                    <div class='form-group'>
+                                        <label>Description</label>
+                                        <input type='text' class='form-control description' name='description' required />
+                                    </div>
+                                    <div class='form-group'>
+                                        <label>Shipper</label>
+                                        <input type='text' class='form-control shipper' name='shipper' />
+                                    </div>
+                                    <div class='form-group'>
+                                        <label>Value</label>
+                                        <input type='text' class='form-control package-value' name='value' required />
+                                    </div>
+                                    <div class='form-group'>
+                                        <label>Pieces</label>
+                                        <input type='text' class='form-control pieces' name='pieces' required />
+                                    </div>
+
+                                    <div class='form-group'>
+                                        <label>Weight</label>
+                                        <input type='text' class='form-control weight ' name='weight' />
+                                    </div>
+                                    <div class='form-group'>
+                                        <button class='btn btn-primary savePackage' type='button'><i class='fa fa-plus'></i>
+                                            Save</button>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class='col-md-9'>
+                                <table id='mailTable' class='table table-bordered table-inverse ' style='width:100%;'>
+
+                                </table>
+                            </div>
+                        </div>
+
+                  
+                  
+                </div>
+            
 
         </div>
     </div>
 </div>
 
-<% block('scripts').append('<script src="/js/packages/save-package.js"></script>')%>
+<div class="modal fade" id="confirmPkgDel" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2" aria-hidden="true"
+    style="display: none;">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel2">Confirmation Required</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type='hidden' id='pkg-tracking' />
+                Are you sure you want to delete this package?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary close-del" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-danger rm-package" id='rmPackage'>Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+<% block('scripts').append('<script src="/vendor/datatables/dataTables.min.js"></script>')%>
+<% block('scripts').append('<script src="/vendor/datatables/dataTables.bootstrap.min.js"></script>')%>
+
+<% block('scripts').append('<script src="/vendor/datatables/custom/fixedHeader.js"></script>')%>
+<% block('scripts').append('<script src="/js/packages/manifest-package.js"></script>')%>

@@ -12,10 +12,14 @@ $(function () {
         getManifestPackages(mid, 'cargo',function(cargoPackages){ 
             displayCargoPackages(cargoPackages);
         });
-        
-        
-      
-        
+
+        //we need to get the counts intially 
+        LoadPackageCounters(); 
+
+    }
+    function LoadPackageCounters(){
+        getPackageCountBySize(mid,"cargo","#packageCount"); 
+        getPackageCountBySize(mid,"mail","#mailCount"); 
     }
     LoadPageData();
     //#endregion
@@ -39,13 +43,47 @@ $(function () {
 
         var package = getPackageDetails($(this));
         var validPackage = validatePackage(package, $(this));
+        var form = $(this).closest('form'); 
         if (validPackage) {
             //save
-            savePackage(package);
+            savePackage(package,form);
         } else {
             console.log('not saving the package...Invalid')
         }
 
+    });
+    $(".close-manifest").click(function(){
+        $.ajax({
+            url:'/warehouse/close-manifest',
+            type:'post',
+            data:{mid:mid},
+            success:function(result){
+                notes.show(result.message, {
+                    type: 'info',
+                    title: 'Hey',
+                    icon: '<i class="icon-icon-lock-open-outline"></i>',
+                    sticky: true
+                });
+            }
+        }); 
+    }); 
+    $(".ship-manifest").click(function(){
+        $.ajax({
+            url:'warehouse/ship-manifest',
+            type:'post',
+            data:{mid:mid},
+            success:function(result){
+                notes.show(result.message, {
+                    type: 'info',
+                    title: 'Hey',
+                    icon: '<i class="icon-icon-lock-open-outline"></i>',
+                    sticky: true
+                });
+            }
+        }); 
+    });
+    $(".export-manifest").click(function(){
+        window.location = '/warehouse/export-manifest'; 
     });
     $("#rmPackage").click(function(){
         var id = $(this).attr('data-id');
@@ -149,11 +187,19 @@ $(function () {
         });
     }
 
-    function clearForm() {
-
+    function clearForm(form) {
+         form.find('.skybox').val('');
+         form.find('.customerName').text('');
+         form.find('.trackingNo').val('');
+         form.find('.description').val('');
+         form.find('.shipper').val('');
+         form.find('.package-value').val('');
+         form.find('.pieces').val('');
+         form.find('.weight').val('');
+        
     }
     
-  
+   ///TO BE REfactored to one function that will take packages and type and control to display the pacakges in 
     function displayCargoPackages(packages) {
         if (cargoTable)
             cargoTable.destroy();
@@ -265,6 +311,7 @@ $(function () {
 
         });
     }
+    ///TO BE REfactored to one function that will take packages and type and control to display the pacakges in 
     function displayMailPackages(packages) {
         if (mailTable)
             mailTable.destroy();
@@ -377,7 +424,19 @@ $(function () {
         });
     }
 
-    function savePackage(package) {
+    function getPackageCountBySize(mid,type,ctrlName){
+        $.ajax({
+            url:`/warehouse/manifest-count/${mid}/${type}`, 
+            contentType:'json', 
+            success:function(result)
+            {
+                $(ctrlName).html(result.size);
+                console.log(result); 
+            }
+        }); 
+    }
+
+    function savePackage(package,form) {
 
         $.ajax({
             url: '/warehouse/save-package',
@@ -387,11 +446,15 @@ $(function () {
                 if (result.saved == true) {
                     //clear the form 
                     //and build dataTable 
-                    clearForm();
-                    if (package.mtype =='mail')
-                    getManifestPackages(mid, 'mail',function(cargoPackages){ 
-                        displayCargoPackages(cargoPackages);
-                    });
+                    clearForm(form);
+                    LoadPackageCounters();
+                    console.log("about to redisplay "+package.mtype);
+                    if (package.mtype == 'mail'){
+                        getManifestPackages(mid, 'mail',function(mailPackages){ 
+                            displayMailPackages(mailPackages);
+                        });
+                    }
+                    
                     
                         if (package.mtype =='cargo'){
                             getManifestPackages(mid, 'cargo',function(cargoPackages){ 
@@ -442,6 +505,7 @@ $(function () {
             type:'post',
             data:{trackingNo:trackingNo,mid:$("#mid").val()},
             success: function(dResult){
+                LoadPackageCounters();
                     if (type=='mail'){
                      //refresh the package listing 
                      console.log('refreshing mail');
