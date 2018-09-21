@@ -26,7 +26,16 @@ export class ManifestService{
             });
         });
     }
-    
+    getManifest(mid){
+        return new Promise (function(resolve,reject){
+            dataContext.getServiceProxy(SERVICE_KEY).getManifest({mid:mid},function(error,result){
+                if (error){
+                    reject(error);
+                }
+                resolve( result);
+            });
+        });
+    }
     closeManifest(mid,stage,username){
         return new Promise (function(resolve,reject){
             dataContext.getServiceProxy(SERVICE_KEY).closeManifest({mid:mid,stage:stage,username:username},function(error,result){
@@ -47,9 +56,9 @@ export class ManifestService{
             });
         });
     }
-    shipManifest(mid){
+    shipManifest(mid,awb,username){
         return new Promise (function(resolve,reject){
-            dataContext.getServiceProxy(SERVICE_KEY).shipManifest({mid:mid},function(error,result){
+            dataContext.getServiceProxy(SERVICE_KEY).shipManifest({mid:mid,awb:awb,username:username},function(error,result){
                 if (error){
                     reject(error);
                 }

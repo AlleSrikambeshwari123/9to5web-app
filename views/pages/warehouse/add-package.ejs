@@ -1,38 +1,94 @@
 <% layout('./shared/__template')%>
 <div class='gutters'>
     <div class='col-xl-12 col-lg-6 col-md-12 col-sm-12'>
-        
+        <input type='hidden' id='mid' value="<%=mid%>" />
 
         <div class='card'>
             <div class="card-header col-md-12">
-                <h3>  H-123 Data Entry</h3>
+                <h3> <%=ColLabel%> <%=inital%>-<%=mid %> Data Entry</h3>
             </div>
             <div class="card-body">
-          
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab"
+                            aria-controls="home" aria-selected="true" aria-expanded="true"><%=ColLabel%> Overview</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile"
+                            aria-selected="false" aria-expanded="false">Packages</a>
+                    </li>
+                  
 
-                
-                    <div class="show" id="home" role="tabpanel" aria-labelledby="home-tab"
+                </ul>
+
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade active show" id="home" role="tabpanel" aria-labelledby="home-tab"
                         aria-expanded="true">
                         <div>
                             <div class="clearfix">
                                 <div class="btn-group custom-btn-group float-right" role="group">
-
-                                    <button type="button" class="btn btn-primary btn-sm">Close Manifest</button>
-                                    <button type="button" class="btn btn-success btn-sm">Ship Manifest</button>
-                                    <button type="button" class="btn btn-dark btn-sm">Export Excel</button>
+                                    <%if(Number(manifest.StageId) <= 1 ){%>
+                                    <button type="button" class="btn btn-primary btn-sm close-manifest">Close <%=ColLabel%></button>
+                                    <%}%>
+                                    <%if(Number(manifest.StageId) <= 2 ){%>
+                                    <button type="button" class="btn btn-success btn-sm ship-manifest-btn" data-toggle='modal'
+                                        data-target='#shipManifest'>Ship <%=ColLabel%></button>
+                                    <%}%>
+                                    <button type="button" class="btn btn-dark btn-sm export-manifest">Export Excel</button>
 
                                 </div>
                             </div>
                         </div>
-                        
-                    </div>
-                   
                         <div class='row'>
+
                             <div class='col-md-3'>
-                                <form method='post' id='PackageForm'>
+                            <div class="col-lg-12 col-md-12 col-sm-12">
+													<p class="text-uppercase small">
+														<strong>Date:</strong> <br/><%=manifest.DateCreatedDisplay %>
+													</p>
+													<address class='small'>
+														
+														<strong>VALUE:</strong> $1,123.23<br>
+														<strong>WEIGHT:</strong> 1,123 Lbs<br>
+                                                        <strong>STAGE:</strong> Closed<br>
+                                                        
+                                                        <strong>CREATED BY:</strong> Stevan<br>
+													
+													</address>
+												</div>
+                              
+                            </div>
+                            <div class='col-md-9'>
+                                <div class='row gutters pt-2 mt-4'>
+
+                                    
+                                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">
+                                        <div class="info-stats4 pull-left">
+                                            <div class="icon-type ">
+                                                <i class="icon-box"></i>
+                                            </div>
+                                            <div class="sale-num">
+                                                <h4 id='packageCount'>0</h4>
+                                                <p>Packages</p>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab" aria-expanded="false">
+                        <div class='row'>
+                            <%if (manifest.StageId <= 1){ %>
+                            <div class='col-md-3 pkg-form'>
+
+                                <form method='post' id='mailPackageForm'>
                                     <div class='form-group'>
-                                        <label id="containerLabel">Skid </label>
-                                        <input type='text' class='form-control bag' name='bag' id='bag' required />
+                                        <label>Skid </label>
+                                        <input type='text' class='form-control skid' name='skid' id='skid' required />
                                     </div>
                                     <div class='form-group'>
                                         <label>SkyBox <span class='text-info title customerName '></span></label>
@@ -40,8 +96,8 @@
                                     </div>
                                     <div class='form-group'>
                                         <label>Tracking #</label>
-                                        
-                                        <input type='hidden' class='mtype' value='mail' />
+                                        <input type='hidden' class='mid' value='<%=mid %>' />
+                                        <input type='hidden' class='mtype' value='<%= ColLabel.toLowerCase() %>' />
                                         <input type='text' class='form-control trackingNo' name='trackingNo' required />
                                     </div>
                                     <div class='form-group'>
@@ -70,7 +126,9 @@
                                             Save</button>
                                     </div>
                                 </form>
+
                             </div>
+                            <%}%>
                             <div class='col-md-9'>
                                 <table id='mailTable' class='table table-bordered table-inverse ' style='width:100%;'>
 
@@ -78,10 +136,10 @@
                             </div>
                         </div>
 
-                  
-                  
+                    </div>
+                    
                 </div>
-            
+            </div>
 
         </div>
     </div>
@@ -104,6 +162,32 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary close-del" data-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-danger rm-package" id='rmPackage'>Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="shipManifest" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2" aria-hidden="true"
+    style="display: none;">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel2">Ship Manifest</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <label>Enter AWB #</label>
+                <input type='text' class='form-control awb'>
+            </div>
+            <div class="modal-footer">
+
+
+                <button type="button" class="btn btn-primary close-del" data-dismiss="modal">Close</button>
+
+                <button type="button" class="btn btn-success ship-manifest" id='ship-manifest'>Ship Manifest</button>
             </div>
         </div>
     </div>

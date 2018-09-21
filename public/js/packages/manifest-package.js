@@ -53,11 +53,14 @@ $(function () {
 
     });
     $(".close-manifest").click(function(){
+        var btn = $(this);
         $.ajax({
             url:'/warehouse/close-manifest',
             type:'post',
             data:{mid:mid},
             success:function(result){
+                btn.fadeOut(); 
+                $(".pkg-form").hide();
                 notes.show(result.message, {
                     type: 'info',
                     title: 'Hey',
@@ -68,16 +71,22 @@ $(function () {
         }); 
     }); 
     $(".ship-manifest").click(function(){
+        //we need the awb 
+        var btn = $(".ship-manifest-btn");
+        var awb = $("#awb").val();
+
         $.ajax({
-            url:'warehouse/ship-manifest',
+            url:'/warehouse/ship-manifest',
             type:'post',
-            data:{mid:mid},
+            data:{mid:mid, awb:awb},
             success:function(result){
+                $(".close-del").trigger('click');
+                btn.fadeOut(); 
                 notes.show(result.message, {
                     type: 'info',
                     title: 'Hey',
                     icon: '<i class="icon-icon-lock-open-outline"></i>',
-                    sticky: true
+                    sticky: false
                 });
             }
         }); 
