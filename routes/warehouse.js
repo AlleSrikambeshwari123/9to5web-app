@@ -69,6 +69,8 @@ router.get('/m-packages/:manifestId', middleware(services.userService).requireAu
     services.manifestService.getManifest(pageData.mid).then((m)=>{
         console.log(m);
         pageData.manifest = m.manifest; 
+        pageData.mtype = "cargo";
+        pageData.ColLabel = "Cargo";
         res.render('pages/warehouse/manifest-packages', pageData);
     }); 
     
@@ -240,6 +242,8 @@ router.post('/save-package', middleware(services.userService).requireAuthenticat
         mid: body.mid,
         mtype: body.mtype
     }
+    //we have the package details here .. now we need to get the existing package 
+   
     var container = "";
     var containerNo = ""
     if (typeof body.bag != "undefined") {
@@ -252,36 +256,61 @@ router.post('/save-package', middleware(services.userService).requireAuthenticat
         container = "skid";
         containerNo = package.skid;
     }
-    //save the package to the package NS
-    redis.hmset('packages:' + package.trackingNo, package).then(function (result) {
-        var manifestKey = `manifest:${package.mid}:${package.mtype}:${container}:${containerNo}`;
-        redis.setAdd(manifestKey, package.trackingNo).then(function (sResult) {
-            //get the members one time here 
-            console.log(manifestKey);
-            redis.getMembers(manifestKey)
-                .then((data) => Promise.all(data.map(redis.getPackage)))
-                .then(function (data) {
-                    res.send({
-                        saved: true,
-                        packages: data
+    redis.getPackage(package.trackingNo).then((p)=>{
+        if (p){
+            var currentContainer = `manifest:${p.mid}:${p.mtype}:${container}:`;
+            console.log('found package '); 
+            console.log(p); 
+            if (container =='bag'){
+                //check to see if the back no is the same. 
+                if (p.bag != package.bag){
+                //remove it from the original list 
+                  redis.srem(currentContainer+p.bag,p.trackingNo)
+                  console.log('remove package from current set '+ currentContainer)
+                }
+            }
+            else {
+                //check to see if the skid number is the same. 
+                if (p.skid != package.skid){
+                    //remove it from the original list  
+                    redis.srem(currentContainer+p.skid,p.trackingNo)
+                    console.log('remove package from current set '+ currentContainer)
+                }
+            }
+        }
+        
+        redis.hmset('packages:' + package.trackingNo, package).then(function (result) {
+            var manifestKey = `manifest:${package.mid}:${package.mtype}:${container}:${containerNo}`;
+            redis.setAdd(manifestKey, package.trackingNo).then(function (sResult) {
+                //get the members one time here 
+                console.log(manifestKey);
+                redis.getMembers(manifestKey)
+                    .then((data) => Promise.all(data.map(redis.getPackage)))
+                    .then(function (data) {
+                        res.send({
+                            saved: true,
+                            packages: data
+                        });
+                    }).catch((err3) => {
+                        res.send({
+                            err: err3,
+                            saved: true,
+                            listing: false
+                        })
                     });
-                }).catch((err3) => {
-                    res.send({
-                        err: err3,
-                        saved: true,
-                        listing: false
-                    })
+    
+            }).catch(function (err) {
+                res.send({
+                    saved: false
                 });
-
-        }).catch(function (err) {
+            });
+        }).catch(function (err2) {
             res.send({
                 saved: false
-            });
-        });
-    }).catch(function (err2) {
-        res.send({
-            saved: false
-        })
+            })
+    }); 
+    //save the package to the package NS
+  
     });
 
 

@@ -2,6 +2,7 @@
 <div class='gutters'>
     <div class='col-xl-12 col-lg-6 col-md-12 col-sm-12'>
         <input type='hidden' id='mid' value="<%=mid%>" />
+        <input type='hidden' id='mtype' value="<%= ColLabel.toLowerCase() %>" />
 
         <div class='card'>
             <div class="card-header col-md-12">
@@ -28,13 +29,12 @@
                             <div class="clearfix">
                                 <div class="btn-group custom-btn-group float-right" role="group">
                                     <%if(Number(manifest.StageId) <= 1 ){%>
-                                    <button type="button" class="btn btn-primary btn-sm close-manifest">Close <%=ColLabel%></button>
+                                        <button type="button" class="btn btn-primary btn-sm close-manifest">Close <%=ColLabel%></button>
                                     <%}%>
                                     <%if(Number(manifest.StageId) <= 2 ){%>
-                                    <button type="button" class="btn btn-success btn-sm ship-manifest-btn" data-toggle='modal'
-                                        data-target='#shipManifest'>Ship <%=ColLabel%></button>
+                                        <button type="button" class="btn btn-success btn-sm ship-manifest-btn" data-toggle='modal' data-target='#shipManifest'>Ship <%=ColLabel%></button>
                                     <%}%>
-                                    <button type="button" class="btn btn-dark btn-sm export-manifest">Export Excel</button>
+                                        <button type="button" class="btn btn-dark btn-sm export-manifest">Export Excel</button>
 
                                 </div>
                             </div>
@@ -48,11 +48,11 @@
 													</p>
 													<address class='small'>
 														
-														<strong>VALUE:</strong> $1,123.23<br>
-														<strong>WEIGHT:</strong> 1,123 Lbs<br>
-                                                        <strong>STAGE:</strong> Closed<br>
+														<strong>VALUE:</strong><span class='total-value'></span><br>
+														<strong>WEIGHT:</strong> <span class='total-weight'></span> <br>
+                                                        <strong>STAGE:</strong> <%=manifest.StageName%><br>
                                                         
-                                                        <strong>CREATED BY:</strong> Stevan<br>
+                                                        <strong>CREATED BY:</strong> <%=manifest.CreatedBy%><br>
 													
 													</address>
 												</div>
@@ -82,10 +82,13 @@
                     </div>
                     <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab" aria-expanded="false">
                         <div class='row'>
-                            <%if (manifest.StageId <= 1){ %>
-                            <div class='col-md-3 pkg-form'>
+                                <% var showForm ='' 
+                                if (manifest.StageId > 1){ 
+                                    showForm ='display:none'
+                               }%>
+                            <div class='col-md-3 pkg-form' style='<%=showForm%>'>
 
-                                <form method='post' id='mailPackageForm'>
+                                <form method='post' id='cargoPackageForm'>
                                     <div class='form-group'>
                                         <label>Skid </label>
                                         <input type='text' class='form-control skid' name='skid' id='skid' required />
@@ -128,9 +131,9 @@
                                 </form>
 
                             </div>
-                            <%}%>
+                            
                             <div class='col-md-9'>
-                                <table id='mailTable' class='table table-bordered table-inverse ' style='width:100%;'>
+                                <table id='packageTable' class='table table-bordered table-inverse ' style='width:100%;'>
 
                                 </table>
                             </div>

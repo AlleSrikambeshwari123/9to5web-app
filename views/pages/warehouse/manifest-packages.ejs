@@ -1,7 +1,8 @@
 <% layout('./shared/__template')%>
 <div class='gutters'>
     <div class='col-xl-12 col-lg-6 col-md-12 col-sm-12'>
-        <input type='hidden' id='mid' value="<%=mid%>" />
+        <input type='hidden' id='mid' value="<%=mid%>" /><
+            <input type='hidden' id='mtype' value="<%= ColLabel.toLowerCase() %>" />
 
         <div class='card'>
             <div class="card-header col-md-12">
@@ -52,11 +53,11 @@
 													</p>
 													<address class='small'>
 														
-														<strong>VALUE:</strong> $1,123.23<br>
-														<strong>WEIGHT:</strong> 1,123 Lbs<br>
-                                                        <strong>STAGE:</strong> Closed<br>
-                                                        
-                                                        <strong>CREATED BY:</strong> Stevan<br>
+                                                            <strong>VALUE:</strong><span class='total-value'></span><br>
+                                                            <strong>WEIGHT:</strong> <span class='total-weight'></span> <br>
+                                                            <strong>STAGE:</strong> <%=manifest.StageName%><br>
+                                                            
+                                                            <strong>CREATED BY:</strong> <%=manifest.CreatedBy%><br>
 													
 													</address>
 												</div>
@@ -96,8 +97,12 @@
                     </div>
                     <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab" aria-expanded="false">
                         <div class='row'>
-                            <%if (manifest.StageId <= 1){ %>
-                            <div class='col-md-3 pkg-form'>
+
+                            <% var showForm ='' 
+                            if (manifest.StageId > 1){ 
+                                showForm ='display:none'
+                           }%>
+                            <div class='col-md-3 pkg-form ' style='<%=showForm%>'>
 
                                 <form method='post' id='mailPackageForm'>
                                     <div class='form-group'>
@@ -136,13 +141,13 @@
                                         <input type='text' class='form-control weight ' name='weight' />
                                     </div>
                                     <div class='form-group'>
-                                        <button class='btn btn-primary savePackage' type='button'><i class='fa fa-plus'></i>
+                                        <button class='btn btn-primary savePackage' data-stage='<%=manifest.StageId%>' type='button'><i class='fa fa-plus'></i>
                                             Save</button>
                                     </div>
                                 </form>
 
                             </div>
-                            <%}%>
+                            
                             <div class='col-md-9'>
                                 <table id='mailTable' class='table table-bordered table-inverse ' style='width:100%;'>
 
@@ -153,8 +158,8 @@
                     </div>
                     <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab" aria-expanded="false">
                         <div class='row'>
-                            <%if (manifest.StageId <= 1){ %>
-                            <div class='col-md-3 pkg-form'>
+                           
+                            <div class='col-md-3 pkg-form' style='<%=showForm%>'>
                                 <form method='post' id='cargoPackageForm'>
                                     <div class='form-group'>
                                         <label>Skid </label>
@@ -192,12 +197,12 @@
                                         <input type='text' class='form-control weight' name='weight' />
                                     </div>
                                     <div class='form-group'>
-                                        <button class='btn btn-primary savePackage' type='button'><i class='fa fa-plus'></i>
+                                        <button class='btn btn-primary savePackage' data-stage='<%=manifest.StageId%>' type='button'><i class='fa fa-plus'></i>
                                             Save</button>
                                     </div>
                                 </form>
                             </div>
-                            <%}%>
+                            
                             <div class='col-md-9'>
                                 <table id='cargoTable' class='table table-bordered table-inverse ' style='width:100%'>
 

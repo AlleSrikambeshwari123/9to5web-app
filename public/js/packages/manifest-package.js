@@ -1,25 +1,55 @@
+Number.prototype.formatMoney = function(c, d, t){
+    var n = this,
+        c = isNaN(c = Math.abs(c)) ? 2 : c,
+        d = d == undefined ? "." : d,
+        t = t == undefined ? "," : t,
+        s = n < 0 ? "-" : "",
+        i = String(parseInt(n = Math.abs(Number(n) || 0).toFixed(c))),
+        j = (j = i.length) > 3 ? j % 3 : 0;
+    return "$"+s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
+};
 $(function () {
 
     //#region PAGE LOAD 
     var mid = $("#mid").val();
+    var mtype = $('#mtype').val();
     var mailTable;
     var cargoTable;
+    
     function LoadPageData() {
-        getManifestPackages(mid, 'mail',function(mailPackages){ 
-            displayMailPackages(mailPackages);
-        });
-
-        getManifestPackages(mid, 'cargo',function(cargoPackages){ 
-            displayCargoPackages(cargoPackages);
-        });
-
+        //we need to load page data based on manifest type... 
+        getManifestTotals(mid,mtype);
+        if (mtype!="cargo"){
+            getManifestPackages(mid, mtype, function (mailPackages) {
+             
+                // displayMailPackages(mailPackages);
+                displayPackages(mailPackages,"#packageTable",mtype)
+            });
+            
+        }
+       
+        else {
+            getManifestPackages(mid, 'mail', function (mailPackages) {
+             
+                // displayMailPackages(mailPackages);
+                displayPackages(mailPackages,"#mailTable","mail")
+            });
+    
+            getManifestPackages(mid, 'cargo', function (cargoPackages) {
+                //displayCargoPackages(cargoPackages);
+                displayPackages(cargoPackages,"#cargoTable","cargo")
+            });
+        }
+       
         //we need to get the counts intially 
-        LoadPackageCounters(); 
+        LoadPackageCounters();
 
     }
-    function LoadPackageCounters(){
-        getPackageCountBySize(mid,"cargo","#packageCount"); 
-        getPackageCountBySize(mid,"mail","#mailCount"); 
+
+    function LoadPackageCounters() {
+        getPackageCountBySize(mid, mtype, "#packageCount");
+        if ($("#mailCount"))
+            getPackageCountBySize(mid, "mail", "#mailCount");
     }
     LoadPageData();
     //#endregion
@@ -42,24 +72,28 @@ $(function () {
     $(".savePackage").click(function () {
 
         var package = getPackageDetails($(this));
+        var stage = $(this).attr('data-stage');
+        var mtype = $("#mytpe").val();
         var validPackage = validatePackage(package, $(this));
-        var form = $(this).closest('form'); 
+        var form = $(this).closest('form');
         if (validPackage) {
             //save
-            savePackage(package,form);
+            savePackage(package, form,Number(stage)>1);
         } else {
             console.log('not saving the package...Invalid')
         }
 
     });
-    $(".close-manifest").click(function(){
+    $(".close-manifest").click(function () {
         var btn = $(this);
         $.ajax({
-            url:'/warehouse/close-manifest',
-            type:'post',
-            data:{mid:mid},
-            success:function(result){
-                btn.fadeOut(); 
+            url: '/warehouse/close-manifest',
+            type: 'post',
+            data: {
+                mid: mid
+            },
+            success: function (result) {
+                btn.fadeOut();
                 $(".pkg-form").hide();
                 notes.show(result.message, {
                     type: 'info',
@@ -68,20 +102,23 @@ $(function () {
                     sticky: true
                 });
             }
-        }); 
-    }); 
-    $(".ship-manifest").click(function(){
+        });
+    });
+    $(".ship-manifest").click(function () {
         //we need the awb 
         var btn = $(".ship-manifest-btn");
         var awb = $("#awb").val();
 
         $.ajax({
-            url:'/warehouse/ship-manifest',
-            type:'post',
-            data:{mid:mid, awb:awb},
-            success:function(result){
+            url: '/warehouse/ship-manifest',
+            type: 'post',
+            data: {
+                mid: mid,
+                awb: awb
+            },
+            success: function (result) {
                 $(".close-del").trigger('click');
-                btn.fadeOut(); 
+                btn.fadeOut();
                 notes.show(result.message, {
                     type: 'info',
                     title: 'Hey',
@@ -89,21 +126,21 @@ $(function () {
                     sticky: false
                 });
             }
-        }); 
+        });
     });
-    $(".export-manifest").click(function(){
-        window.location = '/warehouse/export-manifest'; 
+    $(".export-manifest").click(function () {
+        window.location = '/warehouse/export-manifest';
     });
-    $("#rmPackage").click(function(){
+    $("#rmPackage").click(function () {
         var id = $(this).attr('data-id');
         var type = $(this).attr('data-type');
-        console.log('type '+type);
-         deletePackage(id,type);
-         $(".close-del").trigger('click');
+        console.log('type ' + type);
+        deletePackage(id, type);
+        $(".close-del").trigger('click');
     });
     //#endregion
 
-    //#region FUNCTIONS
+    //#region Package / Manifest FUNCTIONS
     function getPackageDetails(saveBtn) {
         console.log('getting the package details')
         var form = saveBtn.closest('form');
@@ -129,7 +166,41 @@ $(function () {
         return package;
 
     }
-
+   
+    function getManifestTotals(mid,type){
+        var totalWeight = 0; 
+        var totalValue = 0 ; 
+        
+        
+        
+   
+        getManifestPackages(mid,mtype,function(packages){
+           
+            packages.forEach(element => {
+               
+                totalWeight = totalWeight + Number(element.weight);
+            
+                totalValue = totalValue + Number(element.value); 
+            });
+            if (type == 'cargo'){
+                getManifestPackages(mid,"mail",function(packages){
+                    packages.forEach(element => {
+                        totalWeight += Number(element.weight); 
+                        totalValue += Number(element.value); 
+                    });
+                    $(".total-weight").text(' '+totalWeight+' LBS');
+                    $(".total-value").text(' '+Number(totalValue).formatMoney(2,'.',','))
+                });
+                
+            }
+            else{
+                $(".total-weight").text(' '+totalWeight+' LBS');
+                $(".total-value").text(' '+Number(totalValue).formatMoney(2,'.',','))
+            }
+        });
+       
+      
+    }
     function validatePackage(package, saveBtn) {
         var valid = true;
         var message = '';
@@ -176,8 +247,8 @@ $(function () {
         return valid;
     }
 
-    function getManifestPackages(mid, type,callbk) {
-       var pkgs = [];
+    function getManifestPackages(mid, type, callbk) {
+        var pkgs = [];
         $.ajax({
             url: '/warehouse/get-mpackages',
             type: 'post',
@@ -187,8 +258,8 @@ $(function () {
             },
             success: function (result) {
                 console.log(result);
-                pkgs = result; 
-               callbk(pkgs); 
+                pkgs = result;
+                callbk(pkgs);
             },
             error: function (err) {
 
@@ -197,29 +268,37 @@ $(function () {
     }
 
     function clearForm(form) {
-         form.find('.skybox').val('');
-         form.find('.customerName').text('');
-         form.find('.trackingNo').val('');
-         form.find('.description').val('');
-         form.find('.shipper').val('');
-         form.find('.package-value').val('');
-         form.find('.pieces').val('');
-         form.find('.weight').val('');
-        
+        form.find('.skybox').val('');
+        form.find('.customerName').text('');
+        form.find('.trackingNo').val('');
+        form.find('.description').val('');
+        form.find('.shipper').val('');
+        form.find('.package-value').val('');
+        form.find('.pieces').val('');
+        form.find('.weight').val('');
+
     }
+
     
-   ///TO BE REfactored to one function that will take packages and type and control to display the pacakges in 
-    function displayCargoPackages(packages) {
-        if (cargoTable)
-            cargoTable.destroy();
-        
+    
+    function displayPackages(packages, tableId,ctype) {
+        //REFACTORED FUNCTION  
+        if ($(tableId +" tbody").children().length >0  )
+             $(tableId).DataTable().destroy();
+        var containerLabel = "Skid"; 
+
+        if (ctype=='mail')
+            containerLabel = "Bag";
         var colDef = [
             {
-                title: "Skid",
+                title: containerLabel,
                 data: null,
                 render: function (data, type, row, meta) {
                     // console.log(data);
-                    return `${data.skid} `;
+                    if(ctype=='mail')
+                        return `${data.bag}`; 
+                    else
+                        return `${data.skid} `;
                 }
             },
             {
@@ -276,7 +355,7 @@ $(function () {
                 data: null,
                 render: function (data, type, row, meta) {
                     // console.log(data);
-                    return `${data.value}`;
+                    return `${Number(data.value).formatMoney(2,'.',',')}`;
                 }
             },
             {
@@ -284,12 +363,12 @@ $(function () {
                 data: null,
                 render: function (data, type, row, meta) {
                     // console.log(data);
-                    return `<i class='icon-pencil3 edit'  data-id='${data.trackingNo}' title='Edit' style='cursor:pointer;'></i> <i title='Delete' data-type='cargo' data-toggle='modal' data-target='#confirmPkgDel' class='icon-trash rm' data-id='${data.trackingNo}' style='cursor:pointer;'></i>`;
+                    return `<i class='icon-pencil3 edit'  data-id='${data.trackingNo}' title='Edit' style='cursor:pointer;'></i> <i title='Delete' data-type='${ctype}' data-toggle='modal' data-target='#confirmPkgDel' class='icon-trash rm' data-id='${data.trackingNo}' style='cursor:pointer;'></i>`;
                 }
             },
 
         ];
-        cargoTable = $('#cargoTable').DataTable({
+         $(tableId).DataTable({
 
             data: packages,
             paging: true,
@@ -304,148 +383,42 @@ $(function () {
 
             "deferRender": true,
             initComplete: function () {
-                $("#cargoTable").find(".edit").click(function(){
-                    var id = $(this).attr('data-id'); 
+                $(tableId).find(".edit").click(function () {
+                    var id = $(this).attr('data-id');
+                    var form = "#cargoPackageForm";
+                   
+                    if (ctype =='mail')
+                        form ='#mailPackageForm';
                     
-                    loadPackage(id,$("#cargoPackageForm")); 
+                    $(form).parent().show();
+                    loadPackage(id,$(form));
                 });
-                $("#cargoTable").find(".rm").click(function(){
-                    var id = $(this).attr('data-id'); 
-                    var type= $(this).attr('data-type'); 
-                    $("#rmPackage").attr('data-id',id); 
-                    $("#rmPackage").attr('data-type',type); 
-                   // deletePackage(id,"cargo");
-                });
-            },
-
-        });
-    }
-    ///TO BE REfactored to one function that will take packages and type and control to display the pacakges in 
-    function displayMailPackages(packages) {
-        if (mailTable)
-            mailTable.destroy();
-        console.log(packages);
-        var colDef = [
-            {
-                title: "Bag",
-                data: null,
-                render: function (data, type, row, meta) {
-                    // console.log(data);
-                    return `${data.bag} `;
-                }
-            },
-            {
-                title: "Skybox",
-                data: null,
-                render: function (data, type, row, meta) {
-                    // console.log(data);
-                    return `T-${data.skybox} `;
-                }
-            },
-            {
-                title: "Customer",
-                data: null,
-                render: function (data, type, row, meta) {
-                    // console.log(data);
-                    return `${data.customer} `;
-                }
-            },
-            {
-                title: "Tracking No",
-                data: null,
-                render: function (data, type, row, meta) {
-                    // console.log(data);
-                    return `${data.trackingNo} `;
-                }
-            },
-
-            {
-                title: "Shipper",
-                data: null,
-                render: function (data, type, row, meta) {
-                    // console.log(data);
-                    return `${data.shipper}`;
-                }
-            },
-            {
-                title: "Pieces",
-                data: null,
-                render: function (data, type, row, meta) {
-                    // console.log(data);
-                    return `${data.pieces}`;
-                }
-            },
-            {
-                title: "Weight",
-                data: null,
-                render: function (data, type, row, meta) {
-                    // console.log(data);
-                    return `${data.weight}`;
-                }
-            },
-            {
-                title: "Value (USD)",
-                data: null,
-                render: function (data, type, row, meta) {
-                    // console.log(data);
-                    return `${data.value}`;
-                }
-            },
-            {
-                title: "",
-                data: null,
-                render: function (data, type, row, meta) {
-                    // console.log(data);
-                    return `<i class='icon-pencil3 edit' data-id='${data.trackingNo}' title='Edit' style='cursor:pointer;'></i> <i data-type='mail' data-id='${data.trackingNo}' data-toggle='modal' data-target='#confirmPkgDel' title='Delete' class='icon-trash rm' style='cursor:pointer;'></i>`;
-                }
-            },
-
-        ];
-        mailTable = $('#mailTable').DataTable({
-
-            data: packages,
-            paging: true,
-
-            columns: colDef,
-            //bInfo:false,
-
-            "language": {
-                "decimal": ",",
-                "thousands": "."
-            },
-
-            "deferRender": true,
-            initComplete: function () {
-                $("#mailTable").find(".edit").click(function(){
-                    var id = $(this).attr('data-id'); 
-                    loadPackage(id,$("#mailPackageForm")); 
-                  
-                });
-                $("#mailTable").find(".rm").click(function(){
-                    var id = $(this).attr('data-id'); 
-                    var type= $(this).attr('data-type'); 
-                    $("#rmPackage").attr('data-id',id); 
-                    $("#rmPackage").attr('data-type',type); 
-                    //deletePackage(id,"mail");
+                $(tableId).find(".rm").click(function () {
+                    var id = $(this).attr('data-id');
+                    var type = $(this).attr('data-type');
+                    $("#rmPackage").attr('data-id', id);
+                    $("#rmPackage").attr('data-type', type);
+                    // deletePackage(id,"cargo");
                 });
             },
 
         });
     }
 
-    function getPackageCountBySize(mid,type,ctrlName){
+   
+
+    function getPackageCountBySize(mid, type, ctrlName) {
         $.ajax({
-            url:`/warehouse/manifest-count/${mid}/${type}`, 
-            contentType:'json', 
-            success:function(result)
-            {
+            url: `/warehouse/manifest-count/${mid}/${type}`,
+            contentType: 'json',
+            success: function (result) {
                 $(ctrlName).html(result.size);
-                console.log(result); 
+                console.log(result);
             }
-        }); 
+        });
     }
 
-    function savePackage(package,form) {
+    function savePackage(package, form,isClosed) {
 
         $.ajax({
             url: '/warehouse/save-package',
@@ -455,22 +428,29 @@ $(function () {
                 if (result.saved == true) {
                     //clear the form 
                     //and build dataTable 
+                    //if the manifest is closed then hide the form after  
                     clearForm(form);
+                    if (isClosed){
+                        form.parent().hide();
+                    }
                     LoadPackageCounters();
-                    console.log("about to redisplay "+package.mtype);
-                    if (package.mtype == 'mail'){
-                        getManifestPackages(mid, 'mail',function(mailPackages){ 
-                            displayMailPackages(mailPackages);
+                    console.log("about to re-display " + package.mtype);
+                    if (package.mtype == 'mail') {
+                        getManifestPackages(mid, 'mail', function (mailPackages) {
+                            displayPackages(mailPackages,"#mailTable",package.mtype);
                         });
                     }
-                    
-                    
-                        if (package.mtype =='cargo'){
-                            getManifestPackages(mid, 'cargo',function(cargoPackages){ 
-                                displayCargoPackages(cargoPackages);
-                            });
-                        }
-                    
+                    else if (package.mtype == 'cargo') {
+                        getManifestPackages(mid, 'cargo', function (cargoPackages) {
+                            displayPackages(cargoPackages,"#cargoTable","cargo");
+                        });
+                    }
+                    else {
+                        getManifestPackages(mid, mtype, function (cargoPackages) {
+                            displayPackages(cargoPackages,"#packageTable",mtype);
+                        });
+                    }
+
                     console.log('saved');
                 }
             },
@@ -479,58 +459,74 @@ $(function () {
             }
         })
     }
-    function loadPackage(trackingNo, form){
+
+    function loadPackage(trackingNo, form) {
+        console.log(form.attr('id'));
         $.ajax({
-            url:'/warehouse/load-package/'+trackingNo,
-            contentType:'json',
-            success: function(dResult){
+            url: '/warehouse/load-package/' + trackingNo,
+            contentType: 'json',
+            success: function (dResult) {
                 console.log(dResult);
 
                 form.find('.skybox').val(dResult.skybox);
-                console.log(dResult.skybox); 
+                console.log(dResult.skybox);
                 form.find('.trackingNo').val(dResult.trackingNo);
                 form.find('.shipper').val(dResult.shipper);
                 form.find('.package-value').val(dResult.value);
                 form.find('.weight').val(dResult.weight);
                 form.find('.pieces').val(dResult.pieces);
                 form.find('.description').val(dResult.description);
-                if (typeof dResult.bag!="undefined")
+                if (typeof dResult.bag != "undefined")
                     form.find('.bag').val(dResult.bag);
-                else 
-                    form.find('.skid').val(dResult.skid) ; 
+                else
+                    form.find('.skid').val(dResult.skid);
 
-                    form.find('.skybox').trigger('change');
+                form.find('.skybox').trigger('change');
 
             },
-            error:function(err){
-                
+            error: function (err) {
+
             }
 
         })
     }
-    function deletePackage(trackingNo,type){
+
+    function deletePackage(trackingNo, type) {
         $.ajax({
-            url:'/warehouse/rm-package',
-            type:'post',
-            data:{trackingNo:trackingNo,mid:$("#mid").val()},
-            success: function(dResult){
-                LoadPackageCounters();
-                    if (type=='mail'){
-                     //refresh the package listing 
-                     console.log('refreshing mail');
-                     getManifestPackages(mid, 'mail',function(mailPackages){ 
-                        displayMailPackages(mailPackages);
-                    });
-                    }
-                    else if (type=="cargo"){
-                        // cargo 
-                        console.log('refreshing cargo');
-                        getManifestPackages(mid, 'cargo',function(cargoPackages){ 
-                            displayCargoPackages(cargoPackages);
-                        });
-                    }
+            url: '/warehouse/rm-package',
+            type: 'post',
+            data: {
+                trackingNo: trackingNo,
+                mid: $("#mid").val()
             },
-            error:function(err){
+            success: function (dResult) {
+                LoadPackageCounters();
+                if (type == 'mail') {
+                    //refresh the package listing 
+                    console.log('refreshing mail');
+                    getManifestPackages(mid, "mail", function (mailPackages) {
+             
+                        // displayMailPackages(mailPackages);
+                        displayPackages(mailPackages,"#mailTable",mtype)
+                    });
+                } else if (type == "cargo") {
+                    // cargo 
+                    console.log('refreshing cargo');
+                    getManifestPackages(mid, "cargo", function (mailPackages) {
+             
+                        
+                        displayPackages(mailPackages,"#cargoTable",mtype)
+                    });
+                }
+                else {
+                    getManifestPackages(mid, mtype, function (mailPackages) {
+             
+                        
+                        displayPackages(mailPackages,"#packageTable",mtype)
+                    });
+                }
+            },
+            error: function (err) {
 
             }
 
