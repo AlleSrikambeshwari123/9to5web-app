@@ -24,7 +24,7 @@
                    <tbody id='data-listing'>
                     <% listing.forEach(function(manifest){ %>
                     <tr>
-                        <td><strong>M-00<%=manifest.ManifestId%></strong></td>
+                        <td><strong>M-<%=manifest.ManifestId%></strong></td>
                         <td><%=manifest.StageName%></td>
                         <td><%=manifest.DateCreatedDisplay %></td>
                         <td><%=manifest.CreatedBy%></td>

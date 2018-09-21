@@ -61,13 +61,19 @@ router.get('/m-packages/:manifestId', middleware(services.userService).requireAu
     pageData.title = "Manifest Packages";
     pageData.luser = res.User.FirstName + ' ' + res.User.LastName;
     pageData.RoleId = res.User.RoleId;
-    
+    pageData.manifest = {};
     pageData.mid = Number(req.params.manifestId);
 
 
     //we want to format the manifest number to 3 digits 
-    res.render('pages/warehouse/manifest-packages', pageData);
+    services.manifestService.getManifest(pageData.mid).then((m)=>{
+        console.log(m);
+        pageData.manifest = m.manifest; 
+        res.render('pages/warehouse/manifest-packages', pageData);
+    }); 
+    
 });
+
 
 const sumFunction = (accumulator, currentValue) => accumulator + currentValue;
 router.get('/manifest-count/:mid/:mtype', middleware(services.userService).requireAuthentication, function (req, res, next) {
@@ -109,12 +115,28 @@ router.get('/mlist', middleware(services.userService).requireAuthentication, (re
     });
 });
 
-router.get('/packages', middleware(services.userService).requireAuthentication, (req, res, next) => {
+router.get('/packages/:mid', middleware(services.userService).requireAuthentication, (req, res, next) => {
     var pageData = {};
     pageData.title = "Add Packages";
+    pageData.mid = req.params.mid; 
     pageData.luser = res.User.FirstName + ' ' + res.User.LastName;
     pageData.RoleId = res.User.RoleId;
-    res.render('pages/warehouse/add-package.ejs', pageData);
+    services.manifestService.getManifest(Number(pageData.mid)).then((m)=>{
+        pageData.manifest = m.manifest;
+        
+        if (m.manifest.ManifestTypeId == 2){
+            pageData.ColLabel = "Ocean"
+            pageData.inital = "O"
+            pageData.typeId = 2; 
+        }
+        else if ( m.manifest.ManifestTypeId == 3){
+            pageData.ColLabel = "HAZMAT"
+            pageData.inital = "H"
+            pageData.typeId = 3; 
+        }
+        res.render('pages/warehouse/add-package.ejs', pageData);
+    })
+    
 
 
 });
@@ -146,16 +168,19 @@ router.post('/get-mpackages/', middleware(services.userService).requireAuthentic
     
     //so we get the keys 
     redis.getKeys(manifestKey).then((data) => {
-        
-        redis.union(data).then(function (result) {
-            console.log(result)
-            //we need the actual packages now 
-            Promise.all(result.map(redis.getPackage)).then(function (packages) {
-                // console.log(packages);
-                res.send(packages);
-            });
+        if (data.length==0){
+            res.send([])
+        }
+        else 
+            redis.union(data).then(function (result) {
+                console.log(result)
+                //we need the actual packages now 
+                Promise.all(result.map(redis.getPackage)).then(function (packages) {
+                    // console.log(packages);
+                    res.send(packages);
+                });
 
-        });
+            });
 
 
     });
@@ -291,7 +316,8 @@ router.post('/close-manifest', middleware(services.userService).requireAuthentic
 router.post('/ship-manifest', middleware(services.userService).requireAuthentication, (req, res, next) => {
     var mid = Number(req.body.mid); 
     var awb = req.body.awb; 
-    services.manifestService.shipManifest(mid,awb).then((mREsult)=>{
+    var user = res.User.Username;
+    services.manifestService.shipManifest(mid,awb,user).then((mREsult)=>{
         res.send(mREsult); 
     }); 
     

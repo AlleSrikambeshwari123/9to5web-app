@@ -6,14 +6,15 @@ $(function(){
         //check to see if the card body has a table if not add it i
         var table = $(".mlisting"); 
         table.show(); 
-        var tableBody = $(".mlisting").find('tbody'); 
+        var tableBody = $(".mlisting").find('#data-listing'); 
         if (!tableBody){
            table.append(`<tbody id="data-listing"><tr> <td>M-${manifest.ManifestId} </td> <td>${manifest.StageName} </td> <td>${manifest.DateCreatedDisplay} </td> <td>${manifest.CreatedBy} </td> <td><a href='/warehouse/m-packages/${manifest.ManifestId}' class='btn btn-sm btn-primary'>Manage</a> <button class='btn btn-danger btn-sm'>Delete</button> </td> </tr></tbody>`); 
-
+            console
 
         }
         else {
-            $(tableBody).append(`<tr> <td>M-${manifest.ManifestId} </td> <td>${manifest.StageName} </td> <td>${manifest.DateCreatedDisplay} </td> <td>${manifest.CreatedBy} </td> <td><a href='/warehouse/m-packages/${manifest.ManifestId}' class='btn btn-sm btn-primary'>Manage</a> <button class='btn btn-danger btn-sm'>Delete</button> </td> </tr>`);
+
+            $(tableBody).prepend(`<tr> <td><strong>M-${manifest.ManifestId}</strong> </td> <td>${manifest.StageName} </td> <td>${manifest.DateCreatedDisplay} </td> <td>${manifest.CreatedBy} </td> <td><a href='/warehouse/m-packages/${manifest.ManifestId}' class='btn btn-sm btn-primary'>Manage</a> <button class='btn btn-danger btn-sm'>Delete</button> </td> </tr>`);
         }
 
     }
@@ -30,7 +31,8 @@ $(function(){
                         type: 'success',
                         title: 'Hey',
                         icon: '<i class="icon-icon-lock-open-outline"></i>',
-                        sticky: true
+                        sticky: true,
+                        hide:3000
                     });
                     $(".alert-warning").hide();
                     console.log(result);
