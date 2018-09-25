@@ -48,6 +48,7 @@ export class ManifestService{
     }
     exportExcel(mid,packages,path){
         return new Promise (function(resolve,reject){
+            console.log('the path we have her is '+ path);
             dataContext.getServiceProxy(SERVICE_KEY).exportManifestXLS({mid:mid,packages:packages,path:path},function(error,result){
                 if (error){
                     reject(error);
