@@ -50,7 +50,7 @@ export class ManifestService{
         console.log('the path we have here is '+ path);
         return new Promise (function(resolve,reject){
             console.log('the path we have her is '+ path);
-            dataContext.getServiceProxy(SERVICE_KEY).exportManifestXLS({mid:mid,packages:packages,path:path},function(error,result){
+            dataContext.getServiceProxy(SERVICE_KEY).exportManifestXLS({mid:mid,packages:packages,dir_loc:path},function(error,result){
                 if (error){
                     reject(error);
                 }
