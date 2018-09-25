@@ -364,7 +364,7 @@ router.get('/export-manifest/:mid', middleware(services.userService).requireAuth
 
     var mid = Number(req.params.mid); 
     var dir = __dirname.replace("routes","public\\manifest_files") ; 
-    
+    console.log('dirname:'+__dirname);
     console.log('dir: '+dir ); 
     //send the package array since there is a problem doing this in c# itself 
     var manifestKey = `manifest:${mid}:*`;
