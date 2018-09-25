@@ -4,6 +4,8 @@ var services = require('../DataServices/services');
 var middleware = require('../middleware');
 var moment = require('moment');
 var redis = require('../DataServices/redis');
+var PackageUtil = require('../Util/packageutil').PackageUtility; 
+var packageUtil = new PackageUtil(); 
 //Manifest Routes
 router.get('/list-manifest', middleware(services.userService).requireAuthentication, (req, res, next) => {
     var pageData = {};
@@ -234,14 +236,21 @@ router.post('/save-package', middleware(services.userService).requireAuthenticat
         skybox: body.skybox,
         customer: body.customer.replace('-', '').trim(),
         trackingNo: body.tracking,
+        dutyPercent:0.2,
         description: body.description,
         shipper: body.shipper,
         value: Number(body.value),
         pieces: Number(body.pieces),
         weight: Number(body.weight),
         mid: body.mid,
+        //hasOpt : true,
         mtype: body.mtype
-    }
+    }; 
+
+    package = packageUtil.calculateFees(package); 
+    console.log('package with fees')
+
+    //we also want to calculate the the package fees one time...... 
     //we have the package details here .. now we need to get the existing package 
    
     var container = "";
@@ -351,11 +360,35 @@ router.post('/ship-manifest', middleware(services.userService).requireAuthentica
     }); 
     
 });
-router.post('/export-manifest', middleware(services.userService).requireAuthentication, (req, res, next) => {
+router.get('/export-manifest/:mid', middleware(services.userService).requireAuthentication, (req, res, next) => {
 
-    var mid = Number(req.body.mid); 
-    services.manifestService.exportExcel(mid).then((mREsult)=>{
-        res.download(mREsult.filename); 
-    }); 
+    var mid = Number(req.params.mid); 
+    var dir = __dirname.replace("routes","public\\manifest_files") ; 
+    
+    console.log('dir: '+dir ); 
+    //send the package array since there is a problem doing this in c# itself 
+    var manifestKey = `manifest:${mid}:*`;
+    
+    //so we get the keys 
+    redis.getKeys(manifestKey).then((data) => {
+        
+            redis.union(data).then(function (result) {
+                console.log(result)
+                //we need the actual packages now 
+                Promise.all(result.map(redis.getPackage)).then(function (packages) {
+                    // console.log(packages);
+                    var packagesString = JSON.stringify(packages); 
+                    //
+                    services.manifestService.exportExcel(mid,packagesString,dir).then((mREsult)=>{
+                       // res.send({"packages":packagesString}); 
+                         res.download(mREsult.file); 
+                    }); 
+                });
+
+            });
+
+
+    });
+    
 });
 module.exports = router;

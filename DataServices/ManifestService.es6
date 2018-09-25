@@ -46,9 +46,9 @@ export class ManifestService{
             });
         });
     }
-    exportExcel(mid){
+    exportExcel(mid,packages,path){
         return new Promise (function(resolve,reject){
-            dataContext.getServiceProxy(SERVICE_KEY).exportManifestXLS({mid:mid},function(error,result){
+            dataContext.getServiceProxy(SERVICE_KEY).exportManifestXLS({mid:mid,packages:packages,path:path},function(error,result){
                 if (error){
                     reject(error);
                 }

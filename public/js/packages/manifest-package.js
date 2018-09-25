@@ -129,7 +129,7 @@ $(function () {
         });
     });
     $(".export-manifest").click(function () {
-        window.location = '/warehouse/export-manifest';
+        window.location = '/warehouse/export-manifest/'+mid;
     });
     $("#rmPackage").click(function () {
         var id = $(this).attr('data-id');
@@ -276,7 +276,15 @@ $(function () {
         form.find('.package-value').val('');
         form.find('.pieces').val('');
         form.find('.weight').val('');
-
+        var bagInput  = form.find('.bag'); 
+        var skidinput  = form.find('.skid'); 
+        console.log(bagInput); 
+        console.log('skid'); 
+        console.log(skidinput);
+        if (bagInput.length>0 )
+            bagInput.focus(); 
+        else if(skidinput.length>0)
+            skidinput.focus(); 
     }
 
     
