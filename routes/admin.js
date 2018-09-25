@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var services = require('../DataServices/services'); 
 var middleware = require('../middleware'); 
+var redis = require('../DataServices/redis');
 /* GET users listing. */
 router.get('/',middleware(services.userService).requireAuthentication, function(req, res, next) {
     var pageData = {}; 
@@ -85,7 +86,24 @@ router.post('/user/',middleware(services.userService).requireAuthentication,func
     
     
 }); 
+router.get('/customers',middleware(services.userService).requireAuthentication, function(req, res, next) {
+    var pageData = {}; 
+    pageData.title = "Tropcial Customers"
+    pageData.luser = res.User.FirstName+ ' '+res.User.LastName;
+    pageData.RoleId = res.User.RoleId; 
+    redis.getKeys("tew:owners:*").then((result)=>{
+        console.log("the owners count is "+ result.length); 
+        console.log('the first owner is ' + result[0]);
+        Promise.all(result.map(redis.hgetall)).then(function (owners) {
+            // console.log(packages);
+            console.log(owners[0]); 
+            pageData.owners = owners; 
+            res.render('pages/admin/customers',pageData);    
+        });
+    })
+    
 
+  });
 
 
 module.exports = router;
