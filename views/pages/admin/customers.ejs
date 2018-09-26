@@ -4,7 +4,9 @@
             <div class="card">
                 <div class="card-header">Customers </div>
                 <div class="card-body">
-                   
+                <table id='customerTable' class='table table-bordered table-inverse ' style='width:100%'>
+
+                </table>
                 </div>
             </div>
         </div>
@@ -14,3 +16,8 @@
     <script>
     var rpackages = <%-JSON.stringify(owners)%> ;
     </script>
+    <% block('scripts').append('<script src="/vendor/datatables/dataTables.min.js"></script>')%>
+    <% block('scripts').append('<script src="/vendor/datatables/dataTables.bootstrap.min.js"></script>')%>
+    
+    <% block('scripts').append('<script src="/vendor/datatables/custom/fixedHeader.js"></script>')%>
+    <% block('scripts').append('<script src="/js/customers.js"></script>')%>
