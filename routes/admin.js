@@ -109,7 +109,7 @@ router.get('/customers/:currentPage?',middleware(services.userService).requireAu
    
   });
 
-router.post('/customers/',middleware(serviers.userService).requireAuthentication,function(req,res,next){
+router.post('/customers/',middleware(services.userService).requireAuthentication,function(req,res,next){
     var searchText = req.body.params.searchText; 
     redis.searchCustomers(searchtext).then((customerInfo)=>{
         //for now we wont page the result of the search 
