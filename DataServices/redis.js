@@ -177,67 +177,7 @@ var customerList = (pageSize,currentPage) =>{
         });
     })
 }
-var searchCustomers = (searchText)=> {
-    var startIndex = (currentPage -1) * pageSize; 
-    var endIndex = startIndex + (pageSize-1); 
-    console.log(`starting index is ${startIndex} and end index is ${endIndex}`)
-    var args = ['customer:names',`[${searchText}`,`(${searchText}\xff`,"LIMIT", `${startIndex}`, `${pageSize}`]
-    var args = ['customer:skybox',`[${searchText}`,`(${searchText}\xff`,"LIMIT", `${startIndex}`, `${pageSize}`]
-    return new Promise((resolve,reject)=>{
-        client.zrangebylex(args,(error,dataR)=>{
-            client.zcard('customer:names',(err,data)=>{
-                var psIndex = 1 ; 
-                var peIndex = 10 ; 
-                if ( currentPage >= 10 ){
-                    psIndex  = currentPage - 5; 
-                    peIndex = currentPage +5;
-                }
-                if (peIndex + 5 >  Number(data) / pageSize){
-                    peIndex  = Number(data) / pageSize; 
-                }
-                var pagerInfo = { 
-                    pages: Number(data) / pageSize,
-                    currentPage : currentPage,
-                    startPage : psIndex,
-                    endPage:peIndex,
-                    totalRecords:data
-                }
-                Promise.all(dataR.map(rmNamesforLookup)).then((boxes)=>{
-                    pagerInfo.boxes = boxes; 
-                   resolve(pagerInfo); 
-               })
-            })
-          
-           // resolve(data); 
-        });
-        client.zrangebylex(args,(error,dataR)=>{
-            client.zcard('customer:skybox',(err,data)=>{
-                var psIndex = 1 ; 
-                var peIndex = 10 ; 
-                if ( currentPage >= 10 ){
-                    psIndex  = currentPage - 5; 
-                    peIndex = currentPage +5;
-                }
-                if (peIndex + 5 >  Number(data) / pageSize){
-                    peIndex  = Number(data) / pageSize; 
-                }
-                var pagerInfo = { 
-                    pages: Number(data) / pageSize,
-                    currentPage : currentPage,
-                    startPage : psIndex,
-                    endPage:peIndex,
-                    totalRecords:data
-                }
-                Promise.all(dataR.map(rmNamesforLookup)).then((boxes)=>{
-                    pagerInfo.boxes = boxes; 
-                   resolve(pagerInfo); 
-               })
-            })
-          
-           // resolve(data); 
-        });
-    })
-}
+
 var rmNamesforLookup = (compoundKey)=>{
     var skybox = compoundKey.substring(compoundKey.indexOf(':')); 
     console.log(skybox); 
