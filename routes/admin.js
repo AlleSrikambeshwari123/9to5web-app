@@ -86,24 +86,33 @@ router.post('/user/',middleware(services.userService).requireAuthentication,func
     
     
 }); 
-router.get('/customers',middleware(services.userService).requireAuthentication, function(req, res, next) {
+router.get('/customers/:currentPage?',middleware(services.userService).requireAuthentication, function(req, res, next) {
     var pageData = {}; 
-    pageData.title = "Tropcial Customers"
+    var currentPage = Number(req.params.currentPage); 
+    if (isNaN(currentPage))
+        currentPage = 1; 
+    pageData.title = "Tropical Customers"
     pageData.luser = res.User.FirstName+ ' '+res.User.LastName;
     pageData.RoleId = res.User.RoleId; 
-    redis.getKeys("tew:owners:*").then((result)=>{
-        console.log("the owners count is "+ result.length); 
-        console.log('the first owner is ' + result[0]);
-        Promise.all(result.map(redis.hgetall)).then(function (owners) {
-            // console.log(packages);
-            console.log(owners[0]); 
-            pageData.owners = owners; 
-            res.render('pages/admin/customers',pageData);    
+    pageData.owners = []; 
+    redis.customerList(20,currentPage).then((ownerKeys)=> { 
+        Promise.all(ownerKeys.boxes.map(redis.hgetall)).then(function (ownersResult) {
+         //we need to get TOTAL PAGES / count 
+         //we need 
+                     pageData.records = ownersResult; 
+                     pageData.pagerInfo = ownerKeys; 
+                     console.log(ownerKeys); 
+                    res.render('pages/admin/customers',pageData);    
         });
-    })
-    
-
+       
+    }); 
+   
   });
 
-
+router.post('/customers/',middleware(serviers.userService).requireAuthentication,function(req,res,next){
+    var searchText = req.body.params.searchText; 
+    redis.searchCustomers(searchtext).then((customerInfo)=>{
+        //for now we wont page the result of the search 
+    })
+}); 
 module.exports = router;
