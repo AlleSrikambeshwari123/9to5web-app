@@ -177,6 +177,39 @@ var customerList = (pageSize,currentPage) =>{
         });
     })
 }
+var customerSearch = (searchText,pageSize,currentPage) =>{
+    var startIndex = (currentPage -1) * pageSize; 
+    var endIndex = startIndex + (pageSize-1); 
+    console.log(`starting index is ${startIndex} and end index is ${endIndex}`)
+    var args = ['customer:names',`[${searchText}`,`(${searchText}\xff`,"LIMIT", `${startIndex}`, `${pageSize}`]
+    return new Promise((resolve,reject)=>{
+      
+        client.zscan('customer:names', '0','MATCH',`*${searchText}*`,(error,dataR)=>{
+            client.zcard('customer:names',(err,data)=>{
+                var psIndex = 1 ; 
+                var peIndex = 10 ; 
+                if ( currentPage >= 10 ){
+                    psIndex  = currentPage - 5; 
+                    peIndex = currentPage +5;
+                }
+                if (peIndex + 5 >  Number(data) / pageSize){
+                    peIndex  = Number(data) / pageSize; 
+                }
+                var pagerInfo = { 
+                    pages: Number(data) / pageSize,
+                    currentPage : currentPage,
+                    startPage : psIndex,
+                    endPage:peIndex,
+                    totalRecords:data
+                }
+                console.log(dataR); 
+               
+            })
+          
+           // resolve(data); 
+        });
+    })
+}
 
 var rmNamesforLookup = (compoundKey)=>{
     var skybox = compoundKey.substring(compoundKey.indexOf(':')); 
@@ -198,3 +231,4 @@ module.exports.srem = srem;
 module.exports.setSize = sCard; 
 module.exports.client = client; 
 module.exports.customerList = customerList; 
+module.exports.customerSearch = customerSearch;
