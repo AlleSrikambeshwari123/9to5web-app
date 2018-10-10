@@ -242,6 +242,7 @@ router.post('/save-package', middleware(services.userService).requireAuthenticat
         value: Number(body.value),
         pieces: Number(body.pieces),
         weight: Number(body.weight),
+        status: 1,
         mid: body.mid,
         //hasOpt : true,
         mtype: body.mtype
