@@ -290,6 +290,11 @@ router.post('/save-package', middleware(services.userService).requireAuthenticat
         }
         
         redis.hmset('packages:' + package.trackingNo, package).then(function (result) {
+            //add to queue for persistent processing 
+            redis.mProcessQueue(package.trackingNo).then((result)=>{
+                console.log(result)
+                console.log('added to queue for persistent processing '); 
+            })
             var manifestKey = `manifest:${package.mid}:${package.mtype}:${container}:${containerNo}`;
             redis.setAdd(manifestKey, package.trackingNo).then(function (sResult) {
                 //get the members one time here 
@@ -320,7 +325,7 @@ router.post('/save-package', middleware(services.userService).requireAuthenticat
             })
     }); 
     //save the package to the package NS
-  
+    
     });
 
 
