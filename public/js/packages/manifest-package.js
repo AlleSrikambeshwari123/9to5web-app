@@ -15,7 +15,7 @@ $(function () {
     var mtype = $('#mtype').val();
     var mailTable;
     var cargoTable;
-    
+    var unProcTable; 
     function LoadPageData() {
         //we need to load page data based on manifest type... 
         getManifestTotals(mid,mtype);
@@ -39,6 +39,10 @@ $(function () {
                 //displayCargoPackages(cargoPackages);
                 displayPackages(cargoPackages,"#cargoTable","cargo")
             });
+            getManifestPackages(mid, 'unproc', function (cargoPackages) {
+                //displayCargoPackages(cargoPackages);
+                displayPackages(cargoPackages,"#unprocTable","unproc")
+            });
         }
        
         //we need to get the counts intially 
@@ -50,6 +54,8 @@ $(function () {
         getPackageCountBySize(mid, mtype, "#packageCount");
         if ($("#mailCount"))
             getPackageCountBySize(mid, "mail", "#mailCount");
+        if($("#unProcCount"))
+            getPackageCountBySize(mid, "unproc", "#unProcCount");
     }
     LoadPageData();
     //#endregion
@@ -76,6 +82,22 @@ $(function () {
         var mtype = $("#mytpe").val();
         var validPackage = validatePackage(package, $(this));
         var form = $(this).closest('form');
+        if (validPackage) {
+            //save
+            savePackage(package, form,Number(stage)>1);
+        } else {
+            console.log('not saving the package...Invalid')
+        }
+
+    });
+    $(".saveUnProcPackage").click(function () {
+
+        var package = getPackageDetails($(this));
+        var stage = $(this).attr('data-stage');
+        var mtype = $("#mytpe").val();
+        var validPackage = validateUnProcPackage(package, $(this));
+        var form = $(this).closest('form');
+        console.log('Package is valid : '+validatePackage);
         if (validPackage) {
             //save
             savePackage(package, form,Number(stage)>1);
@@ -246,7 +268,38 @@ $(function () {
         }
         return valid;
     }
+    function validateUnProcPackage(package, saveBtn) {
+        var valid = true;
+        var message = '';
+        var form = saveBtn.closest('form');
 
+        var skybox = form.find('.skybox')
+        $(skybox).parent().find('label').removeClass('text-danger');
+
+        if (package.skybox == "") {
+            valid = false;
+            $(skybox).parent().find('label').addClass('text-danger');
+        }
+
+        form.find('.trackingNo').parent().find('label').removeClass('text-danger');
+        if (package.tracking == '') {
+            valid = false;
+            form.find('.trackingNo').parent().find('label').addClass('text-danger');
+        }
+        
+        form.find('.package-value').parent().find('label').removeClass('text-danger');
+        if (package.value == '') {
+            valid = false;
+            form.find('.package-value').parent().find('label').addClass('text-danger');
+        }
+        form.find('.weight').parent().find('label').removeClass('text-danger');
+        if (package.weight == '') {
+            valid = false;
+            form.find('.weight').parent().find('label').addClass('text-danger');
+        }
+       
+        return valid;
+    }
     function getManifestPackages(mid, type, callbk) {
         var pkgs = [];
         $.ajax({
@@ -294,9 +347,14 @@ $(function () {
         if ($(tableId +" tbody").children().length >0  )
              $(tableId).DataTable().destroy();
         var containerLabel = "Skid"; 
-
+        var hideCols = true; 
         if (ctype=='mail')
             containerLabel = "Bag";
+        if (ctype == "unproc"){
+            hideCols = false;
+
+            console.log('going to hide cols');
+        }
         var colDef = [
             {
                 title: containerLabel,
@@ -336,7 +394,7 @@ $(function () {
 
             {
                 title: "Shipper",
-                data: null,
+                data: null,visible: hideCols,
                 render: function (data, type, row, meta) {
                     // console.log(data);
                     return `${data.shipper}`;
@@ -344,6 +402,7 @@ $(function () {
             },
             {
                 title: "Pieces",
+                visible: hideCols,
                 data: null,
                 render: function (data, type, row, meta) {
                     // console.log(data);
@@ -376,7 +435,9 @@ $(function () {
             },
 
         ];
-         $(tableId).DataTable({
+
+    
+        $(tableId).DataTable({
 
             data: packages,
             paging: true,
@@ -397,7 +458,8 @@ $(function () {
                    
                     if (ctype =='mail')
                         form ='#mailPackageForm';
-                    
+                    if (ctype =="unproc")
+                        form = "#unprocPackageForm"
                     $(form).parent().show();
                     loadPackage(id,$(form));
                 });
@@ -454,8 +516,8 @@ $(function () {
                         });
                     }
                     else {
-                        getManifestPackages(mid, mtype, function (cargoPackages) {
-                            displayPackages(cargoPackages,"#packageTable",mtype);
+                        getManifestPackages(mid, package.mtype, function (cargoPackages) {
+                            displayPackages(cargoPackages,"#unprocTable",package.mtype);
                         });
                     }
 
@@ -527,10 +589,10 @@ $(function () {
                     });
                 }
                 else {
-                    getManifestPackages(mid, mtype, function (mailPackages) {
+                    getManifestPackages(mid, type, function (mailPackages) {
              
                         
-                        displayPackages(mailPackages,"#packageTable",mtype)
+                        displayPackages(mailPackages,"#unprocTable",type)
                     });
                 }
             },

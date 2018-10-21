@@ -31,7 +31,7 @@
                 </ul>
 
                 <div class="tab-content" id="myTabContent">
-                    <div class="tab-pane fade active show" id="home" role="tabpanel" aria-labelledby="home-tab"
+                    <div class="tab-pane active show" id="home" role="tabpanel" aria-labelledby="home-tab"
                         aria-expanded="true">
                         <div>
                             <div class="clearfix">
@@ -70,7 +70,7 @@
                             <div class='col-md-9'>
                                 <div class='row gutters pt-2 mt-4'>
 
-                                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">
+                                    <div class="col-xl-4 col-lg-6 col-md-6 col-sm-6">
                                         <div class="info-stats4">
                                             <div class="icon-type pull-left">
                                                 <i class="icon-mail6"></i>
@@ -81,7 +81,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">
+                                    <div class="col-xl-4 col-lg-6 col-md-6 col-sm-6">
                                         <div class="info-stats4 pull-left">
                                             <div class="icon-type ">
                                                 <i class="icon-box"></i>
@@ -94,12 +94,25 @@
 
                                     </div>
 
+                                    <div class="col-xl-4 col-lg-6 col-md-6 col-sm-6">
+                                        <div class="info-stats4 pull-left">
+                                            <div class="icon-type ">
+                                                <i class="icon-dots-three-horizontal"></i>
+                                            </div>
+                                            <div class="sale-num">
+                                                <h4 id='unProcCount'>0</h4>
+                                                <p>Un Processed</p>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
                                 </div>
 
                             </div>
                         </div>
                     </div>
-                    <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab" aria-expanded="false">
+                    <div class="tab-pane" id="profile" role="tabpanel" aria-labelledby="profile-tab" aria-expanded="false">
                         <div class='row'>
 
                             <% var showForm ='' 
@@ -160,7 +173,7 @@
                         </div>
 
                     </div>
-                    <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab" aria-expanded="false">
+                    <div class="tab-pane " id="contact" role="tabpanel" aria-labelledby="contact-tab" aria-expanded="false">
                         <div class='row'>
                            
                             <div class='col-md-3 pkg-form' style='<%=showForm%>'>
@@ -214,12 +227,15 @@
                             </div>
                         </div>
                     </div>
-                    <div class="tab-pane fade" id="unproc" role="tabpanel" aria-labelledby="unproc-tab" aria-expanded="false">
+                    <div class="tab-pane " id="unproc" role="tabpanel" aria-labelledby="unproc-tab" aria-expanded="false">
                         <div class='row'>
                            
                             <div class='col-md-3 pkg-form' style='<%=showForm%>'>
                                 <form method='post' id='unprocPackageForm'>
-                                    
+                                    <div class='form-group'>
+                                        <label>Skid </label>
+                                        <input type='text' class='form-control skid' name='skid' required />
+                                    </div>
                                     <div class='form-group'>
                                         <label>SkyBox <span id='' class='text-info title customerName'></span></label>
                                         <input type='text' class='form-control skybox' name='skybox' required />
@@ -227,7 +243,7 @@
                                     <div class='form-group'>
                                         <label>Tracking #</label>
                                         <input type='hidden' class='mid' value='<%=mid %>' />
-                                        <input type='hidden' class='mtype' value='cargo' />
+                                        <input type='hidden' class='mtype' value='unproc' />
                                         <input type='text' class='form-control trackingNo' name='trackingNo' required />
                                     </div>
                                    
@@ -249,7 +265,7 @@
                             </div>
                             
                             <div class='col-md-9'>
-                                <table id='cargoTable' class='table table-bordered table-inverse ' style='width:100%'>
+                                <table id='unprocTable' class='table table-bordered table-inverse ' style='width:100%'>
 
                                 </table>
                             </div>
