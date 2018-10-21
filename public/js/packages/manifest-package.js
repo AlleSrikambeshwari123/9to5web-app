@@ -60,6 +60,15 @@ $(function () {
     LoadPageData();
     //#endregion
 
+    $(".nav-link").click(function(e){
+        $(".tab-pane").removeClass("active"); 
+        var tabSelector  = $(this).attr("href");
+        $(this).tab('show'); 
+        $(tabSelector).addClass('active'); 
+        return false;  
+    })
+
+
     //#region Control Actions
     $(".skybox").change(function () {
         //set the user 
