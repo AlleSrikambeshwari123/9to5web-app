@@ -1,13 +1,12 @@
 <% layout('./shared/__template')%>
 <div class='gutters'>
     <div class='col-xl-12 col-lg-6 col-md-12 col-sm-12'>
-        <input type='hidden' id='mid' value="<%=mid%>" /><
+        <input type='hidden' id='mid' value="<%=mid%>" />
             <input type='hidden' id='mtype' value="<%= ColLabel.toLowerCase() %>" />
 
         <div class='card'>
             <div class="card-header col-md-12">
-                <h3> Manifest M-
-                    <%=mid %> Data Entry</h3>
+                <h3> Manifest M-<%=mid %> Data Entry</h3>
             </div>
             <div class="card-body">
                 <ul class="nav 57 id="myTab" role="tablist">
@@ -64,7 +63,18 @@
                                                             <strong>CREATED BY:</strong> <%=manifest.CreatedBy%><br>
 													
 													</address>
-												</div>
+                                                </div>
+                                                <%if (manifest.StageId == 2) {%>
+                                                <p>
+                                                    <div class='form-group'>
+                                                    <label class=''> Excel Duty Confirmation</label>
+                                                        <input type='file' class='form-control' id="uploadxls"/>
+                                                    </div>
+                                                    <div class='form-group'>
+                                                        <button class='btn btn-info btn-sm' id="verify-manifest-duty">Verify</button>
+                                                    </div>
+                                                </p>
+                                                <%}%>
                               
                             </div>
                             <div class='col-md-9'>

@@ -63,8 +63,10 @@ $(function () {
     $(".nav-link").click(function(e){
         $(".tab-pane").removeClass("active"); 
         var tabSelector  = $(this).attr("href");
-        $(this).tab('show'); 
+        $(this).tab('show');
+        $(this).addClass('active'); 
         $(tabSelector).addClass('active'); 
+
         return false;  
     })
 
@@ -153,7 +155,7 @@ $(function () {
                 notes.show(result.message, {
                     type: 'info',
                     title: 'Hey',
-                    icon: '<i class="icon-icon-lock-open-outline"></i>',
+                    icon: '<i class="icon-icon-lock-open-outline"><  /i>',
                     sticky: false
                 });
             }
@@ -168,10 +170,101 @@ $(function () {
         console.log('type ' + type);
         deletePackage(id, type);
         $(".close-del").trigger('click');
+        getManifestTotals(mid,mtype); 
     });
+    $("#verify-manifest-duty").click(function(){
+        var itemsFile =$(document.getElementById('uploadxls'));
+        console.log(itemsFile);
+        if (itemsFile[0].files.length >0 ){
+            uploadContentFile(itemsFile,function(data){
+                var fileData = JSON.parse(data); 
+                var request = {}; 
+                request.filename = fileData[0].uploadedFile; 
+                request.mid = mid; 
+                
+                $.ajax({
+                    url:'/warehouse/verify-manifest',
+                    type:'post',
+                    data:request,
+                    success:function(faResponse){
+                     
+                      alert('success');
+                    }
+                  }); 
+            }); 
+        }
+    })
+
+   
     //#endregion
 
     //#region Package / Manifest FUNCTIONS
+    function uploadContentFile(fileInputctrl,  completeHandler){
+        var files = fileInputctrl.get(0).files;
+    
+        if (files.length > 0){
+            // create a FormData object which will be sent as the data payload in the
+            // AJAX request
+            var formData = new FormData();
+    
+            // loop through all the selected files and add them to the formData object
+            for (var i = 0; i < files.length; i++) {
+                var file = files[i];
+    
+                // add the files to formData object for the data payload
+                formData.append('uploads[]', file, file.name);
+            }
+    
+            $.ajax({
+                url: '/warehouse/upload',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(data){
+                    //we want to get the filename uploaded here
+                    //we are expecting data to be an array of files uploaded now
+    
+                    //now that we have uploaded lets send it to azure storage
+                    console.log('upload successful!\n' + data);
+                    $("#pindecator").css('width',0+'%')
+                    if (completeHandler !== undefined){
+                        completeHandler(data);
+                    }
+                },
+                xhr: function() {
+                    // create an XMLHttpRequest
+                    var xhr = new XMLHttpRequest();
+    
+                    // listen to the 'progress' event
+                    xhr.upload.addEventListener('progress', function(evt) {
+    
+                        if (evt.lengthComputable) {
+                            // calculate the percentage of upload completed
+                            var percentComplete = evt.loaded / evt.total;
+                            percentComplete = parseInt(percentComplete * 100);
+                            $("#pindecator").css('width',percentComplete+'%')
+                            //Materialize.toast("percent complete" + percentComplete);
+                            // update the Bootstrap progress bar with the new percentage
+                            //$('.progress-bar').text(percentComplete + '%');
+                            //$('.progress-bar').width(percentComplete + '%');
+    
+                            // once the upload reaches 100%, set the progress bar text to done
+                            //if (percentComplete === 100) {
+                            //    $('.progress-bar').html('Done');
+                            //}
+    
+                        }
+    
+                    }, false);
+    
+                    return xhr;
+                }
+            });
+    
+        }
+    }
+
     function getPackageDetails(saveBtn) {
         console.log('getting the package details')
         var form = saveBtn.closest('form');
@@ -208,23 +301,41 @@ $(function () {
         getManifestPackages(mid,mtype,function(packages){
            
             packages.forEach(element => {
-               
-                totalWeight = totalWeight + Number(element.weight);
+                if (element!=null){
+                    totalWeight = totalWeight + Number(element.weight);
             
-                totalValue = totalValue + Number(element.value); 
+                    totalValue = totalValue + Number(element.value);
+                }
+                 
             });
             if (type == 'cargo'){
-                getManifestPackages(mid,"mail",function(packages){
-                    packages.forEach(element => {
+                getManifestPackages(mid,"mail",function(packages1){
+                    packages1.forEach(element => {
                         totalWeight += Number(element.weight); 
                         totalValue += Number(element.value); 
                     });
                     $(".total-weight").text(' '+totalWeight+' LBS');
                     $(".total-value").text(' '+Number(totalValue).formatMoney(2,'.',','))
+                    getManifestPackages(mid,"unproc",function(packages2){
+                        packages2.forEach(element => {
+                            console.log(element);
+                           
+                            totalWeight += Number(element.weight); 
+                            totalValue += Number(element.value); 
+                            console.log(`the total weight is ${totalWeight} - ${totalValue}`); 
+                            $(".total-weight").text(' '+totalWeight+' LBS');
+                            $(".total-value").text(' '+Number(totalValue).formatMoney(2,'.',',')); 
+                            
+                        });
+                        //LoadPackageCounters();
+                        
+                    });
+
                 });
                 
             }
             else{
+              //  LoadPackageCounters();
                 $(".total-weight").text(' '+totalWeight+' LBS');
                 $(".total-value").text(' '+Number(totalValue).formatMoney(2,'.',','))
             }
@@ -357,12 +468,18 @@ $(function () {
              $(tableId).DataTable().destroy();
         var containerLabel = "Skid"; 
         var hideCols = true; 
-        if (ctype=='mail')
-            containerLabel = "Bag";
+        if (ctype == 'mail')
+        {
+            console.log('print')
+            $("#mailCount").text(packages.length);
+        }   
         if (ctype == "unproc"){
             hideCols = false;
-
+            $("#unProcCount").text(packages.length); 
             console.log('going to hide cols');
+        }
+        if (ctype == "cargo"){
+            $("#packageCount").text(packages.length); 
         }
         var colDef = [
             {
@@ -529,7 +646,7 @@ $(function () {
                             displayPackages(cargoPackages,"#unprocTable",package.mtype);
                         });
                     }
-
+                    getManifestTotals(mid,mtype);
                     console.log('saved');
                 }
             },
@@ -579,14 +696,14 @@ $(function () {
                 mid: $("#mid").val()
             },
             success: function (dResult) {
-                LoadPackageCounters();
+                
                 if (type == 'mail') {
                     //refresh the package listing 
                     console.log('refreshing mail');
                     getManifestPackages(mid, "mail", function (mailPackages) {
              
                         // displayMailPackages(mailPackages);
-                        displayPackages(mailPackages,"#mailTable",mtype)
+                        displayPackages(mailPackages,"#mailTable","mail")
                     });
                 } else if (type == "cargo") {
                     // cargo 

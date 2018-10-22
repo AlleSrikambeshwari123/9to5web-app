@@ -6,6 +6,10 @@ var moment = require('moment');
 var redis = require('../DataServices/redis');
 var PackageUtil = require('../Util/packageutil').PackageUtility; 
 var packageUtil = new PackageUtil(); 
+var formidable = require('formidable');
+var path = require('path'); 
+var fs = require('fs'); 
+var delfile = ''; 
 //Manifest Routes
 router.get('/list-manifest', middleware(services.userService).requireAuthentication, (req, res, next) => {
     var pageData = {};
@@ -377,7 +381,12 @@ router.get('/export-manifest/:mid', middleware(services.userService).requireAuth
     
     //so we get the keys 
     redis.getKeys(manifestKey).then((data) => {
-        
+        console.log(data);
+        if (data.length == 0)
+        {
+            res.redirect('/warehouse/m-packages/'+mid);
+            return;
+        }   
             redis.union(data).then(function (result) {
                 console.log(result)
                 //we need the actual packages now 
@@ -397,4 +406,84 @@ router.get('/export-manifest/:mid', middleware(services.userService).requireAuth
     });
     
 });
+router.post('/verify-manifest',middleware(services.userService).requireAuthentication,(req,res,next)=>{
+  //handle file upload 
+  //pass to .net for process 
+  console.log('verifying'); 
+  //delete the original file 
+  var mid = Number(req.body.mid); console.log( __dirname.replace("routes","public\\uploads\\")); 
+  var filePath = path.join(__dirname.replace("routes","public\\uploads\\"), req.body.filename); 
+  fs.unlink(delfile);
+  services.manifestService.verifyManifest(mid,filePath).then(function(result){
+    res.send({result:'yea'});
+  })
+  
+
+}); 
+router.post('/upload', function (req, res) {
+    // create an incoming form object
+    console.log("yes sur we got a file uploaded! check the upload dir.")
+    var uploadedFiles = [];
+    var index = 0;
+    var form = new formidable.IncomingForm();
+    var orignalFiles = []; 
+    // specify that we want to allow the user to upload multiple files in a single request
+    form.multiples = false;
+    console.log(__dirname);
+    // store all uploads in the /uploads directory
+    form.uploadDir = path.join(__dirname.replace("routes", ""), '/public/uploads');
+    var imagesDir = path.join(__dirname.replace("routes", ""), '/public/images');
+    // every time a file has been uploaded successfully,
+    // rename it to it's orginal name
+    var IMAGES_PATH = path.join(form.uploadDir, '*.{png,jpeg,jpg,svg,gif}');
+    form.on('file', function (field, file) {
+        //mv(file.path, path.join(form.uploadDir, file.name));
+        var content;
+        orignalFiles[index] = file.path; 
+        // First I want to read the file
+        fs.readFile(file.path, function read(err, data) {
+            if (err) {
+                throw err;
+            }
+            content = data;
+  
+            fs.writeFile(path.join(form.uploadDir, file.name), content, function (err) {
+                if (err) throw err;
+                /!*do something else.*!/
+               // fs.unlink(file.path);
+            });
+        });
+  
+  
+        //fs.rename(file.path, path.join(form.uploadDir, file.name));
+        console.log('BIG file uploaded yee-haaaa!');
+        uploadedFiles[index] = {
+            'uploadedFile': file.name
+        };
+        var filename = file.name;
+  
+        console.log("images:" + IMAGES_PATH);
+        console.log("publish:" + imagesDir);
+  
+  
+    });
+  
+    // log any errors that occur
+    form.on('error', function (err) {
+        console.log('An error has occured: \n' + err);
+    });
+  
+    // once all the files have been uploaded, send a response to the client
+    form.on('end', function () {
+        //we want to upload to azure storage from here
+        console.log(uploadedFiles);
+        delfile = orignalFiles[0]; 
+       // fs.unlink(orignalFiles[0]);
+        res.end(JSON.stringify(uploadedFiles));
+  
+    });
+  
+    // parse the incoming request containing the form data
+    form.parse(req);
+  });
 module.exports = router;

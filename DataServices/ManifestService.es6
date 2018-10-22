@@ -58,6 +58,18 @@ export class ManifestService{
             });
         });
     }
+    verifyManifest (mid, path){
+        console.log('the path we have here is '+ path);
+        return new Promise (function(resolve,reject){
+            console.log('the path we have her is '+ path);
+            dataContext.getServiceProxy(SERVICE_KEY).verifyManifestXls({mid:mid,file:path},function(error,result){
+                if (error){
+                    reject(error);
+                }
+                resolve( result);
+            });
+        });
+    }
     shipManifest(mid,awb,username){
         return new Promise (function(resolve,reject){
             dataContext.getServiceProxy(SERVICE_KEY).shipManifest({mid:mid,awb:awb,username:username},function(error,result){
