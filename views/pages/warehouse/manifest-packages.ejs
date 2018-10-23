@@ -75,6 +75,14 @@
                                                     </div>
                                                 </p>
                                                 <%}%>
+                                                <%if (manifest.StageId == 3) {%>
+                                                <p>
+                                                    
+                                                    <div class='form-group'>
+                                                        <button class='btn btn-info btn-sm' id="generateAwb">Generate AWB</button>
+                                                    </div>
+                                                </p>
+                                                <%}%>
                               
                             </div>
                             <div class='col-md-9'>
@@ -323,7 +331,7 @@
             <div class="modal-body">
 
                 <label>Enter AWB #</label>
-                <input type='text' class='form-control awb'>
+                <input type='text' id='awb' class='form-control awb'>
             </div>
             <div class="modal-footer">
 

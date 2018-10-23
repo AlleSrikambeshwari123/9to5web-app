@@ -413,16 +413,34 @@ router.post('/verify-manifest',middleware(services.userService).requireAuthentic
   //delete the original file 
   var mid = Number(req.body.mid); console.log( __dirname.replace("routes","public\\uploads\\")); 
   var filePath = path.join(__dirname.replace("routes","public\\uploads\\"), req.body.filename); 
-  fs.unlink(delfile);
+  fs.unlink(delfile); 
   services.manifestService.verifyManifest(mid,filePath).then(function(result){
     res.send({result:'yea'});
-  })
+  });
   
 
 }); 
+
+router.post('/download-awb',function(req,res,next){
+     var  template = path.join(__dirname.replace("routes","templates\\"),"awb-template.pdf"); 
+     var body = req.body; 
+     console.log(body)
+     var mid = Number(body.mid); 
+
+     services.manifestService.getAwb(mid,template,body.totalWeight,body.totalValue,body.pieces).then((result)=>{
+         console.log(result); 
+        res.send({filename:result.filename});
+     });   
+}); 
+router.get('/download-file/:filename',function(req,res,net){
+    var file = req.params.filename; 
+    var dir  = __dirname.replace("routes","templates\\");
+    res.download(path.join(dir,file)) ; 
+}); 
+
 router.post('/upload', function (req, res) {
     // create an incoming form object
-    console.log("yes sur we got a file uploaded! check the upload dir.")
+    console.log("yes sur we got a file uploaded! check the upload dir.");
     var uploadedFiles = [];
     var index = 0;
     var form = new formidable.IncomingForm();

@@ -47,7 +47,7 @@ export class ManifestService{
         });
     }
     exportExcel(mid,packages,path){
-        console.log('the path we have here is '+ path);
+        
         return new Promise (function(resolve,reject){
             console.log('the path we have her is '+ path);
             dataContext.getServiceProxy(SERVICE_KEY).exportManifestXLS({mid:mid,packages:packages,dir_loc:path},function(error,result){
@@ -63,6 +63,17 @@ export class ManifestService{
         return new Promise (function(resolve,reject){
             console.log('the path we have her is '+ path);
             dataContext.getServiceProxy(SERVICE_KEY).verifyManifestXls({mid:mid,file:path},function(error,result){
+                if (error){
+                    reject(error);
+                }
+                resolve( result);
+            });
+        });
+    }
+    getAwb(mid,template,weight,value,pieces){
+        
+        return new Promise (function(resolve,reject){
+            dataContext.getServiceProxy(SERVICE_KEY).generateAwb({mid:mid,template:template,totalWeight:weight,totalValue: value, pieces:pieces},function(error,result){
                 if (error){
                     reject(error);
                 }

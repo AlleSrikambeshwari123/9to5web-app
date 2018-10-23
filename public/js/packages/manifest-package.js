@@ -188,13 +188,24 @@ $(function () {
                     data:request,
                     success:function(faResponse){
                      
-                      alert('success');
+                      alert('success'); 
                     }
                   }); 
             }); 
         }
     })
-
+    $("#generateAwb").click(function(){
+      $.ajax({
+          url:"/warehouse/download-awb",
+          type:"post",
+          data:{mid:mid, totalWeight:$(".total-weight").text(), totalValue:$(".total-value").text(),pieces:Number($("#mailCount").text())+Number($("#packageCount").text())+Number($("#unProcCount").text())},
+          success:function(result){
+              console.log(result); 
+              window.location = "/warehouse/download-file/"+result.filename; 
+              //alert(result.filename); 
+          }
+      })
+    });
    
     //#endregion
 
