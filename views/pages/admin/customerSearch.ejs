@@ -1,0 +1,38 @@
+<% layout('./shared/__template')%>
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="#"><i class="icon-home6"></i></a></li>
+        <li class="breadcrumb-item"><a href="#">Customers</a></li>
+        
+    </ol>
+</nav>
+    <div class='gutters'>
+        <div class="col-xl-12 col-lg-6 col-md-12 col-sm-12">
+            <div class="card">
+                <div class="card-header">Customers </div>
+                <div class="card-body"><form method="POST">
+                        <div class='row'>
+                           
+                            <div class='col-md-6  mr-0 pr-0'><input name='searchText' class="form-control form-control-sm " type="text" placeholder="search customers"></div>
+                            <div class='col-md-5 ml-0 pl-0'><button class='btn btn-primary btn-sm ' type="submit"> <i class='icon-search'></i></button> </div>
+                            <div class='col-md-1 '></div>
+                        
+                        </div>
+                           </form>
+                <table id='customerTable' class='table table-bordered table-inverse pt-2 mt-2' style='width:100%'>
+
+                </table>
+                
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+    <script>
+    var rpackages = <%-JSON.stringify(records)%> ;
+    </script>
+    <% block('scripts').append('<script src="/vendor/datatables/dataTables.min.js"></script>')%>
+    <% block('scripts').append('<script src="/vendor/datatables/dataTables.bootstrap.min.js"></script>')%>
+    <% block('scripts').append('<script src="/vendor/datatables/custom/fixedHeader.js"></script>')%>
+    <% block('scripts').append('<script src="/js/customers.js"></script>')%>
