@@ -6,7 +6,7 @@ $(function(){
             targets: 'no-sort', orderable: false,
             render: function (data, type, row, meta) {
                 // console.log(data);
-                return "T-"+data.skybox; 
+                return "T-"+data.SkyBox; 
             }
         },
         {
@@ -15,7 +15,7 @@ $(function(){
             data: null,
             render: function (data, type, row, meta) {
                 // console.log(data);
-                return `${data.name} `;
+                return `${data.Name} `;
             }
         },
         {
@@ -24,7 +24,7 @@ $(function(){
             data: null,
             render: function (data, type, row, meta) {
                 // console.log(data);
-                return `${data.email} `;
+                return `${data.Email} `;
             }
         },
         {
@@ -33,7 +33,7 @@ $(function(){
             data: null,
             render: function (data, type, row, meta) {
                 // console.log(data);
-                return `${data.mobile} `;
+                return `${data.Mobile} `;
             }
         },
         {
@@ -42,7 +42,16 @@ $(function(){
             data: null,
             render: function (data, type, row, meta) {
                 // console.log(data);
-                return `${data.area} `;
+                return `${data.Area} `;
+            }
+        },
+        {
+            targets: 'no-sort', orderable: false,
+            title: "",
+            data: null,
+            render: function (data, type, row, meta) {
+                // console.log(data);
+                return `<a href ="#" class='text-white'><i class='icon-edit2'></i></a>`;
             }
         },
         

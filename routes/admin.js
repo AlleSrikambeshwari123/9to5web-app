@@ -3,6 +3,9 @@ var router = express.Router();
 var services = require('../DataServices/services'); 
 var middleware = require('../middleware'); 
 var redis = require('../DataServices/redis');
+
+var customerService = require('../DataServices/CustomerService').Customer ; 
+
 /* GET users listing. */
 router.get('/',middleware(services.userService).requireAuthentication, function(req, res, next) {
     var pageData = {}; 
@@ -95,17 +98,40 @@ router.get('/customers/:currentPage?',middleware(services.userService).requireAu
     pageData.luser = res.User.FirstName+ ' '+res.User.LastName;
     pageData.RoleId = res.User.RoleId; 
     pageData.owners = []; 
-    redis.customerList(20,currentPage).then((ownerKeys)=> { 
-        Promise.all(ownerKeys.boxes.map(redis.hgetall)).then(function (ownersResult) {
-         //we need to get TOTAL PAGES / count 
-         //we need 
-                     pageData.records = ownersResult; 
-                     pageData.pagerInfo = ownerKeys; 
-                     console.log(ownerKeys); 
-                    res.render('pages/admin/customers',pageData);    
-        });
+    services.customerService.listCustomers(currentPage,20).then(function(customers){
+        
+        var psIndex = 1;
+        var peIndex = 10;
+        if (currentPage >= 10) {
+            psIndex = currentPage - 5;
+            peIndex = currentPage + 5;
+        }
+        if (peIndex + 5 > customers.data.TotalPages) {
+            peIndex =  customers.data.TotalPages;
+        }
+        var pagerInfo = {
+            pages: customers.data.TotalPages,
+            currentPage: currentPage,
+            startPage: psIndex,
+            endPage: peIndex,
+            totalRecords: customers.data.totalPages
+        }
+       pageData.records = customers.data.Records;
+        pageData.pagerInfo = pagerInfo;  
+        console.log(pageData.pagerInfo);
+        res.render('pages/admin/customers',pageData); 
+    });
+    // redis.customerList(20,currentPage).then((ownerKeys)=> { 
+    //     Promise.all(ownerKeys.boxes.map(redis.hgetall)).then(function (ownersResult) {
+    //      //we need to get TOTAL PAGES / count 
+    //      //we need 
+    //                  pageData.records = ownersResult; 
+    //                  pageData.pagerInfo = ownerKeys; 
+    //                  console.log(ownerKeys); 
+    //                 res.render('pages/admin/customers',pageData);    
+    //     });
        
-    }); 
+    // }); 
    
   });
 
