@@ -133,7 +133,20 @@ router.get('/customers/:currentPage?', middleware(services.userService).requireA
     // }); 
 
 });
+router.get('/customer-edit/:skybox', middleware(services.userService).requireAuthentication, function (req, res, next) {
+var body = req.body; 
+var skybox = Number(req.params.skybox); 
+services.customerService.getCustomer(skybox).then((customer)=>{
+    var pageData = {};
 
+        pageData.title = "Tropical Customer"
+        pageData.luser = res.User.FirstName + ' ' + res.User.LastName;
+        pageData.RoleId = res.User.RoleId;
+        pageData.customer = result.customer;
+        
+    res.render('pages/admin/customerEdit',pageData); 
+})
+}); 
 router.post('/customers/', middleware(services.userService).requireAuthentication, function (req, res, next) {
     var searchText = req.body.searchText;
     services.customerService.findCustomers(searchText).then((result) => {

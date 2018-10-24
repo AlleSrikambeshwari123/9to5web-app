@@ -1,0 +1,72 @@
+<% layout('./shared/__template')%>
+<form id="saveFrom" method='POST' action ='/admin/user/'>
+<div class="row gutters">
+    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+        <div class="card">
+            <div class="card-header">Save User</div>
+            <div class="card-body">
+                    <div class="form-group">
+                            <label for="exOne">Username</label>
+                            <input type="text" class="form-control" name='username' id="username" placeholder="" required value='<%=user.Username %>'>
+                        </div>
+                        <div class="form-group">
+                            <label for="exOne">First Name</label>
+                            <input type="text" class="form-control" name='firstname' id="firstname" placeholder="" required value='<%=user.FirstName %>'>
+                        </div>
+                        <div class="form-group">
+                            <label for="exOne">LastName</label>
+                            <input type="text" class="form-control" name='lastname' id="lastname" placeholder="" required value='<%=user.LastName %>'>
+                        </div>
+                        <div class="form-group">
+                                <label for="exOne">Password</label> 
+                                <%
+                                    var passrequired = 'required'; 
+                                    if (user.Username.length > 0)
+                                      passrequired = ''; 
+                                
+                                %>
+                                <input type="password" class="form-control" name='password' id="password" placeholder="" <%=passrequired%>>
+                            </div>
+                            <div class="form-group">
+                                    <label for="exOne">Confirm Password</label>
+                                    <input type="password" class="form-control" name='cpass' id="cpass" placeholder="" <%=passrequired%>>
+                                </div>
+                <div class="form-group">
+                    <label for="exOne">Email address</label>
+                    <input type="email" class="form-control" id="email" name='email' placeholder="name@example.com" value='<%=user.Email %>'>
+                </div>
+                <div class="form-group">
+                    <label for="exOne">Mobile</label>
+                    <input type="text" class="form-control" id="mobile" name='mobile' placeholder="(868)-xxx-xxxx" value='<%=user.Mobile %>'>
+                </div>
+                <div class="form-group">
+                    <label for="selectTwo">User Role</label>
+                    <select class="form-control" id="userRole" name='userRole' >
+                        <option value=''>Select Role</option>
+                        <% var selected = '';%>
+                        <%roles.forEach(function(role){%>
+                            <% 
+                        
+                        
+                        if (role.RoleId == user.RoleId)
+                        {
+                            selected = 'selected'; 
+
+                        }
+                        else {selected =''; }
+                        %>
+                            <option value='<%=role.RoleId %>' <%=selected %>><%=role.RoleName %></option>
+                        <%})%>
+                    </select>
+                </div>
+           
+                <button type="submit" class="btn btn-primary">Save</button> <button type="button" class="btn btn-primary">Cancel</button>
+                
+            </div>
+        </div>
+    </div>
+  
+</div>
+</form>
+
+<% block('scripts').append('<script src="/js/adminUsers.js"></script>')%>
