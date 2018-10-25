@@ -147,6 +147,30 @@ services.customerService.getCustomer(skybox).then((customer)=>{
     res.render('pages/admin/customerEdit',pageData); 
 })
 }); 
+router.post('/customer-edit',middleware(services.userService).requireAuthentication, function (req, res, next) {
+    var body = req.body; 
+    console.log(body); 
+    var customer = { 
+        id: Number(body.id),
+        skybox : Number(body.skybox ),
+        name : body.name, 
+        email: body.email, 
+        mobile: body.mobile, 
+        isBusiness : body.isBusiness,
+        area:body.area,
+    }; 
+    if (customer.isBusiness == "on")
+        customer.isBusiness = true;
+    else 
+        customer.inBusiness =false ; 
+
+    services.customerService.saveCustomer(customer).then(function(result){
+        res.redirect(  '/admin/customers?m='+customer.skybox); 
+    }).catch((e)=>{
+
+    }); 
+
+});
 router.post('/customers/', middleware(services.userService).requireAuthentication, function (req, res, next) {
     var searchText = req.body.searchText;
     services.customerService.findCustomers(searchText).then((result) => {
