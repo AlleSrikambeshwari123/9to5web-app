@@ -161,6 +161,16 @@ $(function () {
             }
         });
     });
+    $(".email-broker").click(function(){
+        $.ajax({
+            url:'/warehouse/email-manifest',
+            type:'post',
+            data:{mid:mid,email:$("#broker-email").val(),name:$("#broker-name").val()},
+            success:function(result){
+                alert(result.message);
+            }
+        })
+    });
     $(".export-manifest").click(function () {
         window.location = '/warehouse/export-manifest/'+mid;
     });

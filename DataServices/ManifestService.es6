@@ -81,6 +81,16 @@ export class ManifestService{
             });
         });
     }
+    emailBroker(emailBrokerRequest){
+        return new Promise (function(resolve,reject){
+            dataContext.getServiceProxy(SERVICE_KEY).emailBroker(emailBrokerRequest,function(error,result){
+                if (error){
+                    reject(error);
+                }
+                resolve( result);
+            });
+        }); 
+    }
     shipManifest(mid,awb,username){
         return new Promise (function(resolve,reject){
             dataContext.getServiceProxy(SERVICE_KEY).shipManifest({mid:mid,awb:awb,username:username},function(error,result){

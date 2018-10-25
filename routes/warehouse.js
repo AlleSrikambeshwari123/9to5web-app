@@ -411,6 +411,48 @@ router.get('/export-manifest/:mid', middleware(services.userService).requireAuth
     });
     
 });
+router.post('/email-manifest',middleware(services.userService).requireAuthentication,(req,res,next)=>{
+    var body = req.body; 
+    var mid = Number(body.mid); 
+    var email = body.email; 
+    var brokerName = body.name;
+    var dir = __dirname.replace("routes","public\\manifest_files") ; 
+    console.log('dirname:'+__dirname);
+    console.log('dir: '+dir ); 
+    //send the package array since there is a problem doing this in c# itself 
+    var manifestKey = `manifest:${mid}:*`;
+    
+    //so we get the keys 
+    redis.getKeys(manifestKey).then((data) => {
+        console.log(data);
+        if (data.length == 0)
+        {
+            res.send({message:'no packages to export'});
+            return;
+        }   
+            redis.union(data).then(function (result) {
+                console.log(result)
+                //we need the actual packages now 
+                Promise.all(result.map(redis.getPackage)).then(function (packages) {
+                    // console.log(packages);
+                    var packagesString = JSON.stringify(packages); 
+                    //
+                    var emailRequest = {
+                        mid:mid,
+                        packages:packagesString,
+                        dir_loc:dir, 
+                        email:email, 
+                        name:brokerName
+                    };
+                    services.manifestService.emailBroker(emailRequest).then((result)=>{
+                        res.send({message:'Email Sent'})
+                    });
+                });
+
+            });
+    });
+  
+});
 router.post('/verify-manifest',middleware(services.userService).requireAuthentication,(req,res,next)=>{
   //handle file upload 
   //pass to .net for process 
