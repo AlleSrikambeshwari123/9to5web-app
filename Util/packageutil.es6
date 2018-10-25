@@ -40,6 +40,8 @@ export class PackageUtility{
         fees.insurance = fees.ttvalue * .02; 
         fees.duty = cpackage.dutyPercent * (fees.ttvalue + fees.freight);
         fees.opt = (fees.ttvalue + fees.freight) *.07; 
+        if (cpackage.hasOpt == false )
+            fees.opt = 0; 
         fees.vat = (fees.ttvalue + fees.duty + fees.freight) * this._VAT; 
 
         //shipping cost calculated based on weight  

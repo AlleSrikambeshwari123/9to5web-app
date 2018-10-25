@@ -290,6 +290,7 @@ $(function () {
             weight: $(form).find('.weight').val(),
             mid: $(form).find('.mid').val(),
             mtype: $(form).find('.mtype').val(),
+            isBusiness:$(form).find('.isBusiness').val()
         }
 
         if (typeof $(form).find('.bag').val() != 'undefined') {
@@ -744,19 +745,23 @@ $(function () {
         ctrl.text('');
         ctrl.removeClass('text-info');
         ctrl.removeClass('text-danger');
-
+        if (typeof customer.isBusiness === "undefined")
+        customer.isBusiness = 0 ; 
+        ctrl.parent().parent().find('.isBusiness').val(customer.isBusiness); 
         if (customer.err) {
             //display as error
             ctrl.text(customer.err);
             ctrl.removeClass('text-info');
             ctrl.addClass('text-danger');
-
+          
             return;
         }
         console.log(customer);
+
         ctrl.text(" - " + customer.name);
         ctrl.addClass('text-info');
 
+        //we also what to see if 
 
     }
 

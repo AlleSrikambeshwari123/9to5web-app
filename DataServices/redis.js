@@ -18,6 +18,16 @@ var get = (key) => {
         });
     });
 }
+var setHashField = (key, field, value)=> { 
+    return new Promise((resolve, reject) => {
+        if (key == null) reject();
+        
+        client.hset(key,field,value, (error, data) => {
+            if (error) reject(error);
+            resolve(data)
+        });
+    });
+}
 var getKeys = (ptrn) => {
     return new Promise((resolve, reject) => {
         if (ptrn == null) reject();
@@ -231,6 +241,7 @@ var rmNamesforLookup = (compoundKey) => {
     return "tew:owners" + skybox;
 }
 module.exports.set = set;
+module.exports.seth = setHashField; 
 module.exports.get = get;
 module.exports.getPackage = getPackage;
 module.exports.getNS = getNSRecords;

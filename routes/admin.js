@@ -162,9 +162,16 @@ router.post('/customer-edit',middleware(services.userService).requireAuthenticat
     if (customer.isBusiness == "on")
         customer.isBusiness = true;
     else 
-        customer.inBusiness =false ; 
+        customer.isBusiness =false ; 
 
     services.customerService.saveCustomer(customer).then(function(result){
+        var bvalue = 0 ; 
+        if (customer.isBusiness == true){
+            bvalue = 1 ; 
+        }
+        redis.seth(`tew:owners:${customer.skybox}`,"isBusiness", bvalue).then(function(r){
+            console.log('set the customer as a business'); 
+        }); 
         res.redirect(  '/admin/customers?m='+customer.skybox); 
     }).catch((e)=>{
 

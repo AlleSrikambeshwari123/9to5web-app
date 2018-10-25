@@ -248,10 +248,13 @@ router.post('/save-package', middleware(services.userService).requireAuthenticat
         weight: Number(body.weight),
         status: 1,
         mid: body.mid,
-        //hasOpt : true,
+        hasOpt : true,
         mtype: body.mtype
     }; 
-
+    console.log(body);
+    if (Number(body.isBusiness) == 1){
+        package.hasOpt = false; 
+    }
     package = packageUtil.calculateFees(package); 
     console.log('package with fees')
 
@@ -270,6 +273,8 @@ router.post('/save-package', middleware(services.userService).requireAuthenticat
         container = "skid";
         containerNo = package.skid;
     }
+    //we need to check to see of the owner is a business here 
+    
     redis.getPackage(package.trackingNo).then((p)=>{
         if (p){
             var currentContainer = `manifest:${p.mid}:${p.mtype}:${container}:`;
