@@ -142,8 +142,8 @@ services.customerService.getCustomer(skybox).then((customer)=>{
         pageData.title = "Tropical Customer"
         pageData.luser = res.User.FirstName + ' ' + res.User.LastName;
         pageData.RoleId = res.User.RoleId;
-        pageData.customer = result.customer;
-        
+        pageData.customer = customer.customer;
+        console.log(customer);
     res.render('pages/admin/customerEdit',pageData); 
 })
 }); 

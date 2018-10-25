@@ -51,7 +51,7 @@ $(function(){
             data: null,
             render: function (data, type, row, meta) {
                 // console.log(data);
-                return `<a href ="/admin/customer/${data.Id}" class='text-white'><i class='icon-edit2'></i></a>`;
+                return `<a href ="/admin/customer-edit/${data.Id}" class='text-white'><i class='icon-edit2'></i></a>`;
             }
         },
         
