@@ -24,6 +24,15 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+@keyframes anim-rotate {
+	0% {
+		transform: rotate(0);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
+}
+
 .icon-mobile4:before {
   content: "\e004";
 }
@@ -5262,4 +5271,10 @@
 .icon-opera:before {
   content: "\edcf";
 }
+.spinner {
+	display: inline-block;
 
+	animation: anim-rotate 1s infinite linear;
+
+	text-shadow: 0 0 .25em rgba(255,255,255, .3);
+}
