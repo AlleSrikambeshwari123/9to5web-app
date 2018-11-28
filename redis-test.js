@@ -1,6 +1,11 @@
 var redis = require('./DataServices/redis'); 
+var lredis = require('./DataServices/redis-local');
 
-redis.customerSearch("16586",10,1).then(function(results){
+redis.customerList(10,1).then(function(results){
     console.log(results) ;
 });
+lredis.set("test","1").then((redResult)=>{
+    console.log(redResult); 
+    
+}); 
 

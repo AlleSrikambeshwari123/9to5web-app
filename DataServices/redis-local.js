@@ -2,11 +2,8 @@ var redis = require('redis');
 const NSPACE_CUST = "skybox:";
 const NSPACE_BOX = "tew:owner:";
 
-var client = redis.createClient(6380, "tew-redis.redis.cache.windows.net", {
-    auth_pass: 'euAj2NlScSkbO52pTt0LoEX7RajlFnZlmJ+baDt05Cw=',
-    tls: {
-        servername: 'tew-redis.redis.cache.windows.net'
-    }
+var client = redis.createClient(12000, "192.168.21.110", {
+    auth_pass: 'Silver123.'   
 });
 
 var get = (key) => {
