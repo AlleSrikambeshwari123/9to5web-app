@@ -161,6 +161,31 @@ $(function () {
             }
         });
     });
+    $(".email-broker").click(function(){
+
+        //change icon to spin 
+       $("#eb-icon").removeClass('icon-plane'); 
+       $('#eb-icon').addClass('spinner'); 
+       $('#eb-icon').addClass('icon-spinner2'); 
+        $.ajax({
+            url:'/warehouse/email-manifest',
+            type:'post',
+            data:{mid:mid,email:$("#broker-email").val(),name:$("#broker-name").val()},
+            success:function(result){
+               
+                $("#eb-icon").removeClass('spinner'); 
+                $("#eb-icon").removeClass('icon-spinner2'); 
+                $("#eb-icon").addClass('icon-check');
+                $("#eb-message").text(result.message); 
+                $("#eb-message").addClass('text-success');
+                setTimeout(function(){
+                    $(".close-del").trigger('click'); 
+                },2000);
+                 //show message 
+        //and close modal 
+            }
+        })
+    });
     $(".export-manifest").click(function () {
         window.location = '/warehouse/export-manifest/'+mid;
     });
