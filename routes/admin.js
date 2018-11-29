@@ -3,8 +3,8 @@ var router = express.Router();
 var services = require('../DataServices/services');
 var middleware = require('../middleware');
 var redis = require('../DataServices/redis');
-
-var customerService = require('../DataServices/CustomerService').Customer;
+var RedisCustomerService = require('../RedisServices/CustomerService').CustomerService
+var rCusomterService = new RedisCustomerService(); 
 
 /* GET users listing. */
 router.get('/', middleware(services.userService).requireAuthentication, function (req, res, next) {
@@ -88,6 +88,79 @@ router.post('/user/', middleware(services.userService).requireAuthentication, fu
 
 
 });
+router.get('/customersV1/:currentPage?', middleware(services.userService).requireAuthentication, function (req, res, next) {
+    var currentPage = Number(req.params.currentPage);
+    var pageData = {}; 
+    if (isNaN(currentPage))
+        currentPage = 1;
+        pageData.title = "Tropical Customers"
+    pageData.luser = res.User.FirstName + ' ' + res.User.LastName;
+    pageData.RoleId = res.User.RoleId;
+    pageData.owners = [];
+    rCusomterService.listCustomers(currentPage,10).then((pResult)=>{
+        var psIndex = 1;
+        var peIndex = 10;
+        if (currentPage >= 10) {
+            psIndex = currentPage - 5;
+            peIndex = currentPage + 5;
+        }
+        if (peIndex + 5 > pResult.TotalPages) {
+            peIndex = pResult.TotalPages;
+        }
+        var pagerInfo = {
+            pages: pResult.TotalPages,
+            currentPage: currentPage,
+            startPage: psIndex,
+            endPage: peIndex,
+            totalRecords: pResult.totalResults
+        }
+        pageData.records = pResult.customers;
+        pageData.pagerInfo = pagerInfo;
+        console.log(pageData.pagerInfo);
+        res.render('pages/admin/customers', pageData);
+    })
+
+});
+router.post('/customersV1/:currentPage?', middleware(services.userService).requireAuthentication, function (req, res, next) {
+    var searchText = req.body.searchText;
+    var currentPage = Number(req.body.rpage)
+    if (isNaN(currentPage)){
+        currentPage = 1; 
+    }
+    console.log('we are looking for '+ searchText + " on the page "+currentPage);
+    if (searchText == ''){
+        res.redirect('/admin/customerV1'); 
+    }
+    else 
+        rCusomterService.searchCustomers(searchText,currentPage,20).then((result) => {
+                var pageData = {};
+
+                pageData.title = "Tropical Customers"
+                pageData.searchText = searchText;
+                pageData.luser = res.User.FirstName + ' ' + res.User.LastName;
+                pageData.RoleId = res.User.RoleId;
+                pageData.records = result.customers;
+                var psIndex = 1;
+                var peIndex = 10;
+                if (currentPage >= 10) {
+                    psIndex = currentPage - 5;
+                    peIndex = currentPage + 5;
+                }
+                if (peIndex + 5 > result.TotalPages) {
+                    peIndex = result.TotalPages;
+                }
+                var pagerInfo = {
+                    pages: result.TotalPages,
+                    currentPage: currentPage,
+                    startPage: psIndex,
+                    endPage: peIndex,
+                    totalRecords: result.totalResults
+                }
+                pageData.records = result.customers;
+                pageData.pagerInfo = pagerInfo;
+                res.render('pages/admin/customerSearch.ejs', pageData)
+        })
+});
 router.get('/customers/:currentPage?', middleware(services.userService).requireAuthentication, function (req, res, next) {
     var pageData = {};
     var currentPage = Number(req.params.currentPage);
@@ -136,16 +209,16 @@ router.get('/customers/:currentPage?', middleware(services.userService).requireA
 router.get('/customer-edit/:skybox', middleware(services.userService).requireAuthentication, function (req, res, next) {
 var body = req.body; 
 var skybox = Number(req.params.skybox); 
-services.customerService.getCustomer(skybox).then((customer)=>{
+rCusomterService.getCustomer(skybox).then((customer)=>{
+    console.log(customer);
     var pageData = {};
-
-        pageData.title = "Tropical Customer"
-        pageData.luser = res.User.FirstName + ' ' + res.User.LastName;
-        pageData.RoleId = res.User.RoleId;
-        pageData.customer = customer.customer;
-        console.log(customer);
+    pageData.title = "Tropical Customer"
+    pageData.luser = res.User.FirstName + ' ' + res.User.LastName;
+    pageData.RoleId = res.User.RoleId;
+    pageData.customer = customer;
     res.render('pages/admin/customerEdit',pageData); 
-})
+});
+
 }); 
 router.post('/customer-edit',middleware(services.userService).requireAuthentication, function (req, res, next) {
     var body = req.body; 

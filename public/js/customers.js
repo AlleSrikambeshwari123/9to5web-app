@@ -6,7 +6,7 @@ $(function(){
             targets: 'no-sort', orderable: false,
             render: function (data, type, row, meta) {
                 // console.log(data);
-                return "T-"+data.SkyBox; 
+                return "T-"+data.skybox; 
             }
         },
         {
@@ -15,7 +15,7 @@ $(function(){
             data: null,
             render: function (data, type, row, meta) {
                 // console.log(data);
-                return `${data.Name} `;
+                return `${data.name} `;
             }
         },
         {
@@ -24,7 +24,7 @@ $(function(){
             data: null,
             render: function (data, type, row, meta) {
                 // console.log(data);
-                return `${data.Email} `;
+                return `${data.email} `;
             }
         },
         {
@@ -33,7 +33,7 @@ $(function(){
             data: null,
             render: function (data, type, row, meta) {
                 // console.log(data);
-                return `${data.Mobile} `;
+                return `${data.mobile} `;
             }
         },
         {
@@ -42,7 +42,7 @@ $(function(){
             data: null,
             render: function (data, type, row, meta) {
                 // console.log(data);
-                return `${data.Area} `;
+                return `${data.area} `;
             }
         },
         {
@@ -51,7 +51,7 @@ $(function(){
             data: null,
             render: function (data, type, row, meta) {
                 // console.log(data);
-                return `<a href ="/admin/customer-edit/${data.Id}" class='text-white'><i class='icon-edit2'></i></a>`;
+                return `<a href ="/admin/customer-edit/${data.skybox}" class='text-white'><i class='icon-edit2'></i></a>`;
             }
         },
         
@@ -74,5 +74,10 @@ $(function(){
          
         },
 
+    });
+
+    $(".page-item-search").click(function(){
+        $("#rpage").val($(this).attr('data-id')); 
+        $("#searchFrm").submit();
     });
 });

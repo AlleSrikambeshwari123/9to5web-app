@@ -2,8 +2,8 @@ var redis = require('redis');
 const NSPACE_CUST = "skybox:";
 const NSPACE_BOX = "tew:owner:";
 
-var client = redis.createClient(12000, "192.168.21.110", {
-    auth_pass: 'Silver123.'   
+var client = redis.createClient(14897, "redis-14897.c2822.us-east-1-mz.ec2.cloud.rlrcp.com", {
+    auth_pass: 't5atRuWQlOW7Vp2uhZpQivcIotDmTPpl'
 });
 
 var get = (key) => {
