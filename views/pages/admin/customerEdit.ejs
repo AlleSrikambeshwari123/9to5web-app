@@ -25,25 +25,31 @@
                     <input type="text" class="form-control" id="mobile" name='mobile' placeholder="(868)-xxx-xxxx" value='<%=customer.mobile %>'>
                 </div>
                 <div class="form-group">
-                    <label for="exOne">Mobile</label>
+                    <label for="exOne">Pick Up</label>
+                    <input type='hidden' id='pickupValue' value='<%=customer.area.toUpperCase() %>'/>
                     <select id="area" name="area" class=" form-control ">
 <% 
 
 %>
                                 <option value=""> Pick up Location </option>
-                                <option>Trincity</option>
-                                <option>Chaguanas</option>
-                                <option>Curepe</option>
-                                <option>Sangre Grande</option>
-                                <option>Port of Spain </option>
-                                <option>San Fernando</option>
-                                <option>Tobago</option>
+                                <option value='TRINCITY'>Trincity</option>
+                                <option value='CHAGUNAS'>Chaguanas</option>
+                                <option value='CUREPE'>Curepe</option>
+                                <option value='SANGRE GRANDE'>Sangre Grande</option>
+                                <option value ='PORT OF SPAIN'>Port of Spain </option>
+                                <option value='SAN FERNANDO'>San Fernando</option>
+                                <option value='TOBAGO'>Tobago</option>
                             </select>
                 </div>
                 <div class="form-group">
                     <label for="exOne">Is Business </label>
-                   
-                    <input type="checkbox" class="form-control" id="isBusiness" name='isBusiness' style='width:40px;' >
+                   <% 
+                    var isBusiness = ''
+                   if(customer.isBusiness == 'true'){
+                    isBusiness ='checked'
+                   }%>
+                    
+                    <input type="checkbox" class="form-control" id="isBusiness" name='isBusiness' style='width:40px;' <%=isBusiness%> >
                 </div>
                 <button type="submit" class="btn btn-primary">Save</button> <button type="button" class="btn btn-primary">Cancel</button>
                 

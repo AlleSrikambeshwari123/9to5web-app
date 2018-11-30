@@ -129,7 +129,7 @@ router.post('/customersV1/:currentPage?', middleware(services.userService).requi
     }
     console.log('we are looking for '+ searchText + " on the page "+currentPage);
     if (searchText == ''){
-        res.redirect('/admin/customerV1'); 
+        res.redirect('/admin/customersV1'); 
     }
     else 
         rCusomterService.searchCustomers(searchText,currentPage,20).then((result) => {
@@ -236,19 +236,21 @@ router.post('/customer-edit',middleware(services.userService).requireAuthenticat
         customer.isBusiness = true;
     else 
         customer.isBusiness =false ; 
-
-    services.customerService.saveCustomer(customer).then(function(result){
-        var bvalue = 0 ; 
-        if (customer.isBusiness == true){
-            bvalue = 1 ; 
-        }
-        redis.seth(`tew:owners:${customer.skybox}`,"isBusiness", bvalue).then(function(r){
-            console.log('set the customer as a business'); 
-        }); 
-        res.redirect(  '/admin/customers?m='+customer.skybox); 
-    }).catch((e)=>{
-
+    rCusomterService.saveCustomer(customer).then((result)=>{
+        res.redirect('/admin/customersV1/')
     }); 
+    // services.customerService.saveCustomer(customer).then(function(result){
+    //     var bvalue = 0 ; 
+    //     if (customer.isBusiness == true){
+    //         bvalue = 1 ; 
+    //     }
+    //     redis.seth(`tew:owners:${customer.skybox}`,"isBusiness", bvalue).then(function(r){
+    //         console.log('set the customer as a business'); 
+    //     }); 
+    //     res.redirect(  '/admin/customers?m='+customer.skybox); 
+    // }).catch((e)=>{
+
+    // }); 
 
 });
 router.post('/customers/', middleware(services.userService).requireAuthentication, function (req, res, next) {

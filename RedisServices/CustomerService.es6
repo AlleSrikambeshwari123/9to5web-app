@@ -56,7 +56,7 @@ export class CustomerService {
             var offsetVal = (page - 1) * pageSize;
             console.log('offset '+offsetVal);
             
-            this.mySearch.search(search+'*', {
+            this.mySearch.search(search.replace("@"," ")+'*', {
                 offset:offsetVal,
                 numberOfResults: pageSize,
                 SORTBY: "skybox"
@@ -96,5 +96,12 @@ export class CustomerService {
               resolve(user); 
           })
         })
+    } 
+    saveCustomer(customer){ 
+        return new Promise((resolve,reject)=>{
+            lredis.hmset("tew:owners:"+customer.skybox,customer).then((result)=>{
+                resolve(result);
+            }); 
+        });
     }
 }

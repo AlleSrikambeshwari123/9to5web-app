@@ -1,11 +1,11 @@
-var redis = require('./DataServices/redis'); 
-var lredis = require('./DataServices/redis-local');
-
-redis.customerList(10,1).then(function(results){
-    console.log(results) ;
-});
-lredis.set("test","1").then((redResult)=>{
-    console.log(redResult); 
+//#region  Manifest TEST 
+    var ManifestService = require('./RedisServices/ManifestService').ManifestService; 
     
-}); 
+    var ms = new ManifestService(); 
 
+    ms.createNewManifest(ms.mtypes.air,"stevan").then((result)=>{
+        console.log(result)
+    }).catch((err)=>{
+        console.log(err);
+    });
+//#endregion

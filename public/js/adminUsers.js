@@ -1,6 +1,6 @@
 $(function(){
 
-
+    $("#area").val($("#pickupValue").val())
     $(".enableUser").click(function(){
        var username = $(this).attr('data-id'); 
        var enabled = $(this).attr('data-value'); 
