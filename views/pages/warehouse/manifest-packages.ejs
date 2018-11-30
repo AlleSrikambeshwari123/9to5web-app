@@ -57,19 +57,19 @@
                             <div class='col-md-3'>
                             <div class="col-lg-12 col-md-12 col-sm-12">
 													<p class="text-uppercase small">
-														<strong>Date:</strong> <br/><%=manifest.DateCreatedDisplay %>
+														<strong>Date:</strong> <br/><%=moment(manifest.dateCreated,'YYYY-MM-DD').format("dddd, LL") %>
 													</p>
 													<address class='small'>
 														
                                                             <strong>VALUE:</strong><span class='total-value'></span><br>
                                                             <strong>WEIGHT:</strong> <span class='total-weight'></span> <br>
-                                                            <strong>STAGE:</strong> <%=manifest.StageName%><br>
+                                                            <strong>STAGE:</strong> <%=manifest.stage%><br>
                                                             
-                                                            <strong>CREATED BY:</strong> <%=manifest.CreatedBy%><br>
+                                                            <strong>CREATED BY:</strong> <%=manifest.createdBy%><br>
 													
 													</address>
                                                 </div>
-                                                <%if (manifest.StageId == 2) {%>
+                                                <%if (Number(manifest.stageId) == 2) {%>
                                                 <p>
                                                     <div class='form-group'>
                                                     <label class=''> Excel Duty Confirmation</label>

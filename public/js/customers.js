@@ -6,7 +6,7 @@ $(function(){
             targets: 'no-sort', orderable: false,
             render: function (data, type, row, meta) {
                 // console.log(data);
-                return "T-"+data.skybox; 
+                return data.skybox; 
             }
         },
         {

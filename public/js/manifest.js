@@ -5,17 +5,23 @@ $(function(){
     function addManifest(manifest){
         //check to see if the card body has a table if not add it i
         var table = $(".mlisting"); 
+        console.log("listing"); 
+        console.log(manifest); 
         table.show(); 
-        var tableBody = $(".mlisting").find('#data-listing'); 
-        if (!tableBody){
-           table.append(`<tbody id="data-listing"><tr> <td>M-${manifest.ManifestId} </td> <td>${manifest.StageName} </td> <td>${manifest.DateCreatedDisplay} </td> <td>${manifest.CreatedBy} </td> <td><a href='/warehouse/m-packages/${manifest.ManifestId}' class='btn btn-sm btn-primary'>Manage</a> <button class='btn btn-danger btn-sm'>Delete</button> </td> </tr></tbody>`); 
-            console
-
-        }
-        else {
-
-            $(tableBody).prepend(`<tr> <td><strong>M-${manifest.ManifestId}</strong> </td> <td>${manifest.StageName} </td> <td>${manifest.DateCreatedDisplay} </td> <td>${manifest.CreatedBy} </td> <td><a href='/warehouse/m-packages/${manifest.ManifestId}' class='btn btn-sm btn-primary'>Manage</a> <button class='btn btn-danger btn-sm'>Delete</button> </td> </tr>`);
-        }
+        setTimeout(function(){
+            var tableBody = $(".mlisting").find('#data-listing'); 
+            console.log(tableBody);
+            if (tableBody.length ==0){
+               table.append(`<tbody id="data-listing"><tr> <td>M-${manifest.mid} </td> <td>${manifest.stage} </td> <td>${moment(manifest.dateCreated,"YYYY-MM-DD").format("dddd, LL")} </td> <td>${manifest.createdBy} </td> <td><a href='/warehouse/m-packages/${manifest.mid}' class='btn btn-sm btn-primary'>Manage</a> <button class='btn btn-danger btn-sm'>Delete</button> </td> </tr></tbody>`); 
+                console
+    
+            }
+            else {
+    
+                $(tableBody).prepend(`<tr> <td><strong>M-${manifest.mid}</strong> </td> <td>${manifest.stage} </td> <td>${moment(manifest.dateCreated,"YYYY-MM-DD").format("dddd, LL")} </td> <td>${manifest.createdBy} </td> <td><a href='/warehouse/m-packages/${manifest.mid}' class='btn btn-sm btn-primary'>Manage</a> <button class='btn btn-danger btn-sm'>Delete</button> </td> </tr>`);
+            }
+        },100)
+       
 
     }
 
@@ -26,7 +32,8 @@ $(function(){
             type:'post',
             data:{mtype:mtype},
             success:function(result){
-                if (result.manifestId > 0 ){
+                console.log(result);
+                if (result.manifest.mid > 0 ){
                     notes.show("Manifest Created", {
                         type: 'success',
                         title: 'Hey',

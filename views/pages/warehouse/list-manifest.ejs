@@ -24,11 +24,15 @@
                    <tbody id='data-listing'>
                     <% listing.forEach(function(manifest){ %>
                     <tr>
-                        <td><strong>M-<%=manifest.ManifestId%></strong></td>
-                        <td><%=manifest.StageName%></td>
-                        <td><%=manifest.DateCreatedDisplay %></td>
-                        <td><%=manifest.CreatedBy%></td>
-                        <td><a href='/warehouse/m-packages/<%=manifest.ManifestId%>' class='btn btn-sm btn-primary'>Manage</a> <button class='btn btn-danger btn-sm'>Delete</button></td>
+                        <td><strong>M-<%=manifest.mid%></strong></td>
+                        <td><%=manifest.stage%></td>
+                        <td><%=moment(manifest.dateCreated,"YYYY-MM-DD").format("dddd, LL") %></td>
+                        <td><%=manifest.createdBy%></td>
+                        <td><a href='/warehouse/m-packages/<%=manifest.mid%>' class='btn btn-sm btn-primary'>Manage</a>
+                        <%if (manifest.stageId ==1) {%>
+                        <button class='btn btn-danger btn-sm rm-manifest'>Delete</button>
+                        <%}%>
+                        </td>
                     </tr>
 
                     <%});%>

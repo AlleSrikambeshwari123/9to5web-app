@@ -33,108 +33,93 @@ var redis = require('redis');
 var redisSearch = require('redisearchclient');
 var lredis = require('./DataServices/redis-local')
 
+var services = require('./RedisServices/RedisDataServices')
 
-let customersIndex = redisSearch(redis, 'tew:customers', {
-    clientOptions: {
-        'host': 'redis-14897.c2822.us-east-1-mz.ec2.cloud.rlrcp.com',
-        'port': '14897',
-        auth_pass: 't5atRuWQlOW7Vp2uhZpQivcIotDmTPpl'
-    }
-});
-let manifestIndex = redisSearch(redis, 'tew:manifest', {
-    clientOptions: {
-        'host': 'redis-14897.c2822.us-east-1-mz.ec2.cloud.rlrcp.com',
-        'port': '14897',
-        auth_pass: 't5atRuWQlOW7Vp2uhZpQivcIotDmTPpl'
-    }
-});
-let packageIndex = redisSearch(redis, 'tew:packages', {
-    clientOptions: {
-        'host': 'redis-14897.c2822.us-east-1-mz.ec2.cloud.rlrcp.com',
-        'port': '14897',
-        auth_pass: 't5atRuWQlOW7Vp2uhZpQivcIotDmTPpl'
-    }
-});
+services.manifestService.getOpenManifest(1).then(function(result){
+    console.log('manifest-Count')
+    console.log(result);
+}); 
 
-manifestIndex.createIndex([
-    customerIndex.fieldDefinition.text("title", true),
-    customerIndex.fieldDefinition.text("stage", true),
-    customerIndex.fieldDefinition.text("type", true),
-    customerIndex.fieldDefinition.text("createdBy", true),
-])
-packageIndex.createIndex([
-    customerIndex.fieldDefinition.text("trackingNo", true),
-    customerIndex.fieldDefinition.text("skybox", true),
-    customerIndex.fieldDefinition.text("customer", true),
-    customerIndex.fieldDefinition.text("shipper", true),
-    customerIndex.fieldDefinition.text("description", true),
-    customerIndex.fieldDefinition.numeric("pieces", true),
-    customerIndex.fieldDefinition.numeric("weight", true),
-    customerIndex.fieldDefinition.numeric("value", true),
-])
-console.log('search index created');
-customerIndex.createIndex([
-    customerIndex.fieldDefinition.text("name", true),
-    customerIndex.fieldDefinition.text("mobile", false),
-    customerIndex.fieldDefinition.text("email", true),
-    customerIndex.fieldDefinition.text("skybox", true),
-    customerIndex.fieldDefinition.text("area", true)
-])
-//()=>{
-//  lredis.getKeys("tew*").then((kresults)=>{
-//      console.log(kresults); 
-//     kresults.forEach(element => {
 
-//          lredis.hgetall(element).then((customer)=>{
-//              mySearch.add(customer.skybox,customer); 
-//              console.log("added document "+customer.name); 
-//          })
-//      });
-//  })
-//}
-//]); 
 
-//   lredis.getKeys('tew:*').then((keys)=>{
+//#region Manifest Index
+// let manifestIndex = redisSearch(redis, 'index:manifest', {
+//     clientOptions: {
+//         'host': 'redis-14897.c2822.us-east-1-mz.ec2.cloud.rlrcp.com',
+//         'port': '14897',
+//         auth_pass: 't5atRuWQlOW7Vp2uhZpQivcIotDmTPpl'
+//     }
+// });
+// manifestIndex.dropIndex();
+// manifestIndex.createIndex([
+//     manifestIndex.fieldDefinition.numeric("mid", true),
+//     manifestIndex.fieldDefinition.text("title", true),
+//     manifestIndex.fieldDefinition.numeric("stageId", true),
+//     manifestIndex.fieldDefinition.text("stage", true),
+//     manifestIndex.fieldDefinition.text("dateCreated", true),
+//     manifestIndex.fieldDefinition.text("mtypeId", true),
+//     manifestIndex.fieldDefinition.text("createdBy", true),
+//  ])
+// console.log('Populating manifest keys')
+// lredis.getKeys('tew:manifest:*').then((keys) => {
+//     keys.forEach(element => {
+//         lredis.hgetall(element).then((obj) => {
+//             console.log(obj);
+//             obj.title = "M-"+obj.mid
+//             obj.stage = "Open"
+//             manifestIndex.add(obj.mid, obj)
+//         });
+//     });
+// });
+//#endregion
+
+//#region Package Index
+// let packageIndex = redisSearch(redis, 'tew:packages', {
+//     clientOptions: {
+//         'host': 'redis-14897.c2822.us-east-1-mz.ec2.cloud.rlrcp.com',
+//         'port': '14897',
+//         auth_pass: 't5atRuWQlOW7Vp2uhZpQivcIotDmTPpl'
+//     }
+// });
+
+// packageIndex.createIndex([
+//     packageIndex.fieldDefinition.text("trackingNo", true),
+//     packageIndex.fieldDefinition.text("skybox", true),
+//     packageIndex.fieldDefinition.text("customer", true),
+//     packageIndex.fieldDefinition.text("shipper", true),
+//     packageIndex.fieldDefinition.text("description", true),
+//     packageIndex.fieldDefinition.numeric("pieces", true),
+//     packageIndex.fieldDefinition.numeric("weight", true),
+//     packageIndex.fieldDefinition.numeric("value", true),
+// ])
+//#endregion
+//console.log('search index created');
+
+//#region Customer Index
+// let customersIndex = redisSearch(redis, 'tew:customers', {
+//     clientOptions: {
+//         'host': 'redis-14897.c2822.us-east-1-mz.ec2.cloud.rlrcp.com',
+//         'port': '14897',
+//         auth_pass: 't5atRuWQlOW7Vp2uhZpQivcIotDmTPpl'
+//     }
+// });
+// customersIndex.createIndex([
+//     customersIndex.fieldDefinition.text("name", true),
+//     customersIndex.fieldDefinition.text("mobile", false),
+//     customersIndex.fieldDefinition.text("email", true),
+//     customersIndex.fieldDefinition.text("skybox", true),
+//     customersIndex.fieldDefinition.numeric('svalue',true),
+//     customersIndex.fieldDefinition.text("area", true)
+// ]); 
+// console.log('Populating customer keys')
+//   lredis.getKeys('tew:owner*').then((keys)=>{
 //   keys.forEach(element => {
 //       lredis.hgetall(element).then((obj)=>{
 //           console.log(obj);
-//           mySearch.add(obj.skybox,obj)
+//             obj.svalue = obj.skybox; 
+//             obj.skybox ="T-"+obj.skybox;
+//           customersIndex.add(obj.skybox,obj)
 //       }); 
 //   });
 // }); 
-
-//  mySearch.search("*",{offset:20,numberOfRecords:10},(r1,r2)=>{
-//     console.log(r1); 
-//     console.log(r2); 
-//  });
-
-//mySearch.add(16586,)
-
-//mySearch.createIndex([
-//     mySearch.fieldDefinition.text("name",true),
-//     mySearch.fieldDefinition.text("mobile",false),
-//     mySearch.fieldDefinition.text("email",true),
-//     mySearch.fieldDefinition.numeric("skybox",true),
-//     mySearch.fieldDefinition.text("area",true), 
-//     ()=>{
-//         lredis.getKeys("tew*").then((kresults)=>{
-//             console.log(kresults); 
-//             kresults.forEach(element => {
-//             //    lredis.hgetall(element).then((customer)=>{
-//             //         mySearch.add()
-//             //    })
-//             });
-//         })
-//     }
-// ])
-
-
-
-
-
-//so we are going to pull the keys then insert localally 
-//create the bindings to redis 
-
-//create the customer index 
-
-//add the keys to the index
+//#endregion

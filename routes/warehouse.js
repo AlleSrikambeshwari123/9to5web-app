@@ -10,19 +10,27 @@ var formidable = require('formidable');
 var path = require('path'); 
 var fs = require('fs'); 
 var delfile = ''; 
+var rServices = require('../RedisServices/RedisDataServices')
+
 //Manifest Routes
 router.get('/list-manifest', middleware(services.userService).requireAuthentication, (req, res, next) => {
     var pageData = {};
     pageData.title = "Manifest";
     pageData.luser = res.User.FirstName + ' ' + res.User.LastName;
     pageData.RoleId = res.User.RoleId;
-    services.manifestService.listAllManifest(1).then((result) => {
-        console.log('listing');
-        console.log(result);
-        pageData.listing = result.listing;
-
+    rServices.manifestService.listManifest(1,1,20).then((result)=>{
+        console.log(result); 
+        pageData.listing = result.manifests;
+        pageData.moment = moment; 
         res.render('pages/warehouse/list-manifest', pageData);
-    });
+    })
+    // services.manifestService.listAllManifest(1).then((result) => {
+    //     console.log('listing');
+    //     console.log(result);
+    //     pageData.listing = result.listing;
+
+    //     res.render('pages/warehouse/list-manifest', pageData);
+    // });
 
 });
 router.get('/list-ocean', middleware(services.userService).requireAuthentication, (req, res, next) => {
@@ -69,16 +77,23 @@ router.get('/m-packages/:manifestId', middleware(services.userService).requireAu
     pageData.RoleId = res.User.RoleId;
     pageData.manifest = {};
     pageData.mid = Number(req.params.manifestId);
-
+    pageData.moment = moment;
 
     //we want to format the manifest number to 3 digits 
-    services.manifestService.getManifest(pageData.mid).then((m)=>{
-        console.log(m);
-        pageData.manifest = m.manifest; 
+    rServices.manifestService.getManifest(pageData.mid).then((manifest)=>{
+      
+        pageData.manifest = manifest; 
         pageData.mtype = "cargo";
         pageData.ColLabel = "Cargo";
         res.render('pages/warehouse/manifest-packages', pageData);
-    }); 
+    });
+    // services.manifestService.getManifest(pageData.mid).then((m)=>{
+    //     console.log(m);
+    //     pageData.manifest = m.manifest; 
+    //     pageData.mtype = "cargo";
+    //     pageData.ColLabel = "Cargo";
+    //     res.render('pages/warehouse/manifest-packages', pageData);
+    // }); 
     
 });
 
@@ -112,9 +127,16 @@ router.post('/create-manifest', middleware(services.userService).requireAuthenti
     console.log(res.User);
     var manifestType = Number(req.body.mtype); 
     console.log(manifestType)
-    services.manifestService.createManfiest(res.User.Username,manifestType).then((result) => {
-        res.send(result);
+    let typeObj = rServices.manifestService.getTypebyId(Number(manifestType)); 
+    rServices.manifestService.createNewManifest(typeObj,res.User.Username).then((result)=>{
+        var resp = { manifest: result}; 
+        res.send(resp);
+    }).catch((err)=>{
+        res.send({mid:0,error:err});
     });
+    // services.manifestService.createManfiest(res.User.Username,manifestType).then((result) => {
+    //     res.send(result);
+    // });
 });
 
 router.get('/mlist', middleware(services.userService).requireAuthentication, (req, res, next) => {
@@ -467,6 +489,19 @@ router.post('/verify-manifest',middleware(services.userService).requireAuthentic
   
 
 }); 
+router.post('/rm-manifest',middleware(services.userService).requireAuthentication,(req,res,next)=>{
+    var mid = Numebr(req.body.mid); 
+    if (isNaN(mid)){
+        res.send({deleted:false});
+    }    
+    else {
+        rServices.manifestService.deleteManifest(mid).then((result)=>{
+            res.send(result); 
+        })
+    }
+  
+  }); 
+  
 
 router.post('/download-awb',function(req,res,next){
      var  template = path.join(__dirname.replace("routes","templates\\"),"awb-template.pdf"); 

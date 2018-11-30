@@ -21,9 +21,10 @@ export class CustomerService {
             this.mySearch.search("*", {
                 offset:offsetVal,
                 numberOfResults: pageSize,
-                SORTBY: "skybox"
+                sortBy: "svalue"
             }, (r1, data) => {
-                console.log(data);
+                if (r1)
+                    console.log(r1);
                 var customers = []; 
                  data.results.forEach(customerResult => {
                      customers.push(customerResult.doc);    
@@ -38,14 +39,8 @@ export class CustomerService {
                     TotalPages : (data.totalResults/pageSize)
                 }
                 resolve(pagedData);
-                //Promise.all()
                 console.log(customers);
-                // Promise.all(customers.map(lredis.hgetall)).then(function (ownersResult) {
-                //     console.log(ownersResult);
-                   
-                // });
-               
-                //console.log(r2); 
+                
             });
         })
 
@@ -59,7 +54,8 @@ export class CustomerService {
             this.mySearch.search(search.replace("@"," ")+'*', {
                 offset:offsetVal,
                 numberOfResults: pageSize,
-                SORTBY: "skybox"
+                sortBy: "svalue",
+                dir : "ASC"
             }, (r1, data) => {
                 console.log(data);
                 var customers = []; 
