@@ -29,16 +29,17 @@
 //#endregion
 
 
-var redis = require('redis');
-var redisSearch = require('redisearchclient');
-var lredis = require('./DataServices/redis-local')
+// var redis = require('redis');
+// var redisSearch = require('../redisearchclient/index');
+// var lredis = require('./DataServices/redis-local')
 
 var services = require('./RedisServices/RedisDataServices')
-
-services.manifestService.getOpenManifest(1).then(function(result){
-    console.log('manifest-Count')
-    console.log(result);
-}); 
+var rse  = require('./redisearchclient')
+// services.manifestService.deleteManifest(132);
+// services.manifestService.getOpenManifest(1).then(function(result){
+//     console.log('manifest-Count')
+//     console.log(result);
+// }); 
 
 
 

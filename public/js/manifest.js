@@ -1,63 +1,100 @@
+$(function () {
 
-
-$(function(){
-    
-    function addManifest(manifest){
+    function addManifest(manifest) {
         //check to see if the card body has a table if not add it i
-        var table = $(".mlisting"); 
-        console.log("listing"); 
-        console.log(manifest); 
-        table.show(); 
-        setTimeout(function(){
-            var tableBody = $(".mlisting").find('#data-listing'); 
+        var table = $(".mlisting");
+        console.log("listing");
+        console.log(manifest);
+        table.show();
+        setTimeout(function () {
+            var tableBody = $(".mlisting").find('#data-listing');
             console.log(tableBody);
-            if (tableBody.length ==0){
-               table.append(`<tbody id="data-listing"><tr> <td>M-${manifest.mid} </td> <td>${manifest.stage} </td> <td>${moment(manifest.dateCreated,"YYYY-MM-DD").format("dddd, LL")} </td> <td>${manifest.createdBy} </td> <td><a href='/warehouse/m-packages/${manifest.mid}' class='btn btn-sm btn-primary'>Manage</a> <button class='btn btn-danger btn-sm'>Delete</button> </td> </tr></tbody>`); 
-                console
-    
+            var url = "m-packages"; 
+            if (Number(manifest.mtypeId) != 1){
+                url ='packages'
             }
-            else {
-    
-                $(tableBody).prepend(`<tr> <td><strong>M-${manifest.mid}</strong> </td> <td>${manifest.stage} </td> <td>${moment(manifest.dateCreated,"YYYY-MM-DD").format("dddd, LL")} </td> <td>${manifest.createdBy} </td> <td><a href='/warehouse/m-packages/${manifest.mid}' class='btn btn-sm btn-primary'>Manage</a> <button class='btn btn-danger btn-sm'>Delete</button> </td> </tr>`);
+            if (tableBody.length == 0) {
+                table.append(`<tbody id="data-listing"><tr> <td>${manifest.title} </td> <td>${manifest.stage} </td> <td>${moment(manifest.dateCreated,"YYYY-MM-DD").format("dddd, LL")} </td> <td>${manifest.createdBy} </td> <td><a href='/warehouse/${url}/${manifest.mid}' class='btn btn-sm btn-primary'>Manage</a> <button class='btn btn-danger btn-sm rm-manifest-launch' data-id='${manifest.mid}' data-target='#rm-manifest-modal' data-toggle='modal'>Delete</button> </td> </tr></tbody>`);
+                
+
+            } else {
+
+                $(tableBody).prepend(`<tr> <td><strong>${manifest.title}</strong> </td> <td>${manifest.stage} </td> <td>${moment(manifest.dateCreated,"YYYY-MM-DD").format("dddd, LL")} </td> <td>${manifest.createdBy} </td> <td><a href='/warehouse/${url}/${manifest.mid}' class='btn btn-sm btn-primary'>Manage</a> <button class='btn btn-danger btn-sm rm-manifest-launch' data-id='${manifest.mid}' data-target='#rm-manifest-modal' data-toggle='modal'>Delete</button> </td> </tr>`);
             }
-        },100)
-       
+            setupUpDelete(); 
+        }, 100)
+
 
     }
 
-    $(".create-manifest").click(function(){
-        var mtype = $(this).attr('data-type'); 
+    $(".create-manifest").click(function () {
+        var mtype = $(this).attr('data-type');
         $.ajax({
-            url:'/warehouse/create-manifest',
-            type:'post',
-            data:{mtype:mtype},
-            success:function(result){
+            url: '/warehouse/create-manifest',
+            type: 'post',
+            data: {
+                mtype: mtype
+            },
+            success: function (result) {
                 console.log(result);
-                if (result.manifest.mid > 0 ){
+                if (result.manifest.mid > 0) {
                     notes.show("Manifest Created", {
                         type: 'success',
                         title: 'Hey',
                         icon: '<i class="icon-icon-lock-open-outline"></i>',
                         sticky: true,
-                        hide:3000
+                        hide: 3000
                     });
                     $(".alert-warning").hide();
                     console.log(result);
-                    addManifest(result.manifest);     
-                }
-                else  {
+                    addManifest(result.manifest);
+                } else {
                     //show the message that 
-                    notes.show(result.message, {
-                        type: 'error',
-                        title: 'Hey',
+                    notes.show(result.error.message, {
+                        type: 'danger',
+                        title: 'Opps',
                         icon: '<i class="icon-icon-lock-open-outline"></i>',
                         sticky: true
                     });
                 }
-                
+
             }
 
 
         });
-    }); 
-}); 
+    });     
+    setupUpDelete(); 
+    var currDelBtn; 
+    function setupUpDelete(){
+        $(".rm-manifest-launch").off().click(function () {
+            $('.rm-manifest').attr('data-id',$(this).attr('data-id')); 
+            currDelBtn = $(this); 
+        })
+        $(".rm-manifest").off().click(function () {
+            var mid = $(this).attr('data-id');
+            $.ajax({
+                url: '/warehouse/rm-manifest',
+                type: 'post',
+                data: {
+                    mid: mid
+                },
+                success: function (result) {
+                    $(".close-del").trigger('click');
+                    if(result.deleted){
+                    currDelBtn.parent().parent().remove(); 
+                    
+                        notes.show("The manifest has been successfully deleted.", {
+                            type: 'success',
+                            title: 'Deleted Manifest',
+                            icon: '<i class="icon-icon-lock-open-outline"></i>',
+                            sticky: true,
+                            hide: 3000
+                        });
+                    }
+                }
+    
+            });
+        })
+    }
+    
+});

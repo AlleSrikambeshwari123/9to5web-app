@@ -4,6 +4,7 @@ var services = require('../DataServices/services');
 var middleware = require('../middleware');
 var moment = require('moment');
 var redis = require('../DataServices/redis');
+var lredis = require('../DataServices/redis-local');
 var PackageUtil = require('../Util/packageutil').PackageUtility; 
 var packageUtil = new PackageUtil(); 
 var formidable = require('formidable');
@@ -33,24 +34,51 @@ router.get('/list-manifest', middleware(services.userService).requireAuthenticat
     // });
 
 });
-router.get('/list-ocean', middleware(services.userService).requireAuthentication, (req, res, next) => {
+
+router.post('/rm-manifest', middleware(services.userService).requireAuthentication,(req,res,next)=>{
+    var body = req.body; 
+    var mid = Number(body.mid); 
+    if (isNaN(mid))
+        mid = 0 ; 
+    console.log("requesting to delete "+mid);
+    rServices.manifestService.deleteManifest(mid).then(function(result){
+        res.send(result); 
+    }); 
+});
+
+router.get('/list-ocean/:currentPage?', middleware(services.userService).requireAuthentication, (req, res, next) => {
     var pageData = {};
     pageData.title = "Ocean";
     pageData.luser = res.User.FirstName + ' ' + res.User.LastName;
     pageData.RoleId = res.User.RoleId;
     pageData.ColLabel = "Ocean"
-    pageData.inital = "O"
-    pageData.typeId = 2; 
-    services.manifestService.listAllManifest(2).then((result) => {
-        console.log('listing');
-        console.log(result);
-        pageData.listing = result.listing;
-
+    pageData.inital = "S"
+     pageData.typeId = 2; 
+    rServices.manifestService.listManifest(2,1,20).then((result)=>{
+        console.log(result); 
+        pageData.listing = result.manifests;
+        pageData.moment = moment; 
         res.render('pages/warehouse/other-manifest', pageData);
     });
 
+    // var pageData = {};
+    // pageData.title = "Ocean";
+    // pageData.luser = res.User.FirstName + ' ' + res.User.LastName;
+    // pageData.RoleId = res.User.RoleId;
+    // pageData.ColLabel = "Ocean"
+    // pageData.inital = "O"
+    // pageData.typeId = 2; 
+    // services.manifestService.listAllManifest(2).then((result) => {
+    //     console.log('listing');
+    //     console.log(result);
+    //     pageData.listing = result.listing;
+
+    //     res.render('pages/warehouse/other-manifest', pageData);
+    // });
+
 });
-router.get('/list-hazmat', middleware(services.userService).requireAuthentication, (req, res, next) => {
+router.get('/list-hazmat/:currentPage?', middleware(services.userService).requireAuthentication, (req, res, next) => {
+   
     var pageData = {};
     pageData.title = "HAZMAT";
     pageData.luser = res.User.FirstName + ' ' + res.User.LastName;
@@ -58,13 +86,28 @@ router.get('/list-hazmat', middleware(services.userService).requireAuthenticatio
     pageData.ColLabel = "HAZMAT"
     pageData.inital = "H"
     pageData.typeId = 3; 
-    services.manifestService.listAllManifest(3).then((result) => {
-        console.log('listing');
-        console.log(result);
-        pageData.listing = result.listing;
-
+    pageData.moment = moment; 
+    rServices.manifestService.listManifest(3,1,20).then((result)=>{
+        console.log(result); 
+        pageData.listing = result.manifests;
+        
         res.render('pages/warehouse/other-manifest', pageData);
     });
+
+    // var pageData = {};
+    // pageData.title = "HAZMAT";
+    // pageData.luser = res.User.FirstName + ' ' + res.User.LastName;
+    // pageData.RoleId = res.User.RoleId;
+    // pageData.ColLabel = "HAZMAT"
+    // pageData.inital = "H"
+    // pageData.typeId = 3; 
+    // services.manifestService.listAllManifest(3).then((result) => {
+    //     console.log('listing');
+    //     console.log(result);
+    //     pageData.listing = result.listing;
+
+    //     res.render('pages/warehouse/other-manifest', pageData);
+    // });
 
 });
 
@@ -85,6 +128,8 @@ router.get('/m-packages/:manifestId', middleware(services.userService).requireAu
         pageData.manifest = manifest; 
         pageData.mtype = "cargo";
         pageData.ColLabel = "Cargo";
+        console.log('pageData')
+        console.log(pageData);
         res.render('pages/warehouse/manifest-packages', pageData);
     });
     // services.manifestService.getManifest(pageData.mid).then((m)=>{
@@ -126,13 +171,16 @@ router.get('/manifest-count/:mid/:mtype', middleware(services.userService).requi
 router.post('/create-manifest', middleware(services.userService).requireAuthentication, function (req, res, next) {
     console.log(res.User);
     var manifestType = Number(req.body.mtype); 
-    console.log(manifestType)
+    console.log("the manifest to create is " +manifestType)
     let typeObj = rServices.manifestService.getTypebyId(Number(manifestType)); 
+    console.log(typeObj); 
     rServices.manifestService.createNewManifest(typeObj,res.User.Username).then((result)=>{
         var resp = { manifest: result}; 
+        
         res.send(resp);
     }).catch((err)=>{
-        res.send({mid:0,error:err});
+        console.log(err); 
+        res.send({manifest:{mid:0},error:err});
     });
     // services.manifestService.createManfiest(res.User.Username,manifestType).then((result) => {
     //     res.send(result);
@@ -151,15 +199,15 @@ router.get('/packages/:mid', middleware(services.userService).requireAuthenticat
     pageData.mid = req.params.mid; 
     pageData.luser = res.User.FirstName + ' ' + res.User.LastName;
     pageData.RoleId = res.User.RoleId;
-    services.manifestService.getManifest(Number(pageData.mid)).then((m)=>{
-        pageData.manifest = m.manifest;
+    rServices.manifestService.getManifest(Number(pageData.mid)).then((m)=>{
+        pageData.manifest = m;
         
-        if (m.manifest.ManifestTypeId == 2){
+        if (m.mtypeId == 2){
             pageData.ColLabel = "Ocean"
-            pageData.inital = "O"
+            pageData.inital = "S"
             pageData.typeId = 2; 
         }
-        else if ( m.manifest.ManifestTypeId == 3){
+        else if ( m.mtypeId == 3){
             pageData.ColLabel = "HAZMAT"
             pageData.inital = "H"
             pageData.typeId = 3; 
@@ -174,7 +222,7 @@ router.get('/packages/:mid', middleware(services.userService).requireAuthenticat
 router.post('/get-customer-info', middleware(services.userService).requireAuthentication, (req, res, next) => {
     //get customer information 
     var skybox = req.body.box;
-    redis.hgetall('tew:owners:' + skybox).then((result) => {
+    lredis.hgetall('tew:owners:' + skybox).then((result) => {
         console.log(result);
         if (result == null)
             res.send({
@@ -382,10 +430,12 @@ router.post('/packages', middleware(services.userService).requireAuthentication,
 
 router.post('/close-manifest', middleware(services.userService).requireAuthentication, (req, res, next) => {
    var mid = Number(req.body.mid); 
-
-   services.manifestService.closeManifest(mid,res.User.Username).then((mREsult)=>{
-       res.send(mREsult); 
+   rServices.manifestService.changeStage(mid,2).then((cResult)=>{
+       res.send(cResult); 
    }); 
+//    services.manifestService.closeManifest(mid,res.User.Username).then((mREsult)=>{
+//        res.send(mREsult); 
+//    }); 
     
 });
 router.post('/ship-manifest', middleware(services.userService).requireAuthentication, (req, res, next) => {
@@ -397,6 +447,7 @@ router.post('/ship-manifest', middleware(services.userService).requireAuthentica
     }); 
     
 });
+
 router.get('/export-manifest/:mid', middleware(services.userService).requireAuthentication, (req, res, next) => {
 
     var mid = Number(req.params.mid); 
@@ -489,6 +540,7 @@ router.post('/verify-manifest',middleware(services.userService).requireAuthentic
   
 
 }); 
+
 router.post('/rm-manifest',middleware(services.userService).requireAuthentication,(req,res,next)=>{
     var mid = Numebr(req.body.mid); 
     if (isNaN(mid)){

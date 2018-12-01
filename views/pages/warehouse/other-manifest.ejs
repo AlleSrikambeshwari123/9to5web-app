@@ -21,14 +21,22 @@
                     </tr>
 
                    <tbody id='data-listing'>
-                    <% listing.forEach(function(manifest){ %>
-                    <tr>
-                        <td><strong><%= inital%> -<%=manifest.ManifestId%></strong></td>
-                        <td><%=manifest.StageName%></td>
-                        <td><%=manifest.DateCreatedDisplay %></td>
-                        <td><%=manifest.CreatedBy%></td>
-                        <td><a href='/warehouse/packages/<%=manifest.ManifestId%>' class='btn btn-sm btn-primary'>Manage</a> <button class='btn btn-danger btn-sm'>Delete</button></td>
-                    </tr>
+                    <% listing.forEach(function(manifest){ 
+                        var url = 'm-packages'
+                        if(manifest.mtypeId != 1)
+                            url ='packages'
+                        %>
+                        <tr>
+                            <td><strong><%=manifest.title%></strong></td>
+                            <td><%=manifest.stage%></td>
+                            <td><%=moment(manifest.dateCreated,"YYYY-MM-DD").format("dddd, LL") %></td>
+                            <td><%=manifest.createdBy%></td>
+                            <td><a href='/warehouse/<%=url%>/<%=manifest.mid%>' class='btn btn-sm btn-primary'>Manage</a>
+                            <%if (manifest.stageId ==1) {%>
+                            <button class='btn btn-danger btn-sm rm-manifest-launch' data-id='<%=manifest.mid%>' data-target='#rm-manifest-modal' data-toggle='modal'>Delete</button>
+                            <%}%>
+                            </td>
+                        </tr>
 
                     <%});%>
                 </tbody>
@@ -46,7 +54,7 @@
                         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                             <span aria-hidden="true">×</span>
                         </button>
-                        <i class="icon-flash"></i><strong>Heads up!</strong> you haven't used the system yet....Go ahead and click Cargo 1 or 2 to create your first manifest!
+                        <i class="icon-flash"></i><strong>Heads up!</strong> you haven't used the system yet....Go ahead and click Ocean to create your first manifest!
                     </div>
                 
                <%}%>
@@ -55,4 +63,29 @@
       </div>
   </div>
 </div>
-<% block('scripts').append('<script src="/js/other-manifest.js"></script>')%>
+<div class="modal fade" id="rm-manifest-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2" aria-hidden="true"
+    style="display: none;">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel2">Confirm Delete</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <label>Are you Sure you want to delete this manifest?</label>
+                
+            </div>
+            <div class="modal-footer">
+
+
+                <button type="button" class="btn btn-primary close-del" data-dismiss="modal">Close</button>
+
+                <button type="button" class="btn btn-danger rm-manifest" id='ship-manifest'>Yes I'm Sure</button>
+            </div>
+        </div>
+    </div>
+</div>
+<% block('scripts').append('<script src="/js/manifest.js"></script>')%>

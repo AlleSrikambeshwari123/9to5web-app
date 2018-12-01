@@ -17,7 +17,7 @@ var manifestTypes = {
         prefix: "M-"
     },
     ocean: {
-        id: 1,
+        id: 2,
         title: "Ocean",
         prefix: "S-"
     },
@@ -85,17 +85,22 @@ export class ManifestService {
     }
 
     getOpenManifest(typeId){
-
+        
         return new Promise((resolve,reject)=>{
-            this.mySearch.search("@stageId:"+1+" @mtypeId:"+typeId, {
+           console.log( `@stageId:[${typeId} ${typeId}] @mtypeId:${typeId}`);
+            this.mySearch.search(`@stageId:[1 1] @mtypeId:${typeId}`, {
                 offset:0,
                 numberOfResults: 100,
                 sortBy: "mid",
                 dir: "DESC"
             }, (r1, data) => {
                 if (r1)
+                 {
+                     console.log('we had an error')
                     console.log(r1);
-                 
+                    
+                 }   
+                 console.log('no errors detected here ...')
                  //console.log(manifestList);
                  console.log(data);
                 resolve(data.totalResults);
@@ -111,18 +116,17 @@ export class ManifestService {
         //1. a new manifest cannot be created if the previous manifest is not closed 
         //check for open manifest first 
         return new Promise((resolve, reject) => {
-            getOpenManifest.then((members) => {
-                console.log("openCount")
-                //we need to do open count by type
-                console.log(members);
-                
-                if (true) {
+            this.getOpenManifest(type.id).then((openCount) => {
+              
+                console.log(type); 
+                if (openCount>0) {
                     //we can't add the manifest reject 
                     reject({
-                        "message": "there is an open manifest please close it"
+                        "message": "There is an open manifest Please close it before creating a new manifest."
                     });
 
                 } else {
+                    console.log('trying to create the manifest........')
                     this.redisClient.multi()
                         .incr(MID_COUNTER)
                         .exec((err, resp) => {
@@ -151,6 +155,9 @@ export class ManifestService {
                         });
                 }
 
+            }).catch((err)=>{
+                console.log("err detected"); 
+                console.log(err);
             });
 
         });
@@ -158,10 +165,25 @@ export class ManifestService {
     }
     changeStage(mid, stages) {
         return new Promise((resolve, reject) => {
-            lredis.client
-            .hset(MID_PREFIX+mid,"stageId",stages.id,(err,result)=>{
-                resolve(result); 
+            
+            lredis.client.hmset(MID_PREFIX+mid,"stageId",stages,(err,result)=>{
+                var stage = this.getStageById(stages); 
+                console.log('looked up the stage '+stage.title);
+                lredis.client.hmset(MID_PREFIX+mid,"stage",stage.title,(err,result2)=>{}); 
+                lredis.hgetall(MID_PREFIX+mid).then((uManifest)=>{
+                    this.mySearch.delDocument("index:manifest",mid,(err,result1)=>{
+                        console.log('changing document');
+                        console.log(err);
+                        console.log(result1) 
+                        this.mySearch.add(uManifest.mid,uManifest); 
+                        resolve(result); 
+                    }); 
+                   
+                });
+               
             });
+            //we also need to to update the document 
+
             
         })
     }
@@ -201,11 +223,20 @@ export class ManifestService {
         return lredis.hgetall(MID_PREFIX+mid)
     }
     deleteManifest(mid){
+       return new Promise((resolve,reject)=>{
         lredis.client.del(MID_PREFIX+mid,(err,resp)=>{
             console.log(resp); 
-            this.mySearch.delDocument("index:manifest",mid); 
+            this.mySearch.delDocument("index:manifest",mid,(err,result)=>{
+                console.log("deleting mid"); 
+                console.log(err); 
+                console.log(result);
+            }); 
             lredis.srem(OPEN_MANIFEST,mid);
+            resolve({deleted:true})    
         })
+
+       }); 
+        
         
     }
     getTypebyId (id){
@@ -219,5 +250,20 @@ export class ManifestService {
             return manifestTypes.hazmat;
         }
         return manifestTypes.air; 
+    }
+    getStageById(id){
+        if (id == 1){
+            return manifestStages.open;
+        }
+        if (id == 2){
+            return manifestStages.closed;
+        }
+        if (id == 3){
+            return manifestStages.shipped;
+        }
+        if (id == 4){
+            return manifestStages.verified;
+        }
+        return manifestStages.open; 
     }
 }
