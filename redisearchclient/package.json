@@ -1,0 +1,83 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "redisearchclient",
+        "scope": null,
+        "escapedName": "redisearchclient",
+        "name": "redisearchclient",
+        "rawSpec": "",
+        "spec": "latest",
+        "type": "tag"
+      },
+      "C:\\Users\\stevan\\Desktop\\Projects\\TropicalCore"
+    ]
+  ],
+  "_from": "redisearchclient@latest",
+  "_id": "redisearchclient@1.0.1",
+  "_inCache": true,
+  "_location": "/redisearchclient",
+  "_nodeVersion": "6.11.0",
+  "_npmOperationalInternal": {
+    "host": "s3://npm-registry-packages",
+    "tmp": "tmp/redisearchclient-1.0.1.tgz_1509483868705_0.3308126055635512"
+  },
+  "_npmUser": {
+    "name": "stockholmux",
+    "email": "kyle@kylejdavis.com"
+  },
+  "_npmVersion": "5.3.0",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "redisearchclient",
+    "scope": null,
+    "escapedName": "redisearchclient",
+    "name": "redisearchclient",
+    "rawSpec": "",
+    "spec": "latest",
+    "type": "tag"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/redisearchclient/-/redisearchclient-1.0.1.tgz",
+  "_shasum": "e62450a074538925cf01414517ee826a7aa81232",
+  "_shrinkwrap": null,
+  "_spec": "redisearchclient",
+  "_where": "C:\\Users\\stevan\\Desktop\\Projects\\TropicalCore",
+  "author": {
+    "name": "Kyle J. Davis"
+  },
+  "dependencies": {
+    "lodash": "^4.17.4",
+    "redis-redisearch": "^1.0.1"
+  },
+  "description": "Client library to abstract RediSearch commands",
+  "devDependencies": {
+    "redis": "^2.8.0",
+    "yargs": "^10.0.3"
+  },
+  "directories": {},
+  "dist": {
+    "integrity": "sha512-uyFgruibTI/RyX11DsMuE/8Fl6jkdlIsQorjERPIsqOKcRwtIOHVhP3zBX/lo+2E+/W9btez89ga/ihT5ULyvA==",
+    "shasum": "e62450a074538925cf01414517ee826a7aa81232",
+    "tarball": "https://registry.npmjs.org/redisearchclient/-/redisearchclient-1.0.1.tgz"
+  },
+  "gitHead": "d5d18452715af02c9939bb128df0610640f4a2ed",
+  "license": "MIT",
+  "main": "index.js",
+  "maintainers": [
+    {
+      "name": "stockholmux",
+      "email": "kyle@kylejdavis.com"
+    }
+  ],
+  "name": "redisearchclient",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "version": "1.0.1"
+}

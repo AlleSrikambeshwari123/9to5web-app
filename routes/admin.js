@@ -208,7 +208,7 @@ router.get('/customers/:currentPage?', middleware(services.userService).requireA
 });
 router.get('/customer-edit/:skybox', middleware(services.userService).requireAuthentication, function (req, res, next) {
 var body = req.body; 
-var skybox = Number(req.params.skybox); 
+var skybox = Number(req.params.skybox.replace("T-","")); 
 rCusomterService.getCustomer(skybox).then((customer)=>{
     console.log(customer);
     var pageData = {};

@@ -1,7 +1,7 @@
 var redis = require('redis');
 var lredis = require('../DataServices/redis-local');
 var moment = require('moment');
-var redisSearch = require('redisearchclient');
+var redisSearch = require('../redisearchclient');
 const MID_COUNTER = "global:midCounter";
 const MID_PREFIX = "tew:manifest:";
 const MID_INDEX = "index:manifest";
@@ -49,8 +49,7 @@ var manifestStages = {
 
 export class ManifestService {
 
-    constructor() {
-        
+    constructor() {        
         this.redisClient = lredis.client;
         this.mtypes = manifestTypes;
         this.mstages = manifestStages;
@@ -185,6 +184,17 @@ export class ManifestService {
             //we also need to to update the document 
 
             
+        })
+    }
+    shipManifest(mid,awb,user){
+        return new Promise((resolve,reject)=>{
+            lredis.hmset(MID_PREFIX+mid, {awb:awb,shipDate:moment().format("YYYY-MM-DD"),shippedBy:user}).then((sresult)=>{
+                console.log(sresult);
+                this.changeStage(mid,3).then((resu)=>{
+                    resolve(sresult);
+                });
+                
+            })
         })
     }
     listManifest(type,page,pageSize){
