@@ -503,7 +503,19 @@ function NewPackageAlert(package){
 //#endregion
 
 //#region Processing 
-
+router.post('/store-package',middleware(services.userService).requireAuthentication,(req,res,next)=>{
+    var body = req.body; 
+    var trackingNo = body.package; 
+    var bin = body.bin; 
+     console.log(bin);
+    rServices.packageService.storePackageForPickup(trackingNo,bin).then(function(result){
+        var rtn = {
+            updated:true,
+            package:result
+        }
+        res.send(rtn); 
+    });
+}); 
 router.get('/processing',middleware(services.userService).requireAuthentication, (req, res, next) => {
     var pageData = {};
     pageData.title = "Manifest Processing";

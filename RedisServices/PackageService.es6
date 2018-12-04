@@ -272,6 +272,17 @@ export class PackageService {
       });
     });
   }
+  storePackageForPickup(trackingNo,bin){
+    var searcher = this.mySearch;
+    return new Promise((resolve,reject)=>{
+       lredis.hmset(PKG_PREFIX+trackingNo,{status:4,location:bin}).then((result)=>{
+         lredis.getPackage(trackingNo).then((pkg)=>{
+          addPackageToIndex(trackingNo,searcher) ; 
+          resolve(pkg);   
+         });
+       }) 
+    }); 
+  }
   updatePackageIndex(tracking){
       return new Promise((resolve,reject)=>{
           var msearch = this.mySearch; 
