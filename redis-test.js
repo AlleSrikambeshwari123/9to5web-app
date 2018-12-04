@@ -1,10 +1,13 @@
 //#region  Manifest TEST 
     var ManifestService = require('./RedisServices/ManifestService').ManifestService; 
-    
+    var pservice =  require('./RedisServices/PackageService').PackageService; 
     var ms = new ManifestService(); 
-    ms.getOpenManifest(2).then((result)=>{
-        console.log(result);
-    });
+    var ps = new pservice(); 
+    ps.removePackage("088",161)
+    //ps.updateManifestPackageToInTransit(161)
+    // .then((result)=>{
+    //     console.log(result);
+    // });
 
     // ms.createNewManifest(ms.mtypes.air,"stevan").then((result)=>{
     //     console.log(result)

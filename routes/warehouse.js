@@ -238,6 +238,7 @@ router.post('/close-manifest', middleware(services.userService).requireAuthentic
  
      rServices.manifestService.shipManifest(mid,awb,user).then((sResult)=>{
          res.send(sResult); 
+         rServices.packageService.updateManifestPackageToInTransit(mid); 
      }); 
      // services.manifestService.shipManifest(mid,awb,user).then((mREsult)=>{
      //     res.send(mREsult); 
@@ -261,17 +262,22 @@ router.post('/close-manifest', middleware(services.userService).requireAuthentic
             res.redirect('/warehouse/m-packages/'+mid);
             return;
         }   
+
             redis.union(data).then(function (result) {
                 console.log(result)
                 //we need the actual packages now 
                 Promise.all(result.map(redis.getPackage)).then(function (packages) {
                     // console.log(packages);
-                    var packagesString = JSON.stringify(packages); 
-                    //
-                    services.manifestService.exportExcel(mid,packagesString,dir).then((mREsult)=>{
-                       // res.send({"packages":packagesString}); 
-                         res.download(mREsult.file); 
+                    //get the manist 
+                    redis.hgetall("tew:manifest:"+mid).then((manifest)=>{
+                        var packagesString = JSON.stringify(packages); 
+                        //
+                        services.manifestService.exportExcel(manifest.title,Number(manifest.mtypeId),packagesString,dir).then((mREsult)=>{
+                           // res.send({"packages":packagesString}); 
+                             res.download(mREsult.file); 
+                        }); 
                     }); 
+                 
                 });
 
             });
@@ -306,16 +312,20 @@ router.post('/email-manifest',middleware(services.userService).requireAuthentica
                     // console.log(packages);
                     var packagesString = JSON.stringify(packages); 
                     //
-                    var emailRequest = {
-                        mid:mid,
-                        packages:packagesString,
-                        dir_loc:dir, 
-                        email:email, 
-                        name:brokerName
-                    };
-                    services.manifestService.emailBroker(emailRequest).then((result)=>{
-                        res.send({message:'Email Sent'})
-                    });
+                    lredis.hgetall("tew:manifest:"+mid).then((manifest)=>{
+                        var emailRequest = {
+                            title:manifest.title,
+                            mtypeId: Number(manifest.mtypeId),
+                            packages:packagesString,
+                            dir_loc:dir, 
+                            email:email, 
+                            name:brokerName
+                        };
+                        services.manifestService.emailBroker(emailRequest).then((result)=>{
+                            res.send({message:'Email Sent'})
+                        });
+                    })
+                    
                 });
 
             });
@@ -411,148 +421,29 @@ router.post('/rm-package', middleware(services.userService).requireAuthenticatio
     var trackingNo = req.body.trackingNo;
     
     var manifest = req.body.mid;
-    var manifestKey = "manifest:" + manifest + ":*";
-    redis.del('packages:' + trackingNo).then(function (result) {
-        console.log(result);
-        redis.getKeys(manifestKey).then((kResult) => {
-            //the list of all the sets ...we need to remove the key from each one 
-            var keysCount = 0;  
-
-            kResult.forEach(element => {
-                console.log(`removing ${trackingNo} package manifest set ${element} `)
-                redis.srem(element, trackingNo).then(function (rResult) {
-                    console.log(rResult);
-                    console.log('removed');
-                    if (keysCount == kResult.length-1)
-                    res.send({
-                        deleted: true
-                    });
-                    keysCount ++; 
-
-                });
-            });
-        });
-        
-
-        //we also need to remove from any sets 
+    rServices.packageService.removePackage(trackingNo,manifest).then((delResult)=>{
+        res.send(delResult);
     });
-
 });
 
 router.post('/save-package', middleware(services.userService).requireAuthentication, (req, res, next) => {
     var body = req.body;
-    var package = {
-        skybox: body.skybox,
-        customer: body.customer.replace('-', '').trim(),
-        trackingNo: body.tracking,
-        dutyPercent:0.2,
-        description: body.description,
-        shipper: body.shipper,
-        value: Number(body.value),
-        pieces: Number(body.pieces),
-        weight: Number(body.weight),
-        status: 1,
-        mid: body.mid,
-        hasOpt : true,
-        mtype: body.mtype
-    }; 
-    if (typeof package.shipper  === "undefined")
-        package.shipper = ''; 
-    if (typeof package.description === "undefined")
-        package.description = ''; 
-    console.log(body);
-    if (Number(body.isBusiness) == 1){
-        package.hasOpt = false; 
-    }
-    package = packageUtil.calculateFees(package); 
-    console.log('package with fees')
+   rServices.packageService.savePackage(body).then((result)=>{
+       console.log('printing the result here')
+       console.log(result);
+       console.log('_-----------------------------')
+       NewPackageAlert(result.sPackage); 
+        res.send(result); 
 
-    //we also want to calculate the the package fees one time...... 
-    //we have the package details here .. now we need to get the existing package 
-   
-    var container = "";
-    var containerNo = ""
-    if (typeof body.bag != "undefined") {
-        package.bag = body.bag;
-        container = "bag";
-        containerNo = package.bag;
-    }
-    if (typeof body.skid != "undefined") {
-        package.skid = body.skid;
-        container = "skid";
-        containerNo = package.skid;
-    }
-    //we need to check to see of the owner is a business here 
-    
-    lredis.getPackage(package.trackingNo).then((p)=>{
-        if (p){
-            var currentContainer = `manifest:${p.mid}:${p.mtype}:${container}:`;
-            console.log('found package '); 
-            console.log(p); 
-            if (container =='bag'){
-                //check to see if the back no is the same. 
-                if (p.bag != package.bag){
-                //remove it from the original list 
-                  lredis.srem(currentContainer+p.bag,p.trackingNo)
-                  console.log('remove package from current set '+ currentContainer)
-                }
-            }
-            else {
-                //check to see if the skid number is the same. 
-                if (p.skid != package.skid){
-                    //remove it from the original list  
-                    lredis.srem(currentContainer+p.skid,p.trackingNo)
-                    console.log('remove package from current set '+ currentContainer)
-                }
-            }
-        }
         
-        lredis.hmset('packages:' + package.trackingNo, package).then(function (result) {
-            //add to queue for persistent processing 
-
-             
-            
-            
-            var manifestKey = `manifest:${package.mid}:${package.mtype}:${container}:${containerNo}`;
-            lredis.setAdd(manifestKey, package.trackingNo).then(function (sResult) {
-                //get the members one time here 
-                console.log(manifestKey);
-                lredis.getMembers(manifestKey)
-                    .then((data) => Promise.all(data.map(redis.getPackage)))
-                    .then(function (data) {
-                        //we need to alert the person that the package is here so read email etc. 
-
-                        res.send({
-                            saved: true,
-                            packages: data
-                        });
-                        NewPackageAlert(package); 
-                    }).catch((err3) => {
-                        res.send({
-                            err: err3,
-                            saved: true,
-                            listing: false
-                        })
-                    });
-    
-            }).catch(function (err) {
-                res.send({
-                    saved: false
-                });
-            });
-        }).catch(function (err2) {
-            res.send({
-                saved: false
-            })
-    }); 
+   }).catch((err)=>{
+       res.send(err); 
+   }); 
     //save the package to the package NS
     
-    });
+   
 
-
-
-
-    console.log(package);
+    
 });
 
 router.post('/packages', middleware(services.userService).requireAuthentication, (req, res, next) => {
@@ -611,7 +502,58 @@ function NewPackageAlert(package){
 }
 //#endregion
 
-  
+//#region Processing 
+
+router.get('/processing',middleware(services.userService).requireAuthentication, (req, res, next) => {
+    var pageData = {};
+    pageData.title = "Manifest Processing";
+    pageData.luser = res.User.FirstName + ' ' + res.User.LastName;
+    pageData.RoleId = res.User.RoleId;
+    rServices.manifestService.getManifestProcessing().then((data)=>{
+        
+        pageData.manifestList = data.manifests; 
+        res.render('pages/warehouse/processing',pageData)
+    }); 
+    
+}); 
+router.get('/get-processing/:mid',middleware(services.userService).requireAuthentication,(req,res,next)=>{
+    var mid = Number(req.params.mid)
+    rServices.packageService.getManifestPackagesByStatus(mid,3).then((packages)=>{
+        res.send(packages);
+    })
+});
+router.post('/process-package',middleware(services.userService).requireAuthentication,(req,res,next)=>{
+
+    //1. find the package 
+    //2. we need update the status 
+    //3. we need to re-index the record 
+    var body = req.body; 
+    console.log(body); 
+    //make sure it exists 
+    lredis.client.exists("packages:"+body.package,(err,result)=>{
+        console.log('first result' + result); 
+        if (result == 1){
+            lredis.hmset("packages:"+body.package,{"status":3,"processedBy":res.User.Username}).then((err)=>{
+              lredis.getPackage(body.package).then(function(rpackage){
+                   rServices.packageService.updatePackageIndex(body.package);
+                    res.send({'updated':true,package:rpackage}); 
+              });
+                
+            });
+        }
+        else {
+            res.send({updated:false}); 
+        }
+    }); 
+}); 
+router.get('/store-check-in',middleware(services.userService).requireAuthentication, (req, res, next) => {
+    var pageData = {};
+    pageData.title = "Manifest";
+    pageData.luser = res.User.FirstName + ' ' + res.User.LastName;
+    pageData.RoleId = res.User.RoleId;
+    res.render('pages/warehouse/store-checkin',pageData);
+})
+//#endregion
 
 router.post('/download-awb',function(req,res,next){
      var  template = path.join(__dirname.replace("routes","templates\\"),"awb-template.pdf"); 

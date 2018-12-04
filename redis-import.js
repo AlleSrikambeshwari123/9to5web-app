@@ -29,12 +29,12 @@
 //#endregion
 
 
-// var redis = require('redis');
+var redis = require('redis');
 // var redisSearch = require('../redisearchclient/index');
 // var lredis = require('./DataServices/redis-local')
 
 var services = require('./RedisServices/RedisDataServices')
-var rse  = require('./redisearchclient')
+var redisSearch  = require('./redisearchclient')
 // services.manifestService.deleteManifest(132);
 // services.manifestService.getOpenManifest(1).then(function(result){
 //     console.log('manifest-Count')
@@ -75,24 +75,26 @@ var rse  = require('./redisearchclient')
 //#endregion
 
 //#region Package Index
-// let packageIndex = redisSearch(redis, 'tew:packages', {
-//     clientOptions: {
-//         'host': 'redis-14897.c2822.us-east-1-mz.ec2.cloud.rlrcp.com',
-//         'port': '14897',
-//         auth_pass: 't5atRuWQlOW7Vp2uhZpQivcIotDmTPpl'
-//     }
-// });
+let packageIndex = redisSearch(redis, 'index:packages', {
+    clientOptions: {
+        'host': 'redis-14897.c2822.us-east-1-mz.ec2.cloud.rlrcp.com',
+        'port': '14897',
+        auth_pass: 't5atRuWQlOW7Vp2uhZpQivcIotDmTPpl'
+    }
+});
 
-// packageIndex.createIndex([
-//     packageIndex.fieldDefinition.text("trackingNo", true),
-//     packageIndex.fieldDefinition.text("skybox", true),
-//     packageIndex.fieldDefinition.text("customer", true),
-//     packageIndex.fieldDefinition.text("shipper", true),
-//     packageIndex.fieldDefinition.text("description", true),
-//     packageIndex.fieldDefinition.numeric("pieces", true),
-//     packageIndex.fieldDefinition.numeric("weight", true),
-//     packageIndex.fieldDefinition.numeric("value", true),
-// ])
+packageIndex.createIndex([
+    packageIndex.fieldDefinition.text("trackingNo", true),
+    packageIndex.fieldDefinition.text("skybox", true),
+    packageIndex.fieldDefinition.text("customer", true),
+    packageIndex.fieldDefinition.text("shipper", true),
+    packageIndex.fieldDefinition.text("description", true),
+    packageIndex.fieldDefinition.numeric("skyboxV", true),
+    packageIndex.fieldDefinition.numeric("status", true),
+    packageIndex.fieldDefinition.numeric("mid", true),
+    packageIndex.fieldDefinition.numeric("value", true),
+    packageIndex.fieldDefinition.text("location",true)
+]);
 //#endregion
 //console.log('search index created');
 

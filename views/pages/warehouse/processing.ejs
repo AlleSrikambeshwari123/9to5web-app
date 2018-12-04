@@ -1,0 +1,59 @@
+<% layout('./shared/__template')%>
+<div class="gutters">
+  <div class="col-xl-12 col-lg-6 col-md-12 col-sm-12">
+    <div class="card">
+      <div class="card-header col-md-12">
+        <div class="row"></div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group ">
+                <label>Scan Package</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="package"
+                  placeholder="Tracking #"
+                />
+              </div>
+              <div class="form-group">
+                <h5>Processing Packages (Scanned By Me)</h5>
+                <table id="scannedPackages" class="table table-stripped">
+                  <tr>
+                    <th>Skybox</th>
+                    <th>Customer</th>
+                    <th>Tracking #</th>
+                  </tr>
+                </table>
+
+                <button class="btn btn-primary"></button>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>View Manifest</label>
+                <select class="form-control" id="manifest">
+                  <option value='0'>Select Manifest</option>
+                  <%manifestList.forEach(function(m){%>
+                    <option value='<%=m.mid%>'><%=m.title%></option>
+                  <%})%>
+                </select>
+                <br/>
+                <h5>Processed </h5>
+                <table id="processedPackages" class="table table-stripped">
+                        <tr>
+                          <th>Skybox</th>
+                          <th>Customer</th>
+                          <th>Tracking #</th>
+                        </tr>
+                      </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <% block('scripts').append('<script src="/js/packages/processing.js"></script>')%>
+</div>

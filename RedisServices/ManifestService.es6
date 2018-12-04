@@ -103,8 +103,6 @@ export class ManifestService {
                  //console.log(manifestList);
                  console.log(data);
                 resolve(data.totalResults);
-                
-                
             });
             
         });
@@ -125,7 +123,6 @@ export class ManifestService {
                     });
 
                 } else {
-                    console.log('trying to create the manifest........')
                     this.redisClient.multi()
                         .incr(MID_COUNTER)
                         .exec((err, resp) => {
@@ -249,6 +246,41 @@ export class ManifestService {
         
         
     }
+    getManifestProcessing(){
+        var msearch = this.mySearch; 
+        return new Promise((resolve,reject)=>{
+            var offsetVal =0;
+            var pageSize = 20; 
+            console.log('offset '+offsetVal);
+            var manifestList = []; 
+            msearch.search(`@stageId:[3 4]`, {
+                offset:offsetVal,
+                numberOfResults: pageSize,
+                sortBy: "mid",
+                dir: "DESC"
+            }, (r1, data) => {
+                if (r1)
+                    console.log(r1);
+                 
+                 data.results.forEach(manifestResult => {
+                    manifestList.push(manifestResult.doc);    
+                    
+                 });
+                 //console.log(manifestList);
+                 var pagedData = {
+                    manifests:manifestList,
+                    totalResults : data.totalResults,
+                    page : 1,
+                    pageSize: pageSize, 
+                    TotalPages : (data.totalResults/pageSize)
+                }
+                resolve(pagedData);
+                console.log(manifestList);
+                
+            });
+        });
+    }
+    
     getTypebyId (id){
         if (id == 1){
             return manifestTypes.air;
