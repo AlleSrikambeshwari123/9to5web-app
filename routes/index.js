@@ -14,7 +14,7 @@ router.post('/',function(req,res,next){
       services.userService.generateToken(authresult.user).then(function(token){
         req.session.token = token;
         var cuser = authresult.user; 
-        
+        console.log(cuser); 
         if (cuser.RoleId == 1){
  
          //replace with admin dashboard
