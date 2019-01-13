@@ -2,9 +2,18 @@ var redis = require('redis');
 const NSPACE_CUST = "skybox:";
 const NSPACE_BOX = "tew:owner:";
 
-var client = redis.createClient(14897, "redis-14897.c2822.us-east-1-mz.ec2.cloud.rlrcp.com", {
-    auth_pass: 't5atRuWQlOW7Vp2uhZpQivcIotDmTPpl'
+var client = redis.createClient(6379, "core.shiptropical.com", {
+    auth_pass: 'Silver123.',
+    tls:{
+        servername: 'core.shiptropical.com'
+    }
 });
+var searchClientOption = {
+    'host': 'core.shiptropical.com',
+    'port': '6379',
+    auth_pass: 'Silver123.',
+    tls:{ servername:'core.shiptropical.com'}
+}
 
 var get = (key) => {
     return new Promise((resolve, reject) => {
@@ -186,3 +195,4 @@ module.exports.srem = srem;
 module.exports.setSize = sCard;
 module.exports.mProcessQueue = queue; 
 module.exports.client = client;
+module.exports.searchClientDetails = searchClientOption

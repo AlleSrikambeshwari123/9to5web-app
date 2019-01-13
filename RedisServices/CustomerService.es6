@@ -5,11 +5,7 @@ var redisSearch = require('redisearchclient');
 export class CustomerService {
     constructor() {
         this.mySearch = redisSearch(redis, 'tew:customers', {
-            clientOptions: {
-                'host': 'redis-14897.c2822.us-east-1-mz.ec2.cloud.rlrcp.com',
-                'port': '14897',
-                auth_pass: 't5atRuWQlOW7Vp2uhZpQivcIotDmTPpl'
-            }
+            clientOptions: lredis.searchClientDetails
         });
     }
 

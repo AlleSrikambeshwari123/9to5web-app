@@ -2,10 +2,10 @@ var redis = require('redis');
 const NSPACE_CUST = "skybox:";
 const NSPACE_BOX = "tew:owner:";
 
-var client = redis.createClient(6380, "tew-redis.redis.cache.windows.net", {
-    auth_pass: 'euAj2NlScSkbO52pTt0LoEX7RajlFnZlmJ+baDt05Cw=',
+var client = redis.createClient(6379, "core.shiptropical.com", {
+    auth_pass: 'Silver123.',
     tls: {
-        servername: 'tew-redis.redis.cache.windows.net'
+        servername: 'core.shiptropical.com'
     }
 });
 
