@@ -1,5 +1,5 @@
 var redis = require('redis');
-var lredis = require('../DataServices/redis-local');
+var lredis = require('./redis-local');
 var redisSearch = require('redisearchclient');
 
 export class CustomerService {

@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
-var services = require('../DataServices/services.js'); 
+var RedisDataService = require("../RedisServices/RedisDataServices")
+var services = require('../RedisServices/RedisDataServices'); 
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
@@ -8,30 +9,31 @@ router.get('/', function(req, res, next) {
 router.post('/',function(req,res,next){
   var body = req.body; 
   var username = body.username; 
-  var password = body.password; 
+  var password = body.password;
+  
   services.userService.authenticate(username,password).then(function(authresult){
+    
     if (authresult.valid == true){
-      services.userService.generateToken(authresult.user).then(function(token){
-        req.session.token = token;
+     // services.userService.generateToken(authresult.user).then(function(token){
+        req.session.token = authresult.token;
         var cuser = authresult.user; 
-        console.log(cuser); 
-        if (cuser.RoleId == 1){
+        
+        if (cuser.role == "Admin"){
  
          //replace with admin dashboard
-         res.redirect('/admin/'); 
+         res.redirect('/admin'); 
         }
         else {
           //replace with general user dashboard
          res.redirect('/users/'); 
         }
-     });
+     //});
     }
     else {
       res.render('index', { title: 'Express' });
     }
     
-    console.log('auth results'); 
-    console.log(authresult);
+  
   }); 
   
 });

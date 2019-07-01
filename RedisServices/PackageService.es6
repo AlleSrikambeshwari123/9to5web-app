@@ -1,7 +1,7 @@
-import { client } from "../DataServices/redis-local";
+
 
 var redis = require("redis");
-var lredis = require("../DataServices/redis-local");
+var lredis = require("./redis-local");
 var moment = require("moment");
 var redisSearch = require("../redisearchclient");
 var fs = require("fs");

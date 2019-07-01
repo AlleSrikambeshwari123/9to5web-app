@@ -25,11 +25,13 @@ module.exports = function(userService,allowedRoles){
         requireAuthentication : function(req,res,next){
             //get the session here
             var pageData = {};
+           
             var token = req.session.token;
             if(token){
                 userService.verifyToken(token).then(function(user){
                     res.User = user;
                     pageData.User = user;
+                    
                     //if users is in role
                     if (Array.isArray(allowedRoles) )
                         if (allowedRoles.indexOf(user.RoleName) < 0){

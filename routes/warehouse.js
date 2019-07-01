@@ -1,10 +1,10 @@
 var express = require('express');
 var router = express.Router();
-var services = require('../DataServices/services');
+var services = require('../RedisServices/RedisDataServices'); 
 var middleware = require('../middleware');
 var moment = require('moment');
 
-var lredis = require('../DataServices/redis-local');
+var lredis = require('../RedisServices/redis-local');
 var redis = lredis;
 var PackageUtil = require('../Util/packageutil').PackageUtility; 
 var packageUtil = new PackageUtil(); 

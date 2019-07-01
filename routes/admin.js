@@ -1,8 +1,8 @@
 var express = require('express');
 var router = express.Router();
-var services = require('../DataServices/services');
+var services = require('../RedisServices/RedisDataServices'); 
 var middleware = require('../middleware');
-var redis = require('../DataServices/redis');
+
 var RedisCustomerService = require('../RedisServices/CustomerService').CustomerService
 var rCusomterService = new RedisCustomerService(); 
 
@@ -10,18 +10,21 @@ var rCusomterService = new RedisCustomerService();
 router.get('/', middleware(services.userService).requireAuthentication, function (req, res, next) {
     var pageData = {};
     pageData.title = "Dashboard";
-    pageData.luser = res.User.FirstName + ' ' + res.User.LastName;
-    pageData.RoleId = res.User.RoleId;
+    console.log(res.User); 
+    pageData.luser = res.User.firstName + ' ' + res.User.lastName;
+    pageData.RoleId = res.User.role;
     res.render('pages/admin/dashboard', pageData);
 });
 router.get('/users', middleware(services.userService).requireAuthentication, function (req, res, next) {
     var pageData = {};
     pageData.title = "System Users"
-    pageData.luser = res.User.FirstName + ' ' + res.User.LastName;
-    pageData.RoleId = res.User.RoleId;
+    console.log(res.User,"here");
+    pageData.luser = res.User.firstName + ' ' + res.User.lastName;
+    pageData.RoleId = res.User.role;
+    console.log(pageData,"here")
     services.userService.getAllUsers().then(function (userResult) {
         console.log(userResult);
-        pageData.users = userResult.users;
+        pageData.users = userResult;
         res.render('pages/admin/users', pageData);
     });
 
@@ -29,14 +32,15 @@ router.get('/users', middleware(services.userService).requireAuthentication, fun
 router.get('/user/:username?', middleware(services.userService).requireAuthentication, function (req, res, next) {
     var pageData = {};
     var user = req.params.username;
-    pageData.RoleId = res.User.RoleId;
-    console.log('user is');
-    console.log(res.User);
-    pageData.luser = res.User.FirstName + ' ' + res.User.LastName;
+    pageData.RoleId = res.User.role;
+  
+    pageData.luser = res.User.firstName + ' ' + res.User.lastName;
     //get the user 
     services.userService.getUser(user).then(function (uResult) {
+        console.log(uResult,"found user")
         services.userService.getRoles().then(function (rResult) {
-            pageData.roles = rResult.roles;
+            console.log(rResult,"roles"); 
+            pageData.roles = rResult;
             pageData.user = uResult.user;
             pageData.title = "Save User";
             console.log(uResult.user);
@@ -65,12 +69,12 @@ router.post('/user/', middleware(services.userService).requireAuthentication, fu
     console.log(body);
     var user = {
         username: body.username,
-        firstname: body.firstname,
-        lastname: body.lastname,
+        firstName: body.firstname,
+        lastName: body.lastname,
         password: body.password,
         email: body.email,
         mobile: body.mobile,
-        roleId: Number(body.userRole)
+        role: Number(body.userRole)
     };
     services.userService.getRoles().then(function (rResult) {
         services.userService.saveUser(user).then(function (suResult) {
@@ -94,8 +98,8 @@ router.get('/customersV1/:currentPage?', middleware(services.userService).requir
     if (isNaN(currentPage))
         currentPage = 1;
         pageData.title = "Tropical Customers"
-    pageData.luser = res.User.FirstName + ' ' + res.User.LastName;
-    pageData.RoleId = res.User.RoleId;
+    pageData.luser = res.User.firstName + ' ' + res.User.lastName;
+    pageData.RoleId = res.User.role;
     pageData.owners = [];
     rCusomterService.listCustomers(currentPage,10).then((pResult)=>{
         var psIndex = 1;
@@ -137,8 +141,8 @@ router.post('/customersV1/:currentPage?', middleware(services.userService).requi
 
                 pageData.title = "Tropical Customers"
                 pageData.searchText = searchText;
-                pageData.luser = res.User.FirstName + ' ' + res.User.LastName;
-                pageData.RoleId = res.User.RoleId;
+                pageData.luser = res.User.firstName + ' ' + res.User.lastName;
+                pageData.RoleId = res.User.role;
                 pageData.records = result.customers;
                 var psIndex = 1;
                 var peIndex = 10;
@@ -167,8 +171,8 @@ router.get('/customers/:currentPage?', middleware(services.userService).requireA
     if (isNaN(currentPage))
         currentPage = 1;
     pageData.title = "Tropical Customers"
-    pageData.luser = res.User.FirstName + ' ' + res.User.LastName;
-    pageData.RoleId = res.User.RoleId;
+    pageData.luser = res.User.firstName + ' ' + res.User.lastName;
+    pageData.RoleId = res.User.role;
     pageData.owners = [];
     services.customerService.listCustomers(currentPage, 20).then(function (customers) {
 
@@ -213,8 +217,8 @@ rCusomterService.getCustomer(skybox).then((customer)=>{
     console.log(customer);
     var pageData = {};
     pageData.title = "Tropical Customer"
-    pageData.luser = res.User.FirstName + ' ' + res.User.LastName;
-    pageData.RoleId = res.User.RoleId;
+    pageData.luser = res.User.firstName + ' ' + res.User.lastName;
+    pageData.RoleId = res.User.role;
     pageData.customer = customer;
     res.render('pages/admin/customerEdit',pageData); 
 });
@@ -259,8 +263,8 @@ router.post('/customers/', middleware(services.userService).requireAuthenticatio
         var pageData = {};
 
         pageData.title = "Tropical Customers"
-        pageData.luser = res.User.FirstName + ' ' + res.User.LastName;
-        pageData.RoleId = res.User.RoleId;
+        pageData.luser = res.User.firstName + ' ' + res.User.lastName;
+        pageData.RoleId = res.User.role;
         pageData.records = result.data;
         res.render('pages/admin/customerSearch.ejs', pageData)
     })
