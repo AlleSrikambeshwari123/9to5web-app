@@ -1,63 +1,64 @@
 <% layout('./shared/__template')%>
-<form id="saveFrom" method='POST' action ='/admin/customer-edit/'>
-<div class="row gutters">
-    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-        <div class="card">
-            <div class="card-header">Save Customer</div>
-            <div class="card-body">
+<form id="saveFrom" method='POST' action='/admin/customer-edit/'>
+    <div class="row gutters">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Save Customer</h4>
+                </div>
+                <div class="card-body">
                     <div class="form-group">
-                            <label for="exOne">Skybox</label>
-                            <input type="text" class="form-control" name='skybox' id="skybox" placeholder="" required readonly value='<%=customer.skybox %>'>
-                            <input type='hidden' value = '<%=customer.Id%>' name='id' id="id">
-                        </div>
-                        <div class="form-group">
-                            <label for="exOne"> Name</label>
-                            <input type="text" class="form-control" name='name' id="name" placeholder="" required value='<%=customer.name %>'>
-                        </div>
-                     
-                      
-                <div class="form-group">
-                    <label for="exOne">Email address</label>
-                    <input type="email" class="form-control" id="email" name='email' placeholder="name@example.com" value='<%=customer.email %>'>
+                        <label for="skybox">Skybox</label>
+                        <input type="text" class="form-control" name='skybox' id="skybox" placeholder="" required
+                            readonly value='<%=customer.skybox %>'>
+                        <input type='hidden' value='<%=customer.Id%>' name='id' id="id">
+                    </div>
+                    <div class="form-group">
+                        <label for="name"> Name</label>
+                        <input type="text" class="form-control" name='name' id="name" placeholder="" required
+                            value='<%=customer.name %>'>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email address</label>
+                        <input type="email" class="form-control" id="email" name='email' placeholder="name@example.com"
+                            value='<%=customer.email %>'>
+                    </div>
+                    <div class="form-group">
+                        <label for="mobile">Mobile</label>
+                        <input type="text" class="form-control" id="mobile" name='mobile' placeholder="(868)-xxx-xxxx"
+                            value='<%=customer.mobile %>'>
+                    </div>
+                    <div class="form-group">
+                        <label for="pickupValue">Pick Up Location</label>
+                        <input type='hidden' id='pickupValue' value='<%=customer.area.toUpperCase() %>' />
+                        <select id="area" name="area" class=" form-control ">
+                            <% %>
+                            <option value=""> Pick up Location </option>
+                            <option value='TRINCITY'>Trincity</option>
+                            <option value='CHAGUNAS'>Chaguanas</option>
+                            <option value='CUREPE'>Curepe</option>
+                            <option value='SANGRE GRANDE'>Sangre Grande</option>
+                            <option value='PORT OF SPAIN'>Port of Spain </option>
+                            <option value='SAN FERNANDO'>San Fernando</option>
+                            <option value='TOBAGO'>Tobago</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="isBusiness">Is Business</label>
+                        <% var isBusiness = ''
+                            if(customer.isBusiness == 'true'){
+                                isBusiness ='checked'
+                        }%>
+                            <input type="checkbox" class="form-control" id="isBusiness" name='isBusiness'
+                                style='width: 40px; display: block' <%=isBusiness%>>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-round">Save</button>
+                    <button type="button" id="cancelForm" class="btn btn-primary btn-round">Cancel</button>
                 </div>
-                <div class="form-group">
-                    <label for="exOne">Mobile</label>
-                    <input type="text" class="form-control" id="mobile" name='mobile' placeholder="(868)-xxx-xxxx" value='<%=customer.mobile %>'>
-                </div>
-                <div class="form-group">
-                    <label for="exOne">Pick Up</label>
-                    <input type='hidden' id='pickupValue' value='<%=customer.area.toUpperCase() %>'/>
-                    <select id="area" name="area" class=" form-control ">
-<% 
-
-%>
-                                <option value=""> Pick up Location </option>
-                                <option value='TRINCITY'>Trincity</option>
-                                <option value='CHAGUNAS'>Chaguanas</option>
-                                <option value='CUREPE'>Curepe</option>
-                                <option value='SANGRE GRANDE'>Sangre Grande</option>
-                                <option value ='PORT OF SPAIN'>Port of Spain </option>
-                                <option value='SAN FERNANDO'>San Fernando</option>
-                                <option value='TOBAGO'>Tobago</option>
-                            </select>
-                </div>
-                <div class="form-group">
-                    <label for="exOne">Is Business </label>
-                   <% 
-                    var isBusiness = ''
-                   if(customer.isBusiness == 'true'){
-                    isBusiness ='checked'
-                   }%>
-                    
-                    <input type="checkbox" class="form-control" id="isBusiness" name='isBusiness' style='width:40px;' <%=isBusiness%> >
-                </div>
-                <button type="submit" class="btn btn-primary">Save</button> <button type="button" class="btn btn-primary">Cancel</button>
-                
             </div>
         </div>
+
     </div>
-  
-</div>
 </form>
 
 <% block('scripts').append('<script src="/js/adminUsers.js"></script>')%>

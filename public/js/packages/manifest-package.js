@@ -1,4 +1,4 @@
-Number.prototype.formatMoney = function(c, d, t){
+Number.prototype.formatMoney = function (c, d, t) {
     var n = this,
         c = isNaN(c = Math.abs(c)) ? 2 : c,
         d = d == undefined ? "." : d,
@@ -6,7 +6,7 @@ Number.prototype.formatMoney = function(c, d, t){
         s = n < 0 ? "-" : "",
         i = String(parseInt(n = Math.abs(Number(n) || 0).toFixed(c))),
         j = (j = i.length) > 3 ? j % 3 : 0;
-    return "$"+s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
+    return "$" + s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
 };
 $(function () {
 
@@ -15,36 +15,36 @@ $(function () {
     var mtype = $('#mtype').val();
     var mailTable;
     var cargoTable;
-    var unProcTable; 
+    var unProcTable;
     function LoadPageData() {
         //we need to load page data based on manifest type... 
-        getManifestTotals(mid,mtype);
-        if (mtype!="cargo"){
+        getManifestTotals(mid, mtype);
+        if (mtype != "cargo") {
             getManifestPackages(mid, mtype, function (mailPackages) {
-             
+
                 // displayMailPackages(mailPackages);
-                displayPackages(mailPackages,"#packageTable",mtype)
+                displayPackages(mailPackages, "#packageTable", mtype)
             });
-            
+
         }
-       
+
         else {
             getManifestPackages(mid, 'mail', function (mailPackages) {
-             
+
                 // displayMailPackages(mailPackages);
-                displayPackages(mailPackages,"#mailTable","mail")
+                displayPackages(mailPackages, "#mailTable", "mail")
             });
-    
+
             getManifestPackages(mid, 'cargo', function (cargoPackages) {
                 //displayCargoPackages(cargoPackages);
-                displayPackages(cargoPackages,"#cargoTable","cargo")
+                displayPackages(cargoPackages, "#cargoTable", "cargo")
             });
             getManifestPackages(mid, 'unproc', function (cargoPackages) {
                 //displayCargoPackages(cargoPackages);
-                displayPackages(cargoPackages,"#unprocTable","unproc")
+                displayPackages(cargoPackages, "#unprocTable", "unproc")
             });
         }
-       
+
         //we need to get the counts intially 
         LoadPackageCounters();
 
@@ -54,20 +54,20 @@ $(function () {
         getPackageCountBySize(mid, mtype, "#packageCount");
         if ($("#mailCount"))
             getPackageCountBySize(mid, "mail", "#mailCount");
-        if($("#unProcCount"))
+        if ($("#unProcCount"))
             getPackageCountBySize(mid, "unproc", "#unProcCount");
     }
     LoadPageData();
     //#endregion
 
-    $(".nav-link").click(function(e){
-        $(".tab-pane").removeClass("active"); 
-        var tabSelector  = $(this).attr("href");
+    $(".nav-link").click(function (e) {
+        $(".tab-pane").removeClass("active");
+        var tabSelector = $(this).attr("href");
         $(this).tab('show');
-        $(this).addClass('active'); 
-        $(tabSelector).addClass('active'); 
+        $(this).addClass('active');
+        $(tabSelector).addClass('active');
 
-        return false;  
+        return false;
     })
 
 
@@ -95,7 +95,7 @@ $(function () {
         var form = $(this).closest('form');
         if (validPackage) {
             //save
-            savePackage(package, form,Number(stage)>1);
+            savePackage(package, form, Number(stage) > 1);
         } else {
             console.log('not saving the package...Invalid')
         }
@@ -108,10 +108,10 @@ $(function () {
         var mtype = $("#mytpe").val();
         var validPackage = validateUnProcPackage(package, $(this));
         var form = $(this).closest('form');
-        console.log('Package is valid : '+validatePackage);
+        console.log('Package is valid : ' + validatePackage);
         if (validPackage) {
             //save
-            savePackage(package, form,Number(stage)>1);
+            savePackage(package, form, Number(stage) > 1);
         } else {
             console.log('not saving the package...Invalid')
         }
@@ -128,11 +128,13 @@ $(function () {
             success: function (result) {
                 btn.fadeOut();
                 $(".pkg-form").hide();
-                notes.show(result.message, {
-                    type: 'info',
-                    title: 'Hey',
-                    icon: '<i class="icon-icon-lock-open-outline"></i>',
-                    sticky: true
+                swal("Hey", result.message, {
+                    icon: "info",
+                    buttons: {
+                        confirm: {
+                            className: 'btn btn-info'
+                        }
+                    },
                 });
             }
         });
@@ -152,42 +154,44 @@ $(function () {
             success: function (result) {
                 $(".close-del").trigger('click');
                 btn.fadeOut();
-                notes.show(result.message, {
-                    type: 'info',
-                    title: 'Hey',
-                    icon: '<i class="icon-icon-lock-open-outline"><  /i>',
-                    sticky: false
+                swal("Hey", result.message, {
+                    icon: "info",
+                    buttons: {
+                        confirm: {
+                            className: 'btn btn-info'
+                        }
+                    },
                 });
             }
         });
     });
-    $(".email-broker").click(function(){
+    $(".email-broker").click(function () {
 
         //change icon to spin 
-       $("#eb-icon").removeClass('icon-plane'); 
-       $('#eb-icon').addClass('spinner'); 
-       $('#eb-icon').addClass('icon-spinner2'); 
+        $("#eb-icon").removeClass('icon-plane');
+        $('#eb-icon').addClass('spinner');
+        $('#eb-icon').addClass('icon-spinner2');
         $.ajax({
-            url:'/warehouse/email-manifest',
-            type:'post',
-            data:{mid:mid,email:$("#broker-email").val(),name:$("#broker-name").val()},
-            success:function(result){
-               
-                $("#eb-icon").removeClass('spinner'); 
-                $("#eb-icon").removeClass('icon-spinner2'); 
+            url: '/warehouse/email-manifest',
+            type: 'post',
+            data: { mid: mid, email: $("#broker-email").val(), name: $("#broker-name").val() },
+            success: function (result) {
+
+                $("#eb-icon").removeClass('spinner');
+                $("#eb-icon").removeClass('icon-spinner2');
                 $("#eb-icon").addClass('icon-check');
-                $("#eb-message").text(result.message); 
+                $("#eb-message").text(result.message);
                 $("#eb-message").addClass('text-success');
-                setTimeout(function(){
-                    $(".close-del").trigger('click'); 
-                },2000);
-                 //show message 
-        //and close modal 
+                setTimeout(function () {
+                    $(".close-del").trigger('click');
+                }, 2000);
+                //show message 
+                //and close modal 
             }
         })
     });
     $(".export-manifest").click(function () {
-        window.location = '/warehouse/export-manifest/'+mid;
+        window.location = '/warehouse/export-manifest/' + mid;
     });
     $("#rmPackage").click(function () {
         var id = $(this).attr('data-id');
@@ -195,109 +199,109 @@ $(function () {
         console.log('type ' + type);
         deletePackage(id, type);
         $(".close-del").trigger('click');
-        getManifestTotals(mid,mtype); 
+        getManifestTotals(mid, mtype);
     });
-    $("#verify-manifest-duty").click(function(){
-        var itemsFile =$(document.getElementById('uploadxls'));
+    $("#verify-manifest-duty").click(function () {
+        var itemsFile = $(document.getElementById('uploadxls'));
         console.log(itemsFile);
-        if (itemsFile[0].files.length >0 ){
-            uploadContentFile(itemsFile,function(data){
-                var fileData = JSON.parse(data); 
-                var request = {}; 
-                request.filename = fileData[0].uploadedFile; 
-                request.mid = mid; 
-                
+        if (itemsFile[0].files.length > 0) {
+            uploadContentFile(itemsFile, function (data) {
+                var fileData = JSON.parse(data);
+                var request = {};
+                request.filename = fileData[0].uploadedFile;
+                request.mid = mid;
+
                 $.ajax({
-                    url:'/warehouse/verify-manifest',
-                    type:'post',
-                    data:request,
-                    success:function(faResponse){
-                     
-                      alert('success'); 
+                    url: '/warehouse/verify-manifest',
+                    type: 'post',
+                    data: request,
+                    success: function (faResponse) {
+
+                        alert('success');
                     }
-                  }); 
-            }); 
+                });
+            });
         }
     })
-    $("#generateAwb").click(function(){
-      $.ajax({
-          url:"/warehouse/download-awb",
-          type:"post",
-          data:{mid:mid, totalWeight:$(".total-weight").text(), totalValue:$(".total-value").text(),pieces:Number($("#mailCount").text())+Number($("#packageCount").text())+Number($("#unProcCount").text())},
-          success:function(result){
-              console.log(result); 
-              window.location = "/warehouse/download-file/"+result.filename; 
-              //alert(result.filename); 
-          }
-      })
+    $("#generateAwb").click(function () {
+        $.ajax({
+            url: "/warehouse/download-awb",
+            type: "post",
+            data: { mid: mid, totalWeight: $(".total-weight").text(), totalValue: $(".total-value").text(), pieces: Number($("#mailCount").text()) + Number($("#packageCount").text()) + Number($("#unProcCount").text()) },
+            success: function (result) {
+                console.log(result);
+                window.location = "/warehouse/download-file/" + result.filename;
+                //alert(result.filename); 
+            }
+        })
     });
-   
+
     //#endregion
 
     //#region Package / Manifest FUNCTIONS
-    function uploadContentFile(fileInputctrl,  completeHandler){
+    function uploadContentFile(fileInputctrl, completeHandler) {
         var files = fileInputctrl.get(0).files;
-    
-        if (files.length > 0){
+
+        if (files.length > 0) {
             // create a FormData object which will be sent as the data payload in the
             // AJAX request
             var formData = new FormData();
-    
+
             // loop through all the selected files and add them to the formData object
             for (var i = 0; i < files.length; i++) {
                 var file = files[i];
-    
+
                 // add the files to formData object for the data payload
                 formData.append('uploads[]', file, file.name);
             }
-    
+
             $.ajax({
                 url: '/warehouse/upload',
                 type: 'POST',
                 data: formData,
                 processData: false,
                 contentType: false,
-                success: function(data){
+                success: function (data) {
                     //we want to get the filename uploaded here
                     //we are expecting data to be an array of files uploaded now
-    
+
                     //now that we have uploaded lets send it to azure storage
                     console.log('upload successful!\n' + data);
-                    $("#pindecator").css('width',0+'%')
-                    if (completeHandler !== undefined){
+                    $("#pindecator").css('width', 0 + '%')
+                    if (completeHandler !== undefined) {
                         completeHandler(data);
                     }
                 },
-                xhr: function() {
+                xhr: function () {
                     // create an XMLHttpRequest
                     var xhr = new XMLHttpRequest();
-    
+
                     // listen to the 'progress' event
-                    xhr.upload.addEventListener('progress', function(evt) {
-    
+                    xhr.upload.addEventListener('progress', function (evt) {
+
                         if (evt.lengthComputable) {
                             // calculate the percentage of upload completed
                             var percentComplete = evt.loaded / evt.total;
                             percentComplete = parseInt(percentComplete * 100);
-                            $("#pindecator").css('width',percentComplete+'%')
+                            $("#pindecator").css('width', percentComplete + '%')
                             //Materialize.toast("percent complete" + percentComplete);
                             // update the Bootstrap progress bar with the new percentage
                             //$('.progress-bar').text(percentComplete + '%');
                             //$('.progress-bar').width(percentComplete + '%');
-    
+
                             // once the upload reaches 100%, set the progress bar text to done
                             //if (percentComplete === 100) {
                             //    $('.progress-bar').html('Done');
                             //}
-    
+
                         }
-    
+
                     }, false);
-    
+
                     return xhr;
                 }
             });
-    
+
         }
     }
 
@@ -315,7 +319,7 @@ $(function () {
             weight: $(form).find('.weight').val(),
             mid: $(form).find('.mid').val(),
             mtype: $(form).find('.mtype').val(),
-            isBusiness:$(form).find('.isBusiness').val()
+            isBusiness: $(form).find('.isBusiness').val()
         }
 
         if (typeof $(form).find('.bag').val() != 'undefined') {
@@ -327,58 +331,58 @@ $(function () {
         return package;
 
     }
-   
-    function getManifestTotals(mid,type){
-        var totalWeight = 0; 
-        var totalValue = 0 ; 
-        
-        
-        
-   
-        getManifestPackages(mid,mtype,function(packages){
-           
+
+    function getManifestTotals(mid, type) {
+        var totalWeight = 0;
+        var totalValue = 0;
+
+
+
+
+        getManifestPackages(mid, mtype, function (packages) {
+
             packages.forEach(element => {
-                if (element!=null){
+                if (element != null) {
                     totalWeight = totalWeight + Number(element.weight);
-            
+
                     totalValue = totalValue + Number(element.value);
                 }
-                 
+
             });
-            if (type == 'cargo'){
-                getManifestPackages(mid,"mail",function(packages1){
+            if (type == 'cargo') {
+                getManifestPackages(mid, "mail", function (packages1) {
                     packages1.forEach(element => {
-                        totalWeight += Number(element.weight); 
-                        totalValue += Number(element.value); 
+                        totalWeight += Number(element.weight);
+                        totalValue += Number(element.value);
                     });
-                    $(".total-weight").text(' '+totalWeight+' LBS');
-                    $(".total-value").text(' '+Number(totalValue).formatMoney(2,'.',','))
-                    getManifestPackages(mid,"unproc",function(packages2){
+                    $(".total-weight").text(' ' + totalWeight + ' LBS');
+                    $(".total-value").text(' ' + Number(totalValue).formatMoney(2, '.', ','))
+                    getManifestPackages(mid, "unproc", function (packages2) {
                         packages2.forEach(element => {
                             console.log(element);
-                           
-                            totalWeight += Number(element.weight); 
-                            totalValue += Number(element.value); 
-                            console.log(`the total weight is ${totalWeight} - ${totalValue}`); 
-                            $(".total-weight").text(' '+totalWeight+' LBS');
-                            $(".total-value").text(' '+Number(totalValue).formatMoney(2,'.',',')); 
-                            
+
+                            totalWeight += Number(element.weight);
+                            totalValue += Number(element.value);
+                            console.log(`the total weight is ${totalWeight} - ${totalValue}`);
+                            $(".total-weight").text(' ' + totalWeight + ' LBS');
+                            $(".total-value").text(' ' + Number(totalValue).formatMoney(2, '.', ','));
+
                         });
                         //LoadPackageCounters();
-                        
+
                     });
 
                 });
-                
+
             }
-            else{
-              //  LoadPackageCounters();
-                $(".total-weight").text(' '+totalWeight+' LBS');
-                $(".total-value").text(' '+Number(totalValue).formatMoney(2,'.',','))
+            else {
+                //  LoadPackageCounters();
+                $(".total-weight").text(' ' + totalWeight + ' LBS');
+                $(".total-value").text(' ' + Number(totalValue).formatMoney(2, '.', ','))
             }
         });
-       
-      
+
+
     }
     function validatePackage(package, saveBtn) {
         var valid = true;
@@ -443,7 +447,7 @@ $(function () {
             valid = false;
             form.find('.trackingNo').parent().find('label').addClass('text-danger');
         }
-        
+
         form.find('.package-value').parent().find('label').removeClass('text-danger');
         if (package.value == '') {
             valid = false;
@@ -454,7 +458,7 @@ $(function () {
             valid = false;
             form.find('.weight').parent().find('label').addClass('text-danger');
         }
-       
+
         return valid;
     }
     function getManifestPackages(mid, type, callbk) {
@@ -486,37 +490,36 @@ $(function () {
         form.find('.package-value').val('');
         form.find('.pieces').val('');
         form.find('.weight').val('');
-        var bagInput  = form.find('.bag'); 
-        var skidinput  = form.find('.skid'); 
-        console.log(bagInput); 
-        console.log('skid'); 
+        var bagInput = form.find('.bag');
+        var skidinput = form.find('.skid');
+        console.log(bagInput);
+        console.log('skid');
         console.log(skidinput);
-        if (bagInput.length>0 )
-            bagInput.focus(); 
-        else if(skidinput.length>0)
-            skidinput.focus(); 
+        if (bagInput.length > 0)
+            bagInput.focus();
+        else if (skidinput.length > 0)
+            skidinput.focus();
     }
 
-    
-    
-    function displayPackages(packages, tableId,ctype) {
+
+
+    function displayPackages(packages, tableId, ctype) {
         //REFACTORED FUNCTION  
-        if ($(tableId +" tbody").children().length >0  )
-             $(tableId).DataTable().destroy();
-        var containerLabel = "Skid"; 
-        var hideCols = true; 
-        if (ctype == 'mail')
-        {
+        if ($(tableId + " tbody").children().length > 0)
+            $(tableId).DataTable().destroy();
+        var containerLabel = "Skid";
+        var hideCols = true;
+        if (ctype == 'mail') {
             console.log('print')
             $("#mailCount").text(packages.length);
-        }   
-        if (ctype == "unproc"){
+        }
+        if (ctype == "unproc") {
             hideCols = false;
-            $("#unProcCount").text(packages.length); 
+            $("#unProcCount").text(packages.length);
             console.log('going to hide cols');
         }
-        if (ctype == "cargo"){
-            $("#packageCount").text(packages.length); 
+        if (ctype == "cargo") {
+            $("#packageCount").text(packages.length);
         }
         var colDef = [
             {
@@ -524,8 +527,8 @@ $(function () {
                 data: null,
                 render: function (data, type, row, meta) {
                     // console.log(data);
-                    if(ctype=='mail')
-                        return `${data.bag}`; 
+                    if (ctype == 'mail')
+                        return `${data.bag}`;
                     else
                         return `${data.skid} `;
                 }
@@ -557,7 +560,7 @@ $(function () {
 
             {
                 title: "Shipper",
-                data: null,visible: hideCols,
+                data: null, visible: hideCols,
                 render: function (data, type, row, meta) {
                     // console.log(data);
                     return `${data.shipper}`;
@@ -585,7 +588,7 @@ $(function () {
                 data: null,
                 render: function (data, type, row, meta) {
                     // console.log(data);
-                    return `${Number(data.value).formatMoney(2,'.',',')}`;
+                    return `${Number(data.value).formatMoney(2, '.', ',')}`;
                 }
             },
             {
@@ -593,13 +596,13 @@ $(function () {
                 data: null,
                 render: function (data, type, row, meta) {
                     // console.log(data);
-                    return `<i class='icon-pencil3 edit'  data-id='${data.trackingNo}' title='Edit' style='cursor:pointer;'></i> <i title='Delete' data-type='${ctype}' data-toggle='modal' data-target='#confirmPkgDel' class='icon-trash rm' data-id='${data.trackingNo}' style='cursor:pointer;'></i>`;
+                    return `<i class='fas fa-pencil-alt edit'  data-id='${data.trackingNo}' title='Edit' style='cursor:pointer;'></i> <i title='Delete' data-type='${ctype}' data-toggle='modal' data-target='#confirmPkgDel' class='fas fa-trash rm' data-id='${data.trackingNo}' style='cursor:pointer;'></i>`;
                 }
             },
 
         ];
 
-    
+
         $(tableId).DataTable({
 
             data: packages,
@@ -618,13 +621,13 @@ $(function () {
                 $(tableId).find(".edit").click(function () {
                     var id = $(this).attr('data-id');
                     var form = "#cargoPackageForm";
-                   
-                    if (ctype =='mail')
-                        form ='#mailPackageForm';
-                    if (ctype =="unproc")
+
+                    if (ctype == 'mail')
+                        form = '#mailPackageForm';
+                    if (ctype == "unproc")
                         form = "#unprocPackageForm"
                     $(form).parent().show();
-                    loadPackage(id,$(form));
+                    loadPackage(id, $(form));
                 });
                 $(tableId).find(".rm").click(function () {
                     var id = $(this).attr('data-id');
@@ -638,7 +641,7 @@ $(function () {
         });
     }
 
-   
+
 
     function getPackageCountBySize(mid, type, ctrlName) {
         $.ajax({
@@ -651,7 +654,7 @@ $(function () {
         });
     }
 
-    function savePackage(package, form,isClosed) {
+    function savePackage(package, form, isClosed) {
 
         $.ajax({
             url: '/warehouse/save-package',
@@ -663,27 +666,27 @@ $(function () {
                     //and build dataTable 
                     //if the manifest is closed then hide the form after  
                     clearForm(form);
-                    if (isClosed){
+                    if (isClosed) {
                         form.parent().hide();
                     }
                     LoadPackageCounters();
                     console.log("about to re-display " + package.mtype);
                     if (package.mtype == 'mail') {
                         getManifestPackages(mid, 'mail', function (mailPackages) {
-                            displayPackages(mailPackages,"#mailTable",package.mtype);
+                            displayPackages(mailPackages, "#mailTable", package.mtype);
                         });
                     }
                     else if (package.mtype == 'cargo') {
                         getManifestPackages(mid, 'cargo', function (cargoPackages) {
-                            displayPackages(cargoPackages,"#cargoTable","cargo");
+                            displayPackages(cargoPackages, "#cargoTable", "cargo");
                         });
                     }
                     else {
                         getManifestPackages(mid, package.mtype, function (cargoPackages) {
-                            displayPackages(cargoPackages,"#unprocTable",package.mtype);
+                            displayPackages(cargoPackages, "#unprocTable", package.mtype);
                         });
                     }
-                    getManifestTotals(mid,mtype);
+                    getManifestTotals(mid, mtype);
                     console.log('saved');
                 }
             },
@@ -733,29 +736,29 @@ $(function () {
                 mid: $("#mid").val()
             },
             success: function (dResult) {
-                
+
                 if (type == 'mail') {
                     //refresh the package listing 
                     console.log('refreshing mail');
                     getManifestPackages(mid, "mail", function (mailPackages) {
-             
+
                         // displayMailPackages(mailPackages);
-                        displayPackages(mailPackages,"#mailTable","mail")
+                        displayPackages(mailPackages, "#mailTable", "mail")
                     });
                 } else if (type == "cargo") {
                     // cargo 
                     console.log('refreshing cargo');
                     getManifestPackages(mid, "cargo", function (mailPackages) {
-             
-                        
-                        displayPackages(mailPackages,"#cargoTable",mtype)
+
+
+                        displayPackages(mailPackages, "#cargoTable", mtype)
                     });
                 }
                 else {
                     getManifestPackages(mid, type, function (mailPackages) {
-             
-                        
-                        displayPackages(mailPackages,"#unprocTable",type)
+
+
+                        displayPackages(mailPackages, "#unprocTable", type)
                     });
                 }
             },
@@ -771,14 +774,14 @@ $(function () {
         ctrl.removeClass('text-info');
         ctrl.removeClass('text-danger');
         if (typeof customer.isBusiness === "undefined")
-        customer.isBusiness = 0 ; 
-        ctrl.parent().parent().find('.isBusiness').val(customer.isBusiness); 
+            customer.isBusiness = 0;
+        ctrl.parent().parent().find('.isBusiness').val(customer.isBusiness);
         if (customer.err) {
             //display as error
             ctrl.text(customer.err);
             ctrl.removeClass('text-info');
             ctrl.addClass('text-danger');
-          
+
             return;
         }
         console.log(customer);

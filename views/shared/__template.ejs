@@ -1,174 +1,293 @@
 <!doctype html>
 <html lang="en">
-	<head>
-		<!-- Required meta tags -->
-		<meta charset="utf-8">
-		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-		<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-		<meta name="description" content="Unify Admin Panel" />
-		<meta name="keywords" content="Admin, Dashboard, Bootstrap4, Sass, CSS3, HTML5, Responsive Dashboard, Responsive Admin Template, Admin Template, Best Admin Template, Bootstrap Template, Themeforest" />
-		<meta name="author" content="Bootstrap Gallery" />
-		<link rel="shortcut icon" href="/img/favicon.jpg" />
-		<title>Tropical Express Core 1.0</title>
-		
-		<!-- Common CSS -->
-		<link rel="stylesheet" href="/css/bootstrap.min.css" />
-		<link rel="stylesheet" href="/fonts/icomoon/icomoon.css" />
-		<link rel="stylesheet" href="/css/main.css" />
 
-				<!-- Notify -->
-				<link rel="stylesheet" href="/vendor/notify/notify-flat.css" />
-		<!-- Other CSS includes plugins - Cleanedup unnecessary CSS -->
-		<!-- Chartist css -->
-		<link href="/vendor/chartist/css/chartist.min.css" rel="stylesheet" />
-		<link href="/vendor/chartist/css/chartist-custom.css" rel="stylesheet" />
+<head>
+	<!-- Required meta tags -->
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+	<meta name="description" content="Unify Admin Panel" />
+	<meta name="keywords"
+		content="Admin, Dashboard, Bootstrap4, Sass, CSS3, HTML5, Responsive Dashboard, Responsive Admin Template, Admin Template, Best Admin Template, Bootstrap Template, Themeforest" />
+	<meta name="author" content="Bootstrap Gallery" />
+	<link rel="shortcut icon" href="/img/favicon.jpg" />
+	<title>Tropical Express Core 1.0</title>
 
-	</head>
-	<body>
+	<script src="/assets/js/plugin/webfont/webfont.min.js"></script>
+	<script>
+		WebFont.load({
+			google: { "families": ["Lato:300,400,700,900"] },
+			custom: { "families": ["Flaticon", "Font Awesome 5 Solid", "Font Awesome 5 Regular", "Font Awesome 5 Brands", "simple-line-icons"], urls: ['/assets/css/fonts.min.css'] },
+			active: function () {
+				sessionStorage.fonts = true;
+			}
+		});
+	</script>
+	<link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+	<link rel="stylesheet" href="/assets/css/atlantis.min.css">
+	<link rel="stylesheet" href="/assets/css/demo.css">
+</head>
 
-		<!-- Loading starts -->
-		<div id="loading-wrapper">
-			<div id="loader">
-				<div class="line1"></div>
-				<div class="line2"></div>
-				<div class="line3"></div>
-				<div class="line4"></div>
-				<div class="line5"></div>
-				<div class="line6"></div>
-			</div>
+<body>
+
+	<!-- Loading starts -->
+	<div id="loading-wrapper">
+		<div id="loader">
+			<div class="line1"></div>
+			<div class="line2"></div>
+			<div class="line3"></div>
+			<div class="line4"></div>
+			<div class="line5"></div>
+			<div class="line6"></div>
 		</div>
-		<!-- Loading ends -->
+	</div>
+	<!-- Loading ends -->
 
-		<!-- BEGIN .app-wrap -->
-		<div class="app-wrap">
-			<!-- BEGIN .app-heading -->
-			<header class="app-header">
-				<div class="container-fluid">
-					<div class="row gutters">
-						<div class="col-xl-5 col-lg-5 col-md-5 col-sm-3 col-4">
-							<a class="mini-nav-btn" href="#" id="app-side-mini-toggler">
-								<i class="icon-menu5"></i>
-							</a>
-							<a href="#app-side" data-toggle="onoffcanvas" class="onoffcanvas-toggler" aria-expanded="true">
-								<i class="icon-chevron-thin-left"></i>
-							</a>
-						</div>
-						<div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 col-4">
-						
-						</div>
-						<div class="col-xl-5 col-lg-5 col-md-5 col-sm-3 col-4">
-							<ul class="header-actions">
-							
-							
-								<li class="dropdown">
-									<a href="#" id="userSettings" class="user-settings" data-toggle="dropdown" aria-haspopup="true">
-										<img class="avatar" src="/img/logo-square.jpg" alt="User Thumb" />
-										<span class="user-name"><%=luser%></span>
-										<i class="icon-chevron-small-down"></i>
-									</a>
-									<div class="dropdown-menu lg dropdown-menu-right" aria-labelledby="userSettings">
-										
-										<div class="logout-btn">
-											<a href="/logout" class="btn btn-primary">Logout</a>
-										</div>
-									</div>
-								</li>
-							</ul>
-						</div>
-					</div>
-				</div>
-			</header>
-			<!-- END: .app-heading -->
-			<!-- BEGIN .app-container -->
-			<div class="app-container">
-				<!-- BEGIN .app-side -->
-				<aside class="app-side" id="app-side">
-					<!-- BEGIN .side-content -->
-					<div class="side-content ">
-						<!-- BEGIN .user-profile -->
-						<div class="user-profile">
-							<img src="/img/logo-square.jpg" class="profile-thumb" alt="Tropical Express">
-							<h6 class="profile-name"><%=luser%></h6>
-							
-						</div>
-						<!-- END .user-profile -->
-						<!-- BEGIN .side-nav -->
-						<% include __navigation.ejs %>
-						<!-- END: .side-nav -->
-					</div>
-					<!-- END: .side-content -->
-				</aside>
-				<!-- END: .app-side -->
+	<!-- BEGIN .app-wrap -->
+	<div class="wrapper">
+		<% include __main_header.ejs %>
+		<% include __sidebar.ejs %>
 
-				<!-- BEGIN .app-main -->
-				<div class="app-main">
-					<!-- BEGIN .main-heading -->
-					<header class="main-heading">
-						<div class="container-fluid">
-							<div class="row">
-								<div class="col-xl-8 col-lg-8 col-md-8 col-sm-8">
-									<div class="page-icon">
-										<i class="icon-laptop_windows"></i>
-									</div>
-									<div class="page-title">
-										<h5><%=title %></h5>
-										<h6 class="sub-heading">Welcome to Tropical Express Core 1.0</h6>
-									</div>
-								</div>
-								<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4">
-									<div class="right-actions">
-										
-									</div>
-								</div>
+		<!-- BEGIN .app-container -->
+		<div class="main-panel">
+			<!-- BEGIN .app-main -->
+			<div class="content">
+				<!-- BEGIN .main-heading -->
+				<div class="panel-header bg-primary-gradient">
+					<div class="page-inner py-5">
+						<div class="d-flex align-items-left align-items-md-center flex-column flex-md-row">
+							<div>
+								<h2 class="text-white pb-2 fw-bold"><%=title %></h2>
+								<h5 class="text-white op-7 mb-2">Welcome to Tropical Express Core 1.0</h5>
 							</div>
+							<!-- <div class="ml-md-auto py-2 py-md-0">
+								<a href="#" class="btn btn-white btn-border btn-round mr-2">Manage</a>
+								<a href="#" class="btn btn-secondary btn-round">Add Customer</a>
+							</div> -->
 						</div>
-					</header>
-					<!-- END: .main-heading -->
-					<!-- BEGIN .main-content -->
-					<div class="main-content">
-                        <!-- Row start -->
-                        <%-body%>   
-						
-					<!-- Row start -->
 					</div>
-					<!-- END: .main-content -->
 				</div>
-				<!-- END: .app-main -->
+				<!-- END: .main-heading -->
+				<!-- BEGIN .main-content -->
+				<div class="page-inner mt--5">
+					<!-- Row start -->
+					<%-body%>
+
+					<!-- Row start -->
+				</div>
+				<!-- END: .main-content -->
 			</div>
-			<!-- END: .app-container -->
-			<!-- BEGIN .main-footer -->
-			<footer class="main-footer fixed-btm">
-				Tropical Express 2018.
-			</footer>
-			<!-- END: .main-footer -->
+			<!-- END: .app-main -->
 		</div>
-		<div class="notify-notifications">
-				<div id="notes" class="notify notify-notes"></div>
-				<div id="messages" class="notify notify-messages"></div>
-				<!-- Row start -->
-			
-				<!-- Row end -->
-			</div>
-		<!-- END: .app-wrap -->
+		<!-- END: .app-container -->
+		<!-- BEGIN .main-footer -->
+		<footer class="main-footer fixed-btm">
+			Tropical Express 2018.
+		</footer>
+		<!-- END: .main-footer -->
+	</div>
+	<div class="notify-notifications">
+		<div id="notes" class="notify notify-notes"></div>
+		<div id="messages" class="notify notify-messages"></div>
+		<!-- Row start -->
 
-		<!-- jQuery first, then Tether, then other JS. -->
-		<script src="/js/jquery.js"></script>
-		<script src="/js/tether.min.js"></script>
-		<script src="/js/bootstrap.min.js"></script>
-		<script src="/vendor/unifyMenu/unifyMenu.js"></script>
-		<script src="/vendor/onoffcanvas/onoffcanvas.js"></script>
-		<script src="/js/moment.js"></script>
+		<!-- Row end -->
+	</div>
+	<!-- END: .app-wrap -->
 
-		<!-- Slimscroll JS -->
-		<script src="/vendor/slimscroll/slimscroll.min.js"></script>
-		<script src="/vendor/slimscroll/custom-scrollbar.js"></script>
-		<script src="/js/jquery.easing.1.3.js"></script>
-	
-		<script src="/vendor/notify/notify.js"></script>
-		<script src="/vendor/notify/notify-custom.js"></script>
-		<!-- Common JS -->
-		<script src="/js/common.js"></script>
-		<%- block('scripts').toString() %>
-	</body>
+	<!-- jQuery first, then Tether, then other JS. -->
+	<script src="/js/jquery.js"></script>
+	<!-- <script src="/js/tether.min.js"></script> -->
+	<!-- <script src="/js/bootstrap.min.js"></script> -->
+	<!-- <script src="/vendor/unifyMenu/unifyMenu.js"></script> -->
+	<!-- <script src="/vendor/onoffcanvas/onoffcanvas.js"></script> -->
+	<!-- <script src="/js/moment.js"></script> -->
+
+	<!-- Slimscroll JS -->
+	<!-- <script src="/vendor/slimscroll/slimscroll.min.js"></script> -->
+	<!-- <script src="/vendor/slimscroll/custom-scrollbar.js"></script> -->
+	<!-- <script src="/js/jquery.easing.1.3.js"></script> -->
+
+	<!-- <script src="/vendor/notify/notify.js"></script> -->
+	<!-- <script src="/vendor/notify/notify-custom.js"></script> -->
+	<!-- Common JS -->
+	<!-- <script src="/js/common.js"></script> -->
+	<%- block('scripts').toString() %>
+
+	<!--   Core JS Files   -->
+	<script src="/assets/js/core/jquery.3.2.1.min.js"></script>
+	<script src="/assets/js/core/popper.min.js"></script>
+	<script src="/assets/js/core/bootstrap.min.js"></script>
+
+	<!-- jQuery UI -->
+	<script src="/assets/js/plugin/jquery-ui-1.12.1.custom/jquery-ui.min.js"></script>
+	<script src="/assets/js/plugin/jquery-ui-touch-punch/jquery.ui.touch-punch.min.js"></script>
+
+	<!-- jQuery Scrollbar -->
+	<script src="/assets/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js"></script>
+
+	<!-- Moment JS -->
+	<script src="/assets/js/plugin/moment/moment.min.js"></script>
+
+	<!-- Chart JS -->
+	<script src="/assets/js/plugin/chart.js/chart.min.js"></script>
+
+	<!-- jQuery Sparkline -->
+	<script src="/assets/js/plugin/jquery.sparkline/jquery.sparkline.min.js"></script>
+
+	<!-- Chart Circle -->
+	<script src="/assets/js/plugin/chart-circle/circles.min.js"></script>
+
+	<!-- Datatables -->
+	<script src="/assets/js/plugin/datatables/datatables.min.js"></script>
+
+	<!-- Bootstrap Notify -->
+	<script src="/assets/js/plugin/bootstrap-notify/bootstrap-notify.min.js"></script>
+
+	<!-- Bootstrap Toggle -->
+	<script src="/assets/js/plugin/bootstrap-toggle/bootstrap-toggle.min.js"></script>
+
+	<!-- jQuery Vector Maps -->
+	<script src="/assets/js/plugin/jqvmap/jquery.vmap.min.js"></script>
+	<script src="/assets/js/plugin/jqvmap/maps/jquery.vmap.world.js"></script>
+
+	<!-- Google Maps Plugin -->
+	<script src="/assets/js/plugin/gmaps/gmaps.js"></script>
+
+	<!-- Dropzone -->
+	<script src="/assets/js/plugin/dropzone/dropzone.min.js"></script>
+
+	<!-- Fullcalendar -->
+	<script src="/assets/js/plugin/fullcalendar/fullcalendar.min.js"></script>
+
+	<!-- DateTimePicker -->
+	<script src="/assets/js/plugin/datepicker/bootstrap-datetimepicker.min.js"></script>
+
+	<!-- Bootstrap Tagsinput -->
+	<script src="/assets/js/plugin/bootstrap-tagsinput/bootstrap-tagsinput.min.js"></script>
+
+	<!-- Bootstrap Wizard -->
+	<script src="/assets/js/plugin/bootstrap-wizard/bootstrapwizard.js"></script>
+
+	<!-- jQuery Validation -->
+	<script src="/assets/js/plugin/jquery.validate/jquery.validate.min.js"></script>
+
+	<!-- Summernote -->
+	<script src="/assets/js/plugin/summernote/summernote-bs4.min.js"></script>
+
+	<!-- Select2 -->
+	<script src="/assets/js/plugin/select2/select2.full.min.js"></script>
+
+	<!-- Sweet Alert -->
+	<script src="/assets/js/plugin/sweetalert/sweetalert.min.js"></script>
+
+	<!-- Owl Carousel -->
+	<script src="/assets/js/plugin/owl-carousel/owl.carousel.min.js"></script>
+
+	<!-- Magnific Popup -->
+	<script src="/assets/js/plugin/jquery.magnific-popup/jquery.magnific-popup.min.js"></script>
+
+	<!-- Atlantis JS -->
+	<script src="/assets/js/atlantis.min.js"></script>
+	<!-- Atlantis DEMO methods, don't include it in your project! -->
+	<script src="/assets/js/setting-demo.js"></script>
+	<script src="/assets/js/demo.js"></script>
+
+	<script>
+		Circles.create({
+			id: 'circles-1',
+			radius: 45,
+			value: 60,
+			maxValue: 100,
+			width: 7,
+			text: 5,
+			colors: ['#f1f1f1', '#FF9E27'],
+			duration: 400,
+			wrpClass: 'circles-wrp',
+			textClass: 'circles-text',
+			styleWrapper: true,
+			styleText: true
+		})
+
+		Circles.create({
+			id: 'circles-2',
+			radius: 45,
+			value: 70,
+			maxValue: 100,
+			width: 7,
+			text: 36,
+			colors: ['#f1f1f1', '#2BB930'],
+			duration: 400,
+			wrpClass: 'circles-wrp',
+			textClass: 'circles-text',
+			styleWrapper: true,
+			styleText: true
+		})
+
+		Circles.create({
+			id: 'circles-3',
+			radius: 45,
+			value: 40,
+			maxValue: 100,
+			width: 7,
+			text: 12,
+			colors: ['#f1f1f1', '#F25961'],
+			duration: 400,
+			wrpClass: 'circles-wrp',
+			textClass: 'circles-text',
+			styleWrapper: true,
+			styleText: true
+		})
+
+		var totalIncomeChart = document.getElementById('totalIncomeChart').getContext('2d');
+
+		var mytotalIncomeChart = new Chart(totalIncomeChart, {
+			type: 'bar',
+			data: {
+				labels: ["S", "M", "T", "W", "T", "F", "S", "S", "M", "T"],
+				datasets: [{
+					label: "Total Income",
+					backgroundColor: '#ff9e27',
+					borderColor: 'rgb(23, 125, 255)',
+					data: [6, 4, 9, 5, 4, 6, 4, 3, 8, 10],
+				}],
+			},
+			options: {
+				responsive: true,
+				maintainAspectRatio: false,
+				legend: {
+					display: false,
+				},
+				scales: {
+					yAxes: [{
+						ticks: {
+							display: false //this will remove only the label
+						},
+						gridLines: {
+							drawBorder: false,
+							display: false
+						}
+					}],
+					xAxes: [{
+						gridLines: {
+							drawBorder: false,
+							display: false
+						}
+					}]
+				},
+			}
+		});
+
+		$('#lineChart').sparkline([105, 103, 123, 100, 95, 105, 115], {
+			type: 'line',
+			height: '70',
+			width: '100%',
+			lineWidth: '2',
+			lineColor: '#ffa534',
+			fillColor: 'rgba(255, 165, 52, .14)'
+		});
+	</script>
+</body>
+
 </html>

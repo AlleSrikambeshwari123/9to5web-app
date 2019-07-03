@@ -1,182 +1,512 @@
 <% layout('./shared/__template')%>
-
-<div class="row gutters">
-    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-        <div class="card">
-            <div class="card-header">Overview<a class="link" href="widgets.html">June 2018</a></div>
+<div class="row mt--2">
+    <div class="col-md-6">
+        <div class="card full-height">
             <div class="card-body">
-                <!-- Row start -->
-                <div class="row gutters">
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-12">
-                        <h6 class="card-title mt-0">Packages</h6>
-                        <div class="chartist custom-one">
-                            <div class="line-chart"><div class="chartist-tooltip" style="left: 112px; top: -45.42px;"></div><svg xmlns="http://www.w3.org/2000/svg" class="ct-chart-line" style="width: 100%; height: 190px;" width="100%" height="190px" xmlns:ct="http://gionkunz.github.com/chartist-js/ct"><g class="ct-grids"><line class="ct-grid ct-vertical" x1="10" y1="190" x2="729.71" y2="190" /><line class="ct-grid ct-vertical" x1="10" y1="164.286" x2="729.71" y2="164.286" /><line class="ct-grid ct-vertical" x1="10" y1="138.571" x2="729.71" y2="138.571" /><line class="ct-grid ct-vertical" x1="10" y1="112.857" x2="729.71" y2="112.857" /><line class="ct-grid ct-vertical" x1="10" y1="87.1429" x2="729.71" y2="87.1429" /><line class="ct-grid ct-vertical" x1="10" y1="61.4286" x2="729.71" y2="61.4286" /><line class="ct-grid ct-vertical" x1="10" y1="35.7143" x2="729.71" y2="35.7143" /><line class="ct-grid ct-vertical" x1="10" y1="10" x2="729.71" y2="10" /></g><g><g class="ct-series ct-series-a"><path class="ct-line" d="M 10 164.286 C 99.964 164.286 99.964 87.143 189.927 87.143 C 279.891 87.143 279.891 92.286 369.855 92.286 C 459.819 92.286 459.819 35.714 549.782 35.714 C 639.746 35.714 639.746 10 729.71 10" /><line class="ct-point" x1="10" y1="164.286" x2="10.01" y2="164.286" ct:value="500" ct:meta="Visitors" /><line class="ct-point" x1="189.927" y1="87.1429" x2="189.937" y2="87.1429" ct:value="2000" ct:meta="Visitors" /><line class="ct-point" x1="369.855" y1="92.2857" x2="369.865" y2="92.2857" ct:value="1900" ct:meta="Visitors" /><line class="ct-point" x1="549.782" y1="35.7143" x2="549.792" y2="35.7143" ct:value="3000" ct:meta="Visitors" /><line class="ct-point" x1="729.71" y1="10" x2="729.72" y2="10" ct:value="3500" ct:meta="Visitors" /></g></g><g class="ct-labels" /></svg></div>
+                <div class="card-title">Overall statistics</div>
+                <div class="card-category">Daily information about statistics in system</div>
+                <div class="d-flex flex-wrap justify-content-around pb-2 pt-4">
+                    <div class="px-2 pb-2 pb-md-0 text-center">
+                        <div id="circles-1"></div>
+                        <h6 class="fw-bold mt-3 mb-0">New Users</h6>
+                    </div>
+                    <div class="px-2 pb-2 pb-md-0 text-center">
+                        <div id="circles-2"></div>
+                        <h6 class="fw-bold mt-3 mb-0">Sales</h6>
+                    </div>
+                    <div class="px-2 pb-2 pb-md-0 text-center">
+                        <div id="circles-3"></div>
+                        <h6 class="fw-bold mt-3 mb-0">Subscribers</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card full-height">
+            <div class="card-body">
+                <div class="card-title">Total income & spend statistics</div>
+                <div class="row py-3">
+                    <div class="col-md-4 d-flex flex-column justify-content-around">
+                        <div>
+                            <h6 class="fw-bold text-uppercase text-success op-8">Total Income</h6>
+                            <h3 class="fw-bold">$9.782</h3>
                         </div>
-                        <div class="download-details">
-                            <p>21<sup>%</sup> more packages than last month</p>
+                        <div>
+                            <h6 class="fw-bold text-uppercase text-danger op-8">Total Spend</h6>
+                            <h3 class="fw-bold">$1,248</h3>
                         </div>
                     </div>
-                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12">
-                        <div class="monthly-avg">
-                            <h6>Monthly Average</h6>
-                            <div class="avg-block">
-                                <h4 class="avg-total text-secondary">9500</h4>
-                                <h6 class="avg-label">
-                                    Packages
-                                </h6>
-                            </div>
-                            <div class="avg-block">
-                                <h4 class="avg-total text-primary">$510<sup>k</sup></h4>
-                                <h6 class="avg-label">
-                                    Sales
-                                </h6>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-12">
-                        <h6 class="card-title mt-0">Revenue</h6>
-                        <div class="chartist custom-two">
-                            <div class="line-chart2"><div class="chartist-tooltip" style="left: 261.22px; top: -50.42px;"></div><svg xmlns="http://www.w3.org/2000/svg" class="ct-chart-line" style="width: 100%; height: 190px;" width="100%" height="190px" xmlns:ct="http://gionkunz.github.com/chartist-js/ct"><g class="ct-grids"><line class="ct-grid ct-vertical" x1="10" y1="190" x2="729.71" y2="190" /><line class="ct-grid ct-vertical" x1="10" y1="167.5" x2="729.71" y2="167.5" /><line class="ct-grid ct-vertical" x1="10" y1="145" x2="729.71" y2="145" /><line class="ct-grid ct-vertical" x1="10" y1="122.5" x2="729.71" y2="122.5" /><line class="ct-grid ct-vertical" x1="10" y1="100" x2="729.71" y2="100" /><line class="ct-grid ct-vertical" x1="10" y1="77.5" x2="729.71" y2="77.5" /><line class="ct-grid ct-vertical" x1="10" y1="55" x2="729.71" y2="55" /><line class="ct-grid ct-vertical" x1="10" y1="32.5" x2="729.71" y2="32.5" /><line class="ct-grid ct-vertical" x1="10" y1="10" x2="729.71" y2="10" /></g><g><g class="ct-series ct-series-a"><path class="ct-line" d="M 10 154 C 99.964 154 99.964 133.75 189.928 133.75 C 279.891 133.75 279.891 95.5 369.855 95.5 C 459.819 95.5 459.819 154 549.783 154 C 639.746 154 639.746 23.5 729.71 23.5" /><line class="ct-point" x1="10" y1="154" x2="10.01" y2="154" ct:value="800" ct:meta="Sales" /><line class="ct-point" x1="189.928" y1="133.75" x2="189.938" y2="133.75" ct:value="1250" ct:meta="Sales" /><line class="ct-point" x1="369.855" y1="95.5" x2="369.865" y2="95.5" ct:value="2100" ct:meta="Sales" /><line class="ct-point" x1="549.783" y1="154" x2="549.793" y2="154" ct:value="800" ct:meta="Sales" /><line class="ct-point" x1="729.71" y1="23.5" x2="729.72" y2="23.5" ct:value="3700" ct:meta="Sales" /></g></g><g class="ct-labels" /></svg></div>
-                        </div>
-                        <div class="download-details">
-                            <p>15<sup>%</sup> more revenue than last month</p>
+                    <div class="col-md-8">
+                        <div id="chart-container">
+                            <canvas id="totalIncomeChart"></canvas>
                         </div>
                     </div>
                 </div>
-                <!-- Row end -->
             </div>
         </div>
     </div>
 </div>
-
-<div class="row gutters">
-    <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6">
+<div class="row">
+    <div class="col-md-8">
         <div class="card">
-            <div class="card-header">Mail</div>
-            <div class="slimScrollDiv" style="width: auto; height: 300px; overflow: hidden; position: relative;"><div class="customScroll" style="width: auto; height: 300px; overflow: hidden;">
-                <div class="card-body">
-                    <ul class="order-list">
-                        <li>
-                            <p class="order-num placed">#45763 <span class="order-date">45 mins</span></p>
-                            <p class="order-desc">Jessse <span>placed</span> new order</p>
-                        </li>
-                        <li>
-                            <p class="order-num cancelled">#48239 <span class="order-date">38 mins</span></p>
-                            <p class="order-desc">Alex <span>cancelled</span> an order</p>
-                        </li>
-                        <li>
-                            <p class="order-num">#41470 <span class="order-date">24 mins</span></p>
-                            <p class="order-desc">Sunny <span>processed</span> an order</p>
-                        </li>
-                        <li>
-                            <p class="order-num placed">#46360 <span class="order-date">10 mins</span></p>
-                            <p class="order-desc">Thompson <span>placed</span> an order</p>
-                        </li>
-                        <li>
-                            <p class="order-num placed">#55242 <span class="order-date">45 mins</span></p>
-                            <p class="order-desc">Jessse <span>placed</span> new order</p>
-                        </li>
-                        <li>
-                            <p class="order-num cancelled">#33561 <span class="order-date">38 mins</span></p>
-                            <p class="order-desc">Alex <span>cancelled</span> an order</p>
-                        </li>
-                        <li>
-                            <p class="order-num">#12876 <span class="order-date">24 mins</span></p>
-                            <p class="order-desc">Sunny <span>processed</span> an order</p>
-                        </li>
-                        <li>
-                            <p class="order-num placed">#22536 <span class="order-date">10 mins</span></p>
-                            <p class="order-desc">Thompson <span>placed</span> an order</p>
-                        </li>
-                    </ul>
+            <div class="card-header">
+                <div class="card-head-row">
+                    <div class="card-title">User Statistics</div>
+                    <div class="card-tools">
+                        <a href="#" class="btn btn-info btn-border btn-round btn-sm mr-2">
+                            <span class="btn-label">
+                                <i class="fa fa-pencil"></i>
+                            </span>
+                            Export
+                        </a>
+                        <a href="#" class="btn btn-info btn-border btn-round btn-sm">
+                            <span class="btn-label">
+                                <i class="fa fa-print"></i>
+                            </span>
+                            Print
+                        </a>
+                    </div>
                 </div>
-            </div><div class="slimScrollBar" style="background: rgb(229, 232, 242); border-radius: 0px; top: 0px; width: 7px; height: 108.43px; right: 1px; display: none; position: absolute; z-index: 99; opacity: 0.8;"></div><div class="slimScrollRail" style="background: rgb(0, 122, 225); border-radius: 0px; top: 0px; width: 7px; height: 100%; right: 1px; display: none; position: absolute; z-index: 90; opacity: 0.2;"></div></div>
+            </div>
+            <div class="card-body">
+                <div class="chart-container" style="min-height: 375px">
+                    <canvas id="statisticsChart"></canvas>
+                </div>
+                <div id="myChartLegend"></div>
+            </div>
         </div>
     </div>
-    <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6">
-        <div class="card">
-            <div class="card-header">Packages</div>
-            <div class="slimScrollDiv" style="width: auto; height: 300px; overflow: hidden; position: relative;"><div class="customScroll" style="width: auto; height: 300px; overflow: hidden;">
-                <div class="card-body pt-0 pb-0">
-                    <ul class="order-list">
-                        <li>
-                            <p class="order-num placed">#45763 <span class="order-date">45 mins</span></p>
-                            <p class="order-desc">Jessse <span>placed</span> new order</p>
-                        </li>
-                        <li>
-                            <p class="order-num cancelled">#48239 <span class="order-date">38 mins</span></p>
-                            <p class="order-desc">Alex <span>cancelled</span> an order</p>
-                        </li>
-                        <li>
-                            <p class="order-num">#41470 <span class="order-date">24 mins</span></p>
-                            <p class="order-desc">Sunny <span>processed</span> an order</p>
-                        </li>
-                        <li>
-                            <p class="order-num placed">#46360 <span class="order-date">10 mins</span></p>
-                            <p class="order-desc">Thompson <span>placed</span> an order</p>
-                        </li>
-                        <li>
-                            <p class="order-num placed">#55242 <span class="order-date">45 mins</span></p>
-                            <p class="order-desc">Jessse <span>placed</span> new order</p>
-                        </li>
-                        <li>
-                            <p class="order-num cancelled">#33561 <span class="order-date">38 mins</span></p>
-                            <p class="order-desc">Alex <span>cancelled</span> an order</p>
-                        </li>
-                        <li>
-                            <p class="order-num">#12876 <span class="order-date">24 mins</span></p>
-                            <p class="order-desc">Sunny <span>processed</span> an order</p>
-                        </li>
-                        <li>
-                            <p class="order-num placed">#22536 <span class="order-date">10 mins</span></p>
-                            <p class="order-desc">Thompson <span>placed</span> an order</p>
-                        </li>
-                    </ul>
+    <div class="col-md-4">
+        <div class="card card-primary">
+            <div class="card-header">
+                <div class="card-title">Daily Sales</div>
+                <div class="card-category">March 25 - April 02</div>
+            </div>
+            <div class="card-body pb-0">
+                <div class="mb-4 mt-2">
+                    <h1>$4,578.58</h1>
                 </div>
-            </div><div class="slimScrollBar" style="background: rgb(229, 232, 242); border-radius: 0px; top: 0px; width: 7px; height: 160.42px; right: 1px; display: none; position: absolute; z-index: 99; opacity: 0.8;"></div><div class="slimScrollRail" style="background: rgb(0, 122, 225); border-radius: 0px; top: 0px; width: 7px; height: 100%; right: 1px; display: none; position: absolute; z-index: 90; opacity: 0.2;"></div></div>
+                <div class="pull-in">
+                    <canvas id="dailySalesChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body pb-0">
+                <div class="h1 fw-bold float-right text-warning">+7%</div>
+                <h2 class="mb-2">213</h2>
+                <p class="text-muted">Transactions</p>
+                <div class="pull-in sparkline-fix">
+                    <div id="lineChart"></div>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
+</div>
+<div class="row row-card-no-pd">
+    <div class="col-md-12">
         <div class="card">
-            <div class="card-header">Hazmat</div>
-            <div class="slimScrollDiv" style="width: auto; height: 300px; overflow: hidden; position: relative;"><div class="customScroll" style="width: auto; height: 300px; overflow: hidden;">
-                <div class="card-body">
-                    <ul class="order-list">
-                        <li>
-                            <p class="order-num placed">#45763 <span class="order-date">45 mins</span></p>
-                            <p class="order-desc">Jessse <span>placed</span> new order</p>
-                        </li>
-                        <li>
-                            <p class="order-num cancelled">#48239 <span class="order-date">38 mins</span></p>
-                            <p class="order-desc">Alex <span>cancelled</span> an order</p>
-                        </li>
-                        <li>
-                            <p class="order-num">#41470 <span class="order-date">24 mins</span></p>
-                            <p class="order-desc">Sunny <span>processed</span> an order</p>
-                        </li>
-                        <li>
-                            <p class="order-num placed">#46360 <span class="order-date">10 mins</span></p>
-                            <p class="order-desc">Thompson <span>placed</span> an order</p>
-                        </li>
-                        <li>
-                            <p class="order-num placed">#55242 <span class="order-date">45 mins</span></p>
-                            <p class="order-desc">Jessse <span>placed</span> new order</p>
-                        </li>
-                        <li>
-                            <p class="order-num cancelled">#33561 <span class="order-date">38 mins</span></p>
-                            <p class="order-desc">Alex <span>cancelled</span> an order</p>
-                        </li>
-                        <li>
-                            <p class="order-num">#12876 <span class="order-date">24 mins</span></p>
-                            <p class="order-desc">Sunny <span>processed</span> an order</p>
-                        </li>
-                        <li>
-                            <p class="order-num placed">#22536 <span class="order-date">10 mins</span></p>
-                            <p class="order-desc">Thompson <span>placed</span> an order</p>
-                        </li>
-                    </ul>
+            <div class="card-header">
+                <div class="card-head-row card-tools-still-right">
+                    <h4 class="card-title">Users Geolocation</h4>
+                    <div class="card-tools">
+                        <button class="btn btn-icon btn-link btn-primary btn-xs"><span
+                                class="fa fa-angle-down"></span></button>
+                        <button class="btn btn-icon btn-link btn-primary btn-xs btn-refresh-card"><span
+                                class="fa fa-sync-alt"></span></button>
+                        <button class="btn btn-icon btn-link btn-primary btn-xs"><span
+                                class="fa fa-times"></span></button>
+                    </div>
                 </div>
-            </div><div class="slimScrollBar" style="background: rgb(229, 232, 242); border-radius: 0px; top: 0px; width: 7px; height: 152.02px; right: 1px; display: block; position: absolute; z-index: 99; opacity: 0.8;"></div><div class="slimScrollRail" style="background: rgb(0, 122, 225); border-radius: 0px; top: 0px; width: 7px; height: 100%; right: 1px; display: none; position: absolute; z-index: 90; opacity: 0.2;"></div></div>
+                <p class="card-category">
+                    Map of the distribution of users around the world</p>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="table-responsive table-hover table-sales">
+                            <table class="table">
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <div class="flag">
+                                                <img src="https://via.placeholder.com/16x11" alt="indonesia">
+                                            </div>
+                                        </td>
+                                        <td>Indonesia</td>
+                                        <td class="text-right">
+                                            2.320
+                                        </td>
+                                        <td class="text-right">
+                                            42.18%
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="flag">
+                                                <img src="https://via.placeholder.com/16x11" alt="united states">
+                                            </div>
+                                        </td>
+                                        <td>USA</td>
+                                        <td class="text-right">
+                                            240
+                                        </td>
+                                        <td class="text-right">
+                                            4.36%
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="flag">
+                                                <img src="https://via.placeholder.com/16x11" alt="australia">
+                                            </div>
+                                        </td>
+                                        <td>Australia</td>
+                                        <td class="text-right">
+                                            119
+                                        </td>
+                                        <td class="text-right">
+                                            2.16%
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="flag">
+                                                <img src="https://via.placeholder.com/16x11" alt="russia">
+                                            </div>
+                                        </td>
+                                        <td>Russia</td>
+                                        <td class="text-right">
+                                            1.081
+                                        </td>
+                                        <td class="text-right">
+                                            19.65%
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="flag">
+                                                <img src="https://via.placeholder.com/16x11" alt="china">
+                                            </div>
+                                        </td>
+                                        <td>China</td>
+                                        <td class="text-right">
+                                            1.100
+                                        </td>
+                                        <td class="text-right">
+                                            20%
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="flag">
+                                                <img src="https://via.placeholder.com/16x11" alt="brazil">
+                                            </div>
+                                        </td>
+                                        <td>Brasil</td>
+                                        <td class="text-right">
+                                            640
+                                        </td>
+                                        <td class="text-right">
+                                            11.63%
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mapcontainer">
+                            <div id="map-example" class="vmap"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Top Products</div>
+            </div>
+            <div class="card-body pb-0">
+                <div class="d-flex">
+                    <div class="avatar">
+                        <img src="https://via.placeholder.com/50x50" alt="..." class="avatar-img rounded-circle">
+                    </div>
+                    <div class="flex-1 pt-1 ml-2">
+                        <h6 class="fw-bold mb-1">CSS</h6>
+                        <small class="text-muted">Cascading Style Sheets</small>
+                    </div>
+                    <div class="d-flex ml-auto align-items-center">
+                        <h3 class="text-info fw-bold">+$17</h3>
+                    </div>
+                </div>
+                <div class="separator-dashed"></div>
+                <div class="d-flex">
+                    <div class="avatar">
+                        <img src="https://via.placeholder.com/50x50" alt="..." class="avatar-img rounded-circle">
+                    </div>
+                    <div class="flex-1 pt-1 ml-2">
+                        <h6 class="fw-bold mb-1">J.CO Donuts</h6>
+                        <small class="text-muted">The Best Donuts</small>
+                    </div>
+                    <div class="d-flex ml-auto align-items-center">
+                        <h3 class="text-info fw-bold">+$300</h3>
+                    </div>
+                </div>
+                <div class="separator-dashed"></div>
+                <div class="d-flex">
+                    <div class="avatar">
+                        <img src="https://via.placeholder.com/50x50" alt="..." class="avatar-img rounded-circle">
+                    </div>
+                    <div class="flex-1 pt-1 ml-2">
+                        <h6 class="fw-bold mb-1">Ready Pro</h6>
+                        <small class="text-muted">Bootstrap 4 Admin Dashboard</small>
+                    </div>
+                    <div class="d-flex ml-auto align-items-center">
+                        <h3 class="text-info fw-bold">+$350</h3>
+                    </div>
+                </div>
+                <div class="separator-dashed"></div>
+                <div class="pull-in">
+                    <canvas id="topProductsChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="card-title fw-mediumbold">Suggested People</div>
+                <div class="card-list">
+                    <div class="item-list">
+                        <div class="avatar">
+                            <img src="https://via.placeholder.com/50x50" alt="..." class="avatar-img rounded-circle">
+                        </div>
+                        <div class="info-user ml-3">
+                            <div class="username">Jimmy Denis</div>
+                            <div class="status">Graphic Designer</div>
+                        </div>
+                        <button class="btn btn-icon btn-primary btn-round btn-xs">
+                            <i class="fa fa-plus"></i>
+                        </button>
+                    </div>
+                    <div class="item-list">
+                        <div class="avatar">
+                            <img src="https://via.placeholder.com/50x50" alt="..." class="avatar-img rounded-circle">
+                        </div>
+                        <div class="info-user ml-3">
+                            <div class="username">Chad</div>
+                            <div class="status">CEO Zeleaf</div>
+                        </div>
+                        <button class="btn btn-icon btn-primary btn-round btn-xs">
+                            <i class="fa fa-plus"></i>
+                        </button>
+                    </div>
+                    <div class="item-list">
+                        <div class="avatar">
+                            <img src="https://via.placeholder.com/50x50" alt="..." class="avatar-img rounded-circle">
+                        </div>
+                        <div class="info-user ml-3">
+                            <div class="username">Talha</div>
+                            <div class="status">Front End Designer</div>
+                        </div>
+                        <button class="btn btn-icon btn-primary btn-round btn-xs">
+                            <i class="fa fa-plus"></i>
+                        </button>
+                    </div>
+                    <div class="item-list">
+                        <div class="avatar">
+                            <img src="https://via.placeholder.com/50x50" alt="..." class="avatar-img rounded-circle">
+                        </div>
+                        <div class="info-user ml-3">
+                            <div class="username">John Doe</div>
+                            <div class="status">Back End Developer</div>
+                        </div>
+                        <button class="btn btn-icon btn-primary btn-round btn-xs">
+                            <i class="fa fa-plus"></i>
+                        </button>
+                    </div>
+                    <div class="item-list">
+                        <div class="avatar">
+                            <img src="https://via.placeholder.com/50x50" alt="..." class="avatar-img rounded-circle">
+                        </div>
+                        <div class="info-user ml-3">
+                            <div class="username">Talha</div>
+                            <div class="status">Front End Designer</div>
+                        </div>
+                        <button class="btn btn-icon btn-primary btn-round btn-xs">
+                            <i class="fa fa-plus"></i>
+                        </button>
+                    </div>
+                    <div class="item-list">
+                        <div class="avatar">
+                            <img src="https://via.placeholder.com/50x50" alt="..." class="avatar-img rounded-circle">
+                        </div>
+                        <div class="info-user ml-3">
+                            <div class="username">Jimmy Denis</div>
+                            <div class="status">Graphic Designer</div>
+                        </div>
+                        <button class="btn btn-icon btn-primary btn-round btn-xs">
+                            <i class="fa fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card card-primary bg-primary-gradient">
+            <div class="card-body">
+                <h4 class="mt-3 b-b1 pb-2 mb-4 fw-bold">Active user right now</h4>
+                <h1 class="mb-4 fw-bold">17</h1>
+                <h4 class="mt-3 b-b1 pb-2 mb-5 fw-bold">Page view per minutes</h4>
+                <div id="activeUsersChart"></div>
+                <h4 class="mt-5 pb-3 mb-0 fw-bold">Top active pages</h4>
+                <ul class="list-unstyled">
+                    <li class="d-flex justify-content-between pb-1 pt-1"><small>/product/readypro/index.html</small>
+                        <span>7</span></li>
+                    <li class="d-flex justify-content-between pb-1 pt-1"><small>/product/atlantis/demo.html</small>
+                        <span>10</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <div class="card full-height">
+            <div class="card-header">
+                <div class="card-title">Feed Activity</div>
+            </div>
+            <div class="card-body">
+                <ol class="activity-feed">
+                    <li class="feed-item feed-item-secondary">
+                        <time class="date" datetime="9-25">Sep 25</time>
+                        <span class="text">Responded to need <a href="#">"Volunteer opportunity"</a></span>
+                    </li>
+                    <li class="feed-item feed-item-success">
+                        <time class="date" datetime="9-24">Sep 24</time>
+                        <span class="text">Added an interest <a href="#">"Volunteer Activities"</a></span>
+                    </li>
+                    <li class="feed-item feed-item-info">
+                        <time class="date" datetime="9-23">Sep 23</time>
+                        <span class="text">Joined the group <a href="single-group.php">"Boardsmanship Forum"</a></span>
+                    </li>
+                    <li class="feed-item feed-item-warning">
+                        <time class="date" datetime="9-21">Sep 21</time>
+                        <span class="text">Responded to need <a href="#">"In-Kind Opportunity"</a></span>
+                    </li>
+                    <li class="feed-item feed-item-danger">
+                        <time class="date" datetime="9-18">Sep 18</time>
+                        <span class="text">Created need <a href="#">"Volunteer Opportunity"</a></span>
+                    </li>
+                    <li class="feed-item">
+                        <time class="date" datetime="9-17">Sep 17</time>
+                        <span class="text">Attending the event <a href="single-event.php">"Some New Event"</a></span>
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card full-height">
+            <div class="card-header">
+                <div class="card-head-row">
+                    <div class="card-title">Support Tickets</div>
+                    <div class="card-tools">
+                        <ul class="nav nav-pills nav-secondary nav-pills-no-bd nav-sm" id="pills-tab" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link" id="pills-today" data-toggle="pill" href="#pills-today" role="tab"
+                                    aria-selected="true">Today</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link active" id="pills-week" data-toggle="pill" href="#pills-week"
+                                    role="tab" aria-selected="false">Week</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="pills-month" data-toggle="pill" href="#pills-month" role="tab"
+                                    aria-selected="false">Month</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="d-flex">
+                    <div class="avatar avatar-online">
+                        <span class="avatar-title rounded-circle border border-white bg-info">J</span>
+                    </div>
+                    <div class="flex-1 ml-3 pt-1">
+                        <h6 class="text-uppercase fw-bold mb-1">Joko Subianto <span
+                                class="text-warning pl-3">pending</span></h6>
+                        <span class="text-muted">I am facing some trouble with my viewport. When i start my</span>
+                    </div>
+                    <div class="float-right pt-1">
+                        <small class="text-muted">8:40 PM</small>
+                    </div>
+                </div>
+                <div class="separator-dashed"></div>
+                <div class="d-flex">
+                    <div class="avatar avatar-offline">
+                        <span class="avatar-title rounded-circle border border-white bg-secondary">P</span>
+                    </div>
+                    <div class="flex-1 ml-3 pt-1">
+                        <h6 class="text-uppercase fw-bold mb-1">Prabowo Widodo <span
+                                class="text-success pl-3">open</span></h6>
+                        <span class="text-muted">I have some query regarding the license issue.</span>
+                    </div>
+                    <div class="float-right pt-1">
+                        <small class="text-muted">1 Day Ago</small>
+                    </div>
+                </div>
+                <div class="separator-dashed"></div>
+                <div class="d-flex">
+                    <div class="avatar avatar-away">
+                        <span class="avatar-title rounded-circle border border-white bg-danger">L</span>
+                    </div>
+                    <div class="flex-1 ml-3 pt-1">
+                        <h6 class="text-uppercase fw-bold mb-1">Lee Chong Wei <span
+                                class="text-muted pl-3">closed</span></h6>
+                        <span class="text-muted">Is there any update plan for RTL version near future?</span>
+                    </div>
+                    <div class="float-right pt-1">
+                        <small class="text-muted">2 Days Ago</small>
+                    </div>
+                </div>
+                <div class="separator-dashed"></div>
+                <div class="d-flex">
+                    <div class="avatar avatar-offline">
+                        <span class="avatar-title rounded-circle border border-white bg-secondary">P</span>
+                    </div>
+                    <div class="flex-1 ml-3 pt-1">
+                        <h6 class="text-uppercase fw-bold mb-1">Peter Parker <span class="text-success pl-3">open</span>
+                        </h6>
+                        <span class="text-muted">I have some query regarding the license issue.</span>
+                    </div>
+                    <div class="float-right pt-1">
+                        <small class="text-muted">2 Day Ago</small>
+                    </div>
+                </div>
+                <div class="separator-dashed"></div>
+                <div class="d-flex">
+                    <div class="avatar avatar-away">
+                        <span class="avatar-title rounded-circle border border-white bg-danger">L</span>
+                    </div>
+                    <div class="flex-1 ml-3 pt-1">
+                        <h6 class="text-uppercase fw-bold mb-1">Logan Paul <span class="text-muted pl-3">closed</span>
+                        </h6>
+                        <span class="text-muted">Is there any update plan for RTL version near future?</span>
+                    </div>
+                    <div class="float-right pt-1">
+                        <small class="text-muted">2 Days Ago</small>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

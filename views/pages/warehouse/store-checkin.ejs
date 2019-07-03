@@ -1,47 +1,43 @@
 <% layout('./shared/__template')%>
 <div class='gutters'>
     <div class='col-xl-12 col-lg-6 col-md-12 col-sm-12'>
-  
-  
         <div class='card'>
-              <div class="card-header col-md-12">
-                      <div class='row'> 
-                         
-              </div>
-              <div class="card-body">
-                 <div class='row'>
-                <div class='col-md-3'>
-                       
-                    <div class='form-group '>
-                        <label>Scan Bin/Shelf</label>
-                        <input type='text' class='form-control' id='bin' placeholder="Bin #"/>
-                    </div>
-                    <div class='form-group '>
-                            <label>Scan Package</label>
-                            <input type='text' class='form-control' id='package' placeholder="Tracking #"/>
+            <div class="card-header col-md-12">
+                <div class='row'>
+                </div>
+                <div class="card-body">
+                    <div class='row'>
+                        <div class='col-md-3'>
+                            <div class='form-group '>
+                                <label for="bin">Scan Bin/Shelf</label>
+                                <input type='text' class='form-control' id='bin' placeholder="Bin #" />
+                            </div>
+                            <div class='form-group '>
+                                <label for="package">Scan Package</label>
+                                <input type='text' class='form-control' id='package' placeholder="Tracking #" />
+                            </div>
+                            <div class='form-group'>
+                                <button class='btn btn-primary'>Scan</button>
+                            </div>
                         </div>
-                    <div class='form-group'>
-                        <button class='btn btn-primary'></button>
+
+                        <div class='col-md-6'>
+                            <h3>Scanned Packages By Me</h3>
+                            <table id='scannedPackages' class='table table-stripped'>
+                                <tr>
+                                    <th>Skybox</th>
+                                    <th>Cusomter</th>
+                                    <th>Tracking #</th>
+                                    <th>Location </th>
+                                </tr>
+                            </table>
+                        </div>
                     </div>
+
+
                 </div>
-                
-                <div class='col-md-6'>
-                    <h5>Scanned Packages By Me</h5>
-                    <table id='scannedPackages' class='table table-stripped'>
-                        <tr>
-                            <th>Skybox</th>
-                            <th>Cusomter</th>
-                            <th>Tracking #</th>
-                            <th>Location </th>
-                        </tr>
-                    </table>
-                </div>
+
             </div>
-                  
-                 
-              </div>
-  
         </div>
     </div>
-  </div>
-  <% block('scripts').append('<script src="/js/packages/store-processing.js"></script>')%>
+    <% block('scripts').append('<script src="/js/packages/store-processing.js"></script>')%>

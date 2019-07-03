@@ -1,7 +1,7 @@
 <!-- BEGIN .side-nav -->
 <nav class="side-nav">
     <!-- BEGIN: side-nav-content -->
-    <ul class="unifyMenu" id="unifyMenu">
+    <ul class="nav nav-primary" id="unifyMenu">
         <%if (RoleId =="Admin"){%>
         <li class="active selected">
             <a href="#" class="has-arrow" aria-expanded="false">
@@ -18,18 +18,17 @@
                     <a href='/admin/users'>Users</a>
                 </li>
                 <li>
-                <a href='/admin/customersV1'>Customers</a>
-            </li>
+                    <a href='/admin/customersV1'>Customers</a>
+                </li>
 
             </ul>
         </li>
         <%}%>
-        <li class="">
-            <a href="#" class="has-arrow" aria-expanded="false">
-                <span class="has-icon">
-                    <i class="icon-storage"></i>
-                </span>
-                <span class="nav-title">Warehouse</span>
+        <li class="nav-item">
+            <a data-toggle="collapse" href="#base">
+                <i class="fas fa-layer-group"></i>
+                <p>Base</p>
+                <span class="caret"></span>
             </a>
             <ul aria-expanded="false" class="collapse in">
               

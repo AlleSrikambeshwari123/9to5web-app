@@ -1,263 +1,512 @@
 <% layout('./shared/__template')%>
-
-
-<div class="row gutters">
-    <div class="col-xl-6 col-lg-3 col-md-6 col-sm-6">
-        <div class="card">
-            <div class="card-header">Membership</div>
+<div class="row mt--2">
+    <div class="col-md-6">
+        <div class="card full-height">
             <div class="card-body">
-                <div class='row'>
-                    <div class='col-md-6'>
-                        <div class="chartist custom-one">
-                            <div class="donut-chart-1">
-                                <div class="chartist-tooltip"></div>
-                            </div>
-                        </div>
+                <div class="card-title">Overall statistics</div>
+                <div class="card-category">Daily information about statistics in system</div>
+                <div class="d-flex flex-wrap justify-content-around pb-2 pt-4">
+                    <div class="px-2 pb-2 pb-md-0 text-center">
+                        <div id="circles-1"></div>
+                        <h6 class="fw-bold mt-3 mb-0">New Users</h6>
                     </div>
-
-                   
-                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-6">
-                    <div class="info-stats4">
-                        <div class="icon-type pull-left">
-                            <i class="icon-location"></i>
-                        </div>
-                        <div class="sale-num">
-                            <h4>12,239</h4>
-                            <p>Arouca</p>
-                        </div>
+                    <div class="px-2 pb-2 pb-md-0 text-center">
+                        <div id="circles-2"></div>
+                        <h6 class="fw-bold mt-3 mb-0">Sales</h6>
+                    </div>
+                    <div class="px-2 pb-2 pb-md-0 text-center">
+                        <div id="circles-3"></div>
+                        <h6 class="fw-bold mt-3 mb-0">Subscribers</h6>
                     </div>
                 </div>
-
-                </div>
-                <div class="row gutters">
-                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 col">
-                        <div class="info-stats">
-                            <span class="info-label"></span>
-                            <h6 class="info-title">San Fernando</h6>
-                            <h4 class="info-total">7,400</h4>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card full-height">
+            <div class="card-body">
+                <div class="card-title">Total income & spend statistics</div>
+                <div class="row py-3">
+                    <div class="col-md-4 d-flex flex-column justify-content-around">
+                        <div>
+                            <h6 class="fw-bold text-uppercase text-success op-8">Total Income</h6>
+                            <h3 class="fw-bold">$9.782</h3>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold text-uppercase text-danger op-8">Total Spend</h6>
+                            <h3 class="fw-bold">$1,248</h3>
                         </div>
                     </div>
-                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 col">
-                        <div class="info-stats">
-                            <span class="info-label red"></span>
-                            <h6 class="info-title">Port of Span</h6>
-                            <h4 class="info-total">5,498</h4>
-                        </div>
-                    </div>
-                    
-                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 col">
-                        <div class="info-stats">
-                            <span class="info-label green"></span>
-                            <h6 class="info-title">Curepe</h6>
-                            <h4 class="info-total">3,234</h4>
-                        </div>
-                    </div>
-                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 col">
-                        <div class="info-stats">
-                            <span class="info-label green"></span>
-                            <h6 class="info-title">Chaguanas</h6>
-                            <h4 class="info-total">4,847</h4>
-                        </div>
-                    </div>
-                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 col">
-                        <div class="info-stats">
-                            <span class="info-label green"></span>
-                            <h6 class="info-title">Sangre Grande</h6>
-                            <h4 class="info-total">2,397</h4>
+                    <div class="col-md-8">
+                        <div id="chart-container">
+                            <canvas id="totalIncomeChart"></canvas>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-xl-2 col-lg-2 col-md-3 col-sm-3 col">
-        <a href="#" class="block-140">
-            <div class="icon violet">
-                <i class="icon-v-card"></i>
-            </div>
-            <h5>2540</h5>
-            <p>New Memebers</p>
-        </a>
-        <a href="#" class="block-140">
-            <div class="icon pink">
-                <i class="icon-users"></i>
-            </div>
-            <h5>763</h5>
-            <p>Referals</p>
-        </a>
-    </div>
-    <div class="col-xl-2 col-lg-2 col-md-3 col-sm-3 col">
-        <a href="#" class="block-140">
-            <div class="icon success">
-                <i class="icon-user-check"></i>
-            </div>
-            <h5>218</h5>
-            <p>Paid Membership</p>
-        </a>
-        <a href="#" class="block-140">
-            <div class="icon warning">
-                <i class="icon-hourglass_full"></i>
-            </div>
-            <h5>549</h5>
-            <p>Old Packages ( > 3 Months)</p>
-        </a>
-    </div>
-    <div class="col-xl-2 col-lg-2 col-md-6 col-sm-6">
-        <a href="#" class="block-140">
-            <div class="icon danger">
-                <i class="icon-archive3"></i>
-            </div>
-            <h5>367</h5>
-            <p>Membership Due</p>
-        </a>
-        <a href="#" class="block-140">
-            <div class="icon info">
-                <i class="icon-download5"></i>
-            </div>
-            <h5>12,957 / <span class='text-info'>33,185</span></h5>
-            <p>Active Members</p>
-        </a>
-    </div>
-
 </div>
-
-
-<div class="row gutters">
-<div class="col-xl-4 col-lg-4 col-md-6 col-sm-6">
-<div class="card">
-    <div class="card-header">Location Packages</div>
-    <div class="slimScrollDiv" style="position: relative; overflow: hidden; width: auto; height: 300px;"><div class="customScroll" style="overflow: hidden; width: auto; height: 300px;">
-        <div class="card-body pt-0 pb-0">
-            <ul class="project-activity">
-                <li class="activity-list">
-                    <div class="detail-info">
-                        <span class="lbl">A</span>
-                        <p class="desc-info"><span class="text-primary">Arouca</span> 3000</p>
-                        <a href="#" class="activity-status"><i class="icon-done_all"></i></a>
-                    </div>
-                </li>
-                <li class="activity-list">
-                    <div class="detail-info">
-                        <span class="lbl success">POS</span>
-                        <p class="desc-info"><span class="text-success">Port of Span</span> 530943</p>
-                        <a href="#" class="activity-status"><i class="icon-done_all"></i></a>
-                    </div>
-                </li>
-                <li class="activity-list">
-                    <div class="detail-info">
-                        <span class="lbl danger">SDO</span>
-                        <p class="desc-info"><span class="text-secondary">San Fernando</span> 659034</p>
-                        <a href="#" class="activity-status"><i class="icon-done_all"></i></a>
-                    </div>
-                </li>
-                <li class="activity-list">
-                    <div class="detail-info">
-                        <span class="lbl warning">C</span>
-                        <p class="desc-info"><span class="text-warning">Curepe</span> 834090</p>
-                        <a href="#" class="activity-status"><i class="icon-done_all"></i></a>
-                    </div>
-                </li>
-                <li class="activity-list">
-                    <div class="detail-info">
-                        <span class="lbl pink">CH</span>
-                        <p class="desc-info"><span class="text-pink">Chaguanas</span> 3000</p>
-                        <a href="#" class="activity-status"><i class="icon-done_all"></i></a>
-                    </div>
-                </li>
-                <li class="activity-list">
-                    <div class="detail-info">
-                        <span class="lbl grey">SG</span>
-                        <p class="desc-info"><span>Sangre Grande</span> 32455</p>
-                        <a href="#" class="activity-status"></a>
-                    </div>
-                </li>
-              
-            </ul>
-        </div>
-    </div><div class="slimScrollBar" style="background: rgb(229, 232, 242); width: 7px; position: absolute; top: 0px; opacity: 0.8; display: none; border-radius: 0px; z-index: 99; right: 1px; height: 162.455px;"></div><div class="slimScrollRail" style="width: 7px; height: 100%; position: absolute; top: 0px; display: none; border-radius: 0px; background: rgb(0, 122, 225); opacity: 0.2; z-index: 90; right: 1px;"></div></div>
-</div>
-</div>
-<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
-<div class="card">
-    <div class="card-header">Sales</div>
-    <div class="card-body">
-        <ul class="social-stats">
-            <li class="clearfix">
-                <div class="month-type svg-container" id="likes"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 194 186" class="circliful">undefined<circle cx="100" cy="100" r="57" class="border" fill="none" stroke="#f5f6fa" stroke-width="7" stroke-dasharray="360" transform="rotate(-90,100,100)"></circle><circle class="circle" cx="100" cy="100" r="57" fill="none" stroke="#007ae1" stroke-width="15" stroke-dasharray="280.8, 20000" transform="rotate(-90,100,100)"></circle><circle cx="100" cy="100" r="28.5" fill="none"></circle>undefined<text class="timer" text-anchor="middle" x="100" y="110" style="font-size: 22px; undefined;" fill="#000000">78%</text></svg></div>
-                <div class="social-info">
-                    <h4>18<sup>k</sup><i class="icon-chevron-up text-primary"></i></h4>
-                    <p class="text-truncate">Linx</p>
-                </div>
-            </li>
-            <li class="clearfix">
-                <div class="month-type svg-container" id="shares"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 194 186" class="circliful">undefined<circle cx="100" cy="100" r="57" class="border" fill="none" stroke="#f5f6fa" stroke-width="7" stroke-dasharray="360" transform="rotate(-90,100,100)"></circle><circle class="circle" cx="100" cy="100" r="57" fill="none" stroke="#007ae1" stroke-width="15" stroke-dasharray="234, 20000" transform="rotate(-90,100,100)"></circle><circle cx="100" cy="100" r="28.5" fill="none"></circle>undefined<text class="timer" text-anchor="middle" x="100" y="110" style="font-size: 22px; undefined;" fill="#000000">65%</text></svg></div>
-                <div class="social-info">
-                    <h4>12<sup>k</sup><i class="icon-chevron-up text-primary"></i></h4>
-                    <p class="text-truncate">Cash</p>
-                </div>
-            </li>
-            <li class="clearfix">
-                <div class="month-type svg-container" id="comments"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 194 186" class="circliful">undefined<circle cx="100" cy="100" r="57" class="border" fill="none" stroke="#f5f6fa" stroke-width="7" stroke-dasharray="360" transform="rotate(-90,100,100)"></circle><circle class="circle" cx="100" cy="100" r="57" fill="none" stroke="#ff3e61" stroke-width="15" stroke-dasharray="306, 20000" transform="rotate(-90,100,100)"></circle><circle cx="100" cy="100" r="28.5" fill="none"></circle>undefined<text class="timer" text-anchor="middle" x="100" y="110" style="font-size: 22px; undefined;" fill="#000000">85%</text></svg></div>
-                <div class="social-info">
-                    <h4>10<sup>k</sup><i class="icon-chevron-down text-secondary"></i></h4>
-                    <p class="text-truncate">Credit Card</p>
-                </div>
-            </li>
-        </ul>
-    </div>
-</div>
-</div>
-    <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
+<div class="row">
+    <div class="col-md-8">
         <div class="card">
-            <div class="card-header">Pre Alert Stream</div>
-            <div class="slimScrollDiv" style="width: auto; height: 300px; overflow: hidden; position: relative;">
-                <div class="customScroll" style="width: auto; height: 300px; overflow: hidden;">
-                    <div class="card-body">
-                        <ul class="order-list">
-                            <li>
-                                <p class="order-num placed">#45763 <span class="order-date">45 mins</span></p>
-                                <p class="order-desc">Jessse pre-alert 859482</p>
+            <div class="card-header">
+                <div class="card-head-row">
+                    <div class="card-title">User Statistics</div>
+                    <div class="card-tools">
+                        <a href="#" class="btn btn-info btn-border btn-round btn-sm mr-2">
+                            <span class="btn-label">
+                                <i class="fa fa-pencil"></i>
+                            </span>
+                            Export
+                        </a>
+                        <a href="#" class="btn btn-info btn-border btn-round btn-sm">
+                            <span class="btn-label">
+                                <i class="fa fa-print"></i>
+                            </span>
+                            Print
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="chart-container" style="min-height: 375px">
+                    <canvas id="statisticsChart"></canvas>
+                </div>
+                <div id="myChartLegend"></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card card-primary">
+            <div class="card-header">
+                <div class="card-title">Daily Sales</div>
+                <div class="card-category">March 25 - April 02</div>
+            </div>
+            <div class="card-body pb-0">
+                <div class="mb-4 mt-2">
+                    <h1>$4,578.58</h1>
+                </div>
+                <div class="pull-in">
+                    <canvas id="dailySalesChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body pb-0">
+                <div class="h1 fw-bold float-right text-warning">+7%</div>
+                <h2 class="mb-2">213</h2>
+                <p class="text-muted">Transactions</p>
+                <div class="pull-in sparkline-fix">
+                    <div id="lineChart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row row-card-no-pd">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-head-row card-tools-still-right">
+                    <h4 class="card-title">Users Geolocation</h4>
+                    <div class="card-tools">
+                        <button class="btn btn-icon btn-link btn-primary btn-xs"><span
+                                class="fa fa-angle-down"></span></button>
+                        <button class="btn btn-icon btn-link btn-primary btn-xs btn-refresh-card"><span
+                                class="fa fa-sync-alt"></span></button>
+                        <button class="btn btn-icon btn-link btn-primary btn-xs"><span
+                                class="fa fa-times"></span></button>
+                    </div>
+                </div>
+                <p class="card-category">
+                    Map of the distribution of users around the world</p>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="table-responsive table-hover table-sales">
+                            <table class="table">
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <div class="flag">
+                                                <img src="https://via.placeholder.com/16x11" alt="indonesia">
+                                            </div>
+                                        </td>
+                                        <td>Indonesia</td>
+                                        <td class="text-right">
+                                            2.320
+                                        </td>
+                                        <td class="text-right">
+                                            42.18%
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="flag">
+                                                <img src="https://via.placeholder.com/16x11" alt="united states">
+                                            </div>
+                                        </td>
+                                        <td>USA</td>
+                                        <td class="text-right">
+                                            240
+                                        </td>
+                                        <td class="text-right">
+                                            4.36%
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="flag">
+                                                <img src="https://via.placeholder.com/16x11" alt="australia">
+                                            </div>
+                                        </td>
+                                        <td>Australia</td>
+                                        <td class="text-right">
+                                            119
+                                        </td>
+                                        <td class="text-right">
+                                            2.16%
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="flag">
+                                                <img src="https://via.placeholder.com/16x11" alt="russia">
+                                            </div>
+                                        </td>
+                                        <td>Russia</td>
+                                        <td class="text-right">
+                                            1.081
+                                        </td>
+                                        <td class="text-right">
+                                            19.65%
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="flag">
+                                                <img src="https://via.placeholder.com/16x11" alt="china">
+                                            </div>
+                                        </td>
+                                        <td>China</td>
+                                        <td class="text-right">
+                                            1.100
+                                        </td>
+                                        <td class="text-right">
+                                            20%
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="flag">
+                                                <img src="https://via.placeholder.com/16x11" alt="brazil">
+                                            </div>
+                                        </td>
+                                        <td>Brasil</td>
+                                        <td class="text-right">
+                                            640
+                                        </td>
+                                        <td class="text-right">
+                                            11.63%
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mapcontainer">
+                            <div id="map-example" class="vmap"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Top Products</div>
+            </div>
+            <div class="card-body pb-0">
+                <div class="d-flex">
+                    <div class="avatar">
+                        <img src="https://via.placeholder.com/50x50" alt="..." class="avatar-img rounded-circle">
+                    </div>
+                    <div class="flex-1 pt-1 ml-2">
+                        <h6 class="fw-bold mb-1">CSS</h6>
+                        <small class="text-muted">Cascading Style Sheets</small>
+                    </div>
+                    <div class="d-flex ml-auto align-items-center">
+                        <h3 class="text-info fw-bold">+$17</h3>
+                    </div>
+                </div>
+                <div class="separator-dashed"></div>
+                <div class="d-flex">
+                    <div class="avatar">
+                        <img src="https://via.placeholder.com/50x50" alt="..." class="avatar-img rounded-circle">
+                    </div>
+                    <div class="flex-1 pt-1 ml-2">
+                        <h6 class="fw-bold mb-1">J.CO Donuts</h6>
+                        <small class="text-muted">The Best Donuts</small>
+                    </div>
+                    <div class="d-flex ml-auto align-items-center">
+                        <h3 class="text-info fw-bold">+$300</h3>
+                    </div>
+                </div>
+                <div class="separator-dashed"></div>
+                <div class="d-flex">
+                    <div class="avatar">
+                        <img src="https://via.placeholder.com/50x50" alt="..." class="avatar-img rounded-circle">
+                    </div>
+                    <div class="flex-1 pt-1 ml-2">
+                        <h6 class="fw-bold mb-1">Ready Pro</h6>
+                        <small class="text-muted">Bootstrap 4 Admin Dashboard</small>
+                    </div>
+                    <div class="d-flex ml-auto align-items-center">
+                        <h3 class="text-info fw-bold">+$350</h3>
+                    </div>
+                </div>
+                <div class="separator-dashed"></div>
+                <div class="pull-in">
+                    <canvas id="topProductsChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="card-title fw-mediumbold">Suggested People</div>
+                <div class="card-list">
+                    <div class="item-list">
+                        <div class="avatar">
+                            <img src="https://via.placeholder.com/50x50" alt="..." class="avatar-img rounded-circle">
+                        </div>
+                        <div class="info-user ml-3">
+                            <div class="username">Jimmy Denis</div>
+                            <div class="status">Graphic Designer</div>
+                        </div>
+                        <button class="btn btn-icon btn-primary btn-round btn-xs">
+                            <i class="fa fa-plus"></i>
+                        </button>
+                    </div>
+                    <div class="item-list">
+                        <div class="avatar">
+                            <img src="https://via.placeholder.com/50x50" alt="..." class="avatar-img rounded-circle">
+                        </div>
+                        <div class="info-user ml-3">
+                            <div class="username">Chad</div>
+                            <div class="status">CEO Zeleaf</div>
+                        </div>
+                        <button class="btn btn-icon btn-primary btn-round btn-xs">
+                            <i class="fa fa-plus"></i>
+                        </button>
+                    </div>
+                    <div class="item-list">
+                        <div class="avatar">
+                            <img src="https://via.placeholder.com/50x50" alt="..." class="avatar-img rounded-circle">
+                        </div>
+                        <div class="info-user ml-3">
+                            <div class="username">Talha</div>
+                            <div class="status">Front End Designer</div>
+                        </div>
+                        <button class="btn btn-icon btn-primary btn-round btn-xs">
+                            <i class="fa fa-plus"></i>
+                        </button>
+                    </div>
+                    <div class="item-list">
+                        <div class="avatar">
+                            <img src="https://via.placeholder.com/50x50" alt="..." class="avatar-img rounded-circle">
+                        </div>
+                        <div class="info-user ml-3">
+                            <div class="username">John Doe</div>
+                            <div class="status">Back End Developer</div>
+                        </div>
+                        <button class="btn btn-icon btn-primary btn-round btn-xs">
+                            <i class="fa fa-plus"></i>
+                        </button>
+                    </div>
+                    <div class="item-list">
+                        <div class="avatar">
+                            <img src="https://via.placeholder.com/50x50" alt="..." class="avatar-img rounded-circle">
+                        </div>
+                        <div class="info-user ml-3">
+                            <div class="username">Talha</div>
+                            <div class="status">Front End Designer</div>
+                        </div>
+                        <button class="btn btn-icon btn-primary btn-round btn-xs">
+                            <i class="fa fa-plus"></i>
+                        </button>
+                    </div>
+                    <div class="item-list">
+                        <div class="avatar">
+                            <img src="https://via.placeholder.com/50x50" alt="..." class="avatar-img rounded-circle">
+                        </div>
+                        <div class="info-user ml-3">
+                            <div class="username">Jimmy Denis</div>
+                            <div class="status">Graphic Designer</div>
+                        </div>
+                        <button class="btn btn-icon btn-primary btn-round btn-xs">
+                            <i class="fa fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card card-primary bg-primary-gradient">
+            <div class="card-body">
+                <h4 class="mt-3 b-b1 pb-2 mb-4 fw-bold">Active user right now</h4>
+                <h1 class="mb-4 fw-bold">17</h1>
+                <h4 class="mt-3 b-b1 pb-2 mb-5 fw-bold">Page view per minutes</h4>
+                <div id="activeUsersChart"></div>
+                <h4 class="mt-5 pb-3 mb-0 fw-bold">Top active pages</h4>
+                <ul class="list-unstyled">
+                    <li class="d-flex justify-content-between pb-1 pt-1"><small>/product/readypro/index.html</small>
+                        <span>7</span></li>
+                    <li class="d-flex justify-content-between pb-1 pt-1"><small>/product/atlantis/demo.html</small>
+                        <span>10</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <div class="card full-height">
+            <div class="card-header">
+                <div class="card-title">Feed Activity</div>
+            </div>
+            <div class="card-body">
+                <ol class="activity-feed">
+                    <li class="feed-item feed-item-secondary">
+                        <time class="date" datetime="9-25">Sep 25</time>
+                        <span class="text">Responded to need <a href="#">"Volunteer opportunity"</a></span>
+                    </li>
+                    <li class="feed-item feed-item-success">
+                        <time class="date" datetime="9-24">Sep 24</time>
+                        <span class="text">Added an interest <a href="#">"Volunteer Activities"</a></span>
+                    </li>
+                    <li class="feed-item feed-item-info">
+                        <time class="date" datetime="9-23">Sep 23</time>
+                        <span class="text">Joined the group <a href="single-group.php">"Boardsmanship Forum"</a></span>
+                    </li>
+                    <li class="feed-item feed-item-warning">
+                        <time class="date" datetime="9-21">Sep 21</time>
+                        <span class="text">Responded to need <a href="#">"In-Kind Opportunity"</a></span>
+                    </li>
+                    <li class="feed-item feed-item-danger">
+                        <time class="date" datetime="9-18">Sep 18</time>
+                        <span class="text">Created need <a href="#">"Volunteer Opportunity"</a></span>
+                    </li>
+                    <li class="feed-item">
+                        <time class="date" datetime="9-17">Sep 17</time>
+                        <span class="text">Attending the event <a href="single-event.php">"Some New Event"</a></span>
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card full-height">
+            <div class="card-header">
+                <div class="card-head-row">
+                    <div class="card-title">Support Tickets</div>
+                    <div class="card-tools">
+                        <ul class="nav nav-pills nav-secondary nav-pills-no-bd nav-sm" id="pills-tab" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link" id="pills-today" data-toggle="pill" href="#pills-today" role="tab"
+                                    aria-selected="true">Today</a>
                             </li>
-                            <li>
-                                <p class="order-num placed">#48239 <span class="order-date">38 mins</span></p>
-                                <p class="order-desc">Alex <span> pre-alert</span> an order</p>
+                            <li class="nav-item">
+                                <a class="nav-link active" id="pills-week" data-toggle="pill" href="#pills-week"
+                                    role="tab" aria-selected="false">Week</a>
                             </li>
-                            <li>
-                                <p class="order-num">#41470 <span class="order-date">24 mins</span></p>
-                                <p class="order-desc">Sunny <span> pre-alert</span> an order</p>
-                            </li>
-                            <li>
-                                <p class="order-num placed">#46360 <span class="order-date">10 mins</span></p>
-                                <p class="order-desc">Thompson <span> pre-alert</span> an order</p>
-                            </li>
-                            <li>
-                                <p class="order-num placed">#55242 <span class="order-date">45 mins</span></p>
-                                <p class="order-desc">Jessse <span> pre-alert</span> new order</p>
-                            </li>
-                            <li>
-                                <p class="order-num cancelled">#33561 <span class="order-date">38 mins</span></p>
-                                <p class="order-desc">Alex <span> pre-alert</span> an order</p>
-                            </li>
-                            <li>
-                                <p class="order-num">#12876 <span class="order-date">24 mins</span></p>
-                                <p class="order-desc">Sunny <span> pre-alert</span> an order</p>
-                            </li>
-                            <li>
-                                <p class="order-num placed">#22536 <span class="order-date">10 mins</span></p>
-                                <p class="order-desc">Thompson <span> pre-alert</span> an order</p>
+                            <li class="nav-item">
+                                <a class="nav-link" id="pills-month" data-toggle="pill" href="#pills-month" role="tab"
+                                    aria-selected="false">Month</a>
                             </li>
                         </ul>
                     </div>
                 </div>
-                <div class="slimScrollBar" style="background: rgb(229, 232, 242); border-radius: 0px; top: 0px; width: 7px; height: 152.02px; right: 1px; display: block; position: absolute; z-index: 99; opacity: 0.8;"></div>
-                <div class="slimScrollRail" style="background: rgb(0, 122, 225); border-radius: 0px; top: 0px; width: 7px; height: 100%; right: 1px; display: none; position: absolute; z-index: 90; opacity: 0.2;"></div>
+            </div>
+            <div class="card-body">
+                <div class="d-flex">
+                    <div class="avatar avatar-online">
+                        <span class="avatar-title rounded-circle border border-white bg-info">J</span>
+                    </div>
+                    <div class="flex-1 ml-3 pt-1">
+                        <h6 class="text-uppercase fw-bold mb-1">Joko Subianto <span
+                                class="text-warning pl-3">pending</span></h6>
+                        <span class="text-muted">I am facing some trouble with my viewport. When i start my</span>
+                    </div>
+                    <div class="float-right pt-1">
+                        <small class="text-muted">8:40 PM</small>
+                    </div>
+                </div>
+                <div class="separator-dashed"></div>
+                <div class="d-flex">
+                    <div class="avatar avatar-offline">
+                        <span class="avatar-title rounded-circle border border-white bg-secondary">P</span>
+                    </div>
+                    <div class="flex-1 ml-3 pt-1">
+                        <h6 class="text-uppercase fw-bold mb-1">Prabowo Widodo <span
+                                class="text-success pl-3">open</span></h6>
+                        <span class="text-muted">I have some query regarding the license issue.</span>
+                    </div>
+                    <div class="float-right pt-1">
+                        <small class="text-muted">1 Day Ago</small>
+                    </div>
+                </div>
+                <div class="separator-dashed"></div>
+                <div class="d-flex">
+                    <div class="avatar avatar-away">
+                        <span class="avatar-title rounded-circle border border-white bg-danger">L</span>
+                    </div>
+                    <div class="flex-1 ml-3 pt-1">
+                        <h6 class="text-uppercase fw-bold mb-1">Lee Chong Wei <span
+                                class="text-muted pl-3">closed</span></h6>
+                        <span class="text-muted">Is there any update plan for RTL version near future?</span>
+                    </div>
+                    <div class="float-right pt-1">
+                        <small class="text-muted">2 Days Ago</small>
+                    </div>
+                </div>
+                <div class="separator-dashed"></div>
+                <div class="d-flex">
+                    <div class="avatar avatar-offline">
+                        <span class="avatar-title rounded-circle border border-white bg-secondary">P</span>
+                    </div>
+                    <div class="flex-1 ml-3 pt-1">
+                        <h6 class="text-uppercase fw-bold mb-1">Peter Parker <span class="text-success pl-3">open</span>
+                        </h6>
+                        <span class="text-muted">I have some query regarding the license issue.</span>
+                    </div>
+                    <div class="float-right pt-1">
+                        <small class="text-muted">2 Day Ago</small>
+                    </div>
+                </div>
+                <div class="separator-dashed"></div>
+                <div class="d-flex">
+                    <div class="avatar avatar-away">
+                        <span class="avatar-title rounded-circle border border-white bg-danger">L</span>
+                    </div>
+                    <div class="flex-1 ml-3 pt-1">
+                        <h6 class="text-uppercase fw-bold mb-1">Logan Paul <span class="text-muted pl-3">closed</span>
+                        </h6>
+                        <span class="text-muted">Is there any update plan for RTL version near future?</span>
+                    </div>
+                    <div class="float-right pt-1">
+                        <small class="text-muted">2 Days Ago</small>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
-<!-- Chartist JS -->
-<script src="/vendor/chartist/js/chartist.min.js"></script>
-<script src="/vendor/chartist/js/chartist-tooltip.js"></script>
-
-
-<script src="/vendor/chartist/js/custom/donut-chart2.js"></script>

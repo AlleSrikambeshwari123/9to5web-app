@@ -92,6 +92,24 @@ router.post('/user/', middleware(services.userService).requireAuthentication, fu
 
 
 });
+router.get('/customersV1/', middleware(services.userService).requireAuthentication, function (req, res, next) {
+    console.log("HERE");
+    var pageData = {}; 
+        pageData.title = "Tropical Customers"
+    pageData.luser = res.User.firstName + ' ' + res.User.lastName;
+    pageData.RoleId = res.User.role;
+    pageData.owners = [];
+    rCusomterService.listAllCustomers().then((pResult)=>{
+        var pagerInfo = {
+            totalRecords: pResult.totalResults
+        }
+        pageData.records = pResult.customers;
+        pageData.pagerInfo = pagerInfo;
+        console.log("result " + pResult.totalResults)
+        console.log(pageData.pagerInfo);
+        res.render('pages/admin/customers', pageData);
+    })
+});
 router.get('/customersV1/:currentPage?', middleware(services.userService).requireAuthentication, function (req, res, next) {
     var currentPage = Number(req.params.currentPage);
     var pageData = {}; 
@@ -166,6 +184,7 @@ router.post('/customersV1/:currentPage?', middleware(services.userService).requi
         })
 });
 router.get('/customers/:currentPage?', middleware(services.userService).requireAuthentication, function (req, res, next) {
+    console.log("HERE_AAA");
     var pageData = {};
     var currentPage = Number(req.params.currentPage);
     if (isNaN(currentPage))

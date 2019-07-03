@@ -1,4 +1,4 @@
-$(function(){
+$(function () {
     var colDef = [
         {
             title: "Box",
@@ -6,7 +6,7 @@ $(function(){
             targets: 'no-sort', orderable: false,
             render: function (data, type, row, meta) {
                 // console.log(data);
-                return data.skybox; 
+                return data.skybox;
             }
         },
         {
@@ -51,33 +51,29 @@ $(function(){
             data: null,
             render: function (data, type, row, meta) {
                 // console.log(data);
-                return `<a href ="/admin/customer-edit/${data.skybox}" class='text-white'><i class='icon-edit2'></i></a>`;
+                return `<a href ="/admin/customer-edit/${data.skybox}"><i class='fas fa-pencil-alt'></i></a>`;
             }
         },
-        
+
     ];
-     $("#customerTable").DataTable({
 
+    console.log(rpackages);
+    $("#customerTable").DataTable({
         data: rpackages,
-        paging: false,
-
+        paging: true,
         columns: colDef,
-        //bInfo:false,
-        bFilter: false, bInfo: false,
+        bFilter: true, bInfo: true,
         "language": {
             "decimal": ",",
             "thousands": "."
         },
-
         "deferRender": true,
         initComplete: function () {
-         
         },
-
     });
 
-    $(".page-item-search").click(function(){
-        $("#rpage").val($(this).attr('data-id')); 
+    $(".page-item-search").click(function () {
+        $("#rpage").val($(this).attr('data-id'));
         $("#searchFrm").submit();
     });
 });

@@ -27,6 +27,7 @@ var CustomerService = exports.CustomerService = function () {
             var _this = this;
 
             return new Promise(function (resolve, reject) {
+                console.log("listCustomers")
                 var offsetVal = (page - 1) * pageSize;
                 console.log('offset ' + offsetVal);
 
@@ -50,6 +51,28 @@ var CustomerService = exports.CustomerService = function () {
                     };
                     resolve(pagedData);
                     console.log(customers);
+                });
+            });
+        }
+    }, {
+        key: 'listAllCustomers',
+        value: function listAllCustomers() {
+            var _this3 = this;
+            return new Promise(function (resolve, reject) {
+                _this3.mySearch.search("*", {
+                    numberOfResults:1000000
+                }, function (r1, data) {
+                    if (r1) console.log(r1);
+                    var customers = [];
+                    data.results.forEach(function (customerResult) {
+                        customers.push(customerResult.doc);
+                    });
+                    console.log(customers);
+                    var pagedData = {
+                        customers: customers,
+                        totalResults: data.totalResults
+                    };
+                    resolve(pagedData);
                 });
             });
         }

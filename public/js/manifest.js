@@ -9,19 +9,19 @@ $(function () {
         setTimeout(function () {
             var tableBody = $(".mlisting").find('#data-listing');
             console.log(tableBody);
-            var url = "m-packages"; 
-            if (Number(manifest.mtypeId) != 1){
-                url ='packages'
+            var url = "m-packages";
+            if (Number(manifest.mtypeId) != 1) {
+                url = 'packages'
             }
             if (tableBody.length == 0) {
-                table.append(`<tbody id="data-listing"><tr> <td>${manifest.title} </td> <td>${manifest.stage} </td> <td>${moment(manifest.dateCreated,"YYYY-MM-DD").format("dddd, LL")} </td> <td>${manifest.createdBy} </td> <td><a href='/warehouse/${url}/${manifest.mid}' class='btn btn-sm btn-primary'>Manage</a> <button class='btn btn-danger btn-sm rm-manifest-launch' data-id='${manifest.mid}' data-target='#rm-manifest-modal' data-toggle='modal'>Delete</button> </td> </tr></tbody>`);
-                
+                table.append(`<tbody id="data-listing"><tr> <td>${manifest.title} </td> <td>${manifest.stage} </td> <td>${moment(manifest.dateCreated, "YYYY-MM-DD").format("dddd, LL")} </td> <td>${manifest.createdBy} </td> <td><a href='/warehouse/${url}/${manifest.mid}' class='btn btn-sm btn-primary'>Manage</a> <button class='btn btn-danger btn-sm rm-manifest-launch' data-id='${manifest.mid}' data-target='#rm-manifest-modal' data-toggle='modal'>Delete</button> </td> </tr></tbody>`);
+
 
             } else {
 
-                $(tableBody).prepend(`<tr> <td><strong>${manifest.title}</strong> </td> <td>${manifest.stage} </td> <td>${moment(manifest.dateCreated,"YYYY-MM-DD").format("dddd, LL")} </td> <td>${manifest.createdBy} </td> <td><a href='/warehouse/${url}/${manifest.mid}' class='btn btn-sm btn-primary'>Manage</a> <button class='btn btn-danger btn-sm rm-manifest-launch' data-id='${manifest.mid}' data-target='#rm-manifest-modal' data-toggle='modal'>Delete</button> </td> </tr>`);
+                $(tableBody).prepend(`<tr> <td><strong>${manifest.title}</strong> </td> <td>${manifest.stage} </td> <td>${moment(manifest.dateCreated, "YYYY-MM-DD").format("dddd, LL")} </td> <td>${manifest.createdBy} </td> <td><a href='/warehouse/${url}/${manifest.mid}' class='btn btn-sm btn-primary'>Manage</a> <button class='btn btn-danger btn-sm rm-manifest-launch' data-id='${manifest.mid}' data-target='#rm-manifest-modal' data-toggle='modal'>Delete</button> </td> </tr>`);
             }
-            setupUpDelete(); 
+            setupUpDelete();
         }, 100)
 
 
@@ -38,23 +38,25 @@ $(function () {
             success: function (result) {
                 console.log(result);
                 if (result.manifest.mid > 0) {
-                    notes.show("Manifest Created", {
-                        type: 'success',
-                        title: 'Hey',
-                        icon: '<i class="icon-icon-lock-open-outline"></i>',
-                        sticky: true,
-                        hide: 3000
+                    swal("Hey", "Manifest Created", {
+                        icon: "success",
+                        buttons: {
+                            confirm: {
+                                className: 'btn btn-success'
+                            }
+                        },
                     });
                     $(".alert-warning").hide();
                     console.log(result);
                     addManifest(result.manifest);
                 } else {
-                    //show the message that 
-                    notes.show(result.error.message, {
-                        type: 'danger',
-                        title: 'Opps',
-                        icon: '<i class="icon-icon-lock-open-outline"></i>',
-                        sticky: true
+                    swal("Opps", result.error.message, {
+                        icon: "error",
+                        buttons: {
+                            confirm: {
+                                className: 'btn btn-danger'
+                            }
+                        },
                     });
                 }
 
@@ -62,13 +64,13 @@ $(function () {
 
 
         });
-    });     
-    setupUpDelete(); 
-    var currDelBtn; 
-    function setupUpDelete(){
+    });
+    setupUpDelete();
+    var currDelBtn;
+    function setupUpDelete() {
         $(".rm-manifest-launch").off().click(function () {
-            $('.rm-manifest').attr('data-id',$(this).attr('data-id')); 
-            currDelBtn = $(this); 
+            $('.rm-manifest').attr('data-id', $(this).attr('data-id'));
+            currDelBtn = $(this);
         })
         $(".rm-manifest").off().click(function () {
             var mid = $(this).attr('data-id');
@@ -80,9 +82,9 @@ $(function () {
                 },
                 success: function (result) {
                     $(".close-del").trigger('click');
-                    if(result.deleted){
-                    currDelBtn.parent().parent().remove(); 
-                    
+                    if (result.deleted) {
+                        currDelBtn.parent().parent().remove();
+
                         notes.show("The manifest has been successfully deleted.", {
                             type: 'success',
                             title: 'Deleted Manifest',
@@ -92,9 +94,9 @@ $(function () {
                         });
                     }
                 }
-    
+
             });
         })
     }
-    
+
 });

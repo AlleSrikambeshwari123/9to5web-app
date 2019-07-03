@@ -1,0 +1,134 @@
+<!-- Sidebar -->
+<div class="sidebar sidebar-style-2">
+	<div class="sidebar-wrapper scrollbar scrollbar-inner">
+		<div class="sidebar-content">
+			<div class="user">
+				<div class="avatar-sm float-left mr-2">
+					<img src="/img/logo-square.jpg" alt="..." class="avatar-img rounded-circle">
+				</div>
+				<div class="info">
+					<a data-toggle="collapse" href="#collapseExample" aria-expanded="true">
+						<span>
+							<%=luser%>
+							<span class="user-level">Administrator</span>
+							<span class="caret"></span>
+						</span>
+					</a>
+					<div class="clearfix"></div>
+
+					<div class="collapse in" id="collapseExample">
+						<ul class="nav">
+							<li>
+								<a href="#profile">
+									<span class="link-collapse">My Profile</span>
+								</a>
+							</li>
+							<li>
+								<a href="#edit">
+									<span class="link-collapse">Edit Profile</span>
+								</a>
+							</li>
+							<li>
+								<a href="#settings">
+									<span class="link-collapse">Settings</span>
+								</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+			<ul class="nav nav-primary">
+				<li class="nav-item active">
+					<a data-toggle="collapse" href="#admin" class="collapsed" aria-expanded="false">
+						<i class="fas fa-home"></i>
+						<p>Admin</p>
+						<span class="caret"></span>
+					</a>
+					<div class="collapse" id="admin">
+						<ul class="nav nav-collapse">
+							<li>
+								<a href="/admin/">
+									<span class="sub-item">Admin Dashboard</span>
+								</a>
+							</li>
+							<li>
+								<a href="/admin/users">
+									<span class="sub-item">Users</span>
+								</a>
+							</li>
+							<li>
+								<a href="/admin/customersV1">
+									<span class="sub-item">Customers</span>
+								</a>
+							</li>
+						</ul>
+					</div>
+				</li>
+				<li class="nav-item">
+					<a data-toggle="collapse" href="#warehouse">
+						<i class="fas fa-warehouse"></i>
+						<p>Warehouse</p>
+						<span class="caret"></span>
+					</a>
+					<div class="collapse" id="warehouse">
+						<ul class="nav nav-collapse">
+							<li>
+								<a href="/warehouse/list-manifest">
+									<span class="sub-item">Air Cargo</span>
+								</a>
+							</li>
+							<li>
+								<a href="/warehouse/list-ocean">
+									<span class="sub-item">Ocean Cargo</span>
+								</a>
+							</li>
+							<li>
+								<a href="/warehouse/list-hazmat">
+									<span class="sub-item">Hamzat</span>
+								</a>
+							</li>
+							<li>
+								<a href="/warehouse/processing">
+									<span class="sub-item">Trinidad Processing</span>
+								</a>
+							</li>
+							<li>
+								<a href="/warehouse/store-check-in">
+									<span class="sub-item">Store Check-in</span>
+								</a>
+							</li>
+						</ul>
+					</div>
+				</li>
+				<li class="nav-section">
+					<span class="sidebar-mini-icon">
+						<i class="fa fa-ellipsis-h"></i>
+					</span>
+					<h4 class="text-section">Account Options</h4>
+				</li>
+				<li class="nav-item">
+					<a data-toggle="collapse" href="#myaccount">
+						<i class="fas fa-user"></i>
+						<p>My Account</p>
+						<span class="caret"></span>
+					</a>
+					<div class="collapse" id="myaccount">
+						<ul class="nav nav-collapse">
+							<li>
+								<a href="/users/change-pass">
+									<span class="sub-item">Change Password</span>
+								</a>
+							</li>
+							<li>
+								<a href="/logout">
+									<span class="sub-item">Logout</span>
+								</a>
+							</li>
+						</ul>
+					</div>
+				</li>
+			</ul>
+		</div>
+	</div>
+</div>
+<!-- End Sidebar -->

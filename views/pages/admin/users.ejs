@@ -1,58 +1,57 @@
 <% layout('./shared/__template')%>
-    <div class='gutters'>
-        <div class="col-xl-12 col-lg-6 col-md-12 col-sm-12">
-            <div class="card">
-                <div class="card-header">System Users  <a href='/admin/user/' class='btn btn-primary float-right'>Add User</a></div>
-                <div class="card-body">
-                    <table class="table m-0">
-                        <thead>
-                            <tr>
-                                <th>Role</th>
-                                <th>Username</th>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Mobile</th>
-                                <th>Status</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                              
-                            <% users.forEach(function(user){%>
-                                <tr>
-                                        <th scope="row"><%=user.role%></th>
-                                        <td><%=user.username%></td>
-                                        <td><%=user.firstName%> <%=user.lastName%></td>
-                                        <td><%=user.email%></td>
-                                        <td><%=user.mobile %></td>
-                                        <td>
-                                             <%  if (user.enabled == false)
-                                                    { %>
-                                                        <span class='badge badge-danger'>Inactive</span>
-                                                   <% }
-                                                else {%>
-                                                    <span class='badge badge-info'>Active</span>
-                                                <%}%>
-                                          
-                                           
-                                        </td>
-                                        <td><a href='/admin/user/<%=user.username%>' ><i class='icon-edit'></i></a> <a href='#' class='rm-user' data-id='<%=user.username%>'><i class='icon-delete'></i></a> 
-                                            <%  if (user.enabled == false)
-                                            { %>
-                                               <a href='#' class='enableUser' data-id='<%=user.username%>' data-value='true'> <span class='badge badge-info float-right'>Enable</span></a>
-                                           <% }
-                                        else {%>
-                                            <a href='#' class='enableUser' data-id='<%=user.username%>' data-value='false'>  <span class='badge badge-danger float-right'>Disable</span> </a>
-                                        <%}%>
-                                            <!-- <span class="badge badge-danger">Disable</span>--></td>
-                                    </tr>
-                                <%})%>
-                          
-                         
-                        </tbody>
-                    </table>
-                </div>
+<div class='gutters'>
+    <div class="col-xl-12 col-lg-6 col-md-12 col-sm-12">
+        <div class="card">
+            <div class="card-header">System Users
+                <a href='/admin/user/' class='btn btn-primary float-right'>Add User</a>
+            </div>
+            <div class="card-body">
+                <table class="table m-0">
+                    <thead>
+                        <tr>
+                            <th>Role</th>
+                            <th>Username</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Mobile</th>
+                            <th>Status</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% users.forEach(function(user){%>
+                        <tr>
+                            <th scope="row"><%=user.role%></th>
+                            <td><%=user.username%></td>
+                            <td><%=user.firstName%> <%=user.lastName%></td>
+                            <td><%=user.email%></td>
+                            <td><%=user.mobile %></td>
+                            <td>
+                                <%  if (user.enabled == false){ %>
+                                <span class='badge badge-danger'>Inactive</span>
+                                <% } else { %>
+                                <span class='badge badge-info'>Active</span>
+                                <%}%>      
+                            </td>
+                            <td>
+                                <a href='/admin/user/<%=user.username%>'><i class="fas fa-user-edit"></i></a>
+                                <a href='#' class='rm-user' data-id='<%=user.username%>'><i
+                                        class="fas fa-trash"></i></a>
+                                <%  if (user.enabled == false){ %>
+                                <a href='#' class='enableUser' data-id='<%=user.username%>' data-value='true'> <span
+                                        class='badge badge-info float-right'>Enable</span></a>
+                                <% }else {%>
+                                <a href='#' class='enableUser' data-id='<%=user.username%>' data-value='false'> <span
+                                        class='badge badge-danger float-right'>Disable</span> </a>
+                                <%}%>
+                                <!-- <span class="badge badge-danger">Disable</span>-->
+                            </td>
+                        </tr>
+                        <%})%>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
-    <% block('scripts').append('<script src="/js/adminUsers.js"></script>')%>
+</div>
+<% block('scripts').append('<script src="/js/adminUsers.js"></script>')%>
