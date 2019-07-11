@@ -1,0 +1,25 @@
+<% layout('./shared/__template')%>
+<div class='gutters'>
+	<div class="col-xl-12 col-lg-6 col-md-12 col-sm-12">
+		<div class="card">
+			<div class="card-header">
+				<a href='/fleet/addroutes' class='btn btn-primary btn-round float-right'>Add Routes</a>
+			</div>
+			<div class="card-body">
+				<table class="table m-0">
+					<thead>
+						<tr>
+							<th>Route Name</th>
+							<th>Description</th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody>
+
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+<% block('scripts').append('<script src="/js/fleet/routes.js"></script>')%>

@@ -1,0 +1,28 @@
+<% layout('./shared/__template')%>
+<div class='gutters'>
+	<div class="col-xl-12 col-lg-6 col-md-12 col-sm-12">
+		<div class="card">
+			<div class="card-header">Vehicles
+				<a href='/fleet/addvehicle' class='btn btn-primary float-right'>Add Vehicle</a>
+			</div>
+			<div class="card-body">
+				<table class="table m-0">
+					<thead>
+						<tr>
+							<th>Make</th>
+							<th>Model</th>
+							<th>License Plate</th>
+							<th>Driver</th>
+							<th>Route</th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody>
+
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+<% block('scripts').append('<script src="/js/fleet/vehicles.js"></script>')%>
