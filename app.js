@@ -5,16 +5,17 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var ejsmate = require('ejs-mate');
-var session = require ('client-sessions');
+var session = require('client-sessions');
 var index = require('./routes/index');
 var users = require('./routes/users');
 var admin = require('./routes/admin');
 var warehouse = require('./routes/warehouse');
+var fleet = require('./routes/fleet');
 
 var app = express();
 
 // view engine setup
-app.engine("ejs",ejsmate);
+app.engine("ejs", ejsmate);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
@@ -30,21 +31,22 @@ app.use(session({
   cookieName: 'session',
   secret: 'Silver123.',
   duration: 30 * 60 * 1000,
-  activeDuration: 5*60*1000
+  activeDuration: 5 * 60 * 1000
 }));
 app.use('/', index);
 app.use('/users', users);
 app.use('/admin', admin);
-app.use('/warehouse',warehouse);
+app.use('/warehouse', warehouse);
+app.use('/fleet', fleet);
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   var err = new Error('Not Found');
   err.status = 404;
   next(err);
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
