@@ -135,7 +135,7 @@ var ManifestService = exports.ManifestService = function () {
                     if (openCount > 0) {
                         //we can't add the manifest reject 
                         reject({
-                            "message": "There is an open manifest.\nPlease close it before creating a new manifest."
+                            "message": "There is an open manifest Please close it before creating a new manifest."
                         });
                     } else {
                         _this2.redisClient.multi().incr(MID_COUNTER).exec(function (err, resp) {
@@ -176,7 +176,7 @@ var ManifestService = exports.ManifestService = function () {
                 lredis.client.hmset(MID_PREFIX + mid, "stageId", stages, function (err, result) {
                     var stage = _this3.getStageById(stages);
                     console.log('looked up the stage ' + stage.title);
-                    lredis.client.hmset(MID_PREFIX + mid, "stage", stage.title, function (err, result2) { });
+                    lredis.client.hmset(MID_PREFIX + mid, "stage", stage.title, function (err, result2) {});
                     lredis.hgetall(MID_PREFIX + mid).then(function (uManifest) {
                         _this3.mySearch.delDocument("index:manifest", mid, function (err, result1) {
                             console.log('changing document');
