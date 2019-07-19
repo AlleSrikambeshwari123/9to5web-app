@@ -9,11 +9,12 @@ var bcrypt = require('bcrypt');
 const PREFIX  = "user:"
 const INDEX = "index:users"
 const USERIDCOUNTER = "user:id"; 
-var client = redis.createClient(6379, "core.shiptropical.com", {
-    auth_pass: 'Silver123.',
-    tls:{
-        servername: 'core.shiptropical.com'
-    }
+const ENV = require('../environment')
+var client = redis.createClient(ENV.redis_port, ENV.redis_host, {
+    auth_pass: ENV.redis_pass,
+    // tls:{
+    //     servername: 'core.shiptropical.com'
+    // } 
 });
 export class UserService {
     constructor(){
@@ -64,6 +65,7 @@ export class UserService {
                     delete result.password; 
                     resolve({user:result})
                 }
+                else resolve({user:{username:'',firstName:'',lastName:'',email:'',mobile:''}})
             })
          
         });
@@ -82,12 +84,13 @@ export class UserService {
     getRoles(){
         return new Promise (function(resolve,reject){
 
-            resolve(["Admin","Warehouse MIA","Customs Agent","Warehouse TT","Cashier","Location Manager"])
+            resolve(["Admin","Warehouse FLL","Customs Agent","Warehouse BAHAMAS","Cashier","Location Manager"])
             
         });
     }
     getAllUsers(pageSize,currentPage){
         var srv = this; 
+        console.log('getting all users')
         return new Promise (function(resolve,reject){
             var offset
            srv.redisIndexSearch.search('*',{

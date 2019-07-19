@@ -15,12 +15,14 @@ router.get('/', middleware(services.userService).requireAuthentication, function
     pageData.RoleId = res.User.role;
     res.render('pages/admin/dashboard', pageData);
 });
-router.get('/users', middleware(services.userService).requireAuthentication, function (req, res, next) {
+router.get('/users',  function (req, res, next) {
     var pageData = {};
     pageData.title = "System Users"
     console.log(res.User,"here");
-    pageData.luser = res.User.firstName + ' ' + res.User.lastName;
-    pageData.RoleId = res.User.role;
+    // pageData.luser = res.User.firstName + ' ' + res.User.lastName;
+    // pageData.RoleId = res.User.role;
+    pageData.luser = 'stevan thomas';
+    pageData.RoleId = "Admin";
     console.log(pageData,"here")
     services.userService.getAllUsers().then(function (userResult) {
         console.log(userResult);
@@ -29,13 +31,13 @@ router.get('/users', middleware(services.userService).requireAuthentication, fun
     });
 
 });
-router.get('/user/:username?', middleware(services.userService).requireAuthentication, function (req, res, next) {
+router.get('/user/:username?',  function (req, res, next) {
     var pageData = {};
     var user = req.params.username;
-    pageData.RoleId = res.User.role;
-  
-    pageData.luser = res.User.firstName + ' ' + res.User.lastName;
+    pageData.luser = 'stevan thomas';
+    pageData.RoleId = "Admin";
     //get the user 
+    console.log('loading up user page'); 
     services.userService.getUser(user).then(function (uResult) {
         console.log(uResult,"found user")
         services.userService.getRoles().then(function (rResult) {
@@ -64,7 +66,7 @@ router.post('/rm-user', middleware(services.userService).requireAuthentication, 
         res.send(result);
     });
 });
-router.post('/user/', middleware(services.userService).requireAuthentication, function (req, res, next) {
+router.post('/user/',  function (req, res, next) {
     var body = req.body;
     console.log(body);
     var user = {

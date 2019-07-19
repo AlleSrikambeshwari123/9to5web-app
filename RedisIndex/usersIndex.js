@@ -1,13 +1,13 @@
 var redis = require('redis'); 
 var rediSearch = require('../redisearchclient/index'); 
-
+var env = require('../environment')
 
 let userIndex = rediSearch(redis,'index:users', {
     clientOptions: {
-                 'host': 'core.shiptropical.com',
-                 'port': '6379',
-                 auth_pass: 'Silver123.',
-                 tls:{ servername:'core.shiptropical.com'}
+                 'host': env.redis_host,
+                 'port': env.redis_port,
+                 auth_pass: env.redis_pass,
+                //  tls:{ servername:env.red}
     }
     
 }); 

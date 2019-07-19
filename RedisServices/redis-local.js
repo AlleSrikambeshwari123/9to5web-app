@@ -1,18 +1,18 @@
 var redis = require('redis');
 const NSPACE_CUST = "skybox:";
 const NSPACE_BOX = "tew:owner:";
-
-var client = redis.createClient(6379, "core.shiptropical.com", {
-    auth_pass: 'Silver123.',
-    tls:{
-        servername: 'core.shiptropical.com'
-    }
+var env = require('../environment')
+var client = redis.createClient(env.redis_port, env.redis_host, {
+    auth_pass: env.redis_pass,
+    // tls:{
+    //     servername: 'core.shiptropical.com'
+    // }
 });
 var searchClientOption = {
-    'host': 'core.shiptropical.com',
-    'port': '6379',
-    auth_pass: 'Silver123.',
-    tls:{ servername:'core.shiptropical.com'}
+    'host': env.redis_host,
+    'port': env.redis_port,
+    auth_pass: env.redis_pass,
+    // tls:{ servername:env.redis_host}
 }
 
 var get = (key) => {
