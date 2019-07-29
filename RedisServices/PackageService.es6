@@ -1,3 +1,4 @@
+import { cpus } from "os";
 
 
 var redis = require("redis");
@@ -9,18 +10,43 @@ var fs = require("fs");
 var PackageUtil = require("../Util/packageutil").PackageUtility;
 var packageUtil = new PackageUtil();
 const PKG_IDX = "index:packages";
+const PKG_ID_COUNTER = "package:id";
+var dataContext = require('./dataContext')
 const PKG_PREFIX = "packages:";
+const PKG_STATUS = { 
+  1 : "Received",
+  2: "In Transit",
+  3: "Processing",
+  4: "Ready for Pickup / Delivery",
+  5: "Out for Delivery",
+  6: "Delivered"
+
+}; 
+
+const rediSearch = redisSearch(redis, PKG_IDX, {
+  clientOptions: lredis.searchClientDetails
+});
+function getPackageVolumne(mPackage){
+
+  return 0; 
+}
 function createDocument(tPackage) {
   var packageDocument = {
     trackingNo: tPackage.trackingNo,
     skybox: tPackage.skybox,
+    dateRecieved : moment().unix(), 
+    awb:0, 
+    mid:0,
+    volume: getPackageVolumne(tPackage),
     customer: tPackage.customer,
     shipper: tPackage.shipper,
     description: tPackage.description,
-    skyboxV: tPackage.skybox,
+    dimenions:tPackage.dimensions,
+    //skyboxV: tPackage.skybox, add dimenion 
     status: tPackage.status,
     mid: tPackage.mid,
-    value: tPackage.ttvalue
+    value: tPackage.value,
+    
   };
   console.log("about to add the package to the index");
   return packageDocument;
@@ -66,7 +92,51 @@ export class PackageService {
       clientOptions: lredis.searchClientDetails
     });
   }
-  savePackage(body) {
+  savePackage(body){
+    return new Promise((resolve,reject)=>{
+      var cPackage = {
+        skybox: body.skybox,
+        customer: body.customer.replace("-", "").trim(),
+        trackingNo: body.tracking,
+        description: body.description,
+        shipper: body.shipper,
+        carrier:body.carrier,
+        value: Number(body.value),
+        pieces: Number(body.pieces),
+        weight: Number(body.weight),
+        dimensions: body.dimensions,
+        status: 1,
+        location: "FLL",
+        mid: 0,
+        awb:0,
+        //hasOpt: true,
+        //mtype: body.mtype
+      };
+      //validate the package 
+      dataContext.redisClient.incr(PKG_ID_COUNTER,(err,id)=>{
+        cPackage.id = id; 
+        dataContext.redisClient.set(PKG_PREFIX+id,cPackage,(err,response)=>{
+          if (err){
+            reject({saved:false,err:err})
+          }
+           var indexPackage =  createDocument(cPackage); 
+           console.log(indexPackage); 
+           rediSearch.add(cPackage.id,indexPackage,(err1,docResult)=>{
+             console.log(docResult); 
+             if(err1){
+               reject({saved:false,err:err1})
+             }
+             resolve({saved:true})
+           })
+
+        })
+      });
+    
+
+
+    })
+  }
+  savePackageOld(body) {
     
     var searcher = this.mySearch; 
     return new Promise((resolve, reject) => {
@@ -81,40 +151,30 @@ export class PackageService {
         pieces: Number(body.pieces),
         weight: Number(body.weight),
         status: 1,
-        location: "Miami",
+        location: "FLL",
         mid: body.mid,
         hasOpt: true,
-        mtype: body.mtype
+        //mtype: body.mtype
       };
       console.log("about to save the package");
       if (typeof cPackage.shipper === "undefined") cPackage.shipper = "";
       if (typeof cPackage.description === "undefined")
         cPackage.description = "";
       console.log(body);
-      if (Number(body.isBusiness) == 1) {
-        cPackage.hasOpt = false;
-      }
-      cPackage = packageUtil.calculateFees(cPackage);
+      // if (Number(body.isBusiness) == 1) {
+      //   cPackage.hasOpt = false;
+      // }
+      //cPackage = packageUtil.calculateFees(cPackage);
       console.log("package with fees");
 
       //we also want to calculate the the package fees one time......
       //we have the package details here .. now we need to get the existing package
 
-      var container = "";
-      var containerNo = "";
-      if (typeof body.bag != "undefined") {
-        cPackage.bag = body.bag;
-        container = "bag";
-        containerNo = cPackage.bag;
-      }
-      if (typeof body.skid != "undefined") {
-        cPackage.skid = body.skid;
-        container = "skid";
-        containerNo = cPackage.skid;
-      }
+     
       //we need to check to see of the owner is a business here
-
+      console.log("here about to get the package")
       lredis.getPackage(cPackage.trackingNo).then(p => {
+        console.log('p is the ',p); 
         if (p) {
           var currentContainer = `manifest:${p.mid}:${p.mtype}:${container}:`;
           console.log("found package ");
@@ -202,6 +262,8 @@ export class PackageService {
           });
 
         //save the package to the package NS
+      }).catch(err232=>{
+        console.log(err232)
       });
     });
   }

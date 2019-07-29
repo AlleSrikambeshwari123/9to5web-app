@@ -89,13 +89,13 @@ $(function () {
     $(".savePackage").click(function () {
 
         var package = getPackageDetails($(this));
-        var stage = $(this).attr('data-stage');
-        var mtype = $("#mytpe").val();
+        //var stage = $(this).attr('data-stage');
+       // var mtype = $("#mytpe").val();
         var validPackage = validatePackage(package, $(this));
         var form = $(this).closest('form');
         if (validPackage) {
             //save
-            savePackage(package, form, Number(stage) > 1);
+            savePackage(package, form, false);
         } else {
             console.log('not saving the package...Invalid')
         }
@@ -317,16 +317,19 @@ $(function () {
             value: $(form).find('.package-value').val(),
             pieces: $(form).find('.pieces').val(),
             weight: $(form).find('.weight').val(),
-            mid: $(form).find('.mid').val(),
-            mtype: $(form).find('.mtype').val(),
+            dimensions: $(form).find('.dimensions').val(),
+            carrier: $(form).find('carrier').val(),
+            issue: $("form").find('.issue').val(), 
+            //mid: $(form).find('.mid').val(),
+            //mtype: $(form).find('.mtype').val(),
             isBusiness: $(form).find('.isBusiness').val()
         }
 
-        if (typeof $(form).find('.bag').val() != 'undefined') {
-            package.bag = $(form).find('.bag').val()
-        } else {
-            package.skid = $(form).find('.skid').val();
-        }
+        // if (typeof $(form).find('.bag').val() != 'undefined') {
+        //     package.bag = $(form).find('.bag').val()
+        // } else {
+        //     package.skid = $(form).find('.skid').val();
+        // }
         console.log(package)
         return package;
 
@@ -487,18 +490,21 @@ $(function () {
         form.find('.trackingNo').val('');
         form.find('.description').val('');
         form.find('.shipper').val('');
+        form.find('.carrier').val('');
+        form.find('.issue').val('');
+        form.find('.dimensions').val('');
         form.find('.package-value').val('');
         form.find('.pieces').val('');
         form.find('.weight').val('');
-        var bagInput = form.find('.bag');
-        var skidinput = form.find('.skid');
-        console.log(bagInput);
-        console.log('skid');
-        console.log(skidinput);
-        if (bagInput.length > 0)
-            bagInput.focus();
-        else if (skidinput.length > 0)
-            skidinput.focus();
+        // var bagInput = form.find('.bag');
+        // var skidinput = form.find('.skid');
+        // console.log(bagInput);
+        // console.log('skid');
+        // console.log(skidinput);
+        // if (bagInput.length > 0)
+        //     bagInput.focus();
+        // else if (skidinput.length > 0)
+        //     skidinput.focus();
     }
 
 
@@ -522,33 +528,23 @@ $(function () {
             $("#packageCount").text(packages.length);
         }
         var colDef = [
-            {
-                title: containerLabel,
-                data: null,
-                render: function (data, type, row, meta) {
-                    // console.log(data);
-                    if (ctype == 'mail')
-                        return `${data.bag}`;
-                    else
-                        return `${data.skid} `;
-                }
-            },
+           
             {
                 title: "Skybox",
                 data: null,
                 render: function (data, type, row, meta) {
                     // console.log(data);
-                    return `T-${data.skybox} `;
+                    return `${data.skybox} `;
                 }
             },
-            {
-                title: "Customer",
-                data: null,
-                render: function (data, type, row, meta) {
-                    // console.log(data);
-                    return `${data.customer} `;
-                }
-            },
+            // {
+            //     title: "Customer",
+            //     data: null,
+            //     render: function (data, type, row, meta) {
+            //         // console.log(data);
+            //         return `${data.customer} `;
+            //     }
+            // },
             {
                 title: "Tracking No",
                 data: null,
@@ -592,7 +588,7 @@ $(function () {
                 }
             },
             {
-                title: "",
+                title: "Dimensions",
                 data: null,
                 render: function (data, type, row, meta) {
                     // console.log(data);

@@ -151,6 +151,7 @@ export class UserService {
                         user.password = bcrypt.hashSync(user.password,10); 
                         lredis.hmset(PREFIX+user.username,user)
                         addUserToIndex(user,srv.redisIndexSearch); 
+                        resolve({saved:true,"message":"saved successfully."})
                     })
                     
                 }
@@ -159,12 +160,7 @@ export class UserService {
                     resolve({saved:false,"message":"Username taken"})
                 }
             })
-            // dataContext.getServiceProxy(SERVICE_KEY).saveUser(user,function(error,result){
-            //     if (error){
-            //         reject(error);
-            //     }
-            //     resolve( result);
-            // });
+            
         });
     }
     verifyToken (token){

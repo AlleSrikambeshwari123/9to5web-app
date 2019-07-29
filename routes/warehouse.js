@@ -220,7 +220,14 @@ router.get('/packages/:mid', middleware(services.userService).requireAuthenticat
 
 
 });
-
+router.get ('/fll-new-package',middleware(services.userService).requireAuthentication, (req,res,next)=>{
+    var pageData = {};
+    pageData.title = "Add Packages";
+    pageData.mid = req.params.mid;
+    pageData.luser = res.User.FirstName + ' ' + res.User.LastName;
+    pageData.RoleId = res.User.RoleId;
+    res.render('pages/warehouse/fll-add-package',pageData); 
+})
 router.post('/close-manifest', middleware(services.userService).requireAuthentication, (req, res, next) => {
     var mid = Number(req.body.mid);
     rServices.manifestService.changeStage(mid, 2).then((cResult) => {
@@ -467,28 +474,28 @@ function NewPackageAlert(package) {
             console.log(err);
         emailRequest.email = data;
 
-        lredis.hgetall("tew:owners:" + package.skybox).then((customer) => {
-            emailRequest.toPerson = customer.email;
-            emailRequest.name = customer.name;
-            //replace the email with the detials 
-            emailRequest.email = emailRequest.email.replace("{{NAME}}", customer.name)
-            emailRequest.email = emailRequest.email.replace("{{TRACKINGNO}}", package.trackingNo)
-            if (typeof package.shipper != "undefined")
-                emailRequest.email = emailRequest.email.replace("{{SHIPPER}}", package.shipper);
-            else
-                emailRequest.email = emailRequest.email.replace("{{SHIPPER}}", "N/A");
-            emailRequest.email = emailRequest.email.replace("{{DATEREC}}", moment().format("YYYY-MM-DD"));
-            redis.client.hexists("packages:" + package.trackingNo, "emailSent", (err, exists) => {
-                if (exists == 0) {
+        // lredis.hgetall("tew:owners:" + package.skybox).then((customer) => {
+        //     emailRequest.toPerson = customer.email;
+        //     emailRequest.name = customer.name;
+        //     //replace the email with the detials 
+        //     emailRequest.email = emailRequest.email.replace("{{NAME}}", customer.name)
+        //     emailRequest.email = emailRequest.email.replace("{{TRACKINGNO}}", package.trackingNo)
+        //     if (typeof package.shipper != "undefined")
+        //         emailRequest.email = emailRequest.email.replace("{{SHIPPER}}", package.shipper);
+        //     else
+        //         emailRequest.email = emailRequest.email.replace("{{SHIPPER}}", "N/A");
+        //     emailRequest.email = emailRequest.email.replace("{{DATEREC}}", moment().format("YYYY-MM-DD"));
+        //     redis.client.hexists("packages:" + package.trackingNo, "emailSent", (err, exists) => {
+        //         if (exists == 0) {
 
-                    services.manifestService.alertCustomer(emailRequest).then((emailResult) => {
-                        //set the package to alerted 
-                        if (emailResult.sent == true)
-                            redis.hmset("packages:" + package, { emailSent: 1 })
-                    })
-                }
-            });
-        });
+        //             services.manifestService.alertCustomer(emailRequest).then((emailResult) => {
+        //                 //set the package to alerted 
+        //                 if (emailResult.sent == true)
+        //                     redis.hmset("packages:" + package, { emailSent: 1 })
+        //             })
+        //         }
+        //     });
+        // });
 
     });
 

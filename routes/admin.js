@@ -76,17 +76,19 @@ router.post('/user/',  function (req, res, next) {
         password: body.password,
         email: body.email,
         mobile: body.mobile,
-        role: Number(body.userRole)
+        role: body.userRole
     };
     services.userService.getRoles().then(function (rResult) {
         services.userService.saveUser(user).then(function (suResult) {
+            console.log(suResult,"save user Results")
             if (suResult.saved == true) {
                 res.redirect('/admin/users');
             } else {
                 var pageData = {};
                 pageData.user = user;
                 pageData.roles = rResult.roles;
-                pageData.luser = res.User.FirstName + ' ' + res.User.LastName;
+                //pageData.luser = res.User.FirstName + ' ' + res.User.LastName;
+                pageData.luser = "Admin 9-5 Imports"
                 res.render('pages/admin/saveUser', pageData);
             }
         });
