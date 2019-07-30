@@ -103,7 +103,7 @@ router.get('/customersV1/', middleware(services.userService).requireAuthenticati
     pageData.luser = res.User.firstName + ' ' + res.User.lastName;
     pageData.RoleId = res.User.role;
     pageData.owners = [];
-    rCusomterService.listAllCustomers().then((pResult)=>{
+    rCusomterService.listCustomers(1,25).then((pResult)=>{
         var pagerInfo = {
             totalRecords: pResult.totalResults
         }

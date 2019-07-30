@@ -1,10 +1,11 @@
 var redis = require('redis');
 var lredis = require('./redis-local');
 var redisSearch = require('redisearchclient');
-
+const PREFIX = "95:owners"
+const INDEX = "95:customers"
 export class CustomerService {
     constructor() {
-        this.mySearch = redisSearch(redis, 'tew:customers', {
+        this.mySearch = redisSearch(redis, '95:customers', {
             clientOptions: lredis.searchClientDetails
         });
     }
@@ -83,7 +84,7 @@ export class CustomerService {
 
     getCustomer(skybox){
         return new Promise((resolve, reject) => {
-          lredis.hgetall("tew:owners:"+skybox).then((user)=>{
+          lredis.hgetall("95:owners:"+skybox).then((user)=>{
               console.log(user); 
               resolve(user); 
           })
@@ -91,7 +92,7 @@ export class CustomerService {
     } 
     saveCustomer(customer){ 
         return new Promise((resolve,reject)=>{
-            lredis.hmset("tew:owners:"+customer.skybox,customer).then((result)=>{
+            lredis.hmset("95:owners:"+customer.skybox,customer).then((result)=>{
                 resolve(result);
             }); 
         });
