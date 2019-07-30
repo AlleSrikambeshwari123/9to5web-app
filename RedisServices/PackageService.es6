@@ -307,6 +307,24 @@ export class PackageService {
     });
     })
   }
+  getNoDocsPackackages(page,pageSize){
+    return new Promise((resolve,reject)=>{
+      
+      this.mySearch.search(
+        `@hasDocs:[0 0]`,
+        { offset: 0, numberOfResults: 5000 },
+        (err, data) => {
+          var packages = [];
+          console.log(data);
+          data.results.forEach(element => {
+
+            packages.push(element.doc);
+                            
+        });
+        resolve(packages); 
+    });
+    })
+  }
   getPackageById(id){
     return new Promise((resolve,reject)=>{
       rediSearch.getDoc(id,(err,document)=>{

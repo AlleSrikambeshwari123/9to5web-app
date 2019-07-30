@@ -419,10 +419,22 @@ router.post('/get-mpackages/', middleware(services.userService).requireAuthentic
 // });
 
 router.get('/fll-no-docs',middleware(services.userService).requireAuthentication, (req, res, next) => {
-    res.render('pages/no-docs'); 
+    services.packageService.getNoDocsPackackages().then(packages=>{
+        var pageData = {}; 
+        pageData.packages = packages; 
+        pageData.title = "Packages No Documents";
+        pageData.mid = req.params.mid;
+        pageData.luser = res.User.FirstName + ' ' + res.User.LastName;
+        pageData.RoleId = res.User.RoleId;
+        res.render('pages/warehouse/no-docs',pageData); 
+    })
+    
 })
 router.get('/load-package/:trackNo', middleware(services.userService).requireAuthentication, (req, res, next) => {
     var trackingNo = req.params.trackNo;
+
+
+
     services.packageService.getPackageById(trackingNo).then(result=>{
         res.send(result);
     })

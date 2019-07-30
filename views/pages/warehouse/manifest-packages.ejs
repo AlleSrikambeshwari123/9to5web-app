@@ -14,17 +14,17 @@
                         <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab"
                             aria-controls="home" aria-selected="true" aria-expanded="true">Manifest Overview</a>
                     </li>
-                    <li class="nav-item">
+                    <!-- <li class="nav-item">
                         <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab"
                             aria-controls="profile" aria-selected="false" aria-expanded="false">Mail</a>
-                    </li>
+                    </li> -->
                     <li class="nav-item">
                         <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab"
                             aria-controls="contact" aria-selected="false" aria-expanded="false">Cargo</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" id="unproc-tab" data-toggle="tab" href="#unproc" role="tab"
-                            aria-controls="unproc" aria-selected="false" aria-expanded="false">Un-processed</a>
+                            aria-controls="unproc" aria-selected="false" aria-expanded="false">Cube / Consolidated</a>
                     </li>
                 </ul>
                 <div class="tab-content" id="myTabContent">
@@ -33,19 +33,16 @@
                         <div>
                             <div class="clearfix">
                                 <div class="btn-group custom-btn-group float-right" role="group">
-                                    <%if(Number(manifest.stageId) <= 1 ){%>
-                                    <button type="button" class="btn btn-primary btn-sm close-manifest">Close
-                                        Manifest</button>
-                                    <%}%>
-                                    <%if(Number(manifest.stageId) <= 2 ){%>
+                                  
+                                    <!-- <button type="button" class="btn btn-primary btn-sm close-manifest"> New Cube</button> -->
+                                  
                                     <button type="button" class="btn btn-success btn-sm ship-manifest-btn"
                                         data-toggle='modal' data-target='#shipManifest'>Ship Manifest</button>
 
-                                    <%}%>
-                                    <%if( Number(manifest.stageId)>=2){%>
+                                    
                                     <button type="button" class="btn btn-info btn-sm ship-manifest-btn"
                                         data-toggle='modal' data-target='#broker'>Send To Broker </button>
-                                    <%}%>
+                                    
                                     <button type="button" class="btn btn-dark btn-sm export-manifest">Export Excel</button>
                                 </div>
                             </div>
@@ -66,7 +63,7 @@
                             </div>
                             <div class='col-md-9'>
                                 <div class='row gutters pt-2 mt-4'>
-                                    <div class="card-stats card-round col-xl-4 col-lg-6 col-md-6 col-sm-6">
+                                    <!-- <div class="card-stats card-round col-xl-4 col-lg-6 col-md-6 col-sm-6">
                                         <div class="card card-body info-state">
                                             <div class="icon-type pull-left">
                                                 <i class="fas fa-envelope"></i>
@@ -76,7 +73,7 @@
                                                 <p>Mail</p>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div> -->
                                     <div class="card-stats card-round col-xl-4 col-lg-6 col-md-6 col-sm-6">
                                         <div class="card card-body info-state">
                                             <div class="icon-type ">
@@ -88,7 +85,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="card-stats card-round col-xl-4 col-lg-6 col-md-6 col-sm-6">
+                                    <!-- <div class="card-stats card-round col-xl-4 col-lg-6 col-md-6 col-sm-6">
                                         <div class="card card-body info-state">
                                             <div class="icon-type ">
                                                 <i class="fas fa-ellipsis-h"></i>
@@ -99,7 +96,7 @@
                                             </div>
                                         </div>
 
-                                    </div>
+                                    </div> -->
 
                                 </div>
 
@@ -175,10 +172,15 @@
                         <div class='row'>
                             <div class='col-md-3 pkg-form' style='<%=showForm%>'>
                                 <form method='post' id='cargoPackageForm'>
-                                    <div class='form-group'>
+                                    <!-- <div class='form-group'>
                                         <label for="skid">Skid </label>
                                         <input type='text' class='form-control skid' name='skid' required />
-                                    </div>
+                                    </div> -->
+                                    <div class='form-group'>
+                                            <label>AWB <span id='' class='text-info title'></span></label>
+                                            <input type='text' class='form-control awb' name='awb' required />
+                                            <input type='hidden' class='isBusiness' value='' />
+                                        </div>
                                     <div class='form-group'>
                                         <label>SkyBox <span id='' class='text-info title customerName'></span></label>
                                         <input type='text' class='form-control skybox' name='skybox' required />
@@ -190,28 +192,28 @@
                                         <input type='hidden' class='mtype' value='cargo' />
                                         <input type='text' class='form-control trackingNo' name='trackingNo' required />
                                     </div>
-                                    <div class='form-group'>
+                                    <!-- <div class='form-group'>
                                         <label>Description</label>
                                         <input type='text' class='form-control description' name='description'
                                             required />
-                                    </div>
-                                    <div class='form-group'>
+                                    </div> -->
+                                    <!-- <div class='form-group'>
                                         <label>Shipper</label>
                                         <input type='text' class='form-control shipper' name='shipper' />
-                                    </div>
-                                    <div class='form-group'>
+                                    </div> -->
+                                    <!-- <div class='form-group'>
                                         <label>Value</label>
                                         <input type='text' class='form-control package-value' name='value' required />
-                                    </div>
-                                    <div class='form-group'>
+                                    </div> -->
+                                    <!-- <div class='form-group'>
                                         <label>Pieces</label>
                                         <input type='text' class='form-control pieces' name='pieces' required />
-                                    </div>
+                                    </div> -->
 
-                                    <div class='form-group'>
+                                    <!-- <div class='form-group'>
                                         <label>Weight</label>
                                         <input type='text' class='form-control weight' name='weight' />
-                                    </div>
+                                    </div> -->
                                     <div class='form-group'>
                                         <button class='btn btn-primary savePackage' data-stage='<%=manifest.StageId%>'
                                             type='button'>
@@ -233,8 +235,7 @@
                             <div class='col-md-3 pkg-form' style='<%=showForm%>'>
                                 <form method='post' id='unprocPackageForm'>
                                     <div class='form-group'>
-                                        <label>Skid </label>
-                                        <input type='text' class='form-control skid' name='skid' required />
+                                            <button type="button" class="btn btn-primary btn-sm close-manifest"> New Cube</button>
                                     </div>
                                     <div class='form-group'>
                                         <label>SkyBox <span id='' class='text-info title customerName'></span></label>
@@ -247,14 +248,14 @@
                                         <input type='hidden' class='mtype' value='unproc' />
                                         <input type='text' class='form-control trackingNo' name='trackingNo' required />
                                     </div>
-                                    <div class='form-group'>
+                                    <!-- <div class='form-group'>
                                         <label>Value</label>
                                         <input type='text' class='form-control package-value' name='value' required />
                                     </div>
                                     <div class='form-group'>
                                         <label>Weight</label>
                                         <input type='text' class='form-control weight' name='weight' />
-                                    </div>
+                                    </div> -->
                                     <div class='form-group'>
                                         <button class='btn btn-primary savePackage' data-stage='<%=manifest.StageId%>'
                                             type='button'>
