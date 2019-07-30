@@ -124,6 +124,11 @@ $(function () {
             }
         });
     });
+    $(".new-cube").click(function () {
+        var btn = $(this);
+       btn.hide(); 
+       $(".cubeId").show(); 
+    });
     $(".ship-manifest").click(function () {
         //we need the awb 
         var btn = $(".ship-manifest-btn");
