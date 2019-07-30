@@ -226,7 +226,12 @@ router.get ('/fll-new-package',middleware(services.userService).requireAuthentic
     pageData.mid = req.params.mid;
     pageData.luser = res.User.FirstName + ' ' + res.User.LastName;
     pageData.RoleId = res.User.RoleId;
-    res.render('pages/warehouse/fll-add-package',pageData); 
+    //get new packages 
+   
+      
+        res.render('pages/warehouse/fll-add-package',pageData); 
+  
+    
 })
 router.post('/close-manifest', middleware(services.userService).requireAuthentication, (req, res, next) => {
     var mid = Number(req.body.mid);
@@ -362,7 +367,6 @@ router.post('/rm-manifest', middleware(services.userService).requireAuthenticati
 
 //#endregion
 
-//#region Package Functions 
 
 router.post('/get-customer-info', middleware(services.userService).requireAuthentication, (req, res, next) => {
     //get customer information 
@@ -383,45 +387,55 @@ router.post('/get-customer-info', middleware(services.userService).requireAuthen
     });
 
 });
-
 router.post('/get-mpackages/', middleware(services.userService).requireAuthentication, (req, res, next) => {
-    var body = req.body;
+    services.packageService.getReceivedPackages(0,1).then(packages=>{
+        res.send(packages); 
+    })
+})
+// router.post('/get-mpackages/', middleware(services.userService).requireAuthentication, (req, res, next) => {
+//     var body = req.body;
 
-    var manifestKey = `manifest:${body.mid}:${body.mtype}:*`;
+//     var manifestKey = `manifest:${body.mid}:${body.mtype}:*`;
 
-    //so we get the keys 
-    lredis.getKeys(manifestKey).then((data) => {
-        if (data.length == 0) {
-            res.send([])
-        }
-        else
-            lredis.union(data).then(function (result) {
-                console.log(result)
-                //we need the actual packages now 
-                Promise.all(result.map(lredis.getPackage)).then(function (packages) {
-                    // console.log(packages);
-                    res.send(packages);
-                });
+//     //so we get the keys 
+//     lredis.getKeys(manifestKey).then((data) => {
+//         if (data.length == 0) {
+//             res.send([])
+//         }
+//         else
+//             lredis.union(data).then(function (result) {
+//                 console.log(result)
+//                 //we need the actual packages now 
+//                 Promise.all(result.map(lredis.getPackage)).then(function (packages) {
+//                     // console.log(packages);
+//                     res.send(packages);
+//                 });
 
-            });
+//             });
 
 
-    });
+//     });
 
-});
-
+// });
+router.get('/fll-no-docs',middleware(services.userService).requireAuthentication, (req, res, next) => {
+    res.render('pages/no-docs'); 
+})
 router.get('/load-package/:trackNo', middleware(services.userService).requireAuthentication, (req, res, next) => {
     var trackingNo = req.params.trackNo;
-    redis.getPackage(trackingNo).then((package) => {
-        res.send(package);
-    });
+    services.packageService.getPackageById(trackingNo).then(result=>{
+        res.send(result);
+    })
+    // redis.getPackage(trackingNo).then((package) => {
+    //     res.send(package);
+    // });
 });
 
 router.post('/rm-package', middleware(services.userService).requireAuthentication, (req, res, next) => {
     var trackingNo = req.body.trackingNo;
-
+    var packageId = req.body.id; 
     var manifest = req.body.mid;
-    rServices.packageService.removePackage(trackingNo, manifest).then((delResult) => {
+    console.log('removing package '+packageId)
+    rServices.packageService.removePackageById(packageId).then((delResult) => {
         res.send(delResult);
     });
 });
@@ -445,7 +459,9 @@ router.post('/save-package', middleware(services.userService).requireAuthenticat
 
 
 });
+router.get('/no-docs/', middleware(services.userService).requireAuthentication, (req, res, next) => {
 
+})
 router.post('/packages', middleware(services.userService).requireAuthentication, (req, res, next) => {
     var body = req.body;
     var package = {

@@ -21,3 +21,12 @@ manifestIndex.createIndex([
     manifestIndex.fieldDefinition.text("createdBy",true),
 
 ]); 
+
+manifestIndex.add(0,{
+    mid:0,
+    type:"default",
+    stageId:0,
+    dateCreated:0,
+    mtypeId:0,
+    createdBy:"SYSTEM"
+})

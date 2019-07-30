@@ -19,31 +19,16 @@ $(function () {
     function LoadPageData() {
         //we need to load page data based on manifest type... 
         getManifestTotals(mid, mtype);
-        if (mtype != "cargo") {
+        // if (mtype != "cargo") {
             getManifestPackages(mid, mtype, function (mailPackages) {
 
                 // displayMailPackages(mailPackages);
                 displayPackages(mailPackages, "#packageTable", mtype)
             });
 
-        }
+        // }
 
-        else {
-            getManifestPackages(mid, 'mail', function (mailPackages) {
-
-                // displayMailPackages(mailPackages);
-                displayPackages(mailPackages, "#mailTable", "mail")
-            });
-
-            getManifestPackages(mid, 'cargo', function (cargoPackages) {
-                //displayCargoPackages(cargoPackages);
-                displayPackages(cargoPackages, "#cargoTable", "cargo")
-            });
-            getManifestPackages(mid, 'unproc', function (cargoPackages) {
-                //displayCargoPackages(cargoPackages);
-                displayPackages(cargoPackages, "#unprocTable", "unproc")
-            });
-        }
+      
 
         //we need to get the counts intially 
         LoadPackageCounters();
@@ -318,7 +303,7 @@ $(function () {
             pieces: $(form).find('.pieces').val(),
             weight: $(form).find('.weight').val(),
             dimensions: $(form).find('.dimensions').val(),
-            carrier: $(form).find('carrier').val(),
+            carrier: $(form).find('.carrier').val(),
             issue: $("form").find('.issue').val(), 
             //mid: $(form).find('.mid').val(),
             //mtype: $(form).find('.mtype').val(),
@@ -588,11 +573,11 @@ $(function () {
                 }
             },
             {
-                title: "Dimensions",
+                title: "",
                 data: null,
                 render: function (data, type, row, meta) {
                     // console.log(data);
-                    return `<i class='fas fa-pencil-alt edit'  data-id='${data.trackingNo}' title='Edit' style='cursor:pointer;'></i> <i title='Delete' data-type='${ctype}' data-toggle='modal' data-target='#confirmPkgDel' class='fas fa-trash rm' data-id='${data.trackingNo}' style='cursor:pointer;'></i>`;
+                    return `<i class='fas fa-pencil-alt edit'  data-id='${data.id}' title='Edit' style='cursor:pointer;'></i> <i title='Delete' data-type='${ctype}' data-toggle='modal' data-target='#confirmPkgDel' class='fas fa-trash rm' data-id='${data.id}' style='cursor:pointer;'></i>`;
                 }
             },
 
@@ -667,22 +652,11 @@ $(function () {
                     }
                     LoadPackageCounters();
                     console.log("about to re-display " + package.mtype);
-                    if (package.mtype == 'mail') {
-                        getManifestPackages(mid, 'mail', function (mailPackages) {
-                            displayPackages(mailPackages, "#mailTable", package.mtype);
-                        });
-                    }
-                    else if (package.mtype == 'cargo') {
-                        getManifestPackages(mid, 'cargo', function (cargoPackages) {
-                            displayPackages(cargoPackages, "#cargoTable", "cargo");
-                        });
-                    }
-                    else {
-                        getManifestPackages(mid, package.mtype, function (cargoPackages) {
-                            displayPackages(cargoPackages, "#unprocTable", package.mtype);
-                        });
-                    }
-                    getManifestTotals(mid, mtype);
+                    getManifestPackages(mid, "default", function (mailPackages) {
+
+                        // displayMailPackages(mailPackages);
+                        displayPackages(mailPackages, "#packageTable", "default")
+                    });
                     console.log('saved');
                 }
             },
@@ -708,6 +682,8 @@ $(function () {
                 form.find('.weight').val(dResult.weight);
                 form.find('.pieces').val(dResult.pieces);
                 form.find('.description').val(dResult.description);
+                form.find('.carrier').val(dResult.carrier);
+                form.find('.dimensions').val(dResult.dimensions);
                 if (typeof dResult.bag != "undefined")
                     form.find('.bag').val(dResult.bag);
                 else
@@ -723,40 +699,45 @@ $(function () {
         })
     }
 
-    function deletePackage(trackingNo, type) {
+    function deletePackage(trackingNo, type,id) {
         $.ajax({
             url: '/warehouse/rm-package',
             type: 'post',
             data: {
+                id:trackingNo,
                 trackingNo: trackingNo,
                 mid: $("#mid").val()
             },
             success: function (dResult) {
+                getManifestPackages(mid, "default", function (mailPackages) {
 
-                if (type == 'mail') {
-                    //refresh the package listing 
-                    console.log('refreshing mail');
-                    getManifestPackages(mid, "mail", function (mailPackages) {
+                    // displayMailPackages(mailPackages);
+                    displayPackages(mailPackages, "#packageTable", "default")
+                });
+                // if (type == 'mail') {
+                //     //refresh the package listing 
+                //     console.log('refreshing mail');
+                //     getManifestPackages(mid, "mail", function (mailPackages) {
 
-                        // displayMailPackages(mailPackages);
-                        displayPackages(mailPackages, "#mailTable", "mail")
-                    });
-                } else if (type == "cargo") {
-                    // cargo 
-                    console.log('refreshing cargo');
-                    getManifestPackages(mid, "cargo", function (mailPackages) {
-
-
-                        displayPackages(mailPackages, "#cargoTable", mtype)
-                    });
-                }
-                else {
-                    getManifestPackages(mid, type, function (mailPackages) {
+                //         // displayMailPackages(mailPackages);
+                //         displayPackages(mailPackages, "#mailTable", "mail")
+                //     });
+                // } else if (type == "cargo") {
+                //     // cargo 
+                //     console.log('refreshing cargo');
+                //     getManifestPackages(mid, "cargo", function (mailPackages) {
 
 
-                        displayPackages(mailPackages, "#unprocTable", type)
-                    });
-                }
+                //         displayPackages(mailPackages, "#cargoTable", mtype)
+                //     });
+                // }
+                // else {
+                //     getManifestPackages(mid, type, function (mailPackages) {
+
+
+                //         displayPackages(mailPackages, "#unprocTable", type)
+                //     });
+                // }
             },
             error: function (err) {
 

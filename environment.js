@@ -19,4 +19,4 @@ function normalizeValue(val, defaultValue) {
    }
   
     return false;
-  }
+  } 

@@ -31,5 +31,6 @@ packageIndex.createIndex([
     packageIndex.fieldDefinition.numeric("value",true),
     packageIndex.fieldDefinition.numeric("dimensionalWeight",true),
     packageIndex.fieldDefinition.numeric("hasDocs",true),
+    
 
 ]); 

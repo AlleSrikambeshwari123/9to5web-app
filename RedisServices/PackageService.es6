@@ -32,16 +32,20 @@ function getPackageVolumne(mPackage){
 }
 function createDocument(tPackage) {
   var packageDocument = {
+    id:tPackage.id,
     trackingNo: tPackage.trackingNo,
     skybox: tPackage.skybox,
     dateRecieved : moment().unix(), 
     awb:0, 
     mid:0,
     volume: getPackageVolumne(tPackage),
+    weight:tPackage.weight,
+    pieces:tPackage.pieces,
     customer: tPackage.customer,
     shipper: tPackage.shipper,
     description: tPackage.description,
-    dimenions:tPackage.dimensions,
+    dimensions:tPackage.dimensions,
+    carrier:tPackage.carrier,
     //skyboxV: tPackage.skybox, add dimenion 
     status: tPackage.status,
     mid: tPackage.mid,
@@ -95,6 +99,7 @@ export class PackageService {
   savePackage(body){
     return new Promise((resolve,reject)=>{
       var cPackage = {
+        
         skybox: body.skybox,
         customer: body.customer.replace("-", "").trim(),
         trackingNo: body.tracking,
@@ -266,8 +271,49 @@ export class PackageService {
         console.log(err232)
       });
     });
-  }
+  } 
+  getManifestPackages(){
+    return new Promise((resolve,reject)=>{
+      
+      this.mySearch.search(
+        `@mid:[0 0]`,
+        { offset: 0, numberOfResults: 5000 },
+        (err, data) => {
+          var packages = [];
+          console.log(data);
+          data.results.forEach(element => {
 
+            packages.push(element.doc);
+            resolve(packages);                 
+        });
+    });
+    })
+  }
+  getReceivedPackages(page,pageSize){
+    return new Promise((resolve,reject)=>{
+      
+      this.mySearch.search(
+        `@mid:[0 0]`,
+        { offset: 0, numberOfResults: 5000 },
+        (err, data) => {
+          var packages = [];
+          console.log(data);
+          data.results.forEach(element => {
+
+            packages.push(element.doc);
+                            
+        });
+        resolve(packages); 
+    });
+    })
+  }
+  getPackageById(id){
+    return new Promise((resolve,reject)=>{
+      rediSearch.getDoc(id,(err,document)=>{
+        resolve(document.doc); 
+      })
+    }); 
+  }
   updateManifestPackageToInTransit(mid) {
     //get all the packages
     //we need to update the index at this point as well
@@ -328,6 +374,18 @@ export class PackageService {
 
         //we also need to remove from any sets
       });
+    });
+  }
+  removePackageById(id) {
+    var msearch = this.mySearch;
+    return new Promise((resolve, reject) => {
+    
+      rediSearch.delDocument(PKG_IDX,id,(err,response)=>{
+        resolve({deleted:true})
+      })
+      
+        
+      
     });
   }
   storePackageForPickup(trackingNo,bin){
