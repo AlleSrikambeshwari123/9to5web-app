@@ -9,9 +9,7 @@
     "ui": "browser-sync start --proxy=localhost:8000 --files='**/*.css, **/*.ejs, **/*.js,**/*.js' --ignore=node_modules --reload-delay 10 --no-ui --no-notify"
 
   },
-  "engines": {
-    "node": "6.10.0"
-  },
+  
   "dependencies": {
     "@google/maps": "^0.4.6",
     "bcrypt": "^3.0.6",
