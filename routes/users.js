@@ -17,4 +17,11 @@ router.get('/add-locations', middleware(services.userService).requireAuthenticat
 	pageData.RoleId = res.User.role;
   res.render('pages/Stores/new-location',pageData);
 });
+router.get('/change-pass', middleware(services.userService).requireAuthentication,function(req, res, next) {
+  var pageData = {};
+	pageData.title = "Change Password"
+	pageData.luser = res.User.firstName + ' ' + res.User.lastName;
+	pageData.RoleId = res.User.role;
+  res.render('pages/change-pass',pageData);
+});
 module.exports = router;

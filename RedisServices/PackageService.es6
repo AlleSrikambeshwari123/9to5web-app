@@ -13,6 +13,7 @@ const PKG_IDX = "index:packages";
 const PKG_ID_COUNTER = "package:id";
 var dataContext = require('./dataContext')
 const PKG_PREFIX = "packages:";
+const AWB_ID = "awb:id"
 const PKG_STATUS = { 
   1 : "Received",
   2: "In Transit",
@@ -94,6 +95,25 @@ export class PackageService {
   setupIndex() {
     this.mySearch = redisSearch(redis, PKG_IDX, {
       clientOptions: lredis.searchClientDetails
+    });
+  }
+  getNewAwb(){
+    return new Promise((resolve,reject)=>{
+      dataContext.redisClient.exists(AWB_ID,(err,result)=>{
+        console.log(result); 
+        if (result != "1"){
+          dataContext.redisClient.set(AWB_ID == 100000,(err,initResult)=>{
+            dataContext.redisClient.incr(AWB_ID,(err,newId)=>{
+              resolve({awb:newId})
+            })
+          })
+        }
+        else {
+          dataContext.redisClient.incr(AWB_ID,(err,newId)=>{
+            resolve({awb:newId})
+          })
+        }
+      })
     });
   }
   savePackage(body){

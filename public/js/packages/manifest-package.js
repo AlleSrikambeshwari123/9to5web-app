@@ -10,6 +10,7 @@ Number.prototype.formatMoney = function (c, d, t) {
 };
 $(function () {
 
+    var lastPackage = {}
     //#region PAGE LOAD 
     var mid = $("#mid").val();
     var mtype = $('#mtype').val();
@@ -86,6 +87,16 @@ $(function () {
         }
 
     });
+    $(".new-awb").click(function(){
+        $.ajax({
+            url:'/warehouse/new-awb',
+            contentType:'json',
+            success:function(result){
+                
+                $(".awb").val(result.awb)
+            }
+        })
+    })
     $(".saveUnProcPackage").click(function () {
 
         var package = getPackageDetails($(this));
@@ -304,7 +315,8 @@ $(function () {
             tracking: $(form).find('.trackingNo').val(),
             description: $(form).find('.description').val(),
             shipper: $(form).find('.shipper').val(),
-            value: $(form).find('.package-value').val(),
+            //value: $(form).find('.package-value').val(),
+            value: 0,
             pieces: $(form).find('.pieces').val(),
             weight: $(form).find('.weight').val(),
             dimensions: $(form).find('.dimensions').val(),
@@ -641,7 +653,7 @@ $(function () {
     }
 
     function savePackage(package, form, isClosed) {
-
+        lastPackage = { details:package };
         $.ajax({
             url: '/warehouse/save-package',
             type: 'post',

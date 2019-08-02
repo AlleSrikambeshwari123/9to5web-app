@@ -417,7 +417,11 @@ router.post('/get-mpackages/', middleware(services.userService).requireAuthentic
 //     });
 
 // });
-
+router.get('/new-awb',(req,res,next)=>{
+    services.packageService.getNewAwb().then(awbRes=>{
+        res.send(awbRes); 
+    })
+}); 
 router.get('/fll-no-docs',middleware(services.userService).requireAuthentication, (req, res, next) => {
     services.packageService.getNoDocsPackackages().then(packages=>{
         var pageData = {}; 
