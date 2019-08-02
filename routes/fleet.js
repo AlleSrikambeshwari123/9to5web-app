@@ -5,7 +5,20 @@ var middleware = require('../middleware');
 
 var RedisCustomerService = require('../RedisServices/CustomerService').CustomerService
 var rCusomterService = new RedisCustomerService();
-
+router.get('/flights', middleware(services.userService).requireAuthentication, function (req, res, next) {
+	var pageData = {};
+	pageData.title = "Vehicles"
+	pageData.luser = res.User.firstName + ' ' + res.User.lastName;
+	pageData.RoleId = res.User.role;
+	res.render('pages/fleet/flights', pageData);
+});
+router.get('/add-flight', middleware(services.userService).requireAuthentication, function (req, res, next) {
+	var pageData = {};
+	pageData.title = "Vehicles"
+	pageData.luser = res.User.firstName + ' ' + res.User.lastName;
+	pageData.RoleId = res.User.role;
+	res.render('pages/fleet/flights', pageData);
+});
 router.get('/vehicles', middleware(services.userService).requireAuthentication, function (req, res, next) {
 	var pageData = {};
 	pageData.title = "Vehicles"
@@ -28,7 +41,6 @@ router.get('/drivers', middleware(services.userService).requireAuthentication, f
 	pageData.title = "Drivers"
 	pageData.luser = res.User.firstName + ' ' + res.User.lastName;
 	pageData.RoleId = res.User.role;
-
 	res.render('pages/fleet/drivers', pageData);
 });
 
