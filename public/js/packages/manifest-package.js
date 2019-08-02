@@ -417,11 +417,11 @@ $(function () {
             valid = false;
             form.find('.shipper').parent().find('label').addClass('text-danger');
         }
-        form.find('.package-value').parent().find('label').removeClass('text-danger');
-        if (package.value == '') {
-            valid = false;
-            form.find('.package-value').parent().find('label').addClass('text-danger');
-        }
+        // form.find('.package-value').parent().find('label').removeClass('text-danger');
+        // if (package.value == '') {
+        //     valid = false;
+        //     form.find('.package-value').parent().find('label').addClass('text-danger');
+        // }
         form.find('.weight').parent().find('label').removeClass('text-danger');
         if (package.weight == '') {
             valid = false;
@@ -532,7 +532,7 @@ $(function () {
         var colDef = [
            
             {
-                title: "Skybox",
+                title: "PMB",
                 data: null,
                 render: function (data, type, row, meta) {
                     // console.log(data);
