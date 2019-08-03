@@ -27,7 +27,7 @@ router.get('/vehicles', middleware(services.userService).requireAuthentication, 
 	res.render('pages/fleet/vehicles', pageData);
 });
 
-router.get('/addvehicle', middleware(services.userService).requireAuthentication, function (req, res, next) {
+router.get('/add-vehicle', middleware(services.userService).requireAuthentication, function (req, res, next) {
 	var pageData = {};
 	pageData.title = "Add Vehicle"
 	pageData.luser = res.User.firstName + ' ' + res.User.lastName;
@@ -43,7 +43,13 @@ router.get('/drivers', middleware(services.userService).requireAuthentication, f
 	pageData.RoleId = res.User.role;
 	res.render('pages/fleet/drivers', pageData);
 });
-
+router.get('/add-driver', middleware(services.userService).requireAuthentication, function (req, res, next) {
+	var pageData = {};
+	pageData.title = "Add Driver"
+	pageData.luser = res.User.firstName + ' ' + res.User.lastName;
+	pageData.RoleId = res.User.role;
+	res.render('pages/fleet/add-driver', pageData);
+});
 router.get('/routes', middleware(services.userService).requireAuthentication, function (req, res, next) {
 	var pageData = {};
 	pageData.title = "Routes"
@@ -51,5 +57,13 @@ router.get('/routes', middleware(services.userService).requireAuthentication, fu
 	pageData.RoleId = res.User.role;
 
 	res.render('pages/fleet/routes', pageData);
+});
+router.get('/add-routes', middleware(services.userService).requireAuthentication, function (req, res, next) {
+	var pageData = {};
+	pageData.title = "Add Route"
+	pageData.luser = res.User.firstName + ' ' + res.User.lastName;
+	pageData.RoleId = res.User.role;
+
+	res.render('pages/fleet/add-routes', pageData);
 });
 module.exports = router;
