@@ -32,6 +32,15 @@ router.get('/drivers', middleware(services.userService).requireAuthentication, f
 	res.render('pages/fleet/drivers', pageData);
 });
 
+router.get('/adddriver', middleware(services.userService).requireAuthentication, function (req, res, next) {
+	var pageData = {};
+	pageData.title = "Add Driver"
+	pageData.luser = res.User.firstName + ' ' + res.User.lastName;
+	pageData.RoleId = res.User.role;
+
+	res.render('pages/fleet/adddriver', pageData);
+});
+
 router.get('/routes', middleware(services.userService).requireAuthentication, function (req, res, next) {
 	var pageData = {};
 	pageData.title = "Routes"
@@ -39,5 +48,14 @@ router.get('/routes', middleware(services.userService).requireAuthentication, fu
 	pageData.RoleId = res.User.role;
 
 	res.render('pages/fleet/routes', pageData);
+});
+
+router.get('/addroute', middleware(services.userService).requireAuthentication, function (req, res, next) {
+	var pageData = {};
+	pageData.title = "Add Route"
+	pageData.luser = res.User.firstName + ' ' + res.User.lastName;
+	pageData.RoleId = res.User.role;
+
+	res.render('pages/fleet/addroute', pageData);
 });
 module.exports = router;

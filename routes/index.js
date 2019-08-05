@@ -30,6 +30,10 @@ router.post('/', function (req, res, next) {
     }
   });
 });
+router.get('/forgot-password', function (req, res, next) {
+  console.log("HERE");
+  res.render('forgot_password');
+});
 router.get('/logout', function (req, res, next) {
   req.session.reset();
 

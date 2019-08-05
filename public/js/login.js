@@ -22,4 +22,7 @@ $(function () {
 			password.setAttribute("type", "password");
 		}
 	})
+	$('.forgot-password').click(function () {
+		window.location.replace('./forgot-password')
+	})
 });
