@@ -40,8 +40,8 @@
                                         data-toggle='modal' data-target='#shipManifest'>Ship Manifest</button>
 
                                     
-                                    <button type="button" class="btn btn-info btn-sm ship-manifest-btn"
-                                        data-toggle='modal' data-target='#broker'>Send To Broker </button>
+                                    <!-- <button type="button" class="btn btn-info btn-sm ship-manifest-btn"
+                                        data-toggle='modal' data-target='#broker'>Send To Broker </button> -->
                                     
                                     <button type="button" class="btn btn-dark btn-sm export-manifest">Export Excel</button>
                                 </div>
@@ -54,6 +54,7 @@
 														<strong>Date:</strong> <br/><%=moment(manifest.dateCreated,'YYYY-MM-DD').format("dddd, LL") %>
                                     </p>
                                     <address class='small'>
+                                        
                                         <strong>VALUE:</strong><span class='total-value'></span><br>
                                         <strong>WEIGHT:</strong> <span class='total-weight'></span> <br>
                                         <strong>STAGE:</strong> <%=manifest.stage%><br>
@@ -75,7 +76,24 @@
                                         </div>
                                     </div> -->
                                     <div class="card-stats card-round col-xl-4 col-lg-6 col-md-6 col-sm-6">
-                                        <div class="card card-body info-state">
+                                            <div class='form-group'>
+                                                    <label>Flight #</label>
+                                                   
+                                                    <input type='text' class='form-control trackingNo' name='trackingNo' required />
+                                                </div>
+                                                <div class='form-group'>
+                                                        <label>Flight Date /Time </label>
+                                                     
+                                                        <input type='text' class='form-control trackingNo' name='trackingNo' required />
+                                                    </div>
+                                                    <div class='form-group'>
+                                                            <label>Pilot </label>
+                                                         
+                                                            <input type='text' class='form-control trackingNo' name='trackingNo' required />
+                                                        </div>
+                                    </div>
+                                  <div class="card-stats card-round col-xl-4 col-lg-6 col-md-6 col-sm-6">
+                                         <div class="card card-body info-state">
                                             <div class="icon-type ">
                                                 <i class="fas fa-archive"></i>
                                             </div>
@@ -84,19 +102,8 @@
                                                 <p>Packages</p>
                                             </div>
                                         </div>
-                                    </div>
-                                    <!-- <div class="card-stats card-round col-xl-4 col-lg-6 col-md-6 col-sm-6">
-                                        <div class="card card-body info-state">
-                                            <div class="icon-type ">
-                                                <i class="fas fa-ellipsis-h"></i>
-                                            </div>
-                                            <div class="sale-num">
-                                                <h2 id='unProcCount'>0</h2>
-                                                <p>Un Processed</p>
-                                            </div>
-                                        </div>
 
-                                    </div> -->
+                                    </div> 
 
                                 </div>
 
@@ -182,7 +189,7 @@
                                             <input type='hidden' class='isBusiness' value='' />
                                         </div>
                                     <div class='form-group'>
-                                        <label>SkyBox <span id='' class='text-info title customerName'></span></label>
+                                        <label>PMB <span id='' class='text-info title customerName'></span></label>
                                         <input type='text' class='form-control skybox' name='skybox' required />
                                         <input type='hidden' class='isBusiness' value='' />
                                     </div>
@@ -239,7 +246,7 @@
                                             <span class='cubeId' style="display:none;">CUBE-<%=mid %>-1</span>
                                     </div>
                                     <div class='form-group'>
-                                        <label>SkyBox <span id='' class='text-info title customerName'></span></label>
+                                        <label>PMB <span id='' class='text-info title customerName'></span></label>
                                         <input type='hidden' class='isBusiness' value='' />
                                         <input type='text' class='form-control skybox' name='skybox' required />
                                     </div>

@@ -25,77 +25,69 @@
                         aria-expanded="false">
                         <div class='row'>
                           
-                            <div class='col-md-3 pkg-form' >
+                            <div class='col-md-5 pkg-form' >
 
                                 <form method='post' id='cargoPackageForm'>
 
                                     <div class='form-group'>
-                                        <button type='button' class="btn btn-small btn-info new-awb">New AWB</button>
-                                        <button type='button' class="btn btn-small btn-info copy">Copy Last Package </button>
+                                        <button type='button'  class="btn btn-small btn-info new-awb ">New AWB</button>
+                                        
                                     </div>
                                     <div class='form-group'>
                                             <label>AWB </label>
                                             <input type='text' class='form-control awb' id='awb' name='awb' required />
                                         </div>
                                         <div class='form-group'>
+                                            <label>SED Required</label>
+                                            <input type='checkbox' class='form-control carrier' name='hasInvoice' />
+                                        </div>
+                                        <div class='form-group'>
+                                            <label>Has Invocie</label>
+                                            <input type='checkbox' class='form-control hasInvoice' name='hasInvocie' />
+                                        </div>
+                                        <div class='form-group'>
+                                            <label>Upload Invocie</label>
+                                            <input type='file' class='form-control invFile' name='invFile' />
+                                        </div>
+                                        <div class='form-group'>
+                                                <label>Invoice # <span class='text-info title customerName '></span></label>
+                                                <input type='text' class='form-control skybox' name='skybox' required />
+                                            </div>
+                                        <div class='form-group'>
+                                            <label> Value</label>
+                                            <input type='text' class='form-control awbValue' name='awbValue' required />
+                                        </div>
+                                        <!-- <div class='form-group'>
                                                 <label>AWB Value</label>
                                                 <input type='text' class='form-control awbValue' name='awbValue' required />
-                                        </div>
-                                        <div class="separator-solid"></div>
-                                    <div class='form-group'>
-                                        <label>Issue<span class='text-info title '></span></label>
-                                       <select class='form-control issue'>
-                                           <option value='0'>Select</option>
-                                           <option value='1'>No Docs</option>
-                                          
-                                       </select>
-                                    </div>
-                                   
-                                    <div class='form-group'>
-                                        <label>PMB <span class='text-info title customerName '></span></label>
-                                        <input type='text' class='form-control skybox' name='skybox' required />
-                                    </div>
-                                    <div class='form-group'>
-                                        <label>Tracking #</label>
-                                    
-                                     
-                                        <input type='text' class='form-control trackingNo' name='trackingNo' required />
-                                    </div>
-                                    <div class='form-group'>
-                                        <label>Description</label>
-                                        <textarea type='text' class='form-control description' name='description' rows="3"
-                                            required > </textarea>
-                                    </div>
-                                    <div class='form-group'>
-                                        <label>Shipper</label>
-                                        <input type='text' class='form-control shipper' name='shipper' />
-                                    </div>
-                                    <div class='form-group'>
-                                        <label>Carrier</label>
-                                        <input type='text' class='form-control carrier' name='carrier' />
-                                    </div>
-                                  
-                                    <!-- <div class='form-group'>
-                                        <label>No. of Pieces</label>
-                                        <input type='text' class='form-control pieces' name='pieces' required />
-                                    </div> -->
+                                        </div> -->
 
-                                    <div class='form-group'>
-                                        <label>Weight</label>
-                                        <input type='text' class='form-control weight ' name='weight' />
-                                    </div>
-                                    <div class='form-group'>
-                                        <label>Dimensions</label>
-                                        <input type='text' class='form-control dimensions ' name='dimensions' />
-                                    </div>
-                                    <div class='form-group'>
-                                        <button class='btn btn-primary savePackage' type='button'>
-                                            Save</button>
-                                    </div>
+                                        <div class='form-group'>
+                                            <label>Consignee / PMB / 9-5 <span class='text-info title customerName '></span> <a href="#">Assign Box #(9-5)</a> </label> 
+                                            <input type='text' class='form-control skybox' name='skybox' required />
+                                        </div>
+                                        <div class='form-group'>
+                                            <label>Shipper</label>
+                                            <input type='text' class='form-control shipper' name='shipper' />
+                                        </div> 
+                                        
+
+                                        <div class='form-group'>
+                                            <label>Carrier</label>
+                                            <input type='text' class='form-control carrier' name='carrier' />
+                                        </div>
+                                        <a id="add_package" href="#ready-popup" class="btn btn-small btn-info open-popup-link">Add Package</a>
+                                        
+                                        <div class="separator-solid"></div>
+                                
+                                   
+                                  
+                           
                                 </form>
 
                             </div>
-                            <div class='col-md-9'>
+                            <div class='col-md-7'>
+                                <h2>Packages -  <span class='awb'></span></h2>
                                 <table id='packageTable'
                                     class='display table table-bordered table-head-bg-info table-hover'
                                     style='width:100%;'>
@@ -130,7 +122,55 @@
         </div>
     </div>
 </div>
+<div id='ready-popup' class="white-popup mfp-hide">
+        <form id="prescription-form">
+          <div class="card-body">
+            <div class='form-group '>
+              <h4>Add Package to AWB </h4>
+              <form method='post' id='cargoPackageForm'>
 
+                <button type='button' class="btn btn-small btn-info ">Copy Last Package</button>
+                    <div class='form-group'>
+                        <label>Tracking #</label>
+                    
+                     
+                        <input type='text' class='form-control trackingNo' name='trackingNo' required />
+                    </div>
+                    <div class='form-group'>
+                        <label>Description</label>
+                        <textarea type='text' class='form-control description' name='description' rows="3"
+                            required > </textarea>
+                    </div>
+                  
+                  
+                    <!-- <div class='form-group'>
+                        <label>No. of Pieces</label>
+                        <input type='text' class='form-control pieces' name='pieces' required />
+                    </div> -->
+
+                    <div class='form-group'>
+                        <label>Weight</label>
+                        <input type='text' class='form-control weight ' name='weight' />
+                    </div>
+                    <div class='form-group'>
+                        <label>Dimensions</label>
+                        <input type='text' class='form-control dimensions ' name='dimensions' />
+                    </div>
+                   
+                </form>
+
+            </div>
+          </div>
+          <div class="card-action text-center">
+            <div class="row">
+              <div class="col-md-12">
+                <button class="btn btn-info close-popup" type="button" id='cancel-ready' value="No">Cancel</button>
+                <button class="btn btn-primary" type="button" id='complete-ready' value="Yes">Save</button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
 <div class="modal fade" id="shipManifest" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2"
     aria-hidden="true" style="display: none;">
     <div class="modal-dialog" role="document">

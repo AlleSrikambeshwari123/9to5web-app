@@ -13,6 +13,7 @@ const
     text        : 'TEXT',
     numeric     : 'NUMERIC',
     geo         : 'GEO',
+    tag         : 'TAG',
     weight      : 'WEIGHT',
     sortable    : 'SORTABLE',
     fields      : 'FIELDS',
@@ -289,7 +290,8 @@ module.exports  = function(clientOrNodeRedis,key,passedOptsOrCb,passedCb) {
       return field;
     },
     numeric     : genericField(s.numeric),
-    geo         : genericField(s.geo)
+    geo         : genericField(s.geo),
+    tag         : genericField(s.tag)
   };
 
   const deleteDocument = function(index,docId,cb){

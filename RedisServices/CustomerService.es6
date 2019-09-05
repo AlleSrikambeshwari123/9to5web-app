@@ -1,11 +1,11 @@
 var redis = require('redis');
 var lredis = require('./redis-local');
 var redisSearch = require('redisearchclient');
-const PREFIX = "95:owners"
-const INDEX = "95:customers"
+const PREFIX = "pmb:"
+const INDEX = "index:customers"
 export class CustomerService {
     constructor() {
-        this.mySearch = redisSearch(redis, '95:customers', {
+        this.mySearch = redisSearch(redis, INDEX, {
             clientOptions: lredis.searchClientDetails
         });
     }

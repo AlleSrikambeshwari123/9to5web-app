@@ -422,6 +422,19 @@ router.get('/new-awb',(req,res,next)=>{
         res.send(awbRes); 
     })
 }); 
+
+router.get('/incoming-shipment',(req,res,next)=>{
+    res.render('pages/warehouse/incoming-shipment',{})
+})
+router.get('/packages-on-hand',middleware(services.userService).requireAuthentication,(req,res,next)=>{
+    var pageData = {}; 
+    pageData.packages = []; 
+    pageData.title = "Packages on Hand";
+    pageData.mid = req.params.mid;
+    pageData.luser = res.User.FirstName + ' ' + res.User.LastName;
+    pageData.RoleId = res.User.RoleId;
+    res.render('pages/warehouse/no-docs',pageData); 
+})
 router.get('/fll-no-docs',middleware(services.userService).requireAuthentication, (req, res, next) => {
     services.packageService.getNoDocsPackackages().then(packages=>{
         var pageData = {}; 

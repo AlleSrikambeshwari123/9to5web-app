@@ -17,6 +17,15 @@ $(function () {
     var mailTable;
     var cargoTable;
     var unProcTable;
+
+    $('.open-popup-link').magnificPopup({
+        type: 'inline',
+        midClick: true,
+        mainClass: 'mfp-fade',
+        gallery: {
+          enabled: true,
+        }
+      });
     function LoadPageData() {
         //we need to load page data based on manifest type... 
         getManifestTotals(mid, mtype);
@@ -92,7 +101,8 @@ $(function () {
             url:'/warehouse/new-awb',
             contentType:'json',
             success:function(result){
-                
+                console.log("awb",awb)
+                $(".awb").text(result.awb); 
                 $(".awb").val(result.awb)
             }
         })

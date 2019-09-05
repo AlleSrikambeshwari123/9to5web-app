@@ -515,7 +515,7 @@ $(function () {
         var colDef = [
            
             {
-                title: "Skybox",
+                title: "PMB",
                 data: null,
                 render: function (data, type, row, meta) {
                     // console.log(data);
@@ -531,7 +531,7 @@ $(function () {
             //     }
             // },
             {
-                title: "Tracking No",
+                title: "AWB",
                 data: null,
                 render: function (data, type, row, meta) {
                     // console.log(data);
