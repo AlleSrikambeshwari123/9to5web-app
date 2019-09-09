@@ -1,75 +1,74 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
-	<!-- Required meta tags -->
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-	<meta name="description" content="Unify Admin Panel" />
-	<meta name="keywords"
-		content="Login, Unify Login, Admin, Dashboard, Bootstrap4, Sass, CSS3, HTML5, Responsive Dashboard, Responsive Admin Template, Admin Template, Best Admin Template, Bootstrap Template, Themeforest" />
-	<meta name="author" content="Bootstrap Gallery" />
-	<!-- <link rel="shortcut icon" href="img/favicon.jpg" /> -->
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 	<title>9-5 Admin Portal</title>
+	<meta content='width=device-width, initial-scale=1.0, shrink-to-fit=no' name='viewport' />
 
-	<!-- Common CSS -->
-	<link rel="stylesheet" href="css/bootstrap.min.css" />
-	<link rel="stylesheet" href="fonts/icomoon/icomoon.css" />
+	<!-- Fonts and icons -->
+	<script src="../assets/js/plugin/webfont/webfont.min.js"></script>
+	<script>
+		WebFont.load({
+			google: { "families": ["Lato:300,400,700,900"] },
+			custom: { "families": ["Flaticon", "Font Awesome 5 Solid", "Font Awesome 5 Regular", "Font Awesome 5 Brands", "simple-line-icons"], urls: ['../assets/css/fonts.min.css'] },
+			active: function () {
+				sessionStorage.fonts = true;
+			}
+		});
+	</script>
 
-	<!-- Mian and Login css -->
-	<link rel="stylesheet" href="css/main.css" />
-
+	<!-- CSS Files -->
+	<link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+	<link rel="stylesheet" href="../assets/css/atlantis.min.css">
 </head>
 
-<body class="login-bg">
-
-	<div class="container">
-		<div class="login-screen row align-items-center">
-			<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-				<form method='post'>
-					<div class="login-container">
-						<div class="row no-gutters">
-							<div class="col-xl-4 col-lg-5 col-md-6 col-sm-12">
-								<div class="login-box">
-									<a href="#" class="login-logo">
-										<img src="/img/logo.jpg" alt="9-5 Shipping" style='max-height:75px;' />
-									</a>
-									<div class="input-group">
-										<span class="input-group-addon" id="username"><i
-												class="icon-account_circle"></i></span>
-										<input type="text" class="form-control" name='username' placeholder="Username"
-											aria-label="username" aria-describedby="username">
-									</div>
-									<br>
-									<div class="input-group">
-										<span class="input-group-addon" id="password"><i
-												class="icon-verified_user"></i></span>
-										<input type="password" name='password' class="form-control"
-											placeholder="Password" aria-label="Password" aria-describedby="password">
-									</div>
-									<div class="actions clearfix">
-										<a href="#">forgot password?</a>
-										<button type="submit" class="btn btn-primary">Login</button>
-									</div>
-
-								</div>
-							</div>
-							<div class="col-xl-8 col-lg-7 col-md-6 col-sm-12">
-								<div class="login-slider"></div>
+<body class="login">
+	<div class="wrapper wrapper-login wrapper-login-full p-0">
+		<div
+			class="login-aside w-50 d-flex flex-column align-items-center justify-content-center text-center bg-secondary-gradient">
+			<h1 class="title fw-bold text-white mb-3">9-5 Admin Portal</h1>
+			<p class="subtitle text-white op-7">9-5 Import</p>
+		</div>
+		<div class="login-aside w-50 d-flex align-items-center justify-content-center bg-white">
+			<div class="container container-login container-transparent animated fadeIn">
+				<h3 class="text-center">Sign In To Admin</h3>
+				<div class="login-form">
+					<div class="form-group">
+						<label for="username" class="placeholder"><b>Username</b></label>
+						<input id="username" placeholder="Username" name="username" type="text" class="form-control"
+							required>
+					</div>
+					<div class="form-group">
+						<label for="password" class="placeholder"><b>Password</b></label>
+						<!-- <a href="#" class="link float-right forgot-password">Forget Password ?</a> -->
+						<div class="position-relative">
+							<input id="password" placeholder="Password" name="password" type="password"
+								class="form-control" required>
+							<div class="show-password">
+								<i class="icon-eye"></i>
 							</div>
 						</div>
 					</div>
-				</form>
+					<div class="form-group form-action-d-flex mb-3">
+						<!-- <div class="custom-control custom-checkbox">
+							<input type="checkbox" class="custom-control-input" id="rememberme">
+							<label class="custom-control-label m-0" for="rememberme">Remember Me</label>
+						</div> -->
+						<a href="#"
+							class="btn btn-secondary col-md-5 float-right mt-3 mt-sm-0 fw-bold login-button">Sign
+							In</a>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
-	<footer class="main-footer no-bdr fixed-btm">
-		<div class="container">
-			9-5 Imports 2019.
-		</div>
-	</footer>
+	<script src="../assets/js/core/jquery.3.2.1.min.js"></script>
+	<script src="../assets/js/plugin/jquery-ui-1.12.1.custom/jquery-ui.min.js"></script>
+	<script src="../assets/js/core/popper.min.js"></script>
+	<script src="../assets/js/core/bootstrap.min.js"></script>
+	<script src="../assets/js/atlantis.min.js"></script>
+	<script src="../js/login.js"></script>
 </body>
 
 </html>

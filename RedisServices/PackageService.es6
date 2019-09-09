@@ -14,6 +14,7 @@ const PKG_ID_COUNTER = "package:id";
 var dataContext = require('./dataContext')
 const PKG_PREFIX = "packages:";
 const AWB_ID = "awb:id"
+const INDEX_AWB = "index:awb"
 const PKG_STATUS = { 
   1 : "Received",
   2: "In Transit",
@@ -24,7 +25,10 @@ const PKG_STATUS = {
 
 }; 
 
-const rediSearch = redisSearch(redis, PKG_IDX, {
+const awbIndex = redisSearch(redis, INDEX_AWB, {
+  clientOptions: lredis.searchClientDetails
+});
+const packageIndex = redisSearch(redis, PKG_IDX, {
   clientOptions: lredis.searchClientDetails
 });
 function getPackageVolumne(mPackage){
@@ -116,6 +120,38 @@ export class PackageService {
       })
     });
   }
+  saveAwb(awb){
+    return new Promise((resolve,reject)=>{
+      console.log(awb); 
+        awbIndex.add(awb.id,awb,(err1,awbRes)=>{
+          if (err1){
+            console.log('saving err',err1)
+            resolve({saved:false})
+          }
+          resolve({saved:true})
+        })
+      
+      
+    })
+  }
+  listAwbinFll(){
+    return new Promise((resolve,reject)=>{
+       awbIndex.search("@status:[1 1]",{offset:0,numberOfResults:5000,sortBy:'id'},(err,awbs)=>{
+         var awbList = []; 
+         awbs.results.forEach(awb => {
+           awbList.push(awb.doc)
+         });
+         resolve({awbs:awbList})
+       })
+    })
+  }
+  getAwb(id){
+    return new Promise((resolve,reject)=>{
+      awbIndex.getDoc(id,(err,awb)=>{
+        resolve({awb:awb.doc})
+      })
+    })
+  }
   savePackage(body){
     return new Promise((resolve,reject)=>{
       var cPackage = {
@@ -146,7 +182,7 @@ export class PackageService {
           }
            var indexPackage =  createDocument(cPackage); 
            console.log(indexPackage); 
-           rediSearch.add(cPackage.id,indexPackage,(err1,docResult)=>{
+           packageIndex.add(cPackage.id,indexPackage,(err1,docResult)=>{
              console.log(docResult); 
              if(err1){
                reject({saved:false,err:err1})

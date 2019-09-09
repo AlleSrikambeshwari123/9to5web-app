@@ -25,3 +25,14 @@ userIndex.createIndex([
     userIndex.fieldDefinition.numeric("locationName",true)
 ]); 
 
+var user = { 
+id:4,
+username:"admin",
+firstName:"admin",
+lastName: "9-5 Import",
+password: "$2b$10$14j6bL4UEnE5WwNJ35zMoesbG/DGmv5beCcEoTB1VpnHfMgYvwTQu",
+email:"admin@9-5imports.com",
+mobile:"868.354.7177",
+role:"Admin"
+}
+userIndex.add(4,user)

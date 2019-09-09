@@ -2,7 +2,7 @@ var redis = require('redis');
 var rediSearch = require('../redisearchclient/index'); 
 var env = require('../environment')
 
-let userIndex = rediSearch(redis,'index:users', {
+let locationIndex = rediSearch(redis,'index:locations', {
     clientOptions: {
                  'host': env.redis_host,
                  'port': env.redis_port,
@@ -11,14 +11,14 @@ let userIndex = rediSearch(redis,'index:users', {
     }
     
 }); 
-userIndex.dropIndex(); 
-userIndex.createIndex([
-    userIndex.fieldDefinition.numeric("id",true),
-    userIndex.fieldDefinition.text("name",true),
-    userIndex.fieldDefinition.text("address",true),
-    userIndex.fieldDefinition.text("phoneNumber",true),
-    userIndex.fieldDefinition.text("managerId",true),
-    userIndex.fieldDefinition.text("managerName",true),
+locationIndex.dropIndex(); 
+locationIndex.createIndex([
+    locationIndex.fieldDefinition.numeric("id",true),
+    locationIndex.fieldDefinition.text("name",true),
+    locationIndex.fieldDefinition.text("address",true),
+    locationIndex.fieldDefinition.text("phone",true),
+    // locationIndex.fieldDefinition.text("managerId",true),
+    // locationIndex.fieldDefinition.text("managerName",true),
     
 ]); 
 

@@ -14,6 +14,8 @@ let customerIndex = rediSearch(redis,'index:customers', {
 customerIndex.dropIndex(); 
 customerIndex.createIndex([
     customerIndex.fieldDefinition.numeric("id",true),
+
+    customerIndex.fieldDefinition.text("name",true),
     customerIndex.fieldDefinition.text("firstName",true),
     customerIndex.fieldDefinition.text("lastName",true),
     customerIndex.fieldDefinition.text("pmb",true),

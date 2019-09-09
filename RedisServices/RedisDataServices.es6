@@ -6,10 +6,13 @@ var PackageService = require('./PackageService').PackageService
 var packageService = new PackageService(); 
 var UserService = require('./UserService').UserService; 
 var userService = new UserService();
+var LocationService = require('./LocationService').LocationService; 
+var locationService = new LocationService(); 
 
 module.exports = { 
   customerService: customerService,
   manifestService: manifestService,
   packageService: packageService,
-  userService:userService
+  userService:userService,
+  locationService:locationService
 }

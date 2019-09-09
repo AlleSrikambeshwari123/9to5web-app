@@ -1,12 +1,12 @@
 $(function () {
     var colDef = [
         {
-            title: "Box",
+            title: "pmb",
             data: null,
             targets: 'no-sort', orderable: false,
             render: function (data, type, row, meta) {
                 // console.log(data);
-                return data.skybox;
+                return data.pmb;
             }
         },
         {
@@ -15,7 +15,7 @@ $(function () {
             data: null,
             render: function (data, type, row, meta) {
                 // console.log(data);
-                return `${data.name} `;
+                return `${data.name}`;
             }
         },
         {
@@ -33,7 +33,7 @@ $(function () {
             data: null,
             render: function (data, type, row, meta) {
                 // console.log(data);
-                return `${data.mobile} `;
+                return `${data.phone} `;
             }
         },
         {
@@ -42,7 +42,10 @@ $(function () {
             data: null,
             render: function (data, type, row, meta) {
                 // console.log(data);
-                return `${data.area} `;
+                if (!data.branch){
+                    return ""; 
+                }
+                return `${data.branch.replace("POSTBOXES ETC","")} `;
             }
         },
         {
@@ -51,7 +54,7 @@ $(function () {
             data: null,
             render: function (data, type, row, meta) {
                 // console.log(data);
-                return `<a href ="/admin/customer-edit/${data.skybox}"><i class='fas fa-pencil-alt'></i></a>`;
+                return `<a href ="/admin/customer-edit/${data.id}"><i class='fas fa-pencil-alt'></i></a>`;
             }
         },
 

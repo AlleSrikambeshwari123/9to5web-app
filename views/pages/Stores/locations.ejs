@@ -4,7 +4,7 @@
 		<div class="card">
 			<div class="card-header d-flex align-items-left align-items-md-center flex-column flex-md-row">
 				<div class="card-title">Locations</div>
-				<a href='/users/add-locations' class='btn btn-primary btn-round ml-md-auto float-right'>Add Location</a>
+				<a href='/admin/add-locations' class='btn btn-primary btn-round ml-md-auto float-right'>Add Location</a>
 			</div>
 			<div class="card-body">
 				<table class="table m-0">
@@ -13,13 +13,22 @@
 							<th>Location Name</th>
 							<th>Address</th>
 							<th>Phone</th>
-							<th>Email</th>
-							<th></th>
+						
+						
 							<th></th>
 						</tr>
 					</thead>
 					<tbody>
-
+						<%for(i=0;i<locations.length; i++){%>
+								<tr>
+										<td><%=locations[i].name%></td>
+										<td><%=locations[i].address%></td>
+										<td><%=locations[i].phone%></td>
+										
+									
+										<th><a href ="/admin/add-locations/<%=locations[i].id%>"><i class='fas fa-pencil-alt'></i></a></th>
+									</tr>
+						<%}%>
 					</tbody>
 				</table>
 			</div>

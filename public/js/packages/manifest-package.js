@@ -17,7 +17,7 @@ $(function () {
     var mailTable;
     var cargoTable;
     var unProcTable;
-
+    var awbPackages = []; 
     $('.open-popup-link').magnificPopup({
         type: 'inline',
         midClick: true,
@@ -75,38 +75,105 @@ $(function () {
         var nameCtrl = form.find('.customerName');
         lookupUser(box, $(nameCtrl));
     });
-    $("input").change(function () {
-        //revalidate the from
-        var form = $(this).closest('form');
-        var package = getPackageDetails($(this));
-        var validPackage = validatePackage(package, $(this));
-    })
-    $(".savePackage").click(function () {
+    // $("input").change(function () {
+    //     //revalidate the from
+    //     var form = $(this).closest('form');
+    //     var package = getPackageDetails($(this));
+    //     var validPackage = validatePackage(package, $(this));
+    // })
+    // $(".savePackage").click(function () {
 
-        var package = getPackageDetails($(this));
-        //var stage = $(this).attr('data-stage');
-       // var mtype = $("#mytpe").val();
-        var validPackage = validatePackage(package, $(this));
-        var form = $(this).closest('form');
-        if (validPackage) {
-            //save
-            savePackage(package, form, false);
-        } else {
-            console.log('not saving the package...Invalid')
+    //     var package = getPackageDetails($(this));
+    //     //var stage = $(this).attr('data-stage');
+    //    // var mtype = $("#mytpe").val();
+    //     var validPackage = validatePackage(package, $(this));
+    //     var form = $(this).closest('form');
+    //     if (validPackage) {
+    //         //save
+    //         savePackage(package, form, false);
+    //     } else {
+    //         console.log('not saving the package...Invalid')
+    //     }
+
+    // });
+    $("#save-to-awb").click(function(){
+       
+        var package = {
+            trackingNo: $("#trackingNo").val(),
+            description: $("#description").val(),
+            weight:$("#weight").val(), 
+            dimensions: $("#dimensions").val()
         }
+        var isValid = true; 
+        if (package.trackingNo==""){
+            isValid = false 
+        }
+        if (package.weight ==""){
+            isValid = false 
+        }
+        if (package.description == ""){
+            isValid  = false;
+        }
+        if (isValid == true)
+        {
+             awbPackages.push(package);  
+             displayPackages(awbPackages, "#packageTable", "cargo")
+             $(".close-popup").trigger('click'); 
+        }   
 
-    });
+            console.log(package)
+            console.log(awbPackages)
+            //refres the table 
+           
+
+    })
     $(".new-awb").click(function(){
         $.ajax({
             url:'/warehouse/new-awb',
             contentType:'json',
             success:function(result){
-                console.log("awb",awb)
+                //console.log("awb",awb)
                 $(".awb").text(result.awb); 
                 $(".awb").val(result.awb)
+                //clear everything 
+                $("#add_package").hide(); 
+                $("#save_awb").show()
             }
         })
-    })
+    }); 
+    $("#save_awb").click(function(){
+        //validate the awb 
+
+        //handle upload
+        var hasInvoice = 0 ; 
+        var isSED = 0 ; 
+        if ($("#hasInvoice").prop(":checked"))
+            hasInvoice = 1; 
+            if ($("#isSED").prop(":checked"))
+            isSED = 1; 
+        var awbInfo = { 
+            id: $("#id").val(),
+            isSed:isSED,
+            hasDocs: hasInvoice,
+            invoiceNumber:$("#invoiceNumber").val(),
+            value:$("#value").val(),
+            customerId:$("#customerId").val(),
+            shipper:$("#shipper").val(),
+            carrier:$("#carrier").val(),
+
+        };
+        
+        $.ajax({
+            url:'/warehouse/save-awb',
+            type:'post',
+            data:awbInfo,
+            success:function(result){
+                console.log(result);
+                $("#add_package").show(); 
+                $("#save_awb").hide(); 
+            }
+        });
+    }); 
     $(".saveUnProcPackage").click(function () {
 
         var package = getPackageDetails($(this));
@@ -123,6 +190,36 @@ $(function () {
         }
 
     });
+
+    $("#search").keyup(function(){
+        var query = $(this).val();
+        console.log(query)
+        if (query.length>3){
+            console.log(query)
+            $.ajax({
+                url:'/warehouse/find-customer',
+                type:'post',
+                data: {search:query},
+                success:function(data){
+                    console.log(data,"customer listing"); 
+                    $("#customerTable").empty(); 
+                   for(i=0;i<data.customer.length; i++){
+                        console.log(data.customer[i])
+                        $("#customerTable").append(`<tr><td>${data.customer[i].pmb}</td><td>${data.customer[i].name}</td> <td><i data-id="${data.customer[i].id}" data-name="${data.customer[i].name}" class='fa fa-check choose_customer' style='cursor:pointer'></i></td></tr>`)    
+                    }
+                    $("#customerTable").show(); 
+                    $(".choose_customer").click(function(){
+                        var custId = $(this).attr('data-id')
+                        var custName = $(this).attr('data-name')
+                        $(".skybox").val(custName); 
+                        $(".customerId").val(custId); 
+                        $(".close-del").trigger('click')
+                    })
+                }
+            
+            }); 
+        }
+    })
     $(".close-manifest").click(function () {
         var btn = $(this);
         $.ajax({
@@ -541,14 +638,14 @@ $(function () {
         }
         var colDef = [
            
-            {
-                title: "PMB",
-                data: null,
-                render: function (data, type, row, meta) {
-                    // console.log(data);
-                    return `${data.skybox} `;
-                }
-            },
+            // {
+            //     title: "PMB",
+            //     data: null,
+            //     render: function (data, type, row, meta) {
+            //         // console.log(data);
+            //         return `${data.skybox} `;
+            //     }
+            // },
             // {
             //     title: "Customer",
             //     data: null,
@@ -566,21 +663,29 @@ $(function () {
                 }
             },
 
+            // {
+            //     title: "Shipper",
+            //     data: null, visible: hideCols,
+            //     render: function (data, type, row, meta) {
+            //         // console.log(data);
+            //         return `${data.shipper}`;
+            //     }
+            // },
+            // {
+            //     title: "Pieces",
+            //     visible: hideCols,
+            //     data: null,
+            //     render: function (data, type, row, meta) {
+            //         // console.log(data);
+            //         return `${data.pieces}`;
+            //     }
+            // },
             {
-                title: "Shipper",
-                data: null, visible: hideCols,
-                render: function (data, type, row, meta) {
-                    // console.log(data);
-                    return `${data.shipper}`;
-                }
-            },
-            {
-                title: "Pieces",
-                visible: hideCols,
+                title: "Description",
                 data: null,
                 render: function (data, type, row, meta) {
                     // console.log(data);
-                    return `${data.pieces}`;
+                    return `${data.description}`;
                 }
             },
             {
@@ -592,13 +697,21 @@ $(function () {
                 }
             },
             {
-                title: "Value (USD)",
+                title: "Dimensions",
                 data: null,
                 render: function (data, type, row, meta) {
                     // console.log(data);
-                    return `${Number(data.value).formatMoney(2, '.', ',')}`;
+                    return `${data.dimensions}`;
                 }
             },
+            // {
+            //     title: "Value (USD)",
+            //     data: null,
+            //     render: function (data, type, row, meta) {
+            //         // console.log(data);
+            //         return `${Number(data.value).formatMoney(2, '.', ',')}`;
+            //     }
+            // },
             {
                 title: "",
                 data: null,

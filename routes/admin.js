@@ -96,10 +96,78 @@ router.post('/user/',  function (req, res, next) {
 
 
 });
+router.get('/locations',middleware(services.userService).requireAuthentication, function (req, res, next){
+    var pageData = {}; 
+    pageData.title = "Customers"
+    pageData.luser = res.User.firstName + ' ' + res.User.lastName;
+    pageData.RoleId = res.User.role;
+    services.locationService.getLocations().then(locations=>{
+        console.log("list of locations ", locations); 
+        pageData.locations = locations.locations;
+        res.render("pages/Stores/locations",pageData)
+    })
+
+}); 
+router.get('/add-locations/:locationId?', middleware(services.userService).requireAuthentication,function(req, res, next) {
+    var pageData = {};
+      pageData.title = "Locations"
+
+      pageData.luser = res.User.firstName + ' ' + res.User.lastName;
+      pageData.RoleId = res.User.role;
+      if (req.params.locationId){
+        services.locationService.getLocation(req.params.locationId).then(locationRes=>{
+            console.log("got the location",locationRes); 
+            pageData.location = locationRes.location; 
+            res.render('pages/Stores/new-location',pageData);
+        })
+      }
+      else {
+          pageData.location = {
+              id:0,
+              name :"", 
+              phone :"",
+              address:""
+          }
+          res.render('pages/Stores/new-location',pageData);
+      }
+    
+  });
+router.post('/add-location',middleware(services.userService).requireAuthentication, function (req, res, next){
+    var body = req.body; 
+    console.log(body, 'saving location'); 
+    if (Number(body.id)>0){
+        services.locationService.updateLocation(body).then(result=>{
+            if (result.saved == true){
+                res.redirect('/admin/locations'); 
+                var pageData = {}; 
+                pageData.title = "Location Details"
+                pageData.luser = res.User.firstName + ' ' + res.User.lastName;
+                pageData.RoleId = res.User.role;
+                pageData.location = body;
+            }
+        })
+    }
+    else {
+        services.locationService.saveLocation(body).then(results=>{
+            if (results.saved == true){
+                res.redirect('/admin/locations')
+            }
+            else {
+                var pageData = {}; 
+                pageData.title = "Location Details"
+                pageData.luser = res.User.firstName + ' ' + res.User.lastName;
+                pageData.RoleId = res.User.role;
+                pageData.location = location;
+                res.render('/pages/Stores/add-location',pageData)
+            }
+        })
+    }
+   
+})
 router.get('/customersV1/', middleware(services.userService).requireAuthentication, function (req, res, next) {
     console.log("HERE");
     var pageData = {}; 
-        pageData.title = "Tropical Customers"
+        pageData.title = "Customers"
     pageData.luser = res.User.firstName + ' ' + res.User.lastName;
     pageData.RoleId = res.User.role;
     pageData.owners = [];
@@ -236,14 +304,19 @@ router.get('/customers/:currentPage?', middleware(services.userService).requireA
 router.get('/customer-edit/:skybox', middleware(services.userService).requireAuthentication, function (req, res, next) {
 var body = req.body; 
 var skybox = Number(req.params.skybox.replace("T-","")); 
+console.log(skybox); 
 rCusomterService.getCustomer(skybox).then((customer)=>{
-    console.log(customer);
-    var pageData = {};
-    pageData.title = "Tropical Customer"
-    pageData.luser = res.User.firstName + ' ' + res.User.lastName;
-    pageData.RoleId = res.User.role;
-    pageData.customer = customer;
-    res.render('pages/admin/customerEdit',pageData); 
+    services.locationService.getLocations().then(locations=>{
+        console.log(customer);
+        var pageData = {};
+        pageData.title = "9-5 Customer"
+        pageData.luser = res.User.firstName + ' ' + res.User.lastName;
+        pageData.RoleId = res.User.role;
+        pageData.customer = customer;
+        pageData.locations = locations.locations; 
+        res.render('pages/admin/customerEdit',pageData); 
+    })
+   
 });
 
 }); 
@@ -252,11 +325,12 @@ router.post('/customer-edit',middleware(services.userService).requireAuthenticat
     console.log(body); 
     var customer = { 
         id: Number(body.id),
-        skybox : Number(body.skybox ),
+        pmb : Number(body.pmb ),
         name : body.name, 
+        firstName: body.firstName,
+        lastName:body.lastName,
         email: body.email, 
-        mobile: body.mobile, 
-        isBusiness : body.isBusiness,
+        mobile: body.mobile,   
         area:body.area,
     }; 
     if (customer.isBusiness == "on")
@@ -285,7 +359,7 @@ router.post('/customers/', middleware(services.userService).requireAuthenticatio
     services.customerService.findCustomers(searchText).then((result) => {
         var pageData = {};
 
-        pageData.title = "Tropical Customers"
+        pageData.title = "Customers"
         pageData.luser = res.User.firstName + ' ' + res.User.lastName;
         pageData.RoleId = res.User.role;
         pageData.records = result.data;

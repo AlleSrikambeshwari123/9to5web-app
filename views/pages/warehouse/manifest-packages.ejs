@@ -22,10 +22,10 @@
                         <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab"
                             aria-controls="contact" aria-selected="false" aria-expanded="false">Cargo</a>
                     </li>
-                    <li class="nav-item">
+                    <!-- <li class="nav-item">
                         <a class="nav-link" id="unproc-tab" data-toggle="tab" href="#unproc" role="tab"
                             aria-controls="unproc" aria-selected="false" aria-expanded="false">Cube / Consolidated</a>
-                    </li>
+                    </li> -->
                 </ul>
                 <div class="tab-content" id="myTabContent">
                     <div class="tab-pane active fade show" id="home" role="tabpanel" aria-labelledby="home-tab"
@@ -79,7 +79,9 @@
                                             <div class='form-group'>
                                                     <label>Flight #</label>
                                                    
-                                                    <input type='text' class='form-control trackingNo' name='trackingNo' required />
+                                                   <select class='form-control' style='min-height:40px;'>
+                                                    <option value=''>Select Plane</option>
+                                                   </select>
                                                 </div>
                                                 <div class='form-group'>
                                                         <label>Flight Date /Time </label>
@@ -87,9 +89,9 @@
                                                         <input type='text' class='form-control trackingNo' name='trackingNo' required />
                                                     </div>
                                                     <div class='form-group'>
-                                                            <label>Pilot </label>
-                                                         
-                                                            <input type='text' class='form-control trackingNo' name='trackingNo' required />
+                                                            <select class='form-control' style='min-height:40px;'>
+                                                                    <option value=''>Select Pilot</option>
+                                                            </select>
                                                         </div>
                                     </div>
                                   <div class="card-stats card-round col-xl-4 col-lg-6 col-md-6 col-sm-6">
@@ -184,21 +186,17 @@
                                         <input type='text' class='form-control skid' name='skid' required />
                                     </div> -->
                                     <div class='form-group'>
-                                            <label>AWB <span id='' class='text-info title'></span></label>
+                                            <label>Company Tracking # <span id='' class='text-info title'></span></label>
                                             <input type='text' class='form-control awb' name='awb' required />
                                             <input type='hidden' class='isBusiness' value='' />
                                         </div>
-                                    <div class='form-group'>
-                                        <label>PMB <span id='' class='text-info title customerName'></span></label>
-                                        <input type='text' class='form-control skybox' name='skybox' required />
-                                        <input type='hidden' class='isBusiness' value='' />
-                                    </div>
-                                    <div class='form-group'>
+                                    
+                                    <!-- <div class='form-group'>
                                         <label>Tracking #</label>
                                         <input type='hidden' class='mid' value='<%=mid %>' />
                                         <input type='hidden' class='mtype' value='cargo' />
                                         <input type='text' class='form-control trackingNo' name='trackingNo' required />
-                                    </div>
+                                    </div> -->
                                     <!-- <div class='form-group'>
                                         <label>Description</label>
                                         <input type='text' class='form-control description' name='description'
@@ -311,18 +309,17 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 class="modal-title" id="exampleModalLabel2">Ship Manifest</h2>
+                <h2 class="modal-title" id="exampleModalLabel2">Send Flight</h2>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">×</span>
                 </button>
             </div>
             <div class="modal-body">
-                <label for="awb">Enter AWB #</label>
-                <input type='text' id='awb' class='form-control awb'>
+             <h3>Are you sure?</h3>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary close-del" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-success ship-manifest" id='ship-manifest'>Ship Manifest</button>
+                <button type="button" class="btn btn-success ship-manifest" id='ship-manifest'>Send Flight</button>
             </div>
         </div>
     </div>

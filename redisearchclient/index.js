@@ -13,7 +13,6 @@ const
     text        : 'TEXT',
     numeric     : 'NUMERIC',
     geo         : 'GEO',
-    tag         : 'TAG',
     weight      : 'WEIGHT',
     sortable    : 'SORTABLE',
     fields      : 'FIELDS',
@@ -193,7 +192,23 @@ module.exports  = function(clientOrNodeRedis,key,passedOptsOrCb,passedCb) {
       return chainer(cObj);
     };
   };
-
+  const updateFactory = function (cObj){
+    return function(docId, values, passedOptsOrCb, passedCb) {
+      let
+        lastArgs = optionalOptsCbHandler(passedOptsOrCb,passedCb),
+        addArgs   = [docId];
+      
+      if (!checked) { clientCheck(); }
+        
+      addArgs.push(lastArgs.opts.score || 1,"REPLACE" ,"PARTIAL", s.fields); 
+      
+      Object.keys(values).forEach(function(aField) {
+        addArgs.push(aField,values[aField]);
+      });
+      cObj.ft_add(key,addArgs,lastArgs.cb);
+      return chainer(cObj);
+    };
+  }; 
   const addFactory = function(cObj) {
     //cObj is either a `client` or pipeline instance
     return function(docId, values, passedOptsOrCb, passedCb) {
@@ -290,8 +305,7 @@ module.exports  = function(clientOrNodeRedis,key,passedOptsOrCb,passedCb) {
       return field;
     },
     numeric     : genericField(s.numeric),
-    geo         : genericField(s.geo),
-    tag         : genericField(s.tag)
+    geo         : genericField(s.geo)
   };
 
   const deleteDocument = function(index,docId,cb){
@@ -304,7 +318,7 @@ module.exports  = function(clientOrNodeRedis,key,passedOptsOrCb,passedCb) {
     add               : addFactory(client),
     getDoc            : getDocFactory(client),    
     search            : searchFactory(client),
-
+    update            : updateFactory(client),
     batch             : pipelineFactory('batch'),
     
     fieldDefinition   : fieldDefinition,

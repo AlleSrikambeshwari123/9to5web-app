@@ -417,11 +417,26 @@ router.post('/get-mpackages/', middleware(services.userService).requireAuthentic
 //     });
 
 // });
+
 router.get('/new-awb',(req,res,next)=>{
     services.packageService.getNewAwb().then(awbRes=>{
         res.send(awbRes); 
     })
 }); 
+
+router.post("/save-awb",(req,res,next)=>{
+    var body  = req.body;
+    services.packageService.saveAwb(body).then(result=>{
+        res.send(result); 
+    })
+}); 
+router.post('/find-customer',(req,res,next)=>{
+    var body = req.body; 
+    console.log(body); 
+    services.customerService.findCustomer(body.search).then(customers=>{
+        res.send(customers); 
+    })
+})
 
 router.get('/incoming-shipment',(req,res,next)=>{
     res.render('pages/warehouse/incoming-shipment',{})
