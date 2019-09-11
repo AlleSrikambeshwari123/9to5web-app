@@ -430,6 +430,14 @@ router.post("/save-awb",(req,res,next)=>{
         res.send(result); 
     })
 }); 
+
+router.post('/save-awb-package',(req,res,next)=>{
+    var body = req.body; 
+    console.log(body); 
+    services.packageService.savePackageToAwb(body).then(pkgResult=>{
+        res.send(pkgResult); 
+    })
+})
 router.post('/find-customer',(req,res,next)=>{
     var body = req.body; 
     console.log(body); 
@@ -703,6 +711,7 @@ router.post('/process-package', middleware(services.userService).requireAuthenti
         }
     });
 });
+
 router.get('/store-check-in', middleware(services.userService).requireAuthentication, (req, res, next) => {
     var pageData = {};
     pageData.title = "Store Checkin";

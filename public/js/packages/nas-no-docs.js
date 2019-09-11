@@ -10,25 +10,15 @@ Number.prototype.formatMoney = function (c, d, t) {
 };
 $(function () {
 
-    var lastPackage = {}
     //#region PAGE LOAD 
-    var mid = $("#mid").val();
-    var mtype = $('#mtype').val();
+    var mid = 0;
+    var mtype = "default";
     var mailTable;
     var cargoTable;
     var unProcTable;
-    var awbPackages = []; 
-    $('.open-popup-link').magnificPopup({
-        type: 'inline',
-        midClick: true,
-        mainClass: 'mfp-fade',
-        gallery: {
-          enabled: true,
-        }
-      });
     function LoadPageData() {
         //we need to load page data based on manifest type... 
-        getManifestTotals(mid, mtype);
+      
         // if (mtype != "cargo") {
             getManifestPackages(mid, mtype, function (mailPackages) {
 
@@ -75,127 +65,27 @@ $(function () {
         var nameCtrl = form.find('.customerName');
         lookupUser(box, $(nameCtrl));
     });
-    // $("input").change(function () {
-    //     //revalidate the from
-    //     var form = $(this).closest('form');
-    //     var package = getPackageDetails($(this));
-    //     var validPackage = validatePackage(package, $(this));
-    // })
-    // $(".savePackage").click(function () {
-
-    //     var package = getPackageDetails($(this));
-    //     //var stage = $(this).attr('data-stage');
-    //    // var mtype = $("#mytpe").val();
-    //     var validPackage = validatePackage(package, $(this));
-    //     var form = $(this).closest('form');
-    //     if (validPackage) {
-    //         //save
-    //         savePackage(package, form, false);
-    //     } else {
-    //         console.log('not saving the package...Invalid')
-    //     }
-
-    // });
-    $("#save-to-awb").click(function(){
-       
-        var package = {
-            trackingNo: $("#trackingNo").val(),
-            description: $("#description").val(),
-            weight:$("#weight").val(), 
-            dimensions: $("#dimensions").val(),
-            awb:$(".awb").val()
-        }
-        var isValid = true; 
-        if (package.trackingNo==""){
-            isValid = false 
-        }
-        if (package.weight ==""){
-            isValid = false 
-        }
-        if (package.description == ""){
-            isValid  = false;
-        }
-        if (isValid == true)
-        {
-
-            //we need to actually save the package and clear the screen 
-            package.location = "Warehouse FL"; 
-            $.ajax({
-                url:'/warehouse/save-awb-package',
-                type:'post',
-                data:package, 
-                success:function(result){
-                    if (result.id){
-                        package.id=result.id; 
-                    }
-                    awbPackages.push(package);  
-                    displayPackages(awbPackages, "#packageTable", "cargo"); 
-                    $("#trackingNo").val(''); 
-                    $("#description").val(''); 
-                    $("#weight").val(''); 
-                    $("#dimensions").val('');
-                    //$(".close-popup").trigger('click'); 
-                }
-            })
-             
-        }   
-
-            console.log(package)
-            console.log(awbPackages)
-            //refres the table 
-           
-
+    $("input").change(function () {
+        //revalidate the from
+        var form = $(this).closest('form');
+        var package = getPackageDetails($(this));
+        var validPackage = validatePackage(package, $(this));
     })
-    // $(".new-awb").click(function(){
-    //     $.ajax({
-    //         url:'/warehouse/new-awb',
-    //         contentType:'json',
-    //         success:function(result){
-    //             //console.log("awb",awb)
-    //             $(".awb").text(result.awb); 
-    //             $(".awb").val(result.awb)
-    //             //clear everything 
-    //             $("#add_package").hide(); 
-    //             $("#save_awb").show()
-    //         }
-    //     })
-    // }); 
-    $("#save_awb").click(function(){
-        //validate the awb 
+    $(".savePackage").click(function () {
 
-        //handle upload
-        var hasInvoice = 0 ; 
-        var isSED = 0 ; 
-        
-        if ($("#hasInvoice").prop(":checked"))
-            hasInvoice = 1; 
-            if ($("#isSED").prop(":checked"))
-            isSED = 1; 
-        var awbInfo = { 
-            id: $("#id").val(),
-            isSed:isSED,
-            hasDocs: hasInvoice,
-            invoiceNumber:$("#invoiceNumber").val(),
-            value:$("#value").val(),
-            customerId:$("#customerId").val(),
-            shipper:$("#shipper").val(),
-            carrier:$("#carrier").val(),
+        var package = getPackageDetails($(this));
+        //var stage = $(this).attr('data-stage');
+       // var mtype = $("#mytpe").val();
+        var validPackage = validatePackage(package, $(this));
+        var form = $(this).closest('form');
+        if (validPackage) {
+            //save
+            savePackage(package, form, false);
+        } else {
+            console.log('not saving the package...Invalid')
+        }
 
-        };
-        
-        $.ajax({
-            url:'/warehouse/save-awb',
-            type:'post',
-            data:awbInfo,
-            success:function(result){
-                console.log(result);
-                $(".awb").text(result.id); 
-                $(".awb").val(result.id)
-                $("#add_package").show(); 
-                $("#save_awb").hide(); 
-            }
-        });
-    }); 
+    });
     $(".saveUnProcPackage").click(function () {
 
         var package = getPackageDetails($(this));
@@ -212,36 +102,6 @@ $(function () {
         }
 
     });
-
-    $("#search").keyup(function(){
-        var query = $(this).val();
-        console.log(query)
-        if (query.length>3){
-            console.log(query)
-            $.ajax({
-                url:'/warehouse/find-customer',
-                type:'post',
-                data: {search:query},
-                success:function(data){
-                    console.log(data,"customer listing"); 
-                    $("#customerTable").empty(); 
-                   for(i=0;i<data.customer.length; i++){
-                        console.log(data.customer[i])
-                        $("#customerTable").append(`<tr><td>${data.customer[i].pmb}</td><td>${data.customer[i].name}</td> <td><i data-id="${data.customer[i].id}" data-name="${data.customer[i].name}" class='fa fa-check choose_customer' style='cursor:pointer'></i></td></tr>`)    
-                    }
-                    $("#customerTable").show(); 
-                    $(".choose_customer").click(function(){
-                        var custId = $(this).attr('data-id')
-                        var custName = $(this).attr('data-name')
-                        $(".skybox").val(custName); 
-                        $(".customerId").val(custId); 
-                        $(".close-del").trigger('click')
-                    })
-                }
-            
-            }); 
-        }
-    })
     $(".close-manifest").click(function () {
         var btn = $(this);
         $.ajax({
@@ -263,11 +123,6 @@ $(function () {
                 });
             }
         });
-    });
-    $(".new-cube").click(function () {
-        var btn = $(this);
-       btn.hide(); 
-       $(".cubeId").show(); 
     });
     $(".ship-manifest").click(function () {
         //we need the awb 
@@ -444,8 +299,7 @@ $(function () {
             tracking: $(form).find('.trackingNo').val(),
             description: $(form).find('.description').val(),
             shipper: $(form).find('.shipper').val(),
-            //value: $(form).find('.package-value').val(),
-            value: 0,
+            value: $(form).find('.package-value').val(),
             pieces: $(form).find('.pieces').val(),
             weight: $(form).find('.weight').val(),
             dimensions: $(form).find('.dimensions').val(),
@@ -546,11 +400,11 @@ $(function () {
             valid = false;
             form.find('.shipper').parent().find('label').addClass('text-danger');
         }
-        // form.find('.package-value').parent().find('label').removeClass('text-danger');
-        // if (package.value == '') {
-        //     valid = false;
-        //     form.find('.package-value').parent().find('label').addClass('text-danger');
-        // }
+        form.find('.package-value').parent().find('label').removeClass('text-danger');
+        if (package.value == '') {
+            valid = false;
+            form.find('.package-value').parent().find('label').addClass('text-danger');
+        }
         form.find('.weight').parent().find('label').removeClass('text-danger');
         if (package.weight == '') {
             valid = false;
@@ -677,7 +531,15 @@ $(function () {
             //     }
             // },
             {
-                title: "Tracking No",
+                title: "Location",
+                data: null,
+                render: function (data, type, row, meta) {
+                    // console.log(data);
+                    return `${data.trackingNo} `;
+                }
+            },
+            {
+                title: "AWB",
                 data: null,
                 render: function (data, type, row, meta) {
                     // console.log(data);
@@ -685,29 +547,21 @@ $(function () {
                 }
             },
 
-            // {
-            //     title: "Shipper",
-            //     data: null, visible: hideCols,
-            //     render: function (data, type, row, meta) {
-            //         // console.log(data);
-            //         return `${data.shipper}`;
-            //     }
-            // },
-            // {
-            //     title: "Pieces",
-            //     visible: hideCols,
-            //     data: null,
-            //     render: function (data, type, row, meta) {
-            //         // console.log(data);
-            //         return `${data.pieces}`;
-            //     }
-            // },
             {
-                title: "Description",
+                title: "Shipper",
+                data: null, visible: hideCols,
+                render: function (data, type, row, meta) {
+                    // console.log(data);
+                    return `${data.shipper}`;
+                }
+            },
+            {
+                title: "Pieces",
+                visible: hideCols,
                 data: null,
                 render: function (data, type, row, meta) {
                     // console.log(data);
-                    return `${data.description}`;
+                    return `${data.pieces}`;
                 }
             },
             {
@@ -719,21 +573,13 @@ $(function () {
                 }
             },
             {
-                title: "Dimensions",
+                title: "Storage Fees",
                 data: null,
                 render: function (data, type, row, meta) {
                     // console.log(data);
-                    return `${data.dimensions}`;
+                    return `${Number(data.value).formatMoney(2, '.', ',')}`;
                 }
             },
-            // {
-            //     title: "Value (USD)",
-            //     data: null,
-            //     render: function (data, type, row, meta) {
-            //         // console.log(data);
-            //         return `${Number(data.value).formatMoney(2, '.', ',')}`;
-            //     }
-            // },
             {
                 title: "",
                 data: null,
@@ -798,7 +644,7 @@ $(function () {
     }
 
     function savePackage(package, form, isClosed) {
-        lastPackage = { details:package };
+
         $.ajax({
             url: '/warehouse/save-package',
             type: 'post',

@@ -123,13 +123,17 @@ export class PackageService {
   saveAwb(awb){
     return new Promise((resolve,reject)=>{
       console.log(awb); 
-        awbIndex.add(awb.id,awb,(err1,awbRes)=>{
-          if (err1){
-            console.log('saving err',err1)
-            resolve({saved:false})
-          }
-          resolve({saved:true})
-        })
+      dataContext.redisClient.incr(AWB_ID,(err,reply)=>{
+        awb.id = reply; 
+          awbIndex.add(awb.id,awb,(err1,awbRes)=>{
+            if (err1){
+              console.log('saving err',err1)
+              resolve({saved:false})
+            }
+            resolve({saved:true, id:reply})
+          })
+      })
+       
       
       
     })
@@ -159,7 +163,16 @@ export class PackageService {
       })
     })
   }
-  
+  savePackageToAwb(newPackage){
+    return new Promise((resolve,result)=>{
+      dataContext.redisClient.incr(PKG_ID_COUNTER,(err,id)=>{
+        newPackage.id = id; 
+        packageIndex.add(id,newPackage,(err,result)=>{
+          resolve({saved:true,id:id})
+        })
+      })
+    })
+  }
   savePackage(body){
     return new Promise((resolve,reject)=>{
       var cPackage = {

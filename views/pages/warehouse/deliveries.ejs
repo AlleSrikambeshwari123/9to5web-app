@@ -1,0 +1,82 @@
+<% layout('./shared/__template')%>
+<div class='gutters'>
+        <div class='col-xl-12 col-lg-6 col-md-12 col-sm-12'>
+      
+    <input type='hidden' id="mid" value="0" />
+    <input type='hidden' id="mtype" value="default" />
+            <div class='card'>
+                <div class="card-header col-md-12">
+                    <h3><%=title%></h3>
+                </div>
+                <div class="card-body">
+                    <ul class="nav nav-pills nav-primary" id="myTab" role="tablist">
+                      
+                        <!-- <li class="nav-item">
+                            <a class="nav-link active" id="profile-tab" data-toggle="tab" href="#profile" role="tab"
+                                aria-controls="profile" aria-selected="false" aria-expanded="false">FLL Warehouse</a>
+                        </li> -->
+    
+    
+                    </ul>
+                    <div class='row'>
+                        <div class='col-md-12'><button class='btn btn-info pull-right' data-toggle='modal' data-target='#addDelivery'>Create Delivery </button></div>
+                            
+                    </div>
+                    
+                    <div class="tab-content" id="myTabContent">
+                       
+                        <div class="tab-pane active fade show" id="profile" role="tabpanel" aria-labelledby="profile-tab"
+                            aria-expanded="false">
+                            <div class='row'>
+                              
+                                <div class='col-md-12'>
+                                    <table id='deliveryTable'
+                                        class='display table table-bordered table-head-bg-info table-hover'
+                                        style='width:100%;'>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal fade" id="addDelivery" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2"
+        aria-hidden="true" style="display: none;">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="exampleModalLabel2">Create New Delivery</h2>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                  <div class='form-group'>
+                      <label>Select Delivery Location</label>
+                      <select id="toLoc" class=' select' id='delivery-location' style='height:55px;padding:13px;border:1px solid #ced4da ;display:block; width:100%;background: transparent;'>
+                        <option value=''>Select Location</option>
+                        <%for(i=0;i<locations.length;i++){%>
+                            <option value='<%=locations[i].id%>'><%=locations[i].name%></option>
+                        <%}%>
+                      </select>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary close-modal" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-info save-delivery" id='rmPackage'>Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+<script>
+        var deliveries = <%- JSON.stringify(deliveries) %>;
+    </script>
+    
+    <% block('scripts').append('<script src="/vendor/datatables/dataTables.min.js"></script>')%>
+    <% block('scripts').append('<script src="/vendor/datatables/dataTables.bootstrap.min.js"></script>')%>
+    <% block('scripts').append('<script src="/vendor/datatables/custom/fixedHeader.js"></script>')%>
+    <% block('scripts').append('<script src="/js/packages/deliveries.js"></script>')%>
