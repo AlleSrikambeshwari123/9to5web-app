@@ -441,14 +441,74 @@ router.post('/find-customer',(req,res,next)=>{
 router.get('/incoming-shipment',(req,res,next)=>{
     res.render('pages/warehouse/incoming-shipment',{})
 })
+router.get('/rec-package-nas',middleware(services.userService).requireAuthentication,(req,res,next)=>{
+    var pageData = {}; 
+    pageData.packages = []; 
+    pageData.title = "Recieve Package NAS";
+    pageData.mid = req.params.mid;
+    pageData.luser = res.User.FirstName + ' ' + res.User.LastName;
+    pageData.RoleId = res.User.RoleId;
+    res.render('pages/warehouse/rec-nas',pageData); 
+})
+router.post('/rec-package-nas',middleware(services.userService).requireAuthentication,(req,res,next)=>{
+    var pageData = {}; 
+    pageData.packages = []; 
+    pageData.title = "Recieve Package NAS";
+    pageData.mid = req.params.mid;
+    pageData.luser = res.User.FirstName + ' ' + res.User.LastName;
+    pageData.RoleId = res.User.RoleId;
+    var body = req.body; 
+    var nas_location_id = 2; 
+    services.packageService.updateLocation(body.trackNo,nas_location_id).then(result=>{
+        res.render('pages/warehouse/rec-nas',pageData); 
+    })
+    
+})
+
+router.get('/deliveries',middleware(services.userService).requireAuthentication,(req,res,next)=>{
+    var pageData = {}; 
+    pageData.packages = []; 
+    pageData.title = "Warehouse to Store Deliveries";
+    pageData.mid = req.params.mid;
+    pageData.luser = res.User.FirstName + ' ' + res.User.LastName;
+    pageData.RoleId = res.User.RoleId;
+    services.locationService.getLocations().then(locations=>{
+        services.deliveryService.getDeliveries().then(results=>{
+            pageData.deliveries = results.deliveries; 
+            pageData.locations = locations.locations; 
+            console.log(locations)
+            res.render('pages/warehouse/deliveries',pageData);   
+        });
+    })
+    
+    
+})
+router.post('/save-delivery',middleware(services.userService).requireAuthentication,(req,res,next)=>{
+    var body = req.body; 
+    body.createdBy = res.User.username; 
+    body.createdDate = moment().unix(); 
+    services.deliveryService.saveDelivery(body).then(results=>{
+        res.send(results); 
+    })
+
+})
 router.get('/packages-on-hand',middleware(services.userService).requireAuthentication,(req,res,next)=>{
     var pageData = {}; 
     pageData.packages = []; 
-    pageData.title = "Packages on Hand";
+    pageData.title = "Packages on hand FL";
     pageData.mid = req.params.mid;
     pageData.luser = res.User.FirstName + ' ' + res.User.LastName;
     pageData.RoleId = res.User.RoleId;
     res.render('pages/warehouse/no-docs',pageData); 
+})
+router.get('/nas-packages-wh',middleware(services.userService).requireAuthentication,(req,res,next)=>{
+    var pageData = {}; 
+    pageData.packages = []; 
+    pageData.title = "Packages on hand NAS";
+    pageData.mid = req.params.mid;
+    pageData.luser = res.User.FirstName + ' ' + res.User.LastName;
+    pageData.RoleId = res.User.RoleId;
+    res.render('pages/warehouse/nas-packages',pageData); 
 })
 router.get('/fll-no-docs',middleware(services.userService).requireAuthentication, (req, res, next) => {
     services.packageService.getNoDocsPackackages().then(packages=>{
@@ -459,6 +519,30 @@ router.get('/fll-no-docs',middleware(services.userService).requireAuthentication
         pageData.luser = res.User.FirstName + ' ' + res.User.LastName;
         pageData.RoleId = res.User.RoleId;
         res.render('pages/warehouse/no-docs',pageData); 
+    })
+    
+})
+router.get('/store-packages',middleware(services.userService).requireAuthentication, (req, res, next) => {
+    services.packageService.getNoDocsPackackages().then(packages=>{
+        var pageData = {}; 
+        pageData.packages = packages; 
+        pageData.title = "Store Packages";
+        pageData.mid = req.params.mid;
+        pageData.luser = res.User.FirstName + ' ' + res.User.LastName;
+        pageData.RoleId = res.User.RoleId;
+        res.render('pages/warehouse/store-packages',pageData); 
+    })
+    
+})
+router.get('/nas-no-docs',middleware(services.userService).requireAuthentication, (req, res, next) => {
+    services.packageService.getNoDocsPackackages().then(packages=>{
+        var pageData = {}; 
+        pageData.packages = packages; 
+        pageData.title = "Packages with no documents";
+        pageData.mid = req.params.mid;
+        pageData.luser = res.User.FirstName + ' ' + res.User.LastName;
+        pageData.RoleId = res.User.RoleId;
+        res.render('pages/warehouse/nas-no-docs',pageData); 
     })
     
 })
@@ -621,7 +705,7 @@ router.post('/process-package', middleware(services.userService).requireAuthenti
 });
 router.get('/store-check-in', middleware(services.userService).requireAuthentication, (req, res, next) => {
     var pageData = {};
-    pageData.title = "Manifest";
+    pageData.title = "Store Checkin";
     pageData.luser = res.User.FirstName + ' ' + res.User.LastName;
     pageData.RoleId = res.User.RoleId;
     res.render('pages/warehouse/store-checkin', pageData);

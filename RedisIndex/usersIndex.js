@@ -1,7 +1,7 @@
 var redis = require('redis'); 
 var rediSearch = require('../redisearchclient/index'); 
 var env = require('../environment')
-
+var dataContext = require('../RedisServices/dataContext')
 let userIndex = rediSearch(redis,'index:users', {
     clientOptions: {
                  'host': env.redis_host,
@@ -35,4 +35,8 @@ email:"admin@9-5imports.com",
 mobile:"868.354.7177",
 role:"Admin"
 }
+dataContext.redisClient.hmset("user:admin",user,(err,result)=>{
+    console.log('saved user to key',result)
+})
+
 userIndex.add(4,user)

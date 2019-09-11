@@ -152,6 +152,14 @@ export class PackageService {
       })
     })
   }
+  updateLocation(trackingNumber,location_id){
+    return new Promise((resolve,reject)=>{
+      packageIndex.search("@trackingNo:"+trackingNumber,{location:location_id},(err,packageResult)=>{
+
+      })
+    })
+  }
+  
   savePackage(body){
     return new Promise((resolve,reject)=>{
       var cPackage = {

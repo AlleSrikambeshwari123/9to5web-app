@@ -1,11 +1,13 @@
 
 module.exports = { 
     redis_clientOptions: {
+        'host': normalizeValue(process.env.REDIS_HOST,"127.0.0.1"),
         'host': normalizeValue(process.env.REDIS_HOST,"192.241.148.235"),
-        'port': normalizeValue( process.env.REDIS_PORT,"6379"),
+        //'port': normalizeValue( process.env.REDIS_PORT,"6379"),
         auth_pass: normalizeValue(process.env.REDIS_PASS,"Silver123.")
     },
     redis_port: normalizeValue( process.env.REDIS_PORT,"6379"),
+   // redis_host: normalizeValue(process.env.REDIS_HOST,"127.0.0.1"),
     redis_host: normalizeValue(process.env.REDIS_HOST,"192.241.148.235"),
     redis_pass : normalizeValue(process.env.REDIS_PASS,"Silver123.")
 }

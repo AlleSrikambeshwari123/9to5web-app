@@ -8,11 +8,14 @@ var UserService = require('./UserService').UserService;
 var userService = new UserService();
 var LocationService = require('./LocationService').LocationService; 
 var locationService = new LocationService(); 
+var DeliveryService = require('./RouteService').DeliveryService; 
+var deliveryService = new DeliveryService(); 
 
 module.exports = { 
   customerService: customerService,
   manifestService: manifestService,
   packageService: packageService,
   userService:userService,
-  locationService:locationService
+  locationService:locationService,
+  deliveryService:deliveryService
 }
