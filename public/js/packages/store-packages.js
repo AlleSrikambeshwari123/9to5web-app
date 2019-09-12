@@ -514,14 +514,30 @@ $(function () {
         }
         var colDef = [
            
-            // {
-            //     title: "PMB",
-            //     data: null,
-            //     render: function (data, type, row, meta) {
-            //         // console.log(data);
-            //         return `${data.skybox} `;
-            //     }
-            // },
+            {
+                title: "Shelf",
+                data: null,
+                render: function (data, type, row, meta) {
+                    // console.log(data);
+                    return `${data.skybox} `;
+                }
+            },
+            {
+                title: "Package ID",
+                data: null,
+                render: function (data, type, row, meta) {
+                    // console.log(data);
+                    return `${data.skybox} `;
+                }
+            },
+            {
+                title: "PMB",
+                data: null,
+                render: function (data, type, row, meta) {
+                    // console.log(data);
+                    return `${data.skybox} `;
+                }
+            },
             // {
             //     title: "Customer",
             //     data: null,
@@ -530,22 +546,6 @@ $(function () {
             //         return `${data.customer} `;
             //     }
             // },
-            {
-                title: "Date Received",
-                data: null,
-                render: function (data, type, row, meta) {
-                    // console.log(data);
-                    return `${data.skybox} `;
-                }
-            },
-            {
-                title: "Location",
-                data: null,
-                render: function (data, type, row, meta) {
-                    // console.log(data);
-                    return `${data.trackingNo} `;
-                }
-            },
             {
                 title: "Consignee",
                 data: null,
@@ -571,15 +571,15 @@ $(function () {
                     return `${data.shipper}`;
                 }
             },
-            {
-                title: "Pieces",
-                visible: hideCols,
-                data: null,
-                render: function (data, type, row, meta) {
-                    // console.log(data);
-                    return `${data.pieces}`;
-                }
-            },
+            // {
+            //     title: "Pieces",
+            //     visible: hideCols,
+            //     data: null,
+            //     render: function (data, type, row, meta) {
+            //         // console.log(data);
+            //         return `${data.pieces}`;
+            //     }
+            // },
             {
                 title: "Weight",
                 data: null,
@@ -588,14 +588,14 @@ $(function () {
                     return `${data.weight}`;
                 }
             },
-            {
-                title: "Storage Fees",
-                data: null,
-                render: function (data, type, row, meta) {
-                    // console.log(data);
-                    return `${Number(data.value).formatMoney(2, '.', ',')}`;
-                }
-            },
+            // {
+            //     title: "Value (USD)",
+            //     data: null,
+            //     render: function (data, type, row, meta) {
+            //         // console.log(data);
+            //         return `${Number(data.value).formatMoney(2, '.', ',')}`;
+            //     }
+            // },
             {
                 title: "",
                 data: null,

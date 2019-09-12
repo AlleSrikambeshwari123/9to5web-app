@@ -513,7 +513,14 @@ $(function () {
             $("#packageCount").text(packages.length);
         }
         var colDef = [
-           
+            {
+                title: "Date Received",
+                data: null,
+                render: function (data, type, row, meta) {
+                    // console.log(data);
+                    return `${data.skybox} `;
+                }
+            },
             {
                 title: "PMB",
                 data: null,
@@ -530,6 +537,14 @@ $(function () {
             //         return `${data.customer} `;
             //     }
             // },
+            {
+                title: "Consignee",
+                data: null,
+                render: function (data, type, row, meta) {
+                    // console.log(data);
+                    return `${data.trackingNo} `;
+                }
+            },
             {
                 title: "AWB",
                 data: null,
@@ -564,14 +579,14 @@ $(function () {
                     return `${data.weight}`;
                 }
             },
-            {
-                title: "Value (USD)",
-                data: null,
-                render: function (data, type, row, meta) {
-                    // console.log(data);
-                    return `${Number(data.value).formatMoney(2, '.', ',')}`;
-                }
-            },
+            // {
+            //     title: "Value (USD)",
+            //     data: null,
+            //     render: function (data, type, row, meta) {
+            //         // console.log(data);
+            //         return `${Number(data.value).formatMoney(2, '.', ',')}`;
+            //     }
+            // },
             {
                 title: "",
                 data: null,
