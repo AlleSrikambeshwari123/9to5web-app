@@ -11,7 +11,7 @@ var users = require('./routes/users');
 var admin = require('./routes/admin');
 var warehouse = require('./routes/warehouse');
 var fleet = require('./routes/fleet');
-
+var util = require('./routes/util'); 
 var app = express();
 
 // view engine setup
@@ -38,6 +38,7 @@ app.use('/users', users);
 app.use('/admin', admin);
 app.use('/warehouse', warehouse);
 app.use('/fleet', fleet);
+app.use('/util',util); 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   var err = new Error('Not Found');

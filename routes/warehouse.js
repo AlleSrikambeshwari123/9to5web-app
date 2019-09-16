@@ -14,6 +14,9 @@ var fs = require('fs');
 var delfile = '';
 var rServices = require('../RedisServices/RedisDataServices')
 
+
+
+
 //Manifest Routes
 //#region Manifest Routes
 router.get('/list-manifest', middleware(services.userService).requireAuthentication, (req, res, next) => {
@@ -426,6 +429,8 @@ router.get('/new-awb',(req,res,next)=>{
 
 router.post("/save-awb",(req,res,next)=>{
     var body  = req.body;
+    console.log('save-awb',body,moment().toString("hh:mm:ss")); 
+  
     services.packageService.saveAwb(body).then(result=>{
         res.send(result); 
     })
@@ -435,6 +440,7 @@ router.post('/save-awb-package',(req,res,next)=>{
     var body = req.body; 
     console.log(body); 
     services.packageService.savePackageToAwb(body).then(pkgResult=>{
+        console.log(pkgResult)
         res.send(pkgResult); 
     })
 })
@@ -472,7 +478,19 @@ router.post('/rec-package-nas',middleware(services.userService).requireAuthentic
     })
     
 })
-
+router.get('/delivery-detail/:id',middleware(services.userService).requireAuthentication,(req,res,next)=>{
+    var pageData = {}; 
+    pageData.packages = []; 
+    pageData.title = "Delivery Detail";
+    pageData.mid = req.params.mid;
+    pageData.luser = res.User.FirstName + ' ' + res.User.LastName;
+    pageData.RoleId = res.User.RoleId;
+    // services.packageService.getPackagesOnDelivery(deliveryId).then(packages=>{
+    //     res.render('pages/warehouse/delivery-detail',pageData); 
+    // })
+    var deliveryId = req.params.id; 
+    res.render('pages/warehouse/delivery-detail',pageData); 
+})
 router.get('/deliveries',middleware(services.userService).requireAuthentication,(req,res,next)=>{
     var pageData = {}; 
     pageData.packages = []; 

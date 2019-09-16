@@ -1,5 +1,6 @@
 var gulp = require('gulp');
 var lr  = require('gulp-livereload');
+var browserSync = require("browser-sync").create()
 var babel = require('gulp-babel'); 
 var sourcemaps = require('gulp-sourcemaps');
 
@@ -17,9 +18,12 @@ gulp.task('default',['images','styles','scripts'],function(){
 
 function startExpress() {
 
-    var www = require('./bin/www');
 
-    lr.listen();
+    var www = require('./bin/www');
+    browserSync.init({
+        proxy:'http://localhost:3100'
+    })
+  //  lr.listen();
 
 }
 gulp.task('watch',['default'],function(){
@@ -36,6 +40,7 @@ gulp.task('scripts',function(){
     .pipe(babel({presets:['es2015']}))
     .pipe(sourcemaps.write())
     .pipe(gulp.dest("./"))
+    .pipe(browserSync.stream())
 });
 gulp.task('styles',function(){
     console.log("optimizing stylesheets");
@@ -53,7 +58,8 @@ function notifyLivereload(event) {
 // `gulp.watch()` events provide an absolute path
     // so we need to make it relative to the server root
     gulp.src(event.path, {read: false})
-        .pipe(lr());
+        //.pipe(lr())
+        .pipe(browserSync.stream());
 
 
 }

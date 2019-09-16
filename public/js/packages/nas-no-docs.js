@@ -24,6 +24,7 @@ $(function () {
 
                 // displayMailPackages(mailPackages);
                 displayPackages(mailPackages, "#packageTable", mtype)
+                displayPackages(mailPackages, "#importsTable", mtype)
             });
 
         // }

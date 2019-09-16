@@ -52,7 +52,7 @@ $(function () {
         if ($("#unProcCount"))
             getPackageCountBySize(mid, "unproc", "#unProcCount");
     }
-    LoadPageData();
+   // LoadPageData();
     //#endregion
 
     $(".nav-link").click(function (e) {
@@ -117,26 +117,29 @@ $(function () {
         }
         if (isValid == true)
         {
-
-            //we need to actually save the package and clear the screen 
-            package.location = "Warehouse FL"; 
-            $.ajax({
-                url:'/warehouse/save-awb-package',
-                type:'post',
-                data:package, 
-                success:function(result){
-                    if (result.id){
-                        package.id=result.id; 
+          
+               
+                package.location = "Warehouse FL"; 
+                $.ajax({
+                    url:'/warehouse/save-awb-package',
+                    type:'post',
+                    data:package, 
+                    success:function(result){
+                        if (result.id){
+                            package.id=result.id; 
+                        }
+                        awbPackages.push(package);  
+                        displayPackages(awbPackages, "#packageTable", "cargo"); 
+                        $("#trackingNo").val(''); 
+                        $("#description").val(''); 
+                        $("#weight").val(''); 
+                        $("#dimensions").val('');
+                        //$(".close-popup").trigger('click'); 
                     }
-                    awbPackages.push(package);  
-                    displayPackages(awbPackages, "#packageTable", "cargo"); 
-                    $("#trackingNo").val(''); 
-                    $("#description").val(''); 
-                    $("#weight").val(''); 
-                    $("#dimensions").val('');
-                    //$(".close-popup").trigger('click'); 
-                }
-            })
+                })
+            
+            //we need to actually save the package and clear the screen 
+           
              
         }   
 
@@ -182,19 +185,36 @@ $(function () {
             carrier:$("#carrier").val(),
 
         };
-        
-        $.ajax({
-            url:'/warehouse/save-awb',
-            type:'post',
-            data:awbInfo,
-            success:function(result){
-                console.log(result);
-                $(".awb").text(result.id); 
-                $(".awb").val(result.id)
-                $("#add_package").show(); 
-                $("#save_awb").hide(); 
+        if (awbInfo.value == ""){
+            awbInfo.value = -1 ; 
+        }
+        console.log(awbInfo,"saving the awb")
+        uploadContentFile($("#invFile"),function(results){
+            var fileInfo = {}; 
+            if (results != ""){
+                var fileInfo = JSON.parse(results); 
+            
+                console.log('results',fileInfo[0].uploadedFile);
+                if (fileInfo[0].uploadedFile)
+                {
+                    awbInfo.invoice = fileInfo[0].uploadedFile; 
+                }
             }
-        });
+             console.log('sending', awbInfo)
+            $.ajax({
+                url:'/warehouse/save-awb',
+                type:'post',
+                data:awbInfo,
+                success:function(result){
+                    console.log(result);
+                    $(".awb").text(result.id); 
+                    $(".awb").val(result.id)
+                    $("#add_package").show(); 
+                    $("#save_awb").hide(); 
+                }
+            });
+        })
+      
     }); 
     $(".saveUnProcPackage").click(function () {
 
@@ -376,7 +396,7 @@ $(function () {
             // create a FormData object which will be sent as the data payload in the
             // AJAX request
             var formData = new FormData();
-
+            
             // loop through all the selected files and add them to the formData object
             for (var i = 0; i < files.length; i++) {
                 var file = files[i];
@@ -386,7 +406,7 @@ $(function () {
             }
 
             $.ajax({
-                url: '/warehouse/upload',
+                url: '/util/upload',
                 type: 'POST',
                 data: formData,
                 processData: false,
@@ -432,6 +452,10 @@ $(function () {
                 }
             });
 
+        }
+        else {
+            console.log("sending back no file")
+            completeHandler("");
         }
     }
 

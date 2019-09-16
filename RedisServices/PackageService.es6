@@ -6,7 +6,7 @@ var lredis = require("./redis-local");
 var moment = require("moment");
 var redisSearch = require("../redisearchclient");
 var fs = require("fs");
-
+var moment = require('moment')
 var PackageUtil = require("../Util/packageutil").PackageUtility;
 var packageUtil = new PackageUtil();
 const PKG_IDX = "index:packages";
@@ -122,9 +122,10 @@ export class PackageService {
   }
   saveAwb(awb){
     return new Promise((resolve,reject)=>{
-      console.log(awb); 
+      console.log('saving...',awb,moment().toString("hh:mm:ss"))
       dataContext.redisClient.incr(AWB_ID,(err,reply)=>{
         awb.id = reply; 
+
           awbIndex.add(awb.id,awb,(err1,awbRes)=>{
             if (err1){
               console.log('saving err',err1)
@@ -168,6 +169,8 @@ export class PackageService {
       dataContext.redisClient.incr(PKG_ID_COUNTER,(err,id)=>{
         newPackage.id = id; 
         packageIndex.add(id,newPackage,(err,result)=>{
+          if (err)
+            console.log(err); 
           resolve({saved:true,id:id})
         })
       })

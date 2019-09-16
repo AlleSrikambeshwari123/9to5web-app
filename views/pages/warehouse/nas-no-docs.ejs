@@ -11,10 +11,14 @@
             <div class="card-body">
                 <ul class="nav nav-pills nav-primary" id="myTab" role="tablist">
                   
-                    <!-- <li class="nav-item">
-                        <a class="nav-link active" id="profile-tab" data-toggle="tab" href="#profile" role="tab"
-                            aria-controls="profile" aria-selected="false" aria-expanded="false">FLL Warehouse</a>
-                    </li> -->
+                    <li class="nav-item">
+                        <a class="nav-link active" id="profile-tab" data-toggle="tab" href="#postboxes" role="tab"
+                            aria-controls="profile" aria-selected="false" aria-expanded="false">Postboxes Etc.</a>
+                    </li>
+                    <li class="nav-item" style='margin-left:10px;'>
+                        <a class="nav-link active" id="profile-tab" data-toggle="tab" href="#imports" role="tab"
+                            aria-controls="profile" aria-selected="false" aria-expanded="false">9-5 Imports </a>
+                    </li>
 
 
                 </ul>
@@ -22,11 +26,12 @@
                 
                 <div class="tab-content" id="myTabContent">
                    
-                    <div class="tab-pane active fade show" id="profile" role="tabpanel" aria-labelledby="profile-tab"
+                    <div class="tab-pane active fade show" id="postboxes" role="tabpanel" aria-labelledby="profile-tab"
                         aria-expanded="false">
                         <div class='row'>
                           
                             <div class='col-md-12'>
+                                <h3>PostBoxes Etc</h3>
                                 <table id='packageTable'
                                     class='display table table-bordered table-head-bg-info table-hover'
                                     style='width:100%;'>
@@ -34,6 +39,20 @@
                             </div>
                         </div>
                     </div>
+                    <div class="tab-pane  fade show" id="imports" role="tabpanel" aria-labelledby="profile-tab"
+                    aria-expanded="false">
+                    <div class='row'>
+                      
+                        <div class='col-md-12'>
+
+                            <h3> 9-5 Imports</h3>
+                            <table id='importsTable'
+                                class='display table table-bordered table-head-bg-info table-hover'
+                                style='width:100%;'>
+                            </table>
+                        </div>
+                    </div>
+                </div>
                 </div>
             </div>
         </div>
