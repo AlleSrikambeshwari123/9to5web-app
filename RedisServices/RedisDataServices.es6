@@ -10,6 +10,10 @@ var LocationService = require('./LocationService').LocationService;
 var locationService = new LocationService(); 
 var DeliveryService = require('./RouteService').DeliveryService; 
 var deliveryService = new DeliveryService(); 
+var VehicleService = require('./VehicleService').VehicleService
+var vehicleService = new VehicleService()
+var DriverService = require('./DriverService').DriverService; 
+var driverService = new DriverService(); 
 
 module.exports = { 
   customerService: customerService,
@@ -17,5 +21,7 @@ module.exports = {
   packageService: packageService,
   userService:userService,
   locationService:locationService,
-  deliveryService:deliveryService
+  deliveryService:deliveryService, 
+  driverService : driverService, 
+  vehicleService: vehicleService
 }

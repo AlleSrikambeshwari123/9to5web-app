@@ -58,6 +58,22 @@ $(function(){
                 }
             },
             {
+                title: "Driver",
+                data: null,
+                render: function (data, type, row, meta) {
+                    // console.log(data);
+                    return `No Driver`;
+                }
+            },
+            {
+                title: "Vehicle",
+                data: null,
+                render: function (data, type, row, meta) {
+                    // console.log(data);
+                    return `No Vehicle`;
+                }
+            },
+            {
                 title: "Delivery Date",
                 data: null,
                 render: function (data, type, row, meta) {

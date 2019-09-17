@@ -554,6 +554,14 @@ $(function () {
                     return `${data.trackingNo} `;
                 }
             },
+            {
+                title: "Description",
+                data: null,
+                render: function (data, type, row, meta) {
+                    // console.log(data);
+                    return `${data.trackingNo} `;
+                }
+            },
 
             {
                 title: "Shipper",

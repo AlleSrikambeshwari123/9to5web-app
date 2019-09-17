@@ -36,6 +36,22 @@ router.get('/add-vehicle', middleware(services.userService).requireAuthenticatio
 	res.render('pages/fleet/addvehicle', pageData);
 });
 
+router.post('/add-vehicle',middleware(services.userService).requireAuthentication,(req,res,next)=>{
+	var body = req.body; 
+	services.vehicleService.addVehicle(body).then(result=>{
+		if (result.saved == true){
+			res.redirect('/fleet/add-vehicle')
+		}
+		else {
+			var pageData = {};
+			pageData.title = "Add Vehicle"
+			pageData.luser = res.User.firstName + ' ' + res.User.lastName;
+			pageData.RoleId = res.User.role;
+			res.render('pages/fleet/addvehicle', pageData);
+		}
+	})
+})
+
 router.get('/drivers', middleware(services.userService).requireAuthentication, function (req, res, next) {
 	var pageData = {};
 	pageData.title = "Drivers"

@@ -2,7 +2,7 @@ var redis = require('redis');
 var rediSearch = require('../redisearchclient/index'); 
 var env = require('../environment')
 
-let vehicleIndex = rediSearch(redis,'index:users', {
+let vehicleIndex = rediSearch(redis,'index:vehicles', {
     clientOptions: {
                  'host': env.redis_host,
                  'port': env.redis_port,
