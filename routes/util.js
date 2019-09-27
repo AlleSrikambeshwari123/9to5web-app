@@ -21,7 +21,25 @@ const s3 = new aws.S3({
   secretAccessKey: secretAccessKey,
     endpoint: spacesEndpoint
   });
+router.get('/download-file/:filename',(req,res,next)=>{
+    var filename = req.params.filename; 
+    var params = {
+        Bucket: 'vela-space',
+        Key: filename
+    };
+    res.attachment(filename); 
+    var filestream = s3.getObject(params).createReadStream(); 
+    filestream.pipe(res);  
+    // s3.getObject(params,(err,data)=>{
+    //     if (!err){
+    //         console.log(data)
 
+    //         res.setHeader('Content-Length', data.ContentLength);
+    //         res.write(data.body, 'binary');
+    //         res.end();
+    //     }
+    // })
+})
 router.post('/upload/', function (req, res) {
     // create an incoming form object
     var body = req.body; 
@@ -32,6 +50,7 @@ router.post('/upload/', function (req, res) {
     var index = 0;
     var form = new formidable.IncomingForm();
     var orignalFiles = []; 
+    var uniqueId = uniqid(); 
     // specify that we want to allow the user to upload multiple files in a single request
     form.multiples = false;
     console.log(__dirname);
@@ -52,7 +71,7 @@ router.post('/upload/', function (req, res) {
             }
             content = data;
   
-            fs.writeFile(path.join(form.uploadDir, file.name), content, function (err) {
+            fs.writeFile(path.join(form.uploadDir, uniqueId+file.name), content, function (err) {
                 if (err) throw err;
                 /!*do something else.*!/
                // fs.unlink(file.path);
@@ -63,7 +82,7 @@ router.post('/upload/', function (req, res) {
         //fs.rename(file.path, path.join(form.uploadDir, file.name));
         console.log('BIG file uploaded yee-haaaa!');
         uploadedFiles[index] = {
-            'uploadedFile': file.name
+            'uploadedFile': uniqueId+file.name
         };
         var filename = file.name;
   
@@ -89,6 +108,7 @@ router.post('/upload/', function (req, res) {
         
         var fileLocation = orignalFiles[0]; 
         //var fileLocation = path.join(__dirname.replace("routes", ""), '/public/uploads/') +orignalFiles[0]; 
+       
         console.log('file upload ...'+ fileLocation); 
         var params = {
             Body: fs.createReadStream(fileLocation),

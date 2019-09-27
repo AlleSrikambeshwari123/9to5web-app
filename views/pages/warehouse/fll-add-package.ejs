@@ -29,10 +29,13 @@
 
                                 <form method='post' id='cargoPackageForm'>
 
-                                    <!-- <div class='form-group'>
-                                        <button type='button'  class="btn btn-small btn-info new-awb ">New AWB</button>
-                                        
-                                    </div> -->
+                                     <div class='form-group'>
+                                        <button type='button'  class="btn btn-small btn-info new-awb " style='display:none;'>New AWB</button>
+                                       <span class='print-options pull-right mt-2' style='display:none;'>
+                                        <label>PRINT</label> <a id="print-awb" href='javascript:void(0)'><i class="fas fa-print" title='Print AWB'></i></a> | <a id='print-lbl' href='javascript:void(0)'><i title='Print Label' class="fas fa-barcode"></i></a>
+
+                                       </span>
+                                    </div> 
                                     <div class='form-group'>
                                             <label>AWB </label>
                                             <input type='text' class='form-control awb' id='id' name='id' required  readonly/>
@@ -79,7 +82,7 @@
                                         </div>
                                         <a id="save_awb" href="javascript:void(0)" class="btn btn-small btn-info ">Save AWB</a>
                                         <a id="add_package" href="#ready-popup" class="btn btn-small btn-info open-popup-link " style='display:none;'>Add Package</a>
-                                        
+                                        <button type='button'  class="btn btn-small btn-info new-awb " style='display:none;'>New AWB</button>
                                         <div class="separator-solid"></div>
                                 
                                    

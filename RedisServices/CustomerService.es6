@@ -119,13 +119,13 @@ export class CustomerService {
     getCustomer(skybox){
         return new Promise((resolve, reject) => {
             this.mySearch.getDoc(skybox, (err,customerDoc)=>{
-                console.log(customerDoc); 
+               
+                if (customerDoc.doc.pmb == '')
+                    customerDoc.doc.pmb = '9000'
+                    console.log(customerDoc,'looking up the customer'); 
                 resolve(customerDoc.doc); 
             })
-        //   lredis.hgetall("95:owners:"+skybox).then((user)=>{
-        //       console.log(user); 
-        //       resolve(user); 
-        //   })
+       
         })
     } 
     saveCustomer(customer){ 
@@ -147,10 +147,7 @@ export class CustomerService {
                 }); 
                 
             }
-            //we need to a reids update or add here 
-            // lredis.hmset("95:owners:"+customer.pmb,customer).then((result)=>{
-            //     resolve(result);
-            // }); 
+            
         });
     }
 }

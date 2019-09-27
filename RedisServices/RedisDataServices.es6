@@ -14,6 +14,8 @@ var VehicleService = require('./VehicleService').VehicleService
 var vehicleService = new VehicleService()
 var DriverService = require('./DriverService').DriverService; 
 var driverService = new DriverService(); 
+var PrintService = require('./PrintService').PrintService; 
+var printService = new PrintService()
 
 module.exports = { 
   customerService: customerService,
@@ -23,5 +25,6 @@ module.exports = {
   locationService:locationService,
   deliveryService:deliveryService, 
   driverService : driverService, 
-  vehicleService: vehicleService
+  vehicleService: vehicleService, 
+  printService: printService
 }

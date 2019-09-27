@@ -12,6 +12,7 @@ var formidable = require('formidable');
 var path = require('path');
 var fs = require('fs');
 var delfile = '';
+var uniqid = require('uniqid')
 var rServices = require('../RedisServices/RedisDataServices')
 
 
@@ -426,7 +427,13 @@ router.get('/new-awb',(req,res,next)=>{
         res.send(awbRes); 
     })
 }); 
-
+router.get('/awb-details/:id',(req,res,next)=>{
+    var awbId = req.params.id; 
+    console.log('looking for '+awbId)
+    services.packageService.getAwb(awbId).then(awb=>{
+        res.send(awb);
+    })
+})
 router.post("/save-awb",(req,res,next)=>{
     var body  = req.body;
     console.log('save-awb',body,moment().toString("hh:mm:ss")); 
@@ -534,7 +541,12 @@ router.get('/packages-on-hand',middleware(services.userService).requireAuthentic
     pageData.mid = req.params.mid;
     pageData.luser = res.User.firstName + ' ' + res.User.lastName;
     pageData.RoleId = res.User.RoleId;
-    res.render('pages/warehouse/no-docs',pageData); 
+    services.packageService.listAwbinFll().then(awblist=>{
+        console.log(awblist,"AWB's")
+        pageData.records = awblist.awbs; 
+        res.render('pages/warehouse/no-docs',pageData); 
+    })
+    
 })
 router.get('/nas-packages-wh',middleware(services.userService).requireAuthentication,(req,res,next)=>{
     var pageData = {}; 
@@ -553,7 +565,14 @@ router.get('/fll-no-docs',middleware(services.userService).requireAuthentication
         pageData.mid = req.params.mid;
         pageData.luser = res.User.firstName + ' ' + res.User.lastName;
         pageData.RoleId = res.User.RoleId;
-        res.render('pages/warehouse/no-docs',pageData); 
+
+        //listNoDocsFll
+        services.packageService.listNoDocsFll().then(awblist=>{
+            console.log(awblist,"AWB's")
+            pageData.records = awblist.awbs; 
+            res.render('pages/warehouse/no-docs',pageData); 
+        })
+        
     })
     
 })
@@ -764,7 +783,18 @@ router.get('/download-file/:filename', function (req, res, net) {
     var dir = __dirname.replace("routes", "templates\\");
     res.download(path.join(dir, file));
 });
-
+router.get('/print-awb/:awb',middleware(services.userService).requireAuthentication,(req,res,next)=>{
+    var username  = res.User.username; 
+    var awb = req.params.awb; 
+    services.printService.sendAwbToPrint(awb,username)
+    res.send({sent:true})
+})
+router.get('/print-awb-lbl/:awb',middleware(services.userService).requireAuthentication,(req,res,next)=>{
+    var username  = res.User.username; 
+    var awb = req.params.awb; 
+    services.printService.sendLblToPrint(awb,username); 
+    res.send({sent:true})
+})
 router.post('/upload', function (req, res) {
     // create an incoming form object
     console.log("yes sur we got a file uploaded! check the upload dir.");
@@ -784,6 +814,7 @@ router.post('/upload', function (req, res) {
     form.on('file', function (field, file) {
         //mv(file.path, path.join(form.uploadDir, file.name));
         var content;
+        var unique = uniqid(); 
         orignalFiles[index] = file.path;
         // First I want to read the file
         fs.readFile(file.path, function read(err, data) {
@@ -792,7 +823,7 @@ router.post('/upload', function (req, res) {
             }
             content = data;
 
-            fs.writeFile(path.join(form.uploadDir, file.name), content, function (err) {
+            fs.writeFile(path.join(form.uploadDir, unique+file.name), content, function (err) {
                 if (err) throw err;
                 /!*do something else.*!/
                 // fs.unlink(file.path);
@@ -803,7 +834,7 @@ router.post('/upload', function (req, res) {
         //fs.rename(file.path, path.join(form.uploadDir, file.name));
         console.log('BIG file uploaded yee-haaaa!');
         uploadedFiles[index] = {
-            'uploadedFile': file.name
+            'uploadedFile': unique+file.name
         };
         var filename = file.name;
 

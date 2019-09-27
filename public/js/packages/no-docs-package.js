@@ -9,7 +9,26 @@ Number.prototype.formatMoney = function (c, d, t) {
     return "$" + s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
 };
 $(function () {
-
+    $("#print-awb").click(function(){
+        var awb = $(this).attr('data-id')
+        $.ajax({
+            url:'/warehouse/print-awb/'+awb,
+            contentType:'json',
+            success:function(result){
+                console.log('result',result)
+            }
+        })
+    })
+    $("#print-lbl").click(function(){
+        var awb = $(this).attr('data-id')
+        $.ajax({
+            url:'/warehouse/print-awb-lbl/'+awb,
+            contentType:'json',
+            success:function(result){
+                console.log('result',result)
+            }
+        })
+    })
     //#region PAGE LOAD 
     var mid = 0;
     var mtype = "default";
@@ -493,7 +512,7 @@ $(function () {
         //     skidinput.focus();
     }
 
-
+    
 
     function displayPackages(packages, tableId, ctype) {
         //REFACTORED FUNCTION  
@@ -519,15 +538,15 @@ $(function () {
                 data: null,
                 render: function (data, type, row, meta) {
                     // console.log(data);
-                    return `${data.skybox} `;
+                    return `${data.dateCreated} `;
                 }
             },
             {
                 title: "PMB",
                 data: null,
                 render: function (data, type, row, meta) {
-                    // console.log(data);
-                    return `${data.skybox} `;
+                     console.log(data);
+                    return `${data.pmb} `;
                 }
             },
             // {
@@ -543,7 +562,7 @@ $(function () {
                 data: null,
                 render: function (data, type, row, meta) {
                     // console.log(data);
-                    return `${data.trackingNo} `;
+                    return `${data.consignee} `;
                 }
             },
             {
@@ -551,7 +570,7 @@ $(function () {
                 data: null,
                 render: function (data, type, row, meta) {
                     // console.log(data);
-                    return `${data.trackingNo} `;
+                    return `<a href='javascript:void(0)' data-id='${data.id}' class='view-awb-details' data-toggle='modal' data-target='#awb-details'> ${data.id} </a>`;
                 }
             },
             {
@@ -559,7 +578,7 @@ $(function () {
                 data: null,
                 render: function (data, type, row, meta) {
                     // console.log(data);
-                    return `${data.trackingNo} `;
+                    return `${data.description} `;
                 }
             },
 
@@ -610,7 +629,7 @@ $(function () {
 
         $(tableId).DataTable({
 
-            data: packages,
+            data: awbs,
             paging: true,
 
             columns: colDef,
@@ -623,6 +642,43 @@ $(function () {
 
             "deferRender": true,
             initComplete: function () {
+                $(".view-awb-details").click(function(){
+                    var id = $(this).attr('data-id'); 
+                    $.ajax({
+                        url:'/warehouse/awb-details/'+id,
+                        contentType:'json',
+                        success:function(d){
+                            console.log(d); 
+                           
+                           
+                            
+                            $("#awb-details").find('.ad-id').html(d.awb.id)
+                            $("#awb-details").find('.ad-consignee').html(`<strong>Customer:</strong>  `+d.awb.customer.name)
+                            $("#awb-details").find(".ad-value").html(`<strong>Value:</strong>  `+Number(d.awb.value).formatMoney(2, '.', ','))
+                            var downloadInvoice = ''
+                            if (d.awb.invoice){
+                                downloadInvoice = `<a href='/util/download-file/${d.awb.invoice}'><i class='fa fa-download'></i></a>`
+                            }
+                            $("#awb-details").find(".ad-invoice").html(`<strong>Invoice Number:</strong>  `+d.awb.invoiceNumber + ` ${downloadInvoice}`)
+                            $("#awb-details").find(".ad-shipper").html(`<strong>Shipper:</strong>  `+d.awb.shipper)
+                            $("#awb-details").find(".ad-carrier").html(`<strong>Carrier:</strong>  `+d.awb.carrier)
+                            $("#awb-details").find("#print-awb").attr("data-id",d.awb.id)
+                            $("#awb-details").find("#print-lbl").attr("data-id",d.awb.id)
+                            
+                            //
+                             $("#packageListing").find("tr:gt(0)").remove();
+                            d.awb.packages.forEach(pkg => {
+                                $("#awb-details").find("#packageListing").append(`<tr>
+                                <td>${pkg.trackingNo}</td>
+                                <td>${pkg.description}</td>
+                                <td>${pkg.dimensions}</td>
+                                <td>${pkg.weight}</td>
+                            </tr>`)
+                            });
+                           
+                        }
+                    })
+                })
                 $(tableId).find(".edit").click(function () {
                     var id = $(this).attr('data-id');
                     var form = "#cargoPackageForm";

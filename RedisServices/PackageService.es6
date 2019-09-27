@@ -15,6 +15,8 @@ var dataContext = require('./dataContext')
 const PKG_PREFIX = "packages:";
 const AWB_ID = "awb:id"
 const INDEX_AWB = "index:awb"
+var CustomerService = require('./CustomerService').CustomerService; 
+var customerService = new CustomerService()
 const PKG_STATUS = { 
   1 : "Received",
   2: "In Transit",
@@ -125,7 +127,17 @@ export class PackageService {
       console.log('saving...',awb,moment().toString("hh:mm:ss"))
       dataContext.redisClient.incr(AWB_ID,(err,reply)=>{
         awb.id = reply; 
-
+        awb.status = 1; 
+        if (awb.invoice){
+          awb.hasDocs = 1
+          console.log("HAS DOCCCCC")
+        }
+        else {
+          awb.hasDocs = 0 ; 
+          console.log("HAS NO DOCCCCC")
+        }
+        
+        awb.dateCreated = moment().unix(); 
           awbIndex.add(awb.id,awb,(err1,awbRes)=>{
             if (err1){
               console.log('saving err',err1)
@@ -139,21 +151,145 @@ export class PackageService {
       
     })
   }
+  getAwbOverview(id){
+    // get the awb packages and add everything in 
+    return new Promise((resolve,reject)=>{
+      packageIndex.search(`@awb:[${id} ${id}]`,{numberOfResults:5000,offset:0},(err,packages)=>{
+        var weight = 0 ; 
+        var pieces = packages.totalResults; 
+        var description = ""
+        packages.results.forEach(package1 => {
+          if (description =="")
+            description = package1.doc.description; 
+          weight += Number(package1.doc.weight)
+        });
+        var data  = {weight:weight,description:description,pieces:pieces}
+        console.log(data,"AWB DETAILS"); 
+        resolve( data)
+      })
+    })
+   
+  }
+  getAwbDetails(id){
+    var srv = this; 
+    return new Promise((resolve,reject)=>{
+      console.log(`@awb:[${id} ${id}]`)
+     
+      packageIndex.search(`@awb:[${id} ${id}]`,{numberOfResults:5000,offset:0},(err,packages)=>{
+        if (err)
+         console.log(err)
+      
+        var  packagelist  = []
+        var count = 1; 
+        packages.results.forEach(package1 => {
+
+          if (package1.doc.trackingNo.length > 7){
+            //only display the last 7 
+            package1.doc.trackingNo = package1.doc.trackingNo.substring(package1.doc.trackingNo.length -7)
+            
+          }
+          package1.doc.packageIndex = count;
+          count ++; 
+          packagelist.push( package1.doc)
+        });
+       
+       
+        resolve( packagelist)
+      })
+    })
+  }
+  listNoDocsFll(){
+    return new Promise((resolve,reject)=>{
+       awbIndex.search("@status:[1 1] @hasDocs:[0 0]",{offset:0,numberOfResults:5000,sortBy:'id'},(err,awbs)=>{
+         var awbList = []; 
+         Promise.all(awbs.results.map(awb=>customerService.getCustomer(awb.doc.customerId))).then(customers=>{
+           Promise.all(awbs.results.map(awb=>this.getAwbOverview(awb.doc.id))).then(details=>{
+            console.log("got the customers",customers, awbs)
+            for(var i =0 ; i < awbs.results.length ; i++ ){
+              var awb = awbs.results[i]; 
+              awb.doc.dateCreated = moment.unix(awb.doc.dateCreated).format("YYYY-MM-DD hh:mm A")
+              //we need to get the customer 
+              awb.doc.consignee = customers[i].name; 
+              awb.doc.weight = details[i].weight; 
+              awb.doc.pmb = customers[i].pmb; 
+              awb.doc.description = details[i].description; 
+              awb.doc.pieces = details[i].pieces; 
+              if (customers[i].pmb == ''){
+                awb.doc.pmb = '9000'
+              }
+              console.log('pushing ',awb)
+              //we need to get all the packages 
+              awbList.push(awb.doc)
+             }
+             resolve({awbs:awbList})
+           })
+          
+          }).catch(err=>{
+            console.log(err); 
+          })
+         
+        //  awbs.results.forEach(awb => {
+           
+          
+        //  });
+         
+       })
+    })
+  }
+
   listAwbinFll(){
     return new Promise((resolve,reject)=>{
-       awbIndex.search("@status:[1 1]",{offset:0,numberOfResults:5000,sortBy:'id'},(err,awbs)=>{
+       awbIndex.search("@status:[1 1] @hasDocs:[1 1]",{offset:0,numberOfResults:5000,sortBy:'id'},(err,awbs)=>{
          var awbList = []; 
-         awbs.results.forEach(awb => {
-           awbList.push(awb.doc)
-         });
-         resolve({awbs:awbList})
+         Promise.all(awbs.results.map(awb=>customerService.getCustomer(awb.doc.customerId))).then(customers=>{
+           Promise.all(awbs.results.map(awb=>this.getAwbOverview(awb.doc.id))).then(details=>{
+            console.log("got the customers",customers, awbs)
+            for(var i =0 ; i < awbs.results.length ; i++ ){
+              var awb = awbs.results[i]; 
+              awb.doc.dateCreated = moment.unix(awb.doc.dateCreated).format("YYYY-MM-DD hh:mm A")
+              //we need to get the customer 
+              awb.doc.consignee = customers[i].name; 
+              awb.doc.pmb = customers[i].pmb; 
+              awb.doc.weight = details[i].weight; 
+              awb.doc.description = details[i].description; 
+              awb.doc.pieces = details[i].pieces; 
+              if (customers[i].pmb == ''){
+                awb.doc.pmb = '9000'
+              }
+              console.log('pushing ',awb)
+              //we need to get all the packages 
+              awbList.push(awb.doc)
+             }
+             resolve({awbs:awbList})
+           })
+          
+          }).catch(err=>{
+            console.log(err); 
+          })
+         
+        //  awbs.results.forEach(awb => {
+           
+          
+        //  });
+         
        })
     })
   }
   getAwb(id){
+    const srv = this; 
     return new Promise((resolve,reject)=>{
       awbIndex.getDoc(id,(err,awb)=>{
-        resolve({awb:awb.doc})
+        //get the customer 
+        customerService.getCustomer(awb.doc.customerId).then(customer=>{
+          awb.doc.customer = customer; 
+          srv.getAwbDetails(id).then(packages=>{
+            //get the packages for the awb 
+            awb.doc.packages = packages; 
+            resolve({awb:awb.doc})  
+          })
+          
+        })
+        
       })
     })
   }

@@ -22,6 +22,7 @@ awbIndex.createIndex([
     awbIndex.fieldDefinition.numeric("customerId"),
     awbIndex.fieldDefinition.text("shipper"),
     awbIndex.fieldDefinition.text("carrier"),
+    awbIndex.fieldDefinition.numeric("status"),
     awbIndex.fieldDefinition.numeric("dateCreated"),
     awbIndex.fieldDefinition.numeric("mid",true),
     awbIndex.fieldDefinition.numeric("hasDocs",true),

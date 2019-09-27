@@ -75,27 +75,51 @@ $(function () {
         var nameCtrl = form.find('.customerName');
         lookupUser(box, $(nameCtrl));
     });
-    // $("input").change(function () {
-    //     //revalidate the from
-    //     var form = $(this).closest('form');
-    //     var package = getPackageDetails($(this));
-    //     var validPackage = validatePackage(package, $(this));
-    // })
-    // $(".savePackage").click(function () {
+    
+    $("#print-awb").click(function(){
+        var awb = $(this).attr('data-id')
+        $.ajax({
+            url:'/warehouse/print-awb/'+awb,
+            contentType:'json',
+            success:function(result){
+                console.log('result',result)
+            }
+        })
+    })
+    $("#print-lbl").click(function(){
+        var awb = $(this).attr('data-id')
+        $.ajax({
+            url:'/warehouse/print-awb-lbl/'+awb,
+            contentType:'json',
+            success:function(result){
+                console.log('result',result)
+            }
+        })
+    })
 
-    //     var package = getPackageDetails($(this));
-    //     //var stage = $(this).attr('data-stage');
-    //    // var mtype = $("#mytpe").val();
-    //     var validPackage = validatePackage(package, $(this));
-    //     var form = $(this).closest('form');
-    //     if (validPackage) {
-    //         //save
-    //         savePackage(package, form, false);
-    //     } else {
-    //         console.log('not saving the package...Invalid')
-    //     }
+    $(".new-awb").click(function(){
+        //clear out items 
+    
+        $("#id").val('')
+        $("#invoiceNumber").val('')
+        $("#value").val('')
+        $("#customerId").val('')
+        $("#shipper").val('')
+        $("#carrier").val('')
+        $(".skybox").val(''); 
+        $("#isSED").prop(":checked",false)
+        $("#hasInvoice").prop(":checked",false)
+        $(".awb").text('');
+        $(".awb-new").hide()
+        $(".print-options").hide(); 
+        $("#save_awb").show()
+        $("#add_package").hide(); 
+        $(".new-awb").hide(); 
+        //clear the table 
+        awbPackages = []; 
+        displayPackages(awbPackages, "#packageTable", "cargo"); 
+    })
 
-    // });
     $("#save-to-awb").click(function(){
        
         var package = {
@@ -149,20 +173,7 @@ $(function () {
            
 
     })
-    // $(".new-awb").click(function(){
-    //     $.ajax({
-    //         url:'/warehouse/new-awb',
-    //         contentType:'json',
-    //         success:function(result){
-    //             //console.log("awb",awb)
-    //             $(".awb").text(result.awb); 
-    //             $(".awb").val(result.awb)
-    //             //clear everything 
-    //             $("#add_package").hide(); 
-    //             $("#save_awb").show()
-    //         }
-    //     })
-    // }); 
+    
     $("#save_awb").click(function(){
         //validate the awb 
 
@@ -183,7 +194,7 @@ $(function () {
             customerId:$("#customerId").val(),
             shipper:$("#shipper").val(),
             carrier:$("#carrier").val(),
-
+           
         };
         if (awbInfo.value == ""){
             awbInfo.value = -1 ; 
@@ -211,11 +222,23 @@ $(function () {
                     $(".awb").val(result.id)
                     $("#add_package").show(); 
                     $("#save_awb").hide(); 
+                    $(".new-awb").show();
+                    $(".print-options").show();
+                    $("#print-awb").attr('data-id',result.id);
+                    $("#print-lbl").attr('data-id',result.id); 
                 }
             });
         })
       
     }); 
+
+    $("#print-awb").click(function(){
+
+    })
+    $("#print-label").click(function(){
+
+    })
+
     $(".saveUnProcPackage").click(function () {
 
         var package = getPackageDetails($(this));
@@ -661,8 +684,6 @@ $(function () {
         // else if (skidinput.length > 0)
         //     skidinput.focus();
     }
-
-
 
     function displayPackages(packages, tableId, ctype) {
         //REFACTORED FUNCTION  
