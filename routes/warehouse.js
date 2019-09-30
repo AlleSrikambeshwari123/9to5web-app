@@ -130,13 +130,19 @@ router.get('/m-packages/:manifestId', middleware(services.userService).requireAu
 
     //we want to format the manifest number to 3 digits 
     rServices.manifestService.getManifest(pageData.mid).then((manifest) => {
-
-        pageData.manifest = manifest;
-        pageData.mtype = "cargo";
-        pageData.ColLabel = "Cargo";
-        console.log('pageData')
-        console.log(pageData);
-        res.render('pages/warehouse/manifest-packages', pageData);
+        services.planeService.getPlanes().then(planeData=>{
+            services.pilotService.getPilots().then(pilotData=>{
+                pageData.manifest = manifest;
+                pageData.pilots = pilotData.pilots; 
+                pageData.planes = planeData.planes
+                pageData.mtype = "cargo";
+                pageData.ColLabel = "Cargo";
+                console.log('pageData')
+                console.log(pageData);
+                res.render('pages/warehouse/manifest-packages', pageData);
+            })
+        })
+        
     });
     // services.manifestService.getManifest(pageData.mid).then((m)=>{
     //     console.log(m);
@@ -147,6 +153,16 @@ router.get('/m-packages/:manifestId', middleware(services.userService).requireAu
     // }); 
 
 });
+router.post('/update-manifest-details', middleware(services.userService).requireAuthentication, function (req, res, next) {
+    var body = req.body; 
+    var details = {
+        shipDate: moment(),
+        planeId: body.planeId,
+    }
+    services.manifestService.updateShippingInfo(details).then(result=>{
+        
+    })
+})
 
 
 const sumFunction = (accumulator, currentValue) => accumulator + currentValue;
@@ -178,9 +194,9 @@ router.post('/create-manifest', middleware(services.userService).requireAuthenti
     console.log(res.User);
     var manifestType = Number(req.body.mtype);
     console.log("the manifest to create is " + manifestType)
-    let typeObj = rServices.manifestService.getTypebyId(Number(manifestType));
+    let typeObj = rServices.manifestService.getTypebyId(1);
     console.log(typeObj);
-    rServices.manifestService.createNewManifest(typeObj, res.User.Username).then((result) => {
+    rServices.manifestService.createNewManifest(typeObj, res.User.username).then((result) => {
         var resp = { manifest: result };
 
         res.send(resp);
@@ -372,6 +388,8 @@ router.post('/rm-manifest', middleware(services.userService).requireAuthenticati
 //#endregion
 
 
+//#region AWB
+
 router.post('/get-customer-info', middleware(services.userService).requireAuthentication, (req, res, next) => {
     //get customer information 
     var skybox = req.body.box;
@@ -396,31 +414,7 @@ router.post('/get-mpackages/', middleware(services.userService).requireAuthentic
         res.send(packages); 
     })
 })
-// router.post('/get-mpackages/', middleware(services.userService).requireAuthentication, (req, res, next) => {
-//     var body = req.body;
 
-//     var manifestKey = `manifest:${body.mid}:${body.mtype}:*`;
-
-//     //so we get the keys 
-//     lredis.getKeys(manifestKey).then((data) => {
-//         if (data.length == 0) {
-//             res.send([])
-//         }
-//         else
-//             lredis.union(data).then(function (result) {
-//                 console.log(result)
-//                 //we need the actual packages now 
-//                 Promise.all(result.map(lredis.getPackage)).then(function (packages) {
-//                     // console.log(packages);
-//                     res.send(packages);
-//                 });
-
-//             });
-
-
-//     });
-
-// });
 
 router.get('/new-awb',(req,res,next)=>{
     services.packageService.getNewAwb().then(awbRes=>{
@@ -458,7 +452,7 @@ router.post('/find-customer',(req,res,next)=>{
         res.send(customers); 
     })
 })
-
+//#endregion
 router.get('/incoming-shipment',(req,res,next)=>{
     res.render('pages/warehouse/incoming-shipment',{})
 })

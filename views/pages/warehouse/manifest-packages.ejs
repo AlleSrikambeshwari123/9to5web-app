@@ -34,16 +34,16 @@
                             <div class="clearfix">
                                 <div class="btn-group custom-btn-group float-right" role="group">
                                   
-                                    <!-- <button type="button" class="btn btn-primary btn-sm close-manifest"> New Cube</button> -->
+                                    <button type="button" class="btn btn-primary btn-sm "> <i class='fa fa-download'></i> Load Sheet</button>
                                   
-                                    <button type="button" class="btn btn-success btn-sm ship-manifest-btn"
-                                        data-toggle='modal' data-target='#shipManifest'>Ship Manifest</button>
+                                    <button type="button" class="btn btn-success btn-sm "
+                                        data-toggle='modal' data-target='#shipManifest'><i class='fa fa-download'></i> Flight Manifest</button>
 
                                     
-                                    <!-- <button type="button" class="btn btn-info btn-sm ship-manifest-btn"
-                                        data-toggle='modal' data-target='#broker'>Send To Broker </button> -->
+                                    <button type="button" class="btn btn-info btn-sm ship-manifest-btn"
+                                        data-toggle='modal' data-target='#broker'> <i class='fa fa-plane'></i> Send Flight</button>
                                     
-                                    <button type="button" class="btn btn-dark btn-sm export-manifest">Export Excel</button>
+                                    <!-- <button type="button" class="btn btn-dark btn-sm export-manifest">Export Excel</button> -->
                                 </div>
                             </div>
                         </div>
@@ -51,7 +51,7 @@
                             <div class='col-md-3'>
                             <div class="col-lg-12 col-md-12 col-sm-12">
 													<p class="text-uppercase small">
-														<strong>Date:</strong> <br/><%=moment(manifest.dateCreated,'YYYY-MM-DD').format("dddd, LL") %>
+														<strong>Date:</strong> <br/><%=moment.unix(manifest.dateCreated).format("dddd, LL") %>
                                     </p>
                                     <address class='small'>
                                         
@@ -76,23 +76,34 @@
                                         </div>
                                     </div> -->
                                     <div class="card-stats card-round col-xl-4 col-lg-6 col-md-6 col-sm-6">
-                                            <div class='form-group'>
+                                            <div class='form-group select2-input'>
                                                     <label>Flight #</label>
                                                    
-                                                   <select class='form-control' style='min-height:40px;'>
+                                                   <select class='form-control ' id='select-plane' >
                                                     <option value=''>Select Plane</option>
+                                                    <%for (var i =0 ;i < planes.length; i++){ %>
+                                                            <option value ='<%=planes[i].id%>'><%=planes[i].tail_num%></option>
+
+                                                        <%}%>
                                                    </select>
                                                 </div>
                                                 <div class='form-group'>
                                                         <label>Flight Date /Time </label>
                                                      
-                                                        <input type='text' class='form-control trackingNo' name='trackingNo' required />
+                                                        <input type='text' class='form-control' id='flight-date'  />
                                                     </div>
-                                                    <div class='form-group'>
-                                                            <select class='form-control' style='min-height:40px;'>
+                                                    <!-- <div class='form-group'>
+                                                            <select class='form-control' id='select-pilot' >
                                                                     <option value=''>Select Pilot</option>
+                                                                    <%for (var i =0 ;i < pilots.length; i++){ %>
+                                                                        <option value ='<%=pilots[i].id%>'><%=pilots[i].name%></option>
+            
+                                                                    <%}%>
                                                             </select>
-                                                        </div>
+                                                        </div> -->
+                                                    <div class='form-group'>
+                                                            <button type="button" class="btn btn-dark btn-sm">Save Details</button>
+                                                    </div>
                                     </div>
                                   <div class="card-stats card-round col-xl-4 col-lg-6 col-md-6 col-sm-6">
                                          <div class="card card-body info-state">
@@ -186,7 +197,13 @@
                                         <input type='text' class='form-control skid' name='skid' required />
                                     </div> -->
                                     <div class='form-group'>
-                                            <label>Company Tracking # <span id='' class='text-info title'></span></label>
+                                            <label>Select Section<span id='' class='text-info title'></span></label>
+                                           <select id='plane-compartment' class='form-control'>
+                                               <option>Select Compartment</option>
+                                           </select>
+                                        </div>
+                                    <div class='form-group'>
+                                            <label>Package No # <span id='' class='text-info title'></span></label>
                                             <input type='text' class='form-control awb' name='awb' required />
                                             <input type='hidden' class='isBusiness' value='' />
                                         </div>

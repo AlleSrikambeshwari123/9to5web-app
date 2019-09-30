@@ -17,6 +17,7 @@ export class PilotService{
     addPilot(pilot){
         return new Promise((resolve,reject)=>{
             dataContext.redisClient.incr(PILOT_ID,(err,id)=>{
+                pilot.id = id; 
                 dataContext.redisClient.hmset(PREFIX+id,pilot,(errS,result)=>{
                     rs.add(id,pilot); 
                     resolve({saved:true}); 
@@ -37,7 +38,7 @@ export class PilotService{
                 pilots.results.forEach(pilot => {
                     rPilots.push(pilot.doc); 
                 });
-                resolve({pilots:pilots})
+                resolve({pilots:rPilots})
             });
         }); 
     }
@@ -52,6 +53,7 @@ export class PilotService{
         return new Promise((resolve,reject)=>{
             dataContext.redisClient.del(PREFIX+id); 
             rs.delDocument(PILOT_INDEX,id)
+            resolve({deleted:true})
         });
     }
 }

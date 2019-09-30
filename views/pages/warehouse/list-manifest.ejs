@@ -30,7 +30,8 @@
                         <tr>
                             <td><strong>M-<%=manifest.mid%></strong></td>
                             <td><%=manifest.stage%></td>
-                            <td><%=moment(manifest.dateCreated,"YYYY-MM-DD").format("dddd, LL") %></td>
+                            <td><%=moment.unix(manifest.dateCreated
+                                ).format("dddd, LL") %></td>
                             <td><%=manifest.createdBy%></td>
                             <td><a href='/warehouse/m-packages/<%=manifest.mid%>'
                                     class='btn btn-sm btn-primary'>Manage</a>

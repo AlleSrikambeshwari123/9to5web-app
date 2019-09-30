@@ -16,6 +16,10 @@ var DriverService = require('./DriverService').DriverService;
 var driverService = new DriverService(); 
 var PrintService = require('./PrintService').PrintService; 
 var printService = new PrintService()
+var PilotService = require('./PilotService').PilotService
+var pilotService = new PilotService(); 
+var PlaneService = require('./PlaneService').PlaneService
+var planeService = new PlaneService()
 
 module.exports = { 
   customerService: customerService,
@@ -26,5 +30,7 @@ module.exports = {
   deliveryService:deliveryService, 
   driverService : driverService, 
   vehicleService: vehicleService, 
-  printService: printService
+  printService: printService,
+  pilotService:pilotService,
+  planeService:planeService
 }

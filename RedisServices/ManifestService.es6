@@ -3,7 +3,7 @@ var lredis = require('./redis-local');
 var moment = require('moment');
 var redisSearch = require('../redisearchclient');
 const MID_COUNTER = "global:midCounter";
-const MID_PREFIX = "tew:manifest:";
+const MID_PREFIX = "manifest:";
 const MID_INDEX = "index:manifest";
 const OPEN_MANIFEST = "manifest:open";
 const CLOSED_MANIFEST = "manifest:closed"
@@ -108,17 +108,18 @@ export class ManifestService {
         //we have some rules to follow here 
         //1. a new manifest cannot be created if the previous manifest is not closed 
         //check for open manifest first 
+        var srv = this; 
         return new Promise((resolve, reject) => {
             this.getOpenManifest(type.id).then((openCount) => {
               
                 console.log(type); 
-                if (openCount>0) {
-                    //we can't add the manifest reject 
-                    reject({
-                        "message": "There is an open manifest Please close it before creating a new manifest."
-                    });
+                // if (openCount>0) {
+                //     //we can't add the manifest reject 
+                //     reject({
+                //         "message": "There is an open manifest Please close it before creating a new manifest."
+                //     });
 
-                } else {
+                // } else {
                     this.redisClient.multi()
                         .incr(MID_COUNTER)
                         .exec((err, resp) => {
@@ -126,17 +127,22 @@ export class ManifestService {
                             var manifest = {
                                 mid: resp[0],
                                 title: type.prefix+resp[0],
-                                dateCreated: moment().format("YYYY-MM-DD"),
+                                dateCreated: moment().unix(),//format("YYYY-MM-DD"),
                                 mtypeId: type.id,
                                 stageId: manifestStages.open.id,
                                 stage: manifestStages.open.title,
                                 createdBy: user
                             };
-                            this.redisClient.multi()
+                            console.log(manifest)
+                            srv.redisClient.multi()
                                 .hmset(MID_PREFIX + manifest.mid, manifest)
                                 .sadd(OPEN_MANIFEST, manifest.mid)
                                 .exec((err, results) => {
-                                    this.mySearch.add(manifest.mid,manifest);
+                                    srv.mySearch.add(manifest.mid,manifest,(serr,resu)=>{
+                                        if (serr)
+                                         console.log(serr)
+                                     console.log(resu)
+                                    });
                                     //also add to the index here one time 
                                     if (err) {
                                         reject(err);
@@ -145,7 +151,7 @@ export class ManifestService {
                                     }
                                 });
                         });
-                }
+                //}
 
             }).catch((err)=>{
                 console.log("err detected"); 

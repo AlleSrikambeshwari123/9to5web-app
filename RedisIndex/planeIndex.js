@@ -17,6 +17,9 @@ userIndex.createIndex([
     userIndex.fieldDefinition.text("tail_num",true),
     userIndex.fieldDefinition.text("maximum_capacity",true),
     userIndex.fieldDefinition.text("pilot",true),
+    userIndex.fieldDefinition.text("aircraft_type",true),
+    userIndex.fieldDefinition.text("contact_name",true),
+    userIndex.fieldDefinition.text("contact_phone",true),
     userIndex.fieldDefinition.text("company",true)
 ]); 
 

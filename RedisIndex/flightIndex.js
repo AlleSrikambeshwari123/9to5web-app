@@ -17,6 +17,8 @@ flightIndex.createIndex([
     flightIndex.fieldDefinition.numeric("planeId",true),
     flightindex.fieldDefinition.numeric("pilotId",false),
     flightIndex.fieldDefinition.text("pilotName"),
+    flightIndex.fieldDefinition.numeric("mid"),
+
     flightIndex.fieldDefinition.numeric("compartmentId",true),
     flightIndex.fieldDefinition.text("packageId",true),
     flightIndex.fieldDefinition.text("")

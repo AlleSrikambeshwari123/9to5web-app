@@ -18,6 +18,15 @@ $(function () {
     var cargoTable;
     var unProcTable;
     var awbPackages = []; 
+    $("#select-pilot").select2({
+        placeholder: 'Select a Pilot'
+      }); 
+    $("#select-plane").select2({
+        placeholder: 'Select an Plane'
+      }); 
+    $('#flight-date').datetimepicker({
+        format: 'MM/DD/YYYY',
+    });
     $('.open-popup-link').magnificPopup({
         type: 'inline',
         midClick: true,
@@ -65,7 +74,9 @@ $(function () {
         return false;
     })
 
-
+    $("#save-details").click(function(){
+        //get the manifest id and updated plane and 
+    })
     //#region Control Actions
     $(".skybox").change(function () {
         //set the user 
