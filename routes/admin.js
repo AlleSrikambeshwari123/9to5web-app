@@ -50,6 +50,27 @@ router.get('/user/:username?',  function (req, res, next) {
         });
     });
 });
+router.get('/user-v1/:username?',  function (req, res, next) {
+    var pageData = {};
+    var user = req.params.username;
+    pageData.user = user; 
+    pageData.luser = "Admin User";
+    pageData.RoleId = "Admin";
+    //get the user 
+    console.log('loading up user page'); 
+    services.userService.getUser(user).then(function (uResult) {
+        console.log(uResult,"found user")
+        services.userService.getRoles().then(function (rResult) {
+            console.log(rResult,"roles");
+
+            pageData.roles = rResult;
+            pageData.user = uResult.user;
+            pageData.title = "Save User";
+            console.log(uResult.user);
+            res.render('pages/admin/user-v1.ejs', pageData);
+        });
+    });
+});
 router.post('/enable-user', middleware(services.userService).requireAuthentication, function (req, res, next) {
     var body = req.body;
     var username = body.username;

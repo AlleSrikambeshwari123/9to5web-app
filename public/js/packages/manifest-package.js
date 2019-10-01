@@ -76,6 +76,20 @@ $(function () {
 
     $("#save-details").click(function(){
         //get the manifest id and updated plane and 
+        var details = {
+            planeId : $("#select-plane").val(),
+            flightDate: $("#flight-date").val(), 
+            id : $("#mid").val()
+        }
+         $.ajax({
+             url:'/warehouse/update-manifest-details',
+             type:'post',
+             data:details, 
+             success:function(success){
+                window.location = window.location; 
+             }
+
+         })
     })
     //#region Control Actions
     $(".skybox").change(function () {

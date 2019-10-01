@@ -75,22 +75,37 @@
                                             </div>
                                         </div>
                                     </div> -->
+
+                                    
                                     <div class="card-stats card-round col-xl-4 col-lg-6 col-md-6 col-sm-6">
                                             <div class='form-group select2-input'>
                                                     <label>Flight #</label>
                                                    
                                                    <select class='form-control ' id='select-plane' >
                                                     <option value=''>Select Plane</option>
-                                                    <%for (var i =0 ;i < planes.length; i++){ %>
+                                                    
+                                                    <%
+                                                    
+                                                    for (var i =0 ;i < planes.length; i++){ %>
+                                                        if (plane.id == planes[i].id){
+                                                            
+                                                            
+                                                            <option selected value ='<%=planes[i].id%>'><%=planes[i].tail_num%></option>
+
+                                                        <%}%> 
+                                                     <%   if (!plane){ %>
+
+                                                        
                                                             <option value ='<%=planes[i].id%>'><%=planes[i].tail_num%></option>
 
-                                                        <%}%>
+                                                        <%}%> 
+                                                        
                                                    </select>
                                                 </div>
                                                 <div class='form-group'>
-                                                        <label>Flight Date /Time </label>
+                                                        <label>Flight Date / Time </label>
                                                      
-                                                        <input type='text' class='form-control' id='flight-date'  />
+                                                        <input type='text' class='form-control' id='flight-date' value ='<%=manifest.flightDate%>' />
                                                     </div>
                                                     <!-- <div class='form-group'>
                                                             <select class='form-control' id='select-pilot' >
@@ -102,7 +117,8 @@
                                                             </select>
                                                         </div> -->
                                                     <div class='form-group'>
-                                                            <button type="button" class="btn btn-dark btn-sm">Save Details</button>
+                                                        
+                                                            <button type="button" id='save-details' class="btn btn-dark btn-sm save-details">Save Details</button>
                                                     </div>
                                     </div>
                                   <div class="card-stats card-round col-xl-4 col-lg-6 col-md-6 col-sm-6">

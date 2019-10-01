@@ -78,7 +78,14 @@ export class ManifestService {
     getStages() {
         return this.manifestStages;
     }
-
+    updateManifestDetails(details){
+        return new Promise((resolve,reject)=>{
+            this.mySearch.update(details.id,details,(err,result)=>{
+                lredis.hmset(MID_PREFIX+details.id,details)
+                resolve({updated:true})
+            })
+        })
+    }
     getOpenManifest(typeId){
         
         return new Promise((resolve,reject)=>{

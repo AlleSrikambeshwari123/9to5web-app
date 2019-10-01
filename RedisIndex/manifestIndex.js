@@ -18,6 +18,7 @@ manifestIndex.createIndex([
     manifestIndex.fieldDefinition.numeric("stageId",true),
     manifestIndex.fieldDefinition.numeric("planeId",true),
     manifestIndex.fieldDefinition.numeric("pilotId",true),
+    manifestIndex.fieldDefinition.numeric("fligtDate",true),
     manifestIndex.fieldDefinition.numeric("dateCreated",true),
     
     manifestIndex.fieldDefinition.text("mtypeId",true),

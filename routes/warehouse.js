@@ -130,6 +130,7 @@ router.get('/m-packages/:manifestId', middleware(services.userService).requireAu
 
     //we want to format the manifest number to 3 digits 
     rServices.manifestService.getManifest(pageData.mid).then((manifest) => {
+        
         services.planeService.getPlanes().then(planeData=>{
             services.pilotService.getPilots().then(pilotData=>{
                 pageData.manifest = manifest;
@@ -137,9 +138,25 @@ router.get('/m-packages/:manifestId', middleware(services.userService).requireAu
                 pageData.planes = planeData.planes
                 pageData.mtype = "cargo";
                 pageData.ColLabel = "Cargo";
-                console.log('pageData')
-                console.log(pageData);
-                res.render('pages/warehouse/manifest-packages', pageData);
+                if (manifest.flightDate){
+                    manifest.flightDate = moment.unix(manifest.flightDate).format("MM/DD/YYYY")
+                }
+                if (manifest.planeId){
+                    services.planeService.listCompartments(manifest.planeId).then(plane=>{
+                       // console.log('pageData',plane)
+                        pageData.plane = plane.plane
+                        console.log(pageData);
+
+                        res.render('pages/warehouse/manifest-packages', pageData);
+                    })
+                   
+                }
+                else {
+                    console.log('pageData')
+                    console.log(pageData);
+                    res.render('pages/warehouse/manifest-packages', pageData);
+                }
+             
             })
         })
         
@@ -155,12 +172,15 @@ router.get('/m-packages/:manifestId', middleware(services.userService).requireAu
 });
 router.post('/update-manifest-details', middleware(services.userService).requireAuthentication, function (req, res, next) {
     var body = req.body; 
+    console.log(body); 
     var details = {
-        shipDate: moment(),
+        flightDate: moment(body.flightDate,"MM/DD/YYYY").unix(),
         planeId: body.planeId,
+        id : body.id
     }
-    services.manifestService.updateShippingInfo(details).then(result=>{
-        
+    console.log(details,"saving the details"); 
+    services.manifestService.updateManifestDetails(details).then(result=>{
+        res.send(result)
     })
 })
 
