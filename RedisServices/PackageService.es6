@@ -704,6 +704,7 @@ export class PackageService {
 function getPackageIdFromBarCode(barCodeValue){
   var parts = barCodeValue.split("-"); 
   if (parts.length == 3)
+    if (typeof parts[2] != "undefined")
     return parts[2].trim(); 
   return ""
 }

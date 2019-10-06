@@ -40,6 +40,7 @@ router.post('/add-package-to-flight',(req,res,next)=>{
         mid: body.mid,
         barcode: body.barCode
     }
+    console.log(action);
     services.packageService.addToFlight(action).then((result)=>{
         res.send(result)
     })
