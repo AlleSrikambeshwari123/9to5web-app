@@ -50,5 +50,6 @@ packageIndex.createIndex([
     packageIndex.fieldDefinition.numeric("volume",true),
     packageIndex.fieldDefinition.text("location",true),
     packageIndex.fieldDefinition.numeric("hasDocs",true),
+    packageIndex.fieldDefinition.numeric("mid",true),
     packageIndex.fieldDefinition.text("dimensions",true),
 ]); 

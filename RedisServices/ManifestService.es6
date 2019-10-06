@@ -1,6 +1,9 @@
+import { promises } from 'fs';
+
 var redis = require('redis');
 var lredis = require('./redis-local');
 var moment = require('moment');
+var dataContext = require('./dataContext')
 var redisSearch = require('../redisearchclient');
 const MID_COUNTER = "global:midCounter";
 const MID_PREFIX = "manifest:";
@@ -8,8 +11,10 @@ const MID_INDEX = "index:manifest";
 const OPEN_MANIFEST = "manifest:open";
 const CLOSED_MANIFEST = "manifest:closed"
 const SHIPPED_MANIFEST = "manifest:shipped"
+const MID_PACKAGES = "manifest:packages:"
 const VERIFIED_MANIFEST = "manifest:verified"; // manifest that have duties verified
-
+var PlaneService = require('./PlaneService').PlaneService; 
+var planeService = new PlaneService(); 
 var manifestTypes = {
     air: {
         id: 1,
@@ -105,7 +110,54 @@ export class ManifestService {
                  console.log('no errors detected here ...')
                  //console.log(manifestList);
                  console.log(data);
+                
                 resolve(data.totalResults);
+            });
+            
+        });
+        
+    }
+    getOpenManifestList(typeId){
+        
+        return new Promise((resolve,reject)=>{
+           console.log( `@stageId:[${typeId} ${typeId}] @mtypeId:${typeId}`);
+            this.mySearch.search(`@stageId:[1 1] @mtypeId:${typeId}`, {
+                offset:0,
+                numberOfResults: 100,
+                sortBy: "mid",
+                dir: "DESC"
+            }, (r1, data) => {
+                if (r1)
+                 {
+                     console.log('we had an error')
+                    console.log(r1);
+                    
+                 }   
+                 console.log('no errors detected here ...')
+                 //console.log(manifestList);
+                 console.log(data);
+                 var manifestList  = []; 
+               
+                     Promise.all(data.results.map(man=>planeService.listCompartments(man.doc.planeId))).then(planeResulst=>{
+                         console.log(planeResulst); 
+                         for (let i = 0; i < planeResulst.length; i++) {
+                             var m = data.results[i]; 
+                             var manifest = {}
+                             
+                            
+                             manifest.plane = planeResulst[i].plane
+                             manifest.mid = m.doc.mid; 
+                             manifest.title = m.doc.title; 
+                             //console.log(m.doc.flightDate,moment.unix(m.doc.flightDate).format("MMM DD,YYYY hh:mm A"))
+                             manifest.flightDate = moment.unix(m.doc.flightDate).format("MMM DD,YYYY hh:mm A"); 
+                             manifestList.push(manifest)
+                         }
+                         
+                         resolve({manifests:manifestList});
+               
+                    
+                 });
+                
             });
             
         });
@@ -317,4 +369,25 @@ export class ManifestService {
         }
         return manifestStages.open; 
     }
+
+    // addPackageToManifest(packageBarCode, mid){
+    //     //we should just update the package in the index. 
+    //     return new Promise((resolve,reject)=>{
+    //         dataContext.redisClient.sadd(MID_PACKAGES+mid,packageBarCode,(err,result)=>{
+    //             resolve({added:true})
+    //         }); 
+    //     })
+    // }
+    // removePackageFromManifest(packageBarCode,mid){
+    //     return new Promise((resolve,reject)=>{
+    //         dataContext.redisClient.srem(MID_PACKAGES_mid,packageBarCode,(err,result)=>{
+    //             resolve({remove:true})
+    //         })
+    //     })
+    // }
+    // getManifestPackages(mid){
+    //     return new Promise((resolve,reject)=>{
+    //         dataContext.redisClient.smembers(MID_PACKAGES+mid,(err))
+    //     })
+    // }
 }

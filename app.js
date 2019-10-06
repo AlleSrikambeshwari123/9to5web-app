@@ -12,6 +12,7 @@ var admin = require('./routes/admin');
 var warehouse = require('./routes/warehouse');
 var fleet = require('./routes/fleet');
 var util = require('./routes/util'); 
+var wapi = require('./routes/wapi'); 
 var app = express();
 
 // view engine setup
@@ -39,6 +40,7 @@ app.use('/admin', admin);
 app.use('/warehouse', warehouse);
 app.use('/fleet', fleet);
 app.use('/util',util); 
+app.use('/api/warehouse',wapi); 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   var err = new Error('Not Found');

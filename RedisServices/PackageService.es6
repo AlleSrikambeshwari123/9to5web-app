@@ -1,4 +1,5 @@
 import { cpus } from "os";
+import { promises } from "dns";
 
 
 var redis = require("redis");
@@ -15,6 +16,7 @@ var dataContext = require('./dataContext')
 const PKG_PREFIX = "packages:";
 const AWB_ID = "awb:id"
 const INDEX_AWB = "index:awb"
+const REC_PKG = "pkg:rec:"
 var CustomerService = require('./CustomerService').CustomerService; 
 var customerService = new CustomerService()
 const PKG_STATUS = { 
@@ -575,7 +577,7 @@ export class PackageService {
       }
     );
   }
-  removePackage(trackingNo, mid) {
+  removePackageFromManifest(packageId, mid) {
     var msearch = this.mySearch;
     return new Promise((resolve, reject) => {
       var manifest = mid;
@@ -658,5 +660,50 @@ export class PackageService {
         });
       });
   
-  }     
+  }   
+  
+  
+
+   //#region Manifest Package Functions 
+
+   addToFlight(action){
+    return new Promise((resolve,reject)=>{
+      var packageNo = getPackageIdFromBarCode(action.barcode); 
+      this.mySearch.update(packageNo,{mid:action.mid},(err,result)=>{
+        if(err)
+          resolve({added:false})
+        
+        resolve({added:true})
+      })
+        
+    })
+   }
+   removeFromFlight(action){
+    return new Promise((resolve,reject)=>{
+        var packageNo = getPackageIdFromBarCode(action.barcode);   
+        this.mySearch.update(packageNo,{mid:action.mid},(err,result)=>{
+        if(err)
+            resolve({removed:false})
+          
+          resolve({removed:true})
+        })
+    })
+   }
+   recFromTruck(trackingNo){
+     return new Promise((resolve,reject)=>{
+     
+        dataContext.redisClient.set(REC_PKG+trackingNo,moment().unix(), (err,result)=>{
+          if (err) resolve({saved:false})
+          resolve({saved:true})
+        })
+     })
+   }
+   //#endregion
+}
+
+function getPackageIdFromBarCode(barCodeValue){
+  var parts = barCodeValue.split("-"); 
+  if (parts.length == 3)
+    return parts[2].trim(); 
+  return ""
 }
