@@ -669,7 +669,7 @@ export class PackageService {
    addToFlight(action){
     return new Promise((resolve,reject)=>{
       var packageNo = getPackageIdFromBarCode(action.barcode); 
-      this.mySearch.update(packageNo,{mid:action.mid , status: 2},(err,result)=>{
+      this.mySearch.update(packageNo,{mid:action.mid , status: 2, location:"Loaded on AirCraft"},(err,result)=>{
         if(err)
           resolve({added:false})
         
@@ -704,9 +704,9 @@ export class PackageService {
        var srv = this ; 
        var pkgId = getPackageIdFromBarCode(barcode); 
         srv.mySearch.getDoc(pkgId,(err,pkg)=>{
-            pkg.status = 4; 
-            pkg.location  = "Warehouse NAS"; 
-            srv.mySearch.update(pkgId,pkg,(err,updateResult)=>{
+            pkg.doc.status = 4; 
+            pkg.doc.location  = "Warehouse NAS"; 
+            srv.mySearch.update(pkgId,pkg.doc,(err,updateResult)=>{
               if(err)
                 reject({updated:false})
               resolve({updated:true})
