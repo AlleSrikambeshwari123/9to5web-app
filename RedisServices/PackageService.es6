@@ -678,6 +678,7 @@ export class PackageService {
         
     })
    }
+   //remove from flight 
    removeFromFlight(action){
     return new Promise((resolve,reject)=>{
         var packageNo = getPackageIdFromBarCode(action.barcode);   
