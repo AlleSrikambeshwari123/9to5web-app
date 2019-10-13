@@ -62,5 +62,10 @@ router.post('/rec-package',(req,res,next)=>{
         res.send(result)
     })
 })
-
+router.post('/rec-package-nas',(req,res,next)=>{
+    var body = req.body; 
+    services.packageService.recFromPlaneNas(body.barcode).then((result)=>{
+        res.send(result)
+    })
+})
 module.exports = router;

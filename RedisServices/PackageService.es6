@@ -21,10 +21,10 @@ var CustomerService = require('./CustomerService').CustomerService;
 var customerService = new CustomerService()
 const PKG_STATUS = { 
   1 : "Received",
-  2: "In Transit",
-  3: "Processing",
-  4: "Ready for Pickup / Delivery",
-  5: "Out for Delivery",
+  2: "Loaded on AirCraft",
+  3: "In Transit",
+  4: "Recieved in NAS",
+  5: "Ready for Pickup / Delivery",
   6: "Delivered"
 
 }; 
@@ -669,7 +669,7 @@ export class PackageService {
    addToFlight(action){
     return new Promise((resolve,reject)=>{
       var packageNo = getPackageIdFromBarCode(action.barcode); 
-      this.mySearch.update(packageNo,{mid:action.mid},(err,result)=>{
+      this.mySearch.update(packageNo,{mid:action.mid , status: 2},(err,result)=>{
         if(err)
           resolve({added:false})
         
@@ -695,6 +695,22 @@ export class PackageService {
         dataContext.redisClient.set(REC_PKG+trackingNo,moment().unix(), (err,result)=>{
           if (err) resolve({saved:false})
           resolve({saved:true})
+        })
+     })
+   }
+
+   recFromPlaneNas(barcode){
+     return new Promise((resolve,reject)=>{
+       var srv = this ; 
+       var pkgId = getPackageIdFromBarCode(barcode); 
+        srv.mySearch.getDoc(pkgId,(err,pkg)=>{
+            pkg.status = 4; 
+            pkg.location  = "Warehouse NAS"; 
+            srv.mySearch.update(pkgId,pkg,(err,updateResult)=>{
+              if(err)
+                reject({updated:false})
+              resolve({updated:true})
+            })
         })
      })
    }

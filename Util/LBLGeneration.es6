@@ -43,19 +43,37 @@
 export class LBLGeneration
 {
     constructor(){
-
+            this.companies = {
+            nineTofive: {
+                logo:'public/img/logo.jpg',
+                name: "NINE TO FIVE IMPORT EXPORT"
+            }, 
+            postBoxes: {
+                logo:'public/img/pbe-logo.png', 
+                name : "POST BOXES ETC"
+            }
+        }
     }
 
     generatePackageLabels(awb){
-        this.awb = awb.awb; 
-        var srv  = this; 
-        console.log("generating",awb.awb); 
-        console.log(this.awb.packages.length,"- no of labels to generate."); 
-        Promise.all(srv.awb.packages.map(pkg=>this.GernerateAWBLabel(pkg))).then(results=>{
-            console.log(results);
+        return new Promise((resolve,reject)=>{
+            this.awb = awb.awb; 
+            var srv  = this; 
+            var company  = this.companies.nineTofive; 
+            if (Number(srv.awb.customer.pmb)>=9000){
+                company = this.companies.nineTofive; 
+            }
+            else company = this.companies.postBoxes
+            console.log("generating",awb.awb); 
+            console.log(this.awb.packages.length,"- no of labels to generate."); 
+            Promise.all(srv.awb.packages.map(pkg=>this.GernerateAWBLabel(pkg,company))).then(results=>{
+                console.log(results);
+                resolve(results)
+            })
         })
+       
     }
-    GernerateAWBLabel(pkg){
+    GernerateAWBLabel(pkg , company){
         return new Promise((resolve,reject)=>{
             
             var srv = this; 
@@ -64,10 +82,10 @@ export class LBLGeneration
             this.generateBarcode(srv.awb.customer.pmb+"-"+srv.awb.id.toString()+"-"+pkg.id).then(png=>{
                 var docDefinition = {
                     pageSize: {
-                        width: 306.00,
-                        height: 'auto'
+                        width: 288.00,
+                        height: 432.00
                       },
-                      pageMargins: [ 30, 10, 30, 30 ],
+                      pageMargins: [ 10, 10, 10, 10 ],
                     content: [
                         {
                             // margin:[0,20],
@@ -75,12 +93,20 @@ export class LBLGeneration
                                 headerRows:0, 
                                 widths:['*','*',"*"],
                                 body:[
-                                    [{margin:[1,5],image:"public/img/logo.jpg",width:60,border:[false,false,false,true]}, //logo for lbl 
+                                    
+                                    [{margin:[1,5],stack:[{
+                                        image:company.logo,width:70, alignment:'center'
+                                    },{text:''},
+                                    {margin:[5,6],qr:srv.awb.customer.pmb+"-"+srv.awb.id.toString()+"-"+pkg.id, fit:'60',alignment:'center'}
+                                ]   ,border:[false,false,false,true]},
+                                  
+                                     //logo for lbl 
                                      {colSpan:2,border:[false,false,false,true],stack:[
-                                        {margin:[1,1],text:"NINE TO FIVE IMPORT EXPORT",fontSize:9,bold:true},
-                                        {margin:[1,1],text:"1811 51st Street"},
-                                        {margin:[1,1],text:"Hanger 42 D"},
-                                        {margin:[1,1],text:"Fort Lauderdale, FL 33309 UNITED STATES"}
+                                        {margin:[1,5],text:company.name,fontSize:10,bold:true},
+                                        {margin:[1,2],text:"1811 51st Street"},
+                                        {margin:[1,2],text:"Hanger 42 D"},
+                                        {margin:[1,2],text:"Fort Lauderdale, FL 33309 "},
+                                        {margin:[1,2],text:"UNITED STATES "}
                                      ]}
                                 ]
                                 ]//end table body 
@@ -94,11 +120,11 @@ export class LBLGeneration
                                 body:[
                                     [{margin:[1,1],stack:[
                                         {text:"CONSIGNEE", fontSize:4,bold:true},
-                                        {margin:[2,5],text:srv.awb.customer.name, fontSize:5,bold:true},
+                                        {margin:[2,5],text:srv.awb.customer.name, fontSize:8,bold:true},
 
                                     ],border:[false,false,false,true]}, //logo for lbl 
                                      {border:[true,false,false,true],stack:[
-                                        {text:"Account No", fontSize:5,bold:true},
+                                        {text:"Account No", fontSize:8,bold:true},
                                         {margin:[2,5],text:srv.awb.customer.pmb, fontSize:9,bold:true}
                                         // {margin:[1,1],text:"NINE TO FIVE IMPORT EXPORT",fontSize:9,bold:true},
                                         // {margin:[1,1],text:"1811 51st Street"},
@@ -136,7 +162,7 @@ export class LBLGeneration
                                 widths:['*'],
                                 body:[
                                     [{margin:[1,1],stack:[
-                                        {text:"Shipper", fontSize:4,bold:true},
+                                        {text:"SHIPPER", fontSize:7,bold:true},
                                         {margin:[0,5],text:srv.awb.shipper, fontSize:8,bold:true},
 
                                     ],border:[false,false,false,true]}, //logo for lbl 
@@ -154,17 +180,17 @@ export class LBLGeneration
                                 widths:['*',30,50],
                                 body:[
                                     [{margin:[1,1],stack:[
-                                        {text:"PACKAGE NO", fontSize:4,bold:true},
+                                        {text:"PACKAGE NO", fontSize:6,bold:true},
                                         {margin:[0,5],text:"PK00"+pkg.id, fontSize:12,bold:true},
 
                                     ],border:[false,false,false,true]}, //logo for lbl 
                                     {margin:[1,1],stack:[
-                                        {text:"PIECE", fontSize:4,bold:true},
+                                        {text:"PIECE", fontSize:6,bold:true},
                                         {margin:[10,5],text:pkg.packageIndex, fontSize:12,bold:true},
 
                                     ],border:[true,false,false,true]},
                                     {margin:[1,1],stack:[
-                                        {text:"TOTAL PIECES", fontSize:4,bold:true},
+                                        {text:"TOTAL PIECES", fontSize:6,bold:true},
                                         {margin:[10,5],text:srv.awb.packages.length, fontSize:12,bold:true},
 
                                     ],border:[true,false,false,true]}
@@ -205,8 +231,8 @@ export class LBLGeneration
                                     [
                                         {margin:[0,0 ],stack:[
                                         
-                                         {margin:[0,5],text:"DESCRIPTION", fontSize:5,bold:true},
-                                         {margin:[0,5],text:pkg.description, fontSize:5,bold:true},
+                                         {margin:[0,5],text:"DESCRIPTION", fontSize:7,bold:true},
+                                         {margin:[0,5],text:pkg.description, fontSize:7,bold:true},
                                         //table here 
                                         {
                                             margin:[0,0],
@@ -216,8 +242,8 @@ export class LBLGeneration
                                                 widths:['*'],
                                                 body:[
                                                     [{margin:[1,1],stack:[
-                                                        {text:"NOTES", fontSize:5,bold:true},
-                                                        {margin:[0,10],text:"Class 3", fontSize:5,bold:true},
+                                                        {text:"NOTES", fontSize:7,bold:true},
+                                                        {margin:[0,10],text:"Class 3", fontSize:7,bold:true},
                 
                                                     ],border:[true,true,true,true]}, //logo for lbl 
                                                      
@@ -231,11 +257,11 @@ export class LBLGeneration
                                     ],border:[false,false,false,true]}, //barcode for lbl 
                                     {margin:[1,1],stack:[
                                         
-                                        {margin:[0,1],text:"WEIGHT", fontSize:5,bold:true},
-                                        {margin:[0,2],text:`${pkg.weight} lbs.`, fontSize:5,bold:true},
-                                        {margin:[0,1],text:"DIMENSIONS", fontSize:5,bold:true},
-                                        {margin:[0,1],text:`${pkg.dimensions} ins.`, fontSize:5,bold:true},
-                                        {margin:[0,1],text:"VOL. WEIGHT", fontSize:5,bold:true},
+                                        {margin:[0,1],text:"WEIGHT", fontSize:6,bold:true},
+                                        {margin:[0,2],text:`${pkg.weight} lbs.`, fontSize:8,bold:true},
+                                        {margin:[0,1],text:"DIMENSIONS", fontSize:6,bold:true},
+                                        {margin:[0,1],text:`${pkg.dimensions} ins.`, fontSize:8,bold:true},
+                                        {margin:[0,1],text:"VOL. WEIGHT", fontSize:6,bold:true},
                                         {margin:[0,2],text:`${srv.calculateDimensionalWeight(pkg.dimensions)} Vlbs`, fontSize:5,bold:true},
                                        //table here 
 
@@ -252,7 +278,7 @@ export class LBLGeneration
               
                     defaultStyle: {
                       font: 'Helvetica',
-                      fontSize:7
+                      fontSize:11
                     },
                     
                   };
