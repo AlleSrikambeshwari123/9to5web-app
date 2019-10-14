@@ -146,6 +146,37 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="findshipper" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2"
+    aria-hidden="true" style="display: none;">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="exampleModalLabel2">Find Shipper</h2>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class='form-group' >
+                <input type='text' class='form-control' id='search' name='search' placeholder="Enter Name " > 
+            </div>
+               <table id='shipperTable' class='table-bordered table' style='display:none'>
+                   <tr>
+                       <td>PMB</td>
+                       <td>Customer Name</td>
+                   </tr>
+
+                   <tbody id="customerlisting"></tbody>
+               </table>
+               
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary close-del" data-dismiss="modal">Close</button>
+                
+            </div>
+        </div>
+    </div>
+</div>
 <div class="modal fade" id="confirmPkgDel" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2"
     aria-hidden="true" style="display: none;">
     <div class="modal-dialog" role="document">
@@ -237,7 +268,30 @@
         </div>
     </div>
 </div>
-
+<div class="modal fade" id="alertSEDPOPUP" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2"
+    aria-hidden="true" style="display: none;">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="exampleModalLabel2">Is SED Required</h2>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class='form-group' >
+                <input type='text' class='form-control' id='search' name='search' placeholder="Enter Name or PMB#" > 
+            </div>
+             The value of the this AWB is <span id='sedvalue'></span> which may pass the SED Limit. If one of the items are greater than $2500 this AWB requires the SED declaration. 
+               
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary close-del" data-dismiss="modal">Close</button>
+                
+            </div>
+        </div>
+    </div>
+</div>
 <% block('scripts').append('<script src="/vendor/datatables/dataTables.min.js"></script>')%>
 <% block('scripts').append('<script src="/vendor/datatables/dataTables.bootstrap.min.js"></script>')%>
 <% block('scripts').append('<script src="/vendor/datatables/custom/fixedHeader.js"></script>')%>
