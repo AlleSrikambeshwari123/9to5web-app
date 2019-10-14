@@ -22,6 +22,7 @@ export class DeliveryService {
         return new Promise((resolve,reject)=>{
             dataContext.redisClient.incr(ID,(err,id)=>{
                 delivery.id = id ; 
+                delivery.status = 0 ; 
                 console.log('saving delivery',delivery); 
                 deliveryIndex.add(id,delivery) 
                 resolve({saved:true});                
@@ -42,6 +43,30 @@ export class DeliveryService {
                     deliveries.push(delivery.doc)    
                 });
                 resolve({deliveries:deliveries})
+            })
+        })
+    }
+    getOpenDeliveries(){
+        return new Promise((resolve,reject)=>{
+            deliveryIndex.search("@status:0",{offset:0,numberOfResults:1000,sortBy:'createdDate',sortDir:'DESC'},(err,reply)=>{
+                if (err){
+                    console.log(err); 
+                    resolve({deliveries:[]})
+                    return; 
+                }
+                var deliveries = []; 
+                reply.results.forEach(delivery => {
+                    deliveries.push(delivery.doc)    
+                });
+                resolve({deliveries:deliveries})
+            })
+        })
+    }
+    sendDelivery(deliverId){
+        return new Promise ((resolve,reject)=>{
+            deliveryIndex.getDoc(deliverId,(err,result)=>{
+                result.doc.status  = 1; 
+                deliveryIndex.update(deliverId,results.doc); 
             })
         })
     }

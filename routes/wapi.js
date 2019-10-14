@@ -68,4 +68,14 @@ router.post('/rec-package-nas',(req,res,next)=>{
         res.send(result)
     })
 })
+router.get('/get-open-deliveries',(req,res,next)=>{
+    services.deliveryService.getOpenDeliveries().then(deliveries=>{
+        res.send(deliveries); 
+    })
+})
+router.get('/get-locations',(req,res,next)=>{
+    services.locationService.getLocations().then(locations=>{
+        res.send(locations); 
+    })
+}); 
 module.exports = router;
