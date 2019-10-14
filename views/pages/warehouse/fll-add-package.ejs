@@ -41,17 +41,34 @@
                                             <input type='text' class='form-control awb' id='id' name='id' required  readonly/>
                                         </div>
                                         <div class='form-group'>
+                                            <label>Consignee / PMB / 9-5 <span class='text-info title customerName'></span> <a href="#" class=" " data-target='#findCustomer' data-toggle='modal'>Assign Box #(9-5)</a> </label> 
+                                            <input type='text' class='form-control skybox' id="customerName" name='pmb' required readonly/>
+                                            <input type='hidden' class='customerId' id='customerId' />
+                                        </div>
+                                        <div class='form-group'>
+                                            <label>Shipper <a id="select Shipper" href='javasceript:void(0)'>Select Shipper</a></label>
+                                            <input type='text' class='form-control shipper' id='shipper' name='shipper' />
+                                        </div> 
+                                        
+
+                                        <div class='form-group'>
+                                            <label>Carrier <a id="select Shipper" href='javasceript:void(0)'>Select Carrier</a></label>
+                                            <input type='text' class='form-control carrier' id='carrier' name='carrier' />
+                                        </div>
+
+                                        <div class='form-group'>
+                                            <label>Is HAZMAT <a id="selectHazClass" href='javasceript:void(0)'>Select Class</a></label> 
+                                            <input type='checkbox' class='form-control hasInvoice' id='isHazmat' name='isHazMat' />
+                                        </div>
+                                        <div class='form-group'>
                                             <label>SED Required</label>
                                             <input type='checkbox' class='form-control carrier' id="isSED" name='isSED' />
                                         </div>
-                                        <div class='form-group'>
+                                        <!-- <div class='form-group'>
                                             <label>Has Invocie</label>
                                             <input type='checkbox' class='form-control hasInvoice' id='hasInvoice' name='hasInvocie' />
-                                        </div>
-                                        <div class='form-group'>
-                                                <label>Is HAZMAT</label>
-                                                <input type='checkbox' class='form-control hasInvoice' id='isHazmat' name='isHazMat' />
-                                            </div>
+                                        </div> -->
+                                        
                                         <div class='form-group'>
                                             <label>Upload Invocie</label>
                                             <input type='file' class='form-control invFile' id='invFile' name='invFile' />
@@ -69,21 +86,8 @@
                                                 <input type='text' class='form-control awbValue' name='awbValue' required />
                                         </div> -->
 
-                                        <div class='form-group'>
-                                            <label>Consignee / PMB / 9-5 <span class='text-info title customerName'></span> <a href="#" class=" " data-target='#findCustomer' data-toggle='modal'>Assign Box #(9-5)</a> </label> 
-                                            <input type='text' class='form-control skybox' id="customerName" name='pmb' required readonly/>
-                                            <input type='hidden' class='customerId' id='customerId' />
-                                        </div>
-                                        <div class='form-group'>
-                                            <label>Shipper</label>
-                                            <input type='text' class='form-control shipper' id='shipper' name='shipper' />
-                                        </div> 
-                                        
-
-                                        <div class='form-group'>
-                                            <label>Carrier</label>
-                                            <input type='text' class='form-control carrier' id='carrier' name='carrier' />
-                                        </div>
+                                       
+                                       
                                         <a id="save_awb" href="javascript:void(0)" class="btn btn-small btn-info ">Save AWB</a>
                                         <a id="add_package" href="#ready-popup" class="btn btn-small btn-info open-popup-link " style='display:none;'>Add Package</a>
                                         <button type='button'  class="btn btn-small btn-info new-awb " style='display:none;'>New AWB</button>
