@@ -266,6 +266,8 @@ $(function () {
                     awbInfo.invoice = fileInfo[0].uploadedFile; 
                 }
             }
+
+            //we can send now 
              console.log('sending', awbInfo)
             $.ajax({
                 url:'/warehouse/save-awb',
