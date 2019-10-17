@@ -19,7 +19,7 @@ export class HazmatService{
                 shippers.results.forEach(shipper => {
                     listing.push(shipper.doc); 
                 });
-                resolve({shippers:listing})
+                resolve({classes:listing})
             })
         })
     }

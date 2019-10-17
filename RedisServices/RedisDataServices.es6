@@ -20,6 +20,10 @@ var PilotService = require('./PilotService').PilotService
 var pilotService = new PilotService(); 
 var PlaneService = require('./PlaneService').PlaneService
 var planeService = new PlaneService()
+var HazmatService = require('./HazmatService').HazmatService; 
+var hazmatService = new HazmatService(); 
+var ShipperService = require('./ShipperService').ShipperService; 
+var shipperService = new ShipperService(); 
 
 module.exports = { 
   customerService: customerService,
@@ -32,5 +36,7 @@ module.exports = {
   vehicleService: vehicleService, 
   printService: printService,
   pilotService:pilotService,
-  planeService:planeService
+  planeService:planeService, 
+  hazmatService: hazmatService,
+  shipperService:shipperService, 
 }

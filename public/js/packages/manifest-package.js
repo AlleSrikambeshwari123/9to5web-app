@@ -17,9 +17,20 @@ $(function () {
     var mailTable;
     var cargoTable;
     var unProcTable;
+    var sedAnswered  = 0 ; 
     var awbPackages = []; 
     $("#select-pilot").select2({
         placeholder: 'Select a Pilot'
+      }); 
+    $("#pick-haz").select2({
+        theme: "classic",
+        placeholder: 'Select a HAZMAT Class',
+        
+      }); 
+    $("#pick-shipper").select2({
+        theme: "classic",
+        placeholder: 'Select a Shipper',
+        
       }); 
     $("#select-plane").select2({
         placeholder: 'Select an Plane'
@@ -124,7 +135,7 @@ $(function () {
 
     $(".new-awb").click(function(){
         //clear out items 
-    
+        sedAnswered = 0; 
         $("#id").val('')
         $("#invoiceNumber").val('')
         $("#value").val('')
@@ -132,8 +143,9 @@ $(function () {
         $("#shipper").val('')
         $("#carrier").val('')
         $(".skybox").val(''); 
-        $("#isSED").prop(":checked",false)
-        $("#hasInvoice").prop(":checked",false)
+        $("#sedRequired").val("0"); 
+        //$("#isSED").prop(":checked",false)
+        //$("#hasInvoice").prop(":checked",false)
         $(".awb").text('');
         $(".awb-new").hide()
         $(".print-options").hide(); 
@@ -199,26 +211,42 @@ $(function () {
 
     })
     
+
+    $("#value").change(function(){
+        sedAnswered = 0 ; 
+    })
+    $(".sed-click").click(function(){
+        $("#sedRequired").val(Number($(this).attr("data-id"))); 
+        sedAnswered =1; 
+        console.log('sed answer changed' + sedAnswered)
+        $("#save_awb").trigger('click'); 
+        
+    })
     $("#save_awb").click(function(){
         //validate the awb 
 
         //handle upload
         var hasInvoice = 0 ; 
-        var isSED = 0 ; 
         
-        if ($("#hasInvoice").prop(":checked"))
-            hasInvoice = 1; 
-            if ($("#isSED").prop(":checked"))
-            isSED = 1; 
+        if (Number($("#value").val())>= 2500 && sedAnswered == 0){
+            //trigger SED QUESTION
+            $("#show-sed").trigger('click'); 
+
+            console.log('showing sed question')
+            return; 
+        }
+       
+           
         var awbInfo = { 
             id: $("#id").val(),
-            isSed:isSED,
+            isSed:$("#sedRequired").val(),
             hasDocs: hasInvoice,
             invoiceNumber:$("#invoiceNumber").val(),
             value:$("#value").val(),
             customerId:$("#customerId").val(),
-            shipper:$("#shipper").val(),
+            shipper:$("#pick-shipper").val(),
             carrier:$("#carrier").val(),
+            hazmat:$("#pick-haz").val(),
            
         };
         if (awbInfo.value == ""){
@@ -233,6 +261,8 @@ $(function () {
                 console.log('results',fileInfo[0].uploadedFile);
                 if (fileInfo[0].uploadedFile)
                 {
+                    hasInvoice = 1; 
+                    awbInfo.hasDocs = 1; 
                     awbInfo.invoice = fileInfo[0].uploadedFile; 
                 }
             }
@@ -251,6 +281,7 @@ $(function () {
                     $(".print-options").show();
                     $("#print-awb").attr('data-id',result.id);
                     $("#print-lbl").attr('data-id',result.id); 
+
                 }
             });
         })

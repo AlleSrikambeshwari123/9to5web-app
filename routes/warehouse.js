@@ -267,9 +267,20 @@ router.get ('/fll-new-package',middleware(services.userService).requireAuthentic
     pageData.luser = res.User.firstName + ' ' + res.User.lastName;
     pageData.RoleId = res.User.RoleId;
     //get new packages 
+    services.hazmatService.getAllClasses().then(classes=>{
+        console.log(classes); 
+        pageData.hazmatListing = classes.classes; 
+        services.shipperService.getAllShippers().then(results=>{
+            pageData.shipperListing = results.shippers; 
+            res.render('pages/warehouse/fll-add-package',pageData);    
+            
+        })
+        
+        
+    })
    
       
-        res.render('pages/warehouse/fll-add-package',pageData); 
+        
   
     
 })

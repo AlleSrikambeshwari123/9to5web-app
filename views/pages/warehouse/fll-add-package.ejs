@@ -46,24 +46,34 @@
                                             <input type='hidden' class='customerId' id='customerId' />
                                         </div>
                                         <div class='form-group'>
-                                            <label>Shipper <a id="select Shipper" href='javasceript:void(0)'>Select Shipper</a></label>
-                                            <input type='text' class='form-control shipper' id='shipper' name='shipper' />
-                                        </div> 
+                                            <label>Shipper </label><br/>
+                                            <select id="pick-shipper" class='form-control' style='width:90%;'>
+                                                    <option>Select Shipper</option>
+                                                    <%for(var i =0; i < shipperListing.length;i++){%>
+                                                        <option value="<%=shipperListing[i].id%>"><%=shipperListing[i].name%></option>
+                                                        <%}%>
+                                                 </select>
+                                        </div>  
                                         
 
-                                        <div class='form-group'>
-                                            <label>Carrier <a id="select Shipper" href='javasceript:void(0)'>Select Carrier</a></label>
+                                         <div class='form-group'>
+                                            <label>Carrier </label>
                                             <input type='text' class='form-control carrier' id='carrier' name='carrier' />
                                         </div>
 
                                         <div class='form-group'>
-                                            <label>Is HAZMAT <a id="selectHazClass" href='javasceript:void(0)'>Select Class</a></label> 
-                                            <input type='checkbox' class='form-control hasInvoice' id='isHazmat' name='isHazMat' />
+                                            <label> Is HAZMAT</label>
+                                                <select id="pick-haz" class='form-control' style='width:90%;'>
+                                                       <option>Select HAZMAT</option>
+                                                        <%for(var i =0; i < hazmatListing.length;i++){%>
+                                                            <option value="<%=hazmatListing[i].id%>"><%=hazmatListing[i].description%></option>
+                                                            <%}%>
+                                                     </select>
                                         </div>
-                                        <div class='form-group'>
+                                        <!-- <div class='form-group'>
                                             <label>SED Required</label>
                                             <input type='checkbox' class='form-control carrier' id="isSED" name='isSED' />
-                                        </div>
+                                        </div> -->
                                         <!-- <div class='form-group'>
                                             <label>Has Invocie</label>
                                             <input type='checkbox' class='form-control hasInvoice' id='hasInvoice' name='hasInvocie' />
@@ -80,6 +90,8 @@
                                         <div class='form-group'>
                                             <label> Value</label>
                                             <input type='text' class='form-control awbValue'  id='value' name='value' required />
+                                            <a id='show-sed' data-toggle="modal" data-target="#alertSEDPOPUP"></a>
+                                            <input type ='hidden' value="0"  id='sedRequired'/>
                                         </div>
                                         <!-- <div class='form-group'>
                                                 <label>AWB Value</label>
@@ -168,6 +180,31 @@
 
                    <tbody id="customerlisting"></tbody>
                </table>
+               
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary close-del" data-dismiss="modal">Close</button>
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="select-class" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2"
+    aria-hidden="true" style="display: none;">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="exampleModalLabel2">Select Hazmat</h2>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                
+              
+
+                
+               
                
             </div>
             <div class="modal-footer">
@@ -279,14 +316,13 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div class='form-group' >
-                <input type='text' class='form-control' id='search' name='search' placeholder="Enter Name or PMB#" > 
-            </div>
+              
              The value of the this AWB is <span id='sedvalue'></span> which may pass the SED Limit. If one of the items are greater than $2500 this AWB requires the SED declaration. 
                
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary close-del" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary sed-click" data-dismiss="modal" data-id="0">No</button>
+                <button type="button" class="btn btn-primary btn-success sed-click " data-dismiss="modal" data-id="1" id="sed-click">SED REQUIRED</button>
                 
             </div>
         </div>
