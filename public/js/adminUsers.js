@@ -1,4 +1,10 @@
 $(function () {
+    $("#userRole").select2({
+       
+        placeholder: 'Select Permissions',
+        
+      }
+    )
     $("#area").val($("#pickupValue").val())
     $(".enableUser").click(function () {
         var username = $(this).attr('data-id');

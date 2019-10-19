@@ -157,7 +157,19 @@ export class UserService {
                 }
                 else {
                     //update the user 
-                    resolve({saved:false,"message":"Username taken"})
+                    //prepare the roles we are going to get an arra 
+                    const roles = ConvertRolesToString(user.role)
+                    srv.redisIndexSearch.update(user.id,user,(err,reply)=>{
+                        if(err)
+                            resolve({saved:false,"message":"Username taken"})
+                        else {
+                            client.hmset(PREFIX+user.username,user)
+                            resolve({saved:true,"message":"User updated."})
+                        }
+                        
+                    })
+                    
+                    
                 }
             })
             
@@ -206,6 +218,14 @@ export class UserService {
         });
 
     }
+}
+function ConvertRolesToString(rolesArray){
+    var allPermissions = ""; 
+    rolesArray.forEach(role => {
+        allPermissions += role +","
+    });
+    allPermissions = allPermissions.substring(0,allPermissions.length-1); 
+    console.log(allPermissions)
 }
 function createDocument(account){
     var customerDocument = { 

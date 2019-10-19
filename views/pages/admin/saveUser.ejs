@@ -9,6 +9,7 @@
                         <label for="exOne">Username</label>
                         <input type="text" class="form-control" name='username' id="username" placeholder="" required
                             value='<%=user.username %>'>
+                            <input type ='hidden' name='id' value='<%=user.id%>'
                     </div>
                     <div class="form-group">
                         <label for="exOne">First Name</label>
@@ -47,20 +48,19 @@
                             value='<%=user.mobile %>'>
                     </div>
                     <div class="form-group">
-                        <label for="selectTwo">User Role</label>
-                        <select class="form-control" id="userRole" name='userRole'>
-                            <option value=''>Select Role</option>
-                            <% var selected = '';%>
-                            <%roles.forEach(function(role){%>
-                            <% 
-                                if (role == user.role)
-                                {
-                                    selected = 'selected'; 
-                                }
-                                else {selected =''; }
-                            %>
-                            <option value='<%=role %>' <%=selected %>><%=role %></option>
-                            <%})%>
+                        <label for="selectTwo">Select User Permission</label>
+                        <select class="form-control" id="userRole" name='userRole' multiple="multiple">
+                           
+                            <option  <% if (user.role.indexOf("Warehouse Fl")>-1) { %> selected <%}%> > Warehouse Fl</option>
+                            <option <% if (user.role.indexOf("Admin")>-1) { %> selected <%}%>> Admin</option>
+                            <option <% if (user.role.indexOf("Warehouse NAS")>-1) { %> selected <%}%>> Warehouse NAS</option>
+                            <option <% if (user.role.indexOf("Store Access")>-1) { %> selected <%}%>> Store Access </option>
+                            <option <% if (user.role.indexOf("Reports FL")>-1) { %> selected <%}%>> Reports FL</option>
+                            <option <% if (user.role.indexOf("Reports NAS")>-1) { %> selected <%}%>> Reports NAS</option>
+                            <option <% if (user.role.indexOf(" Create AWB")>-1) { %> selected <%}%>> Create AWB</option>
+                            <option <% if (user.role.indexOf("Load Flight")>-1) { %> selected <%}%>> Load Flight</option>
+                            <option <% if (user.role.indexOf("NAS Processing")>-1) { %> selected <%}%>> NAS Processing</option>
+                            <option <% if (user.role.indexOf("Deliveries")>-1) { %> selected <%}%>>Deliveries </option>
                         </select>
                     </div>
 
