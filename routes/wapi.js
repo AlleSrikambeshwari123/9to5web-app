@@ -78,4 +78,10 @@ router.get('/get-locations',(req,res,next)=>{
         res.send(locations); 
     })
 }); 
+router.get('/get-package-info/:id',(req,res,next)=>{
+    var id = req.params.id; 
+    services.packageService.getPackageById(id).then((pkg=>{
+        res.send(pkg); 
+    }))
+})
 module.exports = router;

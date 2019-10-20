@@ -544,9 +544,19 @@ export class PackageService {
     })
   }
   getPackageById(id){
+    var srv = this; 
     return new Promise((resolve,reject)=>{
-      rediSearch.getDoc(id,(err,document)=>{
-        resolve(document.doc); 
+      this.mySearch.getDoc(id,(err,document)=>{
+        //get the awb info here as well 
+        srv.getAwb(document.doc.awb).then(awbinfo=>{
+          console.log(awbinfo); 
+          var response = { 
+            awb : awbinfo.awb,
+            package : document.doc
+          }
+          resolve(response); 
+        }); 
+        
       })
     }); 
   }
