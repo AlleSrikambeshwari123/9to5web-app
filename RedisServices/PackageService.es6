@@ -543,10 +543,11 @@ export class PackageService {
     });
     })
   }
-  getPackageById(id){
+  getPackageById(barcode){
     var srv = this; 
+    var pkgId = getPackageIdFromBarCode(barcode); 
     return new Promise((resolve,reject)=>{
-      this.mySearch.getDoc(id,(err,document)=>{
+      this.mySearch.getDoc(pkgId,(err,document)=>{
         //get the awb info here as well 
         srv.getAwb(document.doc.awb).then(awbinfo=>{
           console.log(awbinfo); 
