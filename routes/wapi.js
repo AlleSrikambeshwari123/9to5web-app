@@ -84,4 +84,7 @@ router.post('/get-package-info/',(req,res,next)=>{
         res.send(pkg); 
     }))
 })
+router.post('/save-package-fees',(req,res,next)=>{
+    res.send({saved:true})
+})
 module.exports = router;
