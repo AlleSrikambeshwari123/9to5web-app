@@ -62,6 +62,8 @@ router.post('/rm-package-from-flight',(req,res,next)=>{
         res.send(result); 
    })
 })
+
+//
 router.post('/rec-package',(req,res,next)=>{
     var body = req.body; 
     services.packageService.recFromTruck(body.trackingNumber).then((result)=>{
