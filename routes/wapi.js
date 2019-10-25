@@ -46,6 +46,12 @@ router.post('/add-package-to-flight',(req,res,next)=>{
         res.send(result)
     })
 })
+router.post('/process-pkg-nas',(req,res,next)=>{
+    var body = req.body; 
+    var dir = __dirname.replace("routes","uploads"); 
+    res.download(dir+'/proc-lbl.pdf');
+
+})
 router.post('/rm-package-from-flight',(req,res,next)=>{
     var body = req.body; 
     var action = { 

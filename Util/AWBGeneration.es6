@@ -42,7 +42,7 @@ export class AWBGeneration{
             console.log("generating",awb.awb); 
             this.generateBarcode(srv.awb.id.toString()).then(png=>{
                 var docDefinition = {
-                    footer: srv.generateFooter,
+                    // footer: srv.generateFooter,
                     content: [
                         {
                             columns :srv.generateHeader(png)
