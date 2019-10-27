@@ -126,18 +126,21 @@ router.get('/m-packages/:manifestId', middleware(services.userService).requireAu
     pageData.RoleId = res.User.RoleId;
     pageData.manifest = {};
     pageData.mid = Number(req.params.manifestId);
-    pageData.moment = moment;
+    //pageData.moment = moment;
 
     //we want to format the manifest number to 3 digits 
     rServices.manifestService.getManifest(pageData.mid).then((manifest) => {
         
         services.planeService.getPlanes().then(planeData=>{
+            console.log(planeData)
             services.pilotService.getPilots().then(pilotData=>{
                 pageData.manifest = manifest;
+                manifest.dateCreated = moment.unix(manifest.dateCreated).format("dddd, LL")
                 pageData.pilots = pilotData.pilots; 
                 pageData.planes = planeData.planes
                 pageData.mtype = "cargo";
                 pageData.ColLabel = "Cargo";
+                pageData.plane = {}
                 if (manifest.flightDate){
                     manifest.flightDate = moment.unix(manifest.flightDate).format("MM/DD/YYYY")
                 }

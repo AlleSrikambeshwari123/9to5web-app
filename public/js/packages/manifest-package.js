@@ -249,8 +249,13 @@ $(function () {
             hazmat:$("#pick-haz").val(),
            
         };
+        if (awbInfo.customerId == "" || awbInfo.shipper =="" || awbInfo.carrier == ""){
+            alert('cannot save AWB Info missing')
+
+            return; 
+        }
         if (awbInfo.value == ""){
-            awbInfo.value = -1 ; 
+            awbInfo.value = 0  ; 
         }
         console.log(awbInfo,"saving the awb")
         uploadContentFile($("#invFile"),function(results){
