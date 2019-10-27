@@ -19,6 +19,13 @@ $(function () {
     var unProcTable;
     var sedAnswered  = 0 ; 
     var awbPackages = []; 
+    if ($("#id").val()!=""){
+        $("#save_awb").hide(); 
+        $("#add_package").show(); 
+        $("#update_awb").show(); 
+        awbPackages = rpackages
+        displayPackages(awbPackages, "#packageTable", "cargo")
+    }
     $("#select-pilot").select2({
         placeholder: 'Select a Pilot'
       }); 
@@ -157,6 +164,35 @@ $(function () {
         displayPackages(awbPackages, "#packageTable", "cargo"); 
     })
 
+
+    $("#save-shipper").click(function(){
+        var shipper = {
+            name: $("#sp-name").val(),
+            address: $("#sp-address").val(),
+            city : $("#sp-city").val(), 
+            state: $("#sp-state").val(), 
+            
+
+            
+        }
+        if (shipper.name != "" || shipper.address != ""){
+            $.ajax({
+                url:"/warehouse/add-shipper",
+                type:'post',
+                data : shipper,
+                success:function(result){
+                    if (result.saved == "true" || result.save==true){
+                        console.log(result)
+                        $("#pick-shipper").append("<option selected value='"+result.shipper.id+"'>"+result.shipper.name+"</option>").trigger('change'); 
+                    }
+                }
+            })
+        }
+        else {
+            alert("Please add a shipper name and address. ")
+        }
+    })
+    
     $("#save-to-awb").click(function(){
        
         var package = {

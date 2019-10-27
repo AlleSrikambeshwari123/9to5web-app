@@ -13,6 +13,19 @@ export class ShipperService {
 
     }
 
+
+    addShipper(shipper){
+        return new Promise((resolve,reject)=>{
+            dataContext.redisClient.incr("shipper:id",(err,reply)=>{
+                shipper.id= reply
+                rs.add(reply,shipper,(err,sresult)=>{
+                    if (err)
+                        resolve({saved:false})
+                    resolve({saved:true,shipper})
+                })
+            })
+        })
+    }
     getAllShippers(){
         return new Promise((resolve,reject)=>{
             rs.search('*',{offset:0, numberOfResults:5000,sortBy:"name",sortDir:"ASC"},(err,shippers)=>{

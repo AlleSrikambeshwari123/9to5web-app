@@ -38,19 +38,26 @@
                                     </div> 
                                     <div class='form-group'>
                                             <label>AWB </label>
-                                            <input type='text' class='form-control awb' id='id' name='id' required  readonly/>
+                                            <input type='text' class='form-control awb' id='id' name='id' required  readonly value='<%=awb.id%>'/>
                                         </div>
                                         <div class='form-group'>
                                             <label>Consignee / PMB / 9-5 <span class='text-info title customerName'></span> <a href="#" class=" " data-target='#findCustomer' data-toggle='modal'>Assign Box #(9-5)</a> </label> 
-                                            <input type='text' class='form-control skybox' id="customerName" name='pmb' required readonly/>
-                                            <input type='hidden' class='customerId' id='customerId' />
+                                            <input type='text' class='form-control skybox' id="customerName" name='pmb' required readonly value='<%=awb.customer.name%>'/>
+                                            <input type='hidden' class='customerId' id='customerId' value="<%=awb.customer.id%>" />
                                         </div>
                                         <div class='form-group'>
                                             <label>Shipper  <a href='#' data-target="#findshipper" data-toggle="modal">Add New Shipper</a></label><br/>
                                             <select id="pick-shipper" class='form-control' style='width:90%;'>
                                                     <option>Select Shipper</option>
-                                                    <%for(var i =0; i < shipperListing.length;i++){%>
-                                                        <option value="<%=shipperListing[i].id%>"><%=shipperListing[i].name%></option>
+                                                    <%for(var i =0; i < shipperListing.length;i++){
+                                                        var shipperSelected = ''; 
+                                                        if (shipperListing[i].id == awb.shipper){
+                                                            shipperSelected = 'selected'
+                                                        }
+                                                        %>
+
+                                                        
+                                                        <option <%=shipperSelected%> value="<%=shipperListing[i].id%>"><%=shipperListing[i].name%></option>
                                                         <%}%>
                                                  </select>
                                         </div>  
@@ -58,15 +65,20 @@
 
                                          <div class='form-group'>
                                             <label>Carrier </label>
-                                            <input type='text' class='form-control carrier' id='carrier' name='carrier' />
+                                            <input type='text' class='form-control carrier' id='carrier' name='carrier' value="<%=awb.carrier%>" />
                                         </div>
 
                                         <div class='form-group'>
                                             <label> Is HAZMAT</label>
                                                 <select id="pick-haz" class='form-control' style='width:90%;'>
                                                        <option>Select HAZMAT</option>
-                                                        <%for(var i =0; i < hazmatListing.length;i++){%>
-                                                            <option value="<%=hazmatListing[i].id%>"><%=hazmatListing[i].description%></option>
+                                                        <%for(var i =0; i < hazmatListing.length;i++){
+                                                            var hazSelected = ''; 
+                                                            if (hazmatListing[i].id == awb.hazmat){
+                                                                hazSelected = 'selected'
+                                                            }
+                                                            %>
+                                                            <option <%=hazSelected%> value="<%=hazmatListing[i].id%>"><%=hazmatListing[i].description%></option>
                                                             <%}%>
                                                      </select>
                                         </div>
@@ -85,11 +97,11 @@
                                         </div>
                                         <div class='form-group'>
                                                 <label>Invoice # <span class='text-info title customerName '></span></label>
-                                                <input type='text' class='form-control invoice' id='invoiceNumber' name='invoiceNumber' required />
+                                                <input type='text' class='form-control invoice' id='invoiceNumber' name='invoiceNumber' required value="<%=awb.invoiceNumber%>"/>
                                             </div>
                                         <div class='form-group'>
                                             <label> Value</label>
-                                            <input type='text' class='form-control awbValue'  id='value' name='value' required />
+                                            <input type='text' class='form-control awbValue'  id='value' name='value' required value="<%=awb.value%>" />
                                             <a id='show-sed' data-toggle="modal" data-target="#alertSEDPOPUP"></a>
                                             <input type ='hidden' value="0"  id='sedRequired'/>
                                         </div>
@@ -101,6 +113,7 @@
                                        
                                        
                                         <a id="save_awb" href="javascript:void(0)" class="btn btn-small btn-info ">Save AWB</a>
+                                        <a id="update_awb" href="#ready-popup" class="btn btn-small btn-info open-popup-link " style='display:none;'>Update Awb</a>
                                         <a id="add_package" href="#ready-popup" class="btn btn-small btn-info open-popup-link " style='display:none;'>Add Package</a>
                                         <button type='button'  class="btn btn-small btn-info new-awb " style='display:none;'>New AWB</button>
                                         <div class="separator-solid"></div>
@@ -169,30 +182,28 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div class='form-group' >
-                <input type='text' class='form-control' id='search' name='search' placeholder="Enter Name " > 
-            </div>
+            
                
               <div class='form-group' >
                 <label> Name</label>
-                <input type ='text' class='form-control' placeholder="Name"/>
+                <input type ='text' class='form-control' placeholder="Name" id='sp-name'/>
               </div>
               <div class='form-group' >
                 <label> Address</label>
-                <input type ='text' class='form-control' placeholder="Address"/>
+                <input type ='text' class='form-control' placeholder="Address" id='sh-address'/>
               </div>
               <div class='form-group' >
                 <label> City</label>
-                <input type ='text' class='form-control' placeholder="City"/>
+                <input type ='text' class='form-control' placeholder="City" id='sp-city'/>
               </div>
               <div class='form-group' >
                 <label> State</label>
-                <input type ='text' class='form-control' placeholder="State"/>
+                <input type ='text' class='form-control' placeholder="State" id='sp-state'/>
               </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary close-del" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary btn-success" data-dismiss="modal">Create</button>
+                <button type="button" class="btn btn-primary btn-success" id='save-shipper' data-dismiss="modal">Create</button>
                 
             </div>
         </div>
@@ -343,6 +354,9 @@
         </div>
     </div>
 </div>
+<script>
+ var rpackages = <%- JSON.stringify(awb.packages) %>;
+</script>
 <% block('scripts').append('<script src="/vendor/datatables/dataTables.min.js"></script>')%>
 <% block('scripts').append('<script src="/vendor/datatables/dataTables.bootstrap.min.js"></script>')%>
 <% block('scripts').append('<script src="/vendor/datatables/custom/fixedHeader.js"></script>')%>

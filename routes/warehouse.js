@@ -117,6 +117,12 @@ router.get('/list-hazmat/:currentPage?', middleware(services.userService).requir
 
 });
 
+router.post('/add-shipper',(req,res,next)=>{
+    services.shipperService.addShipper(req.body).then(result=>{
+        res.send(result);
+    })
+})
+
 router.get('/m-packages/:manifestId', middleware(services.userService).requireAuthentication, function (req, res, next) {
 
 
@@ -263,19 +269,59 @@ router.get('/packages/:mid', middleware(services.userService).requireAuthenticat
 
 
 });
-router.get ('/fll-new-package',middleware(services.userService).requireAuthentication, (req,res,next)=>{
+router.get ('/fll-new-package/:awb?',middleware(services.userService).requireAuthentication, (req,res,next)=>{
     var pageData = {};
     pageData.title = "Add Packages";
     pageData.mid = req.params.mid;
     pageData.luser = res.User.firstName + ' ' + res.User.lastName;
     pageData.RoleId = res.User.RoleId;
     //get new packages 
+    var awb = req.params.awb; 
+   
     services.hazmatService.getAllClasses().then(classes=>{
-        console.log(classes); 
+       
         pageData.hazmatListing = classes.classes; 
         services.shipperService.getAllShippers().then(results=>{
             pageData.shipperListing = results.shippers; 
-            res.render('pages/warehouse/fll-add-package',pageData);    
+            if (awb){
+                services.packageService.getAwb(awb).then(awbResult=>{
+                    pageData.awb = awbResult.awb; 
+                    console.log(pageData,"pageData")
+                    res.render('pages/warehouse/fll-add-package',pageData);    
+                })
+            }
+            else {
+               var awbNew = { id: '',
+                isSed: '',
+                hasDocs: '',
+                invoiceNumber: '',
+                value: '',
+                customerId: '',
+                shipper: '',
+                carrier: '',
+                hazmat: '',
+                status: '',
+                dateCreated: '',
+                customer: 
+                 { id: '',
+                   name: '',
+                   firstName: '',
+                   lastName: '',
+                   pmb: '',
+                   address: '#',
+                   phone: '',
+                   email: '',
+                   dateCreated: '',
+                   company: '',
+                   branch: '' },
+                packages:[]
+                
+            }
+            pageData.awb = awbNew; 
+                res.render('pages/warehouse/fll-add-package',pageData);    
+            }
+
+            
             
         })
         

@@ -43,7 +43,7 @@ $(function () {
 
                 // displayMailPackages(mailPackages);
                 displayPackages(mailPackages, "#packageTable", mtype)
-                displayPackages(mailPackages, "#importsTable", mtype)
+              
             });
 
         // }
@@ -620,7 +620,7 @@ $(function () {
                 data: null,
                 render: function (data, type, row, meta) {
                     // console.log(data);
-                    return `<i class='fas fa-pencil-alt edit'  data-id='${data.id}' title='Edit' style='cursor:pointer;'></i> <i title='Delete' data-type='${ctype}' data-toggle='modal' data-target='#confirmPkgDel' class='fas fa-trash rm' data-id='${data.id}' style='cursor:pointer;'></i>`;
+                    return `<a href='/warehouse/fll-new-package/${data.id}' style='color:gray'><i class='fas fa-pencil-alt edit'  data-id='${data.id}' title='Edit' style='cursor:pointer;'></i></a> <i title='Delete' data-type='${ctype}' data-toggle='modal' data-target='#confirmPkgDel' class='fas fa-trash rm' data-id='${data.id}' style='cursor:pointer;'></i>`;
                 }
             },
 
@@ -679,17 +679,17 @@ $(function () {
                         }
                     })
                 })
-                $(tableId).find(".edit").click(function () {
-                    var id = $(this).attr('data-id');
-                    var form = "#cargoPackageForm";
+                // $(tableId).find(".edit").click(function () {
+                //     var id = $(this).attr('data-id');
+                //     var form = "#cargoPackageForm";
 
-                    if (ctype == 'mail')
-                        form = '#mailPackageForm';
-                    if (ctype == "unproc")
-                        form = "#unprocPackageForm"
-                    $(form).parent().show();
-                    loadPackage(id, $(form));
-                });
+                //     if (ctype == 'mail')
+                //         form = '#mailPackageForm';
+                //     if (ctype == "unproc")
+                //         form = "#unprocPackageForm"
+                //     $(form).parent().show();
+                //     loadPackage(id, $(form));
+                // });
                 $(tableId).find(".rm").click(function () {
                     var id = $(this).attr('data-id');
                     var type = $(this).attr('data-type');
