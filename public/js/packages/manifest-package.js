@@ -258,6 +258,9 @@ $(function () {
         $("#save_awb").trigger('click'); 
         
     })
+    $("#update_awb").click(function(){
+        $("#save_awb").trigger("click")
+    })
     $("#save_awb").click(function(){
         //validate the awb 
 

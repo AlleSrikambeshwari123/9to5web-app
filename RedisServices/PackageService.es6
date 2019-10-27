@@ -127,6 +127,16 @@ export class PackageService {
   saveAwb(awb){
     return new Promise((resolve,reject)=>{
       console.log('saving...',awb,moment().toString("hh:mm:ss"))
+      if (awb.id !=""){
+        awbIndex.update(awb.id,awb,(err1,awbRes)=>{
+          if (err1){
+            console.log('saving err',err1)
+            resolve({saved:false})
+          }
+          resolve({saved:true, id:awb.id})
+        })
+      }
+      else{
       dataContext.redisClient.incr(AWB_ID,(err,reply)=>{
         awb.id = reply; 
         awb.status = 1; 
@@ -148,7 +158,7 @@ export class PackageService {
             resolve({saved:true, id:reply})
           })
       })
-       
+    }
       
       
     })
