@@ -727,6 +727,9 @@ export class PackageService {
    procssessPackage(pkgIfno,username){
      return new Promise((resolve,reject)=>{
        dataContext.redisClient.hmset("fees:awb:"+pkgIfno.awb,pkginfo,(err,result)=>{
+         if (err)
+          console.log(err); 
+          console.log(result); 
          dataContext.redisClient.publish("print:fees:"+username,pkgIfno.awb); 
          resolve({sent:true})
        })
