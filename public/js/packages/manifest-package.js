@@ -203,7 +203,7 @@ $(function () {
             trackingNo: $("#trackingNo").val(),
             description: $("#description").val(),
             weight:$("#weight").val(), 
-            dimensions: $("#dimensions").val(),
+            dimensions: $("#W").val()+"x"+$("#H").val()+"x"+$("#L").val(),
             awb:$(".awb").val()
         }
         var isValid = true; 
