@@ -46,7 +46,7 @@ router.post('/add-package-to-flight',(req,res,next)=>{
         res.send(result)
     })
 })
-router.post('/process-pkg-nas',middleware(services.userService).requireAuthentication,(req,res,next)=>{
+router.post('/process-pkg-nas',(req,res,next)=>{
     
     var body = req.body; 
     var nas_location_id = 2; 
