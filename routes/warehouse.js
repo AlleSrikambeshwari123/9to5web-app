@@ -148,7 +148,7 @@ router.get('/m-packages/:manifestId', middleware(services.userService).requireAu
                 pageData.planes = planeData.planes
                 pageData.mtype = "cargo";
                 pageData.ColLabel = "Cargo";
-                pageData.plane = {}
+                pageData.plane = {compartments:[]}
                 pageData.packages  = []; 
                 console.log('manifest', manifest)
                 if (manifest.shipDate){
