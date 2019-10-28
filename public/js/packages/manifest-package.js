@@ -23,7 +23,9 @@ $(function () {
         $("#save_awb").hide(); 
         $("#add_package").show(); 
         $("#update_awb").show(); 
-        awbPackages = rpackages
+       
+            awbPackages = rpackages
+       
         displayPackages(awbPackages, "#packageTable", "cargo")
     }
     $("#select-pilot").select2({
@@ -42,9 +44,7 @@ $(function () {
     $("#select-plane").select2({
         placeholder: 'Select an Plane'
       }); 
-    $('#flight-date').datetimepicker({
-        format: 'MM/DD/YYYY',
-    });
+  
     $('.open-popup-link').magnificPopup({
         type: 'inline',
         midClick: true,
@@ -91,20 +91,24 @@ $(function () {
 
         return false;
     })
-
+   
     $("#save-details").click(function(){
         //get the manifest id and updated plane and 
+       
         var details = {
+            tailNum:$("#tailNumber").val(),
             planeId : $("#select-plane").val(),
-            flightDate: $("#flight-date").val(), 
+            shipDate: $("#flight-date").val(), 
             id : $("#mid").val()
         }
+        console.log('sending details',details)
          $.ajax({
              url:'/warehouse/update-manifest-details',
              type:'post',
              data:details, 
              success:function(success){
-                window.location = window.location; 
+                 console.log(success)
+                // window.location = window.location; 
              }
 
          })

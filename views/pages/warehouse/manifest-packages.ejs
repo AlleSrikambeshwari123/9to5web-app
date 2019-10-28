@@ -78,34 +78,34 @@
 
                                     
                                     <div class="card-stats card-round col-xl-4 col-lg-6 col-md-6 col-sm-6">
+                                          <div class='form-group'>
+                                              <label>Plane Tail Number</label>
+                                              <input type ='text' id='tailNumber' class='form-control' value='<%=manifest.tailNum%>'>
+                                          </div>
                                             <div class='form-group select2-input'>
-                                                    <label>Flight #</label>
+                                                    <label>Plane Type</label>
                                                    
                                                    <select class='form-control ' id='select-plane' >
                                                     <option value=''>Select Plane</option>
                                                     
-                                                    <%
+                                                    <% for (var i =0 ;i < planes.length; i++){ 
+                                                        var pselected = ''
+                                                        if (Number(manifest.planeId) == Number(planes[i].id)){
+                                                            pselected = 'selected'; 
+                                                        }
+                                                            %>
+                                                            
+                                                            <option <%=pselected%> value ='<%=planes[i].id%>'><%=planes[i].tail_num%></option>
+
+                                                        <%}%> 
                                                     
-                                                    for (var i =0 ;i < planes.length; i++){ %>
-                                                        if (plane.id == planes[i].id){
-                                                            
-                                                            
-                                                            <option selected value ='<%=planes[i].id%>'><%=planes[i].tail_num%></option>
-
-                                                        <%}%> 
-                                                     <%   if (!plane){ %>
-
-                                                        
-                                                            <option value ='<%=planes[i].id%>'><%=planes[i].tail_num%></option>
-
-                                                        <%}%> 
                                                         
                                                    </select>
                                                 </div>
                                                 <div class='form-group'>
                                                         <label>Flight Date / Time </label>
                                                      
-                                                        <input type='text' class='form-control' id='flight-date' value ='<%=manifest.flightDate%>' />
+                                                        <input type='text' class='form-control flightdate' id='flight-date' value ='<%=manifest.shipDate%>' />
                                                     </div>
                                                     <!-- <div class='form-group'>
                                                             <select class='form-control' id='select-pilot' >
@@ -216,6 +216,13 @@
                                             <label>Select Section<span id='' class='text-info title'></span></label>
                                            <select id='plane-compartment' class='form-control'>
                                                <option>Select Compartment</option>
+                                               <% for (var i =0 ;i < plane.compartments.length; i++){ 
+                                             
+                                                    %>
+                                                    
+                                                    <option  value ='<%=plane.compartments[i].id%>'><%=plane.compartments[i].name%></option>
+
+                                                <%}%> 
                                            </select>
                                         </div>
                                     <div class='form-group'>
@@ -260,7 +267,7 @@
                                 </form>
                             </div>
                             <div class='col-md-9'>
-                                <table id='cargoTable'
+                                <table id='packageTable'
                                     class='display table table-bordered table-head-bg-info table-hover'
                                     style='width:100%'>
                                 </table>
@@ -391,4 +398,8 @@
 <% block('scripts').append('<script src="/vendor/datatables/custom/fixedHeader.js"></script>')%>
 <% block('scripts').append('<script src="/vendor/datatables/dataTables.min.js"></script>')%> -->
 <!-- <script src="/assets/js/plugin/datatables/datatables.min.js"></script> -->
+
+<script>
+        var rpackages = <%- JSON.stringify(packages) %>;
+       </script>
 <% block('scripts').append('<script src="/js/packages/manifest-package.js"></script>')%>

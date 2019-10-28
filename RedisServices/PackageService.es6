@@ -669,9 +669,9 @@ export class PackageService {
   getCustomerPackages(skybox) {}
   getManifestPackagesByStatus(mid,status) {
       return new Promise((resolve,reject)=>{
-          console.log(`@mid:[${mid} ${mid}] @status=[${status} ${status}]`)
+          console.log(`@mid:[${mid} ${mid}]`)
         this.mySearch.search(
-            `@mid:[${mid} ${mid}] @status:[${status} ${status}]`,
+            `@mid:[${mid} ${mid}]`,
             { offset: 0, numberOfResults: 5000 },
             (err, data) => {
               var packages = [];
@@ -693,6 +693,7 @@ export class PackageService {
    addToFlight(action){
     return new Promise((resolve,reject)=>{
       var packageNo = getPackageIdFromBarCode(action.barcode); 
+      console.log(action); 
       this.mySearch.update(packageNo,{mid:action.mid , status: 2, location:"Loaded on AirCraft"},(err,result)=>{
         if(err)
           resolve({added:false})

@@ -118,14 +118,17 @@ export class PlaneService{
     listCompartments(planeId){
         var srv = this; 
         return new Promise((resolve,reject)=>{
-            compartmentIndex.search(`@plane_id:[${planeId} ${planeId}]`,{offset:0,numberOfResults:100},(err,compResults)=>{
+            compartmentIndex.search(`@plane_id:[${planeId} ${planeId}]`,{offset:0,numberOfResults:100,sortBy:'name',dir:"DESC"},(err,compResults)=>{
+                if (err) 
+                    console.log(err)
                 var compartments = []; 
                 compResults.results.forEach(compartment => {
+                    
                     compartments.push(compartment.doc)
                 });
                 //
                 srv.getPlane(planeId).then(plane=>{
-                    plane.plane.compartments = compartments; 
+                    plane.plane.compartments = compartments.reverse(); 
                     resolve(plane); 
                 })
             })

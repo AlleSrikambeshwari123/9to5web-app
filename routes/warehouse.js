@@ -141,22 +141,31 @@ router.get('/m-packages/:manifestId', middleware(services.userService).requireAu
             console.log(planeData)
             services.pilotService.getPilots().then(pilotData=>{
                 pageData.manifest = manifest;
+                if (!manifest.shipDate)
+                    manifest.shipDate = ''; 
                 manifest.dateCreated = moment.unix(manifest.dateCreated).format("dddd, LL")
                 pageData.pilots = pilotData.pilots; 
                 pageData.planes = planeData.planes
                 pageData.mtype = "cargo";
                 pageData.ColLabel = "Cargo";
                 pageData.plane = {}
-                if (manifest.flightDate){
-                    manifest.flightDate = moment.unix(manifest.flightDate).format("MM/DD/YYYY")
+                pageData.packages  = []; 
+                console.log('manifest', manifest)
+                if (manifest.shipDate){
+                    manifest.shipDate = moment.unix(manifest.shipDate).format("MM/DD/YYYY")
                 }
                 if (manifest.planeId){
                     services.planeService.listCompartments(manifest.planeId).then(plane=>{
                        // console.log('pageData',plane)
                         pageData.plane = plane.plane
-                        console.log(pageData);
-
-                        res.render('pages/warehouse/manifest-packages', pageData);
+                        
+                        services.packageService.getManifestPackagesByStatus(pageData.mid,0).then(packages=>{
+                            pageData.packages = packages; 
+                            console.log(pageData);
+                            res.render('pages/warehouse/manifest-packages', pageData);
+                        }); 
+                        
+                        
                     })
                    
                 }
@@ -183,12 +192,14 @@ router.post('/update-manifest-details', middleware(services.userService).require
     var body = req.body; 
     console.log(body); 
     var details = {
-        flightDate: moment(body.flightDate,"MM/DD/YYYY").unix(),
+        tailNum: body.tailNum,
+        shipDate: moment(body.shipDate,"MM/DD/YYYY").unix(),
         planeId: body.planeId,
         id : body.id
     }
-    console.log(details,"saving the details"); 
+    
     services.manifestService.updateManifestDetails(details).then(result=>{
+        console.log(result,"update result"); 
         res.send(result)
     })
 })

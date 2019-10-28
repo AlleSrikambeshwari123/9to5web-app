@@ -197,6 +197,10 @@
 	<%- block('scripts').toString() %>
 
 	<script>
+
+$('.flightdate').datetimepicker({
+        format: 'MM/DD/YYYY',
+    });
 		Circles.create({
 			id: 'circles-1',
 			radius: 45,

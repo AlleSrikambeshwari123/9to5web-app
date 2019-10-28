@@ -85,7 +85,10 @@ export class ManifestService {
     }
     updateManifestDetails(details){
         return new Promise((resolve,reject)=>{
+            console.log('saving details', details); 
             this.mySearch.update(details.id,details,(err,result)=>{
+                if (err)
+                    console.log(err); 
                 lredis.hmset(MID_PREFIX+details.id,details)
                 resolve({updated:true})
             })
