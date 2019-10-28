@@ -724,7 +724,14 @@ export class PackageService {
         })
      })
    }
-
+   procssessPackage(pkgIfno,username){
+     return new Promise((resolve,reject)=>{
+       dataContext.redisClient.hmset("fees:awb:"+pkgIfno.awb,pkginfo,(err,result)=>{
+         dataContext.redisClient.publish("print:fees:"+username,pkgIfno.awb); 
+         resolve({sent:true})
+       })
+     })
+   }
    recFromPlaneNas(barcode){
      return new Promise((resolve,reject)=>{
        var srv = this ; 

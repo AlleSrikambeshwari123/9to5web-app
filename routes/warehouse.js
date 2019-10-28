@@ -580,6 +580,22 @@ router.post('/rec-package-nas',middleware(services.userService).requireAuthentic
     })
     
 })
+router.post('/process-pkg-nas',middleware(services.userService).requireAuthentication,(req,res,next)=>{
+    var pageData = {}; 
+    pageData.packages = []; 
+    pageData.title = "Recieve Package NAS";
+    pageData.mid = req.params.mid;
+    pageData.luser = res.User.firstName + ' ' + res.User.lastName;
+    pageData.RoleId = res.User.RoleId;
+    var body = req.body; 
+    var nas_location_id = 2; 
+    
+    services.packageService.procssessPackage(body).then(result=>{
+        res.send(result)
+    })
+    
+    
+})
 router.get('/delivery-detail/:id',middleware(services.userService).requireAuthentication,(req,res,next)=>{
     var pageData = {}; 
     pageData.packages = []; 
