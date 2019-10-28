@@ -46,11 +46,21 @@ router.post('/add-package-to-flight',(req,res,next)=>{
         res.send(result)
     })
 })
-router.post('/process-pkg-nas',(req,res,next)=>{
+router.post('/process-pkg-nas',middleware(services.userService).requireAuthentication,(req,res,next)=>{
+    var pageData = {}; 
+    pageData.packages = []; 
+    pageData.title = "Recieve Package NAS";
+    pageData.mid = req.params.mid;
+    pageData.luser = res.User.firstName + ' ' + res.User.lastName;
+    pageData.RoleId = res.User.RoleId;
     var body = req.body; 
-    var dir = __dirname.replace("routes","uploads"); 
-    res.download(dir+'/proc-lbl.pdf');
-
+    var nas_location_id = 2; 
+    
+    services.packageService.procssessPackage(body).then(result=>{
+        res.send(result)
+    })
+    
+    
 })
 router.post('/rm-package-from-flight',(req,res,next)=>{
     var body = req.body; 
