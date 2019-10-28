@@ -47,16 +47,11 @@ router.post('/add-package-to-flight',(req,res,next)=>{
     })
 })
 router.post('/process-pkg-nas',middleware(services.userService).requireAuthentication,(req,res,next)=>{
-    var pageData = {}; 
-    pageData.packages = []; 
-    pageData.title = "Recieve Package NAS";
-    pageData.mid = req.params.mid;
-    pageData.luser = res.User.firstName + ' ' + res.User.lastName;
-    pageData.RoleId = res.User.RoleId;
+    
     var body = req.body; 
     var nas_location_id = 2; 
-    
-    services.packageService.procssessPackage(body).then(result=>{
+    console.log(req.body;)
+    services.packageService.procssessPackage(body,"admin").then(result=>{
         res.send(result)
     })
     
