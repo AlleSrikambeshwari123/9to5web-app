@@ -50,7 +50,7 @@ router.post('/process-pkg-nas',middleware(services.userService).requireAuthentic
     
     var body = req.body; 
     var nas_location_id = 2; 
-    console.log(req.body;)
+    console.log(req.body)
     services.packageService.procssessPackage(body,"admin").then(result=>{
         res.send(result)
     })
