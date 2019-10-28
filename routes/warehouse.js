@@ -119,6 +119,7 @@ router.get('/list-hazmat/:currentPage?', middleware(services.userService).requir
 
 router.post('/add-shipper',(req,res,next)=>{
     services.shipperService.addShipper(req.body).then(result=>{
+        console.log(result); 
         res.send(result);
     })
 })

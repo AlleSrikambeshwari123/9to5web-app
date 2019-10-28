@@ -206,10 +206,12 @@ $(function () {
                 type:'post',
                 data : shipper,
                 success:function(result){
-                    if (result.saved == "true" || result.save==true){
+                    //if (result.saved == "true" || result.save==true){
+                        
                         console.log(result)
-                        $("#pick-shipper").append("<option selected value='"+result.shipper.id+"'>"+result.shipper.name+"</option>").trigger('change'); 
-                    }
+                        var newOption = new Option(result.shipper.name, result.shipper.id, false, true);
+                        $("#pick-shipper").append(newOption).trigger('change'); 
+                   // }
                 }
             })
         }
