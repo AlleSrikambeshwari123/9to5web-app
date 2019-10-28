@@ -41,7 +41,7 @@
                                             <input type='text' class='form-control awb' id='id' name='id' required  readonly value='<%=awb.id%>'/>
                                         </div>
                                         <div class='form-group'>
-                                            <label>Consignee / PMB / 9-5 <span class='text-info title customerName'></span> <a href="#" class=" " data-target='#findCustomer' data-toggle='modal'>Assign Box #(9-5)</a> </label> 
+                                            <label>Consignee / PMB / 9-5 <span class='text-info title customerName'></span> <a href="#" class=" " data-target='#findCustomer' data-toggle='modal'>Assign Box #(9-5) or PostBoxes</a> |  <a href="javascript:void(0)" data-toggle="modal" data-target="#addCustomer">Add New Customer</a></label> 
                                             <input type='text' class='form-control skybox' id="customerName" name='pmb' required readonly value='<%=awb.customer.name%>'/>
                                             <input type='hidden' class='customerId' id='customerId' value="<%=awb.customer.id%>" />
                                         </div>
@@ -251,6 +251,50 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary close-del" data-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-danger rm-package" id='rmPackage'>Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addCustomer" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2"
+    aria-hidden="true" style="display: none;">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="exampleModalLabel2">Add New Customer</h2>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                    <div class='form-group'>
+                            <label>Customer Branch</label>
+                            <input type="text" class='form-control' id="cust_branch" placeholder="Customer Branch"/>
+                        </div>
+                <div class='form-group'>
+                    <label>Customer Name</label>
+                    <input type="text" class='form-control' id="cust_name" placeholder="Customer Name"/>
+                </div>
+                <div class='form-group'>
+                    <label>Customer PMB</label>
+                    <input type="text" class='form-control' id="cust_pmb" placeholder="Customer PMB"/>
+                </div>
+                <div class='form-group'>
+                        <label>Address</label>
+                        <input type="text" class='form-control' id="cust_address" placeholder="Customer Address"/>
+                </div>
+                <div class='form-group'>
+                        <label>Phone</label>
+                        <input type="text" class='form-control' id="cust_phone" placeholder="Customer Phone"/>
+                </div>
+                <div class='form-group'>
+                        <label>Email</label>
+                        <input type="text" class='form-control' id="cust_email" placeholder="Customer Email"/>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary close-del" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success saveCustomer" id='saveCustomer' data-dismiss="modal">Save Customer</button>
             </div>
         </div>
     </div>

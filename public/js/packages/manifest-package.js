@@ -167,7 +167,28 @@ $(function () {
         awbPackages = []; 
         displayPackages(awbPackages, "#packageTable", "cargo"); 
     })
+    $("#saveCustomer").click(function(){
+        var customer = { 
+            branch: $("#cust_branch").val(),
+            name : $("#cust_name").val(),
+            pmb: $("#cust_pmb").val(), 
+            email: $("#cust_email").val(),
+            phone : $("#cust_phone").val(),
+            address: $("#cust_address").val(),  
+        }
+        if (customer.name == "" || customer.address == ""){
+            return; 
+        }
+        $.ajax({
+            url:'/warehouse/save-customer',
+            type:'post',
+            data:customer,
+            success:function(success){
+                alert ('customer added'); 
+            }
 
+        })
+    })
 
     $("#save-shipper").click(function(){
         var shipper = {
@@ -365,7 +386,7 @@ $(function () {
     $("#search").keyup(function(){
         var query = $(this).val();
         console.log(query)
-        if (query.length>3){
+        if (query.length>=3){
             console.log(query)
             $.ajax({
                 url:'/warehouse/find-customer',
