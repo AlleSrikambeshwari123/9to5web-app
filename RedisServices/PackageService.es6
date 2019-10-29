@@ -314,14 +314,24 @@ export class PackageService {
   }
   savePackageToAwb(newPackage){
     return new Promise((resolve,result)=>{
-      dataContext.redisClient.incr(PKG_ID_COUNTER,(err,id)=>{
-        newPackage.id = id; 
-        packageIndex.add(id,newPackage,(err,result)=>{
+      if (newPackage.id){
+        packageIndex.update(newPackage.id,newPackage,(err,result)=>{
           if (err)
             console.log(err); 
-          resolve({saved:true,id:id})
+          resolve({saved:true,id:newPackage.id})
         })
-      })
+      }
+      else {
+        dataContext.redisClient.incr(PKG_ID_COUNTER,(err,id)=>{
+          newPackage.id = id; 
+          packageIndex.add(id,newPackage,(err,result)=>{
+            if (err)
+              console.log(err); 
+            resolve({saved:true,id:id})
+          })
+        })
+      }
+   
     })
   }
   savePackage(body){
@@ -423,6 +433,13 @@ export class PackageService {
     });
     })
   }
+  getpackagebyRedisId(id){
+    return new Promise((resolve,reject)=>{
+      packageIndex.getDoc(id,(err,document)=>{
+        resolve(document.doc); 
+      })
+    })
+  }
   getPackageById(barcode){
     var srv = this; 
     var pkgId = getPackageIdFromBarCode(barcode); 
@@ -509,8 +526,11 @@ export class PackageService {
   removePackageById(id) {
     var msearch = this.mySearch;
     return new Promise((resolve, reject) => {
-    
-      rediSearch.delDocument(PKG_IDX,id,(err,response)=>{
+      
+      packageIndex.delDocument(PKG_IDX,id,(err,response)=>{
+        if (err)
+          console.log(err); 
+        console.log(response); 
         resolve({deleted:true})
       })
       

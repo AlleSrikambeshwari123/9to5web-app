@@ -223,6 +223,7 @@ $(function () {
     $("#save-to-awb").click(function(){
        
         var package = {
+            id:$("#pkgId").val(),
             trackingNo: $("#trackingNo").val(),
             description: $("#description").val(),
             weight:$("#weight").val(), 
@@ -252,8 +253,15 @@ $(function () {
                         if (result.id){
                             package.id=result.id; 
                         }
-                        awbPackages.push(package);  
+                        if ($("#pkgId").val()!= 0){
+                            $("#pkgId").val("0"); 
+                            window.location = window.location; 
+                        }
+                        else {
+                            awbPackages.push(package);  
                         displayPackages(awbPackages, "#packageTable", "cargo"); 
+                        }
+                        
                         $("#trackingNo").val(''); 
                         $("#description").val(''); 
                         $("#weight").val(''); 
@@ -1010,22 +1018,31 @@ $(function () {
             success: function (dResult) {
                 console.log(dResult);
 
-                form.find('.skybox').val(dResult.skybox);
-                console.log(dResult.skybox);
-                form.find('.trackingNo').val(dResult.trackingNo);
-                form.find('.shipper').val(dResult.shipper);
-                form.find('.package-value').val(dResult.value);
-                form.find('.weight').val(dResult.weight);
-                form.find('.pieces').val(dResult.pieces);
-                form.find('.description').val(dResult.description);
-                form.find('.carrier').val(dResult.carrier);
+               // form.find('.skybox').val(dResult.skybox);
+                //console.log(dResult.skybox);
+                $("#pkgId").val(dResult.id); 
+                $('#trackingNo').val(dResult.trackingNo);
+               // form.find('.shipper').val(dResult.shipper);
+                //form.find('.package-value').val(dResult.value);
+                $('#weight').val(dResult.weight);
+                //form.find('.pieces').val(dResult.pieces);
+                $('#description').val(dResult.description);
+                //form.find('.carrier').val(dResult.carrier);
+                var dims = dResult.dimensions.split("x"); 
+                if (dims.length == 3){
+                    $("#W").val(dims[0])
+                $("#H").val(dims[1])
+                $("#L").val(dims[2])
+                }
+                
                 form.find('.dimensions').val(dResult.dimensions);
-                if (typeof dResult.bag != "undefined")
-                    form.find('.bag').val(dResult.bag);
-                else
-                    form.find('.skid').val(dResult.skid);
+                $(".open-popup-link").trigger('click'); 
+                // if (typeof dResult.bag != "undefined")
+                //     form.find('.bag').val(dResult.bag);
+                // else
+                //     form.find('.skid').val(dResult.skid);
 
-                form.find('.skybox').trigger('change');
+                //form.find('.skybox').trigger('change');
 
             },
             error: function (err) {
@@ -1041,8 +1058,6 @@ $(function () {
             type: 'post',
             data: {
                 id:trackingNo,
-                trackingNo: trackingNo,
-                mid: $("#mid").val()
             },
             success: function (dResult) {
                 getManifestPackages(mid, "default", function (mailPackages) {

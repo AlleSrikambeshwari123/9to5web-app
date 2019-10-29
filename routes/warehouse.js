@@ -711,8 +711,9 @@ router.get('/load-package/:trackNo', middleware(services.userService).requireAut
     var trackingNo = req.params.trackNo;
 
 
+    console.log(trackingNo,"getting package")
 
-    services.packageService.getPackageById(trackingNo).then(result=>{
+    services.packageService.getpackagebyRedisId(trackingNo).then(result=>{
         res.send(result);
     })
     // redis.getPackage(trackingNo).then((package) => {
