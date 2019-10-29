@@ -1063,7 +1063,8 @@ $(function () {
                 getManifestPackages(mid, "default", function (mailPackages) {
 
                     // displayMailPackages(mailPackages);
-                    displayPackages(mailPackages, "#packageTable", "default")
+                    window.location = window.location; 
+                    
                 });
                 // if (type == 'mail') {
                 //     //refresh the package listing 

@@ -314,7 +314,7 @@ export class PackageService {
   }
   savePackageToAwb(newPackage){
     return new Promise((resolve,result)=>{
-      if (newPackage.id){
+      if (newPackage.id !="0"){
         packageIndex.update(newPackage.id,newPackage,(err,result)=>{
           if (err)
             console.log(err); 
