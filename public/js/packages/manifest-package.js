@@ -23,7 +23,7 @@ $(function () {
         $("#save_awb").hide(); 
         $("#add_package").show(); 
         $("#update_awb").show(); 
-       
+        $(".print-options").show(); 
             awbPackages = rpackages
        
         displayPackages(awbPackages, "#packageTable", "cargo")

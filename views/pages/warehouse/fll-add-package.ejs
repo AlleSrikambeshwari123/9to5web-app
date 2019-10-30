@@ -32,7 +32,7 @@
                                      <div class='form-group'>
                                         <button type='button'  class="btn btn-small btn-info new-awb " style='display:none;'>New AWB</button>
                                        <span class='print-options pull-right mt-2' style='display:none;'>
-                                        <label>PRINT</label> <a id="print-awb" href='javascript:void(0)'><i class="fas fa-print" title='Print AWB'></i></a> | <a id='print-lbl' href='javascript:void(0)'><i title='Print Label' class="fas fa-barcode"></i></a>
+                                         <a id="print-awb" href='javascript:void(0)'><i class="fas fa-print" title='Print AWB'></i>Print AWB</a> <a href="javascript:void(0)">|</a> <a id='print-lbl' href='javascript:void(0)'><i title='Print Label' class="fas fa-print"></i>Print Labels</a>
 
                                        </span>
                                     </div> 
@@ -71,7 +71,7 @@
                                         <div class='form-group'>
                                             <label> Is HAZMAT</label>
                                                 <select id="pick-haz" class='form-control' style='width:90%;'>
-                                                       <option>Select HAZMAT</option>
+                                                       <option value="">Select HAZMAT</option>
                                                         <%for(var i =0; i < hazmatListing.length;i++){
                                                             var hazSelected = ''; 
                                                             if (hazmatListing[i].id == awb.hazmat){
