@@ -165,6 +165,7 @@ export class UserService {
                         delete user.password; 
                     }
                     console.log('updating user',user)
+                    user.password = bcrypt.hashSync(user.password,10); 
                     client.hmset(PREFIX+user.username,user)
                     srv.redisIndexSearch.update(user.id,user,(err,reply)=>{
                         if(err)
