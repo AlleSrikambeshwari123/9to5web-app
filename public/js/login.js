@@ -6,16 +6,16 @@ $(function () {
 		$.ajax({
 			url: '/',
 			type: 'post',
-			data: { username: username.value, password: password.value }
-		}).done(function (res) {
-			console.log(res); 
+			data: { username: username.value, password: password.value }, 
+			success:function(res){
+				console.log(res); 
 			if (res.success) {
 				
 				if (res.role.indexOf("Admin")>-1 ){
 
 					window.location.replace('/admin');
 				}
-				else if (res.role.indexOf("Warehouse FL")>-1){
+				else if (res.role.indexOf("Warehouse Fl")>-1){
 					window.location.replace("/warehouse/fll-new-package")
 				}
 				else if (res.role.indexOf("Warehouse NAS")>-1){
@@ -29,6 +29,9 @@ $(function () {
 				}
 					
 			}
+			}
+		}).done(function (res) {
+			
 		});
 	});
 	$('.show-password').click(function () {

@@ -18,14 +18,15 @@ router.post('/', function (req, res, next) {
       var cuser = authresult.user;
       if (cuser.role.indexOf("Admin")>-1) {
         //replace with admin dashboard
-        res.json({ success: true, role: cuser.role });
+        res.send({ success: true, role: cuser.role });
       }
       if (cuser.role.indexOf("Warehouse Fl")>-1){
-
+        res.send({ success: true, role: cuser.role});
       }
       else {
         //replace with general user dashboard
-        res.json({ success: true, role: cuser.role});
+        console.log(cuser.role,"ROLE")
+        res.send({ success: true, role: cuser.role});
       }
       //});
     }
