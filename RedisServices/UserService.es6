@@ -169,7 +169,7 @@ export class UserService {
                     }
                    
 
-                    
+
                     client.hmset(PREFIX+user.username,user)
                     srv.redisIndexSearch.update(user.id,user,(err,reply)=>{
                         if(err)
@@ -180,8 +180,6 @@ export class UserService {
                         else {
                            
                            
-                                user.password = bcrypt.hashSync(user.password,10); 
-                            
                             resolve({saved:true,"message":"User updated."})
                         }
                         
