@@ -29,7 +29,7 @@ router.get('/open-flights',(req,res,next)=>{
    })
 })
 router.get('/rec-shipment-id',(req,res,next)=>{
-    rServices.shipperService().getShipmentId().then((id)=>{
+    rServices.shipperService.getShipmentId().then((id)=>{
         res.send({id:id})
     })
 })
