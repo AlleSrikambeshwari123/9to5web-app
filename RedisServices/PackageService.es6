@@ -607,13 +607,18 @@ export class PackageService {
    }
    recFromTruck(trackingNo,username,shipmentId){
      return new Promise((resolve,reject)=>{
-     
-        dataContext.redisClient.set(REC_PKG+trackingNo,moment().unix(), (err,result)=>{
-          if (err) resolve({saved:false})
-          //shipment count 
-          var shipmentCount = 1;
-          resolve({saved:true,pkgCount:shipmentCount})
+        dataContext.sadd("shipment:id:"+shipmentId,trackingNo,(err,reply)=>{
+          dataContext.redisClient.set(REC_PKG+trackingNo,moment().unix(), (err,result)=>{
+            if (err) resolve({saved:false})
+            //shipment count 
+            var shipmentCount = 1;
+            dataContext.redisClient.scard("shipment:id:"+shipmentId,(err,card)=>{
+              resolve({saved:true,pkgCount:card})
+            });
+           
+          })
         })
+        
      })
    }
    procssessPackage(pkgIfno,username){

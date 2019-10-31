@@ -71,7 +71,7 @@ router.post('/rm-user', middleware(services.userService).requireAuthentication, 
         res.send(result);
     });
 });
-router.post('/user/',  function (req, res, next) {
+router.post('/user/',middleware(services.userService).requireAuthentication,  function (req, res, next) {
     var body = req.body;
     console.log(body);
     var user = {
@@ -93,12 +93,15 @@ router.post('/user/',  function (req, res, next) {
             if (suResult.saved == true) {
                 res.redirect('/admin/users');
             } else {
-                var pageData = {};
-                pageData.user = user;
-                pageData.roles = rResult.roles;
-                //pageData.luser = res.User.FirstName + ' ' + res.User.LastName;
-                pageData.luser = "Admin 9-5 Imports"
-                res.render('pages/admin/saveUser', pageData);
+                res.redirect('/admin/users');
+                // var pageData = {};
+                // pageData.user = user;
+                // pageData.title = "Save User"
+                // pageData.roles = rResult.roles;
+                // pageData.luser = res.User.firstName + ' ' + res.User.lastName;
+                // //pageData.luser = "Admin 9-5 Imports"
+                // pageData.RoleId = res.User.role
+                // res.render('pages/admin/saveUser', pageData);
             }
         });
     });

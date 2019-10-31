@@ -159,17 +159,24 @@ export class UserService {
                 else {
                     //update the user 
                     //prepare the roles we are going to get an arra 
-                    const roles = ConvertRolesToString(user.role)
+                   
+                    
+                    if (!user.password || user.password == ""){
+                        delete user.password; 
+                    }
+                    console.log('updating user',user)
+                    client.hmset(PREFIX+user.username,user)
                     srv.redisIndexSearch.update(user.id,user,(err,reply)=>{
                         if(err)
-                            resolve({saved:false,"message":"Username taken"})
+                         {
+                             console.log(err)
+                            resolve({saved:false,"message":"Username err"})
+                         }   
                         else {
-                            if (!user.password || user.password == ""){
-                                delete user.password; 
-                            }
-                            else 
+                           
+                           
                                 user.password = bcrypt.hashSync(user.password,10); 
-                            client.hmset(PREFIX+user.username,user)
+                            
                             resolve({saved:true,"message":"User updated."})
                         }
                         
