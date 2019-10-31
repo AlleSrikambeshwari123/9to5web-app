@@ -86,9 +86,7 @@ router.post('/user/',  function (req, res, next) {
     };
 
     console.log(typeof user.role,"ROLE TYPE")
-    user.role.forEach(element => {
-        console.log("saving" +element)
-    });
+   
     services.userService.getRoles().then(function (rResult) {
         services.userService.saveUser(user).then(function (suResult) {
             console.log(suResult,"save user Results")
