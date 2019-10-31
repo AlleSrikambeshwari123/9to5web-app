@@ -8,10 +8,10 @@
 		<div class="card-body">
 		
             <div class="form-group form-show-validation row">
-				<label for="oldpassword" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Old Password <span
+				<label for="oldpass" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Old Password <span
 						class="required-label">*</span></label>
 				<div class="col-lg-4 col-md-9 col-sm-8">
-					<input type="password" class="form-control" id="oldpassword" name="password"
+					<input type="password" class="form-control" id="oldpass" name="password"
 						placeholder="Enter Password" required>
 				</div>
 			</div>
@@ -20,7 +20,7 @@
 				<label for="password" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Password <span
 						class="required-label">*</span></label>
 				<div class="col-lg-4 col-md-9 col-sm-8">
-					<input type="password" class="form-control" id="password" name="password"
+					<input type="password" class="form-control" id="pass" name="password"
 						placeholder="Enter Password" required>
 				</div>
 			</div>
@@ -28,7 +28,7 @@
 				<label for="confirmpassword" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Confirm Password
 					<span class="required-label">*</span></label>
 				<div class="col-lg-4 col-md-9 col-sm-8">
-					<input type="password" class="form-control" id="confirmpassword" name="confirmpassword"
+					<input type="password" class="form-control" id="cpass" id='cpass' name="confirmpassword"
 						placeholder="Enter Password" required>
 				</div>
 			</div>
@@ -37,7 +37,7 @@
 		<div class="card-action">
 			<div class="row">
 				<div class="col-md-12">
-					<input class="btn btn-success" type="submit" value="Update">
+					<input class="btn btn-success change-pass" type="button" value="Update">
 					<button class="btn btn-danger" id="cancel">Cancel</button>
 				</div>
 			</div>
@@ -45,4 +45,4 @@
 	</form>
 </div>
 
-<% block('scripts').append('<script src="/js/fleet/addvehicle.js"></script>')%>
+<% block('scripts').append('<script src="/js/change-password.js"></script>')%>

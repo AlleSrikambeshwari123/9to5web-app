@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var middleware = require('../middleware');
 var RedisDataService = require("../RedisServices/RedisDataServices")
 var services = require('../RedisServices/RedisDataServices');
 /* GET home page. */
@@ -42,5 +43,13 @@ router.get('/logout', function (req, res, next) {
 
   res.redirect('/');
 });
+
+router.post('/change-pass',middleware(services.userService).requireAuthentication,(req,res,next)=>{
+  console.log(req.body)
+  console.log(res.User); 
+  services.userService.changePassword(res.User.username,req.body.newPass,req.body.oldPass).then(result=>{
+    res.send(result)
+  })
+})
 
 module.exports = router;

@@ -22,6 +22,28 @@ export class UserService {
             clientOptions:lredis.searchClientDetails
         });
     }
+
+    changePassword(username, newpassword, oldpassword){
+        return new Promise((resolve,reject)=>{
+            var srv = this; 
+            srv.authenticate(username,oldpassword).then(userInfo=>{ 
+                if (userInfo.valid =="true" || userInfo.valid == true){
+                    
+                    client.hmset(PREFIX+username,{password:bcrypt.hashSync(newpassword,10)},(err,result)=>{
+                        if(err)
+                         {
+                            resolve({updated:false})
+                            console.log(err)
+                         }   
+                        resolve({updated:true})
+                    })
+                }
+                else {
+                    resolve({updated:false})
+                }
+            })
+        })
+    }
     authenticate (username,password){
         var srv = this; 
         console.log('about to auth')
