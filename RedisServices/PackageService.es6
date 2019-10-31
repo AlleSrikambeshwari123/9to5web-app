@@ -607,7 +607,7 @@ export class PackageService {
    }
    recFromTruck(trackingNo,username,shipmentId){
      return new Promise((resolve,reject)=>{
-        dataContext.sadd("shipment:id:"+shipmentId,trackingNo,(err,reply)=>{
+        dataContext.redisClient.sadd("shipment:id:"+shipmentId,trackingNo,(err,reply)=>{
           dataContext.redisClient.set(REC_PKG+trackingNo,moment().unix(), (err,result)=>{
             if (err) resolve({saved:false})
             //shipment count 
