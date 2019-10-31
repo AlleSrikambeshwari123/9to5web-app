@@ -10,5 +10,8 @@ export class PrintService{
     sendLblToPrint(awb,username){
         dataContext.redisClient.publish('print:lbl:'+username,awb)
     }
+    sendSingleLbl(awb,pkgId,username){
+        dataContext.redisClient.publish('print:single:lbl:'+username,  `${awb}:${pkgId}`)
+    }
 
 }

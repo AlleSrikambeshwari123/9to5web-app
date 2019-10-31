@@ -28,6 +28,11 @@ router.get('/open-flights',(req,res,next)=>{
        res.send(mlist); 
    })
 })
+router.get('/rec-shipment-id',(req,res,next)=>{
+    rServices.shipperService().getShipmentId().then((id)=>{
+        res.send({id:id})
+    })
+})
 router.get('/plane-compartments/:planeId',(req,res,next)=>{
     var planeId = req.params.planeId; 
     rServices.planeService.listCompartments(planeId).then(details=>{
@@ -71,8 +76,9 @@ router.post('/rm-package-from-flight',(req,res,next)=>{
 //
 router.post('/rec-package',(req,res,next)=>{
     var body = req.body; 
-    services.packageService.recFromTruck(body.trackingNumber).then((result)=>{
-        res.send(result)
+    services.packageService.recFromTruck(body.trackingNumber,body.username,body.shipmentId).then((result)=>{
+        res.send(result);
+
     })
 })
 router.post('/rec-package-nas',(req,res,next)=>{

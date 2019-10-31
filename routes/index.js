@@ -15,13 +15,16 @@ router.post('/', function (req, res, next) {
       // services.userService.generateToken(authresult.user).then(function(token){
       req.session.token = authresult.token;
       var cuser = authresult.user;
-      if (cuser.role == "Admin") {
+      if (cuser.role.indexOf("Admin")>-1) {
         //replace with admin dashboard
-        res.json({ success: true, role: "admin" });
+        res.json({ success: true, role: cuser.role });
+      }
+      if (cuser.role.indexOf("Warehouse Fl")>-1){
+
       }
       else {
         //replace with general user dashboard
-        res.json({ success: true, role: "user" });
+        res.json({ success: true, role: cuser.role});
       }
       //});
     }

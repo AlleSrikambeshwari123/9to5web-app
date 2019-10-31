@@ -13,7 +13,13 @@ export class ShipperService {
 
     }
 
-
+    getShipmentId(){
+        return new Promise((resolve,reject)=>{
+            dataContext.redisClient.incr("rec:truck:id",(err,reply)=>{
+                resolve(reply); 
+            })
+        })
+    }
     addShipper(shipper){
         return new Promise((resolve,reject)=>{
             dataContext.redisClient.incr("shipper:id",(err,reply)=>{

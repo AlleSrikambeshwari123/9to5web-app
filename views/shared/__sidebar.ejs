@@ -9,9 +9,9 @@
 				<div class="info">
 					<a data-toggle="collapse" href="#collapseExample" aria-expanded="true">
 						<span>
-							<%=luser%>
-							<span class="user-level">Administrator</span>
-							<span class="caret"></span>
+							
+							<span class="user-level"><%=luser%></span>
+							<!-- <span class="caret"></span> -->
 						</span>
 					</a>
 					<div class="clearfix"></div>
@@ -38,6 +38,7 @@
 				</div>
 			</div>
 			<ul class="nav nav-primary">
+				<%if (RoleId.indexOf("Admin")>-1 ) {%>
 				<li class="nav-item">
 					<a data-toggle="collapse" href="#admin" class="collapsed" aria-expanded="false">
 						<i class="fas fa-home"></i>
@@ -69,6 +70,8 @@
 						</ul>
 					</div>
 				</li>
+				<%}%>
+				<%if (RoleId.indexOf("Admin")>-1 || RoleId.indexOf("Warehouse Fl")>-1) {%>
 				<li class="nav-item">
 					<a data-toggle="collapse" href="#warehouse">
 						<i class="fas fa-warehouse"></i>
@@ -153,6 +156,8 @@
 						</ul>
 					</div>
 				</li>
+				<%}%>
+				<%if (RoleId.indexOf("Admin")>-1 || RoleId.indexOf("Warehouse NAS")>-1) {%>
 				<li class="nav-item">
 					<a data-toggle="collapse" href="#wnas">
 						<i class="fas fa-warehouse"></i>
@@ -222,6 +227,8 @@
 						</ul>
 					</div>
 				</li>
+				<%}%>
+				<%if (RoleId.indexOf("Admin")>-1 || RoleId.indexOf("Store")>-1) {%>
 				<li class="nav-item">
 					<a data-toggle="collapse" href="#stores">
 						<i class="fas fa-store"></i>
@@ -254,29 +261,8 @@
 						</ul>
 					</div>
 				</li>
-				<!-- <li class="nav-item">
-					<a data-toggle="collapse" href="#customers">
-						<i class="fas fa-users"></i>
-						<p>Customers</p>
-						<span class="caret"></span>
-					</a>
-					<div class="collapse" id="customers">
-						<ul class="nav nav-collapse">
-							<li>
-								<a href="/users/change-pass">
-									<span class="sub-item">Create</span>
-								</a>
-							</li>
-							<li>
-								<a href="/logout">
-									<span class="sub-item">Incoming Packages</span>
-								</a>
-							</li>
-						</ul>
-					</div>
-				</li> -->
-		
-				<!-- <li class="nav-item">
+				<%}%>
+			
 					<a href="#">
 						<i class="fa fa-file-alt"></i>
 						<p>Reports</p>

@@ -8,9 +8,26 @@ $(function () {
 			type: 'post',
 			data: { username: username.value, password: password.value }
 		}).done(function (res) {
+			console.log(res); 
 			if (res.success) {
-				if (res.role == "admin")
+				
+				if (res.role.indexOf("Admin")>-1 ){
+
 					window.location.replace('/admin');
+				}
+				else if (res.role.indexOf("Warehouse FL")>-1){
+					window.location.replace("/warehouse/fll-new-package")
+				}
+				else if (res.role.indexOf("Warehouse NAS")>-1){
+					window.location.replace("warehouse/nas-no-docs")
+				}
+				else if (res.role.indexOf("Stores")>-1){
+					window.location.replace("warehouse/store-packages")
+				}
+				else {
+
+				}
+					
 			}
 		});
 	});

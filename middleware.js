@@ -6,19 +6,13 @@ module.exports = function(userService,allowedRoles){
     function handleNavigation(user){
         var adminRoles  = ['Admin'];
         var CSRRoles = ['CSR'];
-        var immigrationRoles = ['Immigration-IT'];
+       
 
-        if (adminRoles.indexOf(user.Role)>-1){
+        if (adminRoles.indexOf(user.role)>-1){
             return "admin-mode";
         }
-        if(CSRRoles.indexOf(user.RoleName)>-1){
-            return "csr-mode";
-
-        }
-        if(immigrationRoles.indexOf(user.RoleName)>-1){
-            return "immigration-mode";
-
-        }
+       
+        
 
     }
     return {
@@ -31,15 +25,15 @@ module.exports = function(userService,allowedRoles){
                 userService.verifyToken(token).then(function(user){
                     res.User = user;
                     pageData.User = user;
-                    
+                    var navMode = handleNavigation(user);
+                    console.log("NAV MODE",navMode); 
                     //if users is in role
                     if (Array.isArray(allowedRoles) )
-                        if (allowedRoles.indexOf(user.RoleName) < 0){
-
+                        if (allowedRoles.indexOf(user.role) < 0){
                             res.status(401).render('pages/401', pageData);
                         }
                     var navMode = handleNavigation(user);
-
+                        console.log("NAV MODE",navMode); 
                     res.navigationMode = navMode;
                     next();
                 },function(){

@@ -24,7 +24,7 @@ router.get('/list-manifest', middleware(services.userService).requireAuthenticat
     var pageData = {};
     pageData.title = "Manifest";
     pageData.luser = res.User.FirstName + ' ' + res.User.LastName;
-    pageData.RoleId = res.User.RoleId;
+    pageData.RoleId = res.User.role;
     rServices.manifestService.listManifest(1, 1, 20).then((result) => {
         console.log(result);
         pageData.listing = result.manifests;
@@ -56,7 +56,7 @@ router.get('/list-ocean/:currentPage?', middleware(services.userService).require
     var pageData = {};
     pageData.title = "Ocean";
     pageData.luser = res.User.FirstName + ' ' + res.User.LastName;
-    pageData.RoleId = res.User.RoleId;
+    pageData.RoleId = res.User.role;
     pageData.ColLabel = "Ocean"
     pageData.inital = "S"
     pageData.typeId = 2;
@@ -88,7 +88,7 @@ router.get('/list-hazmat/:currentPage?', middleware(services.userService).requir
     var pageData = {};
     pageData.title = "HAZMAT";
     pageData.luser = res.User.FirstName + ' ' + res.User.LastName;
-    pageData.RoleId = res.User.RoleId;
+    pageData.RoleId = res.User.role;
     pageData.ColLabel = "HAZMAT"
     pageData.inital = "H"
     pageData.typeId = 3;
@@ -130,7 +130,7 @@ router.get('/m-packages/:manifestId', middleware(services.userService).requireAu
     var pageData = {};
     pageData.title = "Manifest Packages";
     pageData.luser = res.User.FirstName + ' ' + res.User.LastName;
-    pageData.RoleId = res.User.RoleId;
+    pageData.RoleId = res.User.role;
     pageData.manifest = {};
     pageData.mid = Number(req.params.manifestId);
     //pageData.moment = moment;
@@ -286,7 +286,7 @@ router.get ('/fll-new-package/:awb?',middleware(services.userService).requireAut
     pageData.title = "Add Packages";
     pageData.mid = req.params.mid;
     pageData.luser = res.User.firstName + ' ' + res.User.lastName;
-    pageData.RoleId = res.User.RoleId;
+    pageData.RoleId = res.User.role;
     //get new packages 
     var awb = req.params.awb; 
    
@@ -520,7 +520,7 @@ router.get('/awb-details/:id',(req,res,next)=>{
         res.send(awb);
     })
 })
-router.post("/save-awb",(req,res,next)=>{
+router.post("/save-awb", middleware(services.userService).requireAuthentication,(req,res,next)=>{
     var body  = req.body;
     console.log('save-awb',body,moment().toString("hh:mm:ss")); 
   
@@ -529,7 +529,7 @@ router.post("/save-awb",(req,res,next)=>{
     })
 }); 
 
-router.post('/save-awb-package',(req,res,next)=>{
+router.post('/save-awb-package',middleware(services.userService).requireAuthentication,(req,res,next)=>{
     var body = req.body; 
     console.log(body); 
     services.packageService.savePackageToAwb(body).then(pkgResult=>{
@@ -554,7 +554,7 @@ router.get('/rec-package-nas',middleware(services.userService).requireAuthentica
     pageData.title = "Recieve Package NAS";
     pageData.mid = req.params.mid;
     pageData.luser = res.User.firstName + ' ' + res.User.lastName;
-    pageData.RoleId = res.User.RoleId;
+    pageData.RoleId = res.User.role;
     res.render('pages/warehouse/rec-nas',pageData); 
 })
 router.get('/update-invoice',middleware(services.userService).requireAuthentication,(req,res,next)=>{
@@ -563,7 +563,7 @@ router.get('/update-invoice',middleware(services.userService).requireAuthenticat
     pageData.title = "Update Invoices";
     pageData.mid = req.params.mid;
     pageData.luser = res.User.firstName + ' ' + res.User.lastName;
-    pageData.RoleId = res.User.RoleId;
+    pageData.RoleId = res.User.role;
     res.render('pages/warehouse/invoice-update',pageData); 
 })
 router.post('/rec-package-nas',middleware(services.userService).requireAuthentication,(req,res,next)=>{
@@ -572,7 +572,7 @@ router.post('/rec-package-nas',middleware(services.userService).requireAuthentic
     pageData.title = "Recieve Package NAS";
     pageData.mid = req.params.mid;
     pageData.luser = res.User.firstName + ' ' + res.User.lastName;
-    pageData.RoleId = res.User.RoleId;
+    pageData.RoleId = res.User.role;
     var body = req.body; 
     var nas_location_id = 2; 
     services.packageService.updateLocation(body.trackNo,nas_location_id).then(result=>{
@@ -586,7 +586,7 @@ router.post('/process-pkg-nas',middleware(services.userService).requireAuthentic
     pageData.title = "Recieve Package NAS";
     pageData.mid = req.params.mid;
     pageData.luser = res.User.firstName + ' ' + res.User.lastName;
-    pageData.RoleId = res.User.RoleId;
+    pageData.RoleId = res.User.role;
     var body = req.body; 
     var nas_location_id = 2; 
     
@@ -602,7 +602,7 @@ router.get('/delivery-detail/:id',middleware(services.userService).requireAuthen
     pageData.title = "Delivery Detail";
     pageData.mid = req.params.mid;
     pageData.luser = res.User.fristname + ' ' + res.User.lastname;
-    pageData.RoleId = res.User.RoleId;
+    pageData.RoleId = res.User.role;
     // services.packageService.getPackagesOnDelivery(deliveryId).then(packages=>{
     //     res.render('pages/warehouse/delivery-detail',pageData); 
     // })
@@ -615,7 +615,7 @@ router.get('/deliveries',middleware(services.userService).requireAuthentication,
     pageData.title = "Warehouse to Store Deliveries";
     pageData.mid = req.params.mid;
     pageData.luser = res.User.firstName + ' ' + res.User.lastName;
-    pageData.RoleId = res.User.RoleId;
+    pageData.RoleId = res.User.role;
     services.locationService.getLocations().then(locations=>{
         services.deliveryService.getDeliveries().then(results=>{
             pageData.deliveries = results.deliveries; 
@@ -642,7 +642,7 @@ router.get('/packages-on-hand',middleware(services.userService).requireAuthentic
     pageData.title = "Packages on hand FL";
     pageData.mid = req.params.mid;
     pageData.luser = res.User.firstName + ' ' + res.User.lastName;
-    pageData.RoleId = res.User.RoleId;
+    pageData.RoleId = res.User.role;
     services.packageService.listAwbinFll().then(awblist=>{
         console.log(awblist,"AWB's")
         pageData.records = awblist.awbs; 
@@ -656,7 +656,7 @@ router.get('/nas-packages-wh',middleware(services.userService).requireAuthentica
     pageData.title = "Packages on hand NAS";
     pageData.mid = req.params.mid;
     pageData.luser = res.User.firstName + ' ' + res.User.lastName;
-    pageData.RoleId = res.User.RoleId;
+    pageData.RoleId = res.User.role;
     res.render('pages/warehouse/nas-packages',pageData); 
 })
 router.post('/save-customer',(req,res,next)=>{
@@ -671,7 +671,7 @@ router.get('/fll-no-docs',middleware(services.userService).requireAuthentication
         pageData.title = "Packages No Documents";
         pageData.mid = req.params.mid;
         pageData.luser = res.User.firstName + ' ' + res.User.lastName;
-        pageData.RoleId = res.User.RoleId;
+        pageData.RoleId = res.User.role;
 
         //listNoDocsFll
         services.packageService.listNoDocsFll().then(awblist=>{
@@ -690,7 +690,7 @@ router.get('/store-packages',middleware(services.userService).requireAuthenticat
         pageData.title = "Store Packages";
         pageData.mid = req.params.mid;
         pageData.luser = res.User.firstName + ' ' + res.User.lastName;
-        pageData.RoleId = res.User.RoleId;
+        pageData.RoleId = res.User.role;
         res.render('pages/warehouse/store-packages',pageData); 
     })
     
@@ -702,7 +702,7 @@ router.get('/nas-no-docs',middleware(services.userService).requireAuthentication
         pageData.title = "Packages with no documents";
         pageData.mid = req.params.mid;
         pageData.luser = res.User.firstName + ' ' + res.User.lastName;
-        pageData.RoleId = res.User.RoleId;
+        pageData.RoleId = res.User.role;
         res.render('pages/warehouse/nas-no-docs',pageData); 
     })
     
@@ -827,7 +827,7 @@ router.get('/processing', middleware(services.userService).requireAuthentication
     var pageData = {};
     pageData.title = "Manifest Processing";
     pageData.luser = res.User.FirstName + ' ' + res.User.LastName;
-    pageData.RoleId = res.User.RoleId;
+    pageData.RoleId = res.User.role;
     rServices.manifestService.getManifestProcessing().then((data) => {
 
         pageData.manifestList = data.manifests;
@@ -870,7 +870,7 @@ router.get('/store-check-in', middleware(services.userService).requireAuthentica
     var pageData = {};
     pageData.title = "Store Checkin";
     pageData.luser = res.User.FirstName + ' ' + res.User.LastName;
-    pageData.RoleId = res.User.RoleId;
+    pageData.RoleId = res.User.role;
     res.render('pages/warehouse/store-checkin', pageData);
 })
 //#endregion
@@ -900,6 +900,13 @@ router.get('/print-awb/:awb',middleware(services.userService).requireAuthenticat
 router.get('/print-awb-lbl/:awb',middleware(services.userService).requireAuthentication,(req,res,next)=>{
     var username  = res.User.username; 
     var awb = req.params.awb; 
+    services.printService.sendLblToPrint(awb,username); 
+    res.send({sent:true})
+})
+router.get('/print-single-label/:awb/:pkgId',middleware(services.userService).requireAuthentication,(req,res,next)=>{
+    var username  = res.User.username; 
+    var awb = req.params.awb; 
+    var pkgId = req.params.pkgId
     services.printService.sendLblToPrint(awb,username); 
     res.send({sent:true})
 })

@@ -43,7 +43,8 @@ export class UserService {
                                 resolve({user:result,token:token,valid:true})
                             });
                         }
-                        else {
+                        else { 
+                            console.log("auth failed")
                             resolve({user:null,token:"",valid:false})
                         }
                        
@@ -163,6 +164,11 @@ export class UserService {
                         if(err)
                             resolve({saved:false,"message":"Username taken"})
                         else {
+                            if (!user.password || user.password == ""){
+                                delete user.password; 
+                            }
+                            else 
+                                user.password = bcrypt.hashSync(user.password,10); 
                             client.hmset(PREFIX+user.username,user)
                             resolve({saved:true,"message":"User updated."})
                         }

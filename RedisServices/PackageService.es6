@@ -605,12 +605,14 @@ export class PackageService {
         })
     })
    }
-   recFromTruck(trackingNo){
+   recFromTruck(trackingNo,username,shipmentId){
      return new Promise((resolve,reject)=>{
      
         dataContext.redisClient.set(REC_PKG+trackingNo,moment().unix(), (err,result)=>{
           if (err) resolve({saved:false})
-          resolve({saved:true})
+          //shipment count 
+          var shipmentCount = 1;
+          resolve({saved:true,pkgCount:shipmentCount})
         })
      })
    }

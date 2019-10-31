@@ -921,7 +921,7 @@ $(function () {
                 data: null,
                 render: function (data, type, row, meta) {
                     // console.log(data);
-                    return `<i class='fas fa-pencil-alt edit'  data-id='${data.id}' title='Edit' style='cursor:pointer;'></i> <i title='Delete' data-type='${ctype}' data-toggle='modal' data-target='#confirmPkgDel' class='fas fa-trash rm' data-id='${data.id}' style='cursor:pointer;'></i>`;
+                    return `<i class='fas fa-pencil-alt edit'  data-id='${data.id}' title='Edit' style='cursor:pointer;'></i> <i class='fas fa-print print-single-label pl-2 pr-2'  data-id='${data.id}' title='Print Label' style='cursor:pointer;'></i> <i title='Delete' data-type='${ctype}' data-toggle='modal' data-target='#confirmPkgDel' class='fas fa-trash rm' data-id='${data.id}' style='cursor:pointer;'></i>`;
                 }
             },
 
@@ -953,6 +953,18 @@ $(function () {
                         form = "#unprocPackageForm"
                     $(form).parent().show();
                     loadPackage(id, $(form));
+                });
+                $(tableId).find(".print-single-label").click(function () {
+                    var id = $(this).attr('data-id');
+                    var form = "#cargoPackageForm";
+                    $.ajax({
+                        url:'/warehouse/print-single-label/'+$("#id").val()+"/"+id,
+                        contentType:'json',
+                        success:function(result){
+
+                        }
+                    })
+
                 });
                 $(tableId).find(".rm").click(function () {
                     var id = $(this).attr('data-id');
