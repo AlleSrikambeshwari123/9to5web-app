@@ -641,9 +641,10 @@ $(function () {
             },
 
             "deferRender": true,
-            initComplete: function () {
+            drawCallback: function () {
                 $(".view-awb-details").click(function(){
                     var id = $(this).attr('data-id'); 
+                   
                     $.ajax({
                         url:'/warehouse/awb-details/'+id,
                         contentType:'json',
