@@ -165,6 +165,8 @@ export class ManifestService {
                          resolve({manifests:manifestList});
                
                     
+                 }).catch(errall=>{
+                     console.log(errall)
                  });
                 
             });
