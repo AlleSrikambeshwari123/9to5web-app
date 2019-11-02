@@ -121,6 +121,12 @@ export class PlaneService{
             if (!planeId){
                 var plane  = { 
                     plane:{
+                        id:0, 
+                        tail_num:"No Plane",
+                        aircraft_type:"NO Plane",
+                        contact_name: "",
+                        contact_phone:"",
+                        company:"",
                         compartments:[] 
                     }
                     
