@@ -140,7 +140,7 @@ export class ManifestService {
                  //console.log(manifestList);
                  console.log(data);
                  var manifestList  = []; 
-               
+
                      Promise.all(data.results.map(man=>planeService.listCompartments(man.doc.planeId))).then(planeResulst=>{
                          console.log(planeResulst); 
                          for (let i = 0; i < planeResulst.length; i++) {
@@ -152,7 +152,13 @@ export class ManifestService {
                              manifest.mid = m.doc.mid; 
                              manifest.title = m.doc.title; 
                              //console.log(m.doc.flightDate,moment.unix(m.doc.flightDate).format("MMM DD,YYYY hh:mm A"))
-                             manifest.flightDate = moment.unix(m.doc.flightDate).format("MMM DD,YYYY hh:mm A"); 
+                             if (!m.doc.tailNum)
+                                m.doc.tailNum = ""; 
+                             if (!m.doc.flightDate){
+                                 manifest.flightDate = ""
+                             }
+                             else
+                                manifest.flightDate = moment.unix(m.doc.flightDate).format("MMM DD,YYYY hh:mm A"); 
                              manifestList.push(manifest)
                          }
                          

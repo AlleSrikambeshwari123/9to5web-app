@@ -118,20 +118,33 @@ export class PlaneService{
     listCompartments(planeId){
         var srv = this; 
         return new Promise((resolve,reject)=>{
-            compartmentIndex.search(`@plane_id:[${planeId} ${planeId}]`,{offset:0,numberOfResults:100,sortBy:'name',dir:"DESC"},(err,compResults)=>{
-                if (err) 
-                    console.log(err)
-                var compartments = []; 
-                compResults.results.forEach(compartment => {
+            if (!planeId){
+                var plane  = { 
+                    plane:{
+                        compartments:[] 
+                    }
                     
-                    compartments.push(compartment.doc)
-                });
-                //
-                srv.getPlane(planeId).then(plane=>{
-                    plane.plane.compartments = compartments.reverse(); 
-                    resolve(plane); 
+                }
+                return plane ; 
+
+            }
+            else {
+                compartmentIndex.search(`@plane_id:[${planeId} ${planeId}]`,{offset:0,numberOfResults:100,sortBy:'name',dir:"DESC"},(err,compResults)=>{
+                    if (err) 
+                        console.log(err)
+                    var compartments = []; 
+                    compResults.results.forEach(compartment => {
+                        
+                        compartments.push(compartment.doc)
+                    });
+                    //
+                    srv.getPlane(planeId).then(plane=>{
+                        plane.plane.compartments = compartments.reverse(); 
+                        resolve(plane); 
+                    })
                 })
-            })
+            }
+          
         })
     }
     removeCompartment(planeId,cid){

@@ -128,6 +128,8 @@ export class PackageService {
     return new Promise((resolve,reject)=>{
       console.log('saving...',awb,moment().toString("hh:mm:ss"))
       if (awb.id !=""){
+        awb.updated_by = awb.username; 
+        awb.date_updated = moment().unix(); 
         awbIndex.update(awb.id,awb,(err1,awbRes)=>{
           if (err1){
             console.log('saving err',err1)
@@ -148,7 +150,9 @@ export class PackageService {
           awb.hasDocs = 0 ; 
           console.log("HAS NO DOCCCCC")
         }
-        
+
+        awb.created_by = awb.username; 
+        delete awb.username;
         awb.dateCreated = moment().unix(); 
           awbIndex.add(awb.id,awb,(err1,awbRes)=>{
             if (err1){

@@ -137,7 +137,13 @@ router.get('/m-packages/:manifestId', middleware(services.userService).requireAu
 
     //we want to format the manifest number to 3 digits 
     rServices.manifestService.getManifest(pageData.mid).then((manifest) => {
-        
+        if (!manifest.tailNum)
+        manifest.tailNum = ""; 
+        if (!manifest.flightDate){
+            manifest.flightDate = ""
+        }
+     else
+        manifest.flightDate = moment.unix(m.doc.flightDate).format("MMM DD,YYYY hh:mm A"); 
         services.planeService.getPlanes().then(planeData=>{
             console.log(planeData)
             services.pilotService.getPilots().then(pilotData=>{
@@ -522,6 +528,7 @@ router.get('/awb-details/:id',(req,res,next)=>{
 })
 router.post("/save-awb", middleware(services.userService).requireAuthentication,(req,res,next)=>{
     var body  = req.body;
+    body.username = res.User.username; 
     console.log('save-awb',body,moment().toString("hh:mm:ss")); 
   
     services.packageService.saveAwb(body).then(result=>{
