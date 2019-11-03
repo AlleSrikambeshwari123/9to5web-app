@@ -51,7 +51,8 @@ router.post('/add-package-to-flight',(req,res,next)=>{
     var body = req.body; 
     var action = { 
         mid: body.mid,
-        barcode: body.barCode
+        barcode: body.barCode,
+        compartment: body.compartment
     }
     console.log(action);
     

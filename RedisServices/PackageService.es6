@@ -29,7 +29,7 @@ const PKG_STATUS = {
   6: "Delivered"
 
 }; 
-
+redis.addCommand("ft.aggregate")
 const awbIndex = redisSearch(redis, INDEX_AWB, {
   clientOptions: lredis.searchClientDetails
 });
@@ -636,17 +636,38 @@ export class PackageService {
    //#region Manifest Package Functions 
 
    addToFlight(action){
+     var srv = this; 
     return new Promise((resolve,reject)=>{
       var packageNo = getPackageIdFromBarCode(action.barcode); 
       console.log(action); 
-      this.mySearch.update(packageNo,{mid:action.mid , status: 2, location:"Loaded on AirCraft"},(err,result)=>{
+      this.mySearch.update(packageNo,{mid:action.mid , status: 2, location:"Loaded on AirCraft",compartment:action.compartment},(err,result)=>{
         if(err)
           resolve({added:false})
-        
-        resolve({added:true})
+        srv.getFlightCompartmentWeight(action.mid,action.compartment).then(fresult=>{
+          fresult.added = true; 
+          resolve(fresult)
+        })
+       
       })
         
     })
+   }
+   //get the compartment weight 
+   getFlightCompartmentWeight(mid,compartment){
+     return new Promise((resolve,reject)=>{
+      
+      this.mySearch.aggregate(`@mid:[${mid} ${mid}] @compartment:Nose`, {},(err,reply)=>{
+         if (err)
+         console.log(err); 
+         console.log(reply,"TOTAL SECTION Weight")
+         if (reply[1]){
+           var result = reply[1];
+           var compartment = result[3]; 
+           var weight = result[5]; 
+         }
+         resolve({compartment:compartment,weight:weight})
+       })
+     })
    }
    //remove from flight 
    removeFromFlight(action){

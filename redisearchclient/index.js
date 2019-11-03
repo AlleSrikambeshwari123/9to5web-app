@@ -209,6 +209,51 @@ module.exports  = function(clientOrNodeRedis,key,passedOptsOrCb,passedCb) {
       return chainer(cObj);
     };
   }; 
+  const aggregateFactory = function (cObj){
+    return function(queryString, passedOptsOrCb, passedCb) {
+      let 
+        lastArgs = optionalOptsCbHandler(passedOptsOrCb,passedCb),
+        searchArgs = [],
+        parser = searchResultParserFactory(lastArgs.opts);
+
+      if (!checked) { clientCheck(); }
+      
+      searchArgs.push(queryString);
+      if (lastArgs.opts.offset || lastArgs.opts.numberOfResults) {
+        
+        searchArgs.push(s.limit, lastArgs.opts.offset || 0, lastArgs.opts.numberOfResults || defaultNumberOfResults);
+      }
+      
+      searchArgs.push("groupby");
+      searchArgs.push("2")
+      searchArgs.push("@mid")
+      searchArgs.push("@compartment")
+      searchArgs.push("reduce")
+      searchArgs.push("sum")
+      searchArgs.push("1")
+      searchArgs.push("@weight");
+
+      if(lastArgs.opts.sortBy){
+        searchArgs.push("SORTBY")
+        searchArgs.push(lastArgs.opts.sortBy)
+        if (lastArgs.opts.dir)
+          searchArgs.push(lastArgs.opts.dir)
+        else 
+          searchArgs.push('ASC')
+      }
+      if (cObj.constructor.name === s.mulitConstructor) {
+        cObj.parsers = !cObj.parsers ? {} : cObj.parsers;
+        cObj.parsers['c'+cObj.queue.length] = parser;
+      }
+      cObj.ft_aggregate(key,searchArgs,function(err,results) {
+        if (err) { lastArgs.cb(err); } else {
+          if (lastArgs.cb !== noop) {
+            lastArgs.cb(err,results);
+          }
+        }
+      });
+    };
+  }; 
   const addFactory = function(cObj) {
     //cObj is either a `client` or pipeline instance
     return function(docId, values, passedOptsOrCb, passedCb) {
@@ -261,7 +306,8 @@ module.exports  = function(clientOrNodeRedis,key,passedOptsOrCb,passedCb) {
         add     : addFactory(ctx),
         exec    : execFactory(ctx),
         getDoc  : getDocFactory(ctx),
-        search  : searchFactory(ctx)
+        search  : searchFactory(ctx),
+        
       };
       return ctx;
     };
@@ -319,6 +365,7 @@ module.exports  = function(clientOrNodeRedis,key,passedOptsOrCb,passedCb) {
     getDoc            : getDocFactory(client),    
     search            : searchFactory(client),
     update            : updateFactory(client),
+    aggregate         : aggregateFactory(client),
     batch             : pipelineFactory('batch'),
     
     fieldDefinition   : fieldDefinition,

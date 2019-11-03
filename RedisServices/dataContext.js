@@ -8,6 +8,8 @@ const client = redis.createClient(envronment.redis_port, envronment.redis_host, 
     
 //   }
 });
+redis.addCommand("ft.aggregate")
+
 
 var clientOptions= {
     'host': envronment.redis_host,
