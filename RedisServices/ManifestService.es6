@@ -154,11 +154,11 @@ export class ManifestService {
                              //console.log(m.doc.flightDate,moment.unix(m.doc.flightDate).format("MMM DD,YYYY hh:mm A"))
                              if (!m.doc.tailNum)
                                 m.doc.tailNum = ""; 
-                             if (!m.doc.flightDate){
-                                 manifest.flightDate = ""
+                             if (!m.doc.shipDate){
+                                 manifest.shipDate = ""
                              }
                              else
-                                manifest.flightDate = moment.unix(m.doc.flightDate).format("MMM DD,YYYY hh:mm A"); 
+                                manifest.shipDate = moment.unix(m.doc.shipDate).format("MMM DD,YYYY hh:mm A"); 
                              manifestList.push(manifest)
                          }
                          
