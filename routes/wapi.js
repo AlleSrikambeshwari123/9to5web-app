@@ -65,7 +65,7 @@ router.post('/process-pkg-nas',(req,res,next)=>{
     var body = req.body; 
     var nas_location_id = 2; 
     console.log(req.body)
-    services.packageService.procssessPackage(body,"admin").then(result=>{
+    services.packageService.procssessPackage(body,req.body.username).then(result=>{
         res.send(result)
     })
     
