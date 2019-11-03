@@ -22,6 +22,14 @@ router.post('/authenticate',(req,res,next)=>{
       res.send(result); 
   })
 })
+router.post("/consolidate-packages",(req,res,next)=>{
+    var pkgArray = JSON.parse(req.body.packages);
+    var user = req.body.username; 
+    console.log(pkgArray,user,pkgArray.length); 
+    rServices.packageService.createConsolated(pkgArray,user).then(result=>{
+        res.send(result); 
+    })
+})
 router.get('/open-flights',(req,res,next)=>{
    rServices.manifestService.getOpenManifestList(1).then(mlist=>{
        console.log(mlist)

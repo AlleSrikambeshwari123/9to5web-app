@@ -17,6 +17,7 @@ const PKG_PREFIX = "packages:";
 const AWB_ID = "awb:id"
 const INDEX_AWB = "index:awb"
 const REC_PKG = "pkg:rec:"
+var uniqId = require("uniqid"); 
 var CustomerService = require('./CustomerService').CustomerService; 
 var customerService = new CustomerService()
 const PKG_STATUS = { 
@@ -336,6 +337,56 @@ export class PackageService {
         })
       }
    
+    })
+  }
+  createConsolated(packages,username){
+    var srv = this; 
+    return new Promise((resolve,reject)=>{
+      var awbInfo = { 
+        id: "",
+        isSed:0,
+        hasDocs: "0",
+        invoiceNumber:"",
+        value:"0",
+        customerId:24197,
+        shipper:"482", // we should get an id here 
+        carrier:"USPS",
+        hazmat:"",
+        username:  username
+       
+    };
+    srv.saveAwb(awbInfo).then(awbResult=>{
+       //add 
+          var cPackage = {
+            id:0,
+            trackingNo: uniqId(),
+            description: "Consolidated Package",
+            weight:0, 
+            dimensions: "0x0x0",
+            awb:awbResult.id, 
+            isConsolidated: "1", 
+            created_by: username, 
+          
+        }; 
+        srv.savePackageToAwb(cPackage).then(pkgResult=>{
+          // get the id 
+          //
+          var batch = dataContext.redisClient.batch(); 
+          packages.forEach(pkg => {
+            //these are barcodes 
+            batch.sadd("consolidated:pkg:"+pkgResult.id,pkg)
+          });
+          batch.exec((err,results)=>{
+            resolve({saved:true,id:pkgResult.id})
+          })
+        })
+        
+    })
+
+   
+      //validate the package 
+    
+
     })
   }
   savePackage(body){
