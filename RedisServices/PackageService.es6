@@ -339,7 +339,7 @@ export class PackageService {
    
     })
   }
-  createConsolated(packages,username){
+  createConsolated(packages,username,boxSize){
     var srv = this; 
     return new Promise((resolve,reject)=>{
       var awbInfo = { 
@@ -362,7 +362,7 @@ export class PackageService {
             trackingNo: uniqId(),
             description: "Consolidated Package",
             weight:0, 
-            dimensions: "0x0x0",
+            dimensions:  `${boxSize}x${boxSize}x${boxSize}`,
             awb:awbResult.id, 
             isConsolidated: "1", 
             created_by: username, 

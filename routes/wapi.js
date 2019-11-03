@@ -25,8 +25,8 @@ router.post('/authenticate',(req,res,next)=>{
 router.post("/consolidate-packages",(req,res,next)=>{
     var pkgArray = JSON.parse(req.body.packages);
     var user = req.body.username; 
-    console.log(pkgArray,user,pkgArray.length); 
-    rServices.packageService.createConsolated(pkgArray,user).then(result=>{
+    var boxSize = req.body.boxSize; 
+    rServices.packageService.createConsolated(pkgArray,user,boxSize).then(result=>{
         res.send(result); 
     })
 })
