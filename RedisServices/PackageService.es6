@@ -372,11 +372,25 @@ export class PackageService {
           // get the id 
           //
           var batch = dataContext.redisClient.batch(); 
+          var pkgBatch = dataContext.redisClient.batch(); 
+
           packages.forEach(pkg => {
             //these are barcodes 
             batch.sadd("consolidated:pkg:"+pkgResult.id,pkg)
+            pkgBatch.hmget(PKG_PREFIX+getPackageIdFromBarCode(pkg),"weight")
           });
           batch.exec((err,results)=>{
+            //
+            pkgBatch.exec((err1,results)=>{
+              var totalWeight = 0; 
+              results.forEach(weight => {
+                if (isNaN(Number(weight)) == false)
+                  totalWeight += Number(weight);
+              });
+              //we need to update the total weight of the package now 
+              srv.packageIndex.update(cPackage.id,{weight:totalWeight})
+            })
+            
             resolve({saved:true,id:pkgResult.id})
           })
         })
@@ -703,6 +717,7 @@ export class PackageService {
          if (err)
           console.log(err); 
           console.log(result); 
+          console.log("print:fees:"+username,username); 
          dataContext.redisClient.publish("print:fees:"+username,pkgIfno.awb); 
          resolve({sent:true})
        })

@@ -9,6 +9,7 @@ Number.prototype.formatMoney = function (c, d, t) {
     return "$" + s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
 };
 $(function () {
+    var pageMode = $("#pgmode").val(); 
 
     var lastPackage = {}
     //#region PAGE LOAD 
@@ -842,22 +843,7 @@ $(function () {
         }
         var colDef = [
            
-            // {
-            //     title: "PMB",
-            //     data: null,
-            //     render: function (data, type, row, meta) {
-            //         // console.log(data);
-            //         return `${data.skybox} `;
-            //     }
-            // },
-            // {
-            //     title: "Customer",
-            //     data: null,
-            //     render: function (data, type, row, meta) {
-            //         // console.log(data);
-            //         return `${data.customer} `;
-            //     }
-            // },
+           
             {
                 title: "Tracking No",
                 data: null,
@@ -867,23 +853,7 @@ $(function () {
                 }
             },
 
-            // {
-            //     title: "Shipper",
-            //     data: null, visible: hideCols,
-            //     render: function (data, type, row, meta) {
-            //         // console.log(data);
-            //         return `${data.shipper}`;
-            //     }
-            // },
-            // {
-            //     title: "Pieces",
-            //     visible: hideCols,
-            //     data: null,
-            //     render: function (data, type, row, meta) {
-            //         // console.log(data);
-            //         return `${data.pieces}`;
-            //     }
-            // },
+           
             {
                 title: "Description",
                 data: null,
@@ -908,14 +878,7 @@ $(function () {
                     return `${data.dimensions}`;
                 }
             },
-            // {
-            //     title: "Value (USD)",
-            //     data: null,
-            //     render: function (data, type, row, meta) {
-            //         // console.log(data);
-            //         return `${Number(data.value).formatMoney(2, '.', ',')}`;
-            //     }
-            // },
+            
             {
                 title: "",
                 data: null,
@@ -926,7 +889,64 @@ $(function () {
             },
 
         ];
+        var colDefc = [
+           
+            {
+                title: "Compartment",
+                data: null,
+                render: function (data, type, row, meta) {
+                    // console.log(data);
+                    return `${data.compartment} `;
+                }
+            },
+            {
+                title: "Tracking No",
+                data: null,
+                render: function (data, type, row, meta) {
+                    // console.log(data);
+                    return `${data.trackingNo} `;
+                }
+            },
 
+           
+            {
+                title: "Description",
+                data: null,
+                render: function (data, type, row, meta) {
+                    // console.log(data);
+                    return `${data.description}`;
+                }
+            },
+            {
+                title: "Weight",
+                data: null,
+                render: function (data, type, row, meta) {
+                    // console.log(data);
+                    return `${data.weight}`;
+                }
+            },
+            {
+                title: "Dimensions",
+                data: null,
+                render: function (data, type, row, meta) {
+                    // console.log(data);
+                    return `${data.dimensions}`;
+                }
+            },
+            
+            // {
+            //     title: "",
+            //     data: null,
+            //     render: function (data, type, row, meta) {
+            //         // console.log(data);
+            //         return `<i class='fas fa-pencil-alt edit'  data-id='${data.id}' title='Edit' style='cursor:pointer;'></i> <i class='fas fa-print print-single-label pl-2 pr-2'  data-id='${data.id}' title='Print Label' style='cursor:pointer;'></i> <i title='Delete' data-type='${ctype}' data-toggle='modal' data-target='#confirmPkgDel' class='fas fa-trash rm' data-id='${data.id}' style='cursor:pointer;'></i>`;
+            //     }
+            // },
+
+        ];
+        if (pageMode == "flight"){
+            colDef = colDefc;
+        }
 
         $(tableId).DataTable({
 
