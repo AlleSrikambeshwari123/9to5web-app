@@ -656,7 +656,7 @@ export class PackageService {
    getFlightCompartmentWeight(mid,compartment){
      return new Promise((resolve,reject)=>{
       
-      this.mySearch.aggregate(`@mid:[${mid} ${mid}] @compartment:Nose`, {},(err,reply)=>{
+      this.mySearch.aggregate(`@mid:[${mid} ${mid}] @compartment:${compartment}`, {},(err,reply)=>{
          if (err)
          console.log(err); 
          console.log(reply,"TOTAL SECTION Weight")
