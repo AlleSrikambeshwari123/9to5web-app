@@ -759,7 +759,7 @@ export class PackageService {
 
             if (pkgIfno.refLoc){
               pkg.package.wloc = pkgIfno.refLoc; 
-              if (Number(pkgIfno.nodocs)!= 0 )
+              if (Number(pkgIfno.nodocs)== 0 )
                 pkg.package.hasDocs = 0 ; 
                 pkg.package.status = 4; 
 
