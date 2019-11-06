@@ -792,9 +792,15 @@ export class PackageService {
         srv.mySearch.getDoc(pkgId,(err,pkg)=>{
             pkg.doc.status = 4; 
             pkg.doc.location  = "Warehouse NAS"; 
+            if (pkg.doc.hasDocs == "undefined")
+              pkg.doc.hasDocs = 0 ; 
             srv.mySearch.update(pkgId,pkg.doc,(err,updateResult)=>{
+              
               if(err)
-                reject({updated:false})
+             {  
+               console.log(err)
+              reject({updated:false}) 
+             } 
               resolve({updated:true})
             })
         })
