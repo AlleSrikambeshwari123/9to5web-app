@@ -712,13 +712,25 @@ export class PackageService {
      })
    }
    procssessPackage(pkgIfno,username){
-     return new Promise((resolve,reject)=>{
+    var srv = this;  
+    return new Promise((resolve,reject)=>{
+       //we also need to set the warehouse location here 
        dataContext.redisClient.hmset("fees:awb:"+pkgIfno.awb,pkgIfno,(err,result)=>{
          if (err)
           console.log(err); 
           console.log(result); 
           console.log("print:fees:"+username,username); 
          dataContext.redisClient.publish("print:fees:"+username,pkgIfno.awb); 
+          srv.getPackageById(pkgInfo.barCode).then(pkg=>{
+            if (pkgInfo.refLoc){
+              pkg.package.wloc = pkgInfo.refLoc
+              srv.packageIndex.update(pkg.package.id,pkg.package,(errResp,response)=>{
+                if(errResp)
+                console.log(errResp)
+              })
+            }
+            
+          })
          resolve({sent:true})
        })
      })

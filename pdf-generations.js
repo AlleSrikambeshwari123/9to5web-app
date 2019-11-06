@@ -4,6 +4,8 @@ var PackageService = require('./RedisServices/PackageService').PackageService
 var pkgService  = new PackageService(); 
 var ProcessLbl  = require('./Util/ProcessedLbl').GenerateProcessedLabel; 
 var lblPdf = new ProcessLbl(); 
+var NoDocsLbl = require('./Util/NoDocsLbl').LBLNoDocs; 
+var lblNoDocs  = new NoDocsLbl()
 pkgService.getAwb("100143").then(result=>{
     // awbPdf.generateAWb(result).then(results=>{
     //     console.log('done')
@@ -28,5 +30,5 @@ pkgService.getAwb("100143").then(result=>{
         hazmat: "$0.0",
 
     }
-    lblPdf.printProcessedLabel(result,fees)
+    lblNoDocs.printNoDocsLabel(result,fees)
 })
