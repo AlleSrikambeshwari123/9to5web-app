@@ -670,7 +670,8 @@ export class PackageService {
     var srv = this; 
     return new Promise((resolve,reject)=>{
         packageIndex.search(`@status:[4 4] @company:${company} @hasDocs:[${isNoDoc} ${isNoDoc}]`,{},(err,reply)=>{
-          Promise.all(reply.results.map(pkg => srv.getPackageByDocId(pkg.id))).then(packages=>{
+          console.log(reply.results); 
+          Promise.all(reply.results.map(pkg => srv.getPackageByDocId(pkg.docId))).then(packages=>{
             resolve(packages); 
           })
 
@@ -754,7 +755,7 @@ export class PackageService {
           console.log(err); 
 
 
-          
+
           console.log(result); 
           console.log("print:fees:"+username,username); 
          dataContext.redisClient.publish("print:fees:"+username,pkgIfno.awb); 
@@ -763,7 +764,7 @@ export class PackageService {
             if (pkgIfno.refLoc){
               pkg.package.wloc = pkgIfno.refLoc; 
               
-                pkg.package.hasDocs = pkgIfno.nodocs ; 
+                pkg.package.hasDocs = pkgIfno.hasDocs ; 
                 pkg.package.status = 4; 
 
                 //set theompany 
