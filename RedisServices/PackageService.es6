@@ -752,6 +752,9 @@ export class PackageService {
        dataContext.redisClient.hmset("fees:awb:"+pkgIfno.awb,pkgIfno,(err,result)=>{
          if (err)
           console.log(err); 
+
+
+          
           console.log(result); 
           console.log("print:fees:"+username,username); 
          dataContext.redisClient.publish("print:fees:"+username,pkgIfno.awb); 
