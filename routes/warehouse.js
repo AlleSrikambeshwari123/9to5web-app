@@ -552,6 +552,7 @@ router.post('/find-customer',(req,res,next)=>{
     })
 })
 //#endregion
+
 router.get('/incoming-shipment',(req,res,next)=>{
     res.render('pages/warehouse/incoming-shipment',{})
 })
@@ -702,6 +703,14 @@ router.get('/store-packages',middleware(services.userService).requireAuthenticat
     })
     
 })
+router.post('/get-nas-packages',(req,res,next)=>{
+    var company = req.body.company; 
+    var id = req.body.noDocs; 
+    console.log(req.body); 
+    services.packageService.getPackagesNasWarehouse(id,company).then(results=>{
+        res.send(results); 
+    })
+});
 router.get('/nas-no-docs',middleware(services.userService).requireAuthentication, (req, res, next) => {
     services.packageService.getNoDocsPackackages().then(packages=>{
         var pageData = {}; 

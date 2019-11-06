@@ -527,6 +527,23 @@ export class PackageService {
       })
     }); 
   }
+  getPackageByDocId(pkgId){
+    var srv = this; 
+    return new Promise((resolve,reject)=>{
+      this.mySearch.getDoc(pkgId,(err,document)=>{
+        //get the awb info here as well 
+        srv.getAwb(document.doc.awb).then(awbinfo=>{
+          console.log(awbinfo); 
+          var response = { 
+            awb : awbinfo.awb,
+            package : document.doc
+          }
+          resolve(response); 
+        }); 
+        
+      })
+    }); 
+  }
   //using this 
   
 
@@ -645,6 +662,21 @@ export class PackageService {
   
   }   
   
+  //#region Pakcage Filters  
+  
+  getPackagesNasWarehouse(isNoDoc,company){
+    var srv = this; 
+    return new Promise((resolve,reject)=>{
+        packageIndex.search(`@status:[4 4] @company:${company} @hasDocs:[${isNoDoc} ${isNoDoc}]`,{},(err,reply)=>{
+          Promise.all(reply.results.map(pkg => srv.getPackageByDocId(pkg.id))).then(packages=>{
+            resolve(packages); 
+          })
+
+        })
+    })
+  }
+
+  //#endregion
   
 
    //#region Manifest Package Functions 
@@ -727,6 +759,14 @@ export class PackageService {
               pkg.package.wloc = pkgIfno.refLoc; 
               if (Number(pkgIfno.nodocs)!= 0 )
                 pkg.package.hasDocs = 0 ; 
+                pkg.package.hasDocs = 4; 
+
+                //set theompany 
+                if (Number(pkg.awb.customer.pmb) > 9000){
+                  pkg.package.company = "0"
+                }
+                else 
+                  pkg.package.company = "1"
                 console.log('updating with ',pkg.package)
               packageIndex.update(pkg.package.id,pkg.package,(errResp,response)=>{
                 if(errResp)
@@ -754,6 +794,7 @@ export class PackageService {
         })
      })
    }
+
    //#endregion
 }
 
