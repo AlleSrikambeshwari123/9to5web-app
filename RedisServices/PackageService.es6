@@ -721,7 +721,8 @@ export class PackageService {
           console.log(result); 
           console.log("print:fees:"+username,username); 
          dataContext.redisClient.publish("print:fees:"+username,pkgIfno.awb); 
-          srv.getPackageById(pkgInfo.barCode).then(pkg=>{
+          srv.getPackageById(pkgInfo.barcode).then(pkg=>{
+
             if (pkgInfo.refLoc){
               pkg.package.wloc = pkgInfo.refLoc; 
               if (Number(pkgInfo.nodocs)!= 0 )
