@@ -7,16 +7,18 @@
         <div class='card'>
             <div class="card-header col-md-12">
                 <h3><%=title%></h3>
+                <input id='company' type='hidden' value='1'>
+                <input id='noDocs' type='hidden' value='0'>
             </div>
             <div class="card-body">
                 <ul class="nav nav-pills nav-primary" id="myTab" role="tablist">
                   
                     <li class="nav-item">
-                        <a class="nav-link active" id="profile-tab" data-toggle="tab" href="#postboxes" role="tab"
+                        <a class="nav-link active load-pbx" id="profile-tab" data-toggle="tab" href="#postboxes" role="tab"
                             aria-controls="profile" aria-selected="false" aria-expanded="false">Postboxes Etc.</a>
                     </li>
                     <li class="nav-item" style='margin-left:10px;'>
-                        <a class="nav-link active" id="profile-tab" data-toggle="tab" href="#imports" role="tab"
+                        <a class="nav-link active load-95" id="profile-tab" data-toggle="tab" href="#imports" role="tab"
                             aria-controls="profile" aria-selected="false" aria-expanded="false">9-5 Imports </a>
                     </li>
 

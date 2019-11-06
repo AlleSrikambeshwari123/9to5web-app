@@ -1,3 +1,4 @@
+
 Number.prototype.formatMoney = function (c, d, t) {
     var n = this,
         c = isNaN(c = Math.abs(c)) ? 2 : c,
@@ -10,6 +11,25 @@ Number.prototype.formatMoney = function (c, d, t) {
 };
 $(function () {
 
+
+
+    $(".load-pbx").click(function(){
+        getWarehousePackages(1, 0, function (mailPackages) {
+
+            // displayMailPackages(mailPackages);
+            
+                displayPackages(mailPackages, "#packageTable", 0)
+            
+        });
+    }); 
+    $(".load-95").click(function(){
+        getWarehousePackages("0", 0, function (mailPackages) {
+
+            // displayMailPackages(mailPackages);
+           
+            displayPackages(mailPackages, "#importsTable", 0)
+        });
+    }); 
     //#region PAGE LOAD 
     var mid = 0;
     var mtype = "default";
@@ -20,10 +40,14 @@ $(function () {
         //we need to load page data based on manifest type... 
       
         // if (mtype != "cargo") {
-            getManifestPackages(mid, mtype, function (mailPackages) {
+            var company = $("#company").val(); 
+            var noDocs = $("#noDocs").val()
+            getWarehousePackages(company, noDocs, function (mailPackages) {
 
                 // displayMailPackages(mailPackages);
-                displayPackages(mailPackages, "#packageTable", mtype)
+                if (company=="1")
+                    displayPackages(mailPackages, "#packageTable", mtype)
+                else 
                 displayPackages(mailPackages, "#importsTable", mtype)
             });
 
@@ -69,8 +93,8 @@ $(function () {
     $("input").change(function () {
         //revalidate the from
         var form = $(this).closest('form');
-        var package = getPackageDetails($(this));
-        var validPackage = validatePackage(package, $(this));
+       // var package = getPackageDetails($(this));
+       // var validPackage = validatePackage(package, $(this));
     })
     $(".savePackage").click(function () {
 
@@ -316,7 +340,7 @@ $(function () {
         // } else {
         //     package.skid = $(form).find('.skid').val();
         // }
-        console.log(package)
+        // console.log(package)
         return package;
 
     }
@@ -325,10 +349,7 @@ $(function () {
         var totalWeight = 0;
         var totalValue = 0;
 
-
-
-
-        getManifestPackages(mid, mtype, function (packages) {
+        getWarehousePackages(mid, mtype, function (packages) {
 
             packages.forEach(element => {
                 if (element != null) {
@@ -339,14 +360,14 @@ $(function () {
 
             });
             if (type == 'cargo') {
-                getManifestPackages(mid, "mail", function (packages1) {
+                getWarehousePackages(mid, "mail", function (packages1) {
                     packages1.forEach(element => {
                         totalWeight += Number(element.weight);
                         totalValue += Number(element.value);
                     });
                     $(".total-weight").text(' ' + totalWeight + ' LBS');
                     $(".total-value").text(' ' + Number(totalValue).formatMoney(2, '.', ','))
-                    getManifestPackages(mid, "unproc", function (packages2) {
+                    getWarehousePackages(mid, "unproc", function (packages2) {
                         packages2.forEach(element => {
                             console.log(element);
 
@@ -450,14 +471,15 @@ $(function () {
 
         return valid;
     }
-    function getManifestPackages(mid, type, callbk) {
+
+    function getWarehousePackages(company, noDocs, callbk) {
         var pkgs = [];
         $.ajax({
-            url: '/warehouse/get-mpackages',
+            url: '/warehouse/get-nas-packages/',
             type: 'post',
             data: {
-                mid: mid,
-                mtype: type
+                company: company,
+                noDocs: noDocs
             },
             success: function (result) {
                 console.log(result);
@@ -497,22 +519,12 @@ $(function () {
 
     function displayPackages(packages, tableId, ctype) {
         //REFACTORED FUNCTION  
+        console.log("about to display pakcages",packages)
         if ($(tableId + " tbody").children().length > 0)
             $(tableId).DataTable().destroy();
         var containerLabel = "Skid";
         var hideCols = true;
-        if (ctype == 'mail') {
-            console.log('print')
-            $("#mailCount").text(packages.length);
-        }
-        if (ctype == "unproc") {
-            hideCols = false;
-            $("#unProcCount").text(packages.length);
-            console.log('going to hide cols');
-        }
-        if (ctype == "cargo") {
-            $("#packageCount").text(packages.length);
-        }
+        
         var colDef = [
            
             // {
@@ -536,7 +548,8 @@ $(function () {
                 data: null,
                 render: function (data, type, row, meta) {
                     // console.log(data);
-                    return `${data.skybox} `;
+                    moment.unix(data.package.dateCreated).format("DD/MM/YYYY")
+                    return `${moment.unix(data.package.dateCreated).format("DD/MM/YYYY")} `;
                 }
             },
             {
@@ -544,7 +557,7 @@ $(function () {
                 data: null,
                 render: function (data, type, row, meta) {
                     // console.log(data);
-                    return `${data.trackingNo} `;
+                    return `${data.package.location} `;
                 }
             },
             {
@@ -552,7 +565,7 @@ $(function () {
                 data: null,
                 render: function (data, type, row, meta) {
                     // console.log(data);
-                    return `${data.trackingNo} `;
+                    return `${data.awb.customer.name} `;
                 }
             },
             {
@@ -560,7 +573,7 @@ $(function () {
                 data: null,
                 render: function (data, type, row, meta) {
                     // console.log(data);
-                    return `${data.trackingNo} `;
+                    return `${data.awb.id} `;
                 }
             },
             {
@@ -568,33 +581,33 @@ $(function () {
                 data: null,
                 render: function (data, type, row, meta) {
                     // console.log(data);
-                    return `${data.trackingNo} `;
+                    return `${data.package.description} `;
                 }
             },
 
-            {
-                title: "Shipper",
-                data: null, visible: hideCols,
-                render: function (data, type, row, meta) {
-                    // console.log(data);
-                    return `${data.shipper}`;
-                }
-            },
-            {
-                title: "Pieces",
-                visible: hideCols,
-                data: null,
-                render: function (data, type, row, meta) {
-                    // console.log(data);
-                    return `${data.pieces}`;
-                }
-            },
+            // {
+            //     title: "Shipper",
+            //     data: null, visible: hideCols,
+            //     render: function (data, type, row, meta) {
+            //         // console.log(data);
+            //         return `${data.shipper}`;
+            //     }
+            // },
+            // {
+            //     title: "Pieces",
+            //     visible: hideCols,
+            //     data: null,
+            //     render: function (data, type, row, meta) {
+            //         // console.log(data);
+            //         return `${data.pieces}`;
+            //     }
+            // },
             {
                 title: "Weight",
                 data: null,
                 render: function (data, type, row, meta) {
                     // console.log(data);
-                    return `${data.weight}`;
+                    return `${data.package.weight}`;
                 }
             },
             {
@@ -610,7 +623,8 @@ $(function () {
                 data: null,
                 render: function (data, type, row, meta) {
                     // console.log(data);
-                    return `<i class='fas fa-pencil-alt edit'  data-id='${data.id}' title='Edit' style='cursor:pointer;'></i> <i title='Delete' data-type='${ctype}' data-toggle='modal' data-target='#confirmPkgDel' class='fas fa-trash rm' data-id='${data.id}' style='cursor:pointer;'></i>`;
+                    return ""
+                    // return `<i class='fas fa-pencil-alt edit'  data-id='${data.id}' title='Edit' style='cursor:pointer;'></i> <i title='Delete' data-type='${ctype}' data-toggle='modal' data-target='#confirmPkgDel' class='fas fa-trash rm' data-id='${data.id}' style='cursor:pointer;'></i>`;
                 }
             },
 
@@ -632,24 +646,24 @@ $(function () {
 
             "deferRender": true,
             initComplete: function () {
-                $(tableId).find(".edit").click(function () {
-                    var id = $(this).attr('data-id');
-                    var form = "#cargoPackageForm";
+                // $(tableId).find(".edit").click(function () {
+                //     var id = $(this).attr('data-id');
+                //     var form = "#cargoPackageForm";
 
-                    if (ctype == 'mail')
-                        form = '#mailPackageForm';
-                    if (ctype == "unproc")
-                        form = "#unprocPackageForm"
-                    $(form).parent().show();
-                    loadPackage(id, $(form));
-                });
-                $(tableId).find(".rm").click(function () {
-                    var id = $(this).attr('data-id');
-                    var type = $(this).attr('data-type');
-                    $("#rmPackage").attr('data-id', id);
-                    $("#rmPackage").attr('data-type', type);
-                    // deletePackage(id,"cargo");
-                });
+                //     if (ctype == 'mail')
+                //         form = '#mailPackageForm';
+                //     if (ctype == "unproc")
+                //         form = "#unprocPackageForm"
+                //     $(form).parent().show();
+                //     loadPackage(id, $(form));
+                // });
+                // $(tableId).find(".rm").click(function () {
+                //     var id = $(this).attr('data-id');
+                //     var type = $(this).attr('data-type');
+                //     $("#rmPackage").attr('data-id', id);
+                //     $("#rmPackage").attr('data-type', type);
+                //     // deletePackage(id,"cargo");
+                // });
             },
 
         });
@@ -685,7 +699,7 @@ $(function () {
                     }
                     LoadPackageCounters();
                     console.log("about to re-display " + package.mtype);
-                    getManifestPackages(mid, "default", function (mailPackages) {
+                    getWarehousePackages(mid, "default", function (mailPackages) {
 
                         // displayMailPackages(mailPackages);
                         displayPackages(mailPackages, "#packageTable", "default")
@@ -699,128 +713,10 @@ $(function () {
         })
     }
 
-    function loadPackage(trackingNo, form) {
-        console.log(form.attr('id'));
-        $.ajax({
-            url: '/warehouse/load-package/' + trackingNo,
-            contentType: 'json',
-            success: function (dResult) {
-                console.log(dResult);
-
-                form.find('.skybox').val(dResult.skybox);
-                console.log(dResult.skybox);
-                form.find('.trackingNo').val(dResult.trackingNo);
-                form.find('.shipper').val(dResult.shipper);
-                form.find('.package-value').val(dResult.value);
-                form.find('.weight').val(dResult.weight);
-                form.find('.pieces').val(dResult.pieces);
-                form.find('.description').val(dResult.description);
-                form.find('.carrier').val(dResult.carrier);
-                form.find('.dimensions').val(dResult.dimensions);
-                if (typeof dResult.bag != "undefined")
-                    form.find('.bag').val(dResult.bag);
-                else
-                    form.find('.skid').val(dResult.skid);
-
-                form.find('.skybox').trigger('change');
-
-            },
-            error: function (err) {
-
-            }
-
-        })
-    }
-
-    function deletePackage(trackingNo, type,id) {
-        $.ajax({
-            url: '/warehouse/rm-package',
-            type: 'post',
-            data: {
-                id:trackingNo,
-                trackingNo: trackingNo,
-                mid: $("#mid").val()
-            },
-            success: function (dResult) {
-                getManifestPackages(mid, "default", function (mailPackages) {
-
-                    // displayMailPackages(mailPackages);
-                    displayPackages(mailPackages, "#packageTable", "default")
-                });
-                // if (type == 'mail') {
-                //     //refresh the package listing 
-                //     console.log('refreshing mail');
-                //     getManifestPackages(mid, "mail", function (mailPackages) {
-
-                //         // displayMailPackages(mailPackages);
-                //         displayPackages(mailPackages, "#mailTable", "mail")
-                //     });
-                // } else if (type == "cargo") {
-                //     // cargo 
-                //     console.log('refreshing cargo');
-                //     getManifestPackages(mid, "cargo", function (mailPackages) {
+  
 
 
-                //         displayPackages(mailPackages, "#cargoTable", mtype)
-                //     });
-                // }
-                // else {
-                //     getManifestPackages(mid, type, function (mailPackages) {
 
-
-                //         displayPackages(mailPackages, "#unprocTable", type)
-                //     });
-                // }
-            },
-            error: function (err) {
-
-            }
-
-        })
-    }
-    //sets the name of the person on the page for a given skybox. 
-    function setCustomerInfo(customer, ctrl) {
-        ctrl.text('');
-        ctrl.removeClass('text-info');
-        ctrl.removeClass('text-danger');
-        if (typeof customer.isBusiness === "undefined")
-            customer.isBusiness = 0;
-        ctrl.parent().parent().find('.isBusiness').val(customer.isBusiness);
-        if (customer.err) {
-            //display as error
-            ctrl.text(customer.err);
-            ctrl.removeClass('text-info');
-            ctrl.addClass('text-danger');
-
-            return;
-        }
-        console.log(customer);
-
-        ctrl.text(" - " + customer.name);
-        ctrl.addClass('text-info');
-
-        //we also what to see if 
-
-    }
-
-    //Gets the name of the person associated with the skybox 
-    function lookupUser(skybox, ctrl) {
-        //ajax call 
-        $.ajax({
-            url: '/warehouse/get-customer-info',
-            type: 'post',
-            data: {
-                box: skybox
-            },
-            success: function (customer) {
-
-                setCustomerInfo(customer, ctrl);
-
-            }
-
-
-        })
-    }
 
     //#endregion
 });
