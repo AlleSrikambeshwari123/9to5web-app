@@ -723,7 +723,10 @@ export class PackageService {
          dataContext.redisClient.publish("print:fees:"+username,pkgIfno.awb); 
           srv.getPackageById(pkgInfo.barCode).then(pkg=>{
             if (pkgInfo.refLoc){
-              pkg.package.wloc = pkgInfo.refLoc
+              pkg.package.wloc = pkgInfo.refLoc; 
+              if (Number(pkgInfo.nodocs)!= 0 )
+                pkg.package.hasDocs = 0 ; 
+                console.log('updating with ',pkg.package)
               srv.packageIndex.update(pkg.package.id,pkg.package,(errResp,response)=>{
                 if(errResp)
                 console.log(errResp)
