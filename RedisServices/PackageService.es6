@@ -759,8 +759,8 @@ export class PackageService {
 
             if (pkgIfno.refLoc){
               pkg.package.wloc = pkgIfno.refLoc; 
-              if (Number(pkgIfno.nodocs)== 0 )
-                pkg.package.hasDocs = 0 ; 
+              
+                pkg.package.hasDocs = pkgIfno.nodocs ; 
                 pkg.package.status = 4; 
 
                 //set theompany 
