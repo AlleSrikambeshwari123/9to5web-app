@@ -761,7 +761,7 @@ export class PackageService {
               pkg.package.wloc = pkgIfno.refLoc; 
               if (Number(pkgIfno.nodocs)!= 0 )
                 pkg.package.hasDocs = 0 ; 
-                pkg.package.hasDocs = 4; 
+                pkg.package.status = 4; 
 
                 //set theompany 
                 if (Number(pkg.awb.customer.pmb) > 9000){
