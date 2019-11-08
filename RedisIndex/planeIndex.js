@@ -2,7 +2,7 @@ var redis = require('redis');
 var rediSearch = require('../redisearchclient/index'); 
 var env = require('../environment')
 
-let userIndex = rediSearch(redis,'index:planes', {
+let planeIndex = rediSearch(redis,'index:planes', {
     clientOptions: {
                  'host': env.redis_host,
                  'port': env.redis_port,
@@ -11,15 +11,15 @@ let userIndex = rediSearch(redis,'index:planes', {
     }
     
 }); 
-userIndex.dropIndex(); 
-userIndex.createIndex([
-    userIndex.fieldDefinition.numeric("id",true),
-    userIndex.fieldDefinition.text("tail_num",true),
-    userIndex.fieldDefinition.text("maximum_capacity",true),
-    userIndex.fieldDefinition.text("pilot",true),
-    userIndex.fieldDefinition.text("aircraft_type",true),
-    userIndex.fieldDefinition.text("contact_name",true),
-    userIndex.fieldDefinition.text("contact_phone",true),
-    userIndex.fieldDefinition.text("company",true)
+planeIndex.dropIndex(); 
+planeIndex.createIndex([
+    planeIndex.fieldDefinition.numeric("id",true),
+    planeIndex.fieldDefinition.text("tail_num",true),
+    planeIndex.fieldDefinition.text("maximum_capacity",true),
+    planeIndex.fieldDefinition.text("pilot",true),
+    planeIndex.fieldDefinition.text("aircraft_type",true),
+    planeIndex.fieldDefinition.text("contact_name",true),
+    planeIndex.fieldDefinition.text("contact_phone",true),
+    planeIndex.fieldDefinition.text("company",true)
 ]); 
 

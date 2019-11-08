@@ -3,6 +3,7 @@ sendGrid.setApiKey("SG.FpRdzju6TDaWgsuCmErCEA.wmWJ77R3zi-Wub-UyZH4oDq4waEqEB7Ayy
 var path = require('path'); 
 var fs = require('fs');
 var moment = require('moment'); 
+
  function readEmailTemplate(emailType){
     return  new Promise((resolve,reject)=>{
         var epath = "public/emails/no_docs/index.html"
@@ -56,31 +57,44 @@ function generatePackages(awb){
     });
     return packages; 
 }
-function sendNoDocsEmail(awb){
+async function sendNoDocsEmail(awb){
     console.log("ABOUT TO SEND EMAIL",awb)
-     readEmailTemplate("noDocs").then(emailBody=>{
-         
-        emailBody = emailBody.replace("{{NAME}}",awb.awb.customer.name)
+    var emailBody = await readEmailTemplate("noDocs"); 
+    emailBody = emailBody.replace("{{NAME}}",awb.awb.customer.name)
     
     emailBody = emailBody.replace("{{AWB}}",awb.awb.id)
     emailBody = emailBody.replace("{{PACKAGES}}",generatePackages(awb))
     message = {
-        to : "kim@postboxesetc.com", 
+        to : "stevan@vela.global", 
         from : 'nodocsnas@postboxesetc.com ',
         subject: `Invoice required AWB No(${awb.awb.id})`,
         html:emailBody
     }; 
-    sendGrid.send(message).then((sResult)=>{
-        console.log("Message sent Successfully")
-    }).catch((err)=>{
-        console.log('error:')
-        console.log(err); 
-    });
+    var result = await sendGrid.send(message);
 
-    })
+    return result; 
     
+    
+}
+async function sendAtStoreEmail(){
+    console.log("ABOUT TO SEND EMAIL",awb)
+    var emailBody = await readEmailTemplate("noDocs"); 
+    emailBody = emailBody.replace("{{NAME}}",awb.awb.customer.name)
+    
+    emailBody = emailBody.replace("{{AWB}}",awb.awb.id)
+    emailBody = emailBody.replace("{{PACKAGES}}",generatePackages(awb))
+    message = { 
+        to : "stevan@vela.global", 
+        from : 'nodocsnas@postboxesetc.com ',
+        subject: `Invoice required AWB No(${awb.awb.id})`,
+        html:emailBody
+    }; 
+    var result = await sendGrid.send(message);
+
+    return result; 
 }
 module.exports = { 
     sendNoDocsEmail : sendNoDocsEmail,
+    sendAtStoreEmail: sendAtStoreEmail
     
 }

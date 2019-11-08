@@ -20,7 +20,6 @@ manifestIndex.createIndex([
     manifestIndex.fieldDefinition.numeric("pilotId",true),
     manifestIndex.fieldDefinition.numeric("fligtDate",true),
     manifestIndex.fieldDefinition.numeric("dateCreated",true),
-    
     manifestIndex.fieldDefinition.text("mtypeId",true),
     manifestIndex.fieldDefinition.text("createdBy",true),
 
