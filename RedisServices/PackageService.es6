@@ -1,7 +1,7 @@
 import { cpus } from "os";
 import { promises } from "dns";
 
-
+var emailService = require("../Util/EmailService")
 var redis = require("redis");
 var lredis = require("./redis-local");
 var moment = require("moment");
@@ -29,11 +29,15 @@ const PKG_STATUS = {
   6: "Delivered"
 
 }; 
+const INDEX_SHIPPER = "index:shipper"
 redis.addCommand("ft.aggregate")
 const awbIndex = redisSearch(redis, INDEX_AWB, {
   clientOptions: lredis.searchClientDetails
 });
 const packageIndex = redisSearch(redis, PKG_IDX, {
+  clientOptions: lredis.searchClientDetails
+});
+const shipperIndex = redisSearch(redis, INDEX_SHIPPER, {
   clientOptions: lredis.searchClientDetails
 });
 function getPackageVolumne(mPackage){
@@ -339,6 +343,16 @@ export class PackageService {
    
     })
   }
+  getShipper(id){
+    return new Promise((resolve,reject)=>{
+     shipperIndex.getDoc(id,(err,sresult)=>{
+       if (err)
+        resolve(id);
+
+        resolve(sresult.doc); 
+     })
+    })
+  }
   createConsolated(packages,username,boxSize){
     var srv = this; 
     return new Promise((resolve,reject)=>{
@@ -516,12 +530,16 @@ export class PackageService {
       this.mySearch.getDoc(pkgId,(err,document)=>{
         //get the awb info here as well 
         srv.getAwb(document.doc.awb).then(awbinfo=>{
-          console.log(awbinfo); 
-          var response = { 
-            awb : awbinfo.awb,
-            package : document.doc
-          }
-          resolve(response); 
+          srv.getShipper(awbinfo.awb.shipper).then(shipper=>{
+            console.log(awbinfo); 
+            awbinfo.awb.shipper = shipper.name;
+            var response = { 
+              awb : awbinfo.awb,
+              package : document.doc
+            }
+            resolve(response); 
+          })
+         
         }); 
         
       })
@@ -759,8 +777,9 @@ export class PackageService {
           console.log(result); 
           console.log("print:fees:"+username,username); 
          dataContext.redisClient.publish("print:fees:"+username,pkgIfno.awb); 
+         
           srv.getPackageById(pkgIfno.barcode).then(pkg=>{
-
+            emailService.sendNoDocsEmail(pkg)
             if (pkgIfno.refLoc){
               pkg.package.wloc = pkgIfno.refLoc; 
               
@@ -774,7 +793,9 @@ export class PackageService {
                 else 
                   pkg.package.company = "1"
                 console.log('updating with ',pkg.package)
+                
               packageIndex.update(pkg.package.id,pkg.package,(errResp,response)=>{
+                
                 if(errResp)
                 console.log(errResp)
               })
