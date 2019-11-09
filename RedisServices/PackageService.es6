@@ -554,7 +554,12 @@ export class PackageService {
         pkg.doc.location = checkin.location; 
         pkg.doc.status = 5; 
          packageIndex.update(id,pkg,(err,result)=>{
-           resolve({updated:true}); 
+           //we need to send the email here for the package 
+           srv.getPackageByDocId(id).then(info=>{
+              emailService.sendAtStoreEmail(checkin.location,info);
+              resolve({updated:true}); 
+           })
+         
          });
       })
     })
