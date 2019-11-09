@@ -107,7 +107,7 @@ router.post('/add-package-to-delivery',(req,res,next)=>{
         deliveryId : req.body.deliveryId
     }
     services.deliveryService.addPackage(deliveryPkg.deliveryId,deliveryPkg.barcode).then(result=>{
-        res.send({result})
+        res.send(result)
     })
 })
 router.get('/get-locations',(req,res,next)=>{
