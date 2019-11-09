@@ -104,7 +104,7 @@ async function sendNoDocsEmail(awb){
     emailBody = emailBody.replace("{{AWB}}",awb.awb.id)
     emailBody = emailBody.replace("{{PACKAGES}}",generatePackages(awb))
     message = {
-        to : "stevan@vela.global", 
+        to : "kim@postboxesetc.com", 
         from : 'nodocsnas@postboxesetc.com ',
         subject: `Invoice required AWB No(${awb.awb.id})`,
         html:emailBody
@@ -123,7 +123,7 @@ async function sendNoDocsFl(awb){
     emailBody = emailBody.replace("{{AWB}}",awb.awb.id)
     emailBody = emailBody.replace("{{PACKAGES}}",generatePackages(awb))
     message = { 
-        to : "stevan@vela.global", 
+        to : "kim@postboxesetc.com", 
         from : 'nodocsnas@postboxesetc.com ',
         subject: `Invoice required AWB No(${awb.awb.id})`,
         html:emailBody
@@ -144,7 +144,7 @@ async function sendAtStoreEmail(store,pkg){
     
     emailBody = emailBody.replace("{{PACKAGES}}",generatePackage(pkg))
     message = { 
-        to : "stevan@vela.global", 
+        to : "kim@postboxesetc.com", 
         from : 'info@postboxesetc.com ',
         subject: `Package is at Postboxes Etc. ${store}`,
         html:emailBody
