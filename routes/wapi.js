@@ -110,11 +110,21 @@ router.post('/add-package-to-delivery',(req,res,next)=>{
         res.send(result)
     })
 })
+router.post('/')
 router.get('/get-locations',(req,res,next)=>{
     services.locationService.getLocations().then(locations=>{
         res.send(locations); 
     })
 }); 
+router.post('/checkout-to-customer',(req,res,next)=>{
+        var body = req.body; 
+        var barcode = body.barcode; 
+        var username = body.username;
+    services.packageService.checkOutToCustomer(barcode,username).then(result=>{
+        console.log(result)
+        res.send(result)
+    })
+})
 router.post('/get-package-info/',(req,res,next)=>{
     var id = req.body.barcode; 
     services.packageService.getPackageById(id).then((pkg=>{

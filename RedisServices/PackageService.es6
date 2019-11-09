@@ -564,6 +564,27 @@ export class PackageService {
       })
     })
   }
+  checkOutToCustomer(barcode,user){
+    var srv = this; 
+    return new Promise ((resolve,reject)=>{
+      //we want to check out set the satatus 
+      var id = getPackageIdFromBarCode(barcode); 
+      srv.getPackageByDocId(id).then(pkg=>{
+        console.log(pkg,"THE PKG")
+        pkg.package.status = 6 //checked out to customer 
+        pkg.package.checkoutBy = user;
+        packageIndex.update(pkg.package.id, pkg.package,(errm,reply)=>{
+          if(errm)
+           {
+             console.log(errm)
+            resolve({updated:false})
+           } 
+          resolve({updated:true})
+        })
+      }) 
+
+    })
+  }
   getPackageByDocId(pkgId){
     var srv = this; 
     return new Promise((resolve,reject)=>{
@@ -581,6 +602,7 @@ export class PackageService {
       })
     }); 
   }
+  
   //using this 
   
 
