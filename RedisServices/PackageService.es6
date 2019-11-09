@@ -545,6 +545,20 @@ export class PackageService {
       })
     }); 
   }
+  updateStoreLocation(checkin){
+    var srv = this; 
+    return new Promise ((resolve,reject)=>{
+      var id = getPackageIdFromBarCode(checkin.barcode); 
+      packageIndex.getDoc(id,(err,pkg)=>{
+        pkg.doc.locationId = checkin.locationId; 
+        pkg.doc.location = checkin.location; 
+        pkg.doc.status = 5; 
+         packageIndex.update(id,pkg,(err,result)=>{
+           resolve({updated:true}); 
+         });
+      })
+    })
+  }
   getPackageByDocId(pkgId){
     var srv = this; 
     return new Promise((resolve,reject)=>{

@@ -5,18 +5,39 @@ var redisSearch = require("../redisearchclient");
 
 const INDEX = "index:deliveries"
 const ID = "delivery:ID"; 
+const DELIVERY_SET = "delivery:id:"
 var dataContext = require('./dataContext')
 var deliveryIndex = redisSearch(redis, INDEX, {
     clientOptions: dataContext.clientOptions
 });
 
+var PackageService = require("./PackageService").PackageService; 
+var packageService = new PackageService(); 
 
 export class DeliveryService {
     constructor(){
 
     }
 
-
+    addPackage(deliveryId, barcode){
+        return new Promise((resolve,reject)=>{
+            dataContext.redisClient.sadd(DELIVERY_SET+deliveryId,barcode,(err,reply)=>{
+                if (err){
+                    resolve({added:false})
+                }
+                resolve({added:true})
+            })
+        })
+    }
+    getDeliveryPackages(deliveryId){
+        return new Promise((resolve,reject)=>{
+            dataContext.redisClient.smembers(DELIVERY_SET+deliveryId,(err,results)=>{
+                Promise.all(results.map(dpkg=> packageService.getPackageById(dpkg))).then(packages=>{
+                    resolve({packages:packages})
+                })
+            })
+        })
+    }
 
     saveDelivery(delivery){
         return new Promise((resolve,reject)=>{

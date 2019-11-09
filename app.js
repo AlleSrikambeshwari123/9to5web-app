@@ -31,8 +31,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
   cookieName: 'session',
   secret: 'Silver123.',
-  duration: 30 * 60 * 1000,
-  activeDuration: 5 * 60 * 1000
+  duration: 60 * 60 * 1000,
+  activeDuration: 60 * 60 * 1000
 }));
 app.use('/', index);
 app.use('/users', users);

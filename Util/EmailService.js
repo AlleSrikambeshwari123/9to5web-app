@@ -9,6 +9,10 @@ var moment = require('moment');
         var epath = "public/emails/no_docs/index.html"
         if (emailType == "noDocs")
             epath = "public/emails/no_docs/index.html"
+        else if (emailType == "noDocsFl")
+            epath = "public/emails/no_docs/fl.html"
+        else if (emailType=="store")
+            epath = "public/emails/no_docs/store.html"
         fs.readFile(path.join(__dirname.replace("Util",""),epath), "UTF8", function(err, data) {
             if (err)
                 console.log("couldn't read the file"); 
@@ -76,9 +80,26 @@ async function sendNoDocsEmail(awb){
     
     
 }
-async function sendAtStoreEmail(){
+async function sendNoDocsFl(awb){
     console.log("ABOUT TO SEND EMAIL",awb)
-    var emailBody = await readEmailTemplate("noDocs"); 
+    var emailBody = await readEmailTemplate("noDocsFl"); 
+    emailBody = emailBody.replace("{{NAME}}",awb.awb.customer.name)
+    
+    emailBody = emailBody.replace("{{AWB}}",awb.awb.id)
+    emailBody = emailBody.replace("{{PACKAGES}}",generatePackages(awb))
+    message = { 
+        to : "stevan@vela.global", 
+        from : 'nodocsnas@postboxesetc.com ',
+        subject: `Invoice required AWB No(${awb.awb.id})`,
+        html:emailBody
+    }; 
+    var result = await sendGrid.send(message);
+
+    return result; 
+}
+async function sendAtStoreEmail(store,pkg){
+    console.log("ABOUT TO SEND EMAIL",awb)
+    var emailBody = await readEmailTemplate("store"); 
     emailBody = emailBody.replace("{{NAME}}",awb.awb.customer.name)
     
     emailBody = emailBody.replace("{{AWB}}",awb.awb.id)
@@ -95,6 +116,7 @@ async function sendAtStoreEmail(){
 }
 module.exports = { 
     sendNoDocsEmail : sendNoDocsEmail,
-    sendAtStoreEmail: sendAtStoreEmail
+    sendAtStoreEmail: sendAtStoreEmail,
+    sendNoDocsFL : sendNoDocsFl
     
 }

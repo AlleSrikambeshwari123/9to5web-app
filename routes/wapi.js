@@ -101,6 +101,13 @@ router.get('/get-open-deliveries',(req,res,next)=>{
         res.send(deliveries); 
     })
 })
+router.post('/add-package-to-delivery',(req,res,next)=>{
+    var deliveryPkg = {
+        barcode : req.body.barcode,
+        deliveryId : req.body.deliveryId
+    }
+    services.deliveryService.addPackage(deliveryPkg.deliveryId,deliveryPkg.barcode)
+})
 router.get('/get-locations',(req,res,next)=>{
     services.locationService.getLocations().then(locations=>{
         res.send(locations); 
@@ -112,8 +119,18 @@ router.post('/get-package-info/',(req,res,next)=>{
         res.send(pkg); 
     }))
 })
+router.post('/check-into-store',(req,res,next)=>{
+    var checkin = {
+        locationId: req.body.locationId,
+        location:req.body.location,
+        barcode: req.body.barcode,
+        username: req.body.username,
+    }
+    services.packageService.updateStoreLocation(checkin).then(result=>{
+        res.send(result)
+    })
+})
 router.post('/save-package-fees',(req,res,next)=>{
-    //
     res.send({saved:true})
 })
 module.exports = router;
