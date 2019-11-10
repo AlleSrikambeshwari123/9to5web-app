@@ -26,9 +26,11 @@ $(function () {
         $("#update_awb").show(); 
         $("#print-lbl").attr('data-id',$("#id").val())
         $("#print-awb").attr('data-id',$("#id").val())
+    
         $(".print-options").show(); 
             awbPackages = rpackages
-       
+    
+        $("#pkgNo").val(awbPackages.length+1)
         displayPackages(awbPackages, "#packageTable", "cargo")
     }
     $("#select-pilot").select2({
@@ -242,7 +244,7 @@ $(function () {
         }
     })
     $("#cancel-ready").click(function(){
-        $('.mfp-close').trigger("click")
+        $('.mfp-close').trigger("click");
     })
     $("#save-to-awb").click(function(){
        
@@ -252,7 +254,9 @@ $(function () {
             description: $("#description").val(),
             weight:$("#weight").val(), 
             dimensions: $("#W").val()+"x"+$("#H").val()+"x"+$("#L").val(),
-            awb:$(".awb").val()
+            awb:$(".awb").val(),
+            packaging:$("#packaging").val(),
+            pkgNo:$("#pkgNo").val()
         }
         var isValid = true; 
         if (package.trackingNo==""){
@@ -285,7 +289,7 @@ $(function () {
                             awbPackages.push(package);  
                         displayPackages(awbPackages, "#packageTable", "cargo"); 
                         }
-                        
+                        $("#pkgNo").val(awbPackages.length+1)
                         $("#trackingNo").val(''); 
                         $("#description").val(''); 
                         $("#weight").val(''); 
@@ -985,7 +989,7 @@ $(function () {
                 "decimal": ",",
                 "thousands": "."
             },
-
+            
             "deferRender": true,
             initComplete: function () {
                 $(tableId).find(".edit").click(function () {
@@ -1003,7 +1007,7 @@ $(function () {
                     var id = $(this).attr('data-id');
                     var form = "#cargoPackageForm";
                     $.ajax({
-                        url:'/warehouse/print-single-label/'+$("#id").val()+"/"+id,
+                        url:'/warehouse/print-awb-lbl/'+$("#id").val()+":"+id,
                         contentType:'json',
                         success:function(result){
 
@@ -1088,10 +1092,15 @@ $(function () {
                 var dims = dResult.dimensions.split("x"); 
                 if (dims.length == 3){
                     $("#W").val(dims[0])
-                $("#H").val(dims[1])
-                $("#L").val(dims[2])
+                    $("#H").val(dims[1])
+                    $("#L").val(dims[2])
                 }
-                
+                if (dResult.pkgNo){
+                    $("#pkgNo").val(dResult.pkgNo)
+                }
+                if(dResult.packaging){
+                    $("#packaging").val(dResult.packaging)
+                }
                 form.find('.dimensions').val(dResult.dimensions);
                 $(".open-popup-link").trigger('click'); 
                 // if (typeof dResult.bag != "undefined")

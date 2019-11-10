@@ -634,7 +634,7 @@ $(function () {
 
             columns: colDef,
             //bInfo:false,
-
+            "order": [[ 3, "desc" ]],
             "language": {
                 "decimal": ",",
                 "thousands": "."

@@ -175,7 +175,7 @@ export class PackageService {
   getAwbOverview(id){
     // get the awb packages and add everything in 
     return new Promise((resolve,reject)=>{
-      packageIndex.search(`@awb:[${id} ${id}]`,{numberOfResults:5000,offset:0},(err,packages)=>{
+      packageIndex.search(`@awb:[${id} ${id}]`,{numberOfResults:5000,offset:0,sortBy:'pkgNo'},(err,packages)=>{
         var weight = 0 ; 
         var pieces = packages.totalResults; 
         var description = ""
@@ -196,7 +196,7 @@ export class PackageService {
     return new Promise((resolve,reject)=>{
       console.log(`@awb:[${id} ${id}]`)
      
-      packageIndex.search(`@awb:[${id} ${id}]`,{numberOfResults:5000,offset:0},(err,packages)=>{
+      packageIndex.search(`@awb:[${id} ${id}]`,{numberOfResults:5000,offset:0,sortBy:"pkgNo"},(err,packages)=>{
         if (err)
          console.log(err)
       
@@ -221,7 +221,7 @@ export class PackageService {
   }
   listNoDocsFll(){
     return new Promise((resolve,reject)=>{
-       awbIndex.search("@status:[1 1] @hasDocs:[0 0]",{offset:0,numberOfResults:5000,sortBy:'id'},(err,awbs)=>{
+       awbIndex.search("@status:[1 1] @hasDocs:[0 0]",{offset:0,numberOfResults:5000,sortBy:'id',sortDir:"DESC"},(err,awbs)=>{
          var awbList = []; 
          Promise.all(awbs.results.map(awb=>customerService.getCustomer(awb.doc.customerId))).then(customers=>{
            Promise.all(awbs.results.map(awb=>this.getAwbOverview(awb.doc.id))).then(details=>{
@@ -242,6 +242,7 @@ export class PackageService {
               //we need to get all the packages 
               awbList.push(awb.doc)
              }
+             awbList = awbList.reverse();
              resolve({awbs:awbList})
            })
           
@@ -260,7 +261,7 @@ export class PackageService {
 
   listAwbinFll(){
     return new Promise((resolve,reject)=>{
-       awbIndex.search("@status:[1 1] @hasDocs:[1 1]",{offset:0,numberOfResults:5000,sortBy:'id'},(err,awbs)=>{
+       awbIndex.search("@status:[1 1] @hasDocs:[1 1]",{offset:0,numberOfResults:5000,sortBy:'id',sortDir:'DESC'},(err,awbs)=>{
          var awbList = []; 
          Promise.all(awbs.results.map(awb=>customerService.getCustomer(awb.doc.customerId))).then(customers=>{
            Promise.all(awbs.results.map(awb=>this.getAwbOverview(awb.doc.id))).then(details=>{
