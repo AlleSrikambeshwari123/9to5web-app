@@ -24,6 +24,8 @@ $(function () {
         $("#save_awb").hide(); 
         $("#add_package").show(); 
         $("#update_awb").show(); 
+        $("#print-lbl").attr('data-id',$("#id").val())
+        $("#print-awb").attr('data-id',$("#id").val())
         $(".print-options").show(); 
             awbPackages = rpackages
        
@@ -190,13 +192,32 @@ $(function () {
 
         })
     })
+    $(".copy-last").click(function(){
+        
+        if (awbPackages.length > 0){
+            var pkgIndex = awbPackages.length - 1
+            var packageToCopy = awbPackages[pkgIndex]; 
+            $("#pkgId").val(""); 
+            $("#trackingNo").val(""); 
+            $("#description").val(packageToCopy.description);
+            $("#weight").val(packageToCopy.weight); 
+            //Dims 
+            packageToCopy.dimensions = packageToCopy.dimensions.toLowerCase()
+            var dims = packageToCopy.dimensions.toLowerCase().split('x');
+            $("#W").val(dims[0])
+            $("#H").val(dims[1])
+            $("#L").val(dims[2])
 
+        }
+    })
     $("#save-shipper").click(function(){
         var shipper = {
             name: $("#sp-name").val(),
             address: $("#sp-address").val(),
             city : $("#sp-city").val(), 
             state: $("#sp-state").val(), 
+            zip:$("#sp-zip").val(),
+            taxId:$("#sp-tax-id").val(),
             
 
             
@@ -220,7 +241,9 @@ $(function () {
             alert("Please add a shipper name and address. ")
         }
     })
-    
+    $("#cancel-ready").click(function(){
+        $('.mfp-close').trigger("click")
+    })
     $("#save-to-awb").click(function(){
        
         var package = {
@@ -266,7 +289,9 @@ $(function () {
                         $("#trackingNo").val(''); 
                         $("#description").val(''); 
                         $("#weight").val(''); 
-                        $("#dimensions").val('');
+                        $("#W").val("");
+                        $("#H").val("");
+                        $("#L").val(""); 
                         //$(".close-popup").trigger('click'); 
                     }
                 })

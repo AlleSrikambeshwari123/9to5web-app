@@ -41,7 +41,7 @@
                                             <input type='text' class='form-control awb' id='id' name='id' required  readonly value='<%=awb.id%>'/>
                                         </div>
                                         <div class='form-group'>
-                                            <label>Consignee / PMB / 9-5 <span class='text-info title customerName'></span> <a href="#" class=" " data-target='#findCustomer' data-toggle='modal'>Assign Box #(9-5) or PostBoxes</a> |  <a href="javascript:void(0)" data-toggle="modal" data-target="#addCustomer">Add New Customer</a></label> 
+                                            <label>Consignee <span class='text-info title customerName'></span> <br/><a href="#" class=" " data-target='#findCustomer' data-toggle='modal'>Assign Box(9-5) or PB</a> |  <a href="javascript:void(0)" data-toggle="modal" data-target="#addCustomer">Add New Customer</a></label> 
                                             <input type='text' class='form-control skybox' id="customerName" name='pmb' required readonly value='<%=awb.customer.name%>'/>
                                             <input type='hidden' class='customerId' id='customerId' value="<%=awb.customer.id%>" />
                                         </div>
@@ -189,6 +189,10 @@
                 <input type ='text' class='form-control' placeholder="Name" id='sp-name'/>
               </div>
               <div class='form-group' >
+                <label> Tax ID</label>
+                <input type ='text' class='form-control' placeholder="Tax ID" id='sp-tax-id'/>
+              </div>
+              <div class='form-group' >
                 <label> Address</label>
                 <input type ='text' class='form-control' placeholder="Address" id='sh-address'/>
               </div>
@@ -198,6 +202,10 @@
               </div>
               <div class='form-group' >
                 <label> State</label>
+                <input type ='text' class='form-control' placeholder="Zip" id='sp-zip'/>
+              </div>
+              <div class='form-group' >
+                <label> Zip</label>
                 <input type ='text' class='form-control' placeholder="State" id='sp-state'/>
               </div>
             </div>
@@ -306,7 +314,8 @@
               <h4>Add Package to AWB </h4>
               <form method='post' id='cargoPackageForm'>
 
-                <button type='button' class="btn btn-small btn-info ">Copy Last Package</button>
+                <button type='button' class="btn btn-small btn-info copy-last">Copy Last Package</button>
+                
                     <div class='form-group'>
                         <label>Tracking #</label>
                          <input type='hidden' id='pkgId' value="0" />
@@ -347,7 +356,7 @@
           <div class="card-action text-center">
             <div class="row">
               <div class="col-md-12">
-                <button class="btn btn-info close-popup" type="button" id='cancel-ready' data-dismiss="modal" value="No">Cancel</button>
+                <button class="btn btn-info close-popup " type="button" id='cancel-ready' data-dismiss="modal" >Done</button>
                 <button class="btn btn-primary" type="button" id='save-to-awb' value="Yes">Save</button>
               </div>
             </div>

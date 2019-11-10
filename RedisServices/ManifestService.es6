@@ -151,6 +151,7 @@ export class ManifestService {
                              manifest.plane = planeResulst[i].plane
                              manifest.mid = m.doc.mid; 
                              manifest.title = m.doc.title; 
+                             manifest.tailNum = m.doc.tailNum
                              //console.log(m.doc.flightDate,moment.unix(m.doc.flightDate).format("MMM DD,YYYY hh:mm A"))
                              if (!m.doc.tailNum)
                                 m.doc.tailNum = ""; 
