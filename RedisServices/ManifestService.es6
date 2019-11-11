@@ -300,7 +300,18 @@ export class ManifestService {
         });
     }
     getManifest(mid) {
-        return lredis.hgetall(MID_PREFIX+mid)
+        return new Promise((resolve,reject)=>{
+            lredis.hgetall(MID_PREFIX+mid).then(manifest=>{
+                if (manifest.planeId){
+                    planeService.listCompartments(manifest.planeId).then(planeInfo=>{
+                        manifest.palne = planeInfo.plane; 
+                        resolve(manifest);
+                    })
+                }
+                 
+            })    
+        })
+        
     }
     deleteManifest(mid){
        return new Promise((resolve,reject)=>{
@@ -382,24 +393,4 @@ export class ManifestService {
         return manifestStages.open; 
     }
 
-    // addPackageToManifest(packageBarCode, mid){
-    //     //we should just update the package in the index. 
-    //     return new Promise((resolve,reject)=>{
-    //         dataContext.redisClient.sadd(MID_PACKAGES+mid,packageBarCode,(err,result)=>{
-    //             resolve({added:true})
-    //         }); 
-    //     })
-    // }
-    // removePackageFromManifest(packageBarCode,mid){
-    //     return new Promise((resolve,reject)=>{
-    //         dataContext.redisClient.srem(MID_PACKAGES_mid,packageBarCode,(err,result)=>{
-    //             resolve({remove:true})
-    //         })
-    //     })
-    // }
-    // getManifestPackages(mid){
-    //     return new Promise((resolve,reject)=>{
-    //         dataContext.redisClient.smembers(MID_PACKAGES+mid,(err))
-    //     })
-    // }
 }

@@ -603,7 +603,58 @@ export class PackageService {
       })
     }); 
   }
-  
+  getManifestPackages(mid){
+    return new Promise((resolve,reject)=>{
+      packageIndex.search(`@mid:[${mid} ${mid}]`,{offset:0,numberOfResults:5000,sortBy:'id',sortDir:"DESC"},(err,packages1)=>{
+        var packages = [];
+        packages1.results.forEach(pkg => {
+          
+          packages.push(pkg.doc)
+        });
+        Promise.all(packages.map(pkgData=>this.getAwb(pkgData.awb))).then(reswithAwb=>{
+         for(var i =0; i < reswithAwb.length;i++){
+           console.log("adding ",reswithAwb[i].awb); 
+           packages[i].awbInfo = reswithAwb[i].awb; 
+         }
+         resolve(packages);
+        }) 
+        
+
+        // Promise.all(awbs.results.map(awb=>customerService.getCustomer(awb.doc.customerId))).then(customers=>{
+        //   Promise.all(awbs.results.map(awb=>this.getAwbOverview(awb.doc.id))).then(details=>{
+        //    console.log("got the customers",customers, awbs)
+        //    for(var i =0 ; i < awbs.results.length ; i++ ){
+        //      var awb = awbs.results[i]; 
+        //      awb.doc.dateCreated = moment.unix(awb.doc.dateCreated).format("YYYY-MM-DD hh:mm A")
+        //      //we need to get the customer 
+        //      awb.doc.consignee = customers[i].name; 
+        //      awb.doc.weight = details[i].weight; 
+        //      awb.doc.pmb = customers[i].pmb; 
+        //      awb.doc.description = details[i].description; 
+        //      awb.doc.pieces = details[i].pieces; 
+        //      if (customers[i].pmb == ''){
+        //        awb.doc.pmb = '9000'
+        //      }
+        //      console.log('pushing ',awb)
+        //      //we need to get all the packages 
+        //      awbList.push(awb.doc)
+        //     }
+        //     awbList = awbList.reverse();
+        //     resolve({awbs:awbList})
+        //   })
+         
+        //  }).catch(err=>{
+        //    console.log(err); 
+        //  })
+        
+       //  awbs.results.forEach(awb => {
+          
+         
+       //  });
+        
+      })
+   })
+  }
   //using this 
   
 

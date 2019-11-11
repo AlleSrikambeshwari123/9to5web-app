@@ -26,8 +26,9 @@
       normal: 'ZapfDingbats'
     }
   };
+  var pdffonts = require('pdfmake/build/vfs_fonts')
  var PdfPrinter = require('pdfmake');
-  var printer = new PdfPrinter(fonts);
+  var printer = new PdfPrinter(pdffonts);
   var fs = require('fs');
   var bwipjs = require('bwip-js')
   Number.prototype.formatMoney = function (c, d, t) {

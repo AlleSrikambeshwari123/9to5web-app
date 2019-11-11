@@ -43,7 +43,83 @@ export class FlightLoadSheet{
 
     }
 
-    generateManifestLoadSheet(){
+    generateManifestLoadSheet(manifest){
+        return new Promise((resolve,reject)=>{
+            var srv = this; 
+            var docDefinition = { 
+                footer: srv.generateFooter(),
+                
+                content: [
+                           {
+                               stack :[
+                                   {text:"NINE TO FIVE IMPORT EXPORT",bold:true,fontSize:11,alignment:center},
+                                   {text:"1811 N.W. 51 Street Hanger 42 D",bold:true,fontSize:9,alignment:center},
+                                   {text:"Ft. Lauderale, Florida 33309",bold:true,fontSize:9,alignment:center},
+                                   {text:"FLIGHT LOAD SHEET",bold:true,fontSize:11,alignment:center}
+                               ]
+                           },
+                           {
+                            table:{
+                                headerRows:0,
+                                alignment:center,
+                                
+                                widths:['*','*'],
+                                body:[
+                                    [{text:"For Shipment",fontSize:9},
+                                    {text:mainfest.tailNum,fontSize:9}]
+                                ]
+                            }
+                        },
+                        {
+                            table:{
+                                headerRows:0,
+                                alignment:center,
+                                
+                                widths:['*','*','*','*'],
+                                body:[
+                                    [
+                                        {text:'Departure Date',fontSize:8},
+                                        {text:manifest.shipDate,fontSize:8},
+                                        {text:'Departure Time',fontSize:8},
+                                        {text:manifest.shipDate,fontSize:8},
+                                    ],
+                                    [
+                                        {text:'Carrier',fontSize:8},
+                                        {text:manifest.plane.company,fontSize:8},
+                                        {text:'Airline Flight#',fontSize:8},
+                                        {text:manifest.tailNum,fontSize:8},
+                                    ],
+    
+                                ]
+                            }
+                        },
+                        {
+                            stack:[
+                                {text:"Flight Notes:",fontSize:9,bold:true}
+                            ]
+                        }
 
+                       
+                       
+                       
+                       
+                ]
+            }; 
+          
+    
+            var pdfDoc = printer.createPdfKitDocument(docDefinition);
+            pdfDoc.pipe(fs.createWriteStream(manifest.id+'-load-heet.pdf'));
+            pdfDoc.end();
+        })
+    
     }
+    generateHeader(){
+      
+       
+    }
+   
+    generateFooter(currentPage, pageCount){
+        return        { text: "Page No: " + currentPage.toString() + '/' + pageCount, alignment: 'right', margin:[50,10] }
+                     
+  }
 }
