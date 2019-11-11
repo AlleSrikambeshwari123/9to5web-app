@@ -15,7 +15,10 @@ var delfile = '';
 var uniqid = require('uniqid')
 var rServices = require('../RedisServices/RedisDataServices')
 
-
+var FlightLoadSheet = require('../Util/FlightLoadSheet').FlightLoadSheet; 
+var loadSheet = new FlightLoadSheet(); 
+var FlightManifest = require('../Util/FlightManifest').FlightManifest; 
+var flightManifest = new FlightManifest()
 
 
 //Manifest Routes
@@ -139,11 +142,11 @@ router.get('/m-packages/:manifestId', middleware(services.userService).requireAu
     rServices.manifestService.getManifest(pageData.mid).then((manifest) => {
         if (!manifest.tailNum)
         manifest.tailNum = ""; 
-        if (!manifest.flightDate){
-            manifest.flightDate = ""
+        if (!manifest.shipDate){
+            manifest.shipDate = ""
         }
      else
-        manifest.flightDate = moment.unix(m.doc.flightDate).format("MMM DD,YYYY hh:mm A"); 
+        manifest.flightDate = moment.unix(manifest.flightDate).format("MMM DD,YYYY hh:mm A"); 
         services.planeService.getPlanes().then(planeData=>{
             console.log(planeData)
             services.pilotService.getPilots().then(pilotData=>{
@@ -166,7 +169,7 @@ router.get('/m-packages/:manifestId', middleware(services.userService).requireAu
                        // console.log('pageData',plane)
                         pageData.plane = plane.plane
                         
-                        services.packageService.getManifestPackagesByStatus(pageData.mid,0).then(packages=>{
+                        services.packageService.getManifestPackages(pageData.mid).then(packages=>{
                             pageData.packages = packages; 
                             console.log(pageData);
                             res.render('pages/warehouse/manifest-packages', pageData);
@@ -261,7 +264,18 @@ router.get('/mlist', middleware(services.userService).requireAuthentication, (re
         res.send(result.listing);
     });
 });
-
+router.post('find-package',middleware(services.userService).requireAuthentication, (req, res, next) => {
+    var search = req.body.search ; 
+    var pageData = {}; 
+    pageData.packages = []; 
+    pageData.title = "Recieve Package NAS";
+    pageData.mid = req.params.mid;
+    pageData.luser = res.User.firstName + ' ' + res.User.lastName;
+    pageData.RoleId = res.User.role;
+    services.packageService.find(search).then(packages=>{
+        res.render('pages/warehouse/package-results',pageData); 
+    })
+})
 router.get('/packages/:mid', middleware(services.userService).requireAuthentication, (req, res, next) => {
     var pageData = {};
     pageData.title = "Add Packages";
@@ -552,7 +566,45 @@ router.post('/find-customer',(req,res,next)=>{
     })
 })
 //#endregion
-
+router.get('/download-flight-manifest/:mid',(req,res,next)=>{
+    var mid = req.params.mid; 
+    
+    services.manifestService.getManifest(mid).then(manifest=>{
+        console.log(manifest)
+        services.packageService.getManifestPackages(mid).then(packages=>{
+            console.log('packages',packages)
+            flightManifest.generateManifest(manifest,packages).then(result=>{
+                console.log(result); 
+                setTimeout(() => {
+                    res.download(result.filename);    
+                }, 500);
+                
+            })
+        });
+       
+        //loadSheet.generateManifestLoadSheet(manifest); 
+    })
+})
+router.get('/download-load-sheet/:mid',(req,res,next)=>{
+    var mid = req.params.mid; 
+    
+    services.manifestService.getManifest(mid).then(manifest=>{
+        console.log(manifest)
+        services.packageService.getManifestPackages(mid).then(packages=>{
+            console.log('packages',packages)
+            loadSheet.generateManifestLoadSheet(manifest).then(result=>{
+                console.log(result); 
+                setTimeout(() => {
+                    res.download(result.filename);    
+                }, 500);
+                
+            })
+        });
+       
+        //loadSheet.generateManifestLoadSheet(manifest); 
+    })
+})
+//router.get("/download-load-sheet")
 router.get('/incoming-shipment',(req,res,next)=>{
     res.render('pages/warehouse/incoming-shipment',{})
 })

@@ -30,6 +30,7 @@ var currencyFormatter = require('currency-formatter');
   var printer = new PdfPrinter(fonts);
   var moment  = require('moment'); 
   var fs = require('fs');
+  var path = require('path');
   var bwipjs = require('bwip-js')
   Number.prototype.formatMoney = function (c, d, t) {
     var n = this,
@@ -92,7 +93,7 @@ export class FlightManifest {
                                 ],
                                 [
                                     {border:[false,false,false,false],text:'Carrier:',fontSize:8,alignment:'left',margin:[0,0,2,0],bold:true},
-                                    {border:[false,false,false,false],text:"",fontSize:8},
+                                    {border:[false,false,false,false],text:manifest.plane.company,fontSize:8},
                                     {border:[false,false,false,false],text:'Airline Flight#:',fontSize:8,alignment:'left',margin:[0,0,2,0],bold:true},
                                     {border:[false,false,false,false],text:manifest.tailNum,fontSize:8},
                                 ],
@@ -131,9 +132,12 @@ export class FlightManifest {
             }; 
 
             var pdfDoc = printer.createPdfKitDocument(docDefinition);
-            pdfDoc.pipe(fs.createWriteStream(manifest.mid+'-manifest.pdf'));
+            var path1 = __dirname.replace("Util","data");   
+            var filelocation = path1+"/"+manifest.mid+'-manifest.pdf'; 
+            console.log(filelocation,"file"); 
+            pdfDoc.pipe(fs.createWriteStream(filelocation));
             pdfDoc.end();
-            resolve({completed:true})
+            resolve({completed:true, filename:filelocation})
         })
     }
     generateFooter(currentPage, pageCount){

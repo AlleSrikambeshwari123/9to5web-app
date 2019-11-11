@@ -258,7 +258,7 @@ export class ManifestService {
     }
     shipManifest(mid,awb,user){
         return new Promise((resolve,reject)=>{
-            lredis.hmset(MID_PREFIX+mid, {awb:awb,shipDate:moment().format("YYYY-MM-DD"),shippedBy:user}).then((sresult)=>{
+            lredis.hmset(MID_PREFIX+mid, {shipDate:moment().format("YYYY-MM-DD"),shippedBy:user}).then((sresult)=>{
                 console.log(sresult);
                 this.changeStage(mid,3).then((resu)=>{
                     resolve(sresult);
@@ -304,7 +304,7 @@ export class ManifestService {
             lredis.hgetall(MID_PREFIX+mid).then(manifest=>{
                 if (manifest.planeId){
                     planeService.listCompartments(manifest.planeId).then(planeInfo=>{
-                        manifest.palne = planeInfo.plane; 
+                        manifest.plane = planeInfo.plane; 
                         resolve(manifest);
                     })
                 }

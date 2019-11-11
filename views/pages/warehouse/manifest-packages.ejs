@@ -34,14 +34,14 @@
                             <div class="clearfix">
                                 <div class="btn-group custom-btn-group float-right" role="group">
                                   
-                                    <button type="button" class="btn btn-primary btn-sm "> <i class='fa fa-download'></i> Load Sheet</button>
+                                    <a href="/warehouse/download-load-sheet/<%=manifest.mid%>" type="button" class="btn btn-primary btn-sm "> <i class='fa fa-download'></i> Load Sheet</button>
                                   
-                                    <button type="button" class="btn btn-success btn-sm "
-                                        data-toggle='modal' data-target='#shipManifest'><i class='fa fa-download'></i> Flight Manifest</button>
+                                    <a href='/warehouse/download-flight-manifest/<%=manifest.mid%>'  class="btn btn-success btn-sm "
+                                        ><i class='fa fa-download'></i> Flight Manifest</a>
 
                                     
-                                    <button type="button" class="btn btn-info btn-sm ship-manifest-btn"
-                                        data-toggle='modal' data-target='#broker'> <i class='fa fa-plane'></i> Send Flight</button>
+                                    <button type="button"  class="btn btn-info btn-sm ship-manifest-btn ship-manifest"
+                                        > <i class='fa fa-plane'></i> Send Flight</button>
                                     
                                     <!-- <button type="button" class="btn btn-dark btn-sm export-manifest">Export Excel</button> -->
                                 </div>
@@ -55,7 +55,7 @@
                                     </p>
                                     <address class='small'>
                                         
-                                        <strong>VALUE:</strong><span class='total-value'></span><br>
+                                        
                                         <strong>WEIGHT:</strong> <span class='total-weight'></span> <br>
                                         <strong>STAGE:</strong> <%=manifest.stage%><br>
                                         <strong>CREATED BY:</strong> <%=manifest.createdBy%><br>
@@ -147,54 +147,7 @@
                             if (manifest.StageId > 1){ 
                                 showForm ='display:none'
                            }%>
-                            <div class='col-md-3 pkg-form ' style='<%=showForm%>'>
-                                <form method='post' id='mailPackageForm'>
-                                    <div class='form-group'>
-                                        <label for="bag">Bag </label>
-                                        <input type='text' class='form-control bag' name='bag' id='bag' required />
-                                    </div>
-                                    <div class='form-group'>
-                                        <label for="skybox">SkyBox <span
-                                                class='text-info title customerName '></span></label>
-                                        <input type='text' class='form-control skybox' name='skybox' id='skybox'
-                                            required />
-                                        <input type='hidden' class='isBusiness' value='' />
-                                    </div>
-                                    <div class='form-group'>
-                                        <label>Tracking #</label>
-                                        <input type='hidden' class='mid' value='<%=mid %>' />
-                                        <input type='hidden' class='mtype' value='mail' />
-                                        <input type='text' class='form-control trackingNo' name='trackingNo' required />
-                                    </div>
-                                    <div class='form-group'>
-                                        <label>Description</label>
-                                        <input type='text' class='form-control description' name='description'
-                                            required />
-                                    </div>
-                                    <div class='form-group'>
-                                        <label>Shipper</label>
-                                        <input type='text' class='form-control shipper' name='shipper' />
-                                    </div>
-                                    <div class='form-group'>
-                                        <label>Value</label>
-                                        <input type='text' class='form-control package-value' name='value' required />
-                                    </div>
-                                    <div class='form-group'>
-                                        <label>Pieces</label>
-                                        <input type='text' class='form-control pieces' name='pieces' required />
-                                    </div>
-
-                                    <div class='form-group'>
-                                        <label>Weight</label>
-                                        <input type='text' class='form-control weight ' name='weight' />
-                                    </div>
-                                    <div class='form-group'>
-                                        <button class='btn btn-primary savePackage' data-stage='<%=manifest.StageId%>'
-                                            type='button'>
-                                            Save</button>
-                                    </div>
-                                </form>
-                            </div>
+                           
                             <div class='col-md-9'>
                                 <table id='mailTable'
                                     class='display table table-bordered table-head-bg-info table-hover'
@@ -206,69 +159,10 @@
                     <div class="tab-pane fade " id="contact" role="tabpanel" aria-labelledby="contact-tab"
                         aria-expanded="false">
                         <div class='row'>
-                            <div class='col-md-3 pkg-form' style='<%=showForm%>'>
-                                <form method='post' id='cargoPackageForm'>
-                                    <!-- <div class='form-group'>
-                                        <label for="skid">Skid </label>
-                                        <input type='text' class='form-control skid' name='skid' required />
-                                    </div> -->
-                                    <div class='form-group'>
-                                            <label>Select Section<span id='' class='text-info title'></span></label>
-                                           <select id='plane-compartment' class='form-control'>
-                                               <option>Select Compartment</option>
-                                               <% for (var i =0 ;i < plane.compartments.length; i++){ 
-                                             
-                                                    %>
-                                                    
-                                                    <option  value ='<%=plane.compartments[i].id%>'><%=plane.compartments[i].name%></option>
-
-                                                <%}%> 
-                                           </select>
-                                        </div>
-                                    <div class='form-group'>
-                                            <label>Package No # <span id='' class='text-info title'></span></label>
-                                            <input type='text' class='form-control awb' name='awb' required />
-                                            <input type='hidden' class='isBusiness' value='' />
-                                        </div>
-                                    
-                                    <!-- <div class='form-group'>
-                                        <label>Tracking #</label>
-                                        <input type='hidden' class='mid' value='<%=mid %>' />
-                                        <input type='hidden' class='mtype' value='cargo' />
-                                        <input type='text' class='form-control trackingNo' name='trackingNo' required />
-                                    </div> -->
-                                    <!-- <div class='form-group'>
-                                        <label>Description</label>
-                                        <input type='text' class='form-control description' name='description'
-                                            required />
-                                    </div> -->
-                                    <!-- <div class='form-group'>
-                                        <label>Shipper</label>
-                                        <input type='text' class='form-control shipper' name='shipper' />
-                                    </div> -->
-                                    <!-- <div class='form-group'>
-                                        <label>Value</label>
-                                        <input type='text' class='form-control package-value' name='value' required />
-                                    </div> -->
-                                    <!-- <div class='form-group'>
-                                        <label>Pieces</label>
-                                        <input type='text' class='form-control pieces' name='pieces' required />
-                                    </div> -->
-
-                                    <!-- <div class='form-group'>
-                                        <label>Weight</label>
-                                        <input type='text' class='form-control weight' name='weight' />
-                                    </div> -->
-                                    <div class='form-group'>
-                                        <button class='btn btn-primary savePackage' data-stage='<%=manifest.StageId%>'
-                                            type='button'>
-                                            Save</button>
-                                    </div>
-                                </form>
-                            </div>
+                          
 
                             
-                            <div class='col-md-9'>
+                            <div class='col-md-12'>
                                 <table id='packageTable'
                                     class='display table table-bordered table-head-bg-info table-hover'
                                     style='width:100%'>
@@ -361,7 +255,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary close-del" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-success ship-manifest" id='ship-manifest'>Send Flight</button>
+                <button type="button" class="btn btn-success ship-manifest" id='ship-manifest1'>Send Flight</button>
             </div>
         </div>
     </div>
@@ -379,10 +273,10 @@
             </div>
             <div class="modal-body">
                 <label for="broker-name">Broker Name</label>
-                <input type='text' id='broker-name' class='form-control broker-email' value='Stevan Thomas'>
+                <input type='text' id='broker-name' class='form-control broker-email' value=''>
 
                 <label for="broker-email">Broker Email</label>
-                <input type='text' id='broker-email' class='form-control broker-email' value='stevan@prodigysoft.net'>
+                <input type='text' id='broker-email' class='form-control broker-email' value=''>
             </div>
             <div class="modal-footer">
 

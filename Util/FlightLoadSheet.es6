@@ -47,53 +47,56 @@ export class FlightLoadSheet{
         return new Promise((resolve,reject)=>{
             var srv = this; 
             var docDefinition = { 
-                footer: srv.generateFooter(),
+                footer: srv.generateFooter,
                 
                 content: [
                            {
                                stack :[
-                                   {text:"NINE TO FIVE IMPORT EXPORT",bold:true,fontSize:11,alignment:center},
-                                   {text:"1811 N.W. 51 Street Hanger 42 D",bold:true,fontSize:9,alignment:center},
-                                   {text:"Ft. Lauderale, Florida 33309",bold:true,fontSize:9,alignment:center},
-                                   {text:"FLIGHT LOAD SHEET",bold:true,fontSize:11,alignment:center}
+                                   {text:"NINE TO FIVE IMPORT EXPORT",bold:true,fontSize:11,alignment:"center"},
+                                   {margin:[0,3],text:"1811 N.W. 51 Street Hanger 42 D",bold:true,fontSize:9,alignment:"center"},
+                                   {margin:[0,3],text:"Ft. Lauderale, Florida 33309",bold:true,fontSize:9,alignment:"center"},
+                                   {margin:[0,3],text:"FLIGHT LOAD SHEET",bold:true,fontSize:11,alignment:"center"}
                                ]
                            },
                            {
+                               margin:[0,3],
                             table:{
                                 headerRows:0,
-                                alignment:center,
+                                alignment:"center",
                                 
                                 widths:['*','*'],
                                 body:[
-                                    [{text:"For Shipment",fontSize:9},
-                                    {text:mainfest.tailNum,fontSize:9}]
+                                    [{border:[false,false,false,false],text:"For Shipment:",fontSize:9, alignment:"right",bold:true},
+                                    {border:[false,false,false,false],text:manifest.tailNum,fontSize:9}]
                                 ]
                             }
                         },
                         {
+                            margin:[0,3],
                             table:{
                                 headerRows:0,
-                                alignment:center,
+                                alignment:"center",
                                 
                                 widths:['*','*','*','*'],
                                 body:[
                                     [
-                                        {text:'Departure Date',fontSize:8},
-                                        {text:manifest.shipDate,fontSize:8},
-                                        {text:'Departure Time',fontSize:8},
-                                        {text:manifest.shipDate,fontSize:8},
+                                        {border:[false,false,false,false],text:'Departure Date:',fontSize:8,bold:true},
+                                        {border:[false,false,false,false],text:manifest.shipDate,fontSize:8},
+                                        {border:[false,false,false,false],text:'Departure Time:',fontSize:8,bold:true},
+                                        {border:[false,false,false,false],text:manifest.shipDate,fontSize:8},
                                     ],
                                     [
-                                        {text:'Carrier',fontSize:8},
-                                        {text:manifest.plane.company,fontSize:8},
-                                        {text:'Airline Flight#',fontSize:8},
-                                        {text:manifest.tailNum,fontSize:8},
+                                        {border:[false,false,false,false],text:'Carrier:',fontSize:8,bold:true},
+                                        {border:[false,false,false,false],text:manifest.plane.company,fontSize:8},
+                                        {border:[false,false,false,false],text:'Airline Flight#:',fontSize:8,bold:true},
+                                        {border:[false,false,false,false],text:manifest.tailNum,fontSize:8},
                                     ],
     
                                 ]
                             }
                         },
                         {
+                            margin:[0,3],
                             stack:[
                                 {text:"Flight Notes:",fontSize:9,bold:true}
                             ]
@@ -103,13 +106,20 @@ export class FlightLoadSheet{
                        
                        
                        
-                ]
+                ],
+                defaultStyle: {
+                    font: 'Helvetica',
+                    fontSize:8
+                  }
             }; 
           
-    
+            var path1 = __dirname.replace("Util","data");   
+            var filelocation = path1+"/"+manifest.id+'-load-sheet.pdf'; 
+            console.log(filelocation,"file"); 
             var pdfDoc = printer.createPdfKitDocument(docDefinition);
-            pdfDoc.pipe(fs.createWriteStream(manifest.id+'-load-heet.pdf'));
+            pdfDoc.pipe(fs.createWriteStream(filelocation));
             pdfDoc.end();
+            resolve({completed:true, filename:filelocation})
         })
     
     }

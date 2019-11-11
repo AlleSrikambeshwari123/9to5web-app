@@ -20,6 +20,8 @@ $(function () {
     var unProcTable;
     var sedAnswered  = 0 ; 
     var awbPackages = []; 
+    
+    
     if ($("#id").val()!=""){
         $("#save_awb").hide(); 
         $("#add_package").show(); 
@@ -29,7 +31,7 @@ $(function () {
     
         $(".print-options").show(); 
             awbPackages = rpackages
-    
+        
         $("#pkgNo").val(awbPackages.length+1)
         displayPackages(awbPackages, "#packageTable", "cargo")
     }
@@ -854,6 +856,13 @@ $(function () {
 
     function displayPackages(packages, tableId, ctype) {
         //REFACTORED FUNCTION  
+        var totalWeight = 0 ; 
+        for(var i = 0; i<packages.length; i++){
+            if (!isNaN(packages[i].weight)){
+                totalWeight += Number(packages[i].weight)
+            }
+        }
+        $('.total-weight').text(totalWeight +" lbs")
         if ($(tableId + " tbody").children().length > 0)
             $(tableId).DataTable().destroy();
         var containerLabel = "Skid";

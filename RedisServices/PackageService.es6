@@ -195,7 +195,13 @@ export class PackageService {
     var srv = this; 
     return new Promise((resolve,reject)=>{
       console.log(`@awb:[${id} ${id}]`)
-     
+      var  packagelist  = []
+     if (isNaN(id))
+     {
+       resolve(packagelist)
+       return ; 
+     }
+
       packageIndex.search(`@awb:[${id} ${id}]`,{numberOfResults:5000,offset:0,sortBy:"pkgNo"},(err,packages)=>{
         if (err)
          console.log(err)
