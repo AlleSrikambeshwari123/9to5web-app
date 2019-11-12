@@ -14,7 +14,7 @@ var fs = require('fs');
 var delfile = '';
 var uniqid = require('uniqid')
 var rServices = require('../RedisServices/RedisDataServices')
-
+var datacontext = require("../RedisServices/dataContext")
 var FlightLoadSheet = require('../Util/FlightLoadSheet').FlightLoadSheet; 
 var loadSheet = new FlightLoadSheet(); 
 var FlightManifest = require('../Util/FlightManifest').FlightManifest; 
@@ -604,6 +604,13 @@ router.get('/download-load-sheet/:mid',(req,res,next)=>{
         //loadSheet.generateManifestLoadSheet(manifest); 
     })
 })
+
+router.get('/fl-print-options',middleware(services.userService).requireAuthentication,(req,res,next)=>{
+    datacontext.redisClient.smembers("fl:print:computers",(err,reply)=>{
+        res.send(reply)
+    })
+})
+
 //router.get("/download-load-sheet")
 router.get('/incoming-shipment',(req,res,next)=>{
     res.render('pages/warehouse/incoming-shipment',{})

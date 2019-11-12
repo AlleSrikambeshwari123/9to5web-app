@@ -58,7 +58,7 @@ let packageDeliveryIndex = rediSearch(redis,'index:package:delivery', {
     }
     
 }); 
-packageDeliveryIndex.dropIndex(); 
+//packageDeliveryIndex.dropIndex(); 
 packageDeliveryIndex.createIndex([
     packageDeliveryIndex.fieldDefinition.numeric("id",true),
     packageDeliveryIndex.fieldDefinition.numeric("delivery_id",true),
@@ -75,7 +75,7 @@ let hazmatIndex = rediSearch(redis,'index:hazmat', {
     }
     
 }); 
-hazmatIndex.dropIndex(); 
+//hazmatIndex.dropIndex(); 
 hazmatIndex.createIndex([
     hazmatIndex.fieldDefinition.numeric("id",true),
 
@@ -198,7 +198,7 @@ let planeCompartmentIndex = rediSearch(redis,'index:compartments', {
     }
     
 }); 
-planeCompartmentIndex.dropIndex(); 
+//planeCompartmentIndex.dropIndex(); 
 planeCompartmentIndex.createIndex([
     planeCompartmentIndex.fieldDefinition.numeric("id",true),
     planeCompartmentIndex.fieldDefinition.numeric("plane_id",true),
@@ -216,7 +216,7 @@ let planeIndex = rediSearch(redis,'index:planes', {
     }
     
 }); 
-planeIndex.dropIndex(); 
+///planeIndex.dropIndex(); 
 planeIndex.createIndex([
     planeIndex.fieldDefinition.numeric("id",true),
     planeIndex.fieldDefinition.text("tail_num",true),
@@ -237,7 +237,7 @@ let shipperIndex = rediSearch(redis,'index:shipper', {
     }
     
 }); 
-shipperIndex.dropIndex(); 
+//shipperIndex.dropIndex(); 
 shipperIndex.createIndex([
     shipperIndex.fieldDefinition.numeric("id",true),
     shipperIndex.fieldDefinition.text("name",true),
@@ -260,7 +260,7 @@ let userIndex = rediSearch(redis,'index:users', {
     }
     
 }); 
-userIndex.dropIndex(); 
+//userIndex.dropIndex(); 
 userIndex.createIndex([
     userIndex.fieldDefinition.numeric("id",true),
     userIndex.fieldDefinition.text("username",true),
@@ -451,7 +451,7 @@ let customerIndex = rediSearch(redis,'index:customers', {
     }
     
 }); 
-customerIndex.dropIndex(); 
+//customerIndex.dropIndex(); 
 customerIndex.createIndex([
     customerIndex.fieldDefinition.numeric("id",true),
 

@@ -6,7 +6,13 @@
 <input type='hidden' id="mtype" value="default" />
         <div class='card'>
             <div class="card-header col-md-12">
-                <h3>Add New Package</h3>
+                <h3>Add New Package</h3> 
+                <div>
+                    <select>
+                        <option>Select Your Printer</option>
+                    </select>
+
+                </div>
             </div>
             <div class="card-body">
                 <ul class="nav nav-pills nav-primary" id="myTab" role="tablist">
@@ -64,8 +70,21 @@
                                         
 
                                          <div class='form-group'>
-                                            <label>Carrier </label>
-                                            <input type='text' class='form-control carrier' id='carrier' name='carrier' value="<%=awb.carrier%>" />
+                                            <label>Carrier </label><a href='#' data-target="#findshipper" data-toggle="modal">Add New Carrier</a>
+                                            <!-- <input type='text' class='form-control carrier' id='carrier' name='carrier' value="<%=awb.carrier%>" /> -->
+                                            <select id="pick-carrier" class='form-control' style='width:90%;'>
+                                                <option>Select Carrier</option>
+                                                <%for(var i =0; i < shipperListing.length;i++){
+                                                    var shipperSelected = ''; 
+                                                    if (shipperListing[i].id == awb.carrier){
+                                                        shipperSelected = 'selected'
+                                                    }
+                                                    %>
+
+                                                    
+                                                    <option <%=shipperSelected%> value="<%=shipperListing[i].id%>"><%=shipperListing[i].name%></option>
+                                                    <%}%>
+                                             </select>
                                         </div>
 
                                         <div class='form-group'>
@@ -105,6 +124,18 @@
                                             <a id='show-sed' data-toggle="modal" data-target="#alertSEDPOPUP"></a>
                                             <input type ='hidden' value="0"  id='sedRequired'/>
                                         </div>
+
+                                        <div class='form-group'>
+                                                <a href="javascript:void(0)" data-toggle="modal" data-target="#addPO"> ADD Purchase Order </a>
+                                               
+                                                
+                                               
+                                            </div>
+
+                                            <div class='form-group'>
+                                                    <label>Notes <span class='text-info title customerName '></span></label>
+                                                    <input type='text' class='form-control invoice' id='awbNotes' name='awbNotes' required value=""/>
+                                                </div>
                                         <!-- <div class='form-group'>
                                                 <label>AWB Value</label>
                                                 <input type='text' class='form-control awbValue' name='awbValue' required />
@@ -189,6 +220,26 @@
                 <input type ='text' class='form-control' placeholder="Name" id='sp-name'/>
               </div>
               <div class='form-group' >
+                    <div class='row'>
+                        <div class='col-md-6'>  <label>Contact First Name</label>
+                          <input type ='text' class='form-control' placeholder="Frist Name" id='sp-fname'/></div>
+                        <div class='col-md-6'>
+                              <label>Contact Last Name</label>
+                      <input type ='text' class='form-control' placeholder="Last Name" id='sp-lname'/>
+                        </div>
+                        
+                    </div>
+                    
+                    </div>
+                    <div class='form-group' >
+                            <label>Phone</label>
+                            <input type ='text' class='form-control' placeholder="Phone" id='sp-phone'/>
+                          </div>
+                          <div class='form-group' >
+                                <label>Email</label>
+                                <input type ='text' class='form-control' placeholder="Email" id='sp-email'/>
+                              </div>
+              <div class='form-group' >
                 <label> Tax ID</label>
                 <input type ='text' class='form-control' placeholder="Tax ID" id='sp-tax-id'/>
               </div>
@@ -207,6 +258,64 @@
               <div class='form-group' >
                 <label> Zip</label>
                 <input type ='text' class='form-control' placeholder="State" id='sp-state'/>
+              </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary close-del" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary btn-success" id='save-shipper' data-dismiss="modal">Create</button>
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="findcarrier" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2"
+    aria-hidden="true" style="display: none;">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="exampleModalLabel2">Add Carrier</h2>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+            
+               
+              <div class='form-group' >
+                <label> Name</label>
+                <input type ='text' class='form-control' placeholder="Name" id='ca-name'/>
+              </div>
+              <div class='form-group' >
+                  <div class='row'>
+                      <div class='col-md-6'>  <label>Contact First Name</label>
+                        <input type ='text' class='form-control' placeholder="Name" id='ca-fname'/></div>
+                      <div class='col-md-6'>
+                            <label>Contact Last Name</label>
+                    <input type ='text' class='form-control' placeholder="Name" id='ca-lname'/>
+                      </div>
+                      
+                  </div>
+                  
+                  </div>
+              <div class='form-group' >
+                <label> Tax ID</label>
+                <input type ='text' class='form-control' placeholder="Tax ID" id='ca-tax-id'/>
+              </div>
+              <div class='form-group' >
+                <label> Address</label>
+                <input type ='text' class='form-control' placeholder="Address" id='ca-address'/>
+              </div>
+              <div class='form-group' >
+                <label> City</label>
+                <input type ='text' class='form-control' placeholder="City" id='ca-city'/>
+              </div>
+              <div class='form-group' >
+                <label> State</label>
+                <input type ='text' class='form-control' placeholder="Zip" id='ca-zip'/>
+              </div>
+              <div class='form-group' >
+                <label> Zip</label>
+                <input type ='text' class='form-control' placeholder="State" id='ca-state'/>
               </div>
             </div>
             <div class="modal-footer">
@@ -343,6 +452,15 @@
                        <select class='form-control' id='packaging'>
                            <option>BOX</option>
                            <option>BAG</option>
+                           <option>Envelope</option>
+                           <option>Pallet</option>
+                           <option>Suitcase</option>
+                           <option>Can</option>
+                           <option>Shrink Wrapped Box</option>
+                           <option>Shrink Wrapped Pallet</option>
+                           <option>Shrink Wrapped Pallet</option>
+                           <option>Cooler</option>
+                           <option>Other</option>
                        </select>
                     </div>
                     <div class='form-group'>
@@ -391,6 +509,46 @@
             <div class="modal-body">
                 <label>Enter AWB #</label>
                 <input type='text' class='form-control awb'>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary close-del" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success ship-manifest" id='ship-manifest'>Ship Manifest</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="addPO" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2"
+    aria-hidden="true" style="display: none;">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="exampleModalLabel2">AWB PO</h2>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+              
+                <div class='form-group'>
+                        <label>P.O. #</label>
+                        <input type='text' class='form-control '>
+                </div>
+                <div class='form-group'>
+                        <label>Delivery</label>
+                        <input type='text' class='form-control '>
+                </div>
+                <div class='form-group'>
+                        <label>Pickup</label>
+                        <input type='text' class='form-control '>
+                </div>
+                <div class='form-group'>
+                        <label>MISC</label>
+                        <input type='text' class='form-control '>
+                </div>
+                <div class='form-group'>
+                        <label>Note</label>
+                        <input type='text' class='form-control '>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary close-del" data-dismiss="modal">Close</button>
