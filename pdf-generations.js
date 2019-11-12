@@ -9,11 +9,11 @@ var pkgService  = new PackageService();
 var ManifestService  = require("./RedisServices/ManifestService").ManifestService; 
 var manifestService = new ManifestService(); 
 
-manifestService.getManifest(148).then(manifest=>{
+manifestService.getManifest(147).then(manifest=>{
     console.log(manifest)
-    pkgService.getManifestPackages(148).then(packages=>{
+    pkgService.getManifestPackages(147).then(packages=>{
         console.log('packages',packages)
-        flightManifest.generateManifest(manifest,packages)
+        loadSheet.generateManifestLoadSheet(manifest,packages)
     });
    
     //loadSheet.generateManifestLoadSheet(manifest); 

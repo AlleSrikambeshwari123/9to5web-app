@@ -592,7 +592,7 @@ router.get('/download-load-sheet/:mid',(req,res,next)=>{
         console.log(manifest)
         services.packageService.getManifestPackages(mid).then(packages=>{
             console.log('packages',packages)
-            loadSheet.generateManifestLoadSheet(manifest).then(result=>{
+            loadSheet.generateManifestLoadSheet(manifest,packages).then(result=>{
                 console.log(result); 
                 setTimeout(() => {
                     res.download(result.filename);    
