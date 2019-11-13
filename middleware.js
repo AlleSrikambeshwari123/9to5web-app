@@ -1,7 +1,7 @@
 /**
  * Created by Stevan on 10/2/2017.
  */
-
+var printerUtil = require("./Util/PrinterUtil")
 module.exports = function(userService,allowedRoles){
     function handleNavigation(user){
         var adminRoles  = ['Admin'];
@@ -16,7 +16,7 @@ module.exports = function(userService,allowedRoles){
 
     }
     return {
-        requireAuthentication : function(req,res,next){
+        requireAuthentication : async function(req,res,next){
             //get the session here
             var pageData = {};
            
@@ -25,6 +25,7 @@ module.exports = function(userService,allowedRoles){
                 userService.verifyToken(token).then(function(user){
                     res.User = user;
                     pageData.User = user;
+                    res.printer =  printerUtil.getUserPrinter(user.username); 
                     var navMode = handleNavigation(user);
                     console.log("NAV MODE",navMode); 
                     //if users is in role

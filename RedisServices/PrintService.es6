@@ -1,17 +1,24 @@
 var dataContext = require('./dataContext')
+var printUtil = require("../Util/PrinterUtil")
 export class PrintService{
     constructor(){
 
     }
     //print awb 
-    sendAwbToPrint(awb,username){
-        dataContext.redisClient.publish("print:awb:"+username,awb)
+    async sendAwbToPrint(awb,username){
+        var printServer = await printUtil.getUserPrinter(username)
+        console.log("printServer:",printServer)
+        dataContext.redisClient.publish("print:awb:"+printServer,awb)
     }
-    sendLblToPrint(awb,username){
-        dataContext.redisClient.publish('print:lbl:'+username,awb)
+    async sendLblToPrint(awb,username){
+        var printServer = await printUtil.getUserPrinter(username)
+        console.log("printServer:",printServer)
+        dataContext.redisClient.publish('print:lbl:'+printServer,awb)
     }
-    sendSingleLbl(awb,pkgId,username){
-        dataContext.redisClient.publish('print:single:lbl:'+username,  `${awb}:${pkgId}`)
+    async sendSingleLbl(awb,pkgId,username){
+        var printServer = await printUtil.getUserPrinter(username)
+        console.log("printServer:",printServer)
+        dataContext.redisClient.publish('print:single:lbl:'+printServer,  `${awb}:${pkgId}`)
     }
 
 }

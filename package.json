@@ -13,6 +13,7 @@
     "@sendgrid/mail": "^6.4.0",
     "aws-sdk": "^2.528.0",
     "bcrypt": "^3.0.6",
+    "bluebird": "^3.7.1",
     "body-parser": "~1.15.1",
     "bwip-js": "^1.7.3",
     "client-sessions": "^0.8.0",

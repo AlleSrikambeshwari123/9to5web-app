@@ -19,7 +19,7 @@ var FlightLoadSheet = require('../Util/FlightLoadSheet').FlightLoadSheet;
 var loadSheet = new FlightLoadSheet(); 
 var FlightManifest = require('../Util/FlightManifest').FlightManifest; 
 var flightManifest = new FlightManifest()
-
+var printerUtil = require('../Util/PrinterUtil')
 
 //Manifest Routes
 //#region Manifest Routes
@@ -307,6 +307,8 @@ router.get ('/fll-new-package/:awb?',middleware(services.userService).requireAut
     pageData.mid = req.params.mid;
     pageData.luser = res.User.firstName + ' ' + res.User.lastName;
     pageData.RoleId = res.User.role;
+    pageData.printer = res.printer; 
+    console.log(res.printer)
     //get new packages 
     var awb = req.params.awb; 
    
@@ -604,9 +606,16 @@ router.get('/download-load-sheet/:mid',(req,res,next)=>{
         //loadSheet.generateManifestLoadSheet(manifest); 
     })
 })
+router.post('/set-printer',middleware(services.userService).requireAuthentication,(req,res,next)=>{
+   printerUtil.setUserPrinter(res.User.username,req.body.printer); 
+    res.send({set:true,printer:req.body.printer})
+}); 
 
 router.get('/fl-print-options',middleware(services.userService).requireAuthentication,(req,res,next)=>{
     datacontext.redisClient.smembers("fl:print:computers",(err,reply)=>{
+        if(err)
+            console.log(err); 
+        console.log(reply)
         res.send(reply)
     })
 })
@@ -622,6 +631,7 @@ router.get('/rec-package-nas',middleware(services.userService).requireAuthentica
     pageData.mid = req.params.mid;
     pageData.luser = res.User.firstName + ' ' + res.User.lastName;
     pageData.RoleId = res.User.role;
+
     res.render('pages/warehouse/rec-nas',pageData); 
 })
 router.get('/update-invoice',middleware(services.userService).requireAuthentication,(req,res,next)=>{

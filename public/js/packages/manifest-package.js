@@ -406,9 +406,7 @@ $(function () {
       
     }); 
 
-    $("#print-awb").click(function(){
-
-    })
+ 
     $("#print-label").click(function(){
 
     })

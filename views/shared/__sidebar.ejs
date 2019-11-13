@@ -72,6 +72,14 @@
 				</li>
 				<%}%>
 				<%if (RoleId.indexOf("Admin")>-1 || RoleId.indexOf("Warehouse Fl")>-1) {%>
+				<li class='nav-item'>
+						<div id="current-printer" style='color:gray'></div>
+						<select id='workstations' class='form-control workstations'>
+								<option value="">Select Your Printer</option>
+							</select>
+							
+							<button id='set-printer' class='btn btn-info btn-sm mt-1 pull-right mb-1'>SET</button>
+				</li>
 				<li class="nav-item">
 					<a data-toggle="collapse" href="#warehouse">
 						<i class="fas fa-warehouse"></i>

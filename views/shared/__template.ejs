@@ -202,10 +202,32 @@
 
 $.ajax({
 	url:"/warehouse/fl-print-options",
+	contentType:'json',
 	success:function(workstations){
+		console.log('work',workstations)
+			$.each(workstations,function(index,workstation){
+				console.log(workstation,"ADDING")
+				$("#workstations").append(`<option >${workstation}</option>`)
+			})
+	}	
+		});
+		
+	
+		$("#set-printer").click(function(){
+			//set the printe 
+			$.ajax({
+				url:'/warehouse/set-printer',
+				type:'post',
+				data:{printer:$("#workstations").val(),
+				success:function(results){
+					console.log(results)
+					$("#current-printer").text($("#workstations").val()); 
+					$("#workstations").hide()
+				}
+			}
+			})
+		})
 
-	}
-})
 $('.flightdate').datetimepicker({
         format: 'MM/DD/YYYY',
     });

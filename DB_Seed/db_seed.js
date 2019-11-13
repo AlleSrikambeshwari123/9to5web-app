@@ -2,7 +2,7 @@ var redis = require('redis');
 var rediSearch = require('../redisearchclient/index'); 
 var env = require('../environment')
 var moment = require('moment'); 
-
+var dataContext = require('../RedisServices/dataContext')
 
 
 let driverIndex = rediSearch(redis,'index:drivers', {

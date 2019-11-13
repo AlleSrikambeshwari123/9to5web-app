@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 Object.defineProperty(exports, "__esModule", {
     value: true
@@ -9,6 +9,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var dataContext = require('./dataContext');
+var printUtil = require("../Util/PrinterUtil");
 
 var PrintService = exports.PrintService = function () {
     function PrintService() {
@@ -18,22 +19,28 @@ var PrintService = exports.PrintService = function () {
 
 
     _createClass(PrintService, [{
-        key: 'sendAwbToPrint',
-        value: function sendAwbToPrint(awb, username) {
-            dataContext.redisClient.publish("print:awb:" + username, awb);
+        key: "sendAwbToPrint",
+        value: async function sendAwbToPrint(awb, username) {
+            var printServer = await printUtil.getUserPrinter(username);
+            console.log("printServer:", printServer);
+            dataContext.redisClient.publish("print:awb:" + printServer, awb);
         }
     }, {
-        key: 'sendLblToPrint',
-        value: function sendLblToPrint(awb, username) {
-            dataContext.redisClient.publish('print:lbl:' + username, awb);
+        key: "sendLblToPrint",
+        value: async function sendLblToPrint(awb, username) {
+            var printServer = await printUtil.getUserPrinter(username);
+            console.log("printServer:", printServer);
+            dataContext.redisClient.publish('print:lbl:' + printServer, awb);
         }
     }, {
-        key: 'sendSingleLbl',
-        value: function sendSingleLbl(awb, pkgId, username) {
-            dataContext.redisClient.publish('print:single:lbl:' + username, awb + ':' + pkgId);
+        key: "sendSingleLbl",
+        value: async function sendSingleLbl(awb, pkgId, username) {
+            var printServer = await printUtil.getUserPrinter(username);
+            console.log("printServer:", printServer);
+            dataContext.redisClient.publish('print:single:lbl:' + printServer, awb + ":" + pkgId);
         }
     }]);
 
     return PrintService;
 }();
-//# sourceMappingURL=data:application/json;charset=utf8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIlJlZGlzU2VydmljZXMvUHJpbnRTZXJ2aWNlLmVzNiJdLCJuYW1lcyI6WyJkYXRhQ29udGV4dCIsInJlcXVpcmUiLCJQcmludFNlcnZpY2UiLCJhd2IiLCJ1c2VybmFtZSIsInJlZGlzQ2xpZW50IiwicHVibGlzaCIsInBrZ0lkIl0sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7O0FBQUEsSUFBSUEsY0FBY0MsUUFBUSxlQUFSLENBQWxCOztJQUNhQyxZLFdBQUFBLFk7QUFDVCw0QkFBYTtBQUFBO0FBRVo7QUFDRDs7Ozs7dUNBQ2VDLEcsRUFBSUMsUSxFQUFTO0FBQ3hCSix3QkFBWUssV0FBWixDQUF3QkMsT0FBeEIsQ0FBZ0MsZUFBYUYsUUFBN0MsRUFBc0RELEdBQXREO0FBQ0g7Ozt1Q0FDY0EsRyxFQUFJQyxRLEVBQVM7QUFDeEJKLHdCQUFZSyxXQUFaLENBQXdCQyxPQUF4QixDQUFnQyxlQUFhRixRQUE3QyxFQUFzREQsR0FBdEQ7QUFDSDs7O3NDQUNhQSxHLEVBQUlJLEssRUFBTUgsUSxFQUFTO0FBQzdCSix3QkFBWUssV0FBWixDQUF3QkMsT0FBeEIsQ0FBZ0Msc0JBQW9CRixRQUFwRCxFQUFrRUQsR0FBbEUsU0FBeUVJLEtBQXpFO0FBQ0giLCJmaWxlIjoiUmVkaXNTZXJ2aWNlcy9QcmludFNlcnZpY2UuanMiLCJzb3VyY2VzQ29udGVudCI6WyJ2YXIgZGF0YUNvbnRleHQgPSByZXF1aXJlKCcuL2RhdGFDb250ZXh0JylcbmV4cG9ydCBjbGFzcyBQcmludFNlcnZpY2V7XG4gICAgY29uc3RydWN0b3IoKXtcblxuICAgIH1cbiAgICAvL3ByaW50IGF3YiBcbiAgICBzZW5kQXdiVG9QcmludChhd2IsdXNlcm5hbWUpe1xuICAgICAgICBkYXRhQ29udGV4dC5yZWRpc0NsaWVudC5wdWJsaXNoKFwicHJpbnQ6YXdiOlwiK3VzZXJuYW1lLGF3YilcbiAgICB9XG4gICAgc2VuZExibFRvUHJpbnQoYXdiLHVzZXJuYW1lKXtcbiAgICAgICAgZGF0YUNvbnRleHQucmVkaXNDbGllbnQucHVibGlzaCgncHJpbnQ6bGJsOicrdXNlcm5hbWUsYXdiKVxuICAgIH1cbiAgICBzZW5kU2luZ2xlTGJsKGF3Yixwa2dJZCx1c2VybmFtZSl7XG4gICAgICAgIGRhdGFDb250ZXh0LnJlZGlzQ2xpZW50LnB1Ymxpc2goJ3ByaW50OnNpbmdsZTpsYmw6Jyt1c2VybmFtZSwgIGAke2F3Yn06JHtwa2dJZH1gKVxuICAgIH1cblxufSJdfQ==
+//# sourceMappingURL=data:application/json;charset=utf8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIlJlZGlzU2VydmljZXMvUHJpbnRTZXJ2aWNlLmVzNiJdLCJuYW1lcyI6WyJkYXRhQ29udGV4dCIsInJlcXVpcmUiLCJwcmludFV0aWwiLCJQcmludFNlcnZpY2UiLCJhd2IiLCJ1c2VybmFtZSIsInByaW50U2VydmVyIiwiZ2V0VXNlclByaW50ZXIiLCJjb25zb2xlIiwibG9nIiwicmVkaXNDbGllbnQiLCJwdWJsaXNoIiwicGtnSWQiXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7QUFBQSxJQUFJQSxjQUFjQyxRQUFRLGVBQVIsQ0FBbEI7QUFDQSxJQUFJQyxZQUFZRCxRQUFRLHFCQUFSLENBQWhCOztJQUNhRSxZLFdBQUFBLFk7QUFDVCw0QkFBYTtBQUFBO0FBRVo7QUFDRDs7Ozs7NkNBQ3FCQyxHLEVBQUlDLFEsRUFBUztBQUM5QixnQkFBSUMsY0FBYyxNQUFNSixVQUFVSyxjQUFWLENBQXlCRixRQUF6QixDQUF4QjtBQUNBRyxvQkFBUUMsR0FBUixDQUFZLGNBQVosRUFBMkJILFdBQTNCO0FBQ0FOLHdCQUFZVSxXQUFaLENBQXdCQyxPQUF4QixDQUFnQyxlQUFhTCxXQUE3QyxFQUF5REYsR0FBekQ7QUFDSDs7OzZDQUNvQkEsRyxFQUFJQyxRLEVBQVM7QUFDOUIsZ0JBQUlDLGNBQWMsTUFBTUosVUFBVUssY0FBVixDQUF5QkYsUUFBekIsQ0FBeEI7QUFDQUcsb0JBQVFDLEdBQVIsQ0FBWSxjQUFaLEVBQTJCSCxXQUEzQjtBQUNBTix3QkFBWVUsV0FBWixDQUF3QkMsT0FBeEIsQ0FBZ0MsZUFBYUwsV0FBN0MsRUFBeURGLEdBQXpEO0FBQ0g7Ozs0Q0FDbUJBLEcsRUFBSVEsSyxFQUFNUCxRLEVBQVM7QUFDbkMsZ0JBQUlDLGNBQWMsTUFBTUosVUFBVUssY0FBVixDQUF5QkYsUUFBekIsQ0FBeEI7QUFDQUcsb0JBQVFDLEdBQVIsQ0FBWSxjQUFaLEVBQTJCSCxXQUEzQjtBQUNBTix3QkFBWVUsV0FBWixDQUF3QkMsT0FBeEIsQ0FBZ0Msc0JBQW9CTCxXQUFwRCxFQUFxRUYsR0FBckUsU0FBNEVRLEtBQTVFO0FBQ0giLCJmaWxlIjoiUmVkaXNTZXJ2aWNlcy9QcmludFNlcnZpY2UuanMiLCJzb3VyY2VzQ29udGVudCI6WyJ2YXIgZGF0YUNvbnRleHQgPSByZXF1aXJlKCcuL2RhdGFDb250ZXh0JylcbnZhciBwcmludFV0aWwgPSByZXF1aXJlKFwiLi4vVXRpbC9QcmludGVyVXRpbFwiKVxuZXhwb3J0IGNsYXNzIFByaW50U2VydmljZXtcbiAgICBjb25zdHJ1Y3Rvcigpe1xuXG4gICAgfVxuICAgIC8vcHJpbnQgYXdiIFxuICAgIGFzeW5jIHNlbmRBd2JUb1ByaW50KGF3Yix1c2VybmFtZSl7XG4gICAgICAgIHZhciBwcmludFNlcnZlciA9IGF3YWl0IHByaW50VXRpbC5nZXRVc2VyUHJpbnRlcih1c2VybmFtZSlcbiAgICAgICAgY29uc29sZS5sb2coXCJwcmludFNlcnZlcjpcIixwcmludFNlcnZlcilcbiAgICAgICAgZGF0YUNvbnRleHQucmVkaXNDbGllbnQucHVibGlzaChcInByaW50OmF3YjpcIitwcmludFNlcnZlcixhd2IpXG4gICAgfVxuICAgIGFzeW5jIHNlbmRMYmxUb1ByaW50KGF3Yix1c2VybmFtZSl7XG4gICAgICAgIHZhciBwcmludFNlcnZlciA9IGF3YWl0IHByaW50VXRpbC5nZXRVc2VyUHJpbnRlcih1c2VybmFtZSlcbiAgICAgICAgY29uc29sZS5sb2coXCJwcmludFNlcnZlcjpcIixwcmludFNlcnZlcilcbiAgICAgICAgZGF0YUNvbnRleHQucmVkaXNDbGllbnQucHVibGlzaCgncHJpbnQ6bGJsOicrcHJpbnRTZXJ2ZXIsYXdiKVxuICAgIH1cbiAgICBhc3luYyBzZW5kU2luZ2xlTGJsKGF3Yixwa2dJZCx1c2VybmFtZSl7XG4gICAgICAgIHZhciBwcmludFNlcnZlciA9IGF3YWl0IHByaW50VXRpbC5nZXRVc2VyUHJpbnRlcih1c2VybmFtZSlcbiAgICAgICAgY29uc29sZS5sb2coXCJwcmludFNlcnZlcjpcIixwcmludFNlcnZlcilcbiAgICAgICAgZGF0YUNvbnRleHQucmVkaXNDbGllbnQucHVibGlzaCgncHJpbnQ6c2luZ2xlOmxibDonK3ByaW50U2VydmVyLCAgYCR7YXdifToke3BrZ0lkfWApXG4gICAgfVxuXG59Il19
