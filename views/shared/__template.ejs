@@ -11,7 +11,7 @@
 	<meta name="keywords"
 		content="Admin, Dashboard, Bootstrap4, Sass, CSS3, HTML5, Responsive Dashboard, Responsive Admin Template, Admin Template, Best Admin Template, Bootstrap Template, Themeforest" />
 	<meta name="author" content="Bootstrap Gallery" />
-	<!-- <link rel="shortcut icon" href="/img/favicon.jpg" /> -->
+	<link rel="icon" href="../img/favicon.ico" type="image/x-icon" />
 	<title>9-5 Imports </title>
 
 	<script src="/assets/js/plugin/webfont/webfont.min.js"></script>
@@ -60,7 +60,7 @@
 						<div class="d-flex align-items-left align-items-md-center flex-column flex-md-row">
 							<div>
 								<h2 class="text-white pb-2 fw-bold"><%=title %></h2>
-								<h5 class="text-white op-7 mb-2">Welcome to 9-5 Imports</h5>
+								<h5 class="text-white op-7 mb-2">9-5 Imports</h5>
 							</div>
 							<!-- <div class="ml-md-auto py-2 py-md-0">
 								<a href="#" class="btn btn-white btn-border btn-round mr-2">Manage</a>
@@ -114,7 +114,7 @@
 	<!-- <script src="/vendor/notify/notify-custom.js"></script> -->
 	<!-- Common JS -->
 	<!-- <script src="/js/common.js"></script> -->
-	
+
 
 	<!--   Core JS Files   -->
 	<script src="/assets/js/core/jquery.3.2.1.min.js"></script>
@@ -200,37 +200,38 @@
 
 
 
-$.ajax({
-	url:"/warehouse/fl-print-options",
-	contentType:'json',
-	success:function(workstations){
-		console.log('work',workstations)
-			$.each(workstations,function(index,workstation){
-				console.log(workstation,"ADDING")
-				$("#workstations").append(`<option >${workstation}</option>`)
-			})
-	}	
+		$.ajax({
+			url: "/warehouse/fl-print-options",
+			contentType: 'json',
+			success: function (workstations) {
+				console.log('work', workstations)
+				$.each(workstations, function (index, workstation) {
+					console.log(workstation, "ADDING")
+					$("#workstations").append(`<option >${workstation}</option>`)
+				})
+			}
 		});
-		
-	
-		$("#set-printer").click(function(){
+
+
+		$("#set-printer").click(function () {
 			//set the printe 
 			$.ajax({
-				url:'/warehouse/set-printer',
-				type:'post',
-				data:{printer:$("#workstations").val(),
-				success:function(results){
-					console.log(results)
-					$("#current-printer").text($("#workstations").val()); 
-					$("#workstations").hide()
+				url: '/warehouse/set-printer',
+				type: 'post',
+				data: {
+					printer: $("#workstations").val(),
+					success: function (results) {
+						console.log(results)
+						$("#current-printer").text($("#workstations").val());
+						$("#workstations").hide()
+					}
 				}
-			}
 			})
 		})
 
-$('.flightdate').datetimepicker({
-        format: 'MM/DD/YYYY',
-    });
+		$('.flightdate').datetimepicker({
+			format: 'MM/DD/YYYY',
+		});
 		Circles.create({
 			id: 'circles-1',
 			radius: 45,

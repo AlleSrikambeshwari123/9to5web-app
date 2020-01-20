@@ -16,17 +16,17 @@ router.post('/', function (req, res, next) {
       // services.userService.generateToken(authresult.user).then(function(token){
       req.session.token = authresult.token;
       var cuser = authresult.user;
-      if (cuser.role.indexOf("Admin")>-1) {
+      if (cuser.role.indexOf("Admin") > -1) {
         //replace with admin dashboard
         res.send({ success: true, role: cuser.role });
       }
-      if (cuser.role.indexOf("Warehouse Fl")>-1){
-        res.send({ success: true, role: cuser.role});
+      if (cuser.role.indexOf("Warehouse Fl") > -1) {
+        res.send({ success: true, role: cuser.role });
       }
       else {
         //replace with general user dashboard
-        console.log(cuser.role,"ROLE")
-        res.send({ success: true, role: cuser.role});
+        console.log(cuser.role, "ROLE")
+        res.send({ success: true, role: cuser.role });
       }
       //});
     }
@@ -41,14 +41,13 @@ router.get('/forgot-password', function (req, res, next) {
 });
 router.get('/logout', function (req, res, next) {
   req.session.reset();
-
   res.redirect('/');
 });
 
-router.post('/change-pass',middleware(services.userService).requireAuthentication,(req,res,next)=>{
+router.post('/change-pass', middleware(services.userService).requireAuthentication, (req, res, next) => {
   console.log(req.body)
-  console.log(res.User); 
-  services.userService.changePassword(res.User.username,req.body.newPass,req.body.oldPass).then(result=>{
+  console.log(res.User);
+  services.userService.changePassword(res.User.username, req.body.newPass, req.body.oldPass).then(result => {
     res.send(result)
   })
 })

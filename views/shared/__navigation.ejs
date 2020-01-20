@@ -1,6 +1,4 @@
-<!-- BEGIN .side-nav -->
 <nav class="side-nav">
-    <!-- BEGIN: side-nav-content -->
     <ul class="nav nav-primary" id="unifyMenu">
         <%if (RoleId.indexOf("Admin")>-1){%>
         <li class="active selected">
@@ -20,7 +18,6 @@
                 <li>
                     <a href='/admin/customersV1'>Customers</a>
                 </li>
-
             </ul>
         </li>
         <%}%>
@@ -31,7 +28,6 @@
                 <span class="caret"></span>
             </a>
             <ul aria-expanded="false" class="collapse in">
-              
                 <li>
                     <a href='/warehouse/list-manifest' class="">Air Cargo</a>
                 </li>
@@ -41,19 +37,14 @@
                 <li class='pb-1' style='border-bottom:1px solid #e9ecef!important;'>
                     <a href='/warehouse/list-hazmat' class="">HAZMAT</a>
                 </li>
-               
-                
                 <li>
                     <a href='/warehouse/processing' class="">Trinidad Processing</a>
                 </li>
                 <li>
                     <a href='/warehouse/store-check-in' class="">Store Check-in</a>
                 </li>
-
-
             </ul>
         </li>
-
         <!-- <li>
             <a href="#" class="has-arrow" aria-expanded="false">
                 <span class="has-icon">
@@ -88,14 +79,9 @@
                 <li>
                     <a href='/users/packages'>View Packages</a>
                 </li>
-              
             </ul>
         </li> -->
-
-
-        <li class="menu-header">
-            --Account Options
-        </li>
+        <li class="menu-header"> --Account Options</li>
         <li>
             <a href="#" class="has-arrow" aria-expanded="false">
                 <span class="has-icon">
@@ -107,13 +93,13 @@
                 <li>
                     <a href='/users/change-pass'>Change Password</a>
                 </li>
-                <li>
-                    <a href='/logout'>Logout</a>
-                </li>
-
             </ul>
         </li>
+        <li class="nav-item">
+            <a href="/logout">
+                <i class="fa fa-sign-out-alt"></i>
+                <p>Logout </p>
+            </a>
+        </li>
     </ul>
-    <!-- END: side-nav-content -->
 </nav>
-<!-- END: .side-nav -->
