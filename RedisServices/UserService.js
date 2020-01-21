@@ -2,8 +2,6 @@
 
 var cryptojs = require('crypto-js');
 var jwt = require('jsonwebtoken');
-var moment = require('moment');
-var SERVICE_KEY = 'users';
 var bcrypt = require('bcrypt');
 const strings = require('../Res/strings');
 
@@ -18,16 +16,12 @@ class UserService {
     changePassword(username, newpassword, oldpassword) {
         return new Promise((resolve, reject) => {
             this.authenticate(username, oldpassword).then((userInfo) => {
-                if (userInfo.valid == "true" || userInfo.valid == true) {
+                if (userInfo.valid == true) {
                     client.hmset(PREFIX + username, { password: bcrypt.hashSync(newpassword, 10) }, function (err, result) {
-                        if (err) {
-                            resolve({ updated: false });
-                        }
-                        resolve({ updated: true });
+                        if (err) resolve({ success: false, message: strings.string_response_error });
+                        resolve({ success: true, message: strings.string_response_updated });
                     });
-                } else {
-                    resolve({ updated: false });
-                }
+                } else resolve({ success: false, message: strings.string_password_incorrect });
             });
         });
     }

@@ -1,4 +1,3 @@
-<!-- Sidebar -->
 <div class="sidebar sidebar-style-2">
 	<div class="sidebar-wrapper scrollbar scrollbar-inner">
 		<div class="sidebar-content">
@@ -9,7 +8,6 @@
 					<a data-toggle="collapse" href="#collapseExample" aria-expanded="true">
 						<span>
 							<span class="user-level"><%=user.firstName + ' ' + user.lastName%></span>
-							<!-- <span class="caret"></span> -->
 						</span>
 					</a>
 					<div class="clearfix"></div>
@@ -48,7 +46,7 @@
 					</span>
 					<h4 class="text-section">Admin</h4>
 				</li>
-				<%if (user.role.indexOf("Admin")>-1 ) {%>
+				<%if (user.role.includes("Admin")) {%>
 				<li class="nav-item <% if (page.includes('/users/')) { %> active <% } %>">
 					<a href="/admin/users/list">
 						<i class="fa fa-users"></i>
@@ -68,7 +66,7 @@
 					</a>
 				</li>
 				<%}%>
-				<%if (user.role.indexOf("Admin")>-1 || user.role.indexOf("Warehouse Fl")>-1) {%>
+				<%if (user.role.includes('Admin') || user.role.includes("Warehouse Fl")) {%>
 				<li class='nav-item'>
 					<div id="current-printer" style='color:gray'></div>
 					<select id='workstations' class='form-control workstations'>
@@ -162,7 +160,7 @@
 					</div>
 				</li>
 				<%}%>
-				<%if (user.role.indexOf("Admin")>-1 || user.role.indexOf("Warehouse NAS")>-1) {%>
+				<%if (user.role.includes("Admin") || user.role.includes("Warehouse NAS")) {%>
 				<li class="nav-item">
 					<a data-toggle="collapse" href="#wnas">
 						<i class="fas fa-warehouse"></i>
@@ -228,7 +226,7 @@
 					</div>
 				</li>
 				<%}%>
-				<%if (user.role.indexOf("Admin")>-1 || user.role.indexOf("Store")>-1) {%>
+				<%if (user.role.includes("Admin") || user.role.includes("Store")) {%>
 				<li class="nav-item">
 					<a data-toggle="collapse" href="#stores">
 						<i class="fas fa-store"></i>
@@ -262,31 +260,30 @@
 					</div>
 				</li>
 				<%}%>
-			
-				
+
 				<li class="nav-section">
 					<span class="sidebar-mini-icon">
 						<i class="fa fa-ellipsis-h"></i>
 					</span>
 					<h4 class="text-section">Account Options</h4>
 				</li>
-				<li class="nav-item">
-					<a data-toggle="collapse" href="#myaccount">
-						<i class="fas fa-user"></i>
-						<p>My Account</p>
-						<span class="caret"></span>
-					</a>
-					<div class="collapse" id="myaccount">
-						<ul class="nav nav-collapse">
-							<li>
-								<a href="/users/change-pass">
-									<span class="sub-item">Change Password</span>
-								</a>
-							</li>
-						</ul>
-					</div>
+				<li class="nav-item <% if (page.includes('/account/')) { %> active <% } %>">
+				<a data-toggle="collapse" href="#myaccount">
+					<i class="fas fa-user"></i>
+					<p>My Account</p>
+					<span class="caret"></span>
+				</a>
+				<div class="collapse <% if (page.includes('/account/')) { %> show <% } %>" id="myaccount">
+					<ul class="nav nav-collapse">
+						<li <% if (page.includes('/account/change-pass')) { %> class="active" <% } %>>
+							<a href="/account/change-pass">
+								<span class="sub-item">Change Password</span>
+							</a>
+						</li>
+					</ul>
+				</div>
 				</li>
-				<li class="nav-item  ">
+				<li class="nav-item">
 					<a href="/logout">
 						<i class="fa fa-sign-out-alt"></i>
 						<p>Logout </p>
@@ -296,4 +293,3 @@
 		</div>
 	</div>
 </div>
-<!-- End Sidebar -->

@@ -3,7 +3,7 @@ var services = require('../RedisServices/RedisDataServices');
 exports.create_location = (req, res, next) => {
   res.render('pages/admin/location/create', {
     page: req.url,
-    title: 'Create New User',
+    title: 'Create New Location',
     user: res.user,
   });
 }

@@ -23,3 +23,4 @@ exports.string_response_created = "Successfully Created !";
 exports.string_response_removed = "Successfully Removed !";
 exports.string_user_not_found = "Sorry, we can't find this user.";
 exports.string_user_exist = "Sorry, same username already exist.";
+exports.string_password_incorrect = "Incorrect Password.";

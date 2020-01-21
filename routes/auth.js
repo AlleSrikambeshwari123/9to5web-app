@@ -42,12 +42,4 @@ router.get('/logout', function (req, res, next) {
   res.redirect('/');
 });
 
-router.post('/change-pass', middleware(services.userService).checkSession, (req, res, next) => {
-  console.log(req.body)
-  console.log(res.User);
-  services.userService.changePassword(res.User.username, req.body.newPass, req.body.oldPass).then(result => {
-    res.send(result)
-  })
-})
-
 module.exports = router;

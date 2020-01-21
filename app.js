@@ -6,9 +6,8 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var ejsmate = require('ejs-mate');
 var session = require('client-sessions');
-var users = require('./routes/users');
-// var admin = require('./routes/admin');
 
+var accountRouter = require('./routes/account');
 var authRouter = require('./routes/auth');
 var adminIndexRouter = require('./routes/index');
 var adminUserRouter = require('./routes/admin/users');
@@ -40,7 +39,7 @@ app.use(session({
   activeDuration: 60 * 60 * 1000
 }));
 app.use('/', adminIndexRouter, authRouter);
-app.use('/users', users);
+app.use('/account', accountRouter);
 app.use('/admin', adminUserRouter, adminCustRouter, adminLocaRouter);
 app.use('/warehouse', warehouse);
 app.use('/fleet', fleet);
