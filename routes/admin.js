@@ -3,84 +3,6 @@ var router = express.Router();
 var services = require('../RedisServices/RedisDataServices');
 var middleware = require('../middleware');
 
-router.get('/user/:username?', middleware(services.userService).checkSession, function (req, res, next) {
-    var pageData = {};
-    var user = req.params.username;
-    pageData.luser = res.User.firstName + ' ' + res.User.lastName;
-    pageData.RoleId = res.User.role;
-    //get the user 
-    console.log('loading up user page');
-    services.userService.getUser(user).then(function (uResult) {
-        console.log(uResult, "found user")
-        services.userService.getRoles().then(function (rResult) {
-            console.log(rResult, "roles");
-            pageData.roles = rResult;
-            pageData.user = uResult.user;
-            pageData.title = "Save User";
-            console.log(uResult.user);
-            if (!pageData.user.id)
-                pageData.user.id = 0;
-            if (!pageData.user.role)
-                pageData.user.role = '';
-
-            res.render('pages/admin/saveUser', pageData);
-        });
-    });
-});
-
-router.post('/enable-user', middleware(services.userService).checkSession, function (req, res, next) {
-    var body = req.body;
-    var username = body.username;
-    var enabled = body.enabled;
-    services.userService.enableUser(username, enabled).then(function (result) {
-
-        res.send(result);
-    });
-});
-router.post('/rm-user', middleware(services.userService).checkSession, function (req, res, next) {
-    var body = req.body;
-    var username = body.username;
-    services.userService.removeUser(username).then(function (result) {
-        res.send(result);
-    });
-});
-router.post('/user/', middleware(services.userService).checkSession, function (req, res, next) {
-    var body = req.body;
-    console.log(body);
-    var user = {
-        id: body.id,
-        username: body.username,
-        firstName: body.firstname,
-        lastName: body.lastname,
-        password: body.password,
-        email: body.email,
-        mobile: body.mobile,
-        role: body.userRole
-    };
-
-    console.log(typeof user.role, "ROLE TYPE")
-
-    services.userService.getRoles().then(function (rResult) {
-        services.userService.saveUser(user).then(function (suResult) {
-            console.log(suResult, "save user Results")
-            if (suResult.saved == true) {
-                res.redirect('/admin/users');
-            } else {
-                res.redirect('/admin/users');
-                // var pageData = {};
-                // pageData.user = user;
-                // pageData.title = "Save User"
-                // pageData.roles = rResult.roles;
-                // pageData.luser = res.User.firstName + ' ' + res.User.lastName;
-                // //pageData.luser = "Admin 9-5 Imports"
-                // pageData.RoleId = res.User.role
-                // res.render('pages/admin/saveUser', pageData);
-            }
-        });
-    });
-
-
-});
 router.get('/locations', middleware(services.userService).checkSession, function (req, res, next) {
     var pageData = {};
     pageData.title = "Customers"
@@ -91,7 +13,6 @@ router.get('/locations', middleware(services.userService).checkSession, function
         pageData.locations = locations.locations;
         res.render("pages/Stores/locations", pageData)
     })
-
 });
 router.get('/add-locations/:locationId?', middleware(services.userService).checkSession, function (req, res, next) {
     var pageData = {};

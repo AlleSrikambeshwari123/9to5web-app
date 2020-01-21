@@ -13,8 +13,7 @@ router.get('/dashboard', middleware(services.userService).checkSession, function
   res.render('pages/dashboard', {
     page: req.url,
     title: "Dashboard",
-    luser: res.User.firstName + ' ' + res.User.lastName,
-    RoleId: res.User.role
+    user: res.user,
   });
 });
 

@@ -11,9 +11,8 @@ const strings = require('../Res/strings');
 var client = require('./dataContext').redisClient;
 var lredis = require('./redis-local');
 
-var PREFIX = "user:";
-var INDEX = "index:users";
-var USERIDCOUNTER = "user:id";
+var PREFIX = strings.redis_prefix_user;
+var ID_COUNTER = strings.redis_id_user;
 
 class UserService {
     changePassword(username, newpassword, oldpassword) {
@@ -58,28 +57,22 @@ class UserService {
     }
     getUser(username) {
         return new Promise(function (resolve, reject) {
-            client.hgetall(PREFIX + username, function (err, result) {
-                if (result) {
-                    delete result.password;
-                    resolve({ user: result });
-                } else resolve({ user: { username: '', firstName: '', lastName: '', email: '', mobile: '' } });
+            client.hgetall(PREFIX + username, (err, user) => {
+                if (err) resolve({});
+                resolve(user);
             });
-        });
-    }
-    getUsersInRole(roleId) {
-        return new Promise(function (resolve, reject) {
-
-            // dataContext.getServiceProxy(SERVICE_KEY).getUsersByRole({roleId:roleId},function(error,result){
-            //     if (error){
-            //         reject(error);
-            //     }
-            //     resolve( result);
-            // });
         });
     }
     getRoles() {
         return new Promise(function (resolve, reject) {
-            resolve(["Admin", "Warehouse FLL", "Customs Agent", "Warehouse BAHAMAS", "Cashier", "Location Manager"]);
+            resolve([
+                strings.role_admin,
+                strings.role_warehouse_fl,
+                strings.role_warehouse_nas,
+                strings.role_customer_agent,
+                strings.role_location_manager,
+                strings.role_cashier,
+            ])
         });
     }
     getAllUsers() {
@@ -109,9 +102,9 @@ class UserService {
         return new Promise((resolve, reject) => {
             client.hmset(PREFIX + username, { enabled: enabled }, (err, result) => {
                 if (err) {
-                    resolve({ updated: false, message: strings.string_response_error });
+                    resolve({ success: false, message: strings.string_response_error });
                 } else {
-                    resolve({ updated: true, message: strings.string_response_updated });
+                    resolve({ success: true, message: strings.string_response_updated });
                 }
             });
         });
@@ -121,7 +114,7 @@ class UserService {
         return new Promise((resolve, reject) => {
             this.checkUsername(user.username).then(valid => {
                 if (valid.exist) {
-                    client.incr(USERIDCOUNTER, (err, id) => {
+                    client.incr(ID_COUNTER, (err, id) => {
                         user.id = id;
                         user.password = bcrypt.hashSync(user.password, 10);
                         client.hmset(PREFIX + user.username, user);
@@ -131,59 +124,16 @@ class UserService {
             })
         })
     }
-    saveUser(user) {
+    updateUser(user) {
         return new Promise((resolve, reject) => {
-            srv.checkUsername(user.username).then(function (valid) {
+            this.checkUsername(user.username).then(function (valid) {
                 if (valid.exist) {
                     client.hmset(PREFIX + user.username, user);
-                    resolve({ saved: true, message: strings.string_response_updated });
+                    resolve({ success: true, message: strings.string_response_updated });
                 } else {
                     resolve({ success: false, message: strings.string_user_not_found });
                 }
-                // if (valid.taken == false) {
-                //     //create the hash 
-                //     client.incr(USERIDCOUNTER, function (err, id) {
-                //         user.id = id;
-                //         user.password = bcrypt.hashSync(user.password, 10);
-                //         lredis.hmset(PREFIX + user.username, user);
-                //         addUserToIndex(user, srv.redisIndexSearch);
-                //         resolve({ saved: true, "message": "saved successfully." });
-                //     });
-                // } else {
-                //     if (!user.password || user.password == "") {
-                //         delete user.password;
-                //     } else {
-                //         console.log('updating user', user);
-                //         user.password = bcrypt.hashSync(user.password, 10);
-                //     }
-
-                //     client.hmset(PREFIX + user.username, user);
-                //     srv.redisIndexSearch.update(user.id, user, function (err, reply) {
-                //         if (err) {
-                //             console.log(err);
-                //             resolve({ saved: false, "message": "Username err" });
-                //         } else {
-
-                //             resolve({ saved: true, "message": "User updated." });
-                //         }
-                //     });
-                // }
             });
-        });
-    }
-    verifyToken(token) {
-        return new Promise(function (reslove, reject) {
-            try {
-                var decodedJWT = jwt.verify(token, 'silver123.');
-                var bytes = cryptojs.AES.decrypt(decodedJWT.token, 'Silver123');
-                var tokenData = JSON.parse(bytes.toString(cryptojs.enc.Utf8));
-                /*  console.log('token data below');
-                 console.log(tokenData);*/
-                reslove(tokenData);
-            } catch (e) {
-                console.log(e, "unable to verify token");
-                reject();
-            }
         });
     }
     checkUsername(username) {
@@ -195,6 +145,22 @@ class UserService {
                 else
                     resolve({ exist: false });
             });
+        });
+    }
+
+    verifyToken(token) {
+        return new Promise((reslove, reject) => {
+            try {
+                var decodedJWT = jwt.verify(token, 'silver123.');
+                var bytes = cryptojs.AES.decrypt(decodedJWT.token, 'Silver123');
+                var tokenData = JSON.parse(bytes.toString(cryptojs.enc.Utf8));
+                /*  console.log('token data below');
+                 console.log(tokenData);*/
+                reslove(tokenData);
+            } catch (e) {
+                console.log(e, "unable to verify token");
+                reject();
+            }
         });
     }
     generateToken(user) {

@@ -3,8 +3,17 @@
 exports.role_admin = "Admin";
 exports.role_warehouse_fl = "Warehouse Fl";
 exports.role_warehouse_nas = "Warehouse NAS";
+exports.role_warehouse_bahamas = "Warehouse BAHAMAS";
+exports.role_location_manager = "Location Manager";
+exports.role_customer_agent = "Custom Agent";
+exports.role_cashier = "Cashier";
 exports.role_store = "Stores";
 
+// Redis Keys
+exports.redis_prefix_user = "user:";
+exports.redis_id_user = "user:id";
+
+// Const strings
 exports.string_response_error = "Internal Server Error !";
 exports.string_response_updated = "Successfully Updated !";
 exports.string_response_created = "Successfully Created !";

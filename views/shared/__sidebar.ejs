@@ -8,7 +8,7 @@
 				<div class="info">
 					<a data-toggle="collapse" href="#collapseExample" aria-expanded="true">
 						<span>
-							<span class="user-level"><%=luser%></span>
+							<span class="user-level"><%=user.firstName + ' ' + user.lastName%></span>
 							<!-- <span class="caret"></span> -->
 						</span>
 					</a>
@@ -48,7 +48,7 @@
 					</span>
 					<h4 class="text-section">Admin</h4>
 				</li>
-				<%if (RoleId.indexOf("Admin")>-1 ) {%>
+				<%if (user.role.indexOf("Admin")>-1 ) {%>
 				<li class="nav-item <% if (page.includes('/users/')) { %> active <% } %>">
 					<a href="/admin/users/list">
 						<i class="fa fa-users"></i>
@@ -68,7 +68,7 @@
 					</a>
 				</li>
 				<%}%>
-				<%if (RoleId.indexOf("Admin")>-1 || RoleId.indexOf("Warehouse Fl")>-1) {%>
+				<%if (user.role.indexOf("Admin")>-1 || user.role.indexOf("Warehouse Fl")>-1) {%>
 				<li class='nav-item'>
 					<div id="current-printer" style='color:gray'></div>
 					<select id='workstations' class='form-control workstations'>
@@ -162,7 +162,7 @@
 					</div>
 				</li>
 				<%}%>
-				<%if (RoleId.indexOf("Admin")>-1 || RoleId.indexOf("Warehouse NAS")>-1) {%>
+				<%if (user.role.indexOf("Admin")>-1 || user.role.indexOf("Warehouse NAS")>-1) {%>
 				<li class="nav-item">
 					<a data-toggle="collapse" href="#wnas">
 						<i class="fas fa-warehouse"></i>
@@ -228,7 +228,7 @@
 					</div>
 				</li>
 				<%}%>
-				<%if (RoleId.indexOf("Admin")>-1 || RoleId.indexOf("Store")>-1) {%>
+				<%if (user.role.indexOf("Admin")>-1 || user.role.indexOf("Store")>-1) {%>
 				<li class="nav-item">
 					<a data-toggle="collapse" href="#stores">
 						<i class="fas fa-store"></i>

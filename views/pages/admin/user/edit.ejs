@@ -1,0 +1,53 @@
+<% layout('./shared/__template')%>
+<form id="saveFrom" method="POST" action='update'>
+  <div class="row gutters">
+    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+      <div class="card">
+        <div class="card-header"><%= title %></div>
+        <div class="card-body">
+          <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" class="form-control" name='username' id="username" placeholder="" required
+              value='<%=userDetail.username %>'>
+            <input type='hidden' name='id' value='<%=userDetail.id%>'>
+          </div>
+          <div class="form-group">
+            <label for="firstname">First Name</label>
+            <input type="text" class="form-control" name='firstname' id="firstname" placeholder="" required
+              value='<%=userDetail.firstName %>'>
+          </div>
+          <div class="form-group">
+            <label for="lastname">LastName</label>
+            <input type="text" class="form-control" name='lastname' id="lastname" placeholder="" required
+              value='<%=userDetail.lastName %>'>
+          </div>
+          <div class="form-group">
+            <label for="email">Email address</label>
+            <input type="email" class="form-control" id="email" name='email' placeholder="name@example.com"
+              value='<%=userDetail.email %>'>
+          </div>
+          <div class="form-group">
+            <label for="mobile">Mobile</label>
+            <input type="text" class="form-control" id="mobile" name='mobile' placeholder="(xxx)-xxx-xxxx"
+              value='<%=userDetail.mobile %>'>
+          </div>
+          <div class="form-group">
+            <label for="userRole">Select User Permission</label>
+            <select class="form-control" id="userRole" name='userRole' multiple="multiple">
+              <% roles.forEach(role => { %>
+              <option value="<%= role%>" <% if(userDetail.role.includes(role)) { %> selected <% } %>> <%= role %>
+              </option>
+              <% }) %>
+            </select>
+          </div>
+        </div>
+        <div class="card-action">
+          <button type="submit" class="btn btn-primary">Save</button>
+          <button type="button" id="cancelForm" class="btn btn-danger">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+
+<% block('scripts').append('<script src="/js/admin/user/edit.js"></script>')%>

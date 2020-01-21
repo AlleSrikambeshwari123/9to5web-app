@@ -28,6 +28,7 @@
 	<link rel="stylesheet" href="/assets/css/atlantis.min.css">
 	<link rel="stylesheet" href="/assets/css/magnific-popup.css">
 	<link rel="stylesheet" href="/assets/css/demo.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.2.0/sweetalert2.min.css">
 </head>
 
 <body>
@@ -181,7 +182,8 @@
 	<script src="/assets/js/plugin/select2/select2.full.min.js"></script>
 
 	<!-- Sweet Alert -->
-	<script src="/assets/js/plugin/sweetalert/sweetalert.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.2.0/sweetalert2.all.min.js"></script>
+	<!-- <script src="/assets/js/plugin/sweetalert/sweetalert.min.js"></script> -->
 
 	<!-- Owl Carousel -->
 	<script src="/assets/js/plugin/owl-carousel/owl.carousel.min.js"></script>
@@ -197,9 +199,6 @@
 	<%- block('scripts').toString() %>
 
 	<script>
-
-
-
 		$.ajax({
 			url: "/warehouse/fl-print-options",
 			contentType: 'json',
@@ -211,7 +210,6 @@
 				})
 			}
 		});
-
 
 		$("#set-printer").click(function () {
 			//set the printe 
