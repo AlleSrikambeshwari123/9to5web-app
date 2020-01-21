@@ -8,6 +8,7 @@ var redisSearch = require('../redisearchclient/index');
 var PREFIX = "pmb:";
 var CUST_ID = "customer:id";
 var dataContext = require('./dataContext');
+var client = require('./dataContext').redisClient;
 var INDEX = "index:customers";
 
 var customerIndex = redisSearch(redis, INDEX, {
@@ -24,6 +25,18 @@ class CustomerService {
                 dataContext.redisClient.set(CUST_ID, "50000");
             }
         });
+    }
+
+    getCustomers() {
+        return new Promise((resolve, reject) => {
+            client.keys(PREFIX + '*', (err, keys) => {
+                Promise.all(keys.map(key => {
+                    return lredis.hgetall(key);
+                })).then(customers => {
+                    resolve(customers);
+                })
+            })
+        })
     }
 
     listCustomers(page, pageSize) {

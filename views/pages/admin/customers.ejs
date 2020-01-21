@@ -25,9 +25,6 @@
                     <table id="customerTable" class="display table table-striped table-hover"></table>
                     <!-- <ul class="pagination">
                         <li class="page-item"><a class="page-link" href="#">Previous</a></li>
-                        <% for(var i = pagerInfo.startPage; i <=pagerInfo.endPage; i++) { %>
-                        <li class="page-item"><a class="page-link" href="/admin/customersv1/<%=i%>"> <%= i %></a></li>
-                        <% } %>
                         <li class="page-item"><a class="page-link" href="#">...</a></li>
                         <li class="page-item"><a class="page-link" href="#">Next</a></li>
                     </ul> -->
@@ -39,7 +36,7 @@
 
 
 <script>
-    var rpackages = <%- JSON.stringify(records) %>;
+    var rpackages = <% - JSON.stringify(records) %>;
 </script>
 <!-- <% block('scripts').append('<script src="/vendor/datatables/dataTables.min.js"></script>')%>
 <% block('scripts').append('<script src="/vendor/datatables/dataTables.bootstrap.min.js"></script>')%>

@@ -1,5 +1,22 @@
 var services = require('../RedisServices/RedisDataServices');
 
+exports.create_user = (req, res, next) => {
+  services.userService.getRoles().then(function (roles) {
+    res.render('pages/admin/user/create', {
+      page: req.url,
+      title: 'Create New User',
+      user: res.user,
+      roles: roles,
+    });
+  })
+}
+
+exports.add_new_user = (req, res, next) => {
+  services.userService.createUser(req.body).then(function (result) {
+    res.send(result);
+  })
+}
+
 exports.get_user_list = (req, res, next) => {
   services.userService.getAllUsers().then(userResult => {
     res.render('pages/admin/user/list', {
@@ -39,7 +56,7 @@ exports.delete_user = (req, res, next) => {
 }
 
 exports.enable_user = (req, res, next) => {
-  let username = req.body.username;
+  let username = req.params.username;
   let enabled = req.body.enabled;
 
   services.userService.enableUser(username, enabled).then(result => {

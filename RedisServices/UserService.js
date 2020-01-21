@@ -114,11 +114,14 @@ class UserService {
         return new Promise((resolve, reject) => {
             this.checkUsername(user.username).then(valid => {
                 if (valid.exist) {
+                    resolve({ success: false, message: strings.string_user_exist });
+                } else {
                     client.incr(ID_COUNTER, (err, id) => {
                         user.id = id;
                         user.password = bcrypt.hashSync(user.password, 10);
+                        delete user.confirmPassword;
                         client.hmset(PREFIX + user.username, user);
-                        resolve({ saved: true, message: strings.string_response_created });
+                        resolve({ success: true, message: strings.string_response_created });
                     })
                 }
             })

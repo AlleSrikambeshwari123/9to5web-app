@@ -1,6 +1,6 @@
 var printerUtil = require("./Util/PrinterUtil")
 var services = require('./RedisServices/RedisDataServices');
-module.exports = function (userService, allowedRoles) {
+module.exports = function (allowedRoles) {
     function handleNavigation(user) {
         var adminRoles = ['Admin'];
         var CSRRoles = ['CSR'];

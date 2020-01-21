@@ -1,0 +1,42 @@
+<% layout('./shared/__template')%>
+<div class='gutters'>
+  <div class="col-xl-12 col-lg-6 col-md-12 col-sm-12">
+    <div class="card">
+      <div class="card-header">
+        <h4 class="card-title">Customers</h4>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table id="customerTable" class="display table table-striped table-hover">
+            <thead>
+              <tr>
+                <th>PMB</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Mobile</th>
+                <th>Location</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% customers.forEach(function(customer){%>
+              <tr data-record="<%= customer.id %>">
+                <th scope="row"><%=customer.pmb%></th>
+                <td><%=customer.name%></td>
+                <td><%=customer.email%></td>
+                <td><%=customer.phone %></td>
+                <td><%=customer.branch %></td>
+                <td>
+                  <a href='manage/<%=user.username%>/get'><i class="fas fa-user-edit"></i></a>
+                </td>
+              </tr>
+              <%})%>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<% block('scripts').append('<script src="/js/admin/customer/list.js"></script>')%>

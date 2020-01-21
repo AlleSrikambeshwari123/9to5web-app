@@ -1,9 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var middleware = require('../middleware');
-var RedisDataService = require("../RedisServices/RedisDataServices")
 var services = require('../RedisServices/RedisDataServices');
-/* GET home page. */
 
 router.get('/', function (req, res, next) {
   res.render('index', { title: 'Express' });

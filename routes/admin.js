@@ -71,21 +71,18 @@ router.post('/add-location', middleware(services.userService).checkSession, func
 
 })
 router.get('/customersV1/', middleware(services.userService).checkSession, function (req, res, next) {
-    console.log("HERE");
-    var pageData = {};
-    pageData.title = "Customers"
-    pageData.luser = res.User.firstName + ' ' + res.User.lastName;
-    pageData.RoleId = res.User.role;
-    pageData.owners = [];
     services.customerService.listCustomers(1, 25).then((pResult) => {
         var pagerInfo = {
             totalRecords: pResult.totalResults
         }
-        pageData.records = pResult.customers;
-        pageData.pagerInfo = pagerInfo;
-        console.log("result " + pResult.totalResults)
-        console.log(pageData.pagerInfo);
-        res.render('pages/admin/customers', pageData);
+        res.render('pages/admin/customers', {
+            page: req.url,
+            title: 'Customers',
+            user: res.user,
+            owners: [],
+            records: pResult.customers,
+            pagerInfo: pagerInfo,
+        });
     })
 });
 router.get('/customersV1/:currentPage?', middleware(services.userService).checkSession, function (req, res, next) {

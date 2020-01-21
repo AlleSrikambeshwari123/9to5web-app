@@ -6,13 +6,16 @@ $(function () {
   $("#cancelForm").click(function () {
     window.history.back();
   });
-  $("#saveFrom").submit(function (event) {
+  $("#createFrom").submit(function (event) {
     event.preventDefault(event);
     let formUrl = $(this).attr('action');
     let formData = $(this).serializeArray();
-    var roleId = $("#userRole").val();
-    if (roleId == '') {
-      event.preventDefault(event);
+    let roleId = $("#userRole").val();
+    let password = $(this).find('#password').val();
+    let confirmPassword = $(this).find('#confirmPassword').val();
+    if (password != confirmPassword) {
+      showNotify('Failed', "Password doesn't match", 'fa fa-info', 'danger');
+    } else if (roleId == '') {
       showNotify('Failed', 'Please select a user role.', 'fa fa-info', 'warning');
     } else {
       let data = {};
@@ -33,21 +36,21 @@ $(function () {
       })
     }
   });
-});
 
-function showNotify(title, message, icon, type) {
-  $.notify({
-    title: title,
-    message: message,
-    icon: icon,
-    target: '_blank'
-  }, {
-    type: type,
-    placement: {
-      from: "top",
-      align: "right",
-    },
-    time: 1000,
-    delay: 3000
-  });
-}
+  function showNotify(title, message, icon, type) {
+    $.notify({
+      title: title,
+      message: message,
+      icon: icon,
+      target: '_blank'
+    }, {
+      type: type,
+      placement: {
+        from: "top",
+        align: "right",
+      },
+      time: 1000,
+      delay: 3000
+    });
+  }
+})

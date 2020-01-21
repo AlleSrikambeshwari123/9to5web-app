@@ -1,14 +1,14 @@
 var express = require('express');
 var router = express.Router();
-var services = require('../../RedisServices/RedisDataServices');
 var middleware = require('../../middleware');
 var userCtrl = require('../../Controller/UserController');
-/* GET users listing. */
 
-router.get('/users/list', middleware(services.userService).checkSession, userCtrl.get_user_list);
-router.get('/users/manage/:username/get', middleware(services.userService).checkSession, userCtrl.get_user_detail);
-router.post('/users/manage/:id/update', middleware(services.userService).checkSession, userCtrl.update_user);
-router.put('/users/manage/:id/enable', middleware(services.userService).checkSession, userCtrl.enable_user);
-router.delete('/users/manage/:username/delete', middleware(services.userService).checkSession, userCtrl.delete_user);
+router.get('/users/list', middleware().checkSession, userCtrl.get_user_list);
+router.get('/users/create', middleware().checkSession, userCtrl.create_user);
+router.post('/users/create', middleware().checkSession, userCtrl.add_new_user);
+router.get('/users/manage/:username/get', middleware().checkSession, userCtrl.get_user_detail);
+router.post('/users/manage/:username/update', middleware().checkSession, userCtrl.update_user);
+router.put('/users/manage/:username/enable', middleware().checkSession, userCtrl.enable_user);
+router.delete('/users/manage/:username/delete', middleware().checkSession, userCtrl.delete_user);
 
 module.exports = router;

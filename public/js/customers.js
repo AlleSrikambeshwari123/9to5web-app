@@ -42,10 +42,10 @@ $(function () {
             data: null,
             render: function (data, type, row, meta) {
                 // console.log(data);
-                if (!data.branch){
-                    return ""; 
+                if (!data.branch) {
+                    return "";
                 }
-                return `${data.branch.replace("POSTBOXES ETC","")} `;
+                return `${data.branch.replace("POSTBOXES ETC", "")} `;
             }
         },
         {
