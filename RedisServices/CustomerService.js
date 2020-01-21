@@ -1,36 +1,63 @@
 'use strict';
 require('dotenv').config();
 
-var _moment = require('moment');
+var moment = require('moment');
+var bcrypt = require('bcrypt');
+var utils = require('../Util/utils');
+const strings = require('../Res/strings');
 
-var redis = require('redis');
 var lredis = require('./redis-local');
-var redisSearch = require('../redisearchclient/index');
-var PREFIX = "pmb:";
-var CUST_ID = "customer:id";
-var dataContext = require('./dataContext');
 var client = require('./dataContext').redisClient;
-var INDEX = "index:customers";
 
-var customerIndex = redisSearch(redis, INDEX, {
-    clientOptions: dataContext.clientOptions
-});
+var PREFIX = "customers:";
+var ID_COUNTER = "id:customer";
 
 class CustomerService {
-    constructor() {
-        this.mySearch = redisSearch(redis, INDEX, {
-            clientOptions: lredis.searchClientDetails
+    signUp(customer) {
+        return new Promise((resolve, reject) => {
+            this.getCustomerWithEmail(email).then(existingCustomer => {
+                if (existingCustomer.id) {
+                    resolve({ success: false, message: "Account already exists" });
+                } else {
+                    client.incr(ID_COUNTER, (err, id) => {
+                        customer.id = id;
+                        customer.skybox = id;
+                        customer.password = bcrypt.hashSync(customer.password, 10);
+                        client.hmset(PREFIX + id, customer, (err, result) => {
+                            if (err) resolve({ success: false, message: strings.string_response_error });
+                            resolve({ success: true, message: strings.string_response_created });
+                        })
+                    })
+                }
+            })
         });
-        dataContext.redisClient.get(CUST_ID, function (err, id) {
-            if (Number(id) < 50000) {
-                dataContext.redisClient.set(CUST_ID, "50000");
-            }
-        });
+    }
+
+    login(email, password) {
+        return new Promise((resolve, reject) => {
+            this.getCustomerWithEmail(email).then(customer => {
+                if (customer.id == undefined) {
+                    resolve({ authenticated: false, message: strings.string_customer_not_found });
+                } else {
+                    bcrypt.compare(password, customer.password, (err, same) => {
+                        if (same) {
+                            delete customer.password;
+                            utils.generateToken(customer).then(token => {
+                                resolve({ authenticated: true, token: token, user: customer });
+                            });
+                        } else {
+                            resolve({ authenticated: false, message: strings.string_password_incorrect });
+                        }
+                    })
+                }
+            })
+        })
     }
 
     getCustomers() {
         return new Promise((resolve, reject) => {
             client.keys(PREFIX + '*', (err, keys) => {
+                console.log(keys);
                 Promise.all(keys.map(key => {
                     return lredis.hgetall(key);
                 })).then(customers => {
@@ -40,123 +67,28 @@ class CustomerService {
         })
     }
 
-    listCustomers(page, pageSize) {
-        var _this = this;
-
-        return new Promise(function (resolve, reject) {
-            var offsetVal = (page - 1) * pageSize;
-            console.log('offset ' + offsetVal);
-
-            _this.mySearch.search("@id:[0 50000]", {
-                offset: offsetVal,
-                numberOfResults: 50000
-
-            }, function (r1, data) {
-                if (r1) console.log(r1);
-                var customers = [];
-                data.results.forEach(function (customerResult) {
-                    customers.push(customerResult.doc);
-                });
-                console.log(customers);
-                var pagedData = {
-                    customers: customers,
-                    totalResults: data.totalResults,
-                    page: page,
-                    pageSize: pageSize,
-                    TotalPages: data.totalResults / pageSize
-                };
-                resolve(pagedData);
-                console.log(customers);
-            });
+    getCustomer(id) {
+        return new Promise((resolve, reject) => {
+            client.hgetall(PREFIX + id, (err, customer) => {
+                if (err) resolve({});
+                resolve(customer);
+            })
         });
     }
-    findCustomer(query) {
-        return new Promise(function (resolve, reject) {
-            customerIndex.search('(@name:\'' + query + '*\')|(@pmb:\'' + query + '*\')', { offset: 0, numberOfResults: 1000 }, function (err, results) {
-                if (err) {
-                    console.log(err);
-                    resolve({ customer: [] });
-                    return;
-                }
-                if (!results) { }
-                console.log('results', results);
-
-                var customers = [];
-                results.results.forEach(function (customer) {
-                    customers.push(customer.doc);
-                });
-                console.log(customers);
-                resolve({ customer: customers });
-            });
+    getCustomerWithEmail(email) {
+        return new Promise((resolve, reject) => {
+            lredis.search(PREFIX, 'email', email).then(results => {
+                if (results.length == 0) resolve({});
+                else resolve(results[0]);
+            })
         });
     }
-    searchCustomers(search, page, pageSize) {
-        var _this2 = this;
-
-        return new Promise(function (resolve, reject) {
-            var offsetVal = (page - 1) * pageSize;
-            console.log('offset ' + offsetVal);
-
-            _this2.mySearch.search(search.replace("@", " ") + '*', {
-                offset: offsetVal,
-                numberOfResults: pageSize
-                // sortBy: "name",
-                // dir : "ASC"
-            }, function (r1, data) {
-                console.log(data);
-                var customers = [];
-                data.results.forEach(function (customerResult) {
-                    customers.push(customerResult.doc);
-                });
-                console.log(customers);
-                var pagedData = {
-                    customers: customers,
-                    totalResults: data.totalResults,
-                    page: page,
-                    pageSize: pageSize,
-                    TotalPages: data.totalResults / pageSize
-                };
-                resolve(pagedData);
-                //Promise.all()
-                console.log(customers);
-                // Promise.all(customers.map(lredis.hgetall)).then(function (ownersResult) {
-                //     console.log(ownersResult);
-
-                // });
-
-                //console.log(r2); 
-            });
-        });
-    }
-    getCustomer(skybox) {
-        var _this3 = this;
-
-        return new Promise(function (resolve, reject) {
-            _this3.mySearch.getDoc(skybox, function (err, customerDoc) {
-
-                if (customerDoc.doc.pmb == '') customerDoc.doc.pmb = '9000';
-                console.log(customerDoc, 'looking up the customer');
-                resolve(customerDoc.doc);
-            });
-        });
-    }
-    saveCustomer(customer) {
-        var srv = this;
-        return new Promise(function (resolve, reject) {
-            if (customer.id) {
-
-                srv.mySearch.update(customer.id, customer, function (err, result) {
-                    resolve({ saved: true });
-                });
-            } else {
-                //create new 
-                dataContext.redisClient.incr(CUST_ID, function (err, id) {
-                    customer.id = id;
-                    srv.mySearch.add(id, customer, function (err, result) {
-                        resolve({ saved: true });
-                    });
-                });
-            }
+    removeCustomer(id) {
+        return new Promise((resolve, reject) => {
+            client.del(PREFIX + id, (err, result) => {
+                if (err) resolve({ success: false, message: strings.string_response_error });
+                resolve({ success: true, message: strings.string_response_removed });
+            })
         });
     }
 }

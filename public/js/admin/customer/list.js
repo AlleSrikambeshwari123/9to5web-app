@@ -1,29 +1,6 @@
 $(function () {
-  $('#customerTable').DataTable({
-    "pageLength": 10,
-  });
-  $(".enableUser").click(function () {
-    var username = $(this).data('id');
-    var enabled = $(this).data('value');
-    $.ajax({
-      url: 'manage/' + username + '/enable',
-      type: 'put',
-      data: { username: username, enabled: enabled },
-      success: function (response) {
-        swal({
-          title: response.success == true ? 'Updated' : 'Failed',
-          text: response.message,
-          type: response.success == true ? 'success' : 'error',
-        }).then(res => {
-          if (response.success == true) {
-            document.location.reload(true);
-          }
-        })
-      }
-    });
-  });
-  $('.rm-user').click(function () {
-    var username = $(this).data('id');
+  $('.rm-customer').click(function () {
+    var id = $(this).data('id');
     swal({
       title: "Are you sure?",
       showCancelButton: true,
@@ -31,7 +8,7 @@ $(function () {
     }).then(response => {
       if (response.value) {
         $.ajax({
-          url: 'manage/' + username + '/delete',
+          url: 'manage/' + id + '/delete',
           type: 'delete',
           success: function (response) {
             swal({
@@ -40,12 +17,16 @@ $(function () {
               type: response.success == true ? 'success' : 'error',
             }).then(res => {
               if (response.success == true) {
-                $('tr[data-record="' + username + '"]').fadeOut('slow', () => $('tr[data-record="' + username + '"]').remove())
+                $('tr[data-record="' + id + '"]').fadeOut('slow', () => $('tr[data-record="' + id + '"]').remove())
               }
             })
           }
         });
       }
     })
+  });
+
+  $('#customerTable').DataTable({
+    "pageLength": 10,
   });
 }); 

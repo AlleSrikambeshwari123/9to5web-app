@@ -10,3 +10,9 @@ exports.get_customer_list = (req, res, next) => {
     })
   })
 }
+
+exports.delete_customer = (req, res, next) => {
+  services.customerService.removeCustomer(req.params.id).then(result => {
+    res.send(result);
+  })
+}

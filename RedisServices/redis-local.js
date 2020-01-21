@@ -197,6 +197,52 @@ var customerList = (pageSize, currentPage) => {
         });
     })
 }
+
+var search = (PREFIX, field, value) => {
+    return new Promise((resolve, reject) => {
+        client.keys(PREFIX + '*', (err, keys) => {
+            if (err) {
+                resolve([]);
+            } else {
+                Promise.all(keys.map(key => {
+                    return hmgetall(key);
+                })).then(function (dataList) {
+                    var result = [];
+                    dataList.map(function (data) {
+                        if (data[field] == value) {
+                            result.push(data);
+                        }
+                    })
+                    resolve(result);
+                });
+            }
+        })
+    });
+}
+
+var searchInRange = (PREFIX, field, minValue, maxValue) => {
+    return new Promise(function (resolve, reject) {
+        client.keys(PREFIX + '*', function (err, keys) {
+            if (err) {
+                resolve([]);
+            } else {
+                Promise.all(keys.map(function (key) {
+                    return hmgetall(key);
+                })).then(function (dataList) {
+                    var result = [];
+                    dataList.map(function (data) {
+                        var value = Number(data[field]);
+                        if (value >= minValue && value <= maxValue) {
+                            result.push(data);
+                        }
+                    })
+                    resolve(result);
+                });
+            }
+        })
+    });
+}
+
 var customerSearch = (searchText, pageSize, currentPage) => {
     var startIndex = (currentPage - 1) * pageSize;
     var endIndex = startIndex + (pageSize - 1);
@@ -251,6 +297,8 @@ module.exports.getMembers = getMembers;
 module.exports.hgetall = hmgetall;
 module.exports.srem = srem;
 module.exports.setSize = sCard;
+module.exports.search = search;
+module.exports.searchInRange = searchInRange;
 module.exports.mProcessQueue = queue;
 module.exports.client = client;
 module.exports.searchClientDetails = searchClientOption

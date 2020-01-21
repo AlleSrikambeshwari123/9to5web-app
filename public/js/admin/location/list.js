@@ -1,7 +1,4 @@
 $(function () {
-  $('.location-table').DataTable({
-    "pageLength": 10,
-  });
   $('.rm-location').click(function () {
     var id = $(this).data('id');
     swal({
@@ -27,5 +24,9 @@ $(function () {
         });
       }
     })
+  });
+
+  $('.location-table').DataTable({
+    "pageLength": 10,
   });
 })

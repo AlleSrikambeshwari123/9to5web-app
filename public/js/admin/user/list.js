@@ -1,7 +1,4 @@
 $(function () {
-  $('.user-table').DataTable({
-    "pageLength": 10,
-  });
   $(".enableUser").click(function () {
     var username = $(this).data('id');
     var enabled = $(this).data('value');
@@ -47,5 +44,9 @@ $(function () {
         });
       }
     })
+  });
+
+  $('.user-table').DataTable({
+    "pageLength": 10,
   });
 }); 

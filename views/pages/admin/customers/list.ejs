@@ -21,13 +21,14 @@
             <tbody>
               <% customers.forEach(function(customer){%>
               <tr data-record="<%= customer.id %>">
-                <th scope="row"><%=customer.pmb%></th>
-                <td><%=customer.name%></td>
+                <th scope="row"><%=customer.skybox%></th>
+                <td><%=customer.firstName + ' ' + customer.lastName%></td>
                 <td><%=customer.email%></td>
-                <td><%=customer.phone %></td>
-                <td><%=customer.branch %></td>
+                <td><%=customer.mobile %></td>
+                <td><%=customer.area %></td>
                 <td>
-                  <a href='manage/<%=user.username%>/get'><i class="fas fa-user-edit"></i></a>
+                  <a href='manage/<%=customer.id%>/get'><i class="fas fa-user-edit"></i></a>
+                  <a href='#' class='rm-customer ml-3' data-id='<%=customer.id%>'><i class="fas fa-trash"></i></a>
                 </td>
               </tr>
               <%})%>
