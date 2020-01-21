@@ -9,7 +9,7 @@ module.exports = function (userService, allowedRoles) {
         }
     }
     return {
-        requireAuthentication: async function (req, res, next) {
+        checkSession: async function (req, res, next) {
             //get the session here
             var pageData = {};
 

@@ -6,13 +6,16 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var ejsmate = require('ejs-mate');
 var session = require('client-sessions');
-var index = require('./routes/index');
 var users = require('./routes/users');
 var admin = require('./routes/admin');
+
+var authRouter = require('./routes/auth');
+var adminIndexRouter = require('./routes/index');
+var adminUserRouter = require('./routes/admin/users');
 var warehouse = require('./routes/warehouse');
 var fleet = require('./routes/fleet');
-var util = require('./routes/util'); 
-var wapi = require('./routes/wapi'); 
+var util = require('./routes/util');
+var wapi = require('./routes/wapi');
 var app = express();
 
 // view engine setup
@@ -34,13 +37,13 @@ app.use(session({
   duration: 60 * 60 * 1000,
   activeDuration: 60 * 60 * 1000
 }));
-app.use('/', index);
+app.use('/', adminIndexRouter, authRouter);
 app.use('/users', users);
-app.use('/admin', admin);
+app.use('/admin', admin, adminUserRouter);
 app.use('/warehouse', warehouse);
 app.use('/fleet', fleet);
-app.use('/util',util); 
-app.use('/api/warehouse',wapi); 
+app.use('/util', util);
+app.use('/api/warehouse', wapi);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   var err = new Error('Not Found');

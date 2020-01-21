@@ -36,6 +36,12 @@
 				</div>
 			</div>
 			<ul class="nav nav-primary">
+				<li class="nav-item <% if (page.includes('/dashboard')) { %> active <% } %>">
+					<a href="/dashboard">
+						<i class="fa fa-home"></i>
+						<p>Dashboard </p>
+					</a>
+				</li>
 				<li class="nav-section">
 					<span class="sidebar-mini-icon">
 						<i class="fa fa-ellipsis-h"></i>
@@ -43,14 +49,8 @@
 					<h4 class="text-section">Admin</h4>
 				</li>
 				<%if (RoleId.indexOf("Admin")>-1 ) {%>
-				<li class="nav-item">
-					<a href="/admin">
-						<i class="fa fa-home"></i>
-						<p>Admin Dashboard </p>
-					</a>
-				</li>
-				<li class="nav-item">
-					<a href="/admin/users">
+				<li class="nav-item <% if (page.includes('/users/')) { %> active <% } %>">
+					<a href="/admin/users/list">
 						<i class="fa fa-users"></i>
 						<p>Users </p>
 					</a>

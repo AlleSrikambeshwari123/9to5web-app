@@ -15,15 +15,15 @@ var delfile = '';
 var uniqid = require('uniqid')
 var rServices = require('../RedisServices/RedisDataServices')
 var datacontext = require("../RedisServices/dataContext")
-var FlightLoadSheet = require('../Util/FlightLoadSheet').FlightLoadSheet; 
-var loadSheet = new FlightLoadSheet(); 
-var FlightManifest = require('../Util/FlightManifest').FlightManifest; 
+var FlightLoadSheet = require('../Util/FlightLoadSheet').FlightLoadSheet;
+var loadSheet = new FlightLoadSheet();
+var FlightManifest = require('../Util/FlightManifest').FlightManifest;
 var flightManifest = new FlightManifest()
 var printerUtil = require('../Util/PrinterUtil')
 
 //Manifest Routes
 //#region Manifest Routes
-router.get('/list-manifest', middleware(services.userService).requireAuthentication, (req, res, next) => {
+router.get('/list-manifest', middleware(services.userService).checkSession, (req, res, next) => {
     var pageData = {};
     pageData.title = "Manifest";
     pageData.luser = res.User.FirstName + ' ' + res.User.LastName;
@@ -44,7 +44,7 @@ router.get('/list-manifest', middleware(services.userService).requireAuthenticat
 
 });
 
-router.post('/rm-manifest', middleware(services.userService).requireAuthentication, (req, res, next) => {
+router.post('/rm-manifest', middleware(services.userService).checkSession, (req, res, next) => {
     var body = req.body;
     var mid = Number(body.mid);
     if (isNaN(mid))
@@ -55,7 +55,7 @@ router.post('/rm-manifest', middleware(services.userService).requireAuthenticati
     });
 });
 
-router.get('/list-ocean/:currentPage?', middleware(services.userService).requireAuthentication, (req, res, next) => {
+router.get('/list-ocean/:currentPage?', middleware(services.userService).checkSession, (req, res, next) => {
     var pageData = {};
     pageData.title = "Ocean";
     pageData.luser = res.User.FirstName + ' ' + res.User.LastName;
@@ -86,7 +86,7 @@ router.get('/list-ocean/:currentPage?', middleware(services.userService).require
     // });
 
 });
-router.get('/list-hazmat/:currentPage?', middleware(services.userService).requireAuthentication, (req, res, next) => {
+router.get('/list-hazmat/:currentPage?', middleware(services.userService).checkSession, (req, res, next) => {
 
     var pageData = {};
     pageData.title = "HAZMAT";
@@ -120,14 +120,14 @@ router.get('/list-hazmat/:currentPage?', middleware(services.userService).requir
 
 });
 
-router.post('/add-shipper',(req,res,next)=>{
-    services.shipperService.addShipper(req.body).then(result=>{
-        console.log(result); 
+router.post('/add-shipper', (req, res, next) => {
+    services.shipperService.addShipper(req.body).then(result => {
+        console.log(result);
         res.send(result);
     })
 })
 
-router.get('/m-packages/:manifestId', middleware(services.userService).requireAuthentication, function (req, res, next) {
+router.get('/m-packages/:manifestId', middleware(services.userService).checkSession, function (req, res, next) {
 
 
     var pageData = {};
@@ -141,53 +141,53 @@ router.get('/m-packages/:manifestId', middleware(services.userService).requireAu
     //we want to format the manifest number to 3 digits 
     rServices.manifestService.getManifest(pageData.mid).then((manifest) => {
         if (!manifest.tailNum)
-        manifest.tailNum = ""; 
-        if (!manifest.shipDate){
+            manifest.tailNum = "";
+        if (!manifest.shipDate) {
             manifest.shipDate = ""
         }
-     else
-        manifest.flightDate = moment.unix(manifest.flightDate).format("MMM DD,YYYY hh:mm A"); 
-        services.planeService.getPlanes().then(planeData=>{
+        else
+            manifest.flightDate = moment.unix(manifest.flightDate).format("MMM DD,YYYY hh:mm A");
+        services.planeService.getPlanes().then(planeData => {
             console.log(planeData)
-            services.pilotService.getPilots().then(pilotData=>{
+            services.pilotService.getPilots().then(pilotData => {
                 pageData.manifest = manifest;
                 if (!manifest.shipDate)
-                    manifest.shipDate = ''; 
+                    manifest.shipDate = '';
                 manifest.dateCreated = moment.unix(manifest.dateCreated).format("dddd, LL")
-                pageData.pilots = pilotData.pilots; 
+                pageData.pilots = pilotData.pilots;
                 pageData.planes = planeData.planes
                 pageData.mtype = "cargo";
                 pageData.ColLabel = "Cargo";
-                pageData.plane = {compartments:[]}
-                pageData.packages  = []; 
+                pageData.plane = { compartments: [] }
+                pageData.packages = [];
                 console.log('manifest', manifest)
-                if (manifest.shipDate){
+                if (manifest.shipDate) {
                     manifest.shipDate = moment.unix(manifest.shipDate).format("MM/DD/YYYY")
                 }
-                if (manifest.planeId){
-                    services.planeService.listCompartments(manifest.planeId).then(plane=>{
-                       // console.log('pageData',plane)
+                if (manifest.planeId) {
+                    services.planeService.listCompartments(manifest.planeId).then(plane => {
+                        // console.log('pageData',plane)
                         pageData.plane = plane.plane
-                        
-                        services.packageService.getManifestPackages(pageData.mid).then(packages=>{
-                            pageData.packages = packages; 
+
+                        services.packageService.getManifestPackages(pageData.mid).then(packages => {
+                            pageData.packages = packages;
                             console.log(pageData);
                             res.render('pages/warehouse/manifest-packages', pageData);
-                        }); 
-                        
-                        
+                        });
+
+
                     })
-                   
+
                 }
                 else {
                     console.log('pageData')
                     console.log(pageData);
                     res.render('pages/warehouse/manifest-packages', pageData);
                 }
-             
+
             })
         })
-        
+
     });
     // services.manifestService.getManifest(pageData.mid).then((m)=>{
     //     console.log(m);
@@ -198,25 +198,25 @@ router.get('/m-packages/:manifestId', middleware(services.userService).requireAu
     // }); 
 
 });
-router.post('/update-manifest-details', middleware(services.userService).requireAuthentication, function (req, res, next) {
-    var body = req.body; 
-    console.log(body); 
+router.post('/update-manifest-details', middleware(services.userService).checkSession, function (req, res, next) {
+    var body = req.body;
+    console.log(body);
     var details = {
         tailNum: body.tailNum,
-        shipDate: moment(body.shipDate,"MM/DD/YYYY").unix(),
+        shipDate: moment(body.shipDate, "MM/DD/YYYY").unix(),
         planeId: body.planeId,
-        id : body.id
+        id: body.id
     }
-    
-    services.manifestService.updateManifestDetails(details).then(result=>{
-        console.log(result,"update result"); 
+
+    services.manifestService.updateManifestDetails(details).then(result => {
+        console.log(result, "update result");
         res.send(result)
     })
 })
 
 
 const sumFunction = (accumulator, currentValue) => accumulator + currentValue;
-router.get('/manifest-count/:mid/:mtype', middleware(services.userService).requireAuthentication, function (req, res, next) {
+router.get('/manifest-count/:mid/:mtype', middleware(services.userService).checkSession, function (req, res, next) {
     var mid = req.params.mid;
     var mtype = req.params.mtype;
     var manifestKeys = `manifest:${mid}:${mtype}:*`;
@@ -240,7 +240,7 @@ router.get('/manifest-count/:mid/:mtype', middleware(services.userService).requi
 
 });
 
-router.post('/create-manifest', middleware(services.userService).requireAuthentication, function (req, res, next) {
+router.post('/create-manifest', middleware(services.userService).checkSession, function (req, res, next) {
     console.log(res.User);
     var manifestType = Number(req.body.mtype);
     console.log("the manifest to create is " + manifestType)
@@ -259,24 +259,24 @@ router.post('/create-manifest', middleware(services.userService).requireAuthenti
     // });
 });
 
-router.get('/mlist', middleware(services.userService).requireAuthentication, (req, res, next) => {
+router.get('/mlist', middleware(services.userService).checkSession, (req, res, next) => {
     services.manifestService.listAllManifest().then((result) => {
         res.send(result.listing);
     });
 });
-router.post('find-package',middleware(services.userService).requireAuthentication, (req, res, next) => {
-    var search = req.body.search ; 
-    var pageData = {}; 
-    pageData.packages = []; 
+router.post('find-package', middleware(services.userService).checkSession, (req, res, next) => {
+    var search = req.body.search;
+    var pageData = {};
+    pageData.packages = [];
     pageData.title = "Recieve Package NAS";
     pageData.mid = req.params.mid;
     pageData.luser = res.User.firstName + ' ' + res.User.lastName;
     pageData.RoleId = res.User.role;
-    services.packageService.find(search).then(packages=>{
-        res.render('pages/warehouse/package-results',pageData); 
+    services.packageService.find(search).then(packages => {
+        res.render('pages/warehouse/package-results', pageData);
     })
 })
-router.get('/packages/:mid', middleware(services.userService).requireAuthentication, (req, res, next) => {
+router.get('/packages/:mid', middleware(services.userService).checkSession, (req, res, next) => {
     var pageData = {};
     pageData.title = "Add Packages";
     pageData.mid = req.params.mid;
@@ -301,73 +301,76 @@ router.get('/packages/:mid', middleware(services.userService).requireAuthenticat
 
 
 });
-router.get ('/fll-new-package/:awb?',middleware(services.userService).requireAuthentication, (req,res,next)=>{
+router.get('/fll-new-package/:awb?', middleware(services.userService).checkSession, (req, res, next) => {
     var pageData = {};
     pageData.title = "Add Packages";
     pageData.mid = req.params.mid;
     pageData.luser = res.User.firstName + ' ' + res.User.lastName;
     pageData.RoleId = res.User.role;
-    pageData.printer = res.printer; 
+    pageData.printer = res.printer;
     console.log(res.printer)
     //get new packages 
-    var awb = req.params.awb; 
-   
-    services.hazmatService.getAllClasses().then(classes=>{
-       
-        pageData.hazmatListing = classes.classes; 
-        services.shipperService.getAllShippers().then(results=>{
-            pageData.shipperListing = results.shippers; 
-            if (awb){
-                services.packageService.getAwb(awb).then(awbResult=>{
-                    pageData.awb = awbResult.awb; 
-                    console.log(pageData,"pageData")
-                    res.render('pages/warehouse/fll-add-package',pageData);    
+    var awb = req.params.awb;
+
+    services.hazmatService.getAllClasses().then(classes => {
+
+        pageData.hazmatListing = classes.classes;
+        services.shipperService.getAllShippers().then(results => {
+            pageData.shipperListing = results.shippers;
+            if (awb) {
+                services.packageService.getAwb(awb).then(awbResult => {
+                    pageData.awb = awbResult.awb;
+                    console.log(pageData, "pageData")
+                    res.render('pages/warehouse/fll-add-package', pageData);
                 })
             }
             else {
-               var awbNew = { id: '',
-                isSed: '',
-                hasDocs: '',
-                invoiceNumber: '',
-                value: '',
-                customerId: '',
-                shipper: '',
-                carrier: '',
-                hazmat: '',
-                status: '',
-                dateCreated: '',
-                customer: 
-                 { id: '',
-                   name: '',
-                   firstName: '',
-                   lastName: '',
-                   pmb: '',
-                   address: '#',
-                   phone: '',
-                   email: '',
-                   dateCreated: '',
-                   company: '',
-                   branch: '' },
-                packages:[]
-                
-            }
-            pageData.awb = awbNew; 
-                res.render('pages/warehouse/fll-add-package',pageData);    
+                var awbNew = {
+                    id: '',
+                    isSed: '',
+                    hasDocs: '',
+                    invoiceNumber: '',
+                    value: '',
+                    customerId: '',
+                    shipper: '',
+                    carrier: '',
+                    hazmat: '',
+                    status: '',
+                    dateCreated: '',
+                    customer:
+                    {
+                        id: '',
+                        name: '',
+                        firstName: '',
+                        lastName: '',
+                        pmb: '',
+                        address: '#',
+                        phone: '',
+                        email: '',
+                        dateCreated: '',
+                        company: '',
+                        branch: ''
+                    },
+                    packages: []
+
+                }
+                pageData.awb = awbNew;
+                res.render('pages/warehouse/fll-add-package', pageData);
             }
 
-            
-            
+
+
         })
-        
-        
+
+
     })
-   
-      
-        
-  
-    
+
+
+
+
+
 })
-router.post('/close-manifest', middleware(services.userService).requireAuthentication, (req, res, next) => {
+router.post('/close-manifest', middleware(services.userService).checkSession, (req, res, next) => {
     var mid = Number(req.body.mid);
     rServices.manifestService.changeStage(mid, 2).then((cResult) => {
         res.send(cResult);
@@ -377,7 +380,7 @@ router.post('/close-manifest', middleware(services.userService).requireAuthentic
     //    }); 
 
 });
-router.post('/ship-manifest', middleware(services.userService).requireAuthentication, (req, res, next) => {
+router.post('/ship-manifest', middleware(services.userService).checkSession, (req, res, next) => {
     var mid = Number(req.body.mid);
     var awb = req.body.awb;
     var user = res.User.Username;
@@ -391,7 +394,7 @@ router.post('/ship-manifest', middleware(services.userService).requireAuthentica
     // }); 
 
 });
-router.get('/export-manifest/:mid', middleware(services.userService).requireAuthentication, (req, res, next) => {
+router.get('/export-manifest/:mid', middleware(services.userService).checkSession, (req, res, next) => {
 
     var mid = Number(req.params.mid);
     var dir = __dirname.replace("routes", "public\\manifest_files");
@@ -426,7 +429,7 @@ router.get('/export-manifest/:mid', middleware(services.userService).requireAuth
         });
     });
 });
-router.post('/email-manifest', middleware(services.userService).requireAuthentication, (req, res, next) => {
+router.post('/email-manifest', middleware(services.userService).checkSession, (req, res, next) => {
     var body = req.body;
     var mid = Number(body.mid);
     var email = body.email;
@@ -471,7 +474,7 @@ router.post('/email-manifest', middleware(services.userService).requireAuthentic
     });
 
 });
-router.post('/verify-manifest', middleware(services.userService).requireAuthentication, (req, res, next) => {
+router.post('/verify-manifest', middleware(services.userService).checkSession, (req, res, next) => {
     //handle file upload 
     //pass to .net for process 
     console.log('verifying');
@@ -486,7 +489,7 @@ router.post('/verify-manifest', middleware(services.userService).requireAuthenti
 
 });
 
-router.post('/rm-manifest', middleware(services.userService).requireAuthentication, (req, res, next) => {
+router.post('/rm-manifest', middleware(services.userService).checkSession, (req, res, next) => {
     var mid = Numebr(req.body.mid);
     if (isNaN(mid)) {
         res.send({ deleted: false });
@@ -504,7 +507,7 @@ router.post('/rm-manifest', middleware(services.userService).requireAuthenticati
 
 //#region AWB
 
-router.post('/get-customer-info', middleware(services.userService).requireAuthentication, (req, res, next) => {
+router.post('/get-customer-info', middleware(services.userService).checkSession, (req, res, next) => {
     //get customer information 
     var skybox = req.body.box;
     lredis.hgetall('tew:owners:' + skybox).then((result) => {
@@ -523,159 +526,159 @@ router.post('/get-customer-info', middleware(services.userService).requireAuthen
     });
 
 });
-router.post('/get-mpackages/', middleware(services.userService).requireAuthentication, (req, res, next) => {
-    services.packageService.getReceivedPackages(0,1).then(packages=>{
-        res.send(packages); 
+router.post('/get-mpackages/', middleware(services.userService).checkSession, (req, res, next) => {
+    services.packageService.getReceivedPackages(0, 1).then(packages => {
+        res.send(packages);
     })
 })
 
 
-router.get('/new-awb',(req,res,next)=>{
-    services.packageService.getNewAwb().then(awbRes=>{
-        res.send(awbRes); 
+router.get('/new-awb', (req, res, next) => {
+    services.packageService.getNewAwb().then(awbRes => {
+        res.send(awbRes);
     })
-}); 
-router.get('/awb-details/:id',(req,res,next)=>{
-    var awbId = req.params.id; 
-    console.log('looking for '+awbId)
-    services.packageService.getAwb(awbId).then(awb=>{
+});
+router.get('/awb-details/:id', (req, res, next) => {
+    var awbId = req.params.id;
+    console.log('looking for ' + awbId)
+    services.packageService.getAwb(awbId).then(awb => {
         res.send(awb);
     })
 })
-router.post("/save-awb", middleware(services.userService).requireAuthentication,(req,res,next)=>{
-    var body  = req.body;
-    body.username = res.User.username; 
-    console.log('save-awb',body,moment().toString("hh:mm:ss")); 
-  
-    services.packageService.saveAwb(body).then(result=>{
-        res.send(result); 
-    })
-}); 
+router.post("/save-awb", middleware(services.userService).checkSession, (req, res, next) => {
+    var body = req.body;
+    body.username = res.User.username;
+    console.log('save-awb', body, moment().toString("hh:mm:ss"));
 
-router.post('/save-awb-package',middleware(services.userService).requireAuthentication,(req,res,next)=>{
-    var body = req.body; 
-    console.log(body); 
-    services.packageService.savePackageToAwb(body).then(pkgResult=>{
+    services.packageService.saveAwb(body).then(result => {
+        res.send(result);
+    })
+});
+
+router.post('/save-awb-package', middleware(services.userService).checkSession, (req, res, next) => {
+    var body = req.body;
+    console.log(body);
+    services.packageService.savePackageToAwb(body).then(pkgResult => {
         console.log(pkgResult)
-        res.send(pkgResult); 
+        res.send(pkgResult);
     })
 })
-router.post('/find-customer',(req,res,next)=>{
-    var body = req.body; 
-    console.log(body); 
-    services.customerService.findCustomer(body.search).then(customers=>{
-        res.send(customers); 
+router.post('/find-customer', (req, res, next) => {
+    var body = req.body;
+    console.log(body);
+    services.customerService.findCustomer(body.search).then(customers => {
+        res.send(customers);
     })
 })
 //#endregion
-router.get('/download-flight-manifest/:mid',(req,res,next)=>{
-    var mid = req.params.mid; 
-    
-    services.manifestService.getManifest(mid).then(manifest=>{
-        console.log(manifest)
-        services.packageService.getManifestPackages(mid).then(packages=>{
-            console.log('packages',packages)
-            flightManifest.generateManifest(manifest,packages).then(result=>{
-                console.log(result); 
-                setTimeout(() => {
-                    res.download(result.filename);    
-                }, 500);
-                
-            })
-        });
-       
-        //loadSheet.generateManifestLoadSheet(manifest); 
-    })
-})
-router.get('/download-load-sheet/:mid',(req,res,next)=>{
-    var mid = req.params.mid; 
-    
-    services.manifestService.getManifest(mid).then(manifest=>{
-        console.log(manifest)
-        services.packageService.getManifestPackages(mid).then(packages=>{
-            console.log('packages',packages)
-            loadSheet.generateManifestLoadSheet(manifest,packages).then(result=>{
-                console.log(result); 
-                setTimeout(() => {
-                    res.download(result.filename);    
-                }, 500);
-                
-            })
-        });
-       
-        //loadSheet.generateManifestLoadSheet(manifest); 
-    })
-})
-router.post('/set-printer',middleware(services.userService).requireAuthentication,(req,res,next)=>{
-   printerUtil.setUserPrinter(res.User.username,req.body.printer); 
-    res.send({set:true,printer:req.body.printer})
-}); 
+router.get('/download-flight-manifest/:mid', (req, res, next) => {
+    var mid = req.params.mid;
 
-router.get('/fl-print-options',middleware(services.userService).requireAuthentication,(req,res,next)=>{
-    datacontext.redisClient.smembers("fl:print:computers",(err,reply)=>{
-        if(err)
-            console.log(err); 
+    services.manifestService.getManifest(mid).then(manifest => {
+        console.log(manifest)
+        services.packageService.getManifestPackages(mid).then(packages => {
+            console.log('packages', packages)
+            flightManifest.generateManifest(manifest, packages).then(result => {
+                console.log(result);
+                setTimeout(() => {
+                    res.download(result.filename);
+                }, 500);
+
+            })
+        });
+
+        //loadSheet.generateManifestLoadSheet(manifest); 
+    })
+})
+router.get('/download-load-sheet/:mid', (req, res, next) => {
+    var mid = req.params.mid;
+
+    services.manifestService.getManifest(mid).then(manifest => {
+        console.log(manifest)
+        services.packageService.getManifestPackages(mid).then(packages => {
+            console.log('packages', packages)
+            loadSheet.generateManifestLoadSheet(manifest, packages).then(result => {
+                console.log(result);
+                setTimeout(() => {
+                    res.download(result.filename);
+                }, 500);
+
+            })
+        });
+
+        //loadSheet.generateManifestLoadSheet(manifest); 
+    })
+})
+router.post('/set-printer', middleware(services.userService).checkSession, (req, res, next) => {
+    printerUtil.setUserPrinter(res.User.username, req.body.printer);
+    res.send({ set: true, printer: req.body.printer })
+});
+
+router.get('/fl-print-options', middleware(services.userService).checkSession, (req, res, next) => {
+    datacontext.redisClient.smembers("fl:print:computers", (err, reply) => {
+        if (err)
+            console.log(err);
         console.log(reply)
         res.send(reply)
     })
 })
 
 //router.get("/download-load-sheet")
-router.get('/incoming-shipment',(req,res,next)=>{
-    res.render('pages/warehouse/incoming-shipment',{})
+router.get('/incoming-shipment', (req, res, next) => {
+    res.render('pages/warehouse/incoming-shipment', {})
 })
-router.get('/rec-package-nas',middleware(services.userService).requireAuthentication,(req,res,next)=>{
-    var pageData = {}; 
-    pageData.packages = []; 
+router.get('/rec-package-nas', middleware(services.userService).checkSession, (req, res, next) => {
+    var pageData = {};
+    pageData.packages = [];
     pageData.title = "Recieve Package NAS";
     pageData.mid = req.params.mid;
     pageData.luser = res.User.firstName + ' ' + res.User.lastName;
     pageData.RoleId = res.User.role;
 
-    res.render('pages/warehouse/rec-nas',pageData); 
+    res.render('pages/warehouse/rec-nas', pageData);
 })
-router.get('/update-invoice',middleware(services.userService).requireAuthentication,(req,res,next)=>{
-    var pageData = {}; 
-    pageData.packages = []; 
+router.get('/update-invoice', middleware(services.userService).checkSession, (req, res, next) => {
+    var pageData = {};
+    pageData.packages = [];
     pageData.title = "Update Invoices";
     pageData.mid = req.params.mid;
     pageData.luser = res.User.firstName + ' ' + res.User.lastName;
     pageData.RoleId = res.User.role;
-    res.render('pages/warehouse/invoice-update',pageData); 
+    res.render('pages/warehouse/invoice-update', pageData);
 })
-router.post('/rec-package-nas',middleware(services.userService).requireAuthentication,(req,res,next)=>{
-    var pageData = {}; 
-    pageData.packages = []; 
+router.post('/rec-package-nas', middleware(services.userService).checkSession, (req, res, next) => {
+    var pageData = {};
+    pageData.packages = [];
     pageData.title = "Recieve Package NAS";
     pageData.mid = req.params.mid;
     pageData.luser = res.User.firstName + ' ' + res.User.lastName;
     pageData.RoleId = res.User.role;
-    var body = req.body; 
-    var nas_location_id = 2; 
-    services.packageService.updateLocation(body.trackNo,nas_location_id).then(result=>{
-        res.render('pages/warehouse/rec-nas',pageData); 
+    var body = req.body;
+    var nas_location_id = 2;
+    services.packageService.updateLocation(body.trackNo, nas_location_id).then(result => {
+        res.render('pages/warehouse/rec-nas', pageData);
     })
-    
+
 })
-router.post('/process-pkg-nas',middleware(services.userService).requireAuthentication,(req,res,next)=>{
-    var pageData = {}; 
-    pageData.packages = []; 
+router.post('/process-pkg-nas', middleware(services.userService).checkSession, (req, res, next) => {
+    var pageData = {};
+    pageData.packages = [];
     pageData.title = "Recieve Package NAS";
     pageData.mid = req.params.mid;
     pageData.luser = res.User.firstName + ' ' + res.User.lastName;
     pageData.RoleId = res.User.role;
-    var body = req.body; 
-    var nas_location_id = 2; 
-    
-    services.packageService.procssessPackage(body).then(result=>{
+    var body = req.body;
+    var nas_location_id = 2;
+
+    services.packageService.procssessPackage(body).then(result => {
         res.send(result)
     })
-    
-    
+
+
 })
-router.get('/delivery-detail/:id',middleware(services.userService).requireAuthentication,(req,res,next)=>{
-    var pageData = {}; 
-    pageData.packages = []; 
+router.get('/delivery-detail/:id', middleware(services.userService).checkSession, (req, res, next) => {
+    var pageData = {};
+    pageData.packages = [];
     pageData.title = "Delivery Detail";
     pageData.mid = req.params.mid;
     pageData.luser = res.User.fristname + ' ' + res.User.lastname;
@@ -683,122 +686,122 @@ router.get('/delivery-detail/:id',middleware(services.userService).requireAuthen
     // services.packageService.getPackagesOnDelivery(deliveryId).then(packages=>{
     //     res.render('pages/warehouse/delivery-detail',pageData); 
     // })
-    var deliveryId = req.params.id; 
-    res.render('pages/warehouse/delivery-detail',pageData); 
+    var deliveryId = req.params.id;
+    res.render('pages/warehouse/delivery-detail', pageData);
 })
-router.get('/deliveries',middleware(services.userService).requireAuthentication,(req,res,next)=>{
-    var pageData = {}; 
-    pageData.packages = []; 
+router.get('/deliveries', middleware(services.userService).checkSession, (req, res, next) => {
+    var pageData = {};
+    pageData.packages = [];
     pageData.title = "Warehouse to Store Deliveries";
     pageData.mid = req.params.mid;
     pageData.luser = res.User.firstName + ' ' + res.User.lastName;
     pageData.RoleId = res.User.role;
-    services.locationService.getLocations().then(locations=>{
-        services.deliveryService.getDeliveries().then(results=>{
-            pageData.deliveries = results.deliveries; 
-            pageData.locations = locations.locations; 
+    services.locationService.getLocations().then(locations => {
+        services.deliveryService.getDeliveries().then(results => {
+            pageData.deliveries = results.deliveries;
+            pageData.locations = locations.locations;
             console.log(locations)
-            res.render('pages/warehouse/deliveries',pageData);   
+            res.render('pages/warehouse/deliveries', pageData);
         });
     })
-    
-    
+
+
 })
-router.post('/save-delivery',middleware(services.userService).requireAuthentication,(req,res,next)=>{
-    var body = req.body; 
-    body.createdBy = res.User.username; 
-    body.createdDate = moment().unix(); 
-    services.deliveryService.saveDelivery(body).then(results=>{
-        res.send(results); 
+router.post('/save-delivery', middleware(services.userService).checkSession, (req, res, next) => {
+    var body = req.body;
+    body.createdBy = res.User.username;
+    body.createdDate = moment().unix();
+    services.deliveryService.saveDelivery(body).then(results => {
+        res.send(results);
     })
 
 })
-router.get('/packages-on-hand',middleware(services.userService).requireAuthentication,(req,res,next)=>{
-    var pageData = {}; 
-    pageData.packages = []; 
+router.get('/packages-on-hand', middleware(services.userService).checkSession, (req, res, next) => {
+    var pageData = {};
+    pageData.packages = [];
     pageData.title = "Packages on hand FL";
     pageData.mid = req.params.mid;
     pageData.luser = res.User.firstName + ' ' + res.User.lastName;
     pageData.RoleId = res.User.role;
-    services.packageService.listAwbinFll().then(awblist=>{
-        console.log(awblist,"AWB's")
-        pageData.records = awblist.awbs; 
-        res.render('pages/warehouse/no-docs',pageData); 
+    services.packageService.listAwbinFll().then(awblist => {
+        console.log(awblist, "AWB's")
+        pageData.records = awblist.awbs;
+        res.render('pages/warehouse/no-docs', pageData);
     })
-    
+
 })
-router.get('/nas-packages-wh',middleware(services.userService).requireAuthentication,(req,res,next)=>{
-    var pageData = {}; 
-    pageData.packages = []; 
+router.get('/nas-packages-wh', middleware(services.userService).checkSession, (req, res, next) => {
+    var pageData = {};
+    pageData.packages = [];
     pageData.title = "Packages on hand NAS";
     pageData.mid = req.params.mid;
     pageData.luser = res.User.firstName + ' ' + res.User.lastName;
     pageData.RoleId = res.User.role;
-    res.render('pages/warehouse/nas-packages',pageData); 
+    res.render('pages/warehouse/nas-packages', pageData);
 })
-router.post('/save-customer',(req,res,next)=>{
-    services.customerService.saveCustomer(req.body).then(sreult=>{
+router.post('/save-customer', (req, res, next) => {
+    services.customerService.saveCustomer(req.body).then(sreult => {
         res.send(sreult)
     })
 })
-router.get('/fll-no-docs',middleware(services.userService).requireAuthentication, (req, res, next) => {
-    services.packageService.getNoDocsPackackages().then(packages=>{
-        var pageData = {}; 
-        pageData.packages = packages; 
+router.get('/fll-no-docs', middleware(services.userService).checkSession, (req, res, next) => {
+    services.packageService.getNoDocsPackackages().then(packages => {
+        var pageData = {};
+        pageData.packages = packages;
         pageData.title = "Packages No Documents";
         pageData.mid = req.params.mid;
         pageData.luser = res.User.firstName + ' ' + res.User.lastName;
         pageData.RoleId = res.User.role;
 
         //listNoDocsFll
-        services.packageService.listNoDocsFll().then(awblist=>{
-            console.log(awblist,"AWB's")
-            pageData.records = awblist.awbs; 
-            res.render('pages/warehouse/no-docs',pageData); 
+        services.packageService.listNoDocsFll().then(awblist => {
+            console.log(awblist, "AWB's")
+            pageData.records = awblist.awbs;
+            res.render('pages/warehouse/no-docs', pageData);
         })
-        
+
     })
-    
+
 })
-router.get('/store-packages',middleware(services.userService).requireAuthentication, (req, res, next) => {
-    services.packageService.getNoDocsPackackages().then(packages=>{
-        var pageData = {}; 
-        pageData.packages = packages; 
+router.get('/store-packages', middleware(services.userService).checkSession, (req, res, next) => {
+    services.packageService.getNoDocsPackackages().then(packages => {
+        var pageData = {};
+        pageData.packages = packages;
         pageData.title = "Store Packages";
         pageData.mid = req.params.mid;
         pageData.luser = res.User.firstName + ' ' + res.User.lastName;
         pageData.RoleId = res.User.role;
-        res.render('pages/warehouse/store-packages',pageData); 
+        res.render('pages/warehouse/store-packages', pageData);
     })
-    
+
 })
-router.post('/get-nas-packages',(req,res,next)=>{
-    var company = req.body.company; 
-    var id = req.body.noDocs; 
-    console.log(req.body); 
-    services.packageService.getPackagesNasWarehouse(id,company).then(results=>{
-        res.send(results); 
+router.post('/get-nas-packages', (req, res, next) => {
+    var company = req.body.company;
+    var id = req.body.noDocs;
+    console.log(req.body);
+    services.packageService.getPackagesNasWarehouse(id, company).then(results => {
+        res.send(results);
     })
 });
-router.get('/nas-no-docs',middleware(services.userService).requireAuthentication, (req, res, next) => {
-    services.packageService.getNoDocsPackackages().then(packages=>{
-        var pageData = {}; 
-        pageData.packages = packages; 
+router.get('/nas-no-docs', middleware(services.userService).checkSession, (req, res, next) => {
+    services.packageService.getNoDocsPackackages().then(packages => {
+        var pageData = {};
+        pageData.packages = packages;
         pageData.title = "Packages with no documents";
         pageData.mid = req.params.mid;
         pageData.luser = res.User.firstName + ' ' + res.User.lastName;
         pageData.RoleId = res.User.role;
-        res.render('pages/warehouse/nas-no-docs',pageData); 
+        res.render('pages/warehouse/nas-no-docs', pageData);
     })
-    
+
 })
-router.get('/load-package/:trackNo', middleware(services.userService).requireAuthentication, (req, res, next) => {
+router.get('/load-package/:trackNo', middleware(services.userService).checkSession, (req, res, next) => {
     var trackingNo = req.params.trackNo;
 
 
-    console.log(trackingNo,"getting package")
+    console.log(trackingNo, "getting package")
 
-    services.packageService.getpackagebyRedisId(trackingNo).then(result=>{
+    services.packageService.getpackagebyRedisId(trackingNo).then(result => {
         res.send(result);
     })
     // redis.getPackage(trackingNo).then((package) => {
@@ -806,17 +809,17 @@ router.get('/load-package/:trackNo', middleware(services.userService).requireAut
     // });
 });
 
-router.post('/rm-package', middleware(services.userService).requireAuthentication, (req, res, next) => {
+router.post('/rm-package', middleware(services.userService).checkSession, (req, res, next) => {
     var trackingNo = req.body.trackingNo;
-    var packageId = req.body.id; 
+    var packageId = req.body.id;
     var manifest = req.body.mid;
-    console.log('removing package '+packageId)
+    console.log('removing package ' + packageId)
     rServices.packageService.removePackageById(packageId).then((delResult) => {
         res.send(delResult);
     });
 });
 
-router.post('/save-package', middleware(services.userService).requireAuthentication, (req, res, next) => {
+router.post('/save-package', middleware(services.userService).checkSession, (req, res, next) => {
     var body = req.body;
     rServices.packageService.savePackage(body).then((result) => {
         console.log('printing the result here')
@@ -835,10 +838,10 @@ router.post('/save-package', middleware(services.userService).requireAuthenticat
 
 
 });
-router.get('/no-docs/', middleware(services.userService).requireAuthentication, (req, res, next) => {
+router.get('/no-docs/', middleware(services.userService).checkSession, (req, res, next) => {
 
 })
-router.post('/packages', middleware(services.userService).requireAuthentication, (req, res, next) => {
+router.post('/packages', middleware(services.userService).checkSession, (req, res, next) => {
     var body = req.body;
     var package = {
         trackingNo: body.trackingNo,
@@ -895,7 +898,7 @@ function NewPackageAlert(package) {
 //#endregion
 
 //#region Processing 
-router.post('/store-package', middleware(services.userService).requireAuthentication, (req, res, next) => {
+router.post('/store-package', middleware(services.userService).checkSession, (req, res, next) => {
     var body = req.body;
     var trackingNo = body.package;
     var bin = body.bin;
@@ -908,7 +911,7 @@ router.post('/store-package', middleware(services.userService).requireAuthentica
         res.send(rtn);
     });
 });
-router.get('/processing', middleware(services.userService).requireAuthentication, (req, res, next) => {
+router.get('/processing', middleware(services.userService).checkSession, (req, res, next) => {
     var pageData = {};
     pageData.title = "Manifest Processing";
     pageData.luser = res.User.FirstName + ' ' + res.User.LastName;
@@ -920,13 +923,13 @@ router.get('/processing', middleware(services.userService).requireAuthentication
     });
 
 });
-router.get('/get-processing/:mid', middleware(services.userService).requireAuthentication, (req, res, next) => {
+router.get('/get-processing/:mid', middleware(services.userService).checkSession, (req, res, next) => {
     var mid = Number(req.params.mid)
     rServices.packageService.getManifestPackagesByStatus(mid, 3).then((packages) => {
         res.send(packages);
     })
 });
-router.post('/process-package', middleware(services.userService).requireAuthentication, (req, res, next) => {
+router.post('/process-package', middleware(services.userService).checkSession, (req, res, next) => {
 
     //1. find the package 
     //2. we need update the status 
@@ -951,7 +954,7 @@ router.post('/process-package', middleware(services.userService).requireAuthenti
     });
 });
 
-router.get('/store-check-in', middleware(services.userService).requireAuthentication, (req, res, next) => {
+router.get('/store-check-in', middleware(services.userService).checkSession, (req, res, next) => {
     var pageData = {};
     pageData.title = "Store Checkin";
     pageData.luser = res.User.FirstName + ' ' + res.User.LastName;
@@ -976,24 +979,24 @@ router.get('/download-file/:filename', function (req, res, net) {
     var dir = __dirname.replace("routes", "templates\\");
     res.download(path.join(dir, file));
 });
-router.get('/print-awb/:awb',middleware(services.userService).requireAuthentication,(req,res,next)=>{
-    var username  = res.User.username; 
-    var awb = req.params.awb; 
-    services.printService.sendAwbToPrint(awb,username)
-    res.send({sent:true})
+router.get('/print-awb/:awb', middleware(services.userService).checkSession, (req, res, next) => {
+    var username = res.User.username;
+    var awb = req.params.awb;
+    services.printService.sendAwbToPrint(awb, username)
+    res.send({ sent: true })
 })
-router.get('/print-awb-lbl/:awb',middleware(services.userService).requireAuthentication,(req,res,next)=>{
-    var username  = res.User.username; 
-    var awb = req.params.awb; 
-    services.printService.sendLblToPrint(awb,username); 
-    res.send({sent:true})
+router.get('/print-awb-lbl/:awb', middleware(services.userService).checkSession, (req, res, next) => {
+    var username = res.User.username;
+    var awb = req.params.awb;
+    services.printService.sendLblToPrint(awb, username);
+    res.send({ sent: true })
 })
-router.get('/print-single-label/:awb/:pkgId',middleware(services.userService).requireAuthentication,(req,res,next)=>{
-    var username  = res.User.username; 
-    var awb = req.params.awb; 
+router.get('/print-single-label/:awb/:pkgId', middleware(services.userService).checkSession, (req, res, next) => {
+    var username = res.User.username;
+    var awb = req.params.awb;
     var pkgId = req.params.pkgId
-    services.printService.sendLblToPrint(awb,username); 
-    res.send({sent:true})
+    services.printService.sendLblToPrint(awb, username);
+    res.send({ sent: true })
 })
 router.post('/upload', function (req, res) {
     // create an incoming form object
@@ -1014,7 +1017,7 @@ router.post('/upload', function (req, res) {
     form.on('file', function (field, file) {
         //mv(file.path, path.join(form.uploadDir, file.name));
         var content;
-        var unique = uniqid(); 
+        var unique = uniqid();
         orignalFiles[index] = file.path;
         // First I want to read the file
         fs.readFile(file.path, function read(err, data) {
@@ -1023,7 +1026,7 @@ router.post('/upload', function (req, res) {
             }
             content = data;
 
-            fs.writeFile(path.join(form.uploadDir, unique+file.name), content, function (err) {
+            fs.writeFile(path.join(form.uploadDir, unique + file.name), content, function (err) {
                 if (err) throw err;
                 /!*do something else.*!/
                 // fs.unlink(file.path);
@@ -1034,7 +1037,7 @@ router.post('/upload', function (req, res) {
         //fs.rename(file.path, path.join(form.uploadDir, file.name));
         console.log('BIG file uploaded yee-haaaa!');
         uploadedFiles[index] = {
-            'uploadedFile': unique+file.name
+            'uploadedFile': unique + file.name
         };
         var filename = file.name;
 

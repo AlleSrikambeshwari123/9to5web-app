@@ -1,18 +1,8 @@
-var redis = require('redis');
-const NSPACE_CUST = "skybox:";
-const NSPACE_BOX = "tew:owner:";
-var env = require('../environment')
-var client = redis.createClient(env.redis_port, env.redis_host, {
-    auth_pass: env.redis_pass,
-    // tls:{
-    //     servername: 'core.shiptropical.com'
-    // }
-});
+var client = require('./dataContext').redisClient;
 var searchClientOption = {
-    'host': env.redis_host,
-    'port': env.redis_port,
-    auth_pass: env.redis_pass,
-    // tls:{ servername:env.redis_host}
+    host: process.env.REDIS_HOST,
+    port: process.env.REDIS_PORT,
+    auth_pass: process.env.REDIS_PASS,
 }
 
 var get = (key) => {
@@ -24,11 +14,11 @@ var get = (key) => {
         });
     });
 }
-var setHashField = (key, field, value)=> { 
+var setHashField = (key, field, value) => {
     return new Promise((resolve, reject) => {
         if (key == null) reject();
-        
-        client.hset(key,field,value, (error, data) => {
+
+        client.hset(key, field, value, (error, data) => {
             if (error) reject(error);
             resolve(data)
         });
@@ -166,21 +156,89 @@ var queue = (item) => {
     return new Promise((resolve, reject) => {
         client.lpush
         client.lpush("process-packages", item, (error, data) => {
-            resolve(data) ;
+            resolve(data);
         });
 
     });
 }
 
+//SORTED SET 
+var customerList = (pageSize, currentPage) => {
+    var startIndex = (currentPage - 1) * pageSize;
+    var endIndex = startIndex + (pageSize - 1);
+    console.log(`starting index is ${startIndex} and end index is ${endIndex}`)
+    var args = ['customer:names', "[A", '(Z\xff', "LIMIT", `${startIndex}`, `${startIndex + pageSize}`]
+    return new Promise((resolve, reject) => {
+        client.zrangebylex(args, (error, dataR) => {
+            client.zcard('customer:names', (err, data) => {
+                var psIndex = 1;
+                var peIndex = 10;
+                if (currentPage >= 10) {
+                    psIndex = currentPage - 5;
+                    peIndex = currentPage + 5;
+                }
+                if (peIndex + 5 > Number(data) / pageSize) {
+                    peIndex = Number(data) / pageSize;
+                }
+                var pagerInfo = {
+                    pages: Number(data) / pageSize,
+                    currentPage: currentPage,
+                    startPage: psIndex,
+                    endPage: peIndex,
+                    totalRecords: data
+                }
+                Promise.all(dataR.map(rmNamesforLookup)).then((boxes) => {
+                    pagerInfo.boxes = boxes;
+                    resolve(pagerInfo);
+                })
+            })
+
+            // resolve(data); 
+        });
+    })
+}
+var customerSearch = (searchText, pageSize, currentPage) => {
+    var startIndex = (currentPage - 1) * pageSize;
+    var endIndex = startIndex + (pageSize - 1);
+    console.log(`starting index is ${startIndex} and end index is ${endIndex}`)
+    var args = ['customer:names', `[${searchText}`, `(${searchText}\xff`, "LIMIT", `${startIndex}`, `${pageSize}`]
+    return new Promise((resolve, reject) => {
+
+        client.zscan('customer:names', '0', 'MATCH', `*${searchText}*`, (error, dataR) => {
+            client.zcard('customer:names', (err, data) => {
+                var psIndex = 1;
+                var peIndex = 10;
+                if (currentPage >= 10) {
+                    psIndex = currentPage - 5;
+                    peIndex = currentPage + 5;
+                }
+                if (peIndex + 5 > Number(data) / pageSize) {
+                    peIndex = Number(data) / pageSize;
+                }
+                var pagerInfo = {
+                    pages: Number(data) / pageSize,
+                    currentPage: currentPage,
+                    startPage: psIndex,
+                    endPage: peIndex,
+                    totalRecords: data
+                }
+                console.log(dataR);
+
+            })
+
+            // resolve(data); 
+        });
+    })
+}
 
 var rmNamesforLookup = (compoundKey) => {
     var skybox = compoundKey.substring(compoundKey.indexOf(':'));
     console.log(skybox);
     return "tew:owners" + skybox;
 }
-module.exports.client = client; 
+module.exports.client = client;
 module.exports.set = set;
-module.exports.seth = setHashField; 
+module.exports.seth = setHashField;
 module.exports.get = get;
 module.exports.getPackage = getPackage;
 module.exports.getNS = getNSRecords;
@@ -193,6 +251,6 @@ module.exports.getMembers = getMembers;
 module.exports.hgetall = hmgetall;
 module.exports.srem = srem;
 module.exports.setSize = sCard;
-module.exports.mProcessQueue = queue; 
+module.exports.mProcessQueue = queue;
 module.exports.client = client;
 module.exports.searchClientDetails = searchClientOption
