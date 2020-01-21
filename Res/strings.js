@@ -1,3 +1,5 @@
+// Keys
+exports.user_auth_key = "9-5 Import";
 
 // Roles
 exports.role_admin = "Admin";

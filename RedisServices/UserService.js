@@ -4,6 +4,7 @@ var cryptojs = require('crypto-js');
 var jwt = require('jsonwebtoken');
 var bcrypt = require('bcrypt');
 const strings = require('../Res/strings');
+var utils = require('../Util/utils');
 
 // Redis
 var client = require('./dataContext').redisClient;
@@ -36,7 +37,7 @@ class UserService {
                         if (err) resolve({ valid: false, token: "", user: null });
                         if (pwdsame) {
                             delete result.password;
-                            this.generateToken(result).then(function (token) {
+                            utils.generateToken(result).then(function (token) {
                                 resolve({ user: result, token: token, valid: true });
                             });
                         } else {
@@ -142,34 +143,6 @@ class UserService {
                 else
                     resolve({ exist: false });
             });
-        });
-    }
-
-    verifyToken(token) {
-        return new Promise((reslove, reject) => {
-            try {
-                var decodedJWT = jwt.verify(token, 'silver123.');
-                var bytes = cryptojs.AES.decrypt(decodedJWT.token, 'Silver123');
-                var tokenData = JSON.parse(bytes.toString(cryptojs.enc.Utf8));
-                /*  console.log('token data below');
-                 console.log(tokenData);*/
-                reslove(tokenData);
-            } catch (e) {
-                console.log(e, "unable to verify token");
-                reject();
-            }
-        });
-    }
-    generateToken(user) {
-        return new Promise(function (resolve, reject) {
-
-            var stringData = JSON.stringify(user);
-            var encryptedData = cryptojs.AES.encrypt(stringData, 'Silver123').toString();
-
-            var token = jwt.sign({
-                token: encryptedData
-            }, 'silver123.');
-            resolve(token);
         });
     }
 }

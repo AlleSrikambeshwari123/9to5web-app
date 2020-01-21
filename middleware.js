@@ -1,5 +1,7 @@
 var printerUtil = require("./Util/PrinterUtil")
 var services = require('./RedisServices/RedisDataServices');
+var utils = require('./Util/utils');
+
 module.exports = function (allowedRoles) {
     function handleNavigation(user) {
         var adminRoles = ['Admin'];
@@ -13,7 +15,7 @@ module.exports = function (allowedRoles) {
         checkSession: async function (req, res, next) {
             var token = req.session.token;
             if (token) {
-                services.userService.verifyToken(token).then(function (user) {
+                utils.verifyToken(token).then(function (user) {
                     res.user = user;
                     res.printer = printerUtil.getUserPrinter(user.username);
                     var navMode = handleNavigation(user);
