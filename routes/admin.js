@@ -3,17 +3,6 @@ var router = express.Router();
 var services = require('../RedisServices/RedisDataServices');
 var middleware = require('../middleware');
 
-router.get('/locations', middleware(services.userService).checkSession, function (req, res, next) {
-    var pageData = {};
-    pageData.title = "Customers"
-    pageData.luser = res.User.firstName + ' ' + res.User.lastName;
-    pageData.RoleId = res.User.role;
-    services.locationService.getLocations().then(locations => {
-        console.log("list of locations ", locations);
-        pageData.locations = locations.locations;
-        res.render("pages/Stores/locations", pageData)
-    })
-});
 router.get('/add-locations/:locationId?', middleware(services.userService).checkSession, function (req, res, next) {
     var pageData = {};
     pageData.title = "Locations"

@@ -55,14 +55,14 @@
 						<p>Users </p>
 					</a>
 				</li>
-				<li class="nav-item">
+				<li class="nav-item <% if (page.includes('/customers/')) { %> active <% } %>">
 					<a href="/admin/customers/list">
 						<i class="fa fa-user-tie"></i>
 						<p>Customers</p>
 					</a>
 				</li>
-				<li class="nav-item">
-					<a href="/admin/locations">
+				<li class="nav-item <% if (page.includes('/locations/')) { %> active <% } %>">
+					<a href="/admin/locations/list">
 						<i class="fa fa-map-marker-alt"></i>
 						<p>Locations </p>
 					</a>

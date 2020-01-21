@@ -11,7 +11,10 @@ exports.role_store = "Stores";
 
 // Redis Keys
 exports.redis_prefix_user = "user:";
-exports.redis_id_user = "user:id";
+exports.redis_id_user = "id:user";
+
+exports.redis_prefix_location = "location:";
+exports.redis_id_location = "id:location";
 
 // Const strings
 exports.string_response_error = "Internal Server Error !";

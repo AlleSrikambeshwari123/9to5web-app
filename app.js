@@ -13,6 +13,7 @@ var authRouter = require('./routes/auth');
 var adminIndexRouter = require('./routes/index');
 var adminUserRouter = require('./routes/admin/users');
 var adminCustRouter = require('./routes/admin/customers');
+var adminLocaRouter = require('./routes/admin/locations');
 var warehouse = require('./routes/warehouse');
 var fleet = require('./routes/fleet');
 var util = require('./routes/util');
@@ -40,7 +41,7 @@ app.use(session({
 }));
 app.use('/', adminIndexRouter, authRouter);
 app.use('/users', users);
-app.use('/admin', adminUserRouter, adminCustRouter);
+app.use('/admin', adminUserRouter, adminCustRouter, adminLocaRouter);
 app.use('/warehouse', warehouse);
 app.use('/fleet', fleet);
 app.use('/util', util);

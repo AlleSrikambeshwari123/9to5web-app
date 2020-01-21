@@ -1,69 +1,60 @@
-var redis = require('redis');
+const strings = require('../Res/strings');
+
 var lredis = require('./redis-local');
-var dataContext = require('./dataContext');
-var redisSearch = require('../redisearchclient/index');
-const PREFIX = "location:"
-const INDEX = "index:locations"
-const LOCATION_COUNTER = "location:id";
+var client = require('./dataContext').redisClient;
+const PREFIX = strings.redis_prefix_location;
+const ID_COUNTER = strings.redis_id_location;
 
-const rs = redisSearch(redis, INDEX, {
-  clientOptions: dataContext.clientOptions
-});
 class LocationService {
-  constructor() {
-
-  }
-
   getLocations() {
     return new Promise((resolve, reject) => {
-      rs.search('*', { numberOfResults: 100 }, (err, locations) => {
-        var locationsResult = [];
-        console.log(locations, 'results from locations')
-        locations.results.forEach(locDocument => {
-          locationsResult.push(locDocument.doc);
-        });
-        resolve({ locations: locationsResult })
+      client.keys(PREFIX + '*', (err, keys) => {
+        if (err) resolve([]);
+        console.log(keys);
+        Promise.all(keys.map(key => {
+          return lredis.hgetall(key);
+        })).then(locations => {
+          resolve(locations);
+        })
       })
     })
   }
-  saveLocation(location) {
+  addLocation(location) {
     return new Promise((resolve, reject) => {
-      dataContext.redisClient.incr(LOCATION_COUNTER, (err, id) => {
+      client.incr(ID_COUNTER, (err, id) => {
+        if (err) resolve({ success: false, message: strings.string_response_error });
         location.id = id;
-        dataContext.redisClient.hmset(PREFIX + id, location, (errS, result) => {
-          if (errS)
-            resolve({ saved: false })
-          rs.add(id, location);
-          resolve({ saved: true })
+        client.hmset(PREFIX + id, location, (err, result) => {
+          if (err) resolve({ success: false, message: strings.string_response_error });
+          resolve({ success: true, message: strings.string_response_created });
         })
       })
-
     });
   }
   getLocation(id) {
-    console.log('looking up id' + id);
     return new Promise((resolve, reject) => {
-      rs.getDoc(id, (err, location) => {
-        console.log(location, "from rs")
-        resolve({ location: location.doc })
+      client.hgetall(PREFIX + id, (err, location) => {
+        if (err) resolve({});
+        resolve(location);
       })
     })
   }
   updateLocation(location) {
     return new Promise((resolve, reject) => {
-      rs.update(location.id, location, (err, result) => {
-        if (err)
-          resolve({ saved: false });
-        resolve({ saved: true })
-      });
-      dataContext.redisClient.hmset(PREFIX + location.id, location);
-
+      client.exists(PREFIX + location.id, (err, exist) => {
+        if (Number(exist) == 1) {
+          client.hmset(PREFIX + location.id, location);
+          resolve({ success: true, message: strings.string_response_updated });
+        } else {
+          resolve({ success: false, message: strings.string_response_error });
+        }
+      })
     });
   }
-  rmLocation(id) {
+  removeLocation(id) {
     return new Promise((resolve, reject) => {
-      rs.delDocument(INDEX, id);
-      dataContext.redisClient.del(PREFIX + id);
+      client.del(PREFIX + id);
+      resolve({ success: true, message: strings.string_response_removed });
     })
   }
 }

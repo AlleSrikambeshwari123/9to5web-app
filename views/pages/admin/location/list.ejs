@@ -1,0 +1,38 @@
+<% layout('./shared/__template')%>
+<div class='gutters'>
+  <div class="col-xl-12 col-lg-6 col-md-12 col-sm-12">
+    <div class="card">
+      <div class="card-header d-flex align-items-left align-items-md-center flex-column flex-md-row">
+        <div class="card-title"><%= title %></div>
+        <a href='create' class='btn btn-primary btn-round ml-md-auto float-right'>Add Location</a>
+      </div>
+      <div class="card-body">
+        <table class="table m-0 location-table">
+          <thead>
+            <tr>
+              <th>Location Name</th>
+              <th>Address</th>
+              <th>Phone</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% locations.forEach(location => { %>
+            <tr data-record="<%=location.id%>">
+              <td><%=location.name%></td>
+              <td><%=location.address%></td>
+              <td><%=location.phone%></td>
+              <th>
+                <a href="manage/<%=location.id%>/get"><i class='fas fa-pencil-alt'></i></a>
+                <a href='#' class='rm-location ml-3' data-id='<%=location.id%>'><i class="fas fa-trash"></i></a>
+              </th>
+            </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<% block('scripts').append('<script src="/js/admin/location/list.js"></script>')%>

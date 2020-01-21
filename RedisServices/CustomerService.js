@@ -1,4 +1,5 @@
 'use strict';
+require('dotenv').config();
 
 var _moment = require('moment');
 
