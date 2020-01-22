@@ -17,6 +17,8 @@
 //#endregion
 
 var services = require('./RedisServices/RedisDataServices');
-services.driverService.removeDriver('id').then(result => {
+// services.shipperService.importShippersFromCsv().then(result => {
+services.shipperService.getAllShippers().then(result => {
   console.log(result);
-});
+})
+// });

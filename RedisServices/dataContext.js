@@ -1,3 +1,5 @@
+
+require('dotenv').config();
 var redis = require('redis');
 
 console.log('Creating Redis Client', process.env.REDIS_HOST);

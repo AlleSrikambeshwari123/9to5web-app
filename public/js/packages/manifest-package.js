@@ -9,7 +9,7 @@ Number.prototype.formatMoney = function (c, d, t) {
     return "$" + s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
 };
 $(function () {
-    var pageMode = $("#pgmode").val(); 
+    var pageMode = $("#pgmode").val();
 
     var lastPackage = {}
     //#region PAGE LOAD 
@@ -18,66 +18,67 @@ $(function () {
     var mailTable;
     var cargoTable;
     var unProcTable;
-    var sedAnswered  = 0 ; 
-    var awbPackages = []; 
-    
-    
-    if ($("#id").val()!=""){
-        $("#save_awb").hide(); 
-        $("#add_package").show(); 
-        $("#update_awb").show(); 
-        $("#print-lbl").attr('data-id',$("#id").val())
-        $("#print-awb").attr('data-id',$("#id").val())
-    
-        $(".print-options").show(); 
-            awbPackages = rpackages
-        
-        $("#pkgNo").val(awbPackages.length+1)
+    var sedAnswered = 0;
+    var awbPackages = [];
+
+
+    if ($("#id").val() != "") {
+        $("#save_awb").hide();
+        $("#add_package").show();
+        $("#update_awb").show();
+        $("#print-lbl").attr('data-id', $("#id").val())
+        $("#print-awb").attr('data-id', $("#id").val())
+
+        $(".print-options").show();
+        awbPackages = rpackages
+
+        $("#pkgNo").val(awbPackages.length + 1)
         displayPackages(awbPackages, "#packageTable", "cargo")
     }
     $("#select-pilot").select2({
+        theme: 'bootstrap',
         placeholder: 'Select a Pilot'
-      }); 
+    });
     $("#pick-haz").select2({
         theme: "classic",
         placeholder: 'Select a HAZMAT Class',
-        
-      }); 
+
+    });
     $("#pick-shipper").select2({
         theme: "classic",
         placeholder: 'Select a Shipper',
-        
-      }); 
-      $("#pick-carrier").select2({
+
+    });
+    $("#pick-carrier").select2({
         theme: "classic",
         placeholder: 'Select a Carrier',
-        
-      }); 
+
+    });
     $("#select-plane").select2({
         placeholder: 'Select an Plane'
-      }); 
-  
+    });
+
     $('.open-popup-link').magnificPopup({
         type: 'inline',
         midClick: true,
         mainClass: 'mfp-fade',
         gallery: {
-          enabled: true,
+            enabled: true,
         }
-      });
+    });
     function LoadPageData() {
         //we need to load page data based on manifest type... 
         getManifestTotals(mid, mtype);
         // if (mtype != "cargo") {
-            getManifestPackages(mid, mtype, function (mailPackages) {
+        getManifestPackages(mid, mtype, function (mailPackages) {
 
-                // displayMailPackages(mailPackages);
-                displayPackages(mailPackages, "#packageTable", mtype)
-            });
+            // displayMailPackages(mailPackages);
+            displayPackages(mailPackages, "#packageTable", mtype)
+        });
 
         // }
 
-      
+
 
         //we need to get the counts intially 
         LoadPackageCounters();
@@ -91,7 +92,7 @@ $(function () {
         if ($("#unProcCount"))
             getPackageCountBySize(mid, "unproc", "#unProcCount");
     }
-   // LoadPageData();
+    // LoadPageData();
     //#endregion
 
     $(".nav-link").click(function (e) {
@@ -103,27 +104,27 @@ $(function () {
 
         return false;
     })
-   
-    $("#save-details").click(function(){
-        //get the manifest id and updated plane and 
-       
-        var details = {
-            tailNum:$("#tailNumber").val(),
-            planeId : $("#select-plane").val(),
-            shipDate: $("#flight-date").val(), 
-            id : $("#mid").val()
-        }
-        console.log('sending details',details)
-         $.ajax({
-             url:'/warehouse/update-manifest-details',
-             type:'post',
-             data:details, 
-             success:function(success){
-                 console.log(success)
-                // window.location = window.location; 
-             }
 
-         })
+    $("#save-details").click(function () {
+        //get the manifest id and updated plane and 
+
+        var details = {
+            tailNum: $("#tailNumber").val(),
+            planeId: $("#select-plane").val(),
+            shipDate: $("#flight-date").val(),
+            id: $("#mid").val()
+        }
+        console.log('sending details', details)
+        $.ajax({
+            url: '/warehouse/update-manifest-details',
+            type: 'post',
+            data: details,
+            success: function (success) {
+                console.log(success)
+                // window.location = window.location; 
+            }
+
+        })
     })
     //#region Control Actions
     $(".skybox").change(function () {
@@ -134,82 +135,82 @@ $(function () {
         var nameCtrl = form.find('.customerName');
         lookupUser(box, $(nameCtrl));
     });
-    
-    $("#print-awb").click(function(){
+
+    $("#print-awb").click(function () {
         var awb = $(this).attr('data-id')
         $.ajax({
-            url:'/warehouse/print-awb/'+awb,
-            contentType:'json',
-            success:function(result){
-                console.log('result',result)
+            url: '/warehouse/print-awb/' + awb,
+            contentType: 'json',
+            success: function (result) {
+                console.log('result', result)
             }
         })
     })
-    $("#print-lbl").click(function(){
+    $("#print-lbl").click(function () {
         var awb = $(this).attr('data-id')
         $.ajax({
-            url:'/warehouse/print-awb-lbl/'+awb,
-            contentType:'json',
-            success:function(result){
-                console.log('result',result)
+            url: '/warehouse/print-awb-lbl/' + awb,
+            contentType: 'json',
+            success: function (result) {
+                console.log('result', result)
             }
         })
     })
 
-    $(".new-awb").click(function(){
+    $(".new-awb").click(function () {
         //clear out items 
-        sedAnswered = 0; 
+        sedAnswered = 0;
         $("#id").val('')
         $("#invoiceNumber").val('')
         $("#value").val('')
         $("#customerId").val('')
         $("#shipper").val('')
         $("#carrier").val('')
-        $(".skybox").val(''); 
-        $("#sedRequired").val("0"); 
+        $(".skybox").val('');
+        $("#sedRequired").val("0");
         //$("#isSED").prop(":checked",false)
         //$("#hasInvoice").prop(":checked",false)
         $(".awb").text('');
         $(".awb-new").hide()
-        $(".print-options").hide(); 
+        $(".print-options").hide();
         $("#save_awb").show()
-        $("#add_package").hide(); 
-        $(".new-awb").hide(); 
+        $("#add_package").hide();
+        $(".new-awb").hide();
         //clear the table 
-        awbPackages = []; 
-        displayPackages(awbPackages, "#packageTable", "cargo"); 
+        awbPackages = [];
+        displayPackages(awbPackages, "#packageTable", "cargo");
     })
-    $("#saveCustomer").click(function(){
-        var customer = { 
+    $("#saveCustomer").click(function () {
+        var customer = {
             branch: $("#cust_branch").val(),
-            name : $("#cust_name").val(),
-            pmb: $("#cust_pmb").val(), 
+            name: $("#cust_name").val(),
+            pmb: $("#cust_pmb").val(),
             email: $("#cust_email").val(),
-            phone : $("#cust_phone").val(),
-            address: $("#cust_address").val(),  
+            phone: $("#cust_phone").val(),
+            address: $("#cust_address").val(),
         }
-        if (customer.name == "" || customer.address == ""){
-            return; 
+        if (customer.name == "" || customer.address == "") {
+            return;
         }
         $.ajax({
-            url:'/warehouse/save-customer',
-            type:'post',
-            data:customer,
-            success:function(success){
-                alert ('customer added'); 
+            url: '/warehouse/save-customer',
+            type: 'post',
+            data: customer,
+            success: function (success) {
+                alert('customer added');
             }
 
         })
     })
-    $(".copy-last").click(function(){
-        
-        if (awbPackages.length > 0){
+    $(".copy-last").click(function () {
+
+        if (awbPackages.length > 0) {
             var pkgIndex = awbPackages.length - 1
-            var packageToCopy = awbPackages[pkgIndex]; 
-            $("#pkgId").val(""); 
-            $("#trackingNo").val(""); 
+            var packageToCopy = awbPackages[pkgIndex];
+            $("#pkgId").val("");
+            $("#trackingNo").val("");
             $("#description").val(packageToCopy.description);
-            $("#weight").val(packageToCopy.weight); 
+            $("#weight").val(packageToCopy.weight);
             //Dims 
             packageToCopy.dimensions = packageToCopy.dimensions.toLowerCase()
             var dims = packageToCopy.dimensions.toLowerCase().split('x');
@@ -219,30 +220,30 @@ $(function () {
 
         }
     })
-    $("#save-shipper").click(function(){
+    $("#save-shipper").click(function () {
         var shipper = {
             name: $("#sp-name").val(),
             address: $("#sp-address").val(),
-            city : $("#sp-city").val(), 
-            state: $("#sp-state").val(), 
-            zip:$("#sp-zip").val(),
-            taxId:$("#sp-tax-id").val(),
-            
+            city: $("#sp-city").val(),
+            state: $("#sp-state").val(),
+            zip: $("#sp-zip").val(),
+            taxId: $("#sp-tax-id").val(),
 
-            
+
+
         }
-        if (shipper.name != "" || shipper.address != ""){
+        if (shipper.name != "" || shipper.address != "") {
             $.ajax({
-                url:"/warehouse/add-shipper",
-                type:'post',
-                data : shipper,
-                success:function(result){
+                url: "/warehouse/add-shipper",
+                type: 'post',
+                data: shipper,
+                success: function (result) {
                     //if (result.saved == "true" || result.save==true){
-                        
-                        console.log(result)
-                        var newOption = new Option(result.shipper.name, result.shipper.id, false, true);
-                        $("#pick-shipper").append(newOption).trigger('change'); 
-                   // }
+
+                    console.log(result)
+                    var newOption = new Option(result.shipper.name, result.shipper.id, false, true);
+                    $("#pick-shipper").append(newOption).trigger('change');
+                    // }
                 }
             })
         }
@@ -250,164 +251,162 @@ $(function () {
             alert("Please add a shipper name and address. ")
         }
     })
-    $("#cancel-ready").click(function(){
+    $("#cancel-ready").click(function () {
         $('.mfp-close').trigger("click");
     })
-    $("#save-to-awb").click(function(){
-       
+    $("#save-to-awb").click(function () {
+
         var package = {
-            id:$("#pkgId").val(),
+            id: $("#pkgId").val(),
             trackingNo: $("#trackingNo").val(),
             description: $("#description").val(),
-            weight:$("#weight").val(), 
-            dimensions: $("#W").val()+"x"+$("#H").val()+"x"+$("#L").val(),
-            awb:$(".awb").val(),
-            packaging:$("#packaging").val(),
-            pkgNo:$("#pkgNo").val()
+            weight: $("#weight").val(),
+            dimensions: $("#W").val() + "x" + $("#H").val() + "x" + $("#L").val(),
+            awb: $(".awb").val(),
+            packaging: $("#packaging").val(),
+            pkgNo: $("#pkgNo").val()
         }
-        var isValid = true; 
-        if (package.trackingNo==""){
-            isValid = false 
+        var isValid = true;
+        if (package.trackingNo == "") {
+            isValid = false
         }
-        if (package.weight ==""){
-            isValid = false 
+        if (package.weight == "") {
+            isValid = false
         }
-        if (package.description == ""){
-            isValid  = false;
+        if (package.description == "") {
+            isValid = false;
         }
-        if (isValid == true)
-        {
-          
-               
-                package.location = "Warehouse FL"; 
-                $.ajax({
-                    url:'/warehouse/save-awb-package',
-                    type:'post',
-                    data:package, 
-                    success:function(result){
-                        if (result.id){
-                            package.id=result.id; 
-                        }
-                        if ($("#pkgId").val()!= 0){
-                            $("#pkgId").val("0"); 
-                            window.location = window.location; 
-                        }
-                        else {
-                            awbPackages.push(package);  
-                        displayPackages(awbPackages, "#packageTable", "cargo"); 
-                        }
-                        $("#pkgNo").val(awbPackages.length+1)
-                        $("#trackingNo").val(''); 
-                        $("#description").val(''); 
-                        $("#weight").val(''); 
-                        $("#W").val("");
-                        $("#H").val("");
-                        $("#L").val(""); 
-                        //$(".close-popup").trigger('click'); 
+        if (isValid == true) {
+
+
+            package.location = "Warehouse FL";
+            $.ajax({
+                url: '/warehouse/save-awb-package',
+                type: 'post',
+                data: package,
+                success: function (result) {
+                    if (result.id) {
+                        package.id = result.id;
                     }
-                })
-            
+                    if ($("#pkgId").val() != 0) {
+                        $("#pkgId").val("0");
+                        window.location = window.location;
+                    }
+                    else {
+                        awbPackages.push(package);
+                        displayPackages(awbPackages, "#packageTable", "cargo");
+                    }
+                    $("#pkgNo").val(awbPackages.length + 1)
+                    $("#trackingNo").val('');
+                    $("#description").val('');
+                    $("#weight").val('');
+                    $("#W").val("");
+                    $("#H").val("");
+                    $("#L").val("");
+                    //$(".close-popup").trigger('click'); 
+                }
+            })
+
             //we need to actually save the package and clear the screen 
-           
-             
-        }   
 
-            console.log(package)
-            console.log(awbPackages)
-            //refres the table 
-           
+
+        }
+
+        console.log(package)
+        console.log(awbPackages)
+        //refres the table 
+
 
     })
-    
 
-    $("#value").change(function(){
-        sedAnswered = 0 ; 
+
+    $("#value").change(function () {
+        sedAnswered = 0;
     })
-    $(".sed-click").click(function(){
-        $("#sedRequired").val(Number($(this).attr("data-id"))); 
-        sedAnswered =1; 
+    $(".sed-click").click(function () {
+        $("#sedRequired").val(Number($(this).attr("data-id")));
+        sedAnswered = 1;
         console.log('sed answer changed' + sedAnswered)
-        $("#save_awb").trigger('click'); 
-        
+        $("#save_awb").trigger('click');
+
     })
-    $("#update_awb").click(function(){
+    $("#update_awb").click(function () {
         $("#save_awb").trigger("click")
     })
-    $("#save_awb").click(function(){
+    $("#save_awb").click(function () {
         //validate the awb 
 
         //handle upload
-        var hasInvoice = 0 ; 
-        
-        if (Number($("#value").val())>= 2500 && sedAnswered == 0){
+        var hasInvoice = 0;
+
+        if (Number($("#value").val()) >= 2500 && sedAnswered == 0) {
             //trigger SED QUESTION
-            $("#show-sed").trigger('click'); 
+            $("#show-sed").trigger('click');
 
             console.log('showing sed question')
-            return; 
+            return;
         }
-       
-           
-        var awbInfo = { 
+
+
+        var awbInfo = {
             id: $("#id").val(),
-            isSed:$("#sedRequired").val(),
+            isSed: $("#sedRequired").val(),
             hasDocs: hasInvoice,
-            invoiceNumber:$("#invoiceNumber").val(),
-            value:$("#value").val(),
-            customerId:$("#customerId").val(),
-            shipper:$("#pick-shipper").val(),
-            carrier:$("#carrier").val(),
-            hazmat:$("#pick-haz").val(),
-           
+            invoiceNumber: $("#invoiceNumber").val(),
+            value: $("#value").val(),
+            customerId: $("#customerId").val(),
+            shipper: $("#pick-shipper").val(),
+            carrier: $("#carrier").val(),
+            hazmat: $("#pick-haz").val(),
+
         };
-        if (awbInfo.customerId == "" || awbInfo.shipper =="" || awbInfo.carrier == ""){
+        if (awbInfo.customerId == "" || awbInfo.shipper == "" || awbInfo.carrier == "") {
             alert('cannot save AWB Info missing')
 
-            return; 
+            return;
         }
-        if (awbInfo.value == ""){
-            awbInfo.value = 0  ; 
+        if (awbInfo.value == "") {
+            awbInfo.value = 0;
         }
-        console.log(awbInfo,"saving the awb")
-        uploadContentFile($("#invFile"),function(results){
-            var fileInfo = {}; 
-            if (results != ""){
-                var fileInfo = JSON.parse(results); 
-            
-                console.log('results',fileInfo[0].uploadedFile);
-                if (fileInfo[0].uploadedFile)
-                {
-                    hasInvoice = 1; 
-                    awbInfo.hasDocs = 1; 
-                    awbInfo.invoice = fileInfo[0].uploadedFile; 
+        console.log(awbInfo, "saving the awb")
+        uploadContentFile($("#invFile"), function (results) {
+            var fileInfo = {};
+            if (results != "") {
+                var fileInfo = JSON.parse(results);
+
+                console.log('results', fileInfo[0].uploadedFile);
+                if (fileInfo[0].uploadedFile) {
+                    hasInvoice = 1;
+                    awbInfo.hasDocs = 1;
+                    awbInfo.invoice = fileInfo[0].uploadedFile;
                 }
             }
 
             //we can send now 
-             console.log('sending', awbInfo)
+            console.log('sending', awbInfo)
             $.ajax({
-                url:'/warehouse/save-awb',
-                type:'post',
-                data:awbInfo,
-                success:function(result){
+                url: '/warehouse/save-awb',
+                type: 'post',
+                data: awbInfo,
+                success: function (result) {
                     console.log(result);
-                    $(".awb").text(result.id); 
+                    $(".awb").text(result.id);
                     $(".awb").val(result.id)
-                    $("#add_package").show(); 
-                    $("#save_awb").hide(); 
+                    $("#add_package").show();
+                    $("#save_awb").hide();
                     $(".new-awb").show();
                     $(".print-options").show();
-                    $("#print-awb").attr('data-id',result.id);
-                    $("#print-lbl").attr('data-id',result.id); 
+                    $("#print-awb").attr('data-id', result.id);
+                    $("#print-lbl").attr('data-id', result.id);
 
                 }
             });
         })
-      
-    }); 
 
- 
-    $("#print-label").click(function(){
+    });
+
+
+    $("#print-label").click(function () {
 
     })
 
@@ -428,33 +427,33 @@ $(function () {
 
     });
 
-    $("#search").keyup(function(){
+    $("#search").keyup(function () {
         var query = $(this).val();
         console.log(query)
-        if (query.length>=3){
+        if (query.length >= 3) {
             console.log(query)
             $.ajax({
-                url:'/warehouse/find-customer',
-                type:'post',
-                data: {search:query},
-                success:function(data){
-                    console.log(data,"customer listing"); 
-                    $("#customerTable").empty(); 
-                   for(i=0;i<data.customer.length; i++){
+                url: '/warehouse/find-customer',
+                type: 'post',
+                data: { search: query },
+                success: function (data) {
+                    console.log(data, "customer listing");
+                    $("#customerTable").empty();
+                    for (i = 0; i < data.customer.length; i++) {
                         console.log(data.customer[i])
-                        $("#customerTable").append(`<tr><td>${data.customer[i].pmb}</td><td>${data.customer[i].name}</td> <td><i data-id="${data.customer[i].id}" data-name="${data.customer[i].name}" class='fa fa-check choose_customer' style='cursor:pointer'></i></td></tr>`)    
+                        $("#customerTable").append(`<tr><td>${data.customer[i].pmb}</td><td>${data.customer[i].name}</td> <td><i data-id="${data.customer[i].id}" data-name="${data.customer[i].name}" class='fa fa-check choose_customer' style='cursor:pointer'></i></td></tr>`)
                     }
-                    $("#customerTable").show(); 
-                    $(".choose_customer").click(function(){
+                    $("#customerTable").show();
+                    $(".choose_customer").click(function () {
                         var custId = $(this).attr('data-id')
                         var custName = $(this).attr('data-name')
-                        $(".skybox").val(custName); 
-                        $(".customerId").val(custId); 
+                        $(".skybox").val(custName);
+                        $(".customerId").val(custId);
                         $(".close-del").trigger('click')
                     })
                 }
-            
-            }); 
+
+            });
         }
     })
     $(".close-manifest").click(function () {
@@ -481,8 +480,8 @@ $(function () {
     });
     $(".new-cube").click(function () {
         var btn = $(this);
-       btn.hide(); 
-       $(".cubeId").show(); 
+        btn.hide();
+        $(".cubeId").show();
     });
     $(".ship-manifest").click(function () {
         //we need the awb 
@@ -591,7 +590,7 @@ $(function () {
             // create a FormData object which will be sent as the data payload in the
             // AJAX request
             var formData = new FormData();
-            
+
             // loop through all the selected files and add them to the formData object
             for (var i = 0; i < files.length; i++) {
                 var file = files[i];
@@ -669,7 +668,7 @@ $(function () {
             weight: $(form).find('.weight').val(),
             dimensions: $(form).find('.dimensions').val(),
             carrier: $(form).find('.carrier').val(),
-            issue: $("form").find('.issue').val(), 
+            issue: $("form").find('.issue').val(),
             //mid: $(form).find('.mid').val(),
             //mtype: $(form).find('.mtype').val(),
             isBusiness: $(form).find('.isBusiness').val()
@@ -859,13 +858,13 @@ $(function () {
 
     function displayPackages(packages, tableId, ctype) {
         //REFACTORED FUNCTION  
-        var totalWeight = 0 ; 
-        for(var i = 0; i<packages.length; i++){
-            if (!isNaN(packages[i].weight)){
+        var totalWeight = 0;
+        for (var i = 0; i < packages.length; i++) {
+            if (!isNaN(packages[i].weight)) {
                 totalWeight += Number(packages[i].weight)
             }
         }
-        $('.total-weight').text(totalWeight +" lbs")
+        $('.total-weight').text(totalWeight + " lbs")
         if ($(tableId + " tbody").children().length > 0)
             $(tableId).DataTable().destroy();
         var containerLabel = "Skid";
@@ -883,8 +882,8 @@ $(function () {
             $("#packageCount").text(packages.length);
         }
         var colDef = [
-           
-           
+
+
             {
                 title: "Tracking No",
                 data: null,
@@ -894,7 +893,7 @@ $(function () {
                 }
             },
 
-           
+
             {
                 title: "Description",
                 data: null,
@@ -919,7 +918,7 @@ $(function () {
                     return `${data.dimensions}`;
                 }
             },
-            
+
             {
                 title: "",
                 data: null,
@@ -931,7 +930,7 @@ $(function () {
 
         ];
         var colDefc = [
-           
+
             {
                 title: "Compartment",
                 data: null,
@@ -949,7 +948,7 @@ $(function () {
                 }
             },
 
-           
+
             {
                 title: "Description",
                 data: null,
@@ -974,7 +973,7 @@ $(function () {
                     return `${data.dimensions}`;
                 }
             },
-            
+
             // {
             //     title: "",
             //     data: null,
@@ -985,7 +984,7 @@ $(function () {
             // },
 
         ];
-        if (pageMode == "flight"){
+        if (pageMode == "flight") {
             colDef = colDefc;
         }
 
@@ -1001,7 +1000,7 @@ $(function () {
                 "decimal": ",",
                 "thousands": "."
             },
-            
+
             "deferRender": true,
             initComplete: function () {
                 $(tableId).find(".edit").click(function () {
@@ -1019,9 +1018,9 @@ $(function () {
                     var id = $(this).attr('data-id');
                     var form = "#cargoPackageForm";
                     $.ajax({
-                        url:'/warehouse/print-awb-lbl/'+$("#id").val()+":"+id,
-                        contentType:'json',
-                        success:function(result){
+                        url: '/warehouse/print-awb-lbl/' + $("#id").val() + ":" + id,
+                        contentType: 'json',
+                        success: function (result) {
 
                         }
                     })
@@ -1053,7 +1052,7 @@ $(function () {
     }
 
     function savePackage(package, form, isClosed) {
-        lastPackage = { details:package };
+        lastPackage = { details: package };
         $.ajax({
             url: '/warehouse/save-package',
             type: 'post',
@@ -1091,30 +1090,30 @@ $(function () {
             success: function (dResult) {
                 console.log(dResult);
 
-               // form.find('.skybox').val(dResult.skybox);
+                // form.find('.skybox').val(dResult.skybox);
                 //console.log(dResult.skybox);
-                $("#pkgId").val(dResult.id); 
+                $("#pkgId").val(dResult.id);
                 $('#trackingNo').val(dResult.trackingNo);
-               // form.find('.shipper').val(dResult.shipper);
+                // form.find('.shipper').val(dResult.shipper);
                 //form.find('.package-value').val(dResult.value);
                 $('#weight').val(dResult.weight);
                 //form.find('.pieces').val(dResult.pieces);
                 $('#description').val(dResult.description);
                 //form.find('.carrier').val(dResult.carrier);
-                var dims = dResult.dimensions.split("x"); 
-                if (dims.length == 3){
+                var dims = dResult.dimensions.split("x");
+                if (dims.length == 3) {
                     $("#W").val(dims[0])
                     $("#H").val(dims[1])
                     $("#L").val(dims[2])
                 }
-                if (dResult.pkgNo){
+                if (dResult.pkgNo) {
                     $("#pkgNo").val(dResult.pkgNo)
                 }
-                if(dResult.packaging){
+                if (dResult.packaging) {
                     $("#packaging").val(dResult.packaging)
                 }
                 form.find('.dimensions').val(dResult.dimensions);
-                $(".open-popup-link").trigger('click'); 
+                $(".open-popup-link").trigger('click');
                 // if (typeof dResult.bag != "undefined")
                 //     form.find('.bag').val(dResult.bag);
                 // else
@@ -1130,19 +1129,19 @@ $(function () {
         })
     }
 
-    function deletePackage(trackingNo, type,id) {
+    function deletePackage(trackingNo, type, id) {
         $.ajax({
             url: '/warehouse/rm-package',
             type: 'post',
             data: {
-                id:trackingNo,
+                id: trackingNo,
             },
             success: function (dResult) {
                 getManifestPackages(mid, "default", function (mailPackages) {
 
                     // displayMailPackages(mailPackages);
-                    window.location = window.location; 
-                    
+                    window.location = window.location;
+
                 });
                 // if (type == 'mail') {
                 //     //refresh the package listing 

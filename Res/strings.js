@@ -27,6 +27,9 @@ exports.redis_id_driver = "id:driver";
 exports.redis_prefix_shipper = "shipper:";
 exports.redis_id_shipper = "id:shipper";
 
+exports.redis_prefix_hazmat = "hazmat:";
+exports.redis_id_hazmat = "id:hazmat";
+
 // Const strings
 exports.string_response_error = "Internal Server Error !";
 exports.string_response_updated = "Successfully Updated !";
