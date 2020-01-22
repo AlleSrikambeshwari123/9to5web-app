@@ -1,13 +1,60 @@
 var services = require('../RedisServices/RedisDataServices');
 
 exports.get_customer_list = (req, res, next) => {
-  services.customerService.getCustomers().then(customers => {
+  Promise.all([
+    services.locationService.getLocations(),
+    services.customerService.getCustomers(),
+  ]).then(results => {
+    let locations = {};
+    results[0].forEach(location => locations[location.id] = location.name);
+    let customers = results[1];
+    customers.forEach(customer => customer.location = locations[customer.location]);
+
     res.render('pages/admin/customers/list', {
       page: req.url,
       title: "Customers",
       user: res.user,
       customers: customers,
+      locations: locations,
     })
+  })
+}
+
+exports.create_customer = (req, res, next) => {
+  services.locationService.getLocations().then(locations => {
+    res.render('pages/admin/customers/create', {
+      page: req.url,
+      title: "Create New Customer",
+      user: res.user,
+      locations: locations
+    })
+  })
+}
+
+exports.add_new_customer = (req, res, next) => {
+  services.customerService.signUp(req.body).then(result => {
+    res.send(result);
+  })
+}
+
+exports.get_customer_detail = (req, res, next) => {
+  Promise.all([
+    services.locationService.getLocations(),
+    services.customerService.getCustomer(req.params.id),
+  ]).then(results => {
+    res.render('pages/admin/customers/edit', {
+      page: req.url,
+      title: "Customer Details",
+      user: res.user,
+      locations: results[0],
+      customer: results[1]
+    })
+  })
+}
+
+exports.update_customer = (req, res, next) => {
+  services.customerService.updateCustomer(req.params.id, req.body).then(result => {
+    res.send(result);
   })
 }
 

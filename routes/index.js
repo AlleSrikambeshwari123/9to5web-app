@@ -4,7 +4,10 @@ var middleware = require('../middleware');
 var services = require('../RedisServices/RedisDataServices');
 
 router.get('/', function (req, res, next) {
-  res.render('index', { title: 'Express' });
+  if (req.session.token)
+    res.redirect('/dashboard');
+  else
+    res.render('index');
 });
 
 router.get('/dashboard', middleware(services.userService).checkSession, function (req, res, next) {

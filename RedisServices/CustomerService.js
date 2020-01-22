@@ -15,13 +15,12 @@ var ID_COUNTER = "id:customer";
 class CustomerService {
     signUp(customer) {
         return new Promise((resolve, reject) => {
-            this.getCustomerWithEmail(email).then(existingCustomer => {
+            this.getCustomerWithEmail(customer.email).then(existingCustomer => {
                 if (existingCustomer.id) {
                     resolve({ success: false, message: "Account already exists" });
                 } else {
                     client.incr(ID_COUNTER, (err, id) => {
                         customer.id = id;
-                        customer.skybox = id;
                         customer.password = bcrypt.hashSync(customer.password, 10);
                         client.hmset(PREFIX + id, customer, (err, result) => {
                             if (err) resolve({ success: false, message: strings.string_response_error });
@@ -37,7 +36,7 @@ class CustomerService {
         return new Promise((resolve, reject) => {
             this.getCustomerWithEmail(email).then(customer => {
                 if (customer.id == undefined) {
-                    resolve({ authenticated: false, message: strings.string_customer_not_found });
+                    resolve({ authenticated: false, message: strings.string_not_found_customer });
                 } else {
                     bcrypt.compare(password, customer.password, (err, same) => {
                         if (same) {
@@ -82,6 +81,18 @@ class CustomerService {
                 else resolve(results[0]);
             })
         });
+    }
+    updateCustomer(id, body) {
+        return new Promise((resolve, reject) => {
+            client.exists(PREFIX + id, (err, exist) => {
+                if (err) resolve({ success: false, message: strings.string_response_error });
+                if (Number(exist) == 1) {
+                    client.hmset(PREFIX + id, body);
+                    resolve({ success: true, message: strings.string_response_updated });
+                } else
+                    resolve({ success: true, message: strings.string_not_found_customer });
+            })
+        })
     }
     removeCustomer(id) {
         return new Promise((resolve, reject) => {

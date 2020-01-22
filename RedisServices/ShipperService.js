@@ -1,61 +1,41 @@
 
+const strings = require('../Res/strings');
 
-var dataContext = require('./dataContext');
-var redis = require('redis');
+var client = require('./dataContext').redisClient;
+var lredis = require('./redis-local');
 
-var redisSearch = require('../redisearchclient');
-var SHIPPER_INDEX = "index:shipper"
-const rs = redisSearch(redis, SHIPPER_INDEX, {
-    clientOptions: dataContext.clientOptions
-});
+const PREFIX = strings.redis_prefix_shipper;
+const SHIPPER_ID = strings.redis_id_shipper;
+
 class ShipperService {
-    constructor() {
-
-    }
-
     getShipmentId() {
         return new Promise((resolve, reject) => {
-            dataContext.redisClient.incr("rec:truck:id", (err, reply) => {
+            client.incr("rec:truck:id", (err, reply) => {
                 resolve(reply);
             })
         })
     }
     addShipper(shipper) {
         return new Promise((resolve, reject) => {
-            dataContext.redisClient.incr("shipper:id", (err, reply) => {
-                shipper.id = reply
-                rs.add(reply, shipper, (err, sresult) => {
-                    if (err)
-                        resolve({ saved: false })
-                    resolve({ saved: true, shipper })
+            client.incr(SHIPPER_ID, (err, id) => {
+                if (err) resolve({ success: false, message: strings.string_response_error });
+                shipper.id = id;
+                client.hmset(PREFIX + id, shipper, (err, result) => {
+                    if (err) resolve({ success: false, message: strings.string_response_error });
+                    resolve({ success: true, message: strings.string_response_added });
                 })
             })
         })
     }
     getAllShippers() {
         return new Promise((resolve, reject) => {
-            rs.search('*', { offset: 0, numberOfResults: 5000, sortBy: "name", sortDir: "ASC" }, (err, shippers) => {
-                var listing = [];
-                if (err) {
-                    console.log(err)
-                }
-
-                shippers.results.forEach(shipper => {
-                    listing.push(shipper.doc);
-                });
-
-                resolve({ shippers: listing })
-            })
-        })
-    }
-    findShipper(text) {
-        return new Promise((resolve, reject) => {
-            rs.search(`@name:${text}*`, { offset: 0, numberOfResults: 5000, sortBy: "name", sortDir: "ASC" }, (err, shippers) => {
-                var listing = [];
-                shippers.results.forEach(shipper => {
-                    listing.push(shipper.doc);
-                });
-                resolve({ shippers: listing })
+            client.keys(PREFIX + '*', (err, keys) => {
+                if (err) resolve([]);
+                Promise.all(keys.map(key => {
+                    return lredis.hgetall(key);
+                })).then(shippers => {
+                    resolve(shippers);
+                })
             })
         })
     }

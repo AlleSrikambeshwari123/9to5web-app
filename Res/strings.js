@@ -18,12 +18,20 @@ exports.redis_id_user = "id:user";
 exports.redis_prefix_location = "location:";
 exports.redis_id_location = "id:location";
 
+exports.redis_prefix_vehicle = "vehicle:";
+exports.redis_id_vehicle = "id:vehicle";
+
+exports.redis_prefix_shipper = "shipper:";
+exports.redis_id_shipper = "id:shipper";
+
 // Const strings
 exports.string_response_error = "Internal Server Error !";
 exports.string_response_updated = "Successfully Updated !";
 exports.string_response_created = "Successfully Created !";
 exports.string_response_removed = "Successfully Removed !";
-exports.string_user_not_found = "Sorry, we can't find this user.";
+exports.string_response_added = "Successfully Added !";
+exports.string_not_found_user = "Sorry, we can't find this user.";
+exports.string_not_found_customer = "Sorry, we can't this customer.";
+exports.string_not_found_vehicle = "Sorry, we can't find this vehicle";
 exports.string_user_exist = "Sorry, same username already exist.";
 exports.string_password_incorrect = "Incorrect Password.";
-exports.string_customer_not_found = "Sorry, we can't this customer.";

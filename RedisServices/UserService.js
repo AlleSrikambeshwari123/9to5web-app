@@ -129,7 +129,7 @@ class UserService {
                     client.hmset(PREFIX + user.username, user);
                     resolve({ success: true, message: strings.string_response_updated });
                 } else {
-                    resolve({ success: false, message: strings.string_user_not_found });
+                    resolve({ success: false, message: strings.string_not_found_user });
                 }
             });
         });

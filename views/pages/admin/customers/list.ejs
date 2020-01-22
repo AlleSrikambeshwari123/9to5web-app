@@ -2,8 +2,9 @@
 <div class='gutters'>
   <div class="col-xl-12 col-lg-6 col-md-12 col-sm-12">
     <div class="card">
-      <div class="card-header">
-        <h4 class="card-title">Customers</h4>
+      <div class="card-header d-flex align-items-left align-items-md-center flex-column flex-md-row">
+        <div class="card-title"><%=title%></div>
+        <a href='create' class='btn btn-primary btn-round float-right ml-md-auto'>Add Customer</a>
       </div>
       <div class="card-body">
         <div class="table-responsive">
@@ -21,11 +22,11 @@
             <tbody>
               <% customers.forEach(function(customer){%>
               <tr data-record="<%= customer.id %>">
-                <th scope="row"><%=customer.skybox%></th>
+                <th scope="row"><%=customer.pmb%></th>
                 <td><%=customer.firstName + ' ' + customer.lastName%></td>
                 <td><%=customer.email%></td>
                 <td><%=customer.mobile %></td>
-                <td><%=customer.area %></td>
+                <td><%=customer.location %></td>
                 <td>
                   <a href='manage/<%=customer.id%>/get'><i class="fas fa-user-edit"></i></a>
                   <a href='#' class='rm-customer ml-3' data-id='<%=customer.id%>'><i class="fas fa-trash"></i></a>

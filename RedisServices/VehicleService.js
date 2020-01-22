@@ -1,72 +1,65 @@
 
-var redis = require('redis');
+const strings = require('../Res/strings');
+
 var lredis = require('./redis-local');
-var redisSearch = require('redisearchclient');
-const PREFIX = "vehicle:"
-const INDEX = "index:vehicles"
-const VEHICLE_ID = "vehicle:id";
-const dataContext = require('./dataContext');
-const rs = redisSearch(redis, INDEX, {
-    clientOptions: dataContext.clientOptions
-});
+var client = require('./dataContext').redisClient;
+
+const PREFIX = strings.redis_prefix_vehicle;
+const VEHICLE_ID = strings.redis_id_vehicle;
 
 class VehicleService {
-    constructor() {
-
-    }
-    addVehicle(vechile) {
+    addVehicle(vehicle) {
         return new Promise((resolve, reject) => {
-            dataContext.redisClient.incr(VEHICLE_ID, (err, id) => {
-                vechile.id = id;
-                dataContext.redisClient.hmset(PREFIX + id, vechile);
-                rs.add(id, vechile, (err, results) => {
-                    resolve({ saved: true });
-                });
+            client.incr(VEHICLE_ID, (err, id) => {
+                if (err) resolve({ success: false, message: strings.string_response_error });
+                vehicle.id = id;
+                client.hmset(PREFIX + id, vehicle);
+                resolve({ success: true, message: strings.string_response_added });
             })
         })
     }
-    updateVehicle(vechile) {
+    updateVehicle(id, vehicle) {
         return new Promise((resolve, reject) => {
-            dataContext.redisClient.hmset(PREFIX + id, vechile);
-            rs.update(vechile.id, vechile, (err, saved) => {
-                resolve({ saved: true })
+            client.exists(PREFIX + id, (err, exist) => {
+                if (err) resolve({ success: false, message: strings.string_response_error });
+                if (exist) {
+                    client.hmset(PREFIX + id, vehicle);
+                    resolve({ success: true, message: strings.string_response_updated });
+                } else
+                    resolve({ success: false, message: strings.string_not_found_vehicle });
             })
         })
     }
-    rmVechile(id) {
+    removeVechile(id) {
         return new Promise((resolve, reject) => {
-            dataContext.redisClient.del(PREFIX + id);
-            rs.delDocument(INDEX, id, (err, delResult) => {
-                resolve({ deleted: true });
-            })
+            client.del(PREFIX + id);
+            resolve({ success: true, message: strings.string_response_removed });
         })
     }
     getVehicle(id) {
         return new Promise((resolve, reject) => {
-            dataContext.redisClient.hgetall(PREFIX + id, (err, v) => {
-                resolve({ vehicle: v });
+            client.hgetall(PREFIX + id, (err, vehicle) => {
+                if (err) resolve({});
+                resolve({ vehicle });
             })
         })
     }
     getVehicles() {
         return new Promise((resolve, reject) => {
-            rs.search("*", {}, (err, vResults) => {
-                var vehilces = [];
-                vResults.results.forEach(vehicle => {
-                    vehilces.push(vehicle.doc);
-                });
-                resolve({ vehicles: vehilces });
+            client.keys(PREFIX + '*', (err, keys) => {
+                if (err) resolve([]);
+                Promise.all(keys.map(key => {
+                    return lredis.hgetall(key);
+                })).then(vehicles => {
+                    resolve(vehicles);
+                })
             })
         })
     }
-    getVehicleByCountry(country) {
+    getVehiclesByCountry(country) {
         return new Promise((resolve, reject) => {
-            rs.search("@country:" + country, {}, (err, vResults) => {
-                var vehilces = [];
-                vResults.results.forEach(vehicle => {
-                    vehilces.push(vehicle.doc);
-                });
-                resolve({ vehicles: vehilces });
+            lredis.search(PREFIX, 'country', country).then(vehicles => {
+                resolve(vehicles);
             })
         })
     }
