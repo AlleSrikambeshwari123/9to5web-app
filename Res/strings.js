@@ -21,6 +21,9 @@ exports.redis_id_location = "id:location";
 exports.redis_prefix_vehicle = "vehicle:";
 exports.redis_id_vehicle = "id:vehicle";
 
+exports.redis_prefix_driver = "driver:";
+exports.redis_id_driver = "id:driver";
+
 exports.redis_prefix_shipper = "shipper:";
 exports.redis_id_shipper = "id:shipper";
 
@@ -32,6 +35,7 @@ exports.string_response_removed = "Successfully Removed !";
 exports.string_response_added = "Successfully Added !";
 exports.string_not_found_user = "Sorry, we can't find this user.";
 exports.string_not_found_customer = "Sorry, we can't this customer.";
-exports.string_not_found_vehicle = "Sorry, we can't find this vehicle";
+exports.string_not_found_vehicle = "Sorry, we can't find this vehicle.";
+exports.string_not_found_driver = "Sorry, we can't find this driver.";
 exports.string_user_exist = "Sorry, same username already exist.";
 exports.string_password_incorrect = "Incorrect Password.";

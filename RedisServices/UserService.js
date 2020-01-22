@@ -107,8 +107,8 @@ class UserService {
 
     createUser(user) {
         return new Promise((resolve, reject) => {
-            this.checkUsername(user.username).then(valid => {
-                if (valid.exist) {
+            client.exists(PREFIX + user.username, (err, exist) => {
+                if (Number(exist) == 1) {
                     resolve({ success: false, message: strings.string_user_exist });
                 } else {
                     client.incr(ID_COUNTER, (err, id) => {
@@ -124,8 +124,8 @@ class UserService {
     }
     updateUser(user) {
         return new Promise((resolve, reject) => {
-            this.checkUsername(user.username).then(function (valid) {
-                if (valid.exist) {
+            client.exists(PREFIX + user.username, (err, exist) => {
+                if (Number(exist) == 1) {
                     client.hmset(PREFIX + user.username, user);
                     resolve({ success: true, message: strings.string_response_updated });
                 } else {
@@ -134,44 +134,19 @@ class UserService {
             });
         });
     }
-    checkUsername(username) {
-        return new Promise((resolve, reject) => {
-            client.exists(PREFIX + username, (err, results) => {
-                if (err) resolve({ exist: false });
-                if (Number(results) == 1)
-                    resolve({ exist: true });
-                else
-                    resolve({ exist: false });
-            });
-        });
-    }
-}
 
-function ConvertRolesToString(rolesArray) {
-    var allPermissions = "";
-    rolesArray.forEach(function (role) {
-        allPermissions += role + ",";
-    });
-    allPermissions = allPermissions.substring(0, allPermissions.length - 1);
-    console.log(allPermissions);
-}
-function createDocument(account) {
-    var customerDocument = {
-        id: account.id,
-        username: account.username,
-        email: account.email,
-        firstName: account.firstName,
-        lastName: account.lastName,
-        password: account.password,
-        mobile: account.mobile,
-        role: account.role
-    };
-    console.log(customerDocument);
-    return customerDocument;
-}
-function addUserToIndex(account, searchObj) {
-    var userDocument = createDocument(account);
-    searchObj.add(account.id, userDocument);
+    test(searchword) {
+        return new Promise((resolve, reject) => {
+            client.hscan('0',
+                'MATCH', PREFIX + 'admin',
+                'COUNT', '10',
+                (err, result) => {
+                    console.log(result);
+                    let cursor = result[0];
+                    resolve(result[1]);
+                })
+        })
+    }
 }
 
 module.exports = UserService;

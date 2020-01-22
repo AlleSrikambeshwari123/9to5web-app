@@ -1,4 +1,5 @@
 var services = require('../RedisServices/RedisDataServices');
+var utils = require('../Util/utils');
 
 exports.get_customer_list = (req, res, next) => {
   Promise.all([
@@ -14,7 +15,7 @@ exports.get_customer_list = (req, res, next) => {
       page: req.url,
       title: "Customers",
       user: res.user,
-      customers: customers,
+      customers: customers.map(utils.formattedRecord),
       locations: locations,
     })
   })

@@ -1,86 +1,61 @@
 'use strict';
 
-var dataContext = require('./dataContext');
-var redis = require('redis');
-var PREFIX = "driver:";
-var DRIVER_ID = "driver:id";
-var redisSearch = require('../redisearchclient');
-var DRIVER_INDEX = "index:drivers";
-var rs = redisSearch(redis, DRIVER_INDEX, {
-    clientOptions: dataContext.clientOptions
-});
+const strings = require('../Res/strings');
+
+var client = require('./dataContext').redisClient;
+var lredis = require('./redis-local');
+
+var PREFIX = strings.redis_prefix_driver;
+var DRIVER_ID = strings.redis_id_driver;
 
 class DriverService {
     getDrivers() {
-        return new Promise(function (resolve, rejct) {
-            rs.search('*', {
-                offset: 0,
-                numberOfResults: 1000,
-                sortBy: "lastName",
-                dir: "DESC"
-            }, function (err, results) {
-                var drivers = [];
-                results.results.forEach(function (driverDocument) {
-                    drivers.push(driverDocument.doc);
-                });
-                resolve({ drivers: drivers });
-            });
-        });
-    }
-    findDriver(query) {
-        return new Promise(function (resolve, reject) {
-            rs.search(query, { offset: 0, numberOfResults: 1000 }, function (err, drivers) {
-                //array 
-                var fDrivers = [];
-                drivers.results.forEach(function (driverDocument) {
-                    fDrivers.push(driverDocument.doc);
-                });
-
-                resolve({ drivers: fDrivers });
-            });
+        return new Promise((resolve, rejct) => {
+            client.keys(PREFIX + '*', (err, keys) => {
+                if (err) resolve([]);
+                Promise.all(keys.map(key => {
+                    return lredis.hgetall(key);
+                })).then(drivers => {
+                    resolve(drivers);
+                })
+            })
         });
     }
     getDriver(driverId) {
-        return new Promise(function (resolve, reject) {
-            if (driverId) {
-                rs.search("@id:" + driverId, {
-                    offset: 0,
-                    numberOfResults: 1
-
-                }, function (err, driverRes) {
-                    if (driverRes.results.length == 1) {
-                        resolve({ driver: driverRes.results[0].doc });
-                    } else {
-                        resolve({ driver: {} });
-                    }
-                });
-            }
+        return new Promise((resolve, reject) => {
+            client.hgetall(PREFIX + driverId, (err, driver) => {
+                if (err) resolve({});
+                resolve(driver);
+            })
         });
     }
     createDriver(driver) {
-        return new Promise(function (resolve, reject) {
-            dataContext.redisClient.incr(DRIVER_ID, function (err, id) {
+        return new Promise((resolve, reject) => {
+            client.incr(DRIVER_ID, (err, id) => {
+                if (err) resolve({ success: false, message: strings.string_response_error });
                 driver.id = id;
-                dataContext.redisClient.hmset(DRIVER + id, driver);
-                rs.add(id, driver, function (err, result) {
-                    resolve({ saved: true });
-                });
+                client.hmset(PREFIX + id, driver);
+                resolve({ success: true, message: strings.string_response_added });
             });
         });
     }
-    updateDriver(driver) {
-        return new Promise(function (resolve, reject) {
-            rs.update(driver.id, driver, (err, result));
-        });
+    updateDriver(id, driver) {
+        return new Promise((resolve, reject) => {
+            client.exists(PREFIX + id, (err, exist) => {
+                if (err) resolve({ success: false, message: strings.string_response_error });
+                if (Number(exist) == 1) {
+                    client.hmset(PREFIX + id, driver);
+                    resolve({ success: true, message: strings.string_response_updated });
+                } else
+                    resolve({ success: false, message: strings.string_not_found_driver });
+            })
+        })
     }
     removeDriver(id) {
-        return new Promise(function (resolve, reject) {
-
-            rs.del(id, function (err, restult) {
-                dataContext.redisClient.del(PREFIX + id);
-                resolve({ deleted: true });
-            });
-        });
+        return new Promise((resolve, reject) => {
+            client.del(PREFIX + id);
+            resolve({ success: true, message: strings.string_response_removed });
+        })
     }
 }
 module.exports = DriverService;

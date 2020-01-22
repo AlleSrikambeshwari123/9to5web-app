@@ -11,6 +11,7 @@
           <table id="customerTable" class="display table table-striped table-hover">
             <thead>
               <tr>
+                <th>Company</th>
                 <th>PMB</th>
                 <th>Name</th>
                 <th>Email</th>
@@ -22,7 +23,8 @@
             <tbody>
               <% customers.forEach(function(customer){%>
               <tr data-record="<%= customer.id %>">
-                <th scope="row"><%=customer.pmb%></th>
+                <td><%=customer.companyId%></td>
+                <td scope="row"><%=customer.pmb%></td>
                 <td><%=customer.firstName + ' ' + customer.lastName%></td>
                 <td><%=customer.email%></td>
                 <td><%=customer.mobile %></td>

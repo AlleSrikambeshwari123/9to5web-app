@@ -3,16 +3,18 @@
 		<div class="sidebar-content">
 			<div class="user">
 				<div class="avatar-sm float-left mr-2">
+					<img src="https://via.placeholder.com/60x60" alt="..." class="avatar-img rounded-circle">
 				</div>
 				<div class="info">
-					<a data-toggle="collapse" href="#collapseExample" aria-expanded="true">
+					<a data-toggle="collapse" href="#userCollapse" aria-expanded="true">
 						<span>
 							<span class="user-level"><%=user.firstName + ' ' + user.lastName%></span>
+							<span class="user-level">Administrator</span>
+							<span class="caret"></span>
 						</span>
 					</a>
 					<div class="clearfix"></div>
-
-					<div class="collapse in" id="collapseExample">
+					<div class="collapse in" id="userCollapse">
 						<ul class="nav">
 							<li>
 								<a href="#profile">
@@ -186,31 +188,31 @@
 				</li>
 				<%}%>
 				<%if (user.role.includes("Admin") || user.role.includes("Warehouse NAS") || user.role.includes("Warehouse Fl")) {%>
-				<li class="nav-item">
+				<li class="nav-item <% if (page.includes('/fleet/')) { %> active <% } %>">
 					<a data-toggle="collapse" href="#fleet">
 						<i class="fas fa-truck"></i>
 						<p>Fleet Management</p>
 						<span class="caret"></span>
 					</a>
-					<div class="collapse" id="fleet">
+					<div class="collapse <% if (page.includes('/fleet/')) { %> active <% } %>" id="fleet">
 						<ul class="nav nav-collapse">
-							<li>
-								<a href="/fleet/vehicles">
+							<li <% if (page.includes('/fleet/vehicle/')) { %> class="active" <% } %>>
+								<a href="/fleet/vehicle/list">
 									<span class="sub-item">Vehicles</span>
 								</a>
 							</li>
-							<li>
-								<a href="/fleet/planes">
+							<li <% if (page.includes('/fleet/plane/')) { %> class="active" <% } %>>
+								<a href="/fleet/plane/list">
 									<span class="sub-item">Planes</span>
 								</a>
 							</li>
-							<li>
-								<a href="/fleet/pilots">
+							<li <% if (page.includes('/fleet/pilot/')) { %> class="active" <% } %>>
+								<a href="/fleet/pilot/list">
 									<span class="sub-item">Pilots</span>
 								</a>
 							</li>
-							<li>
-								<a href="/fleet/drivers">
+							<li <% if (page.includes('/fleet/driver/')) { %> class="active" <% } %>>
+								<a href="/fleet/driver/list">
 									<span class="sub-item">Drivers</span>
 								</a>
 							</li>

@@ -22,7 +22,7 @@ class VehicleService {
         return new Promise((resolve, reject) => {
             client.exists(PREFIX + id, (err, exist) => {
                 if (err) resolve({ success: false, message: strings.string_response_error });
-                if (exist) {
+                if (Number(exist) == 1) {
                     client.hmset(PREFIX + id, vehicle);
                     resolve({ success: true, message: strings.string_response_updated });
                 } else
@@ -30,7 +30,7 @@ class VehicleService {
             })
         })
     }
-    removeVechile(id) {
+    removeVehicle(id) {
         return new Promise((resolve, reject) => {
             client.del(PREFIX + id);
             resolve({ success: true, message: strings.string_response_removed });
@@ -40,7 +40,7 @@ class VehicleService {
         return new Promise((resolve, reject) => {
             client.hgetall(PREFIX + id, (err, vehicle) => {
                 if (err) resolve({});
-                resolve({ vehicle });
+                resolve(vehicle);
             })
         })
     }

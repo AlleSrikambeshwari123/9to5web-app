@@ -17,6 +17,6 @@
 //#endregion
 
 var services = require('./RedisServices/RedisDataServices');
-services.locationService.removeLocation('id').then(result => {
+services.driverService.removeDriver('id').then(result => {
   console.log(result);
 });

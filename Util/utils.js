@@ -29,9 +29,8 @@ exports.verifyToken = (token) => {
 }
 
 exports.formattedRecord = (record) => {
-  if (record.platformId == 'payl') record.platformId = 'PayLanes';
-  if (record.platformId == 'cng') record.platformId = "Cash N'Go";
-  if (record.platformId == 'mmx') record.platformId = 'MoneyMaxx';
+  if (record.companyId == '9to5') record.companyId = '9-5 Import';
+  if (record.companyId == 'pmb') record.companyId = "Post Boxes";
 
   if (record.mobile && record.mobile.length >= 10)
     record.mobile = phoneFormatter.format(record.mobile, "(NNN) NNN-NNNN");

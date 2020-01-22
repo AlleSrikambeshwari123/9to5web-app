@@ -3,6 +3,15 @@ $(function () {
     theme: 'bootstrap',
     placeholder: 'Select Location',
   })
+  $('#companyId').select2({
+    theme: 'bootstrap',
+    placeholder: 'Select Location',
+  })
+  $('#companyId').change(function () {
+    let companyId = $(this).val();
+    if (companyId == '9to5') $('#pmb').val(9000);
+    else $('#pmb').val("");
+  })
   $("#cancelForm").click(function () {
     window.history.back();
   });
