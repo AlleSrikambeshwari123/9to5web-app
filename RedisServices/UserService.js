@@ -134,19 +134,6 @@ class UserService {
             });
         });
     }
-
-    test(searchword) {
-        return new Promise((resolve, reject) => {
-            client.hscan('0',
-                'MATCH', PREFIX + 'admin',
-                'COUNT', '10',
-                (err, result) => {
-                    console.log(result);
-                    let cursor = result[0];
-                    resolve(result[1]);
-                })
-        })
-    }
 }
 
 module.exports = UserService;

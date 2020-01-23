@@ -5,8 +5,10 @@ var middleware = require('../../middleware');
 var awbCtrl = require('../../Controller/AwbController');
 
 router.get('/fll/awb/create', middleware().checkSession, awbCtrl.create_awb)
+router.post('/fll/awb/create', middleware().checkSession, awbCtrl.add_new_awb);
 router.get('/fll/awb/:awb/get', middleware().checkSession, awbCtrl.get_awb_detail)
 
+router.get('/fll/awb/no-docs', middleware().checkSession, awbCtrl.get_awb_no_docs);
 
 router.post('find-package', middleware(services.userService).checkSession, (req, res, next) => {
   var search = req.body.search;

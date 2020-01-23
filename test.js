@@ -15,9 +15,18 @@
 //     console.log(err);
 // });
 //#endregion
-
+var user = {
+  username: "admin",
+  firstName: "admin",
+  lastName: "9-5 Import",
+  password: "admin",
+  email: "admin@9-5imports.com",
+  mobile: "868.354.7177",
+  role: "Admin"
+}
 var services = require('./RedisServices/RedisDataServices');
-services.shipperService.importShippersFromCsv().then(result => {
+services.userService.createUser(user).then(result => {
+  // services.shipperService.importShippersFromCsv().then(result => {
   // services.customerService.importShippersFromCsv().then(result => {
   console.log(result);
 })

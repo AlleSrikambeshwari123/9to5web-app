@@ -22,7 +22,7 @@
           <tbody>
             <% users.forEach(function(user){%>
             <tr data-record="<%= user.username %>">
-              <th scope="row"><%=user.role%></th>
+              <td scope="row"><%=user.role%></td>
               <td><%=user.username%></td>
               <td><%=user.firstName + ' ' + user.lastName%></td>
               <td><%=user.email%></td>

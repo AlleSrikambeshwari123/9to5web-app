@@ -634,11 +634,6 @@ router.get('/nas-packages-wh', middleware(services.userService).checkSession, (r
     pageData.RoleId = res.User.role;
     res.render('pages/warehouse/nas-packages', pageData);
 })
-router.post('/save-customer', (req, res, next) => {
-    services.customerService.saveCustomer(req.body).then(sreult => {
-        res.send(sreult)
-    })
-})
 router.get('/fll-no-docs', middleware(services.userService).checkSession, (req, res, next) => {
     services.packageService.getNoDocsPackackages().then(packages => {
         var pageData = {};

@@ -26,6 +26,8 @@ var HazmatService = require('./HazmatService');
 var hazmatService = new HazmatService();
 var ShipperService = require('./ShipperService');
 var shipperService = new ShipperService();
+var AwbService = require('./AwbService');
+var awbService = new AwbService();
 
 module.exports = {
   customerService: customerService,
@@ -40,5 +42,6 @@ module.exports = {
   pilotService: pilotService,
   planeService: planeService,
   hazmatService: hazmatService,
-  shipperService: shipperService
+  shipperService: shipperService,
+  awbService: awbService,
 };

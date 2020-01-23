@@ -1,20 +1,21 @@
 var emailService = require("../Util/EmailService")
 var redis = require("redis");
-var lredis = require("./redis-local");
 var moment = require("moment");
 var redisSearch = require("../redisearchclient");
 var fs = require("fs");
-var moment = require('moment')
+var uniqId = require("uniqid");
+
 var PackageUtil = require("../Util/packageutil").PackageUtility;
 var packageUtil = new PackageUtil();
-const PKG_IDX = "index:packages";
-const PKG_ID_COUNTER = "package:id";
-var dataContext = require('./dataContext')
-const PKG_PREFIX = "packages:";
-const AWB_ID = "awb:id"
-const INDEX_AWB = "index:awb"
+
+var client = require('./dataContext').redisClient;
+var lredis = require('./redis-local');
+
+const PREFIX = "package:";
+const PACKAGE_ID = "id:package";
+const PREFIX_PACKAGE_LIST = "list:package:"; // this key + awbId = array of packages
+
 const REC_PKG = "pkg:rec:"
-var uniqId = require("uniqid");
 var CustomerService = require('./CustomerService');
 var customerService = new CustomerService()
 const PKG_STATUS = {
@@ -26,17 +27,7 @@ const PKG_STATUS = {
   6: "Delivered"
 
 };
-const INDEX_SHIPPER = "index:shipper"
-redis.addCommand("ft.aggregate")
-const awbIndex = redisSearch(redis, INDEX_AWB, {
-  clientOptions: lredis.searchClientDetails
-});
-const packageIndex = redisSearch(redis, PKG_IDX, {
-  clientOptions: lredis.searchClientDetails
-});
-const shipperIndex = redisSearch(redis, INDEX_SHIPPER, {
-  clientOptions: lredis.searchClientDetails
-});
+
 function getPackageVolumne(mPackage) {
 
   return 0;
@@ -76,7 +67,7 @@ function setPackageInTransit(keys, msearcher) {
       };
       console.log(element + "is the element");
 
-      batcher.hmset(PKG_PREFIX + element, value);
+      batcher.hmset(PACKAGE_ID + element, value);
     });
     batcher.exec((err, result) => {
       console.log(result);
@@ -98,129 +89,93 @@ function addPackageToIndex(trackingNo, msearcher) {
     });
   });
 }
+
 class PackageService {
-  constructor() {
-    this.setupIndex();
-  }
-  setupIndex() {
-    this.mySearch = redisSearch(redis, PKG_IDX, {
-      clientOptions: lredis.searchClientDetails
-    });
-  }
-  getNewAwb() {
+  // Only show 7 trackingNo on the list;
+  getPackages(awbId) {
     return new Promise((resolve, reject) => {
-      dataContext.redisClient.exists(AWB_ID, (err, result) => {
-        console.log(result);
-        if (result != "1") {
-          dataContext.redisClient.set(AWB_ID == 100000, (err, initResult) => {
-            dataContext.redisClient.incr(AWB_ID, (err, newId) => {
-              resolve({ awb: newId })
-            })
-          })
-        }
-        else {
-          dataContext.redisClient.incr(AWB_ID, (err, newId) => {
-            resolve({ awb: newId })
-          })
-        }
+      client.smembers(PREFIX_PACKAGE_LIST + awbId, (err, ids) => {
+        if (err) resolve([]);
+        Promise.all(ids.map(id => {
+          return lredis.hgetall(PREFIX + id);
+        })).then(packages => {
+          resolve(packages);
+        })
       })
     });
   }
-  saveAwb(awb) {
-    return new Promise((resolve, reject) => {
-      console.log('saving...', awb, moment().toString("hh:mm:ss"))
-      if (awb.id != "") {
-        awb.updated_by = awb.username;
-        awb.date_updated = moment().unix();
-        awbIndex.update(awb.id, awb, (err1, awbRes) => {
-          if (err1) {
-            console.log('saving err', err1)
-            resolve({ saved: false })
-          }
-          resolve({ saved: true, id: awb.id })
-        })
-      }
-      else {
-        dataContext.redisClient.incr(AWB_ID, (err, reply) => {
-          awb.id = reply;
-          awb.status = 1;
-          if (awb.invoice) {
-            awb.hasDocs = 1
-            console.log("HAS DOCCCCC")
-          }
-          else {
-            awb.hasDocs = 0;
-            console.log("HAS NO DOCCCCC")
-          }
 
-          awb.created_by = awb.username;
-          delete awb.username;
-          awb.dateCreated = moment().unix();
-          awbIndex.add(awb.id, awb, (err1, awbRes) => {
-            if (err1) {
-              console.log('saving err', err1)
-              resolve({ saved: false })
-            }
-            resolve({ saved: true, id: reply })
-          })
-        })
-      }
-
-
-    })
-  }
-  getAwbOverview(id) {
+  getAwbPackageOverview(awbId) {
     // get the awb packages and add everything in 
     return new Promise((resolve, reject) => {
-      packageIndex.search(`@awb:[${id} ${id}]`, { numberOfResults: 5000, offset: 0, sortBy: 'pkgNo' }, (err, packages) => {
-        var weight = 0;
-        var pieces = packages.totalResults;
-        var description = ""
-        packages.results.forEach(package1 => {
-          if (description == "")
-            description = package1.doc.description;
-          weight += Number(package1.doc.weight)
-        });
-        var data = { weight: weight, description: description, pieces: pieces }
-        console.log(data, "AWB DETAILS");
-        resolve(data)
+      this.getPackages(awbId).then(packages => {
+        let weight = 0;
+        var pieces = packages.length;
+        var description = "";
+        packages.forEach(pkg => {
+          weight += Number(pkg.weight);
+          description = pkg.description;
+        })
+        resolve({ weight: weight, description: description, pieces: pieces });
       })
     })
-
   }
-  getAwbDetails(id) {
-    var srv = this;
+
+  updatePackageLocation(trackingNumber, locationId) {
     return new Promise((resolve, reject) => {
-      console.log(`@awb:[${id} ${id}]`)
-      var packagelist = []
-      if (isNaN(id)) {
-        resolve(packagelist)
-        return;
-      }
-
-      packageIndex.search(`@awb:[${id} ${id}]`, { numberOfResults: 5000, offset: 0, sortBy: "pkgNo" }, (err, packages) => {
-        if (err)
-          console.log(err)
-
-        var packagelist = []
-        var count = 1;
-        packages.results.forEach(package1 => {
-
-          if (package1.doc.trackingNo.length > 7) {
-            //only display the last 7 
-            package1.doc.trackingNo = package1.doc.trackingNo.substring(package1.doc.trackingNo.length - 7)
-
-          }
-          package1.doc.packageIndex = count;
-          count++;
-          packagelist.push(package1.doc)
-        });
-
-
-        resolve(packagelist)
+      lredis.search(PREFIX, 'trackingNo', trackingNumber).then(packages => {
+        packages.forEach(pkg => pkg.location = locationId);
+        resolve({ success: true });
       })
-    })
+    });
   }
+
+  createPackages(awbId, packages) {
+    return new Promise((resolve, reject) => {
+      Promise.all(packages.map(pkg => {
+        return this.createPackage(pkg, awbId);
+      })).then(result => {
+        resolve({ success: true });
+      })
+    });
+  }
+
+  createPackage(newPackage, awbId) {
+    // var cPackage = {
+    //   skybox: body.skybox,
+    //   customer: body.customer.replace("-", "").trim(),
+    //   trackingNo: body.tracking,
+    //   description: body.description,
+    //   shipper: body.shipper,
+    //   carrier: body.carrier,
+    //   value: Number(body.value),
+    //   pieces: Number(body.pieces),
+    //   weight: Number(body.weight),
+    //   dimensions: body.dimensions,
+    //   status: 1,
+    //   location: "FLL",
+    //   mid: 0,
+    //   awb: 0,
+    // }
+    return new Promise((resolve, reject) => {
+      client.incr(PACKAGE_ID, (err, id) => {
+        newPackage.id = id;
+        newPackage.awbId = awbId;
+        client.hmset(PREFIX + id, newPackage);
+        client.sadd(PREFIX_PACKAGE_LIST + awbId, id);
+        resolve({ success: true });
+      })
+    });
+  }
+
+  updatePackage(id, pkg) {
+    return new Promise((resolve, reject) => {
+      client.hmset(PREFIX + id, pkg);
+      resolve({ success: true });
+    });
+  }
+
+
   listNoDocsFll() {
     return new Promise((resolve, reject) => {
       awbIndex.search("@status:[1 1] @hasDocs:[0 0]", { offset: 0, numberOfResults: 5000, sortBy: 'id', sortDir: "DESC" }, (err, awbs) => {
@@ -299,63 +254,7 @@ class PackageService {
       })
     })
   }
-  getAwb(id) {
-    const srv = this;
-    return new Promise((resolve, reject) => {
-      awbIndex.getDoc(id, (err, awb) => {
-        //get the customer 
-        customerService.getCustomer(awb.doc.customerId).then(customer => {
-          awb.doc.customer = customer;
-          srv.getAwbDetails(id).then(packages => {
-            //get the packages for the awb 
-            awb.doc.packages = packages;
-            resolve({ awb: awb.doc })
-          })
 
-        })
-
-      })
-    })
-  }
-  updateLocation(trackingNumber, location_id) {
-    return new Promise((resolve, reject) => {
-      packageIndex.search("@trackingNo:" + trackingNumber, { location: location_id }, (err, packageResult) => {
-
-      })
-    })
-  }
-  savePackageToAwb(newPackage) {
-    return new Promise((resolve, result) => {
-      if (newPackage.id != "0") {
-        packageIndex.update(newPackage.id, newPackage, (err, result) => {
-          if (err)
-            console.log(err);
-          resolve({ saved: true, id: newPackage.id })
-        })
-      }
-      else {
-        dataContext.redisClient.incr(PKG_ID_COUNTER, (err, id) => {
-          newPackage.id = id;
-          packageIndex.add(id, newPackage, (err, result) => {
-            if (err)
-              console.log(err);
-            resolve({ saved: true, id: id })
-          })
-        })
-      }
-
-    })
-  }
-  getShipper(id) {
-    return new Promise((resolve, reject) => {
-      shipperIndex.getDoc(id, (err, sresult) => {
-        if (err)
-          resolve(id);
-
-        resolve(sresult.doc);
-      })
-    })
-  }
   createConsolated(packages, username, boxSize) {
     var srv = this;
     return new Promise((resolve, reject) => {
@@ -388,13 +287,13 @@ class PackageService {
         srv.savePackageToAwb(cPackage).then(pkgResult => {
           // get the id 
           //
-          var batch = dataContext.redisClient.batch();
-          var pkgBatch = dataContext.redisClient.batch();
+          var batch = client.batch();
+          var pkgBatch = client.batch();
 
           packages.forEach(pkg => {
             //these are barcodes 
             batch.sadd("consolidated:pkg:" + pkgResult.id, pkg)
-            pkgBatch.hmget(PKG_PREFIX + getPackageIdFromBarCode(pkg), "weight")
+            pkgBatch.hmget(PACKAGE_ID + getPackageIdFromBarCode(pkg), "weight")
           });
           batch.exec((err, results) => {
             //
@@ -420,55 +319,8 @@ class PackageService {
 
     })
   }
-  savePackage(body) {
-    return new Promise((resolve, reject) => {
-      var cPackage = {
-
-        skybox: body.skybox,
-        customer: body.customer.replace("-", "").trim(),
-        trackingNo: body.tracking,
-        description: body.description,
-        shipper: body.shipper,
-        carrier: body.carrier,
-        value: Number(body.value),
-        pieces: Number(body.pieces),
-        weight: Number(body.weight),
-        dimensions: body.dimensions,
-        status: 1,
-        location: "FLL",
-        mid: 0,
-        awb: 0,
-        //hasOpt: true,
-        //mtype: body.mtype
-      };
-      //validate the package 
-      dataContext.redisClient.incr(PKG_ID_COUNTER, (err, id) => {
-        cPackage.id = id;
-        dataContext.redisClient.set(PKG_PREFIX + id, cPackage, (err, response) => {
-          if (err) {
-            reject({ saved: false, err: err })
-          }
-          var indexPackage = createDocument(cPackage);
-          console.log(indexPackage);
-          packageIndex.add(cPackage.id, indexPackage, (err1, docResult) => {
-            console.log(docResult);
-            if (err1) {
-              reject({ saved: false, err: err1 })
-            }
-            resolve({ saved: true })
-          })
-
-        })
-      });
-
-
-
-    })
-  }
-
   getManifestPackages() {
     return new Promise((resolve, reject) => {
-
       this.mySearch.search(
         `@mid:[0 0]`,
         { offset: 0, numberOfResults: 5000 },
@@ -739,7 +591,7 @@ class PackageService {
   storePackageForPickup(trackingNo, bin) {
     var searcher = this.mySearch;
     return new Promise((resolve, reject) => {
-      lredis.hmset(PKG_PREFIX + trackingNo, { status: 4, location: bin }).then((result) => {
+      lredis.hmset(PACKAGE_ID + trackingNo, { status: 4, location: bin }).then((result) => {
         lredis.getPackage(trackingNo).then((pkg) => {
           addPackageToIndex(trackingNo, searcher);
           resolve(pkg);
@@ -844,12 +696,12 @@ class PackageService {
   }
   recFromTruck(trackingNo, username, shipmentId) {
     return new Promise((resolve, reject) => {
-      dataContext.redisClient.sadd("shipment:id:" + shipmentId, trackingNo, (err, reply) => {
-        dataContext.redisClient.set(REC_PKG + trackingNo, moment().unix(), (err, result) => {
+      client.sadd("shipment:id:" + shipmentId, trackingNo, (err, reply) => {
+        client.set(REC_PKG + trackingNo, moment().unix(), (err, result) => {
           if (err) resolve({ saved: false })
           //shipment count 
           var shipmentCount = 1;
-          dataContext.redisClient.scard("shipment:id:" + shipmentId, (err, card) => {
+          client.scard("shipment:id:" + shipmentId, (err, card) => {
             resolve({ saved: true, pkgCount: card })
           });
 
@@ -862,7 +714,7 @@ class PackageService {
     var srv = this;
     return new Promise((resolve, reject) => {
       //we also need to set the warehouse location here 
-      dataContext.redisClient.hmset("fees:awb:" + pkgIfno.awb, pkgIfno, (err, result) => {
+      client.hmset("fees:awb:" + pkgIfno.awb, pkgIfno, (err, result) => {
         if (err)
           console.log(err);
 
@@ -870,7 +722,7 @@ class PackageService {
 
         console.log(result);
         console.log("print:fees:" + username, username);
-        dataContext.redisClient.publish("print:fees:" + username, pkgIfno.awb);
+        client.publish("print:fees:" + username, pkgIfno.awb);
 
         srv.getPackageById(pkgIfno.barcode).then(pkg => {
           emailService.sendNoDocsEmail(pkg)
