@@ -17,7 +17,7 @@ var adminLocaRouter = require('./routes/admin/locations');
 var fleetVehicleRouter = require('./routes/fleet/vehicles');
 var fleetDriverRouter = require('./routes/fleet/drivers');
 
-var warehousePackageRouter = require('./routes/warehouse/package');
+var warehouseAwbRouter = require('./routes/warehouse/awb');
 var warehouseManifestRouter = require('./routes/warehouse/manifest');
 var warehouseShipperRouter = require('./routes/warehouse/shipper');
 var warehouse = require('./routes/warehouse');
@@ -48,7 +48,7 @@ app.use(session({
 app.use('/', adminIndexRouter, authRouter);
 app.use('/account', accountRouter);
 app.use('/admin', adminUserRouter, adminCustRouter, adminLocaRouter);
-app.use('/warehouse', warehouse, warehousePackageRouter, warehouseManifestRouter, warehouseShipperRouter);
+app.use('/warehouse', warehouse, warehouseAwbRouter, warehouseManifestRouter, warehouseShipperRouter);
 app.use('/fleet', fleetVehicleRouter, fleetDriverRouter);
 app.use('/util', util);
 app.use('/api/warehouse', wapi);

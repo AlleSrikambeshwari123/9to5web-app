@@ -2,10 +2,10 @@ var express = require('express');
 var router = express.Router();
 var services = require('../../RedisServices/RedisDataServices');
 var middleware = require('../../middleware');
-var packageCtrl = require('../../Controller/PackageController');
+var awbCtrl = require('../../Controller/AwbController');
 
-router.get('/fll/package/:awb/get', middleware().checkSession, packageCtrl.get_package_detail)
-router.get('/fll/package/create', middleware().checkSession, packageCtrl.create_package)
+router.get('/fll/awb/create', middleware().checkSession, awbCtrl.create_awb)
+router.get('/fll/awb/:awb/get', middleware().checkSession, awbCtrl.get_awb_detail)
 
 
 router.post('find-package', middleware(services.userService).checkSession, (req, res, next) => {

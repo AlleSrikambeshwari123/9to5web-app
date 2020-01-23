@@ -1,13 +1,13 @@
 var services = require('../RedisServices/RedisDataServices');
 
-exports.get_package_detail = (req, res, next) => {
+exports.get_awb_detail = (req, res, next) => {
   var awb = req.params.awb;
   services.hazmatService.getAllClasses().then(classes => {
     services.shipperService.getAllShippers().then(shippers => {
       services.packageService.getAwb(awb).then(awbResult => {
-        res.render('pages/warehouse/package/edit', {
+        res.render('pages/warehouse/awb/edit', {
           page: req.url,
-          title: 'Package Details',
+          title: 'AWB Details',
           user: res.user,
           printer: res.printer,
           hazmats: classes,
@@ -19,15 +19,15 @@ exports.get_package_detail = (req, res, next) => {
   })
 }
 
-exports.create_package = (req, res, next) => {
+exports.create_awb = (req, res, next) => {
   Promise.all([
     services.customerService.getCustomers(),
     services.hazmatService.getAllClasses(),
     services.shipperService.getAllShippers(),
   ]).then(results => {
-    res.render('pages/warehouse/package/create', {
+    res.render('pages/warehouse/awb/create', {
       page: req.url,
-      title: 'Create New Package',
+      title: 'Create New AWB',
       user: res.user,
       printer: res.printer,
       customers: results[0],
