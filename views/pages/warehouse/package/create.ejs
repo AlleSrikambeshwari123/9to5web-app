@@ -4,7 +4,7 @@
     <div class='card card-with-nav'>
       <div class="card-header">
         <div class="row row-nav-line">
-          <ul class="nav nav-tabs nav-line nav-color-secondary" id="package-tab" role="tablist">
+          <ul class="nav nav-tabs nav-line nav-color-primary" id="package-tab" role="tablist">
             <li class="nav-item">
               <a class="nav-link active show" data-toggle="tab" href="#new-package" role="tab"
                 aria-selected="true">Create New Package</a>
@@ -17,118 +17,122 @@
         </div>
       </div>
       <div class="card-body">
-        <div class="tab-content" id="package-tabContent">
+        <div class="tab-content m-4" id="package-tabContent">
           <div class="tab-pane active fade show" id="new-package" role="tabpanel" aria-labelledby="new-package-tab"
             aria-expanded="false">
-            <div class='row pkg-form'>
-              <form method='post' id='cargoPackageForm'>
-                <input type='hidden' id="mid" value="0" />
-                <input type='hidden' id="mtype" value="default" />
-                <div class='form-group'>
-                  <button type='button' class="btn btn-small btn-info new-awb " style='display:none;'>New AWB</button>
-                  <span class='print-options pull-right mt-2' style='display:none;'>
-                    <a id="print-awb" href='javascript:void(0)'><i class="fas fa-print" title='Print AWB'></i>Print
-                      AWB</a> <a href="javascript:void(0)">|</a> <a id='print-lbl' href='javascript:void(0)'><i
-                        title='Print Label' class="fas fa-print"></i>Print All Labels</a>
-                  </span>
+            <form method='post' id='cargoPackageForm'>
+              <input type='hidden' id="mid" value="0" />
+              <input type='hidden' id="mtype" value="default" />
+              <div class='form-group'>
+                <button type='button' class="btn btn-small btn-info new-awb " style='display:none;'>New AWB</button>
+                <span class='print-options pull-right mt-2' style='display:none;'>
+                  <a id="print-awb" href='javascript:void(0)'><i class="fas fa-print" title='Print AWB'></i>Print
+                    AWB</a> <a href="javascript:void(0)">|</a> <a id='print-lbl' href='javascript:void(0)'><i
+                      title='Print Label' class="fas fa-print"></i>Print All Labels</a>
+                </span>
+              </div>
+              <div class="form-group form-show-validation row">
+                <label for="id" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">AWB
+                  <span class="required-label">*</span></label>
+                <div class="col-lg-4 col-md-9 col-sm-8">
+                  <input type="text" class="form-control" id="id" name="id" placeholder="AirWay Bill" required readonly>
                 </div>
-                <div class='form-group'>
-                  <label>AWB </label>
-                  <input type='text' class='form-control awb' id='id' name='id' required readonly />
+              </div>
+              <div class="form-group form-show-validation row">
+                <label for="customerId" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Consignee
+                  <span class="required-label">*</span></label>
+                <div class="col-lg-4 col-md-9 col-sm-8">
+                  <select id="customerId" name="customerId" class='form-control'>
+                    <option>Select Customer</option>
+                    <% customers.forEach(customer => { %>
+                    <option value="<%=customer.id%>"><%=customer.firstName + ' ' + customer.lastName%></option>
+                    <% }) %>
+                  </select>
                 </div>
-                <div class='form-group'>
-                  <label>Consignee <span class='text-info title customerName'></span> <br /><a href="#" class=" "
-                      data-target='#findCustomer' data-toggle='modal'>Assign Box(9-5) or PB</a> | <a
-                      href="javascript:void(0)" data-toggle="modal" data-target="#addCustomer">Add New
-                      Customer</a></label>
-                  <input type='text' class='form-control skybox' id="customerName" name='pmb' required readonly />
-                  <input type='hidden' class='customerId' id='customerId' />
-                </div>
-                <div class='form-group'>
-                  <label>Shipper <a href='#' data-target="#findshipper" data-toggle="modal">Add New
-                      Shipper</a></label><br />
-                  <select id="pick-shipper" class='form-control' style='width:90%;'>
+              </div>
+              <div class="form-group form-show-validation row">
+                <label for="shipper" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Shipper
+                  <span class="required-label">*</span></label>
+                <div class="col-lg-4 col-md-9 col-sm-8">
+                  <select id="shipper" name="shipper" class='form-control'>
                     <option>Select Shipper</option>
                     <% shippers.forEach(shipper => { %>
                     <option value="<%=shipper.id%>"><%=shipper.name%></option>
                     <% }) %>
                   </select>
                 </div>
-                <div class='form-group'>
-                  <label>Carrier </label>
-                  <a href='#' data-target="#findcarrier" data-toggle="modal">Add New Carrier</a>
-                  <!-- <input type='text' class='form-control carrier' id='carrier' name='carrier'"
-                      /> -->
-                  <select id="pick-carrier" class='form-control' style='width:90%;'>
+              </div>
+              <div class="form-group form-show-validation row">
+                <label for="carrier" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Carrier
+                  <span class="required-label">*</span></label>
+                <div class="col-lg-4 col-md-9 col-sm-8">
+                  <select id="carrier" name="carrier" class='form-control'>
                     <option>Select Carrier</option>
                     <% shippers.forEach(shipper => { %>
                     <option value="<%=shipper.id%>"><%=shipper.name%></option>
                     <% }) %>
                   </select>
                 </div>
-
-                <div class='form-group'>
-                  <label> Is HAZMAT</label>
-                  <select id="pick-haz" class='form-control' style='width:90%;'>
+              </div>
+              <div class="form-group form-show-validation row">
+                <label for="hazmat" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">HAZMAT
+                  <span class="required-label">*</span></label>
+                <div class="col-lg-4 col-md-9 col-sm-8">
+                  <select id="hazmat" name="hazmat" class='form-control' style='width:90%;'>
                     <option value="">Select HAZMAT</option>
                     <% hazmats.forEach(hazmat => { %>
                     <option value="<%=hazmat.id%>"><%=hazmat.description%></option>
                     <%})%>
                   </select>
                 </div>
-                <!-- <div class='form-group'>
+              </div>
+              <!-- <div class='form-group'>
                     <label>SED Required</label>
                     <input type='checkbox' class='form-control carrier' id="isSED" name='isSED' />
                   </div> -->
-                <!-- <div class='form-group'>
+              <!-- <div class='form-group'>
                     <label>Has Invocie</label>
                     <input type='checkbox' class='form-control hasInvoice' id='hasInvoice' name='hasInvocie' />
                   </div> -->
-                <div class='form-group'>
-                  <label>Upload Invocie</label>
+              <div class="form-group form-show-validation row">
+                <label for="invFile" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Upload Invocie
+                  <span class="required-label">*</span></label>
+                <div class="col-lg-4 col-md-9 col-sm-8">
                   <input type='file' class='form-control invFile' id='invFile' name='invFile' />
                 </div>
-                <div class='form-group'>
-                  <label>Invoice # <span class='text-info title customerName '></span></label>
+              </div>
+              <div class="form-group form-show-validation row">
+                <label for="invoiceNumber" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Invoice #
+                  <span class="required-label">*</span></label>
+                <div class="col-lg-4 col-md-9 col-sm-8">
                   <input type='text' class='form-control invoice' id='invoiceNumber' name='invoiceNumber' required />
                 </div>
-                <div class='form-group'>
-                  <label> Value</label>
-                  <input type='text' class='form-control awbValue' id='value' name='value' required />
-                  <a id='show-sed' data-toggle="modal" data-target="#alertSEDPOPUP"></a>
-                  <input type='hidden' value="0" id='sedRequired' />
-                </div>
+              </div>
+              <div class='form-group'>
+                <label> Value</label>
+                <input type='text' class='form-control awbValue' id='value' name='value' required />
+                <a id='show-sed' data-toggle="modal" data-target="#alertSEDPOPUP"></a>
+                <input type='hidden' value="0" id='sedRequired' />
+              </div>
 
-                <div class='form-group'>
-                  <a href="javascript:void(0)" data-toggle="modal" data-target="#addPO"> ADD Purchase Order </a>
-
-
-
-                </div>
-
-                <div class='form-group'>
-                  <label>Notes <span class='text-info title customerName '></span></label>
-                  <input type='text' class='form-control invoice' id='awbNotes' name='awbNotes' required value="" />
-                </div>
-                <!-- <div class='form-group'>
-                                                <label>AWB Value</label>
-                                                <input type='text' class='form-control awbValue' name='awbValue' required />
-                                        </div> -->
-
-
-
-                <a id="save_awb" href="javascript:void(0)" class="btn btn-small btn-info ">Save AWB</a>
-                <a id="update_awb" class="btn btn-small btn-info  " style='display:none; color:white;'>Update Awb</a>
-                <a id="add_package" href="#ready-popup" class="btn btn-small btn-info open-popup-link "
-                  style='display:none;'>Add Package</a>
-                <button type='button' class="btn btn-small btn-info new-awb " style='display:none;'>New AWB</button>
-                <div class="separator-solid"></div>
-
-
-
-
-              </form>
-            </div>
+              <div class='form-group'>
+                <a href="javascript:void(0)" data-toggle="modal" data-target="#addPO"> ADD Purchase Order </a>
+              </div>
+              <div class='form-group'>
+                <label>Notes <span class='text-info title customerName '></span></label>
+                <input type='text' class='form-control invoice' id='awbNotes' name='awbNotes' required value="" />
+              </div>
+              <!-- <div class='form-group'>
+                <label>AWB Value</label>
+                <input type='text' class='form-control awbValue' name='awbValue' required />
+              </div> -->
+              <a id="save_awb" href="javascript:void(0)" class="btn btn-small btn-info ">Save AWB</a>
+              <a id="update_awb" class="btn btn-small btn-info  " style='display:none; color:white;'>Update Awb</a>
+              <a id="add_package" href="#ready-popup" class="btn btn-small btn-info open-popup-link "
+                style='display:none;'>Add Package</a>
+              <button type='button' class="btn btn-small btn-info new-awb " style='display:none;'>New AWB</button>
+              <div class="separator-solid"></div>
+            </form>
           </div>
           <div class="tab-pane fade" id="package-list" role="tabpanel" aria-labelledby="package-list-tab">
             <h2>Packages - <span class='awb'></span></h2>
@@ -562,4 +566,4 @@
 <% block('scripts').append('<script src="/vendor/datatables/dataTables.bootstrap.min.js"></script>')%>
 <% block('scripts').append('<script src="/vendor/datatables/custom/fixedHeader.js"></script>')%> -->
 
-<% block('scripts').append('<script src="/js/packages/manifest-package.js"></script>')%>
+<% block('scripts').append('<script src="/js/warehouse/package/create.js"></script>')%>

@@ -17,8 +17,8 @@
 //#endregion
 
 var services = require('./RedisServices/RedisDataServices');
-// services.shipperService.importShippersFromCsv().then(result => {
-services.shipperService.getAllShippers().then(result => {
+services.shipperService.importShippersFromCsv().then(result => {
+  // services.customerService.importShippersFromCsv().then(result => {
   console.log(result);
 })
 // });

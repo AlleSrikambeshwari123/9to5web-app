@@ -15,6 +15,9 @@ exports.role_store = "Stores";
 exports.redis_prefix_user = "user:";
 exports.redis_id_user = "id:user";
 
+exports.redis_prefix_customer = "customer:";
+exports.redis_id_customer = "id:customer";
+
 exports.redis_prefix_location = "location:";
 exports.redis_id_location = "id:location";
 

@@ -20,16 +20,19 @@ exports.get_package_detail = (req, res, next) => {
 }
 
 exports.create_package = (req, res, next) => {
-  services.hazmatService.getAllClasses().then(classes => {
-    services.shipperService.getAllShippers().then(shippers => {
-      res.render('pages/warehouse/package/create', {
-        page: req.url,
-        title: 'Create New Package',
-        user: res.user,
-        printer: res.printer,
-        hazmats: classes,
-        shippers: shippers,
-      });
-    })
+  Promise.all([
+    services.customerService.getCustomers(),
+    services.hazmatService.getAllClasses(),
+    services.shipperService.getAllShippers(),
+  ]).then(results => {
+    res.render('pages/warehouse/package/create', {
+      page: req.url,
+      title: 'Create New Package',
+      user: res.user,
+      printer: res.printer,
+      customers: results[0],
+      hazmats: results[1],
+      shippers: results[2],
+    });
   })
 }

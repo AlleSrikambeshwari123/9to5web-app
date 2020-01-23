@@ -1,0 +1,112 @@
+<% layout('./shared/__template')%>
+<form id="add-shipper-form" method='POST' action='update'>
+  <div class="row gutters">
+    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+      <div class="card">
+        <div class="card-header">
+          <h4 class="card-title"><%=title%></h4>
+        </div>
+        <div class="card-body">
+          <div class="form-group form-show-validation row">
+            <label for="name" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Shipper Name
+              <span class="required-label">*</span></label>
+            <div class="col-lg-4 col-md-9 col-sm-8">
+              <input type="text" class="form-control" id="name" name="name" placeholder="Shipper Name" required
+                value="<%=shipper.name%>">
+            </div>
+          </div>
+          <div class="form-group form-show-validation row">
+            <label for="firstName" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">First Name</label>
+            <div class="col-lg-4 col-md-9 col-sm-8">
+              <input type="text" class="form-control" id="firstName" name="firstName" placeholder="First Name"
+                value="<%=shipper.firstName%>">
+            </div>
+          </div>
+          <div class="form-group form-show-validation row">
+            <label for="lastName" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Last Name</label>
+            <div class="col-lg-4 col-md-9 col-sm-8">
+              <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Last Name"
+                value="<%=shipper.lastName%>">
+            </div>
+          </div>
+          <div class="form-group form-show-validation row">
+            <label for="telephone" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Telephone</label>
+            <div class="col-lg-4 col-md-9 col-sm-8">
+              <input type="tel" class="form-control" id="telephone" name="telephone" placeholder="(242)-xxx-xxxx"
+                value="<%=shipper.telephone%>">
+            </div>
+          </div>
+          <div class="form-group form-show-validation row">
+            <label for="fax" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Fax</label>
+            <div class="col-lg-4 col-md-9 col-sm-8">
+              <input type="tel" class="form-control" id="fax" name="fax" placeholder="(xxx)-xxx-xxxx"
+                value="<%=shipper.fax%>">
+            </div>
+          </div>
+          <div class="form-group form-show-validation row">
+            <label for="email" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Email address</label>
+            <div class="col-lg-4 col-md-9 col-sm-8">
+              <input type="email" class="form-control" id="email" name="email" placeholder="name@example.com"
+                value="<%=shipper.email%>">
+            </div>
+          </div>
+          <div class="form-group form-show-validation row">
+            <label for="address" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Address</label>
+            <div class="col-lg-4 col-md-9 col-sm-8">
+              <input type="text" class="form-control" id="address" name="address" placeholder="Address"
+                value="<%=shipper.address%>">
+            </div>
+          </div>
+          <div class="form-group form-show-validation row">
+            <label for="state" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">State</label>
+            <div class="col-lg-4 col-md-9 col-sm-8">
+              <input type="text" class="form-control" id='state' name="state" placeholder="State"
+                value="<%=shipper.state%>">
+            </div>
+          </div>
+          <div class="form-group form-show-validation row">
+            <label for="country" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Country</label>
+            <div class="col-lg-4 col-md-9 col-sm-8">
+              <input type="text" class="form-control" id='country' name="country" placeholder="Country"
+                value="<%=shipper.country%>">
+            </div>
+          </div>
+          <div class="form-group form-show-validation row">
+            <label for="zipcode" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Zip Code</label>
+            <div class="col-lg-4 col-md-9 col-sm-8">
+              <input type="text" class="form-control" id='zipcode' name="zipcode" placeholder="Zip Code"
+                value="<%=shipper.zipcode%>">
+            </div>
+          </div>
+          <div class="form-group form-show-validation row">
+            <label for="accountNo" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Account Number</label>
+            <div class="col-lg-4 col-md-9 col-sm-8">
+              <input type="text" class="form-control" id='accountNo' name="accountNo" placeholder="Account Number"
+                value="<%=shipper.accountNo%>">
+            </div>
+          </div>
+          <div class="form-group form-show-validation row">
+            <label for="type" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Shipper Type</label>
+            <div class="col-lg-4 col-md-9 col-sm-8">
+              <input type="text" class="form-control" id='type' name="type" placeholder="Shipper Type"
+                value="<%=shipper.type%>">
+            </div>
+          </div>
+          <div class="form-group form-show-validation row">
+            <label for="tranVersion" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Tran Version</label>
+            <div class="col-lg-4 col-md-9 col-sm-8">
+              <input type="text" class="form-control" id='tranVersion' name="tranVersion" placeholder="Tran Version"
+                value="<%=shipper.tranVersion%>">
+            </div>
+          </div>
+        </div>
+        <div class="card-action">
+          <button type="submit" class="btn btn-primary">Update</button>
+          <button type="button" id="cancelForm" class="btn btn-danger">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+
+<% block('scripts').append('<script src="/js/warehouse/shipper/edit.js"></script>')%>

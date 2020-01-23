@@ -33,7 +33,13 @@ class ShipperService {
                                 email: element.sEmail,
                                 address: element.sAddress,
                                 state: element.sState,
-                                country: element.sCountry
+                                country: element.sCountry,
+                                zipcode: element.sZipCode,
+                                accountNo: element.sAccountNo,
+                                type: element.iCarrierType,
+                                isExternal: element.bIsExternal,
+                                tranVersion: element.msrepl_tran_version,
+                                departurePortId: element.iDeparturePortID,
                             });
                         });
                     })).then(result => {
@@ -55,6 +61,34 @@ class ShipperService {
             })
         })
     }
+    updateShipper(id, body) {
+        return new Promise((resolve, reject) => {
+            client.exists(PREFIX + id, (err, exist) => {
+                if (err) resolve({ success: false, message: strings.string_response_error });
+                if (Number(exist) == 1) {
+                    client.hmset(PREFIX + id, body);
+                    resolve({ success: true, message: strings.string_response_updated });
+                } else
+                    resolve({ success: true, message: strings.string_not_found_customer });
+            })
+        })
+    }
+    removeShipper(id) {
+        return new Promise((resolve, reject) => {
+            client.del(PREFIX + id, (err, result) => {
+                if (err) resolve({ success: false, message: strings.string_response_error });
+                resolve({ success: true, message: strings.string_response_removed });
+            })
+        });
+    }
+    getShipper(id) {
+        return new Promise((resolve, reject) => {
+            client.hgetall(PREFIX + id, (err, shipper) => {
+                if (err) resolve({});
+                resolve(shipper);
+            })
+        });
+    }
     getAllShippers() {
         return new Promise((resolve, reject) => {
             client.keys(PREFIX + '*', (err, keys) => {
@@ -69,6 +103,7 @@ class ShipperService {
     }
     removeAll() {
         return new Promise((resolve, reject) => {
+            client.set(SHIPPER_ID, 0);
             client.keys(PREFIX + '*', (err, keys) => {
                 if (err) resolve([]);
                 Promise.all(keys.map(key => {

@@ -43,6 +43,7 @@ class HazmatService {
     }
     removeAll() {
         return new Promise((resolve, reject) => {
+            client.set(HAZMAT_ID, 0);
             client.keys(PREFIX + '*', (err, keys) => {
                 if (err) resolve([]);
                 Promise.all(keys.map(key => {
