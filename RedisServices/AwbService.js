@@ -84,6 +84,14 @@ class AwbService {
       })
     });
   }
+
+  deleteAwb(awbId) {
+    return new Promise((resolve, reject) => {
+      client.del(PREFIX + awbId);
+      client.srem(PREFIX_NO_DOCS_LIST, awbId);
+      resolve({ success: true, message: strings.string_response_removed });
+    });
+  }
 }
 
 module.exports = AwbService;

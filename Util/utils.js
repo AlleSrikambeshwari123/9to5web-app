@@ -45,7 +45,7 @@ exports.formattedRecord = (record) => {
   if (record.customer && record.customer.mobile && record.customer.mobile.length >= 10)
     record.customer.mobile = phoneFormatter.format(record.customer.mobile, "(NNN) NNN-NNNN");
   if (record.dateCreated) {
-    record.dateCreated = moment(record.dateCreated * 1000).format("YYYY/MM/DD, h:mm:ss a");
+    record.dateCreated = moment(record.dateCreated * 1000).format("YYYY/MM/DD, h:mm:ss A");
   }
   return record;
 }

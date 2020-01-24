@@ -175,6 +175,26 @@ class PackageService {
     });
   }
 
+  removePackages(awbId) {
+    return new Promise((resolve, reject) => {
+      client.smembers(PREFIX_PACKAGE_LIST + awbId, (err, ids) => {
+        Promise.all(ids.map(id => {
+          return this.removePackage(awbId, id);
+        })).then(results => {
+          resolve(results);
+        })
+      })
+    });
+  }
+
+  removePackage(awbId, id) {
+    return new Promise((resolve, reject) => {
+      client.del(PREFIX + id);
+      client.srem(PREFIX_PACKAGE_LIST + awbId, id);
+      resolve({ success: true });
+    });
+  }
+
 
   listNoDocsFll() {
     return new Promise((resolve, reject) => {

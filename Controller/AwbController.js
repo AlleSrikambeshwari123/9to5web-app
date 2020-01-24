@@ -1,4 +1,5 @@
 var services = require('../RedisServices/RedisDataServices');
+var utils = require('../Util/utils');
 
 exports.get_awb_detail = (req, res, next) => {
   var id = req.params.id;
@@ -57,17 +58,37 @@ exports.add_new_awb = (req, res, next) => {
 exports.get_awb_no_docs = (req, res, next) => {
   services.awbService.getAwbsNoDocs().then(awbs => {
     Promise.all(awbs.map(awb => {
-      services.packageService.getPackages(awb.id).then(packages => {
-        awb.packages = packages;
+      return Promise.all([
+        services.packageService.getPackages(awb.id),
+        services.customerService.getCustomer(awb.customerId),
+        services.shipperService.getShipper(awb.shipper),
+        services.shipperService.getShipper(awb.carrier),
+      ]).then(results => {
+        let weight = 0;
+        awb.packages = results[0];
+        awb.packages.forEach(pkg => weight += Number(pkg.weight));
+        awb.customer = results[1];
+        awb.shipper = results[2];
+        awb.carrier = results[3];
+        awb.weight = weight;
       })
-      return awb;
-    })).then(awbs => {
-      res.render('pages/warehouse/fll/awb/nodocs', {
+    })).then(results => {
+      res.render('pages/warehouse/awb/nodocs', {
         page: req.url,
         title: "AWB With No Invoice",
         user: res.user,
-        awbs: awbs,
+        awbs: awbs.map(utils.formattedRecord),
       })
     })
+  })
+}
+
+exports.delete_awb = (req, res, next) => {
+  let awbId = req.params.id;
+  Promise.all([
+    services.awbService.deleteAwb(awbId),
+    services.packageService.removePackages(awbId),
+  ]).then(results => {
+    res.send(results[0]);
   })
 }
