@@ -8,8 +8,7 @@ router.get('/fll/awb/create', middleware().checkSession, awbCtrl.create_awb)
 router.post('/fll/awb/create', middleware().checkSession, awbCtrl.add_new_awb);
 router.get('/fll/awb/manage/:id/get', middleware().checkSession, awbCtrl.get_awb_detail);
 router.delete('/fll/awb/manage/:id/delete', middleware().checkSession, awbCtrl.delete_awb);
-
-router.get('/fll/awb/no-docs', middleware().checkSession, awbCtrl.get_awb_no_docs);
+router.get('/fll/awb/list', middleware().checkSession, awbCtrl.get_awb_list);
 
 router.post('find-package', middleware(services.userService).checkSession, (req, res, next) => {
   var search = req.body.search;

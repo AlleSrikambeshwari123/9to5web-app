@@ -19,6 +19,7 @@
                 <th>Carrier</th>
                 <th>Pieces</th>
                 <th>Weight</th>
+                <th>Invoice</th>
                 <th></th>
               </tr>
             </thead>
@@ -34,6 +35,11 @@
                 <td><%=awb.carrier.name %></td>
                 <td><%=awb.packages.length %></td>
                 <td><%=awb.weight %></td>
+                <td><% if(awb.hasDocs) { %>
+                  <a class="btn btn-link btn-primary btn-invoice" data-id="<%=awb.invoice%>" data-toggle="tooltip"
+                    data-original-title="Invoice"> <i class="fa fa-paperclip"></i> </a>
+                  <% } %>
+                </td>
                 <td>
                   <a href='manage/<%=awb.id%>/get' class="btn btn-link btn-primary" data-toggle="tooltip"
                     data-original-title="Edit"> <i class="fa fa-pen"></i> </a>

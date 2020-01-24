@@ -5,7 +5,7 @@ var strings = require('../Res/strings');
 var lredis = require("./redis-local");
 var client = require('./dataContext').redisClient;
 
-const INIT_AWB_ID = 1
+const INIT_AWB_ID = 100000
 const PREFIX = "awb:";
 const AWB_ID = "id:awb";
 const PREFIX_NO_DOCS_LIST = "list:awb:no";
@@ -14,6 +14,12 @@ var CustomerService = require('./CustomerService');
 var customerService = new CustomerService()
 
 class AwbService {
+  resetAwbId() {
+    return new Promise((resolve, reject) => {
+      client.set(AWB_ID, INIT_AWB_ID);
+      resolve({ success: true });
+    });
+  }
   generateAwbId() {
     return new Promise((resolve, reject) => {
       client.exists(AWB_ID, (err, exist) => {
@@ -67,6 +73,19 @@ class AwbService {
         customerService.getCustomer(awb.customerId).then(customer => {
           awb.customer = customer;
           resolve(awb);
+        })
+      })
+    });
+  }
+
+  getAwbs() {
+    return new Promise((resolve, reject) => {
+      client.keys(PREFIX + '*', (err, keys) => {
+        if (err) resolve([]);
+        Promise.all(keys.map(key => {
+          return lredis.hgetall(key);
+        })).then(awbs => {
+          resolve(awbs);
         })
       })
     });

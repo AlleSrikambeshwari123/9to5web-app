@@ -25,7 +25,8 @@ var user = {
   role: "Admin"
 }
 var services = require('./RedisServices/RedisDataServices');
-services.userService.createUser(user).then(result => {
+services.awbService.resetAwbId().then(result => {
+  // services.userService.createUser(user).then(result => {
   // services.shipperService.importShippersFromCsv().then(result => {
   // services.customerService.importShippersFromCsv().then(result => {
   console.log(result);

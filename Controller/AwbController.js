@@ -55,8 +55,8 @@ exports.add_new_awb = (req, res, next) => {
   })
 }
 
-exports.get_awb_no_docs = (req, res, next) => {
-  services.awbService.getAwbsNoDocs().then(awbs => {
+exports.get_awb_list = (req, res, next) => {
+  services.awbService.getAwbs().then(awbs => {
     Promise.all(awbs.map(awb => {
       return Promise.all([
         services.packageService.getPackages(awb.id),

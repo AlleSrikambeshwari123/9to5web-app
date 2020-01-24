@@ -9,6 +9,8 @@ Number.prototype.formatMoney = function (c, d, t) {
   return "$" + s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
 };
 $(function () {
+  var upload = new FileUploadWithPreview('invoice-upload-field')
+
   $('#customerId').select2({
     theme: 'bootstrap',
     width: '100%',
@@ -28,6 +30,22 @@ $(function () {
     theme: 'bootstrap',
     width: '100%',
     placeholder: "Select a HAZMAT Class"
+  })
+  $('#packageType').select2({
+    theme: 'bootstrap',
+    width: '100%',
+    placeholder: "Select a package type"
+  })
+
+  var packageTable = $('#packageTable').DataTable({
+    pageLength: 5,
+    bSortable: false,
+    bLengthChange: false,
+    bFilter: false,
+    columnDefs: [{
+      orderable: false,
+      targets: [0, 1, 2, 3, 4]
+    }]
   })
 
   var pageMode = $("#pgmode").val();
@@ -56,11 +74,6 @@ $(function () {
   })
 
   // Add Pacakge Popup
-  $('#packageType').select2({
-    theme: 'bootstrap',
-    width: '100%',
-    placeholder: "Select a package type"
-  })
   $('.btn-add-package').magnificPopup({
     type: 'inline',
     midClick: true,
@@ -72,6 +85,14 @@ $(function () {
       open: function () {
         if (awbPackages.length > 0) $('.btn-copy-last').show()
         else $('.btn-copy-last').hide();
+
+        $('#trackingNo').val("");
+        $('#description').val("");
+        $('#weight').val("");
+        $('#packageType').val("");
+        $('#W').val("");
+        $('#H').val("");
+        $('#L').val("");
       }
     }
   });
@@ -81,6 +102,7 @@ $(function () {
       $("#trackingNo").val("");
       $("#description").val(lastPackage.description);
       $("#weight").val(lastPackage.weight);
+      $('#packageType').val("");
       var dims = lastPackage.dimensions.toLowerCase().split('x');
       $("#W").val(dims[0])
       $("#H").val(dims[1])
@@ -92,12 +114,11 @@ $(function () {
   })
   $('#add-package-form').submit(function (event) {
     event.preventDefault();
-    let package = extractFormData(this);
-    console.log(package);
-    package.id = package.packageNo;
-    package.location = "Warehouse FLL";
-    package.dimensions = package.W + 'x' + package.H + 'x' + package.L;
-    awbPackages.push(package);
+    let pkg = extractFormData(this);
+    pkg.id = Date.now().toString();
+    pkg.location = "Warehouse FLL";
+    pkg.dimensions = pkg.W + 'x' + pkg.H + 'x' + pkg.L;
+    awbPackages.push(pkg);
     displayPackages(awbPackages, "#packageTable", "cargo");
     $('.mfp-close').trigger("click");
   })
@@ -109,7 +130,6 @@ $(function () {
   $(".sed-click").click(function () {
     $("#sedRequired").val(Number($(this).attr("data-id")));
     sedAnswered = 1;
-    console.log('sed answer changed' + sedAnswered)
     $("#save_awb").trigger('click');
   })
   $("#add-awb-form").submit(function (event) {
@@ -122,7 +142,6 @@ $(function () {
     var awbInfo = extractFormData(this);
     awbInfo.isSed = sedAnswered;
     awbInfo.packages = JSON.stringify(awbPackages);
-    console.log(awbInfo, "saving the awb")
 
     uploadContentFile($("#invFile"), results => {
       var fileInfo = {};
@@ -139,8 +158,6 @@ $(function () {
         data: awbInfo,
         success: function (result) {
           console.log(result);
-          $(".awb").text(result.id);
-          $(".awb").val(result.id)
           $("#save_awb").hide();
           $(".print-options").show();
           $("#print-awb").attr('data-id', result.id);
@@ -194,230 +211,60 @@ $(function () {
     }
   }
 
-  function displayPackages(packages, tableId, ctype) {
-    //REFACTORED FUNCTION  
+  function displayPackages() {
     var totalWeight = 0;
-    for (var i = 0; i < packages.length; i++) {
-      if (!isNaN(packages[i].weight)) {
-        totalWeight += Number(packages[i].weight)
-      }
-    }
-    $('.total-weight').text(totalWeight + " lbs")
-    if ($(tableId + " tbody").children().length > 0)
-      $(tableId).DataTable().destroy();
-    var containerLabel = "Skid";
-    var hideCols = true;
-    if (ctype == 'mail') {
-      console.log('print')
-      $("#mailCount").text(packages.length);
-    }
-    if (ctype == "unproc") {
-      hideCols = false;
-      $("#unProcCount").text(packages.length);
-      console.log('going to hide cols');
-    }
-    if (ctype == "cargo") {
-      $("#packageCount").text(packages.length);
-    }
-    var colDef = [
-      {
-        title: "Tracking No",
-        data: null,
-        render: function (data, type, row, meta) {
-          // console.log(data);
-          return `${data.trackingNo} `;
+    awbPackages.forEach(pkg => totalWeight += Number(pkg.weight));
+    $('.package-info').text(`${awbPackages.length} Pieces / ${totalWeight.toFixed(2)} lbs`);
+
+    packageTable.clear().draw();
+    awbPackages.forEach(pkg => {
+      let rowNode = packageTable.row.add([
+        pkg.trackingNo,
+        pkg.description,
+        pkg.dimensions,
+        Number(pkg.weight).toFixed(2) + ' lbs',
+        `<a class="btn btn-link btn-primary btn-edit-pkg p-1" title="Edit" data-id="${pkg.id}" href="#add-package-popup">
+          <i class="fa fa-pen"></i> </a>
+        <a class="btn btn-link btn-danger btn-rm-pkg p-1" title="Delete" data-id="${pkg.id}" data-toggle='modal' data-target='#confirmPkgDel'>
+          <i class="fa fa-trash"></i> </a>`
+      ]).draw(false).node();
+      $(rowNode).find('td').eq(1).addClass('text-center');
+      $(rowNode).find('td').eq(2).addClass('text-center');
+      $(rowNode).find('td').eq(3).addClass('text-right');
+      $(rowNode).find('.btn-edit-pkg').magnificPopup({
+        type: 'inline',
+        midClick: true,
+        mainClass: 'mfp-fade',
+        gallery: {
+          enabled: true,
+        },
+        callbacks: {
+          open: function () {
+            $('.btn-copy-last').hide();
+
+            $('#trackingNo').val(pkg.trackingNo);
+            $('#description').val(pkg.description);
+            $('#weight').val(pkg.weight);
+            $('#packageType').val(pkg.packageType);
+            var dims = pkg.dimensions.toLowerCase().split('x');
+            $("#W").val(dims[0])
+            $("#H").val(dims[1])
+            $("#L").val(dims[2])
+          }
         }
-      },
-
-
-      {
-        title: "Description",
-        data: null,
-        render: function (data, type, row, meta) {
-          // console.log(data);
-          return `${data.description}`;
-        }
-      },
-      {
-        title: "Weight",
-        data: null,
-        render: function (data, type, row, meta) {
-          // console.log(data);
-          return `${data.weight}`;
-        }
-      },
-      {
-        title: "Dimensions",
-        data: null,
-        render: function (data, type, row, meta) {
-          // console.log(data);
-          return `${data.dimensions}`;
-        }
-      },
-
-      {
-        title: "",
-        data: null,
-        render: function (data, type, row, meta) {
-          // console.log(data);
-          return `<i class='fas fa-pencil-alt edit'  data-id='${data.id}' title='Edit' style='cursor:pointer;'></i> <i class='fas fa-print print-single-label pl-2 pr-2'  data-id='${data.id}' title='Print Label' style='cursor:pointer;'></i> <i title='Delete' data-type='${ctype}' data-toggle='modal' data-target='#confirmPkgDel' class='fas fa-trash rm' data-id='${data.id}' style='cursor:pointer;'></i>`;
-        }
-      },
-
-    ];
-    var colDefc = [
-
-      {
-        title: "Compartment",
-        data: null,
-        render: function (data, type, row, meta) {
-          // console.log(data);
-          return `${data.compartment} `;
-        }
-      },
-      {
-        title: "Tracking No",
-        data: null,
-        render: function (data, type, row, meta) {
-          // console.log(data);
-          return `${data.trackingNo} `;
-        }
-      },
-
-
-      {
-        title: "Description",
-        data: null,
-        render: function (data, type, row, meta) {
-          // console.log(data);
-          return `${data.description}`;
-        }
-      },
-      {
-        title: "Weight",
-        data: null,
-        render: function (data, type, row, meta) {
-          // console.log(data);
-          return `${data.weight}`;
-        }
-      },
-      {
-        title: "Dimensions",
-        data: null,
-        render: function (data, type, row, meta) {
-          // console.log(data);
-          return `${data.dimensions}`;
-        }
-      },
-
-      // {
-      //     title: "",
-      //     data: null,
-      //     render: function (data, type, row, meta) {
-      //         // console.log(data);
-      //         return `<i class='fas fa-pencil-alt edit'  data-id='${data.id}' title='Edit' style='cursor:pointer;'></i> <i class='fas fa-print print-single-label pl-2 pr-2'  data-id='${data.id}' title='Print Label' style='cursor:pointer;'></i> <i title='Delete' data-type='${ctype}' data-toggle='modal' data-target='#confirmPkgDel' class='fas fa-trash rm' data-id='${data.id}' style='cursor:pointer;'></i>`;
-      //     }
-      // },
-
-    ];
-    if (pageMode == "flight") {
-      colDef = colDefc;
-    }
-
-    $(tableId).DataTable({
-
-      data: packages,
-      paging: true,
-
-      columns: colDef,
-      //bInfo:false,
-
-      "language": {
-        "decimal": ",",
-        "thousands": "."
-      },
-
-      "deferRender": true,
-      initComplete: function () {
-        $(tableId).find(".edit").click(function () {
-          var id = $(this).attr('data-id');
-          var form = "#cargoPackageForm";
-
-          if (ctype == 'mail')
-            form = '#mailPackageForm';
-          if (ctype == "unproc")
-            form = "#unprocPackageForm"
-          $(form).parent().show();
-          loadPackage(id, $(form));
-        });
-        $(tableId).find(".print-single-label").click(function () {
-          var id = $(this).attr('data-id');
-          $.ajax({
-            url: '/warehouse/print-awb-lbl/' + $("#id").val() + ":" + id,
-            contentType: 'json',
-            success: function (result) {
-
-            }
-          })
-
-        });
-        $(tableId).find(".rm").click(function () {
-          var id = $(this).attr('data-id');
-          var type = $(this).attr('data-type');
-          $("#rmPackage").attr('data-id', id);
-          $("#rmPackage").attr('data-type', type);
-          // deletePackage(id,"cargo");
-        });
-      },
-
-    });
-  }
-
-  function loadPackage(trackingNo, form) {
-    console.log(form.attr('id'));
-    $.ajax({
-      url: '/warehouse/load-package/' + trackingNo,
-      contentType: 'json',
-      success: function (dResult) {
-        console.log(dResult);
-
-        // form.find('.skybox').val(dResult.skybox);
-        //console.log(dResult.skybox);
-        $("#pkgId").val(dResult.id);
-        $('#trackingNo').val(dResult.trackingNo);
-        // form.find('.shipper').val(dResult.shipper);
-        //form.find('.package-value').val(dResult.value);
-        $('#weight').val(dResult.weight);
-        //form.find('.pieces').val(dResult.pieces);
-        $('#description').val(dResult.description);
-        //form.find('.carrier').val(dResult.carrier);
-        var dims = dResult.dimensions.split("x");
-        if (dims.length == 3) {
-          $("#W").val(dims[0])
-          $("#H").val(dims[1])
-          $("#L").val(dims[2])
-        }
-        if (dResult.pkgNo) {
-          $("#pkgNo").val(dResult.pkgNo)
-        }
-        if (dResult.packaging) {
-          $("#packaging").val(dResult.packaging)
-        }
-        form.find('.dimensions').val(dResult.dimensions);
-        $(".btn-add-package").trigger('click');
-        // if (typeof dResult.bag != "undefined")
-        //     form.find('.bag').val(dResult.bag);
-        // else
-        //     form.find('.skid').val(dResult.skid);
-
-        //form.find('.skybox').trigger('change');
-
-      },
-      error: function (err) {
-
-      }
-
+      })
     })
+
+    $('.btn-rm-pkg').click(function () {
+      var id = $(this).data('id');
+      $("#rmPackage").attr('data-id', id);
+    })
+    $("#rmPackage").click(function () {
+      var id = $(this).data('id');
+      awbPackages = awbPackages.filter(package => package.id != id);
+      displayPackages();
+      $(".close-del").trigger('click');
+    });
   }
 
   function extractFormData(form) {
