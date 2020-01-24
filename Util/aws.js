@@ -13,9 +13,12 @@ const bucket = 'vela-space';
 const signedUrlExpireSeconds = 60 * 5;
 
 exports.getSignedUrl = (filename) => {
-  return s3.getSignedUrl('getObject', {
-    Bucket: bucket,
-    Key: filename,
-    Expires: signedUrlExpireSeconds
-  });
+  if (!filename || filename == undefined || filename == 'undefined')
+    return "";
+  else
+    return s3.getSignedUrl('getObject', {
+      Bucket: bucket,
+      Key: filename,
+      Expires: signedUrlExpireSeconds
+    });
 }

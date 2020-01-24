@@ -25,7 +25,10 @@ $(function () {
     });
   })
 
-  $('#packageTable').DataTable({
+  $('#awb-table').DataTable({
+    pageLength: 10,
+  })
+  $('#no-docs-table').DataTable({
     pageLength: 10,
   })
 })

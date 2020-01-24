@@ -27,7 +27,7 @@ exports.preview_awb = (req, res, next) => {
         shipper: otherInfos[1],
         carrier: otherInfos[2],
         hazmat: otherInfos[3],
-        invoiceLink: aws.getSignedUrl(awb.invoice),
+        invoiceLink: awb.invoice ? aws.getSignedUrl(awb.invoice) : "",
       })
     })
   })
@@ -99,17 +99,18 @@ exports.get_awb_list = (req, res, next) => {
         let weight = 0;
         awb.packages = results[0];
         awb.packages.forEach(pkg => weight += Number(pkg.weight));
+        awb.weight = weight;
         awb.customer = results[1];
         awb.shipper = results[2];
         awb.carrier = results[3];
-        awb.weight = weight;
+        awb.dateCreated = utils.formatDate(awb.dateCreated, "MMM DD, YYYY");
       })
     })).then(results => {
-      res.render('pages/warehouse/awb/nodocs', {
+      res.render('pages/warehouse/awb/list', {
         page: req.url,
-        title: "AWB With No Invoice",
+        title: "AirWay Bills",
         user: res.user,
-        awbs: awbs.map(utils.formattedRecord),
+        awbs: awbs,
       })
     })
   })

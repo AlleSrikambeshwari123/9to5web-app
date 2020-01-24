@@ -1,55 +1,106 @@
 <% layout('./shared/__template')%>
 <div class='gutters'>
   <div class='col-xl-12 col-lg-6 col-md-12 col-sm-12'>
-    <div class='card'>
-      <div class="card-header col-md-12">
-        <div class="card-title"><%=title%></div>
+    <div class='card card-with-nav'>
+      <div class="card-header">
+        <div class="row row-nav-line">
+          <ul class="nav nav-tabs nav-line nav-color-primary" id="awb-list-tab" role="tablist">
+            <li class="nav-item"> <a class="nav-link active show" data-toggle="tab" href="#awb-list" role="tab"
+                aria-selected="true">AirWay Bills</a> </li>
+            <li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#awb-no-docs" role="tab"
+                aria-selected="false">No Docs</a> </li>
+          </ul>
+        </div>
       </div>
       <div class="card-body">
-        <div class="table-responsive">
-          <table id='packageTable' class='display table table-striped table-hover dataTable'>
-            <thead>
-              <tr>
-                <th>Date Received</th>
-                <th>PMB</th>
-                <th>Consignee</th>
-                <th>AWB</th>
-                <th>Description</th>
-                <th>Shipper</th>
-                <th>Carrier</th>
-                <th>Pieces</th>
-                <th>Weight</th>
-                <th>Invoice</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              <% awbs.forEach(function(awb){%>
-              <tr data-record="<%= awb.id %>">
-                <td><%=awb.dateCreated%></td>
-                <td><%=awb.customer.pmb %></td>
-                <td><%=awb.customer.firstName + ' ' + awb.customer.lastName%></td>
-                <td><%=awb.id%></td>
-                <td><%=awb.note %></td>
-                <td><%=awb.shipper.name %></td>
-                <td><%=awb.carrier.name %></td>
-                <td><%=awb.packages.length %></td>
-                <td><%=awb.weight %></td>
-                <td><% if(awb.hasDocs) { %>
-                  <a class="btn btn-link btn-primary btn-invoice" data-id="<%=awb.invoice%>" data-toggle="tooltip"
-                    data-original-title="Invoice"> <i class="fa fa-paperclip"></i> </a>
-                  <% } %>
-                </td>
-                <td>
-                  <a href='manage/<%=awb.id%>/get' class="btn btn-link btn-primary" data-toggle="tooltip"
-                    data-original-title="Edit"> <i class="fa fa-pen"></i> </a>
-                  <a class="btn btn-link btn-danger btn-rm-awb" data-toggle="modal" data-id="<%=awb.id%>"
-                    data-original-title="Delete" data-target="#confirm-delete-awb"> <i class="fa fa-trash"></i> </a>
-                </td>
-              </tr>
-              <%})%>
-            </tbody>
-          </table>
+        <div class="tab-content m-4" id="awb-list-tabContent">
+          <div class="tab-pane fade show active" id="awb-list" role="tabpanel" aria-labelledby="awb-list-tab">
+            <div class="table-responsive">
+              <table id='awb-table' class='display table table-striped table-hover dataTable'>
+                <thead>
+                  <tr>
+                    <th>Date Received</th>
+                    <th>PMB</th>
+                    <th>AWB ID</th>
+                    <th>Consignee</th>
+                    <th>Shipper</th>
+                    <th>Carrier</th>
+                    <th>Pieces</th>
+                    <th>Weight</th>
+                    <th>Invoice</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% awbs.forEach(function(awb){%>
+                  <tr data-record="<%= awb.id %>">
+                    <td><%=awb.dateCreated%></td>
+                    <td><%=awb.customer.pmb %></td>
+                    <td><a href="manage/<%=awb.id%>/preview"><%=awb.id%></a></td>
+                    <td><%=awb.customer.firstName + ' ' + awb.customer.lastName%></td>
+                    <td><%=awb.shipper.name %></td>
+                    <td><%=awb.carrier.name %></td>
+                    <td><%=awb.packages.length %></td>
+                    <td><%=awb.weight %></td>
+                    <td><% if(awb.invoice) { %>
+                      <a class="btn btn-link btn-primary btn-invoice" data-id="<%=awb.invoice%>" data-toggle="tooltip"
+                        data-original-title="Invoice Attached"> <i class="fa fa-paperclip"></i> </a>
+                      <% } %>
+                    </td>
+                    <td class="text-center">
+                      <a href='manage/<%=awb.id%>/get' class="btn btn-link btn-primary p-1" data-toggle="tooltip"
+                        data-original-title="Edit"> <i class="fa fa-pen"></i> </a>
+                      <a class="btn btn-link btn-danger btn-rm-awb p-1" data-toggle="modal" data-id="<%=awb.id%>"
+                        data-original-title="Delete" data-target="#confirm-delete-awb"> <i class="fa fa-trash"></i> </a>
+                    </td>
+                  </tr>
+                  <%})%>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="tab-pane fade" id="awb-no-docs" role="tabpanel" aria-labelledby="awb-no-docs-tab">
+            <div class="table-responsive">
+              <table id='no-docs-table' class='display table table-striped table-hover dataTable'>
+                <thead>
+                  <tr>
+                    <th>Date Received</th>
+                    <th>PMB</th>
+                    <th>AWB ID</th>
+                    <th>Consignee</th>
+                    <th>Shipper</th>
+                    <th>Carrier</th>
+                    <th>Pieces</th>
+                    <th>Weight</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% 
+                  awbs.forEach(function(awb){
+                    if(!awb.invoice) {
+                  %>
+                  <tr data-record="<%= awb.id %>">
+                    <td><%=awb.dateCreated%></td>
+                    <td><%=awb.customer.pmb %></td>
+                    <td><a href="manage/<%=awb.id%>/preview"><%=awb.id%></a></td>
+                    <td><%=awb.customer.firstName + ' ' + awb.customer.lastName%></td>
+                    <td><%=awb.shipper.name %></td>
+                    <td><%=awb.carrier.name %></td>
+                    <td><%=awb.packages.length %></td>
+                    <td><%=awb.weight %></td>
+                    <td class="text-center">
+                      <a href='manage/<%=awb.id%>/get' class="btn btn-link btn-primary p-1" data-toggle="tooltip"
+                        data-original-title="Edit"> <i class="fa fa-pen"></i> </a>
+                      <a class="btn btn-link btn-danger btn-rm-awb p-1" data-toggle="modal" data-id="<%=awb.id%>"
+                        data-original-title="Delete" data-target="#confirm-delete-awb"> <i class="fa fa-trash"></i> </a>
+                    </td>
+                  </tr>
+                  <% }}) %>
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -138,4 +189,4 @@
   </div>
 </div>
 
-<% block('scripts').append('<script src="/js/warehouse/awb/nodocs.js"></script>')%>
+<% block('scripts').append('<script src="/js/warehouse/awb/list.js"></script>')%>

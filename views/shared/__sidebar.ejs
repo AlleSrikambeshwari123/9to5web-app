@@ -89,19 +89,19 @@
 						<p>Warehouse FLL</p>
 						<span class="caret"></span>
 					</a>
-					<div class="collapse" id="warehouse">
+					<div class="collapse <% if (page.includes('/fll/')) { %> show <% } %>" id="warehouse">
 						<ul class="nav nav-collapse">
 							<!-- <li>
 										<a href="/warehouse/incoming-shiptment">
 											<span class="sub-item">Incoming Shipment</span>
 										</a>
 									</li> -->
-							<li>
+							<li <% if (page.includes('/fll/awb/create')) { %> class="active" <% } %>>
 								<a href="/warehouse/fll/awb/create">
 									<span class="sub-item">Create AirWay Bill</span>
 								</a>
 							</li>
-							<li>
+							<li <% if (page.includes('/fll/awb/list')) { %> class="active" <% } %>>
 								<a href="/warehouse/fll/awb/list">
 									<span class="sub-item">AirWay Bills</span>
 								</a>
