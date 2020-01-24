@@ -9,6 +9,7 @@ var mv = require('mv');
 var moment = require('moment');
 var delfile = '';
 var uniqid = require('uniqid')
+var awsUtil = require('../Util/aws');
 
 const aws = require('aws-sdk');
 // const multer = require('multer');

@@ -49,3 +49,7 @@ exports.formattedRecord = (record) => {
   }
   return record;
 }
+
+exports.formatDate = (unix, format) => {
+  return moment(unix * 1000).format(format);
+}

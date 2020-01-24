@@ -11,15 +11,6 @@
           <h3 class="card-title text-muted">Bill Content</h3>
           <div class="row">
             <div class="col-md-6">
-              <input type='hidden' id="mid" value="0" />
-              <input type='hidden' id="mtype" value="default" />
-              <div class='form-group'>
-                <span class='print-options pull-right mt-2' style='display:none;'>
-                  <a id="print-awb" href='#'> <i class="fas fa-print" title='Print AWB'></i>Print AWB</a>
-                  <a href="#">|</a>
-                  <a id='print-lbl' href='#'><i title='Print Label' class="fas fa-print"></i>Print All Labels</a>
-                </span>
-              </div>
               <div class="form-group form-show-validation row">
                 <label for="customerId" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Consignee</label>
                 <div class="col-lg-8 col-md-8 col-sm-8">
@@ -102,7 +93,8 @@
                       <input type="hidden" name="MAX_FILE_SIZE" value="512000" />
                       <span class="custom-file-container__custom-file__custom-file-control"></span>
                     </label>
-                    <div class="custom-file-container__image-preview my-2" style="overflow: hidden;"></div>
+                    <div class="custom-file-container__image-preview my-2"
+                      style="overflow: hidden; border: 1px dashed;"></div>
                     <a href="#" class="custom-file-container__image-clear btn btn-round btn-danger float-right"
                       title="Clear Invoice">Clear Invoice
                     </a>

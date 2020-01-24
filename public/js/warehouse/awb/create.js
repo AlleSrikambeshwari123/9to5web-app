@@ -48,30 +48,8 @@ $(function () {
     }]
   })
 
-  var pageMode = $("#pgmode").val();
   var sedAnswered = 0;
   var awbPackages = [];
-
-  $("#print-awb").click(function () {
-    var awb = $(this).attr('data-id')
-    $.ajax({
-      url: '/warehouse/print-awb/' + awb,
-      contentType: 'json',
-      success: function (result) {
-        console.log('result', result)
-      }
-    })
-  })
-  $("#print-lbl").click(function () {
-    var awb = $(this).attr('data-id')
-    $.ajax({
-      url: '/warehouse/print-awb-lbl/' + awb,
-      contentType: 'json',
-      success: function (result) {
-        console.log('result', result)
-      }
-    })
-  })
 
   // Add Pacakge Popup
   $('.btn-add-package').magnificPopup({
@@ -156,19 +134,20 @@ $(function () {
         url: 'create',
         type: 'post',
         data: awbInfo,
-        success: function (result) {
-          console.log(result);
-          $("#save_awb").hide();
-          $(".print-options").show();
-          $("#print-awb").attr('data-id', result.id);
-          $("#print-lbl").attr('data-id', result.id);
+        success: function (response) {
+          swal({
+            title: response.success == true ? 'Created' : 'Failed',
+            text: response.message,
+            type: response.success == true ? 'success' : 'error',
+          }).then(res => {
+            if (response.success == true) {
+              window.location.href = 'manage/' + response.awb.id + '/preview';
+            }
+          })
         }
       });
     })
   });
-
-  $("#print-label").click(function () {
-  })
 
   //#region Package / Manifest FUNCTIONS
   function uploadContentFile(fileInputctrl, completeHandler) {

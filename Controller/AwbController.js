@@ -1,5 +1,37 @@
 var services = require('../RedisServices/RedisDataServices');
 var utils = require('../Util/utils');
+var aws = require('../Util/aws');
+
+exports.preview_awb = (req, res, next) => {
+  let id = req.params.id;
+  Promise.all([
+    services.awbService.getAwb(id),
+    services.packageService.getPackages(id),
+  ]).then(results => {
+    let awb = results[0];
+    let packages = results[1];
+    Promise.all([
+      services.customerService.getCustomer(awb.customerId),
+      services.shipperService.getShipper(awb.shipper),
+      services.shipperService.getShipper(awb.carrier),
+      services.hazmatService.getClass(awb.hazmat),
+    ]).then(otherInfos => {
+      awb.packages = packages;
+      awb.customer = otherInfos[0];
+      awb.dateCreated = utils.formatDate(awb.dateCreated, "MMM DD,YYYY");
+      res.render('pages/warehouse/awb/preview', {
+        page: req.url,
+        title: "AWB #" + awb.id,
+        user: res.user,
+        awb: awb,
+        shipper: otherInfos[1],
+        carrier: otherInfos[2],
+        hazmat: otherInfos[3],
+        invoiceLink: aws.getSignedUrl(awb.invoice),
+      })
+    })
+  })
+}
 
 exports.get_awb_detail = (req, res, next) => {
   var id = req.params.id;

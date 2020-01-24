@@ -1,0 +1,151 @@
+<% layout('./shared/__template')%>
+<div class="row justify-content-center mt--5">
+  <div class="col-12 col-lg-10 col-xl-9">
+    <div class="row align-items-center">
+      <div class="ml-auto mr-3 mb-3 mt--4">
+        <a class="btn btn-danger btn-round text-white"> Download PDF</a>
+        <a class="btn btn-danger btn-round text-white ml-2"> Print AWB </a>
+        <a class="btn btn-danger btn-round text-white ml-2"> Print All Labels </a>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card card-invoice">
+          <div class="card-header">
+            <div class="invoice-header">
+              <h3 class="invoice-title">AirWay Bill</h3>
+              <div class="invoice-logo">
+                <img src="/img/logo.jpg" alt="company logo">
+              </div>
+            </div>
+            <div class="invoice-desc">
+              Airport Industrial Park, P.O. Box AP 59239<br>
+              Nassau, The Bahamas<br>
+              F: (242) 377-3587
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="separator-solid"></div>
+            <div class="row">
+              <div class="col-md-4 info-invoice">
+                <h5 class="sub">Created At</h5>
+                <p><%= awb.dateCreated%></p>
+              </div>
+              <div class="col-md-4 info-invoice">
+                <h5 class="sub">Bill ID</h5>
+                <p>#<%= awb.id %></p>
+              </div>
+              <div class="col-md-4 info-invoice">
+                <h5 class="sub">Customer</h5>
+                <p><%= awb.customer.firstName + ' ' + awb.customer.lastName %></p>
+              </div>
+            </div>
+            <div class="separator-solid"></div>
+            <div class="row">
+              <div class="col-sm-7 col-md-5 mb-3 mb-md-0 transfer-to">
+                <h5 class="sub">Shipper</h5>
+                <div class="account-transfer">
+                  <div><span>Shipper Name:</span><span><%= shipper.firstName + ' ' + shipper.lastName%></span></div>
+                  <div><span>Shipper Phone:</span><span><%= shipper.telephone%></span></div>
+                </div>
+              </div>
+              <div class="col-sm-7 col-md-5 mb-3 mb-md-0 transfer-to ml-auto">
+                <h5 class="sub">Carrier</h5>
+                <div class="account-transfer">
+                  <div><span>Carrier Name:</span><span><%= carrier.firstName + ' ' + carrier.lastName%></span></div>
+                  <div><span>Carrier Phone:</span><span><%= carrier.telephone%></span></div>
+                </div>
+              </div>
+            </div>
+            <div class="separator-solid"></div>
+            <div class="row">
+              <div class="col-md-7">
+                <img src="<%=invoiceLink%>" style="border: 1px dashed; border-radius: 10px; width: 100%;">
+              </div>
+              <div class="col-md-5 mb-3 mb-md-0 transfer-to">
+                <h5 class="sub">Invoice</h5>
+                <div class="account-transfer">
+                  <div><span>Invoice ID:</span><span>#<%= awb.invoiceNumber%></span></div>
+                  <div><span>Value:</span><span>$ <%= Number(awb.value).toFixed(2) %></span></div>
+                </div>
+              </div>
+            </div>
+            <div class="separator-solid"></div>
+            <div class="row">
+              <div class="col-md-12">
+                <div class="invoice-detail">
+                  <div class="invoice-top">
+                    <h3 class="title"><strong>Package Summary</strong></h3>
+                  </div>
+                  <div class="invoice-item">
+                    <div class="table-responsive">
+                      <table class="table table-striped">
+                        <thead>
+                          <tr>
+                            <td><strong>Tracking No</strong></td>
+                            <td class="text-center"><strong>Description</strong></td>
+                            <td class="text-center"><strong>Type</strong></td>
+                            <td class="text-center"><strong>Dimension</strong></td>
+                            <td class="text-right"><strong>Weight</strong></td>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <% var totalWeight = 0;
+                          awb.packages.forEach(package => { 
+                            totalWeight += Number(package.weight);
+                          %>
+                          <tr>
+                            <td><%= package.trackingNo%></td>
+                            <td class="text-center"><%= package.description%></td>
+                            <td class="text-center"><%= package.packageType%></td>
+                            <td class="text-center"><%= package.dimensions%></td>
+                            <td class="text-right"><%= Number(package.weight).toFixed(2)%> lbs</td>
+                          </tr>
+                          <% }) %>
+                          <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td class="text-center"><strong>Total Weight</strong></td>
+                            <td class="text-right"><%= totalWeight.toFixed(2)%> lbs</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+                <div class="separator-solid  mb-3"></div>
+              </div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <div class="row">
+              <div class="col-sm-7 col-md-5 mb-3 mb-md-0 transfer-to">
+                <h5 class="sub">HAZMAT</h5>
+                <div class="account-transfer">
+                  <div><span>Class:</span><span><%= hazmat.description %></span></div>
+                </div>
+              </div>
+              <div class="col-sm-5 col-md-7 transfer-total">
+                <h5 class="sub">Total Amount</h5>
+                <div class="price">$<%= Number(awb.value).toFixed(2) %></div>
+                <% if(Number(awb.isSed) == 1) { %>
+                <span>SED Included</span>
+                <% } %>
+              </div>
+            </div>
+            <div class="separator-solid"></div>
+            <h6 class="text-uppercase mt-4 mb-3 fw-bold">
+              Notes
+            </h6>
+            <p class="text-muted mb-0">
+              We really appreciate your business and if there's anything else we can do, please let us know! Also,
+              should you need us to add VAT or anything else to this order, it's super easy since this is a template, so
+              just ask!
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -29,6 +29,15 @@ class HazmatService {
             })
         });
     }
+    getClass(id) {
+        return new Promise((resolve, reject) => {
+            client.hgetall(PREFIX + id, (err, hazmat) => {
+                if (err) resolve({ description: "" });
+                if (hazmat) resolve(hazmat);
+                else resolve({ description: "" });
+            })
+        });
+    }
     getAllClasses() {
         return new Promise((resolve, reject) => {
             client.keys(PREFIX + '*', (err, keys) => {
