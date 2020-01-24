@@ -7,9 +7,10 @@
         <a href='create' class='btn btn-primary btn-round ml-md-auto float-right'>Add Location</a>
       </div>
       <div class="card-body">
-        <table class="table m-0 location-table">
+        <table class="display table table-striped table-hover dataTable location-table ">
           <thead>
             <tr>
+              <th>Company</th>
               <th>Location Name</th>
               <th>Address</th>
               <th>Phone</th>
@@ -19,6 +20,7 @@
           <tbody>
             <% locations.forEach(location => { %>
             <tr data-record="<%=location.id%>">
+              <td><%=location.companyId%></td>
               <td><%=location.name%></td>
               <td><%=location.address%></td>
               <td><%=location.phone%></td>

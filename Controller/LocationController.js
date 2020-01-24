@@ -1,4 +1,5 @@
 var services = require('../RedisServices/RedisDataServices');
+var utils = require('../Util/utils');
 
 exports.create_location = (req, res, next) => {
   res.render('pages/admin/location/create', {
@@ -20,7 +21,7 @@ exports.get_location_list = (req, res, next) => {
       title: 'Locations',
       page: req.url,
       user: res.user,
-      locations: locations,
+      locations: locations.map(utils.formattedRecord),
     });
   });
 }

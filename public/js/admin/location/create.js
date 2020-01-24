@@ -1,4 +1,10 @@
 $(function () {
+
+  $('#companyId').select2({
+    theme: 'bootstrap',
+    placeholder: 'Select a company'
+  })
+
   $("#cancelForm").click(function () {
     window.history.back();
   });
