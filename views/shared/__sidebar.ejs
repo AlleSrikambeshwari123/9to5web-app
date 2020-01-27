@@ -106,8 +106,8 @@
 									<span class="sub-item">AirWay Bills</span>
 								</a>
 							</li>
-							<li>
-								<a href="/warehouse/packages-on-hand">
+							<li <% if (page.includes('/fll/package/list')) { %> class="active" <% } %>>
+								<a href="/warehouse/fll/package/list">
 									<span class="sub-item">Packages on Hands</span>
 								</a>
 							</li>

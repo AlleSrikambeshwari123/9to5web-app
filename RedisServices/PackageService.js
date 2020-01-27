@@ -91,6 +91,21 @@ function addPackageToIndex(trackingNo, msearcher) {
 }
 
 class PackageService {
+  getAllPackages() {
+    return new Promise((resolve, reject) => {
+      client.keys(PREFIX + '*', (err, keys) => {
+        if (err) resolve([]);
+        else {
+          Promise.all(keys.map(key => {
+            return lredis.hgetall(key);
+          })).then(results => {
+            resolve(results);
+          })
+        }
+      })
+    });
+  }
+
   // Only show 7 trackingNo on the list;
   getPackages(awbId) {
     return new Promise((resolve, reject) => {

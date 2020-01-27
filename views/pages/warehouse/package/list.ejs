@@ -1,0 +1,40 @@
+<% layout('./shared/__template')%>
+<div class='gutters'>
+  <div class="col-xl-12 col-lg-6 col-md-12 col-sm-12">
+    <div class="card">
+      <div class="card-header d-flex align-items-left align-items-md-center flex-column flex-md-row">
+        <div class="card-title"><%= title %></div>
+        <!-- <a href='create' class='btn btn-primary btn-round float-right ml-md-auto'>Add User</a> -->
+      </div>
+      <div class="card-body">
+        <table class="display table table-striped table-hover dataTable user-table">
+          <thead>
+            <tr>
+              <th>Tracking No</th>
+              <th>Description</th>
+              <th>Type</th>
+              <th>Weight</th>
+              <th>Dimensions</th>
+              <th>AWB</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% packages.forEach(function(pkg){ %>
+            <tr data-record="<%= pkg.id %>">
+              <td><%= pkg.trackingNo%></td>
+              <td><%= pkg.description %></td>
+              <td><%= pkg.packageType %></td>
+              <td><%= pkg.weight%></td>
+              <td><%= pkg.dimensions %></td>
+              <td><%= pkg.awbId %></td>
+            </tr>
+            <%})%>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.2.0/sweetalert2.all.min.js"></script> -->
+<!-- <% block('scripts').append('<script src="/js/admin/user/list.js"></script>')%> -->

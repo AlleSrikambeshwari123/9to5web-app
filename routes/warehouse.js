@@ -611,20 +611,6 @@ router.post('/save-delivery', middleware(services.userService).checkSession, (re
     })
 
 })
-router.get('/packages-on-hand', middleware(services.userService).checkSession, (req, res, next) => {
-    var pageData = {};
-    pageData.packages = [];
-    pageData.title = "Packages on hand FL";
-    pageData.mid = req.params.mid;
-    pageData.luser = res.User.firstName + ' ' + res.User.lastName;
-    pageData.RoleId = res.User.role;
-    services.packageService.listAwbinFll().then(awblist => {
-        console.log(awblist, "AWB's")
-        pageData.records = awblist.awbs;
-        res.render('pages/warehouse/no-docs', pageData);
-    })
-
-})
 router.get('/nas-packages-wh', middleware(services.userService).checkSession, (req, res, next) => {
     var pageData = {};
     pageData.packages = [];
