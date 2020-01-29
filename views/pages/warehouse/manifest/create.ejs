@@ -1,0 +1,277 @@
+<% layout('./shared/__template')%>
+<div class='gutters'>
+  <div class='col-xl-12 col-lg-6 col-md-12 col-sm-12'>
+    <div class='card'>
+      <div class="card-header col-md-12">
+        <h2> Manifest <%=manifest.title %> Data Entry</h2>
+      </div>
+      <div class="card-body">
+        <ul class="nav nav-pills nav-primary" id="myTab" role="tablist">
+          <li class="nav-item">
+            <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home"
+              aria-selected="true" aria-expanded="true">Manifest Overview</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact"
+              aria-selected="false" aria-expanded="false">Cargo</a>
+          </li>
+        </ul>
+        <div class="tab-content" id="myTabContent">
+          <div class="tab-pane active fade show" id="home" role="tabpanel" aria-labelledby="home-tab"
+            aria-expanded="true">
+            <div>
+              <div class="clearfix">
+                <div class="btn-group custom-btn-group float-right" role="group">
+                  <a href="/warehouse/download-load-sheet/<%=manifest.mid%>" type="button"
+                    class="btn btn-primary btn-sm "> <i class='fa fa-download'></i> Load Sheet</button>
+                    <a href='/warehouse/download-flight-manifest/<%=manifest.mid%>' class="btn btn-success btn-sm "><i
+                        class='fa fa-download'></i> Flight Manifest</a>
+                    <button type="button" class="btn btn-info btn-sm ship-manifest-btn ship-manifest"> <i
+                        class='fa fa-plane'></i> Send Flight</button>
+                    <!-- <button type="button" class="btn btn-dark btn-sm export-manifest">Export Excel</button> -->
+                </div>
+              </div>
+            </div>
+            <div class='row'>
+              <div class='col-md-3'>
+                <div class="col-lg-12 col-md-12 col-sm-12">
+                  <p class="text-uppercase small">
+                    <strong>Date:</strong> <br /><%=manifest.dateCreated %>
+                  </p>
+                  <address class='small'>
+                    <strong>WEIGHT:</strong> <span class='total-weight'></span> <br>
+                    <strong>STAGE:</strong> <%=manifest.stage%><br>
+                    <strong>CREATED BY:</strong> <%=manifest.createdBy%><br>
+                  </address>
+                </div>
+              </div>
+              <div class='col-md-9'>
+                <div class='row gutters pt-2 mt-4'>
+                  <!-- <div class="card-stats card-round col-xl-4 col-lg-6 col-md-6 col-sm-6">
+                                        <div class="card card-body info-state">
+                                            <div class="icon-type pull-left">
+                                                <i class="fas fa-envelope"></i>
+                                            </div>
+                                            <div class="sale-num">
+                                                <h2 id='mailCount'>0</h2>
+                                                <p>Mail</p>
+                                            </div>
+                                        </div>
+                                    </div> -->
+                  <input type='hidden' id="pgmode" value='flight' />
+
+                  <div class="card-stats card-round col-xl-4 col-lg-6 col-md-6 col-sm-6">
+                    <div class='form-group'>
+                      <label>Plane Tail Number</label>
+                      <input type='text' id='tailNumber' class='form-control' value='<%=manifest.tailNum%>'>
+                    </div>
+                    <div class='form-group select2-input'>
+                      <label>Plane Type</label>
+
+                      <select class='form-control ' id='select-plane'>
+                        <option value=''>Select Plane</option>
+
+                        <% for (var i =0 ;i < planes.length; i++){ 
+                                                        var pselected = ''
+                                                        if (Number(manifest.planeId) == Number(planes[i].id)){
+                                                            pselected = 'selected'; 
+                                                        }
+                                                            %>
+
+                        <option <%=pselected%> value='<%=planes[i].id%>'><%=planes[i].tail_num%></option>
+
+                        <%}%> 
+                                                    
+                                                        
+                                                   </select>
+                                                </div>
+                                                <div class='form-group'>
+                                                        <label>Flight Date / Time </label>
+                                                     
+                                                        <input type='text' class='form-control flightdate' id='flight-date' value ='<%=manifest.shipDate%>'
+                        />
+                    </div>
+                    <!-- <div class='form-group'>
+                      <select class='form-control' id='select-pilot'>
+                        <option value=''>Select Pilot</option>
+                        <%for (var i =0 ;i < pilots.length; i++){ %>
+                        <option value='<%=pilots[i].id%>'><%=pilots[i].name%></option>
+                        <%}%>
+                      </select>
+                  </div> -->
+                    <div class='form-group'>
+                      <button type="button" id='save-details' class="btn btn-dark btn-sm save-details">Save
+                        Details</button>
+                    </div>
+                  </div>
+                  <div class="card-stats card-round col-xl-4 col-lg-6 col-md-6 col-sm-6">
+                    <div class="card card-body info-state">
+                      <div class="icon-type ">
+                        <i class="fas fa-archive"></i>
+                      </div>
+                      <div class="sale-num">
+                        <h2 id='packageCount'>0</h2>
+                        <p>Packages</p>
+                      </div>
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </div>
+            </div>
+          </div>
+          <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab" aria-expanded="false">
+            <div class='row'>
+
+              <% var showForm ='' 
+                            if (manifest.StageId > 1){ 
+                                showForm ='display:none'
+                           }%>
+
+              <div class='col-md-9'>
+                <table id='mailTable' class='display table table-bordered table-head-bg-info table-hover'
+                  style='width:100%;'>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="tab-pane fade " id="contact" role="tabpanel" aria-labelledby="contact-tab" aria-expanded="false">
+            <div class='row'>
+
+
+
+              <div class='col-md-12'>
+                <table id='packageTable' class='display table table-bordered table-head-bg-info table-hover'
+                  style='width:100%'>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="tab-pane fade" id="unproc" role="tabpanel" aria-labelledby="unproc-tab" aria-expanded="false">
+            <div class='row'>
+              <div class='col-md-3 pkg-form' style='<%=showForm%>'>
+                <form method='post' id='unprocPackageForm'>
+                  <div class='form-group'>
+                    <button type="button" class="btn btn-primary btn-sm new-cube"> New Cube</button>
+                    <span class='cubeId' style="display:none;">CUBE-<%=mid %>-1</span>
+                  </div>
+                  <div class='form-group'>
+                    <label>PMB <span id='' class='text-info title customerName'></span></label>
+                    <input type='hidden' class='isBusiness' value='' />
+                    <input type='text' class='form-control skybox' name='skybox' required />
+                  </div>
+                  <div class='form-group'>
+                    <label>Tracking #</label>
+                    <input type='hidden' class='mid' value='<%=mid %>' />
+                    <input type='hidden' class='mtype' value='unproc' />
+                    <input type='text' class='form-control trackingNo' name='trackingNo' required />
+                  </div>
+                  <!-- <div class='form-group'>
+                                        <label>Value</label>
+                                        <input type='text' class='form-control package-value' name='value' required />
+                                    </div>
+                                    <div class='form-group'>
+                                        <label>Weight</label>
+                                        <input type='text' class='form-control weight' name='weight' />
+                                    </div> -->
+                  <div class='form-group'>
+                    <button class='btn btn-primary savePackage' data-stage='<%=manifest.StageId%>' type='button'>
+                      Save</button>
+                  </div>
+                </form>
+              </div>
+              <div class='col-md-9'>
+                <table id='unprocTable' class='display table table-bordered table-head-bg-info table-hover'
+                  style='width:100%'>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="confirmPkgDel" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2"
+  aria-hidden="true" style="display: none;">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="exampleModalLabel2">Confirmation Required</h2>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <input type='hidden' id='pkg-tracking' />
+        Are you sure you want to delete this package?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary close-del" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-danger rm-package" id='rmPackage'>Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="shipManifest" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2"
+  aria-hidden="true" style="display: none;">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="exampleModalLabel2">Send Flight</h2>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <h3>Are you sure?</h3>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary close-del" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-success ship-manifest" id='ship-manifest1'>Send Flight</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="broker" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2" aria-hidden="true"
+  style="display: none;">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="exampleModalLabel2">Send to Broker (Manifest <%= mid %>)</h2>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <label for="broker-name">Broker Name</label>
+        <input type='text' id='broker-name' class='form-control broker-email' value=''>
+
+        <label for="broker-email">Broker Email</label>
+        <input type='text' id='broker-email' class='form-control broker-email' value=''>
+      </div>
+      <div class="modal-footer">
+
+        <span class='text-left' id='eb-message'></span>
+        <button type="button" class="btn btn-primary close-del" data-dismiss="modal">Close</button>
+
+        <button type="button" class="btn btn-success email-broker" id='email-broker'>Send <i id='eb-icon'
+            class='icon-plane'></i></button>
+      </div>
+    </div>
+  </div>
+</div>
+<% block('scripts').append('<script src="/assets/js/plugin/datatables/datatables.min.js"></script>')%>
+<!-- <% block('scripts').append('<script src="/vendor/datatables/dataTables.bootstrap.min.js"></script>')%>
+<% block('scripts').append('<script src="/vendor/datatables/custom/fixedHeader.js"></script>')%>
+<% block('scripts').append('<script src="/vendor/datatables/dataTables.min.js"></script>')%> -->
+<!-- <script src="/assets/js/plugin/datatables/datatables.min.js"></script> -->
+
+<script>
+  var rpackages = <% - JSON.stringify(packages) %>;
+</script>
+<% block('scripts').append('<script src="/js/packages/manifest-package.js"></script>')%>

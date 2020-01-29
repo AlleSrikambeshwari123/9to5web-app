@@ -1,57 +1,77 @@
-var dataContext = require('./dataContext');
-var redis = require('redis');
-const PREFIX = "pilot:"
-const PILOT_ID = "pilot:id"
-var redisSearch = require('../redisearchclient');
-var PILOT_INDEX = "index:pilots"
-const rs = redisSearch(redis, PILOT_INDEX, {
-    clientOptions: dataContext.clientOptions
-});
+const strings = require('../Res/strings');
+
+// Redis
+var client = require('./dataContext').redisClient;
+var lredis = require('./redis-local');
+
+const PREFIX = strings.redis_prefix_pilot;
+const PILOT_ID = strings.redis_id_pilot;
+const PILOT_LIST = strings.redis_prefix_pilot_list;
 
 class PilotService {
-    constructor() {
-
-    }
     addPilot(pilot) {
         return new Promise((resolve, reject) => {
-            dataContext.redisClient.incr(PILOT_ID, (err, id) => {
+            client.incr(PILOT_ID, (err, id) => {
+                if (err) resolve({ success: false, message: strings.string_response_error });
                 pilot.id = id;
-                dataContext.redisClient.hmset(PREFIX + id, pilot, (errS, result) => {
-                    rs.add(id, pilot);
-                    resolve({ saved: true });
+                client.sadd(PILOT_LIST + pilot.warehouse, id);
+                client.hmset(PREFIX + id, pilot, (err, result) => {
+                    if (err) resolve({ success: false, message: strings.string_response_error });
+                    resolve({ success: true, message: strings.string_response_added });
                 })
             })
         })
     }
-    updatePilot(pilot) {
+    updatePilot(id, pilot) {
         return new Promise((resolve, reject) => {
-            dataContext.redisClient.hmset(PREFIX + pilot.id, pilot)
-            rs.update(pilot.id, pilot);
-        })
+            client.exists(PREFIX + id, (err, exist) => {
+                if (Number(exist) == 1) {
+                    client.hmset(PREFIX + id, pilot);
+                    resolve({ success: true, message: strings.string_response_updated });
+                } else {
+                    resolve({ success: false, message: strings.string_not_found_user });
+                }
+            });
+        });
     }
     getPilots() {
         return new Promise((resolve, reject) => {
-            rs.search("*", {}, (err, pilots) => {
-                var rPilots = [];
-                pilots.results.forEach(pilot => {
-                    rPilots.push(pilot.doc);
-                });
-                resolve({ pilots: rPilots })
-            });
+            client.keys(PREFIX + '*', (err, keys) => {
+                if (err) resolve([]);
+                Promise.all(keys.map(key => {
+                    return lredis.hgetall(key);
+                })).then(pilots => {
+                    resolve(pilots);
+                })
+            })
+        });
+    }
+    getPilotsWarehouse(warehouse) {
+        return new Promise((resolve, reject) => {
+            client.smembers(PILOT_LIST + warehouse, (err, ids) => {
+                if (err) resolve([]);
+                Promise.all(ids.map(id => {
+                    return lredis.hgetall(PREFIX + id);
+                })).then(pilots => {
+                    resolve(pilots);
+                })
+            })
         });
     }
     getPilot(id) {
         return new Promise((resolve, reject) => {
-            dataContext.redisClient.hgetall(PREFIX + id, (err, p) => {
-                resolve({ pilot: p });
+            client.hgetall(PREFIX + id, (err, pilot) => {
+                if (err) resolve({});
+                resolve(pilot);
             })
         })
     }
-    rmPilot(id) {
+    removePilot(id) {
         return new Promise((resolve, reject) => {
-            dataContext.redisClient.del(PREFIX + id);
-            rs.delDocument(PILOT_INDEX, id)
-            resolve({ deleted: true })
+            client.del(PREFIX + id, (err, result) => {
+                if (err) resolve({ success: false, message: strings.string_response_error });
+                resolve({ success: true, message: strings.string_response_removed });
+            })
         });
     }
 }

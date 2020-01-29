@@ -27,11 +27,25 @@ exports.redis_id_vehicle = "id:vehicle";
 exports.redis_prefix_driver = "driver:";
 exports.redis_id_driver = "id:driver";
 
+exports.redis_prefix_pilot = "pilot:";
+exports.redis_id_pilot = "id:pilot";
+exports.redis_prefix_pilot_list = "list:pilot:";
+
 exports.redis_prefix_shipper = "shipper:";
 exports.redis_id_shipper = "id:shipper";
 
 exports.redis_prefix_hazmat = "hazmat:";
 exports.redis_id_hazmat = "id:hazmat";
+
+exports.redis_id_awb_init = 100000;
+exports.redis_prefix_awb = "awb:";
+exports.redis_id_awb = "id:awb";
+exports.redis_prefix_no_docs_list = "list:awb:no";
+
+exports.redis_id_manifest_init = 10000;
+exports.redis_prefix_manifest = "manifest:";
+exports.redis_id_manifest = "id:manifest";
+exports.redis_prefix_manifest_open_list = "list:manifest:open";
 
 // Const strings
 exports.string_response_error = "Internal Server Error !";

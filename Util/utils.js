@@ -32,6 +32,9 @@ exports.formattedRecord = (record) => {
   if (record.companyId == '9to5') record.companyId = '9-5 Import';
   if (record.companyId == 'pmb') record.companyId = "Post Boxes";
 
+  if (record.warehouse == 'fll') record.warehouse = "Warehouse FLL";
+  if (record.warehouse == 'nas') record.warehouse = "Warehouse NAS";
+
   if (record.mobile && record.mobile.length >= 10)
     record.mobile = phoneFormatter.format(record.mobile, "(NNN) NNN-NNNN");
   if (record.phone && record.phone.length >= 10)

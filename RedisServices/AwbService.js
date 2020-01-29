@@ -5,10 +5,10 @@ var strings = require('../Res/strings');
 var lredis = require("./redis-local");
 var client = require('./dataContext').redisClient;
 
-const INIT_AWB_ID = 100000
-const PREFIX = "awb:";
-const AWB_ID = "id:awb";
-const PREFIX_NO_DOCS_LIST = "list:awb:no";
+const INIT_AWB_ID = strings.redis_id_awb_init
+const PREFIX = strings.redis_prefix_awb;
+const AWB_ID = strings.redis_id_awb;
+const PREFIX_NO_DOCS_LIST = strings.redis_prefix_no_docs_list;
 
 var CustomerService = require('./CustomerService');
 var customerService = new CustomerService()

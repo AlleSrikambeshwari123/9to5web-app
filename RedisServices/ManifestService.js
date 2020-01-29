@@ -1,16 +1,17 @@
+
+var moment = require('moment');
+const strings = require('../Res/strings');
+
 var redis = require('redis');
 var lredis = require('./redis-local');
-var moment = require('moment');
-var dataContext = require('./dataContext')
+var client = require('./dataContext').redisClient;
 var redisSearch = require('../redisearchclient');
-const MID_COUNTER = "global:midCounter";
-const MID_PREFIX = "manifest:";
-const MID_INDEX = "index:manifest";
-const OPEN_MANIFEST = "manifest:open";
-const CLOSED_MANIFEST = "manifest:closed"
-const SHIPPED_MANIFEST = "manifest:shipped"
-const MID_PACKAGES = "manifest:packages:"
-const VERIFIED_MANIFEST = "manifest:verified"; // manifest that have duties verified
+
+const INIT_ID = strings.redis_id_manifest_init;
+const ID_COUNTER = strings.redis_id_manifest;
+const PREFIX = strings.redis_prefix_manifest;
+const OPEN_MANIFEST_LIST = strings.redis_prefix_manifest_open_list;
+
 var PlaneService = require('./PlaneService');
 var planeService = new PlaneService();
 var manifestTypes = {
@@ -52,25 +53,15 @@ var manifestStages = {
 
 class ManifestService {
   constructor() {
-    this.redisClient = lredis.client;
     this.mtypes = manifestTypes;
     this.mstages = manifestStages;
-    //check to ensure we have the manifest counter 
     this.checkSetup();
-    this.setupIndex()
-  }
-  setupIndex() {
-    this.mySearch = redisSearch(redis, 'index:manifest', {
-      clientOptions: lredis.searchClientDetails
-    });
   }
   checkSetup() {
-    this.redisClient.exists(MID_COUNTER, (err, res) => {
-      if (res == 0) {
-        //create the manifest 
-        lredis.set(MID_COUNTER, 100);
+    client.exists(ID_COUNTER, (err, exist) => {
+      if (Number(exist) == 0) {
+        client.set(ID_COUNTER, INIT_ID);
       }
-
     });
   }
 
@@ -80,19 +71,13 @@ class ManifestService {
   getStages() {
     return this.manifestStages;
   }
-  updateManifestDetails(details) {
+  updateManifestDetails(id, details) {
     return new Promise((resolve, reject) => {
-      console.log('saving details', details);
-      this.mySearch.update(details.id, details, (err, result) => {
-        if (err)
-          console.log(err);
-        lredis.hmset(MID_PREFIX + details.id, details)
-        resolve({ updated: true })
-      })
+      client.hmset(PREFIX + id, details);
+      resolve({ updated: true })
     })
   }
   getOpenManifest(typeId) {
-
     return new Promise((resolve, reject) => {
       console.log(`@stageId:[${typeId} ${typeId}] @mtypeId:${typeId}`);
       this.mySearch.search(`@stageId:[1 1] @mtypeId:${typeId}`, {
@@ -187,7 +172,7 @@ class ManifestService {
 
         // } else {
         this.redisClient.multi()
-          .incr(MID_COUNTER)
+          .incr(ID_COUNTER)
           .exec((err, resp) => {
             console.log(resp);
             var manifest = {
@@ -201,8 +186,8 @@ class ManifestService {
             };
             console.log(manifest)
             srv.redisClient.multi()
-              .hmset(MID_PREFIX + manifest.mid, manifest)
-              .sadd(OPEN_MANIFEST, manifest.mid)
+              .hmset(PREFIX + manifest.mid, manifest)
+              .sadd(OPEN_MANIFEST_LIST, manifest.mid)
               .exec((err, results) => {
                 srv.mySearch.add(manifest.mid, manifest, (serr, resu) => {
                   if (serr)
@@ -230,11 +215,11 @@ class ManifestService {
   changeStage(mid, stages) {
     return new Promise((resolve, reject) => {
 
-      lredis.client.hmset(MID_PREFIX + mid, "stageId", stages, (err, result) => {
+      lredis.client.hmset(PREFIX + mid, "stageId", stages, (err, result) => {
         var stage = this.getStageById(stages);
         console.log('looked up the stage ' + stage.title);
-        lredis.client.hmset(MID_PREFIX + mid, "stage", stage.title, (err, result2) => { });
-        lredis.hgetall(MID_PREFIX + mid).then((uManifest) => {
+        lredis.client.hmset(PREFIX + mid, "stage", stage.title, (err, result2) => { });
+        lredis.hgetall(PREFIX + mid).then((uManifest) => {
           this.mySearch.delDocument("index:manifest", mid, (err, result1) => {
             console.log('changing document');
             console.log(err);
@@ -253,7 +238,7 @@ class ManifestService {
   }
   shipManifest(mid, awb, user) {
     return new Promise((resolve, reject) => {
-      lredis.hmset(MID_PREFIX + mid, { shipDate: moment().format("YYYY-MM-DD"), shippedBy: user }).then((sresult) => {
+      lredis.hmset(PREFIX + mid, { shipDate: moment().format("YYYY-MM-DD"), shippedBy: user }).then((sresult) => {
         console.log(sresult);
         this.changeStage(mid, 3).then((resu) => {
           resolve(sresult);
@@ -296,7 +281,7 @@ class ManifestService {
   }
   getManifest(mid) {
     return new Promise((resolve, reject) => {
-      lredis.hgetall(MID_PREFIX + mid).then(manifest => {
+      lredis.hgetall(PREFIX + mid).then(manifest => {
         if (manifest.planeId) {
           planeService.listCompartments(manifest.planeId).then(planeInfo => {
             manifest.plane = planeInfo.plane;
@@ -310,14 +295,14 @@ class ManifestService {
   }
   deleteManifest(mid) {
     return new Promise((resolve, reject) => {
-      lredis.client.del(MID_PREFIX + mid, (err, resp) => {
+      lredis.client.del(PREFIX + mid, (err, resp) => {
         console.log(resp);
         this.mySearch.delDocument("index:manifest", mid, (err, result) => {
           console.log("deleting mid");
           console.log(err);
           console.log(result);
         });
-        lredis.srem(OPEN_MANIFEST, mid);
+        lredis.srem(OPEN_MANIFEST_LIST, mid);
         resolve({ deleted: true })
       })
 

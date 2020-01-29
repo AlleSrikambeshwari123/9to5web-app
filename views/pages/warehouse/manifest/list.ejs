@@ -4,22 +4,21 @@
     <div class="card">
       <div class="card-header d-flex align-items-left align-items-md-center flex-column flex-md-row">
         <div class="card-title"><%= title %></div>
-        <!-- <a href='create' class='btn btn-primary btn-round float-right ml-md-auto'>Add User</a> -->
+        <a href='create' class='btn btn-primary btn-round float-right ml-md-auto'>Create Manifest</a>
       </div>
       <div class="card-body">
         <table class="display table table-striped table-hover dataTable package-table">
           <thead>
             <tr>
-              <th>Tracking No</th>
-              <th>Description</th>
-              <th>Type</th>
-              <th>Weight</th>
-              <th>Dimensions</th>
-              <th>AWB</th>
+              <th>Manifest ID#</th>
+              <th>Status</th>
+              <th>Date Created</th>
+              <th>Created By</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
-            <% packages.forEach(function(pkg){ %>
+            <!-- <% manifests.forEach(function(manifest){ %>
             <tr data-record="<%= pkg.id %>">
               <td><%= pkg.trackingNo%></td>
               <td><%= pkg.description %></td>
@@ -28,7 +27,7 @@
               <td><%= pkg.dimensions %></td>
               <td><%= pkg.awbId %></td>
             </tr>
-            <%})%>
+            <%})%> -->
           </tbody>
         </table>
       </div>
@@ -37,4 +36,4 @@
 </div>
 
 <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.2.0/sweetalert2.all.min.js"></script> -->
-<% block('scripts').append('<script src="/js/warehouse/package/list.js"></script>')%>
+<% block('scripts').append('<script src="/js/warehouse/manifest/list.js"></script>')%>

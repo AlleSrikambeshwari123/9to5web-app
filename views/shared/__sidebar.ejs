@@ -111,9 +111,9 @@
 									<span class="sub-item">Packages on Hands</span>
 								</a>
 							</li>
-							<li>
-								<a href="/warehouse/list-manifest">
-									<span class="sub-item">Load Flight</span>
+							<li <% if (page.includes('/fll/manifest/list')) { %> class="active" <% } %>>
+								<a href="/warehouse/fll/manifest/list">
+									<span class="sub-item">Manifest</span>
 								</a>
 							</li>
 							<!-- <li>
@@ -185,6 +185,7 @@
 					</div>
 				</li>
 				<%}%>
+				<!-- Fleet -->
 				<%if (user.role.includes("Admin") || user.role.includes("Warehouse") || user.role.includes("Warehouse")) {%>
 				<li class="nav-item <% if (page.includes('/fleet/')) { %> active <% } %>">
 					<a data-toggle="collapse" href="#fleet">

@@ -72,15 +72,13 @@ class UserService {
     }
     getAllUsers() {
         return new Promise((resolve, reject) => {
-            this.removeUser('id').then(result => {
-                client.keys(PREFIX + '*', (err, keys) => {
-                    if (err) resolve([]);
-                    Promise.all(keys.map(key => {
-                        return lredis.hgetall(key);
-                    })).then(users => {
-                        users.forEach(user => delete user.password);
-                        resolve(users);
-                    })
+            client.keys(PREFIX + '*', (err, keys) => {
+                if (err) resolve([]);
+                Promise.all(keys.map(key => {
+                    return lredis.hgetall(key);
+                })).then(users => {
+                    users.forEach(user => delete user.password);
+                    resolve(users);
                 })
             })
         });
