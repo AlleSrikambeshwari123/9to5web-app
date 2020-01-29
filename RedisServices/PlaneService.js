@@ -73,17 +73,19 @@ class PlaneService {
     }
 
     // Compartment
-    addCompartment(compartment) {
+    addCompartment(planeId, compartment) {
         return new Promise((resolve, reject) => {
             client.incr(COMPARTMENT_COUNTER, (err, id) => {
+                if (err) resolve({ success: false, message: strings.string_response_error });
+
                 compartment.id = id;
                 if (isNaN(Number(compartment.volume)))
                     compartment.volume = 0;
 
                 client.hmset(COMPARTMENT_PREFIX + id, compartment);
-                client.sadd(COMPARTMENT_LIST + compartment.planeId, id);
-                this.updatePlaneCapcity(compartment.planeId);
-                resolve({ saved: true })
+                client.sadd(COMPARTMENT_LIST + planeId, id);
+                this.updatePlaneCapcity(planeId);
+                resolve({ success: true, message: strings.string_response_added });
             })
         })
     }

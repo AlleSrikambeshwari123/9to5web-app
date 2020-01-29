@@ -26,7 +26,7 @@
               <td><%=plane.maximum_capacity%></td>
               <td>
                 <a class='config-plane ml-2' title='Setup Compartments' data-id='<%=plane.id%>'
-                  href="/fleet/list-compartments/<%=plane.id%>"><i class='fa fa-cog'></i></a>
+                  href="/fleet/compartment/<%=plane.id%>/list"><i class='fa fa-cog'></i></a>
                 <a href='manage/<%=plane.id%>/get' class="ml-2"><i class="fas fa-edit"></i></a>
                 <a href="#" class='rm-plane ml-2' data-id='<%=plane.id%>' data-toggle='modal' data-target='#confirmDel'>
                   <i class="fas fa-trash"></i></a>

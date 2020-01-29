@@ -1,0 +1,72 @@
+<% layout('./shared/__template')%>
+
+<div class='gutters'>
+  <div class="col-xl-12 col-lg-6 col-md-12 col-sm-12">
+    <div class="card">
+      <div class="card-header d-flex align-items-left align-items-md-center flex-column flex-md-row">
+        <div class="card-title">Plane-<%= plane.tail_number %> Compartments</div>
+        <a href='#' id='show-add' data-target="#add-compartment" data-toggle='modal'
+          class='btn btn-primary btn-round ml-md-auto float-right'>Add Compartment</a>
+      </div>
+      <div class="card-body">
+        <table class="display table table-striped table-hover dataTable compartment-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Capcity ( Lbs ) </th>
+              <th>Capcity ( Vol ) </th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% comparts.forEach(compart => { %>
+            <tr data-record="<%= compart.id%>">
+              <td><%=compart.name%></td>
+              <td><%=compart.weight%></td>
+              <td><%=compart.volume %></td>
+              <td>
+                <a class='rm-compartment' data-id='<%=compart.id%>' href="#"><i class='fa fa-trash'></i></a>
+              </td>
+            </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="add-compartment" tabindex="-1" role="dialog" aria-labelledby="add-plane" aria-hidden="true"
+  style="display: none;">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="exampleModalLabel2">Add Compartment</h2>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class='form-group'>
+          <label for="name">Name</label>
+          <input class='form-control' type='text' placeholder="Name" id='name' name="name">
+          <input type='hidden' value='<%=plane.id%>' id='planeId' name="planeId" />
+        </div>
+        <div class='form-group'>
+          <label for="max_weight">Max Weight (lbs)</label>
+          <input class='form-control' type='number' placeholder="Max Weight (Lbs)" id='max_weight' name="max_weight">
+        </div>
+        <div class='form-group'>
+          <label for="max_vol">Capcity (vol)</label>
+          <input class='form-control' type='number' placeholder="Max Volume" id='max_vol' name="max_vol">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id='save-plane' class='add-compartment btn btn-primary'>Add</button>
+        <button type="button" class="btn btn-danger close-del" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<% block('scripts').append('<script src="/js/fleet/compartment/list.js"></script>')%>

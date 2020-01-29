@@ -18,6 +18,7 @@ var fleetVehicleRouter = require('./routes/fleet/vehicles');
 var fleetDriverRouter = require('./routes/fleet/drivers');
 var fleetPilotRouter = require('./routes/fleet/pilots');
 var fleetPlaneRouter = require('./routes/fleet/plane');
+var fleetCompartmentRouter = require('./routes/fleet/compartment');
 
 var warehouseAwbRouter = require('./routes/warehouse/awb');
 var warehouseManifestRouter = require('./routes/warehouse/manifest');
@@ -53,7 +54,7 @@ app.use('/', adminIndexRouter, authRouter);
 app.use('/account', accountRouter);
 app.use('/admin', adminUserRouter, adminCustRouter, adminLocaRouter);
 app.use('/warehouse', warehouse, warehouseAwbRouter, warehouseManifestRouter, warehouseShipperRouter, warehousePackageRouter);
-app.use('/fleet', fleetVehicleRouter, fleetDriverRouter, fleetPilotRouter, fleetPlaneRouter);
+app.use('/fleet', fleetVehicleRouter, fleetDriverRouter, fleetPilotRouter, fleetPlaneRouter, fleetCompartmentRouter);
 app.use('/util', util);
 app.use('/api/warehouse', wapi);
 // catch 404 and forward to error handler
