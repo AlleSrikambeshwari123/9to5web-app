@@ -3,7 +3,7 @@ var services = require('../RedisServices/RedisDataServices');
 exports.get_driver_list = (req, res, next) => {
   services.driverService.getDrivers().then(drivers => {
     res.render('pages/fleet/driver/list', {
-      page: req.url,
+      page: req.originalUrl,
       title: 'Drivers',
       user: res.user,
       drivers: drivers,
@@ -13,7 +13,7 @@ exports.get_driver_list = (req, res, next) => {
 
 exports.create_driver = (req, res, next) => {
   res.render('pages/fleet/driver/create', {
-    page: req.url,
+    page: req.originalUrl,
     title: 'Create New Driver',
     user: res.user,
   })
@@ -28,7 +28,7 @@ exports.add_new_driver = (req, res, next) => {
 exports.get_driver_detail = (req, res, next) => {
   services.driverService.getDriver(req.params.id).then(driver => {
     res.render('pages/fleet/driver/edit', {
-      page: req.url,
+      page: req.originalUrl,
       title: 'Driver Detail',
       user: res.user,
       driver: driver,

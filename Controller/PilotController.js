@@ -4,7 +4,7 @@ var utils = require('../Util/utils');
 exports.get_pilot_list = (req, res, next) => {
   services.pilotService.getPilots().then(pilots => {
     res.render('pages/fleet/pilot/list', {
-      page: req.url,
+      page: req.originalUrl,
       user: res.user,
       title: 'Pilots',
       pilots: pilots.map(utils.formattedRecord),
@@ -14,7 +14,7 @@ exports.get_pilot_list = (req, res, next) => {
 
 exports.create_pilot = (req, res, next) => {
   res.render('pages/fleet/pilot/create', {
-    page: req.url,
+    page: req.originalUrl,
     user: res.user,
     title: 'Add New Pilot',
   })
@@ -35,7 +35,7 @@ exports.delete_pilot = (req, res, next) => {
 exports.get_pilot_detail = (req, res, next) => {
   services.pilotService.getPilot(req.params.id).then(pilot => {
     res.render('pages/fleet/pilot/edit', {
-      page: req.url,
+      page: req.originalUrl,
       user: res.user,
       title: 'Pilot Details',
       pilot: pilot,

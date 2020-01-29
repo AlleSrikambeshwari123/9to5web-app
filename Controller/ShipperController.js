@@ -4,7 +4,7 @@ var utils = require('../Util/utils');
 exports.get_shipper_list = (req, res, next) => {
   services.shipperService.getAllShippers().then(shippers => {
     res.render('pages/warehouse/shipper/list', {
-      page: req.url,
+      page: req.originalUrl,
       title: 'Shippers',
       user: res.user,
       shippers: shippers,
@@ -14,7 +14,7 @@ exports.get_shipper_list = (req, res, next) => {
 
 exports.create_shipper = (req, res, next) => {
   res.render('pages/warehouse/shipper/create', {
-    page: req.url,
+    page: req.originalUrl,
     title: 'Add New Shipper',
     user: res.user,
   })
@@ -29,7 +29,7 @@ exports.add_new_shipper = (req, res, next) => {
 exports.get_shipper_detail = (req, res, next) => {
   services.shipperService.getShipper(req.params.id).then(shipper => {
     res.render('pages/warehouse/shipper/edit', {
-      page: req.url,
+      page: req.originalUrl,
       title: "Shipper Details",
       user: res.user,
       shipper: shipper

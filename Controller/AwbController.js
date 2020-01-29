@@ -20,7 +20,7 @@ exports.preview_awb = (req, res, next) => {
       awb.customer = otherInfos[0];
       awb.dateCreated = utils.formatDate(awb.dateCreated, "MMM DD,YYYY");
       res.render('pages/warehouse/awb/preview', {
-        page: req.url,
+        page: req.originalUrl,
         title: "AWB #" + awb.id,
         user: res.user,
         awb: awb,
@@ -43,7 +43,7 @@ exports.get_awb_detail = (req, res, next) => {
     services.packageService.getPackages(id),
   ]).then(results => {
     res.render('pages/warehouse/awb/edit', {
-      page: req.url,
+      page: req.originalUrl,
       title: 'AWB Details',
       user: res.user,
       printer: res.printer,
@@ -63,7 +63,7 @@ exports.create_awb = (req, res, next) => {
     services.shipperService.getAllShippers(),
   ]).then(results => {
     res.render('pages/warehouse/awb/create', {
-      page: req.url,
+      page: req.originalUrl,
       title: 'Create New AWB',
       user: res.user,
       printer: res.printer,
@@ -107,7 +107,7 @@ exports.get_awb_list = (req, res, next) => {
       })
     })).then(results => {
       res.render('pages/warehouse/awb/list', {
-        page: req.url,
+        page: req.originalUrl,
         title: "AirWay Bills",
         user: res.user,
         awbs: awbs,

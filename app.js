@@ -25,10 +25,12 @@ var warehouseManifestRouter = require('./routes/warehouse/manifest');
 var warehouseShipperRouter = require('./routes/warehouse/shipper');
 var warehousePackageRouter = require('./routes/warehouse/package');
 
+var apiWarehouseRouter = require('./routes/api/wapi');
+var apiCustomerRouter = require('./routes/api/customer');
+
 var warehouse = require('./routes/warehouse');
-var fleet = require('./routes/fleet');
 var util = require('./routes/util');
-var wapi = require('./routes/wapi');
+
 var app = express();
 
 // view engine setup
@@ -56,7 +58,9 @@ app.use('/admin', adminUserRouter, adminCustRouter, adminLocaRouter);
 app.use('/warehouse', warehouse, warehouseAwbRouter, warehouseManifestRouter, warehouseShipperRouter, warehousePackageRouter);
 app.use('/fleet', fleetVehicleRouter, fleetDriverRouter, fleetPilotRouter, fleetPlaneRouter, fleetCompartmentRouter);
 app.use('/util', util);
-app.use('/api/warehouse', wapi);
+
+app.use('/api/warehouse', apiWarehouseRouter);
+app.use('/api/customer', apiCustomerRouter);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   var err = new Error('Not Found');

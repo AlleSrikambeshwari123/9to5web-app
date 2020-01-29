@@ -12,7 +12,7 @@ router.get('/', function (req, res, next) {
 
 router.get('/dashboard', middleware(services.userService).checkSession, function (req, res, next) {
   res.render('pages/dashboard', {
-    page: req.url,
+    page: req.originalUrl,
     title: "Dashboard",
     user: res.user,
   });

@@ -3,7 +3,7 @@ var services = require('../RedisServices/RedisDataServices');
 exports.get_vehicle_list = (req, res, next) => {
   services.vehicleService.getVehicles().then(vehicles => {
     res.render('pages/fleet/vehicle/list', {
-      page: req.url,
+      page: req.originalUrl,
       title: 'Vehicles',
       user: res.user,
       vehicles: vehicles,
@@ -13,7 +13,7 @@ exports.get_vehicle_list = (req, res, next) => {
 
 exports.create_vehicle = (req, res, next) => {
   res.render('pages/fleet/vehicle/create', {
-    page: req.url,
+    page: req.originalUrl,
     title: 'Create New Vehicle',
     user: res.user,
   })
@@ -28,7 +28,7 @@ exports.add_new_vehicle = (req, res, next) => {
 exports.get_vehicle_detail = (req, res, next) => {
   services.vehicleService.getVehicle(req.params.id).then(vehicle => {
     res.render('pages/fleet/vehicle/edit', {
-      page: req.url,
+      page: req.originalUrl,
       title: 'Vehicle Details',
       user: res.user,
       vehicle: vehicle,

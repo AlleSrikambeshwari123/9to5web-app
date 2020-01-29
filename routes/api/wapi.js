@@ -1,19 +1,19 @@
 var express = require('express');
 var router = express.Router();
-var services = require('../RedisServices/RedisDataServices');
-var middleware = require('../middleware');
+var services = require('../../RedisServices/RedisDataServices');
+var middleware = require('../../middleware');
 var moment = require('moment');
 
-var lredis = require('../RedisServices/redis-local');
+var lredis = require('../../RedisServices/redis-local');
 var redis = lredis;
-var PackageUtil = require('../Util/packageutil').PackageUtility;
+var PackageUtil = require('../../Util/packageutil').PackageUtility;
 var packageUtil = new PackageUtil();
 var formidable = require('formidable');
 var path = require('path');
 var fs = require('fs');
 var delfile = '';
 var uniqid = require('uniqid')
-var rServices = require('../RedisServices/RedisDataServices')
+var rServices = require('../../RedisServices/RedisDataServices')
 
 router.post('/authenticate', (req, res, next) => {
     var body = req.body;

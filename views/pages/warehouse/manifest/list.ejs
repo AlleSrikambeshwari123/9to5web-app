@@ -18,16 +18,14 @@
             </tr>
           </thead>
           <tbody>
-            <!-- <% manifests.forEach(function(manifest){ %>
+            <% manifests.forEach(function(manifest){ %>
             <tr data-record="<%= pkg.id %>">
-              <td><%= pkg.trackingNo%></td>
-              <td><%= pkg.description %></td>
-              <td><%= pkg.packageType %></td>
-              <td><%= pkg.weight%></td>
-              <td><%= pkg.dimensions %></td>
-              <td><%= pkg.awbId %></td>
+              <td><%= manifest.id%></td>
+              <td><%= manifest.status %></td>
+              <td><%= manifest.dateCreated %></td>
+              <td><%= manifest.createdBy%></td>
             </tr>
-            <%})%> -->
+            <%})%>
           </tbody>
         </table>
       </div>
@@ -35,5 +33,4 @@
   </div>
 </div>
 
-<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.2.0/sweetalert2.all.min.js"></script> -->
 <% block('scripts').append('<script src="/js/warehouse/manifest/list.js"></script>')%>

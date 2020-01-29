@@ -12,7 +12,7 @@ exports.get_customer_list = (req, res, next) => {
     customers.forEach(customer => customer.location = locations[customer.location]);
 
     res.render('pages/admin/customers/list', {
-      page: req.url,
+      page: req.originalUrl,
       title: "Customers",
       user: res.user,
       customers: customers.map(utils.formattedRecord),
@@ -24,7 +24,7 @@ exports.get_customer_list = (req, res, next) => {
 exports.create_customer = (req, res, next) => {
   services.locationService.getLocations().then(locations => {
     res.render('pages/admin/customers/create', {
-      page: req.url,
+      page: req.originalUrl,
       title: "Create New Customer",
       user: res.user,
       locations: locations
@@ -44,7 +44,7 @@ exports.get_customer_detail = (req, res, next) => {
     services.customerService.getCustomer(req.params.id),
   ]).then(results => {
     res.render('pages/admin/customers/edit', {
-      page: req.url,
+      page: req.originalUrl,
       title: "Customer Details",
       user: res.user,
       locations: results[0],

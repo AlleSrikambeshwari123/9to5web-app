@@ -3,7 +3,7 @@ var utils = require('../Util/utils');
 
 exports.create_location = (req, res, next) => {
   res.render('pages/admin/location/create', {
-    page: req.url,
+    page: req.originalUrl,
     title: 'Create New Location',
     user: res.user,
   });
@@ -19,7 +19,7 @@ exports.get_location_list = (req, res, next) => {
   services.locationService.getLocations().then(locations => {
     res.render('pages/admin/location/list', {
       title: 'Locations',
-      page: req.url,
+      page: req.originalUrl,
       user: res.user,
       locations: locations.map(utils.formattedRecord),
     });
@@ -30,7 +30,7 @@ exports.get_location = (req, res, next) => {
   let id = req.params.id;
   services.locationService.getLocation(id).then(location => {
     res.render('pages/admin/location/edit', {
-      page: req.url,
+      page: req.originalUrl,
       title: 'Location Details',
       user: res.user,
       location: location

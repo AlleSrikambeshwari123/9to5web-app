@@ -265,13 +265,5 @@
     </div>
   </div>
 </div>
-<% block('scripts').append('<script src="/assets/js/plugin/datatables/datatables.min.js"></script>')%>
-<!-- <% block('scripts').append('<script src="/vendor/datatables/dataTables.bootstrap.min.js"></script>')%>
-<% block('scripts').append('<script src="/vendor/datatables/custom/fixedHeader.js"></script>')%>
-<% block('scripts').append('<script src="/vendor/datatables/dataTables.min.js"></script>')%> -->
-<!-- <script src="/assets/js/plugin/datatables/datatables.min.js"></script> -->
 
-<script>
-  var rpackages = <% - JSON.stringify(packages) %>;
-</script>
-<% block('scripts').append('<script src="/js/packages/manifest-package.js"></script>')%>
+<% block('scripts').append('<script src="/js/warehouse/manifest/list.js"></script>')%>
