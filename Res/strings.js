@@ -3,7 +3,7 @@ exports.user_auth_key = "9-5 Import";
 
 // Roles
 exports.role_admin = "Admin";
-exports.role_warehouse_fl = "Warehouse Fl";
+exports.role_warehouse_fl = "Warehouse FLL";
 exports.role_warehouse_nas = "Warehouse NAS";
 exports.role_warehouse_bahamas = "Warehouse BAHAMAS";
 exports.role_location_manager = "Location Manager";

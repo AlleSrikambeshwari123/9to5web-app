@@ -61,6 +61,7 @@ app.use('/util', util);
 
 app.use('/api/warehouse', apiWarehouseRouter);
 app.use('/api/customer', apiCustomerRouter);
+
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   var err = new Error('Not Found');

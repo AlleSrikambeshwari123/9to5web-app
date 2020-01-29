@@ -10,7 +10,7 @@ $(function () {
     event.preventDefault(event);
     let formUrl = $(this).attr('action');
     let formData = $(this).serializeArray();
-    let roleId = $("#userRole").val();
+    let roleId = $("#userRole").val().toString();
     let password = $(this).find('#password').val();
     let confirmPassword = $(this).find('#confirmPassword').val();
     if (password != confirmPassword) {
@@ -22,6 +22,7 @@ $(function () {
       $.each(formData, function (_, record) {
         data[record.name] = record.value
       })
+      data.userRole = roleId;
       $.ajax({
         url: formUrl,
         type: 'post',

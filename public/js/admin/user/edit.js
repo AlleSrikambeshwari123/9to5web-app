@@ -10,7 +10,7 @@ $(function () {
     event.preventDefault(event);
     let formUrl = $(this).attr('action');
     let formData = $(this).serializeArray();
-    var roleId = $("#userRole").val();
+    var roleId = $("#userRole").val().toString();
     if (roleId == '') {
       event.preventDefault(event);
       showNotify('Failed', 'Please select a user role.', 'fa fa-info', 'warning');
@@ -19,6 +19,7 @@ $(function () {
       $.each(formData, function (_, record) {
         data[record.name] = record.value
       })
+      data.userRole = roleId;
       $.ajax({
         url: formUrl,
         type: 'post',
