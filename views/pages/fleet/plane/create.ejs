@@ -1,0 +1,53 @@
+<% layout('./shared/__template')%>
+<div class="card">
+  <div class="card-header">
+    <div class="card-title"><%=title%></div>
+  </div>
+  <form id="add-plane-form" action="create">
+    <div class="card-body">
+      <div class="form-group form-show-validation row">
+        <label for="tail_number" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Name </label>
+        <div class="col-lg-4 col-md-9 col-sm-8">
+          <input type="text" class="form-control" id="tail_number" name="tail_number" placeholder="Tail Number"
+            required>
+        </div>
+      </div>
+      <div class="form-group form-show-validation row">
+        <label for="aircraft_type" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Air Craft Type </label>
+        <div class="col-lg-4 col-md-9 col-sm-8">
+          <input type="text" class="form-control" id="aircraft_type" name="aircraft_type" placeholder="Air Craft Type"
+            required>
+        </div>
+      </div>
+      <div class="form-group form-show-validation row">
+        <label for="warehouse" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Warehouse </label>
+        <div class="col-lg-4 col-md-9 col-sm-8">
+          <select class="form-control" id="warehouse" name="warehouse" required>
+            <option></option>
+            <option value="fll">Warehouse FLL</option>
+            <option value="nas">Warehouse NAS</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group form-show-validation row">
+        <label for="pilotId" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Pilot </label>
+        <div class="col-lg-4 col-md-9 col-sm-8">
+          <select class="form-control" id="pilotId" name="pilotId" required>
+            <option></option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="card-action">
+      <div class="row">
+        <div class="col-md-12">
+          <input class="btn btn-primary" type="submit" value="Add">
+          <button class="btn btn-danger" id="cancelForm">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+<% block('scripts').append('<script src="/js/utils.js"></script>')%>
+<% block('scripts').append('<script src="/js/fleet/plane/create.js"></script>')%>

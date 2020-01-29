@@ -10,4 +10,6 @@ router.get('/pilot/manage/:id/get', middleware().checkSession, pilotCtrl.get_pil
 router.post('/pilot/manage/:id/update', middleware().checkSession, pilotCtrl.update_pilot);
 router.delete('/pilot/manage/:id/delete', middleware().checkSession, pilotCtrl.delete_pilot);
 
+router.get('/pilot/get-list/:warehouse', middleware().checkSession, pilotCtrl.get_warehouse_pilots);
+
 module.exports = router;

@@ -31,6 +31,13 @@ exports.redis_prefix_pilot = "pilot:";
 exports.redis_id_pilot = "id:pilot";
 exports.redis_prefix_pilot_list = "list:pilot:";
 
+exports.redis_prefix_planes = "plane:";
+exports.redis_prefix_planes_list = "list:plane:";
+exports.redis_id_plane = "id:plane";
+exports.redis_prefix_plane_compartment = "compartment:"
+exports.redis_prefix_plane_compartment_list = "list:compartment:"; // + planeId
+exports.redis_id_compartment_plane = "id:compartment";
+
 exports.redis_prefix_shipper = "shipper:";
 exports.redis_id_shipper = "id:shipper";
 
@@ -57,5 +64,7 @@ exports.string_not_found_user = "Sorry, we can't find this user.";
 exports.string_not_found_customer = "Sorry, we can't this customer.";
 exports.string_not_found_vehicle = "Sorry, we can't find this vehicle.";
 exports.string_not_found_driver = "Sorry, we can't find this driver.";
+exports.string_not_found_pilot = "Sorry, we can't find this pilot.";
+exports.string_not_found_plane = "Sorry, we can't find this plane.";
 exports.string_user_exist = "Sorry, same username already exist.";
 exports.string_password_incorrect = "Incorrect Password.";

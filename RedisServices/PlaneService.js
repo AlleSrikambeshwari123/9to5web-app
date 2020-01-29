@@ -1,165 +1,138 @@
-var redis = require('redis');
+const strings = require('../Res/strings');
+
+// Redis
 var lredis = require('./redis-local');
-var dataContext = require('./dataContext');
-var redisSearch = require('../redisearchclient/index');
-const PREFIX = "plane:"
-const INDEX = "index:planes"
-const PLANE_COUNTER = "plane:id";
-const COMPARTMENT_COUNTER = "compartment:id"
-const PLANE_COMPARTMENT_INDEX = "index:compartments"
+var client = require('./dataContext').redisClient;
 
+const PREFIX = strings.redis_prefix_planes;
+const PLANE_COUNTER = strings.redis_id_plane;
+const PLANE_LIST = strings.redis_prefix_planes_list;
 
+const COMPARTMENT_PREFIX = strings.redis_prefix_plane_compartment;
+const COMPARTMENT_COUNTER = strings.redis_id_compartment_plane;
+const COMPARTMENT_LIST = strings.redis_prefix_plane_compartment_list;
 
-const rs = redisSearch(redis, INDEX, {
-    clientOptions: dataContext.clientOptions
-});
-const compartmentIndex = redisSearch(redis, PLANE_COMPARTMENT_INDEX, {
-    clientOptions: dataContext.clientOptions
-});
 class PlaneService {
-    constructor() {
-
-    }
     addPlane(plane) {
         return new Promise((resolve, reject) => {
-            dataContext.redisClient.incr(PLANE_COUNTER, (err, id) => {
+            client.incr(PLANE_COUNTER, (err, id) => {
+                if (err) resolve({ success: false, message: strings.string_response_error });
                 plane.id = id;
-                dataContext.redisClient.hmset(PREFIX + id, plane);
-                rs.add(id, plane, (err, res) => {
-                    resolve({ saved: true });
-                });
+                plane.maximum_capacity = "";
+                client.hmset(PREFIX + id, plane);
+                client.sadd(PLANE_LIST + plane.warehouse, id);
+                resolve({ success: true, message: strings.string_response_created });
             })
         })
     }
-    updatePlane(plane) {
+    updatePlane(id, plane) {
         return new Promise((resolve, reject) => {
-            dataContext.redisClient.hmset(PREFIX + plane.id, plane);
-            rs.update(plane.id, plane, (err, result) => {
-                resolve({ saved: true })
-            })
-        })
+            client.exists(PREFIX + id, (err, exist) => {
+                if (Number(exist) == 1) {
+                    client.hmset(PREFIX + id, plane);
+                    resolve({ success: true, message: strings.string_response_updated });
+                } else {
+                    resolve({ success: false, message: strings.string_not_found_user });
+                }
+            });
+        });
     }
-    rmPlane(planeId) {
+    removePlane(planeId) {
         return new Promise((resolve, reject) => {
-            rs.delDocument(INDEX, planeId);
-            dataContext.redisClient.del(PREFIX + planeId, (err, res) => {
-                resolve({ deleted: true })
+            client.hgetall(PREFIX + planeId, (err, plane) => {
+                if (err) resolve({ success: false, message: strings.string_response_error });
+                if (plane.id == undefined) resolve({ success: false, message: strings.string_not_found_plane });
+
+                client.srem(PLANE_LIST + plane.warehouse, planeId);
+                client.del(PREFIX + planeId, (err, result) => {
+                    if (err) resolve({ success: false, message: strings.string_response_error });
+                    resolve({ success: true, message: strings.string_response_removed });
+                })
             })
-        })
+        });
     }
     getPlane(planeId) {
         return new Promise((resolve, reject) => {
-            dataContext.redisClient.hgetall(PREFIX + planeId, (err, p) => {
-                resolve({ plane: p });
+            client.hgetall(PREFIX + planeId, (err, plane) => {
+                if (err) resolve({});
+                resolve(plane);
             })
         })
     }
     getPlanes() {
         return new Promise((resolve, reject) => {
-            rs.search('*', {}, (err, planesResult) => {
-                console.log(planesResult)
-                var planes = [];
-                planesResult.results.forEach(plane => {
-                    planes.push(plane.doc)
-
-                });
-                resolve({ planes: planes });
-            })
-        })
-    }
-
-    addCompartment(comparment) {
-        var srv = this;
-        return new Promise((resolve, reject) => {
-            dataContext.redisClient.incr(COMPARTMENT_COUNTER, (err, id) => {
-                comparment.id = id;
-                console.log(comparment)
-                if (isNaN(Number(comparment.volume)))
-                    comparment.volume = 0;
-                compartmentIndex.add(id, comparment, (err1, result) => {
-                    if (err1) {
-                        console.log(err1)
-                        resolve({ saved: false })
-                        return;
-                    }
-                    srv.updatePlaneCapcity(comparment.plane_id)
-                    resolve({ saved: true })
-                });
-            })
-        })
-    }
-    updatePlaneCapcity(planeId) {
-        // get the compartments 
-
-        var total_weight = 0;
-        var total_volume = 0;
-        compartmentIndex.search(`@plane_id:[${planeId} ${planeId}]`, { offset: 0, numberOfResults: 100 }, (err, compResults) => {
-            if (err)
-                console.log(err)
-            compResults.results.forEach(compartment => {
-                if (isNaN(Number(compartment.doc.weight)) == false) {
-                    total_weight += Number(compartment.doc.weight)
-                }
-                if (isNaN(Number(compartment.doc.volume)) == false) {
-                    total_volume += Number(compartment.doc.volume)
-                }
-                rs.getDoc(planeId, (err1, planeDoc) => {
-                    var plane = planeDoc.doc;
-                    plane.maximum_capacity = total_weight;
-                    rs.update(planeId, plane);
+            client.keys(PREFIX + '*', (err, keys) => {
+                if (err) resolve([]);
+                Promise.all(keys.map(key => {
+                    return lredis.hgetall(key);
+                })).then(planes => {
+                    resolve(planes);
                 })
-            });
+            })
+        });
+    }
 
+    // Compartment
+    addCompartment(compartment) {
+        return new Promise((resolve, reject) => {
+            client.incr(COMPARTMENT_COUNTER, (err, id) => {
+                compartment.id = id;
+                if (isNaN(Number(compartment.volume)))
+                    compartment.volume = 0;
 
+                client.hmset(COMPARTMENT_PREFIX + id, compartment);
+                client.sadd(COMPARTMENT_LIST + compartment.planeId, id);
+                this.updatePlaneCapcity(compartment.planeId);
+                resolve({ saved: true })
+            })
         })
     }
-    listCompartments(planeId) {
-        var srv = this;
+
+    getCompartments(planeId) {
         return new Promise((resolve, reject) => {
-            if (!planeId) {
-                var plane = {
-                    plane: {
-                        id: 0,
-                        tail_num: "No Plane",
-                        aircraft_type: "NO Plane",
-                        contact_name: "",
-                        contact_phone: "",
-                        company: "",
-                        compartments: []
-                    }
+            client.smembers(COMPARTMENT_LIST + planeId, (err, ids) => {
+                if (err) resolve([]);
+                Promise.all(ids.map(id => {
+                    return lredis.hgetall(COMPARTMENT_PREFIX + id);
+                })).then(comparts => {
+                    resolve(comparts);
+                })
+            })
+        });
+    }
 
-                }
-                return resolve(plane);
+    removeCompartment(planeId, cid) {
+        return new Promise((resolve, reject) => {
+            client.del(COMPARTMENT_PREFIX + cid);
+            client.srem(COMPARTMENT_LIST + planeId, cid);
+            this.updatePlaneCapcity(planeId);
+            resolve({ success: true, message: strings.string_response_removed });
+        })
+    }
 
-            }
-            else {
-                compartmentIndex.search(`@plane_id:[${planeId} ${planeId}]`, { offset: 0, numberOfResults: 100, sortBy: 'name', dir: "DESC" }, (err, compResults) => {
-                    if (err)
-                        console.log(err)
-                    var compartments = [];
-                    compResults.results.forEach(compartment => {
-
-                        compartments.push(compartment.doc)
-                    });
-                    //
-                    srv.getPlane(planeId).then(plane => {
-                        plane.plane.compartments = compartments.reverse();
-                        resolve(plane);
+    updatePlaneCapcity(planeId) {
+        return new Promise((resolve, reject) => {
+            client.smembers(COMPARTMENT_LIST + planeId, (err, ids) => {
+                Promise.all(ids.map(id => {
+                    return lredis.hgetall(COMPARTMENT_PREFIX + id);
+                })).then(comparts => {
+                    var total_weight = 0;
+                    var total_volume = 0;
+                    comparts.forEach(compart => {
+                        total_weight += Number(compart.weight);
+                        total_volume += Number(compart.volume);
+                    })
+                    this.getPlane(planeId).then(plane => {
+                        plane.maximum_capacity = total_weight;
+                        this.updatePlane(planeId, plane);
+                        resolve({
+                            total_weight: total_weight,
+                            total_volume: total_volume,
+                        });
                     })
                 })
-            }
-
-        })
+            })
+        });
     }
-    removeCompartment(planeId, cid) {
-        var srv = this;
-        return new Promise((resolve, reject) => {
-            compartmentIndex.delDocument(PLANE_COMPARTMENT_INDEX, cid, (err, delResult) => {
-                resolve({ deleted: true })
-                srv.updatePlaneCapcity(planeId)
-            });
-        })
-    }
-
 }
 module.exports = PlaneService;

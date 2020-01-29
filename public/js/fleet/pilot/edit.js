@@ -1,7 +1,7 @@
 $(function () {
   $('#add-pilot-form').find('#warehouse').select2({
     theme: 'bootstrap',
-    placeholder: 'Select a company',
+    placeholder: 'Select a warehouse',
   })
   $("#cancelForm").click(function () {
     window.history.back();
