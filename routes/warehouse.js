@@ -19,7 +19,6 @@ var FlightLoadSheet = require('../Util/FlightLoadSheet').FlightLoadSheet;
 var loadSheet = new FlightLoadSheet();
 var FlightManifest = require('../Util/FlightManifest').FlightManifest;
 var flightManifest = new FlightManifest()
-var printerUtil = require('../Util/PrinterUtil')
 
 const sumFunction = (accumulator, currentValue) => accumulator + currentValue;
 router.get('/manifest-count/:mid/:mtype', middleware(services.userService).checkSession, function (req, res, next) {
@@ -279,19 +278,6 @@ router.get('/download-load-sheet/:mid', (req, res, next) => {
         });
 
         //loadSheet.generateManifestLoadSheet(manifest); 
-    })
-})
-router.post('/set-printer', middleware(services.userService).checkSession, (req, res, next) => {
-    printerUtil.setUserPrinter(res.User.username, req.body.printer);
-    res.send({ set: true, printer: req.body.printer })
-});
-
-router.get('/fl-print-options', middleware(services.userService).checkSession, (req, res, next) => {
-    datacontext.redisClient.smembers("fl:print:computers", (err, reply) => {
-        if (err)
-            console.log(err);
-        console.log(reply)
-        res.send(reply)
     })
 })
 
@@ -632,25 +618,6 @@ router.get('/download-file/:filename', function (req, res, net) {
     var dir = __dirname.replace("routes", "templates\\");
     res.download(path.join(dir, file));
 });
-router.get('/print-awb/:awb', middleware(services.userService).checkSession, (req, res, next) => {
-    var username = res.User.username;
-    var awb = req.params.awb;
-    services.printService.sendAwbToPrint(awb, username)
-    res.send({ sent: true })
-})
-router.get('/print-awb-lbl/:awb', middleware(services.userService).checkSession, (req, res, next) => {
-    var username = res.User.username;
-    var awb = req.params.awb;
-    services.printService.sendLblToPrint(awb, username);
-    res.send({ sent: true })
-})
-router.get('/print-single-label/:awb/:pkgId', middleware(services.userService).checkSession, (req, res, next) => {
-    var username = res.User.username;
-    var awb = req.params.awb;
-    var pkgId = req.params.pkgId
-    services.printService.sendLblToPrint(awb, username);
-    res.send({ sent: true })
-})
 router.post('/upload', function (req, res) {
     // create an incoming form object
     console.log("yes sur we got a file uploaded! check the upload dir.");

@@ -7,24 +7,33 @@ var bodyParser = require('body-parser');
 var ejsmate = require('ejs-mate');
 var session = require('client-sessions');
 
-var accountRouter = require('./routes/account');
+// Account
+var accountPasswordRouter = require('./routes/account/password');
+var accountPrintRouter = require('./routes/account/print');
+
+// Admin
 var authRouter = require('./routes/auth');
 var adminIndexRouter = require('./routes/index');
 var adminUserRouter = require('./routes/admin/users');
 var adminCustRouter = require('./routes/admin/customers');
 var adminLocaRouter = require('./routes/admin/locations');
 
+// Fleet
 var fleetVehicleRouter = require('./routes/fleet/vehicles');
 var fleetDriverRouter = require('./routes/fleet/drivers');
 var fleetPilotRouter = require('./routes/fleet/pilots');
 var fleetPlaneRouter = require('./routes/fleet/plane');
 var fleetCompartmentRouter = require('./routes/fleet/compartment');
 
+// Warehouse
 var warehouseAwbRouter = require('./routes/warehouse/awb');
 var warehouseManifestRouter = require('./routes/warehouse/manifest');
 var warehouseShipperRouter = require('./routes/warehouse/shipper');
 var warehousePackageRouter = require('./routes/warehouse/package');
+var warehousePrinterRouter = require('./routes/warehouse/print');
 
+// API
+var apiPrinterRouter = require('./routes/api/print');
 var apiWarehouseRouter = require('./routes/api/wapi');
 var apiCustomerRouter = require('./routes/api/customer');
 
@@ -53,12 +62,13 @@ app.use(session({
   activeDuration: 60 * 60 * 1000
 }));
 app.use('/', adminIndexRouter, authRouter);
-app.use('/account', accountRouter);
+app.use('/account', accountPasswordRouter, accountPrintRouter);
 app.use('/admin', adminUserRouter, adminCustRouter, adminLocaRouter);
-app.use('/warehouse', warehouse, warehouseAwbRouter, warehouseManifestRouter, warehouseShipperRouter, warehousePackageRouter);
+app.use('/warehouse', warehouse, warehouseAwbRouter, warehouseManifestRouter, warehouseShipperRouter, warehousePackageRouter, warehousePrinterRouter);
 app.use('/fleet', fleetVehicleRouter, fleetDriverRouter, fleetPilotRouter, fleetPlaneRouter, fleetCompartmentRouter);
 app.use('/util', util);
 
+app.use('/api/printer', apiPrinterRouter);
 app.use('/api/warehouse', apiWarehouseRouter);
 app.use('/api/customer', apiCustomerRouter);
 

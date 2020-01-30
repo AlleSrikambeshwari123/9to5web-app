@@ -42,7 +42,7 @@
 						<p>Dashboard </p>
 					</a>
 				</li>
-				<%if (user.role.includes("Admin")) {%>
+				<% if (user.role.includes("Admin")) { %>
 				<li class="nav-section">
 					<span class="sidebar-mini-icon">
 						<i class="fa fa-ellipsis-h"></i>
@@ -67,7 +67,7 @@
 						<p>Locations </p>
 					</a>
 				</li>
-				<%}%>
+				<% } %>
 
 				<li class="nav-section">
 					<span class="sidebar-mini-icon">
@@ -76,13 +76,6 @@
 					<h4 class="text-section">Warehouse</h4>
 				</li>
 				<%if (user.role.includes('Admin') || user.role.includes("Warehouse Fl")) {%>
-				<!-- <li class='nav-item'>
-					<div id="current-printer" style='color:gray'></div>
-					<select id='workstations' class='form-control workstations'>
-						<option value="">Select Your Printer</option>
-					</select>
-					<button id='set-printer' class='btn btn-info btn-sm mt-1 pull-right mb-1'>SET</button>
-				</li> -->
 				<li class="nav-item <% if (page.includes('/fll/')) { %> active <% } %>">
 					<a data-toggle="collapse" href="#warehouse">
 						<i class="fas fa-warehouse"></i>
@@ -134,8 +127,8 @@
 						</ul>
 					</div>
 				</li>
-				<%}%>
-				<%if (user.role.includes("Admin") || user.role.includes("Warehouse NAS")) {%>
+				<% } %>
+				<% if (user.role.includes("Admin") || user.role.includes("Warehouse NAS")) { %>
 				<li class="nav-item">
 					<a data-toggle="collapse" href="#wnas">
 						<i class="fas fa-warehouse"></i>
@@ -184,9 +177,9 @@
 						</ul>
 					</div>
 				</li>
-				<%}%>
+				<% } %>
 				<!-- Fleet -->
-				<%if (user.role.includes("Admin") || user.role.includes("Warehouse") || user.role.includes("Warehouse")) {%>
+				<% if (user.role.includes("Admin") || user.role.includes("Warehouse") || user.role.includes("Warehouse")) { %>
 				<li class="nav-item <% if (page.includes('/fleet/')) { %> active <% } %>">
 					<a data-toggle="collapse" href="#fleet">
 						<i class="fas fa-truck"></i>
@@ -228,8 +221,8 @@
 						<p>Shippers </p>
 					</a>
 				</li>
-				<%}%>
-				<%if (user.role.includes("Admin") || user.role.includes("Store")) {%>
+				<% } %>
+				<% if (user.role.includes("Admin") || user.role.includes("Store")) { %>
 				<li class="nav-item">
 					<a data-toggle="collapse" href="#stores">
 						<i class="fas fa-store"></i>
@@ -262,7 +255,7 @@
 						</ul>
 					</div>
 				</li>
-				<%}%>
+				<% } %>
 
 				<li class="nav-section">
 					<span class="sidebar-mini-icon">
@@ -271,20 +264,25 @@
 					<h4 class="text-section">Account Options</h4>
 				</li>
 				<li class="nav-item <% if (page.includes('/account/')) { %> active <% } %>">
-				<a data-toggle="collapse" href="#myaccount">
-					<i class="fas fa-user"></i>
-					<p>My Account</p>
-					<span class="caret"></span>
-				</a>
-				<div class="collapse <% if (page.includes('/account/')) { %> show <% } %>" id="myaccount">
-					<ul class="nav nav-collapse">
-						<li <% if (page.includes('/account/change-pass')) { %> class="active" <% } %>>
-							<a href="/account/change-pass">
-								<span class="sub-item">Change Password</span>
-							</a>
-						</li>
-					</ul>
-				</div>
+					<a data-toggle="collapse" href="#myaccount">
+						<i class="fas fa-user"></i>
+						<p>My Account</p>
+						<span class="caret"></span>
+					</a>
+					<div class="collapse <% if (page.includes('/account/')) { %> show <% } %>" id="myaccount">
+						<ul class="nav nav-collapse">
+							<li <% if (page.includes('/account/change-pass')) { %> class="active" <% } %>>
+								<a href="/account/change-pass">
+									<span class="sub-item">Change Password</span>
+								</a>
+							</li>
+							<li <% if (page.includes('/account/change-printer')) { %> class="active" <% } %>>
+								<a href="/account/change-printer">
+									<span class="sub-item">Printer</span>
+								</a>
+							</li>
+						</ul>
+					</div>
 				</li>
 				<li class="nav-item">
 					<a href="/logout">

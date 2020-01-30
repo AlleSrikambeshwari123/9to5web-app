@@ -1,0 +1,39 @@
+<% layout('./shared/__template')%>
+<div class="card">
+  <div class="card-header">
+    <div class="card-title"><%= title %></div>
+  </div>
+  <form id="change-printer">
+    <div class="card-body">
+      <!-- <li class='nav-item'>
+					<div id="current-printer" style='color:gray'></div>
+					<select id='workstations' class='form-control workstations'>
+						<option value="">Select Your Printer</option>
+					</select>
+					<button id='set-printer' class='btn btn-info btn-sm mt-1 pull-right mb-1'>SET</button>
+        </li> -->
+      <div class="form-group form-show-validation row">
+        <label for="printer" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Printer Name</label>
+        <div class="col-lg-8 col-md-8 col-sm-8">
+          <select id="printer" name="printer" class='form-control' required>
+            <option></option>
+            <% printers.forEach(printer => { %>
+            <option <% if(currentPrinter.includes(printer)) { %> selected <% } %>><%= printer%></option>
+            <% }) %>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="card-action">
+      <div class="row">
+        <div class="col-md-12">
+          <button class="btn btn-primary change-pass" type="submit">Update</button>
+          <button class="btn btn-danger" id="cancel">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+<% block('scripts').append('<script src="/js/utils.js"></script>')%>
+<% block('scripts').append('<script src="/js/account/printer.js"></script>')%>

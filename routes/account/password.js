@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
-var services = require('../RedisServices/RedisDataServices');
-var middleware = require('../middleware');
+var services = require('../../RedisServices/RedisDataServices');
+var middleware = require('../../middleware');
 /* GET users listing. */
 
 router.get('/change-pass', middleware(services.userService).checkSession, function (req, res, next) {

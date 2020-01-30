@@ -1,4 +1,3 @@
-var printerUtil = require("./Util/PrinterUtil")
 var services = require('./RedisServices/RedisDataServices');
 var utils = require('./Util/utils');
 
@@ -17,7 +16,7 @@ module.exports = function (allowedRoles) {
             if (token) {
                 utils.verifyToken(token).then(function (user) {
                     res.user = user;
-                    res.printer = printerUtil.getUserPrinter(user.username);
+                    res.printer = services.printService.getUserPrinter(user.username);
                     var navMode = handleNavigation(user);
                     console.log("NAV MODE", navMode);
                     //if users is in role

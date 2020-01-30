@@ -4,11 +4,7 @@ $(function () {
     });
     $("#change-pwd-form").submit(function (event) {
         event.preventDefault();
-        let formData = $(this).serializeArray();
-        let data = {};
-        $.each(formData, function (_, record) {
-            data[record.name] = record.value
-        })
+        let data = extractFormData(this);
         console.log(data);
         if (data.password != data.confirmpassword) {
             showNotify('Failed', "Password doesn't match", 'fa fa-info', 'danger');
@@ -32,22 +28,5 @@ $(function () {
                 }
             })
         }
-
     })
-    function showNotify(title, message, icon, type) {
-        $.notify({
-            title: title,
-            message: message,
-            icon: icon,
-            target: '_blank'
-        }, {
-            type: type,
-            placement: {
-                from: "top",
-                align: "right",
-            },
-            time: 1000,
-            delay: 3000
-        });
-    }
 })
