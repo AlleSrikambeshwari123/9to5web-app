@@ -33,7 +33,7 @@ var warehousePackageRouter = require('./routes/warehouse/package');
 var warehousePrinterRouter = require('./routes/warehouse/print');
 
 // API
-var apiPrinterRouter = require('./routes/api/print');
+var apiPrinterRouter = require('./routes/api/printer');
 var apiWarehouseRouter = require('./routes/api/wapi');
 var apiCustomerRouter = require('./routes/api/customer');
 
