@@ -1,199 +1,112 @@
 <% layout('./shared/__template')%>
-<div class='gutters'>
-  <div class='col-xl-12 col-lg-6 col-md-12 col-sm-12'>
-    <div class='card'>
-      <div class="card-header col-md-12">
-        <h2> Manifest <%=manifest.title %> Data Entry</h2>
-      </div>
-      <div class="card-body">
-        <ul class="nav nav-pills nav-primary" id="myTab" role="tablist">
-          <li class="nav-item">
-            <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home"
-              aria-selected="true" aria-expanded="true">Manifest Overview</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact"
-              aria-selected="false" aria-expanded="false">Cargo</a>
-          </li>
-        </ul>
-        <div class="tab-content" id="myTabContent">
-          <div class="tab-pane active fade show" id="home" role="tabpanel" aria-labelledby="home-tab"
-            aria-expanded="true">
-            <div>
-              <div class="clearfix">
-                <div class="btn-group custom-btn-group float-right" role="group">
-                  <a href="/warehouse/download-load-sheet/<%=manifest.mid%>" type="button"
-                    class="btn btn-primary btn-sm "> <i class='fa fa-download'></i> Load Sheet</button>
-                    <a href='/warehouse/download-flight-manifest/<%=manifest.mid%>' class="btn btn-success btn-sm "><i
-                        class='fa fa-download'></i> Flight Manifest</a>
-                    <button type="button" class="btn btn-info btn-sm ship-manifest-btn ship-manifest"> <i
-                        class='fa fa-plane'></i> Send Flight</button>
-                    <!-- <button type="button" class="btn btn-dark btn-sm export-manifest">Export Excel</button> -->
+
+<form class="add-manifest-form" method="POST">
+  <div class='gutters'>
+    <div class='col-xl-12 col-lg-6 col-md-12 col-sm-12'>
+      <div class='card'>
+        <div class="card-header">
+          <h4 class="card-title">Create Manifest</h4>
+        </div>
+        <div class="card-body">
+          <h3 class="card-title text-muted">Plane</h3>
+          <div class='row'>
+            <div class='col-md-9'>
+              <input type='hidden' id="pgmode" value='flight' />
+              <div class="form-group form-show-validation row">
+                <label for="planeId" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Select Plane</label>
+                <div class="col-lg-8 col-md-8 col-sm-8">
+                  <select id="planeId" name="planeId" class='form-control' required>
+                    <option></option>
+                    <% var test = JSON.stringify(planes); %>
+                    <% planes.forEach(plane => { %>
+                    <option value="<%=plane.id%>"><%=plane.tail_number%></option>
+                    <%})%>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group form-show-validation row">
+                <label for="tailNumber" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Plane Tail Number</label>
+                <div class="col-lg-8 col-md-8 col-sm-8">
+                  <input type='text' class='form-control' id='tailNumber' placeholder="Plane Tail Number" readonly />
+                </div>
+              </div>
+              <div class="form-group form-show-validation row">
+                <label for="tailNumber" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">AirCraft Type</label>
+                <div class="col-lg-8 col-md-8 col-sm-8">
+                  <input type='text' class='form-control' id='aircraft_type' placeholder="AirCraft Type" readonly />
+                </div>
+              </div>
+              <div class="form-group form-show-validation row">
+                <label for="shipDate" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Flight Date / Time </label>
+                <div class="col-lg-8 col-md-9 col-sm-8 d-flex">
+                  <input type="text" class="form-control" id="shipDate" name="shipDate" required>
+                  <div class="input-group-append">
+                    <span class="input-group-text">
+                      <i class="fa fa-calendar-check"></i>
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
-            <div class='row'>
-              <div class='col-md-3'>
-                <div class="col-lg-12 col-md-12 col-sm-12">
-                  <p class="text-uppercase small">
-                    <strong>Date:</strong> <br /><%=manifest.dateCreated %>
-                  </p>
-                  <address class='small'>
-                    <strong>WEIGHT:</strong> <span class='total-weight'></span> <br>
-                    <strong>STAGE:</strong> <%=manifest.stage%><br>
-                    <strong>CREATED BY:</strong> <%=manifest.createdBy%><br>
-                  </address>
-                </div>
-              </div>
-              <div class='col-md-9'>
-                <div class='row gutters pt-2 mt-4'>
-                  <!-- <div class="card-stats card-round col-xl-4 col-lg-6 col-md-6 col-sm-6">
-                                        <div class="card card-body info-state">
-                                            <div class="icon-type pull-left">
-                                                <i class="fas fa-envelope"></i>
-                                            </div>
-                                            <div class="sale-num">
-                                                <h2 id='mailCount'>0</h2>
-                                                <p>Mail</p>
-                                            </div>
-                                        </div>
-                                    </div> -->
-                  <input type='hidden' id="pgmode" value='flight' />
-
-                  <div class="card-stats card-round col-xl-4 col-lg-6 col-md-6 col-sm-6">
-                    <div class='form-group'>
-                      <label>Plane Tail Number</label>
-                      <input type='text' id='tailNumber' class='form-control' value='<%=manifest.tailNum%>'>
-                    </div>
-                    <div class='form-group select2-input'>
-                      <label>Plane Type</label>
-
-                      <select class='form-control ' id='select-plane'>
-                        <option value=''>Select Plane</option>
-
-                        <% for (var i =0 ;i < planes.length; i++){ 
-                                                        var pselected = ''
-                                                        if (Number(manifest.planeId) == Number(planes[i].id)){
-                                                            pselected = 'selected'; 
-                                                        }
-                                                            %>
-
-                        <option <%=pselected%> value='<%=planes[i].id%>'><%=planes[i].tail_num%></option>
-
-                        <%}%> 
-                                                    
-                                                        
-                                                   </select>
-                                                </div>
-                                                <div class='form-group'>
-                                                        <label>Flight Date / Time </label>
-                                                     
-                                                        <input type='text' class='form-control flightdate' id='flight-date' value ='<%=manifest.shipDate%>'
-                        />
-                    </div>
-                    <!-- <div class='form-group'>
-                      <select class='form-control' id='select-pilot'>
-                        <option value=''>Select Pilot</option>
-                        <%for (var i =0 ;i < pilots.length; i++){ %>
-                        <option value='<%=pilots[i].id%>'><%=pilots[i].name%></option>
-                        <%}%>
-                      </select>
-                  </div> -->
-                    <div class='form-group'>
-                      <button type="button" id='save-details' class="btn btn-dark btn-sm save-details">Save
-                        Details</button>
-                    </div>
-                  </div>
-                  <div class="card-stats card-round col-xl-4 col-lg-6 col-md-6 col-sm-6">
-                    <div class="card card-body info-state">
-                      <div class="icon-type ">
-                        <i class="fas fa-archive"></i>
-                      </div>
-                      <div class="sale-num">
-                        <h2 id='packageCount'>0</h2>
-                        <p>Packages</p>
-                      </div>
-                    </div>
-
-                  </div>
-
-                </div>
-
-              </div>
+          </div>
+          <div class="separator-solid"></div>
+          <div class="d-flex">
+            <h3 class="card-title text-muted package-info">Data Entry ( Weight : 0 lbs / 0lbs )</h3>
+            <a href="#add-awb-popup" class="btn btn-primary text-white ml-auto mr-3 btn-add-awb">Add AWB</a>
+          </div>
+          <div class='row'>
+            <div class='col-md-12 table-responsive'>
+              <table id='packageTable' class='display table table-striped table-hover w-100'>
+                <thead>
+                  <tr>
+                    <td><strong>AWB #</strong></td>
+                    <td class="text-center"><strong>Trackig No #</strong></td>
+                    <td class="text-center"><strong>Description</strong></td>
+                    <td class="text-center"><strong>Dimension</strong></td>
+                    <td class="text-right"><strong>Weight</strong></td>
+                  </tr>
+                </thead>
+                <tbody>
+                </tbody>
+              </table>
             </div>
           </div>
-          <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab" aria-expanded="false">
-            <div class='row'>
-
-              <% var showForm ='' 
-                            if (manifest.StageId > 1){ 
-                                showForm ='display:none'
-                           }%>
-
-              <div class='col-md-9'>
-                <table id='mailTable' class='display table table-bordered table-head-bg-info table-hover'
-                  style='width:100%;'>
-                </table>
-              </div>
-            </div>
-          </div>
-          <div class="tab-pane fade " id="contact" role="tabpanel" aria-labelledby="contact-tab" aria-expanded="false">
-            <div class='row'>
-
-
-
-              <div class='col-md-12'>
-                <table id='packageTable' class='display table table-bordered table-head-bg-info table-hover'
-                  style='width:100%'>
-                </table>
-              </div>
-            </div>
-          </div>
-          <div class="tab-pane fade" id="unproc" role="tabpanel" aria-labelledby="unproc-tab" aria-expanded="false">
-            <div class='row'>
-              <div class='col-md-3 pkg-form' style='<%=showForm%>'>
-                <form method='post' id='unprocPackageForm'>
-                  <div class='form-group'>
-                    <button type="button" class="btn btn-primary btn-sm new-cube"> New Cube</button>
-                    <span class='cubeId' style="display:none;">CUBE-<%=mid %>-1</span>
-                  </div>
-                  <div class='form-group'>
-                    <label>PMB <span id='' class='text-info title customerName'></span></label>
-                    <input type='hidden' class='isBusiness' value='' />
-                    <input type='text' class='form-control skybox' name='skybox' required />
-                  </div>
-                  <div class='form-group'>
-                    <label>Tracking #</label>
-                    <input type='hidden' class='mid' value='<%=mid %>' />
-                    <input type='hidden' class='mtype' value='unproc' />
-                    <input type='text' class='form-control trackingNo' name='trackingNo' required />
-                  </div>
-                  <!-- <div class='form-group'>
-                                        <label>Value</label>
-                                        <input type='text' class='form-control package-value' name='value' required />
-                                    </div>
-                                    <div class='form-group'>
-                                        <label>Weight</label>
-                                        <input type='text' class='form-control weight' name='weight' />
-                                    </div> -->
-                  <div class='form-group'>
-                    <button class='btn btn-primary savePackage' data-stage='<%=manifest.StageId%>' type='button'>
-                      Save</button>
-                  </div>
-                </form>
-              </div>
-              <div class='col-md-9'>
-                <table id='unprocTable' class='display table table-bordered table-head-bg-info table-hover'
-                  style='width:100%'>
-                </table>
-              </div>
-            </div>
-          </div>
+        </div>
+        <div class="card-action">
+          <input type="submit" class="btn btn-primary" value="Create Manifest"></input>
         </div>
       </div>
     </div>
   </div>
+</form>
+
+<div id='add-awb-popup' class="card white-popup p-0 mfp-hide">
+  <form method='post' id='add-awb-form'>
+    <div class="card-header">
+      <div class="card-title text-center">Add AWB to Manifest</div>
+    </div>
+    <div class="card-body">
+      <div class='form-group'>
+        <label for="awbId">AWB #</label>
+        <select class='form-control' id='awbId' name="awbId" required>
+          <option></option>
+          <% awbs.forEach(awb => { %>
+          <option value="<%= awb.id%>"><%= awb.id%></option>
+          <% }) %>
+        </select>
+      </div>
+      <div class='form-group'>
+        <label for="weight">Total Weight (lbs)</label>
+        <input type='number' class='form-control' id='weight' name="weight" placeholder="0 lbs" required readonly />
+      </div>
+    </div>
+    <div class="card-action text-center">
+      <button class="btn btn-primary" type="submit" id='btn-add-awb'>Add</button>
+      <button class="btn btn-danger" type="button" id='btn-cancel-add'>Cancel</button>
+    </div>
+  </form>
 </div>
+
 <div class="modal fade" id="confirmPkgDel" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2"
   aria-hidden="true" style="display: none;">
   <div class="modal-dialog" role="document">
@@ -242,7 +155,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h2 class="modal-title" id="exampleModalLabel2">Send to Broker (Manifest <%= mid %>)</h2>
+        <h2 class="modal-title" id="exampleModalLabel2">Send to Broker (Manifest )</h2>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">×</span>
         </button>
@@ -266,4 +179,5 @@
   </div>
 </div>
 
-<% block('scripts').append('<script src="/js/warehouse/manifest/list.js"></script>')%>
+<% block('scripts').append('<script src="/js/utils.js"></script>')%>
+<% block('scripts').append('<script src="/js/warehouse/manifest/create.js"></script>')%>

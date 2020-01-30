@@ -11,3 +11,9 @@ exports.get_package_list = (req, res, next) => {
     })
   })
 }
+
+exports.get_awb_packages = (req, res, next) => {
+  services.packageService.getPackages(req.params.awbId).then(packages => {
+    res.send(packages);
+  })
+}

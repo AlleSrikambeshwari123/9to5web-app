@@ -7,27 +7,64 @@
         <a href='create' class='btn btn-primary btn-round float-right ml-md-auto'>Create Manifest</a>
       </div>
       <div class="card-body">
-        <table class="display table table-striped table-hover dataTable package-table">
+        <table class="display table table-striped table-hover dataTable manifest-table">
           <thead>
             <tr>
               <th>Manifest ID#</th>
               <th>Status</th>
               <th>Date Created</th>
-              <th>Created By</th>
+              <th>Plane</th>
               <th></th>
             </tr>
           </thead>
           <tbody>
             <% manifests.forEach(function(manifest){ %>
-            <tr data-record="<%= pkg.id %>">
-              <td><%= manifest.id%></td>
-              <td><%= manifest.status %></td>
+            <tr data-record="<%= manifest.id %>">
+              <td><strong><%= manifest.title%></strong></td>
+              <td>
+                <% if (manifest.stageId == 1 ) { %>
+                <span class="badge badge-warning"><%=manifest.stage %></span>
+                <% } else if(manifest.stageId == 2) { %>
+                <span class="badge badge-default"><%=manifest.stage %></span>
+                <% } else if(manifest.stageId == 3) { %>
+                <span class="badge badge-success"><%=manifest.stage %></span>
+                <% } else if(manifest.stageId == 4) { %>
+                <span class="badge badge-primary"><%=manifest.stage %></span>
+                <% } %>
+              </td>
               <td><%= manifest.dateCreated %></td>
-              <td><%= manifest.createdBy%></td>
+              <td><%= manifest.plane.tail_number%></td>
+              <td class="text-center">
+                <% if(manifest.stageId == 1) { %>
+                <a class="btn btn-link btn-danger btn-rm-manifest p-1" data-toggle="modal" data-id="<%=manifest.id%>"
+                  data-original-title="Delete" data-target="#confirm-delete-manifest"> <i class="fa fa-trash"></i> </a>
+                <% } %>
+              </td>
             </tr>
             <%})%>
           </tbody>
         </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="confirm-delete-manifest" tabindex="-1" role="dialog" aria-labelledby="confirm-del-title"
+  aria-hidden="true" style="display: none;">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="confirm-del-title">Confirmation Required</h2>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to delete this manifest?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-danger btn-rm" id='btn-rm'>Delete</button>
       </div>
     </div>
   </div>

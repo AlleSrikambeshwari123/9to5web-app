@@ -10,4 +10,6 @@ router.get('/fll/package/list', middleware().checkSession, packageCtrl.get_packa
 // router.post('/fll/package/manage/:id/update', middleware().checkSession, packageCtrl.update_package);
 // router.delete('/fll/package/manage/:id/delete', middleware().checkSession, packageCtrl.delete_package);
 
+router.get('/fll/package/get/:awbId', middleware().checkSession, packageCtrl.get_awb_packages);
+
 module.exports = router;

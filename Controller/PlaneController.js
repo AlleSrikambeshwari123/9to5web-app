@@ -58,3 +58,9 @@ exports.update_plane = (req, res, next) => {
     res.send(result);
   })
 }
+
+exports.get_plane = (req, res, next) => {
+  services.planeService.getPlane(req.params.id).then(plane => {
+    res.send(plane);
+  })
+}

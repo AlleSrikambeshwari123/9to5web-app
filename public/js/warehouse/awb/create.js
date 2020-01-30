@@ -97,7 +97,7 @@ $(function () {
     pkg.location = "Warehouse FLL";
     pkg.dimensions = pkg.W + 'x' + pkg.H + 'x' + pkg.L;
     awbPackages.push(pkg);
-    displayPackages(awbPackages, "#packageTable", "cargo");
+    displayPackages();
     $('.mfp-close').trigger("click");
   })
 
@@ -244,14 +244,5 @@ $(function () {
       displayPackages();
       $(".close-del").trigger('click');
     });
-  }
-
-  function extractFormData(form) {
-    let formData = $(form).serializeArray();
-    let data = {};
-    $.each(formData, function (_, record) {
-      data[record.name] = record.value
-    })
-    return data;
   }
 });

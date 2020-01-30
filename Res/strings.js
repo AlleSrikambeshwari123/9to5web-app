@@ -60,6 +60,7 @@ exports.string_response_updated = "Successfully Updated !";
 exports.string_response_created = "Successfully Created !";
 exports.string_response_removed = "Successfully Removed !";
 exports.string_response_added = "Successfully Added !";
+exports.string_response_shipped = "Successfully Shipped !";
 exports.string_not_found_user = "Sorry, we can't find this user.";
 exports.string_not_found_customer = "Sorry, we can't this customer.";
 exports.string_not_found_vehicle = "Sorry, we can't find this vehicle.";

@@ -11,7 +11,7 @@
 	<meta name="keywords"
 		content="Admin, Dashboard, Bootstrap4, Sass, CSS3, HTML5, Responsive Dashboard, Responsive Admin Template, Admin Template, Best Admin Template, Bootstrap Template, Themeforest" />
 	<meta name="author" content="Bootstrap Gallery" />
-	<link rel="icon" href="/img/favicon.ico" type="image/x-icon" />
+	<link rel="icon" href="/img/favicon.png" type="image/x-icon" />
 	<title>9-5 Imports </title>
 
 	<script src="/assets/js/plugin/webfont/webfont.min.js"></script>
@@ -30,6 +30,9 @@
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.2.0/sweetalert2.min.css">
 	<link rel="stylesheet" type="text/css"
 		href="https://unpkg.com/file-upload-with-preview@4.0.2/dist/file-upload-with-preview.min.css">
+	<link
+		href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css"
+		rel="stylesheet">
 </head>
 
 <body>
@@ -124,6 +127,9 @@
 	<!-- DateTimePicker -->
 	<script src="/assets/js/plugin/datepicker/bootstrap-datetimepicker.min.js"></script>
 
+	<!-- Date Range Picker -->
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+
 	<!-- Bootstrap Tagsinput -->
 	<script src="/assets/js/plugin/bootstrap-tagsinput/bootstrap-tagsinput.min.js"></script>
 
@@ -151,9 +157,10 @@
 
 	<!-- Atlantis JS -->
 	<script src="/assets/js/atlantis.min.js"></script>
-	<!-- Atlantis DEMO methods, don't include it in your project! -->
-	<script src="/assets/js/setting-demo.js"></script>
-	<script src="/assets/js/demo.js"></script>
+
+	<!-- File Upload Preview -->
+	<script src="https://unpkg.com/file-upload-with-preview@4.0.2/dist/file-upload-with-preview.min.js"></script>
+
 	<%- block('scripts').toString() %>
 
 	<script>

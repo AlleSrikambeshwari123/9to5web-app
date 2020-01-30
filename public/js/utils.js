@@ -14,3 +14,12 @@ function showNotify(title, message, icon, type) {
     delay: 3000
   });
 }
+
+function extractFormData(form) {
+  let formData = $(form).serializeArray();
+  let data = {};
+  $.each(formData, function (_, record) {
+    data[record.name] = record.value
+  })
+  return data;
+}

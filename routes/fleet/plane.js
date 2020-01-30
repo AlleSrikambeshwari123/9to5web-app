@@ -10,4 +10,6 @@ router.get('/plane/manage/:id/get', middleware().checkSession, planeCtrl.get_pla
 router.post('/plane/manage/:id/update', middleware().checkSession, planeCtrl.update_plane);
 router.delete('/plane/manage/:id/delete', middleware().checkSession, planeCtrl.delete_plane);
 
+router.get('/plane/get/:id', middleware().checkSession, planeCtrl.get_plane)
+
 module.exports = router;
