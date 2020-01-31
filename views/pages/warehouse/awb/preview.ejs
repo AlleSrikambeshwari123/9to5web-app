@@ -1,11 +1,12 @@
 <% layout('./shared/__template')%>
 <div class="row justify-content-center mt--5">
+  <input type="hidden" data-id="<%= awb.id%>" id="awbId">
   <div class="col-12 col-lg-10 col-xl-9">
     <div class="row align-items-center">
       <div class="ml-auto mr-3 mb-3 mt--4">
-        <a class="btn btn-danger btn-round text-white"> Download PDF</a>
-        <a class="btn btn-danger btn-round text-white ml-2"> Print AWB </a>
-        <a class="btn btn-danger btn-round text-white ml-2"> Print All Labels </a>
+        <a class="btn btn-danger btn-round text-white" href="/warehouse/download-pdf/awb/<%=awb.id%>"> Download PDF</a>
+        <a class="btn btn-danger btn-round text-white ml-2 btn-print-awb"> Print AWB </a>
+        <a class="btn btn-danger btn-round text-white ml-2 btn-print-labels"> Print All Labels </a>
       </div>
     </div>
     <div class="row">
@@ -150,3 +151,6 @@
     </div>
   </div>
 </div>
+
+<% block('scripts').append('<script src="/js/utils.js"></script>')%>
+<% block('scripts').append('<script src="/js/warehouse/awb/preview.js"></script>')%>

@@ -43,6 +43,9 @@ var util = require('./routes/util');
 var app = express();
 
 // view engine setup
+global.appRoot = __dirname;
+global.uploadRoot = __dirname + '/public/uploads';
+
 app.engine("ejs", ejsmate);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
