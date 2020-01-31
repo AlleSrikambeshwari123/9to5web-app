@@ -47,6 +47,7 @@ exports.get_full_awb = (req, res, next) => {
 
 exports.download_pdf_awb = (req, res, next) => {
   let id = req.params.id;
+  console.log("Downloading AWB PDF", id);
   getFullAwb(id).then(awb => {
     console.log(global.uploadRoot);
     var pdffilename = global.uploadRoot + '/awb.' + awb.id + '.pdf';

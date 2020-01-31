@@ -40,7 +40,6 @@ class AWBGeneration {
     generateAWb(awb, filename) {
         this.awb = awb;
         return new Promise((resolve, reject) => {
-            console.log("Generating PDF", awb);
             this.generateBarcode(awb.id).then(png => {
                 var docDefinition = {
                     footer: this.generateFooter,
@@ -221,7 +220,6 @@ class AWBGeneration {
             }]
     }
     generateShiperCosigneeTable(awb) {
-        console.log(awb.shipper)
         var shipperDetails = `${awb.shipper.name} \n`;
         if (awb.shipper.address)
             shipperDetails += awb.shipper.address + "\n"
