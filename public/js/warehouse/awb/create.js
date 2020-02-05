@@ -64,7 +64,6 @@ $(function () {
         if (awbPackages.length > 0) $('.btn-copy-last').show()
         else $('.btn-copy-last').hide();
 
-        $('#trackingNo').val("");
         $('#description').val("");
         $('#weight').val("");
         $('#packageType').val("");
@@ -77,7 +76,6 @@ $(function () {
   $(".btn-copy-last").click(function () {
     if (awbPackages.length > 0) {
       var lastPackage = awbPackages[awbPackages.length - 1];
-      $("#trackingNo").val("");
       $("#description").val(lastPackage.description);
       $("#weight").val(lastPackage.weight);
       $('#packageType').val("");
@@ -198,7 +196,6 @@ $(function () {
     packageTable.clear().draw();
     awbPackages.forEach(pkg => {
       let rowNode = packageTable.row.add([
-        pkg.trackingNo,
         pkg.description,
         pkg.dimensions,
         Number(pkg.weight).toFixed(2) + ' lbs',
@@ -221,7 +218,6 @@ $(function () {
           open: function () {
             $('.btn-copy-last').hide();
 
-            $('#trackingNo').val(pkg.trackingNo);
             $('#description').val(pkg.description);
             $('#weight').val(pkg.weight);
             $('#packageType').val(pkg.packageType);

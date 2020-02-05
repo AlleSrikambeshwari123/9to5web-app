@@ -1,7 +1,6 @@
 var emailService = require("../Util/EmailService")
 var redis = require("redis");
 var moment = require("moment");
-var redisSearch = require("../redisearchclient");
 var fs = require("fs");
 var uniqId = require("uniqid");
 
@@ -176,6 +175,7 @@ class PackageService {
       client.incr(PACKAGE_ID, (err, id) => {
         newPackage.id = id;
         newPackage.awbId = awbId;
+        newPackage.trackingNo = uniqId();
         client.hmset(PREFIX + id, newPackage);
         client.sadd(PREFIX_PACKAGE_LIST + awbId, id);
         resolve({ success: true });

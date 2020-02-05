@@ -1,8 +1,11 @@
+var zip = require('express-zip');
 var services = require('../RedisServices/RedisDataServices');
 var utils = require('../Util/utils');
 const strings = require('../Res/strings');
-var AWBGeneration = require('../Util/AWBGeneration').AWBGeneration;
+var AWBGeneration = require('../Util/AWBGeneration');
 var awbPdfGen = new AWBGeneration();
+var LBLGeneration = require('../Util/LBLGeneration');
+var lblPdfGen = new LBLGeneration();
 
 exports.send_print_awb = (req, res, next) => {
   var username = res.user.username;
@@ -49,10 +52,21 @@ exports.download_pdf_awb = (req, res, next) => {
   let id = req.params.id;
   console.log("Downloading AWB PDF", id);
   getFullAwb(id).then(awb => {
-    console.log(global.uploadRoot);
-    var pdffilename = global.uploadRoot + '/awb.' + awb.id + '.pdf';
-    awbPdfGen.generateAWb(awb, pdffilename).then(result => {
-      res.download(pdffilename);
+    awbPdfGen.generateAWb(awb).then(result => {
+      console.log(result.filename);
+      res.download(result.filename);
+    })
+  })
+}
+
+exports.download_pkg_labels = (req, res, next) => {
+  let id = req.params.id;
+  console.log("Downloading Package Label PDF", id);
+  getFullAwb(id).then(awb => {
+    lblPdfGen.generatePackageLabels(awb).then(results => {
+      console.log(results);
+      res.zip(results)
+      // res.download(results);
     })
   })
 }

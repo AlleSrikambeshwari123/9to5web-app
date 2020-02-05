@@ -2,10 +2,10 @@
   "name": "tropicalcore",
   "version": "0.0.0",
   "private": true,
-  "main": "./bin/www",
+  "main": "./bin/9-5-web",
   "scripts": {
-    "start": "node ./bin/www",
-    "dev": "nodemon ./bin/www",
+    "start": "node ./bin/9-5-web",
+    "dev": "nodemon ./bin/9-5-web",
     "ui": "browser-sync start --proxy=localhost:8000 --files='**/*.css, **/*.ejs, **/*.js,**/*.js' --ignore=node_modules --reload-delay 10 --no-ui --no-notify"
   },
   "dependencies": {
@@ -29,6 +29,7 @@
     "ejs-mate": "^2.3.0",
     "express": "~4.13.4",
     "express-https-redirect": "^1.0.0",
+    "express-zip": "^3.0.0",
     "formidable": "^1.2.1",
     "gulp": "^3.9.1",
     "image-optim": "^3.0.0",
@@ -47,10 +48,6 @@
     "pdfmake": "^0.1.63",
     "phone-formatter": "0.0.2",
     "redis": "^2.8.0",
-    "redis-redisearch": "^1.0.1",
-    "redis-search": "0.0.1",
-    "redisearchclient": "^1.0.1",
-    "redredisearch": "0.0.1",
     "rescode": "^0.1.10",
     "serve-favicon": "~2.3.0",
     "socket.io": "^2.0.4",

@@ -3,8 +3,6 @@ var lredis = require("./redis-local");
 var moment = require("moment");
 const strings = require('../Res/strings');
 
-var redisSearch = require("../redisearchclient");
-
 const INDEX = "index:deliveries"
 const ID = "delivery:ID";
 const DELIVERY_SET = "list:delivery:";

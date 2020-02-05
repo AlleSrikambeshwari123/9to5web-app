@@ -37,7 +37,7 @@ class AWBGeneration {
         this.awb = {}
     }
 
-    generateAWb(awb, filename) {
+    generateAWb(awb) {
         this.awb = awb;
         return new Promise((resolve, reject) => {
             this.generateBarcode(awb.id).then(png => {
@@ -86,6 +86,7 @@ class AWBGeneration {
                     },
                 };
                 var filestream;
+                var filename = global.uploadRoot + '/awb.' + awb.id + '.pdf';
                 var pdfDoc = printer.createPdfKitDocument(docDefinition);
                 pdfDoc.pipe(filestream = fs.createWriteStream(filename));
                 pdfDoc.end();
@@ -272,4 +273,4 @@ function calculateDimensionalWeight(dimensions) {
     return Number(dimWeight).formatMoney(2, '.', ',')
 }
 
-exports.AWBGeneration = AWBGeneration;
+module.exports = AWBGeneration;
