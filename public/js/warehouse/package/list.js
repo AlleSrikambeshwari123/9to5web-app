@@ -6,7 +6,7 @@ var pdfPath;
 $('.btn-print-pkg').click(function () {
   let id = $(this).data('id');
   $.ajax({
-    url: 'manage/' + id + '/print',
+    url: '/api/printer/pdf/generate/pkg/' + id,
     type: 'get',
     success: function (response) {
       pdfPath = '/util/pdf' + response.filename;

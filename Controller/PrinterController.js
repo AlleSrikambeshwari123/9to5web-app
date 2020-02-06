@@ -78,16 +78,14 @@ exports.generate_awb_pdf = (req, res, next) => {
   })
 }
 
-exports.generate_pkg_label_pdf = (packageId) => {
-  return new Promise((resolve, reject) => {
-    services.packageService.getPackage(packageId).then(package => {
-      getFullAwb(package.awbId).then(awb => {
-        lblPdfGen.generateSinglePackageLabel(awb, package).then(result => {
-          resolve(result);
-        })
+exports.generate_pkg_label_pdf = (req, res, next) => {
+  services.packageService.getPackage(req.params.id).then(package => {
+    getFullAwb(package.awbId).then(awb => {
+      lblPdfGen.generateSinglePackageLabel(awb, package).then(result => {
+        res.send(result);
       })
     })
-  });
+  })
 }
 
 function getFullAwb(id) {

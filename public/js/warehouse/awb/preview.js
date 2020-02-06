@@ -13,29 +13,12 @@ $('.btn-print-awb').click(function () {
           var canvas = $('#pdf-preview')[0];
           var canvasContext = canvas.getContext('2d');
           const viewport = page.getViewport({ scale: 1 });
-          // console.log(canvas.width);
-          canvas.width = 448;
           canvas.height = canvas.width / viewport.width * viewport.height;
-          viewport.scale = canvas.width / viewport.width;
-          viewport.width = canvas.width;
-          viewport.height = canvas.height;
-          console.log(viewport);
           page.render({ canvasContext, viewport })
         })
       })
     }
   })
-  // let awbId = $('#awbId').data('id');
-  // $.ajax({
-  //   url: '/warehouse/print-awb/' + awbId,
-  //   type: 'get',
-  //   success: function (response) {
-  //     if (response.success)
-  //       showNotify('Success', response.message, 'fa fa-print', 'success');
-  //     else
-  //       showNotify('Failed', response.message, 'fa fa-print', 'danger');
-  //   }
-  // })
 })
 
 $('.btn-print-labels').click(function () {

@@ -51,7 +51,9 @@
                       <a href='manage/<%=awb.id%>/get' class="btn btn-link btn-primary p-1" data-toggle="tooltip"
                         data-original-title="Edit"> <i class="fa fa-pen"></i> </a>
                       <a class="btn btn-link btn-danger btn-rm-awb p-1" data-toggle="modal" data-id="<%=awb.id%>"
-                        data-original-title="Delete" data-target="#confirm-delete-awb"> <i class="fa fa-trash"></i> </a>
+                        data-target="#confirm-delete-awb"> <i class="fa fa-trash"></i> </a>
+                      <a class="btn btn-link btn-primary btn-print-awb p-1" data-toggle="modal" data-id="<%=awb.id%>"
+                        data-target="#print-popup"> <i class="fa fa-print"></i> </a>
                     </td>
                   </tr>
                   <%})%>
@@ -93,7 +95,9 @@
                       <a href='manage/<%=awb.id%>/get' class="btn btn-link btn-primary p-1" data-toggle="tooltip"
                         data-original-title="Edit"> <i class="fa fa-pen"></i> </a>
                       <a class="btn btn-link btn-danger btn-rm-awb p-1" data-toggle="modal" data-id="<%=awb.id%>"
-                        data-original-title="Delete" data-target="#confirm-delete-awb"> <i class="fa fa-trash"></i> </a>
+                        data-target="#confirm-delete-awb"> <i class="fa fa-trash"></i> </a>
+                      <a class="btn btn-link btn-primary btn-print-awb p-1" data-toggle="modal" data-id="<%=awb.id%>"
+                        data-target="#print-popup"> <i class="fa fa-print"></i> </a>
                     </td>
                   </tr>
                   <% }}) %>
@@ -128,45 +132,6 @@
     </div>
   </div>
 </div>
-<div class="modal fade" id="awb-details" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2"
-  aria-hidden="true" style="display: none;">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2 class="modal-title" id="exampleModalLabel2">AWB Details <span class='ad-id'>ID</span></h2>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">×</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <div class='ad-consignee'></div>
-        <div class='ad-sed'></div>
-        <div class='ad-invoice'></div>
-
-        <div class='ad-value'></div>
-        <div class='ad-shipper'></div>
-        <div class='ad-carrier'></div>
-        <div>
-          <h4>Packages</h4>
-          <table class='table' id='packageListing' style='width:100%'>
-            <tr>
-              <th>Tracking </th>
-              <th>Description</th>
-              <th>Dimensions</th>
-              <th>Weight</th>
-            </tr>
-          </table>
-        </div>
-
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary close-del" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-success " id='print-lbl'>Print Label</button>
-        <button type="button" class="btn btn-success " id='print-awb'>Print AWB</button>
-      </div>
-    </div>
-  </div>
-</div>
 <div class="modal fade" id="shipManifest" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2"
   aria-hidden="true" style="display: none;">
   <div class="modal-dialog" role="document">
@@ -184,6 +149,28 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-primary close-del" data-dismiss="modal">Close</button>
         <button type="button" class="btn btn-success ship-manifest" id='ship-manifest'>Ship Manifest</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="print-popup" tabindex="-1" role="dialog" aria-labelledby="print-popup" aria-hidden="true"
+  style="display: none;">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="exampleModalLabel2">Print AirWay Bill</h2>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group text-center">
+          <canvas id="pdf-preview" class="border border-dark"></canvas>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger close-del" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary print-awb" id='print-awb'>Print</button>
       </div>
     </div>
   </div>

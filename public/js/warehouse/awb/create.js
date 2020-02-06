@@ -119,13 +119,9 @@ $(function () {
     awbInfo.isSed = sedAnswered;
     awbInfo.packages = JSON.stringify(awbPackages);
 
-    uploadContentFile($("#invFile"), results => {
-      var fileInfo = {};
-      if (results != "") {
-        var fileInfo = JSON.parse(results);
-        if (fileInfo[0].uploadedFile) {
-          awbInfo.invoice = fileInfo[0].uploadedFile;
-        }
+    uploadContentFile($("#invFile"), result => {
+      if (result.fileName) {
+        awbInfo.invoice = result.fileName;
       }
 
       $.ajax({
@@ -154,7 +150,7 @@ $(function () {
       var formData = new FormData();
       for (var i = 0; i < files.length; i++) {
         var file = files[i];
-        formData.append('uploads[]', file, file.name);
+        formData.append('upload', file, file.name);
       }
       $.ajax({
         url: '/util/upload',

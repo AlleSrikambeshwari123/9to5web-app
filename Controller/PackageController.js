@@ -18,9 +18,3 @@ exports.get_awb_packages = (req, res, next) => {
     res.send(packages);
   })
 }
-
-exports.generate_package_pdf = (req, res, next) => {
-  printerCtrl.generate_pkg_label_pdf(req.params.packageId).then(result => {
-    res.send(result);
-  })
-}
