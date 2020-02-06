@@ -7,75 +7,113 @@
           <h4 class="card-title"><%=title%></h4>
         </div>
         <div class="card-body">
-          <div class="form-group form-show-validation row">
-            <label for="companyId" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Company
-              <span class="required-label">*</span></label>
-            <div class="col-lg-4 col-md-9 col-sm-8">
-              <select id="companyId" name="companyId" class=" form-control " required>
-                <option value='9to5'>9to5</option>
-                <option value='pmb'>Post Boxes</option>
-              </select>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group form-show-validation row">
+                <label for="companyId" class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">Company </label>
+                <div class="col-lg-8 col-md-8 col-sm-8">
+                  <select id="companyId" name="companyId" class=" form-control " required>
+                    <option value='9to5'>9to5</option>
+                    <option value='pmb'>Post Boxes</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group form-show-validation row">
+                <label for="pmb" class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">PMB </label>
+                <div class="col-lg-8 col-md-8 col-sm-8">
+                  <input type="number" class="form-control" id="pmb" name="pmb" placeholder="PMB" value="9000" readonly>
+                </div>
+              </div>
+              <div class="form-group form-show-validation row">
+                <label for="firstName" class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">First Name </label>
+                <div class="col-lg-8 col-md-8 col-sm-8">
+                  <input type="text" class="form-control" id="firstName" name="firstName" placeholder="First Name"
+                    required>
+                </div>
+              </div>
+              <div class="form-group form-show-validation row">
+                <label for="lastName" class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">Last Name </label>
+                <div class="col-lg-8 col-md-8 col-sm-8">
+                  <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Last Name"
+                    required>
+                </div>
+              </div>
+              <div class="form-group form-show-validation row">
+                <label for="telephone" class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">Telephone</label>
+                <div class="col-lg-8 col-md-8 col-sm-8">
+                  <input type="tel" class="form-control" id="telephone" name="telephone" placeholder="(242)-123-4567">
+                </div>
+              </div>
+              <div class="form-group form-show-validation row">
+                <label for="email" class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">Email address </label>
+                <div class="col-lg-8 col-md-8 col-sm-8">
+                  <input type="email" class="form-control" id="email" name="email" placeholder="name@example.com"
+                    required>
+                </div>
+              </div>
+              <div class="form-group form-show-validation row">
+                <label for="password" class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">Password </label>
+                <div class="col-lg-8 col-md-8 col-sm-8">
+                  <input type="password" class="form-control" id="password" name="password" placeholder="New Password"
+                    required>
+                </div>
+              </div>
+              <div class="form-group form-show-validation row">
+                <label for="confirmPassword" class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">Confirm Password
+                </label>
+                <div class="col-lg-8 col-md-8 col-sm-8">
+                  <input type="password" class="form-control" id='confirmPassword' name="confirmPassword"
+                    placeholder="Confirm New Password" required>
+                </div>
+              </div>
+              <div class="form-group form-show-validation row">
+                <label for="location" class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">Select Location </label>
+                <div class="col-lg-8 col-md-8 col-sm-8">
+                  <select id="location" name="location" class=" form-control " required>
+                    <% locations.forEach(location => { %>
+                    <option value='<%=location.id%>'><%=location.name%></option>
+                    <% }) %>
+                  </select>
+                </div>
+              </div>
             </div>
-          </div>
-          <div class="form-group form-show-validation row">
-            <label for="pmb" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">PMB
-              <span class="required-label">*</span></label>
-            <div class="col-lg-4 col-md-9 col-sm-8">
-              <input type="number" class="form-control" id="pmb" name="pmb" placeholder="PMB" value="9000" readonly>
-            </div>
-          </div>
-          <div class="form-group form-show-validation row">
-            <label for="firstName" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">First Name
-              <span class="required-label">*</span></label>
-            <div class="col-lg-4 col-md-9 col-sm-8">
-              <input type="text" class="form-control" id="firstName" name="firstName" placeholder="First Name" required>
-            </div>
-          </div>
-          <div class="form-group form-show-validation row">
-            <label for="lastName" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Last Name
-              <span class="required-label">*</span></label>
-            <div class="col-lg-4 col-md-9 col-sm-8">
-              <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Last Name" required>
-            </div>
-          </div>
-          <div class="form-group form-show-validation row">
-            <label for="mobile" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Mobile</label>
-            <div class="col-lg-4 col-md-9 col-sm-8">
-              <input type="tel" class="form-control" id="mobile" name="mobile" placeholder="(242)-xxx-xxxx">
-            </div>
-          </div>
-          <div class="form-group form-show-validation row">
-            <label for="email" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Email address
-              <span class="required-label">*</span></label>
-            <div class="col-lg-4 col-md-9 col-sm-8">
-              <input type="email" class="form-control" id="email" name="email" placeholder="name@example.com" required>
-            </div>
-          </div>
-          <div class="form-group form-show-validation row">
-            <label for="password" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Password
-              <span class="required-label">*</span></label>
-            <div class="col-lg-4 col-md-9 col-sm-8">
-              <input type="password" class="form-control" id="password" name="password" placeholder="New Password"
-                required>
-            </div>
-          </div>
-          <div class="form-group form-show-validation row">
-            <label for="confirmPassword" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Confirm Password
-              <span class="required-label">*</span></label>
-            <div class="col-lg-4 col-md-9 col-sm-8">
-              <input type="password" class="form-control" id='confirmPassword' name="confirmPassword"
-                placeholder="Confirm New Password" required>
-            </div>
-          </div>
-          <div class="form-group form-show-validation row">
-            <label for="location" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Select Location
-              <span class="required-label">*</span></label>
-            <div class="col-lg-4 col-md-9 col-sm-8">
-              <select id="location" name="location" class=" form-control " required>
-                <% locations.forEach(location => { %>
-                <option value='<%=location.id%>'><%=location.name%></option>
-                <% }) %>
-              </select>
+            <div class="col-md-6">
+              <div class="form-group form-show-validation row">
+                <label for="address" class="col-lg-3 col-md-4 col-sm-4 mt-sm-2 text-right">Address </label>
+                <div class="col-lg-7 col-md-8 col-sm-8">
+                  <input type="text" class="form-control" id="address" name="address" placeholder="Address" required>
+                </div>
+              </div>
+              <div class="form-group form-show-validation row">
+                <label for="city" class="col-lg-3 col-md-4 col-sm-4 mt-sm-2 text-right">City </label>
+                <div class="col-lg-7 col-md-8 col-sm-8">
+                  <input type="text" class="form-control" id="city" name="city" placeholder="City" required>
+                </div>
+              </div>
+              <div class="form-group form-show-validation row">
+                <label for="state" class="col-lg-3 col-md-4 col-sm-4 mt-sm-2 text-right">State </label>
+                <div class="col-lg-7 col-md-8 col-sm-8">
+                  <input type="text" class="form-control" id="state" name="state" placeholder="State" required>
+                </div>
+              </div>
+              <div class="form-group form-show-validation row">
+                <label for="country" class="col-lg-3 col-md-4 col-sm-4 mt-sm-2 text-right">Country </label>
+                <div class="col-lg-7 col-md-8 col-sm-8">
+                  <input type="text" class="form-control" id="country" name="country" placeholder="Country" required>
+                </div>
+              </div>
+              <div class="form-group form-show-validation row">
+                <label for="zipcode" class="col-lg-3 col-md-4 col-sm-4 mt-sm-2 text-right">Zipcode </label>
+                <div class="col-lg-7 col-md-8 col-sm-8">
+                  <input type="text" class="form-control" id="zipcode" name="zipcode" placeholder="Zipcode" required>
+                </div>
+              </div>
+              <div class="form-group form-show-validation row">
+                <label for="note" class="col-lg-3 col-md-4 col-sm-4 mt-sm-2 text-right">Note </label>
+                <div class="col-lg-7 col-md-8 col-sm-8">
+                  <textarea id="note" class="form-control" name="note"></textarea>
+                </div>
+              </div>
             </div>
           </div>
         </div>

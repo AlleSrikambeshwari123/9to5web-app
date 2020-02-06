@@ -201,5 +201,9 @@ router.post('/upload/:section', function (req, res) {
     form.parse(req);
 });
 
+router.get('/pdf/:pdfname', (req, res, next) => {
+    res.download(global.uploadRoot + '/' + req.params.pdfname);
+})
+
 
 module.exports = router;

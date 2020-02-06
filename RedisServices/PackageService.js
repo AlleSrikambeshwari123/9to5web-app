@@ -105,6 +105,15 @@ class PackageService {
     });
   }
 
+  getPackage(packageId) {
+    return new Promise((resolve, reject) => {
+      client.hgetall(PREFIX + packageId, (err, pkg) => {
+        if (err || !pkg) resolve({});
+        else resolve(pkg);
+      })
+    });
+  }
+
   // Only show 7 trackingNo on the list;
   getPackages(awbId) {
     return new Promise((resolve, reject) => {

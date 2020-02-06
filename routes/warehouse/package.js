@@ -11,5 +11,6 @@ router.get('/fll/package/list', middleware().checkSession, packageCtrl.get_packa
 // router.delete('/fll/package/manage/:id/delete', middleware().checkSession, packageCtrl.delete_package);
 
 router.get('/fll/package/get/:awbId', middleware().checkSession, packageCtrl.get_awb_packages);
+router.get('/fll/package/manage/:packageId/print', middleware().checkSession, packageCtrl.generate_package_pdf);
 
 module.exports = router;

@@ -1,4 +1,5 @@
 var services = require('../RedisServices/RedisDataServices');
+var printerCtrl = require('./PrinterController');
 var utils = require('../Util/utils');
 var aws = require('../Util/aws');
 
@@ -123,5 +124,11 @@ exports.delete_awb = (req, res, next) => {
     services.packageService.removePackages(awbId),
   ]).then(results => {
     res.send(results[0]);
+  })
+}
+
+exports.generate_awb_pdf = (req, res, next) => {
+  printerCtrl.generate_awb_pdf(req.params.awbId).then(result => {
+    res.send(result);
   })
 }

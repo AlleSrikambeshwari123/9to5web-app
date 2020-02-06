@@ -9,5 +9,6 @@ router.get('/get-printers', printerController.get_printers);
 router.get('/get-awb/:id', printerController.get_full_awb);
 router.get('/download-pdf/awb/:id', printerController.download_pdf_awb);
 router.get('/download-pdf/pkg/:id', printerController.download_pkg_labels);
+router.get('/pdf/generate/awb/:id', printerController.generate_awb_pdf);
 
 module.exports = router;

@@ -53,8 +53,7 @@ exports.download_pdf_awb = (req, res, next) => {
   console.log("Downloading AWB PDF", id);
   getFullAwb(id).then(awb => {
     awbPdfGen.generateAWb(awb).then(result => {
-      console.log(result.filename);
-      res.download(result.filename);
+      res.download(result.path);
     })
   })
 }
@@ -63,12 +62,32 @@ exports.download_pkg_labels = (req, res, next) => {
   let id = req.params.id;
   console.log("Downloading Package Label PDF", id);
   getFullAwb(id).then(awb => {
-    lblPdfGen.generatePackageLabels(awb).then(results => {
+    lblPdfGen.generateAllPackageLabels(awb).then(results => {
       console.log(results);
       res.zip(results)
       // res.download(results);
     })
   })
+}
+
+exports.generate_awb_pdf = (req, res, next) => {
+  getFullAwb(req.params.id).then(awb => {
+    awbPdfGen.generateAWb(awb).then(result => {
+      res.send(result);
+    })
+  })
+}
+
+exports.generate_pkg_label_pdf = (packageId) => {
+  return new Promise((resolve, reject) => {
+    services.packageService.getPackage(packageId).then(package => {
+      getFullAwb(package.awbId).then(awb => {
+        lblPdfGen.generateSinglePackageLabel(awb, package).then(result => {
+          resolve(result);
+        })
+      })
+    })
+  });
 }
 
 function getFullAwb(id) {
