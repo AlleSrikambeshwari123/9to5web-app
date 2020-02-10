@@ -9,13 +9,6 @@ const PREFIX = strings.redis_prefix_shipper;
 const SHIPPER_ID = strings.redis_id_shipper;
 
 class ShipperService {
-    getShipmentId() {
-        return new Promise((resolve, reject) => {
-            client.incr("rec:truck:id", (err, reply) => {
-                resolve(reply);
-            })
-        })
-    }
     importShippersFromCsv() {
         return new Promise((resolve, reject) => {
             this.removeAll().then(result => {

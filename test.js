@@ -1,4 +1,4 @@
-//#region  Manifest TEST 
+//#region  Manifest TEST
 // var ManifestService = require('./RedisServices/ManifestService').ManifestService; 
 // var pservice =  require('./RedisServices/PackageService').PackageService; 
 // var ms = new ManifestService(); 
@@ -16,18 +16,18 @@
 // });
 //#endregion
 
-var client = require('./RedisServices/dataContext').redisClient;
+// var client = require('./RedisServices/dataContext').redisClient;
 
-var user = {
-  username: "admin",
-  firstName: "admin",
-  lastName: "9-5 Import",
-  password: "admin",
-  email: "admin@9-5imports.com",
-  mobile: "868.354.7177",
-  role: "Admin"
-}
-client.del('customer:id');
+// var user = {
+//   username: "admin",
+//   firstName: "admin",
+//   lastName: "9-5 Import",
+//   password: "admin",
+//   email: "admin@9-5imports.com",
+//   mobile: "868.354.7177",
+//   role: "Admin"
+// }
+// client.del('customer:id');
 // var services = require('./RedisServices/RedisDataServices');
 // services.awbService.resetAwbId().then(result => {
 //   // services.userService.createUser(user).then(result => {
@@ -36,3 +36,14 @@ client.del('customer:id');
 //   console.log(result);
 // })
 // });
+
+//========== Package Service ==========//
+// const PKG_STATUS = {
+//   1: "Received",
+//   2: "Loaded on AirCraft",
+//   3: "In Transit",
+//   4: "Recieved in NAS",
+//   5: "Ready for Pickup / Delivery",
+//   6: "Delivered"
+// };
+// console.log(PKG_STATUS['1']);

@@ -3,6 +3,7 @@ var redis = require("redis");
 var moment = require("moment");
 var fs = require("fs");
 var uniqId = require("uniqid");
+var strings = require("../Res/strings");
 
 var PackageUtil = require("../Util/packageutil").PackageUtility;
 var packageUtil = new PackageUtil();
@@ -14,6 +15,13 @@ const PREFIX = "package:";
 const PACKAGE_ID = "id:package";
 const PREFIX_PACKAGE_LIST = "list:package:"; // this key + awbId = array of packages
 
+const LIST_PACKAGE_SHIPMENT = "list:shipment:"; // this key + shipmentId = array of packages
+const SHIPMENT_ID = "rec:truck:id";
+
+const PREFIX_PACKAGE_STATUS = "status:package:";
+const ID_PACKAGE_STATUS = "id:status:package";
+const LIST_PACKAGE_STATUS = "list:status:package:";
+
 const REC_PKG = "pkg:rec:"
 var CustomerService = require('./CustomerService');
 var customerService = new CustomerService()
@@ -24,7 +32,6 @@ const PKG_STATUS = {
   4: "Recieved in NAS",
   5: "Ready for Pickup / Delivery",
   6: "Delivered"
-
 };
 
 function getPackageVolumne(mPackage) {
@@ -90,6 +97,7 @@ function addPackageToIndex(trackingNo, msearcher) {
 }
 
 class PackageService {
+  //========== Dashboard Functions ==========//
   getAllPackages() {
     return new Promise((resolve, reject) => {
       client.keys(PREFIX + '*', (err, keys) => {
@@ -108,7 +116,7 @@ class PackageService {
   getPackage(packageId) {
     return new Promise((resolve, reject) => {
       client.hgetall(PREFIX + packageId, (err, pkg) => {
-        if (err || !pkg) resolve({});
+        if (err || pkg == null) resolve({});
         else resolve(pkg);
       })
     });
@@ -219,6 +227,57 @@ class PackageService {
     });
   }
 
+
+  //========== Load Packages to Truck ==========//
+  getShipmentId() {
+    return new Promise((resolve, reject) => {
+      client.incr(SHIPMENT_ID, (err, reply) => {
+        resolve(reply);
+      })
+    })
+  }
+  addPackageToShipment(trackingNo, shipmentId, username, status) { // trackingNo rule ==> pmb-awbId-packageId 
+    return new Promise((resolve, reject) => {
+      let ids = trackingNo.split('-');
+      let packageId = ids[2];
+      client.sadd(LIST_PACKAGE_SHIPMENT + shipmentId, trackingNo, (err, reply) => {
+        if (err) resolve({ success: false, message: strings.string_response_error });
+        this.updatePackageStatus(packageId, status, username).then(result => console.log(result));
+        this.getPackage(packageId).then(pkg => {
+          resolve({ success: true, package: pkg });
+        })
+      })
+    })
+  }
+
+  //========== Package Status ==========//
+  updatePackageStatus(packageId, status, username) {
+    return new Promise((resolve, reject) => {
+      client.incr(ID_PACKAGE_STATUS, (err, id) => {
+        client.hmset(PREFIX_PACKAGE_STATUS + id, {
+          id: id,
+          packageId: packageId,
+          status: PKG_STATUS[status],
+          datetimestamp: moment().utc().unix(),
+          updatedBy: username,
+        });
+        client.sadd(LIST_PACKAGE_STATUS + packageId, id);
+        resolve({ success: true, message: strings.string_response_updated });
+      })
+    });
+  }
+
+  getPackageStatus(packageId) {
+    return new Promise((resolve, reject) => {
+      client.smembers(LIST_PACKAGE_STATUS + packageId, (err, ids) => {
+        Promise.all(ids.map(id => {
+          return lredis.hgetall(PREFIX_PACKAGE_STATUS + id);
+        })).then(status => {
+          resolve(status);
+        })
+      })
+    });
+  }
 
   listNoDocsFll() {
     return new Promise((resolve, reject) => {
@@ -738,22 +797,7 @@ class PackageService {
       })
     })
   }
-  recFromTruck(trackingNo, username, shipmentId) {
-    return new Promise((resolve, reject) => {
-      client.sadd("shipment:id:" + shipmentId, trackingNo, (err, reply) => {
-        client.set(REC_PKG + trackingNo, moment().unix(), (err, result) => {
-          if (err) resolve({ saved: false })
-          //shipment count 
-          var shipmentCount = 1;
-          client.scard("shipment:id:" + shipmentId, (err, card) => {
-            resolve({ saved: true, pkgCount: card })
-          });
 
-        })
-      })
-
-    })
-  }
   procssessPackage(pkgIfno, username) {
     var srv = this;
     return new Promise((resolve, reject) => {

@@ -13,137 +13,133 @@ var PackageUtil = require('../../Util/packageutil').PackageUtility;
 var packageUtil = new PackageUtil();
 
 router.post('/authenticate', (req, res, next) => {
-    var body = req.body;
-    console.log(body);
-    services.userService.authenticate(body.username, body.password).then(result => {
-        res.send(result);
-    })
+  var body = req.body;
+  console.log(body);
+  services.userService.authenticate(body.username, body.password).then(result => {
+    res.send(result);
+  })
 })
 router.post("/consolidate-packages", (req, res, next) => {
-    var pkgArray = JSON.parse(req.body.packages);
-    var user = req.body.username;
-    var boxSize = req.body.boxSize;
-    services.packageService.createConsolated(pkgArray, user, boxSize).then(result => {
-        res.send(result);
-    })
+  var pkgArray = JSON.parse(req.body.packages);
+  var user = req.body.username;
+  var boxSize = req.body.boxSize;
+  services.packageService.createConsolated(pkgArray, user, boxSize).then(result => {
+    res.send(result);
+  })
 })
 router.get('/open-flights', (req, res, next) => {
-    services.manifestService.getOpenManifest().then(manifests => {
-        Promise.all(manifests.map(manifest => {
-            return services.planeService.getPlane(manifest.planeId);
-        })).then(planes => {
-            manifests.forEach((manifest, i) => manifest.plane = planes[i]);
-            res.send({ manifests: manifests });
-        })
+  services.manifestService.getOpenManifest().then(manifests => {
+    Promise.all(manifests.map(manifest => {
+      return services.planeService.getPlane(manifest.planeId);
+    })).then(planes => {
+      manifests.forEach((manifest, i) => manifest.plane = planes[i]);
+      res.send({ manifests: manifests });
     })
-})
-router.get('/rec-shipment-id', (req, res, next) => {
-    services.shipperService.getShipmentId().then((id) => {
-        res.send({ id: id })
-    })
+  })
 })
 router.get('/plane-compartments/:planeId', (req, res, next) => {
-    var planeId = req.params.planeId;
-    services.planeService.listCompartments(planeId).then(details => {
-        res.send(details)
-    })
+  var planeId = req.params.planeId;
+  services.planeService.listCompartments(planeId).then(details => {
+    res.send(details)
+  })
 })
 router.post('/add-package-to-flight', (req, res, next) => {
-    var body = req.body;
-    var action = {
-        mid: body.mid,
-        barcode: body.barCode,
-        compartment: body.compartment
-    }
-    console.log(action);
+  var body = req.body;
+  var action = {
+    mid: body.mid,
+    barcode: body.barCode,
+    compartment: body.compartment
+  }
+  console.log(action);
 
-    services.packageService.addToFlight(action).then((result) => {
-        res.send(result)
-    })
+  services.packageService.addToFlight(action).then((result) => {
+    res.send(result)
+  })
 })
 router.post('/process-pkg-nas', (req, res, next) => {
-
-    var body = req.body;
-    var nas_location_id = 2;
-    console.log(req.body)
-    services.packageService.procssessPackage(body, req.body.username).then(result => {
-        res.send(result)
-    })
-
-
+  var body = req.body;
+  var nas_location_id = 2;
+  console.log(req.body)
+  services.packageService.procssessPackage(body, req.body.username).then(result => {
+    res.send(result)
+  })
 })
 router.post('/rm-package-from-flight', (req, res, next) => {
-    var body = req.body;
-    var action = {
-        mid: body.mid,
-        barcode: body.barCode
-    }
-    services.packageService.removeFromFlight(action).then(result => {
-        res.send(result);
-    })
+  var body = req.body;
+  var action = {
+    mid: body.mid,
+    barcode: body.barCode
+  }
+  services.packageService.removeFromFlight(action).then(result => {
+    res.send(result);
+  })
 })
 
-//
-router.post('/rec-package', (req, res, next) => {
-    var body = req.body;
-    services.packageService.recFromTruck(body.trackingNumber, body.username, body.shipmentId).then((result) => {
-        res.send(result);
-
-    })
+// Packages from FLL Truck to Airport, accept them to get ready to be loaded to flight
+router.get('/new-shipment-id', (req, res, next) => {
+  services.packageService.getShipmentId().then((id) => {
+    res.send({ id: id })
+  })
+})
+router.post('/accept-package', (req, res, next) => {
+  var body = req.body;
+  services.packageService.addPackageToShipment(body.trackingNumber, body.shipmentId, body.username, body.status).then((result) => {
+    res.send(result);
+  })
 })
 router.post('/rec-package-nas', (req, res, next) => {
-    var body = req.body;
-    services.packageService.recFromPlaneNas(body.barcode).then((result) => {
-        res.send(result)
-    })
+  var body = req.body;
+  services.packageService.recFromPlaneNas(body.barcode).then((result) => {
+    res.send(result)
+  })
 })
 router.get('/get-open-deliveries', (req, res, next) => {
-    services.deliveryService.getOpenDeliveries().then(deliveries => {
-        res.send(deliveries);
-    })
+  services.deliveryService.getOpenDeliveries().then(deliveries => {
+    res.send(deliveries);
+  })
 })
 router.post('/add-package-to-delivery', (req, res, next) => {
-    var deliveryPkg = {
-        barcode: req.body.barcode,
-        deliveryId: req.body.deliveryId
-    }
-    services.deliveryService.addPackage(deliveryPkg.deliveryId, deliveryPkg.barcode).then(result => {
-        res.send(result)
-    })
+  var deliveryPkg = {
+    barcode: req.body.barcode,
+    deliveryId: req.body.deliveryId
+  }
+  services.deliveryService.addPackage(deliveryPkg.deliveryId, deliveryPkg.barcode).then(result => {
+    res.send(result)
+  })
 })
 router.post('/')
 router.get('/get-locations', (req, res, next) => {
-    services.locationService.getLocations().then(locations => {
-        res.send(locations);
-    })
+  services.locationService.getLocations().then(locations => {
+    res.send(locations);
+  })
 });
 router.post('/checkout-to-customer', (req, res, next) => {
-    var body = req.body;
-    var barcode = body.barcode;
-    var username = body.username;
-    services.packageService.checkOutToCustomer(barcode, username).then(result => {
-        console.log(result)
-        res.send(result)
-    })
+  var body = req.body;
+  var barcode = body.barcode;
+  var username = body.username;
+  services.packageService.checkOutToCustomer(barcode, username).then(result => {
+    console.log(result)
+    res.send(result)
+  })
 })
 router.post('/get-package-info/', (req, res, next) => {
-    var id = req.body.barcode;
-    services.packageService.getPackageById(id).then((pkg => {
-        res.send(pkg);
-    }))
+  var id = req.body.barcode;
+  services.packageService.getPackageById(id).then((pkg => {
+    res.send(pkg);
+  }))
 })
 router.post('/check-into-store', (req, res, next) => {
-    var checkin = {
-        locationId: req.body.locationId,
-        location: req.body.location,
-        barcode: req.body.barcode,
-        username: req.body.username,
-    }
-    services.packageService.updateStoreLocation(checkin).then(result => {
-        res.send(result)
-    })
+  var checkin = {
+    locationId: req.body.locationId,
+    location: req.body.location,
+    barcode: req.body.barcode,
+    username: req.body.username,
+  }
+  services.packageService.updateStoreLocation(checkin).then(result => {
+    res.send(result)
+  })
 })
 router.post('/save-package-fees', (req, res, next) => {
-    res.send({ saved: true })
+  res.send({ saved: true })
 })
 module.exports = router;
