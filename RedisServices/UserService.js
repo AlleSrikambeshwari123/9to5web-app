@@ -17,7 +17,7 @@ class UserService {
     changePassword(username, newpassword, oldpassword) {
         return new Promise((resolve, reject) => {
             this.authenticate(username, oldpassword).then((userInfo) => {
-                if (userInfo.valid == true) {
+                if (userInfo.authenticated == true) {
                     client.hmset(PREFIX + username, { password: bcrypt.hashSync(newpassword, 10) }, function (err, result) {
                         if (err) resolve({ success: false, message: strings.string_response_error });
                         resolve({ success: true, message: strings.string_response_updated });
@@ -30,22 +30,22 @@ class UserService {
         return new Promise((resolve, reject) => {
             client.hgetall(PREFIX + username, (err, result) => {
                 if (err) {
-                    resolve({ valid: false, token: "", user: null });
+                    resolve({ authenticated: false, token: "", user: null });
                 }
                 if (result) {
                     bcrypt.compare(password, result.password, (err, pwdsame) => {
-                        if (err) resolve({ valid: false, token: "", user: null });
+                        if (err) resolve({ authenticated: false, token: "", user: null });
                         if (pwdsame) {
                             delete result.password;
                             utils.generateToken(result).then(function (token) {
-                                resolve({ user: result, token: token, valid: true });
+                                resolve({ user: result, token: token, authenticated: true });
                             });
                         } else {
-                            resolve({ user: null, token: "", valid: false });
+                            resolve({ user: null, token: "", authenticated: false });
                         }
                     });
                 } else {
-                    resolve({ user: null, token: "", valid: false });
+                    resolve({ user: null, token: "", authenticated: false });
                 }
             });
         });

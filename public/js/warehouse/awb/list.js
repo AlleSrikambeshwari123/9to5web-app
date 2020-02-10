@@ -37,7 +37,6 @@ $('.btn-print-awb').click(function () {
           var canvasContext = canvas.getContext('2d');
           const viewport = page.getViewport({ scale: .5 });
           canvas.height = canvas.width / viewport.width * viewport.height;
-          console.log(viewport);
           page.render({ canvasContext, viewport })
         })
       })

@@ -12,7 +12,7 @@ $('.btn-print-awb').click(function () {
         pdfData.getPage(1).then(page => {
           var canvas = $('#pdf-preview')[0];
           var canvasContext = canvas.getContext('2d');
-          const viewport = page.getViewport({ scale: 1 });
+          const viewport = page.getViewport({ scale: .5 });
           canvas.height = canvas.width / viewport.width * viewport.height;
           page.render({ canvasContext, viewport })
         })

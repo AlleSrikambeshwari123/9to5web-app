@@ -15,7 +15,7 @@ router.post('/login', (req, res, next) => {
   var password = req.body.password;
   services.userService.authenticate(username, password).then(function (authresult) {
     console.log(authresult);
-    if (authresult.valid == true) {
+    if (authresult.authenticated == true) {
       req.session.token = authresult.token;
       var cuser = authresult.user;
       if (cuser.role.indexOf(role_admin) > -1) {
