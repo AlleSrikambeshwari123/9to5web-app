@@ -1,4 +1,3 @@
-
 var moment = require("moment");
 var strings = require('../Res/strings');
 
@@ -10,10 +9,15 @@ const PREFIX = strings.redis_prefix_awb;
 const AWB_ID = strings.redis_id_awb;
 const PREFIX_NO_DOCS_LIST = strings.redis_prefix_no_docs_list;
 
-var CustomerService = require('./CustomerService');
-var customerService = new CustomerService()
-
 class AwbService {
+  constructor() {
+    this.services = {};
+  }
+
+  setServiceInstances(services) {
+    this.services = services;
+  }
+
   resetAwbId() {
     return new Promise((resolve, reject) => {
       client.set(AWB_ID, INIT_AWB_ID);
@@ -66,11 +70,19 @@ class AwbService {
     });
   }
 
+  deleteAwb(awbId) {
+    return new Promise((resolve, reject) => {
+      client.del(PREFIX + awbId);
+      client.srem(PREFIX_NO_DOCS_LIST, awbId);
+      resolve({ success: true, message: strings.string_response_removed });
+    });
+  }
+
   getAwb(id) {
     return new Promise((resolve, reject) => {
       client.hgetall(PREFIX + id, (err, awb) => {
         if (err) resolve({});
-        customerService.getCustomer(awb.customerId).then(customer => {
+        this.services.customerService.getCustomer(awb.customerId).then(customer => {
           awb.customer = customer;
           resolve(awb);
         })
@@ -104,13 +116,49 @@ class AwbService {
     });
   }
 
-  deleteAwb(awbId) {
+  getFullAwb(id) {
     return new Promise((resolve, reject) => {
-      client.del(PREFIX + awbId);
-      client.srem(PREFIX_NO_DOCS_LIST, awbId);
-      resolve({ success: true, message: strings.string_response_removed });
+      Promise.all([
+        this.getAwb(id),
+        this.services.packageService.getPackages(id),
+      ]).then(results => {
+        let awb = results[0];
+        let packages = results[1];
+        Promise.all([
+          this.services.customerService.getCustomer(awb.customerId),
+          this.services.shipperService.getShipper(awb.shipper),
+          this.services.shipperService.getShipper(awb.carrier),
+          this.services.hazmatService.getClass(awb.hazmat),
+        ]).then(otherInfos => {
+          awb.packages = packages;
+          awb.customer = otherInfos[0];
+          delete awb.customer.password;
+          delete awb.customer.confirmPassword;
+          awb.shipper = otherInfos[1];
+          awb.carrier = otherInfos[2];
+          awb.hazmat = otherInfos[3];
+
+          resolve(awb);
+        })
+      });
     });
   }
 }
+
+//========== DB Structure ==========//
+// customerId: '2',
+// shipper: shipperId
+// carrier: carrierId
+// hazmat: hazmatId
+// note: 'Test',
+// invoiceNumber: '1234',
+// value: '500',
+// isSed: '0',
+// packages: [],
+// invoice: '8k71navk6b7qx6p_1581022117.png',
+// id: '100006',
+// dateCreated: '1581022119',
+// status: '1',
+// hasDocs: '1',
 
 module.exports = AwbService;

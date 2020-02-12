@@ -167,4 +167,15 @@ class ManifestService {
   }
 }
 
+//========== DB Structure ==========//
+/* 
+id: 102
+planeId: 1
+awbs: 100002,100001,100003
+dateCreated:
+title: M-102
+shipDate: Jan 30, 2020 22:14
+stage: Open
+stageId: 1
+*/
 module.exports = ManifestService;

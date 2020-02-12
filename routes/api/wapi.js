@@ -19,30 +19,6 @@ router.post('/authenticate', (req, res, next) => {
     res.send(result);
   })
 })
-router.post("/consolidate-packages", (req, res, next) => {
-  var pkgArray = JSON.parse(req.body.packages);
-  var user = req.body.username;
-  var boxSize = req.body.boxSize;
-  services.packageService.createConsolated(pkgArray, user, boxSize).then(result => {
-    res.send(result);
-  })
-})
-router.get('/open-flights', (req, res, next) => {
-  services.manifestService.getOpenManifest().then(manifests => {
-    Promise.all(manifests.map(manifest => {
-      return services.planeService.getPlane(manifest.planeId);
-    })).then(planes => {
-      manifests.forEach((manifest, i) => manifest.plane = planes[i]);
-      res.send({ manifests: manifests });
-    })
-  })
-})
-router.get('/plane-compartments/:planeId', (req, res, next) => {
-  var planeId = req.params.planeId;
-  services.planeService.listCompartments(planeId).then(details => {
-    res.send(details)
-  })
-})
 router.post('/add-package-to-flight', (req, res, next) => {
   var body = req.body;
   var action = {
@@ -75,18 +51,61 @@ router.post('/rm-package-from-flight', (req, res, next) => {
   })
 })
 
+//========== FLL Package APIs ==========//
 // Packages from FLL Truck to Airport, accept them to get ready to be loaded to flight
 router.get('/new-shipment-id', (req, res, next) => {
-  services.packageService.getShipmentId().then((id) => {
+  services.packageService.getShipmentId().then(id => {
     res.send({ id: id })
+  })
+})
+router.get('/get-package-detail/:trackingNo', (req, res, next) => {
+  let trackingNo = req.params.trackingNo;
+  let ids = trackingNo.split('-');
+  let packageId = ids[2];
+  let awbId = ids[1];
+  Promise.all([
+    services.packageService.getPackage(packageId),
+    services.awbService.getFullAwb(awbId),
+  ]).then(results => {
+    res.send({
+      packageInfo: results[0],
+      awb: results[1],
+    })
   })
 })
 router.post('/accept-package', (req, res, next) => {
   var body = req.body;
-  services.packageService.addPackageToShipment(body.trackingNumber, body.shipmentId, body.username, body.status).then((result) => {
+  services.packageService.addPackageToShipment(body.trackingNumber, body.username).then((result) => {
     res.send(result);
   })
 })
+router.post("/consolidate-packages", (req, res, next) => {
+  var pkgArray = JSON.parse(req.body.packages);
+  var user = req.body.username;
+  var boxSize = req.body.boxSize;
+  services.packageService.createConsolated(pkgArray, user, boxSize).then(result => {
+    res.send(result);
+  })
+})
+//========== FLL Flight APIs ==========//
+router.get('/open-manifest', (req, res, next) => {
+  services.manifestService.getOpenManifest().then(manifests => {
+    Promise.all(manifests.map(manifest => {
+      return services.planeService.getFullPlane(manifest.planeId);
+    })).then(planes => {
+      manifests.forEach((manifest, i) => manifest.plane = planes[i]);
+      console.log(manifests);
+      res.send({ manifests: manifests });
+    })
+  })
+})
+router.get('/plane-compartments/:planeId', (req, res, next) => {
+  var planeId = req.params.planeId;
+  services.planeService.getCompartments(planeId).then(compartments => {
+    res.send({ compartments: compartments })
+  })
+})
+
 router.post('/rec-package-nas', (req, res, next) => {
   var body = req.body;
   services.packageService.recFromPlaneNas(body.barcode).then((result) => {

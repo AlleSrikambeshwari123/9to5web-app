@@ -16,15 +16,14 @@ const PACKAGE_ID = "id:package";
 const PREFIX_PACKAGE_LIST = "list:package:"; // this key + awbId = array of packages
 
 const LIST_PACKAGE_SHIPMENT = "list:shipment:"; // this key + shipmentId = array of packages
-const SHIPMENT_ID = "rec:truck:id";
+const SHIPMENT_ID = "id:accept:truck";
 
 const PREFIX_PACKAGE_STATUS = "status:package:";
 const ID_PACKAGE_STATUS = "id:status:package";
 const LIST_PACKAGE_STATUS = "list:status:package:";
 
 const REC_PKG = "pkg:rec:"
-var CustomerService = require('./CustomerService');
-var customerService = new CustomerService()
+
 const PKG_STATUS = {
   1: "Received",
   2: "Loaded on AirCraft",
@@ -97,6 +96,14 @@ function addPackageToIndex(trackingNo, msearcher) {
 }
 
 class PackageService {
+  constructor() {
+    this.services = {};
+  }
+
+  setServiceInstances(services) {
+    this.services = services;
+  }
+
   //========== Dashboard Functions ==========//
   getAllPackages() {
     return new Promise((resolve, reject) => {
@@ -232,19 +239,23 @@ class PackageService {
   getShipmentId() {
     return new Promise((resolve, reject) => {
       client.incr(SHIPMENT_ID, (err, reply) => {
+        if (err) {
+          console.error(err);
+          resolve(null);
+        }
         resolve(reply);
       })
     })
   }
-  addPackageToShipment(trackingNo, shipmentId, username, status) { // trackingNo rule ==> pmb-awbId-packageId 
+  addPackageToShipment(barcodes, username) {
     return new Promise((resolve, reject) => {
-      let ids = trackingNo.split('-');
-      let packageId = ids[2];
-      client.sadd(LIST_PACKAGE_SHIPMENT + shipmentId, trackingNo, (err, reply) => {
-        if (err) resolve({ success: false, message: strings.string_response_error });
-        this.updatePackageStatus(packageId, status, username).then(result => console.log(result));
-        this.getPackage(packageId).then(pkg => {
-          resolve({ success: true, package: pkg });
+      this.getShipmentId().then(shipmentId => {
+        let packageIds = barcodes.split(',');
+        client.sadd(LIST_PACKAGE_SHIPMENT + shipmentId, packageIds, (err, reply) => console.log(err, reply));
+        Promise.all(packageIds.map(packageId => {
+          return this.updatePackageStatus(packageId, 1, username);
+        })).then(result => {
+          resolve({ success: true, message: strings.string_response_received });
         })
       })
     })
@@ -359,7 +370,6 @@ class PackageService {
   }
 
   createConsolated(packages, username, boxSize) {
-    var srv = this;
     return new Promise((resolve, reject) => {
       var awbInfo = {
         id: "",
@@ -374,7 +384,7 @@ class PackageService {
         username: username
 
       };
-      srv.saveAwb(awbInfo).then(awbResult => {
+      this.saveAwb(awbInfo).then(awbResult => {
         //add 
         var cPackage = {
           id: 0,
@@ -385,7 +395,6 @@ class PackageService {
           awb: awbResult.id,
           isConsolidated: "1",
           created_by: username,
-
         };
         srv.savePackageToAwb(cPackage).then(pkgResult => {
           // get the id 
@@ -409,17 +418,11 @@ class PackageService {
               //we need to update the total weight of the package now 
               srv.packageIndex.update(cPackage.id, { weight: totalWeight })
             })
-
             resolve({ saved: true, id: pkgResult.id })
           })
         })
-
       })
-
-
       //validate the package 
-
-
     })
   }
   getManifestPackages() {

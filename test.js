@@ -28,7 +28,11 @@
 //   role: "Admin"
 // }
 // client.del('customer:id');
-// var services = require('./RedisServices/RedisDataServices');
+var services = require('./RedisServices/RedisDataServices');
+//========== AWB Service ==========//
+// services.awbService.getFullAwb('100006').then(awb => {
+//   console.log(awb);
+// })
 // services.awbService.resetAwbId().then(result => {
 //   // services.userService.createUser(user).then(result => {
 //   // services.shipperService.importShippersFromCsv().then(result => {
@@ -47,3 +51,8 @@
 //   6: "Delivered"
 // };
 // console.log(PKG_STATUS['1']);
+
+//========== Package Service ==========//
+services.manifestService.getOpenManifest().then(manifests => {
+  console.log(manifests);
+})

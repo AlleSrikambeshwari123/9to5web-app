@@ -22,7 +22,10 @@ class LocationService {
   addLocation(location) {
     return new Promise((resolve, reject) => {
       client.incr(ID_COUNTER, (err, id) => {
-        if (err) resolve({ success: false, message: strings.string_response_error });
+        if (err) {
+          console.error(err);
+          resolve({ success: false, message: strings.string_response_error });
+        }
         location.id = id;
         client.hmset(PREFIX + id, location, (err, result) => {
           if (err) resolve({ success: false, message: strings.string_response_error });

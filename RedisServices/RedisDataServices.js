@@ -29,19 +29,24 @@ var shipperService = new ShipperService();
 var AwbService = require('./AwbService');
 var awbService = new AwbService();
 
-module.exports = {
-  customerService: customerService,
-  manifestService: manifestService,
-  packageService: packageService,
-  userService: userService,
-  locationService: locationService,
-  deliveryService: deliveryService,
-  driverService: driverService,
-  vehicleService: vehicleService,
-  printService: printService,
-  pilotService: pilotService,
-  planeService: planeService,
-  hazmatService: hazmatService,
-  shipperService: shipperService,
-  awbService: awbService,
+var services = {
+  customerService,
+  manifestService,
+  packageService,
+  userService,
+  locationService,
+  deliveryService,
+  driverService,
+  vehicleService,
+  printService,
+  pilotService,
+  planeService,
+  hazmatService,
+  shipperService,
+  awbService,
 };
+
+packageService.setServiceInstances(services);
+awbService.setServiceInstances(services);
+
+module.exports = services;
