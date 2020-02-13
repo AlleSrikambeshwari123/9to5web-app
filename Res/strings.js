@@ -62,6 +62,7 @@ exports.string_response_removed = "Successfully Removed !";
 exports.string_response_added = "Successfully Added !";
 exports.string_response_shipped = "Successfully Shipped !";
 exports.string_response_received = "Successfully Received !";
+exports.string_response_loaded = "Successfully Loaded !";
 exports.string_response_already_added = "Already Added !";
 exports.string_response_print_awb = "AirWay Bill sent to the printer.";
 

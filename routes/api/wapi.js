@@ -19,19 +19,6 @@ router.post('/authenticate', (req, res, next) => {
     res.send(result);
   })
 })
-router.post('/add-package-to-flight', (req, res, next) => {
-  var body = req.body;
-  var action = {
-    mid: body.mid,
-    barcode: body.barCode,
-    compartment: body.compartment
-  }
-  console.log(action);
-
-  services.packageService.addToFlight(action).then((result) => {
-    res.send(result)
-  })
-})
 router.post('/process-pkg-nas', (req, res, next) => {
   var body = req.body;
   var nas_location_id = 2;
@@ -97,6 +84,14 @@ router.get('/open-manifest', (req, res, next) => {
       console.log(manifests);
       res.send({ manifests: manifests });
     })
+  })
+})
+router.post('/add-packages-to-flight', (req, res, next) => {
+  let packageIds = req.body.packageIds;
+  let manifestId = req.body.manifestId;
+  let compartment = req.body.compartment;
+  services.packageService.addToFlight(packageIds, manifestId, compartment).then((result) => {
+    res.send(result)
   })
 })
 router.get('/plane-compartments/:planeId', (req, res, next) => {

@@ -235,7 +235,7 @@ class PackageService {
   }
 
 
-  //========== Load Packages to Truck ==========//
+  //========== Receive Packages From Truck that arrived at Airport ==========//
   getShipmentId() {
     return new Promise((resolve, reject) => {
       client.incr(SHIPMENT_ID, (err, reply) => {
@@ -255,8 +255,28 @@ class PackageService {
         Promise.all(packageIds.map(packageId => {
           return this.updatePackageStatus(packageId, 1, username);
         })).then(result => {
-          resolve({ success: true, message: strings.string_response_received });
+          resolve({ success: true, message: strings.string_response_received, shipmentId: shipmentId });
         })
+      })
+    })
+  }
+
+  //========== Load Packages to AirCraft ==========//
+  addToFlight(packageIds, manifestId, compartmentId, username) {
+    return new Promise((resolve, reject) => {
+      let packages = packageIds.split(',');
+      Promise.all(packages.map(packageId => {
+        return Promise.all([
+          this.updatePackageStatus(packageId, 2, username),
+          this.updatePackage(packageId, {
+            manifestId: manifestId,
+            status: 2,
+            location: "Loaded on AirCraft",
+            compartmentId: compartmentId,
+          })
+        ])
+      })).then(results => {
+        resolve({ success: true, message: strings.string_response_loaded });
       })
     })
   }
@@ -289,6 +309,7 @@ class PackageService {
       })
     });
   }
+
 
   listNoDocsFll() {
     return new Promise((resolve, reject) => {
@@ -689,9 +710,6 @@ class PackageService {
         console.log(response);
         resolve({ deleted: true })
       })
-
-
-
     });
   }
   storePackageForPickup(trackingNo, bin) {
@@ -754,23 +772,6 @@ class PackageService {
 
   //#region Manifest Package Functions 
 
-  addToFlight(action) {
-    var srv = this;
-    return new Promise((resolve, reject) => {
-      var packageNo = getPackageIdFromBarCode(action.barcode);
-      console.log(action);
-      this.mySearch.update(packageNo, { mid: action.mid, status: 2, location: "Loaded on AirCraft", compartment: action.compartment }, (err, result) => {
-        if (err)
-          resolve({ added: false })
-        srv.getFlightCompartmentWeight(action.mid, action.compartment).then(fresult => {
-          fresult.added = true;
-          resolve(fresult)
-        })
-
-      })
-
-    })
-  }
   //get the compartment weight 
   getFlightCompartmentWeight(mid, compartment) {
     return new Promise((resolve, reject) => {
@@ -874,5 +875,25 @@ function getPackageIdFromBarCode(barCodeValue) {
       return parts[2].trim();
   return ""
 }
+
+//========== DB Structure ==========//
+/*          Package Record
+//--Original
+id:
+weight:
+awbId: 100005
+dimensions: 1x2x3
+packageType: BOX
+trackingNo: 8k72ikk6a0zkgd // Unique ID
+description: Shoes
+W: 1
+H: 2
+L: 3
+//-- Additional Fields
+status:
+manifestId:
+compartmentId:
+location: Warehosue FLL
+*/
 
 module.exports = PackageService;
