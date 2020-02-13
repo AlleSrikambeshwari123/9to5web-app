@@ -261,7 +261,7 @@ class PackageService {
     })
   }
 
-  //========== Load Packages to AirCraft ==========//
+  //========== Load Packages to AirCraft (Add to Manifest) ==========//
   addToFlight(packageIds, manifestId, compartmentId, username) {
     return new Promise((resolve, reject) => {
       let packages = packageIds.split(',');
@@ -293,6 +293,18 @@ class PackageService {
     });
   }
 
+  //========== Ship Packages in Manifest ==========//
+  updateManifestPackageToInTransit(manifestId, username) {
+    return new Promise((resolve, reject) => {
+      this.getPackageOnManifest(manifestId).then(packages => {
+        Promise.all(packages.map(pkg => {
+          return this.updatePackageStatus(pkg.id, 3, username);
+        })).then(results => {
+          resolve({ success: true, message: strings.string_response_updated });
+        })
+      })
+    });
+  }
   //========== Package Status ==========//
   updatePackageStatus(packageId, status, username) {
     return new Promise((resolve, reject) => {
@@ -650,33 +662,6 @@ class PackageService {
   //using this 
 
 
-  updateManifestPackageToInTransit(mid) {
-    //get all the packages
-    //we need to update the index at this point as well
-    var msearch = this.mySearch;
-    this.mySearch.search(
-      `@mid:[${mid} ${mid}]`,
-      { offset: 0, numberOfResults: 5000 },
-      (err, data) => {
-        var packages = [];
-        console.log(data);
-        data.results.forEach(element => {
-          var oldDocId = element.docId;
-          element.docId = element.docId.replace(`${mid}-`, "");
-          packages.push(element.docId);
-          // i could delete here
-          // msearch.delDocument(PKG_IDX,oldDocId)
-          //update all the packages
-        });
-        setPackageInTransit(packages, msearch, mid).then(function (
-          updatedPackages
-        ) {
-          console.log("updated packages");
-          console.log(updatedPackages);
-        });
-      }
-    );
-  }
   removePackageFromManifest(packageId, mid) {
     var msearch = this.mySearch;
     return new Promise((resolve, reject) => {

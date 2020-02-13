@@ -73,12 +73,12 @@ class ManifestService {
     })
   }
 
-  changeStage(mid, stages) {
+  changeStage(mid, stageId) {
     return new Promise((resolve, reject) => {
-      var stage = this.getStageById(stages);
+      var stage = this.getStageById(stageId);
       client.hmset(PREFIX + mid, {
         stageId: stage.id,
-        stege: stage.title
+        stage: stage.title
       }, (err, result) => {
         if (stage.id == manifestStages.open.id)
           client.sadd(OPEN_MANIFEST_LIST, mid);
@@ -88,11 +88,12 @@ class ManifestService {
       });
     })
   }
-  shipManifest(mid, awb, user) {
+
+  shipManifest(mid, username) {
     return new Promise((resolve, reject) => {
       client.hmset(PREFIX + mid, {
-        shipDate: moment().format("YYYY-MM-DD"),
-        shippedBy: user
+        shipDate: moment().utc().unix(),
+        shippedBy: username
       }, (err, result) => {
         this.changeStage(mid, manifestStages.shipped.id);
         resolve({ success: true, message: strings.string_response_shipped });
@@ -180,6 +181,7 @@ planeId: 1
 dateCreated:
 title: M-102
 shipDate: Jan 30, 2020 22:14
+shippedBy:
 stage: Open
 stageId: 1
 */

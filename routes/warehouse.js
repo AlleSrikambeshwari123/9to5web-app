@@ -51,20 +51,6 @@ router.get('/mlist', middleware(services.userService).checkSession, (req, res, n
     });
 });
 
-router.post('/ship-manifest', middleware(services.userService).checkSession, (req, res, next) => {
-    var mid = Number(req.body.mid);
-    var awb = req.body.awb;
-    var user = res.User.Username;
-
-    rServices.manifestService.shipManifest(mid, awb, user).then((sResult) => {
-        res.send(sResult);
-        rServices.packageService.updateManifestPackageToInTransit(mid);
-    });
-    // services.manifestService.shipManifest(mid,awb,user).then((mREsult)=>{
-    //     res.send(mREsult); 
-    // }); 
-
-});
 router.get('/export-manifest/:mid', middleware(services.userService).checkSession, (req, res, next) => {
 
     var mid = Number(req.params.mid);

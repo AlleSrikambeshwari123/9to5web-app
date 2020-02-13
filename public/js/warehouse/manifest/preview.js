@@ -10,5 +10,20 @@ $('.btn-send').click(function () {
 })
 
 $('.ship-manifest').click(function () {
-  console.log(selected_manifestId);
+  $('.close-del').trigger('click');
+  $.ajax({
+    url: 'ship',
+    type: 'get',
+    success: response => {
+      swal({
+        title: response.success == true ? 'Shipped' : 'Failed',
+        text: response.message,
+        type: response.success == true ? 'success' : 'error',
+      }).then(res => {
+        if (response.success == true) {
+          document.location.href = "/warehouse/fll/manifest/list";
+        }
+      })
+    }
+  })
 })
