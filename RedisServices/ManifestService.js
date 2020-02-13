@@ -21,12 +21,16 @@ const manifestStages = {
     id: 2,
     title: 'Closed'
   },
-  shipped: {
+  shipping: {
     id: 3,
+    title: 'Shipping'
+  },
+  shipped: {
+    id: 4,
     title: 'Shipped'
   },
   verified: {
-    id: 4,
+    id: 5,
     title: 'Verified'
   }
 }
@@ -98,12 +102,14 @@ class ManifestService {
 
   getManifest(manifestId) {
     return new Promise((resolve, reject) => {
-      client.hgetall(PREFIX + manifestId).then(manifest => {
+      lredis.hgetall(PREFIX + manifestId).then(manifest => {
         if (manifest.planeId) {
           planeService.getPlane(manifest.planeId).then(planeInfo => {
             manifest.plane = planeInfo;
             resolve(manifest);
           })
+        } else {
+          resolve(manifest);
         }
       })
     })
@@ -171,7 +177,6 @@ class ManifestService {
 /* 
 id: 102
 planeId: 1
-awbs: 100002,100001,100003
 dateCreated:
 title: M-102
 shipDate: Jan 30, 2020 22:14

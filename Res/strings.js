@@ -54,6 +54,17 @@ exports.redis_prefix_manifest = "manifest:";
 exports.redis_id_manifest = "id:manifest";
 exports.redis_prefix_manifest_open_list = "list:manifest:open";
 
+// Package
+exports.redis_prefix_package = "package:";
+exports.redis_id_package = "id:package";
+
+exports.redis_prefix_awb_package_list = "list:awb:package";
+exports.redis_prefix_manifest_package_list = "list:manifest:package";
+
+exports.redis_prefix_package_status = "status:package:";
+exports.redis_id_package_status = "id:status:package";
+exports.redis_prefix_list_package_status = "list:status:package:"
+
 // Const strings
 exports.string_response_error = "Internal Server Error !";
 exports.string_response_updated = "Successfully Updated !";

@@ -23,20 +23,24 @@
               <td><strong><%= manifest.title%></strong></td>
               <td>
                 <% if (manifest.stageId == 1 ) { %>
-                <span class="badge badge-warning"><%=manifest.stage %></span>
+                <span class="badge badge-secondary"><%=manifest.stage %></span>
                 <% } else if(manifest.stageId == 2) { %>
                 <span class="badge badge-default"><%=manifest.stage %></span>
                 <% } else if(manifest.stageId == 3) { %>
-                <span class="badge badge-success"><%=manifest.stage %></span>
+                <span class="badge badge-warning"><%=manifest.stage %></span>
                 <% } else if(manifest.stageId == 4) { %>
                 <span class="badge badge-primary"><%=manifest.stage %></span>
+                <% } else if(manifest.stageId == 5) { %>
+                <span class="badge badge-success"><%=manifest.stage %></span>
                 <% } %>
               </td>
               <td><%= manifest.dateCreated %></td>
               <td><%= manifest.plane.tail_number%></td>
               <td class="text-center">
+                <a href='manage/<%=manifest.id%>/get' class="btn btn-link btn-primary px-3" data-toggle="tooltip"
+                  data-original-title="View Details"> <i class="fa fa-eye"></i> </a>
                 <% if(manifest.stageId == 1) { %>
-                <a class="btn btn-link btn-danger btn-rm-manifest p-1" data-toggle="modal" data-id="<%=manifest.id%>"
+                <a class="btn btn-link btn-danger btn-rm-manifest px-3" data-toggle="modal" data-id="<%=manifest.id%>"
                   data-original-title="Delete" data-target="#confirm-delete-manifest"> <i class="fa fa-trash"></i> </a>
                 <% } %>
               </td>

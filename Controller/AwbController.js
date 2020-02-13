@@ -90,26 +90,23 @@ exports.add_new_awb = (req, res, next) => {
 
 exports.get_awb_list = (req, res, next) => {
   services.awbService.getAwbs().then(awbs => {
-    Promise.all(awbs.map(awb => {
-      return Promise.all([
-        services.packageService.getPackages(awb.id),
-        services.customerService.getCustomer(awb.customerId),
-        services.shipperService.getShipper(awb.shipper),
-        services.shipperService.getShipper(awb.carrier),
-      ]).then(results => {
-        let weight = 0;
-        awb.packages = results[0];
-        awb.packages.forEach(pkg => weight += Number(pkg.weight));
-        awb.weight = weight;
-        awb.customer = results[1];
-        awb.shipper = results[2];
-        awb.carrier = results[3];
-        awb.dateCreated = utils.formatDate(awb.dateCreated, "MMM DD, YYYY");
-      })
-    })).then(results => {
+    getFullAwb(awbs).then(awbs => {
       res.render('pages/warehouse/awb/list', {
         page: req.originalUrl,
         title: "AirWay Bills",
+        user: res.user,
+        awbs: awbs,
+      })
+    })
+  })
+}
+
+exports.get_awb_no_docs = (req, res, next) => {
+  services.awbService.getAwbsNoDocs().then(awbs => {
+    getFullAwb(awbs).then(awbs => {
+      res.render('pages/warehouse/awb/no-docs', {
+        page: req.originalUrl,
+        title: "AirWay Bills - No Docs",
         user: res.user,
         awbs: awbs,
       })
@@ -131,4 +128,41 @@ exports.generate_awb_pdf = (req, res, next) => {
   printerCtrl.generate_awb_pdf(req.params.awbId).then(result => {
     res.send(result);
   })
+}
+
+exports.nas_no_docs = (req, res, next) => {
+  services.awbService.getAwbsNoDocs().then(awbs => {
+    getFullAwb(awbs).then(awbs => {
+      res.render('pages/warehouse/awb/no-docs', {
+        page: req.originalUrl,
+        title: "AirWay Bills - No Docs",
+        user: res.user,
+        awbs: awbs,
+      })
+    })
+  })
+}
+
+function getFullAwb(awbs) {
+  return new Promise((resolve, reject) => {
+    Promise.all(awbs.map(awb => {
+      return Promise.all([
+        services.packageService.getPackages(awb.id),
+        services.customerService.getCustomer(awb.customerId),
+        services.shipperService.getShipper(awb.shipper),
+        services.shipperService.getShipper(awb.carrier),
+      ]).then(results => {
+        let weight = 0;
+        awb.packages = results[0];
+        awb.packages.forEach(pkg => weight += Number(pkg.weight));
+        awb.weight = weight;
+        awb.customer = results[1];
+        awb.shipper = results[2];
+        awb.carrier = results[3];
+        awb.dateCreated = utils.formatDate(awb.dateCreated, "MMM DD, YYYY");
+      })
+    })).then(results => {
+      resolve(awbs);
+    })
+  });
 }

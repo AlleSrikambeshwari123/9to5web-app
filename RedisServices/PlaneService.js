@@ -116,6 +116,14 @@ class PlaneService {
     });
   }
 
+  getCompartment(compartmentId) {
+    return new Promise((resolve, reject) => {
+      client.hgetall(COMPARTMENT_PREFIX + compartmentId, (err, compartment) => {
+        resolve(compartment);
+      })
+    });
+  }
+
   removeCompartment(planeId, cid) {
     return new Promise((resolve, reject) => {
       client.del(COMPARTMENT_PREFIX + cid);

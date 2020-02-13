@@ -77,12 +77,12 @@
 				</li>
 				<%if (user.role.includes('Admin') || user.role.includes("Warehouse Fl")) {%>
 				<li class="nav-item <% if (page.includes('/fll/')) { %> active <% } %>">
-					<a data-toggle="collapse" href="#warehouse">
+					<a data-toggle="collapse" href="#warehouse-fll">
 						<i class="fas fa-warehouse"></i>
 						<p>Warehouse FLL</p>
 						<span class="caret"></span>
 					</a>
-					<div class="collapse <% if (page.includes('/fll/')) { %> show <% } %>" id="warehouse">
+					<div class="collapse <% if (page.includes('/fll/')) { %> show <% } %>" id="warehouse-fll">
 						<ul class="nav nav-collapse">
 							<!-- <li>
 										<a href="/warehouse/incoming-shiptment">
@@ -94,11 +94,16 @@
 									<span class="sub-item">Create AirWay Bill</span>
 								</a>
 							</li>
-							<li <% if (page.includes('/fll/awb/list')) { %> class="active" <% } %>>
+							<li <% if (page.includes('/fll/awb/no-docs')) { %> class="active" <% } %>>
+								<a href="/warehouse/fll/awb/no-docs">
+									<span class="sub-item">No Docs</span>
+								</a>
+							</li>
+							<!-- <li <% if (page.includes('/fll/awb/list')) { %> class="active" <% } %>>
 								<a href="/warehouse/fll/awb/list">
 									<span class="sub-item">AirWay Bills</span>
 								</a>
-							</li>
+							</li> -->
 							<li <% if (page.includes('/fll/package/list')) { %> class="active" <% } %>>
 								<a href="/warehouse/fll/package/list">
 									<span class="sub-item">Packages on Hands</span>
@@ -109,41 +114,26 @@
 									<span class="sub-item">Manifest</span>
 								</a>
 							</li>
-							<!-- <li>
-								<a href="/warehouse/list-manifest">
-									<span class="sub-item">Reports</span>
-								</a>
-							</li> -->
-							<!-- <li>
-								<a href="/warehouse/processing">
-									<span class="sub-item">Bahamas Processing</span>
-								</a>
-							</li> -->
-							<!-- <li>
-								<a href="/warehouse/store-check-in">
-									<span class="sub-item">Store Check-in</span>
-								</a>
-							</li> -->
 						</ul>
 					</div>
 				</li>
 				<% } %>
 				<% if (user.role.includes("Admin") || user.role.includes("Warehouse NAS")) { %>
-				<li class="nav-item">
-					<a data-toggle="collapse" href="#wnas">
+				<li class="nav-item <% if (page.includes('/nas/')) { %> active <% } %>">
+					<a data-toggle="collapse" href="#warehouse-nas">
 						<i class="fas fa-warehouse"></i>
 						<p>Warehouse NAS</p>
 						<span class="caret"></span>
 					</a>
-					<div class="collapse" id="wnas">
+					<div class="collapse <% if (page.includes('/nas/')) { %> show <% } %>" id="warehouse-nas">
 						<ul class="nav nav-collapse">
-							<li>
-								<a href="/warehouse/nas-no-docs">
+							<li <% if (page.includes('/nas/awb/no-docs')) { %> class="active" <% } %>>
+								<a href="/warehouse/nas/awb/no-docs">
 									<span class="sub-item">No Docs</span>
 								</a>
 							</li>
 							<li>
-								<a href="/warehouse/incoming-flights">
+								<a href="/warehouse/nas/incoming-flights">
 									<span class="sub-item">Incoming Flights</span>
 								</a>
 							</li>
@@ -165,13 +155,6 @@
 							<li>
 								<a href="/warehouse/deliveries">
 									<span class="sub-item">Deliveries</span>
-								</a>
-							</li>
-							<li class="nav-item">
-								<a data-toggle="collapse" href="#fleetnas">
-									<i class="fas fa-truck"></i>
-									<p>Fleet Management</p>
-									<span class="caret"></span>
 								</a>
 							</li>
 						</ul>

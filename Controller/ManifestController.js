@@ -50,3 +50,30 @@ exports.delete_manifest = (req, res, next) => {
     res.send(result);
   })
 }
+
+exports.get_manifest_detail = (req, res, next) => {
+  var manifestId = req.params.id;
+  Promise.all([
+    services.manifestService.getManifest(manifestId),
+    services.packageService.getPackageOnManifest(manifestId),
+  ]).then(results => {
+    var manifest = results[0];
+    var packages = results[1];
+    Promise.all(packages.map(pkg => {
+      return services.planeService.getCompartment(pkg.compartmentId);
+    })).then(comparts => {
+      packages.forEach((pkg, i) => pkg.compartment = comparts[i]);
+      console.log(packages);
+      services.planeService.getPlane(manifest.planeId).then(plane => {
+        res.render('pages/warehouse/manifest/preview', {
+          page: req.originalUrl,
+          user: res.user,
+          title: 'Preview Manifest ' + manifest.title,
+          plane: plane,
+          manifest: manifest,
+          packages: packages,
+        })
+      })
+    })
+  })
+}

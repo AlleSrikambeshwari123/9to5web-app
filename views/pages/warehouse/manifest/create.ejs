@@ -49,28 +49,6 @@
               </div>
             </div>
           </div>
-          <div class="separator-solid"></div>
-          <div class="d-flex">
-            <h3 class="card-title text-muted package-info">Data Entry ( Weight : 0 lbs / 0lbs )</h3>
-            <a href="#add-awb-popup" class="btn btn-primary text-white ml-auto mr-3 btn-add-awb">Add AWB</a>
-          </div>
-          <div class='row'>
-            <div class='col-md-12 table-responsive'>
-              <table id='packageTable' class='display table table-striped table-hover w-100'>
-                <thead>
-                  <tr>
-                    <td><strong>AWB #</strong></td>
-                    <td class="text-center"><strong>Trackig No #</strong></td>
-                    <td class="text-center"><strong>Description</strong></td>
-                    <td class="text-center"><strong>Dimension</strong></td>
-                    <td class="text-right"><strong>Weight</strong></td>
-                  </tr>
-                </thead>
-                <tbody>
-                </tbody>
-              </table>
-            </div>
-          </div>
         </div>
         <div class="card-action">
           <input type="submit" class="btn btn-primary" value="Create Manifest"></input>
@@ -79,105 +57,6 @@
     </div>
   </div>
 </form>
-
-<div id='add-awb-popup' class="card white-popup p-0 mfp-hide">
-  <form method='post' id='add-awb-form'>
-    <div class="card-header">
-      <div class="card-title text-center">Add AWB to Manifest</div>
-    </div>
-    <div class="card-body">
-      <div class='form-group'>
-        <label for="awbId">AWB #</label>
-        <select class='form-control' id='awbId' name="awbId" required>
-          <option></option>
-          <% awbs.forEach(awb => { %>
-          <option value="<%= awb.id%>"><%= awb.id%></option>
-          <% }) %>
-        </select>
-      </div>
-      <div class='form-group'>
-        <label for="weight">Total Weight (lbs)</label>
-        <input type='number' class='form-control' id='weight' name="weight" placeholder="0 lbs" required readonly />
-      </div>
-    </div>
-    <div class="card-action text-center">
-      <button class="btn btn-primary" type="submit" id='btn-add-awb'>Add</button>
-      <button class="btn btn-danger" type="button" id='btn-cancel-add'>Cancel</button>
-    </div>
-  </form>
-</div>
-
-<div class="modal fade" id="confirmPkgDel" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2"
-  aria-hidden="true" style="display: none;">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2 class="modal-title" id="exampleModalLabel2">Confirmation Required</h2>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">×</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <input type='hidden' id='pkg-tracking' />
-        Are you sure you want to delete this package?
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary close-del" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-danger rm-package" id='rmPackage'>Delete</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="modal fade" id="shipManifest" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2"
-  aria-hidden="true" style="display: none;">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2 class="modal-title" id="exampleModalLabel2">Send Flight</h2>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">×</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <h3>Are you sure?</h3>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary close-del" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-success ship-manifest" id='ship-manifest1'>Send Flight</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="modal fade" id="broker" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2" aria-hidden="true"
-  style="display: none;">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2 class="modal-title" id="exampleModalLabel2">Send to Broker (Manifest )</h2>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">×</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <label for="broker-name">Broker Name</label>
-        <input type='text' id='broker-name' class='form-control broker-email' value=''>
-
-        <label for="broker-email">Broker Email</label>
-        <input type='text' id='broker-email' class='form-control broker-email' value=''>
-      </div>
-      <div class="modal-footer">
-
-        <span class='text-left' id='eb-message'></span>
-        <button type="button" class="btn btn-primary close-del" data-dismiss="modal">Close</button>
-
-        <button type="button" class="btn btn-success email-broker" id='email-broker'>Send <i id='eb-icon'
-            class='icon-plane'></i></button>
-      </div>
-    </div>
-  </div>
-</div>
 
 <% block('scripts').append('<script src="/js/utils.js"></script>')%>
 <% block('scripts').append('<script src="/js/warehouse/manifest/create.js"></script>')%>

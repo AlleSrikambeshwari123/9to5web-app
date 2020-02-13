@@ -11,18 +11,18 @@ var packageUtil = new PackageUtil();
 var client = require('./dataContext').redisClient;
 var lredis = require('./redis-local');
 
-const PREFIX = "package:";
-const PACKAGE_ID = "id:package";
-const PREFIX_PACKAGE_LIST = "list:package:"; // this key + awbId = array of packages
+const PREFIX = strings.redis_prefix_package;
+const PACKAGE_ID = strings.redis_id_package;
+const PREFIX_PACKAGE_LIST = strings.redis_prefix_awb_package_list; // this key + awbId = array of packages
 
 const LIST_PACKAGE_SHIPMENT = "list:shipment:"; // this key + shipmentId = array of packages
 const SHIPMENT_ID = "id:accept:truck";
 
-const PREFIX_PACKAGE_STATUS = "status:package:";
-const ID_PACKAGE_STATUS = "id:status:package";
-const LIST_PACKAGE_STATUS = "list:status:package:";
+const PREFIX_PACKAGE_STATUS = strings.redis_prefix_package_status;
+const ID_PACKAGE_STATUS = strings.redis_id_package_status;
+const LIST_PACKAGE_STATUS = strings.redis_prefix_list_package_status;
 
-const REC_PKG = "pkg:rec:"
+const LIST_PACKAGE_MANIFEST = strings.redis_prefix_manifest_package_list;
 
 const PKG_STATUS = {
   1: "Received",
@@ -273,12 +273,24 @@ class PackageService {
             status: 2,
             location: "Loaded on AirCraft",
             compartmentId: compartmentId,
-          })
+          }),
+          lredis.setAdd(LIST_PACKAGE_MANIFEST + manifestId, packages)
         ])
       })).then(results => {
         resolve({ success: true, message: strings.string_response_loaded });
       })
     })
+  }
+  getPackageOnManifest(manifestId) {
+    return new Promise((resolve, reject) => {
+      client.smembers(LIST_PACKAGE_MANIFEST + manifestId, (err, ids) => {
+        Promise.all(ids.map(id => {
+          return this.getPackage(id);
+        })).then(packages => {
+          resolve(packages);
+        })
+      })
+    });
   }
 
   //========== Package Status ==========//
