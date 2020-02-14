@@ -137,8 +137,8 @@
 									<span class="sub-item">Incoming Flights</span>
 								</a>
 							</li>
-							<li>
-								<a href="/warehouse/nas-packages-wh">
+							<li <% if (page.includes('/nas/package/list')) { %> class="active" <% } %>>
+								<a href="/warehouse/nas/package/list">
 									<span class="sub-item">Packages on Hand</span>
 								</a>
 							</li>
@@ -157,6 +157,41 @@
 									<span class="sub-item">Deliveries</span>
 								</a>
 							</li>
+						</ul>
+					</div>
+				</li>
+				<% } %>
+				<!-- Store -->
+				<% if (user.role.includes("Admin") || user.role.includes("Store")) { %>
+				<li class="nav-item">
+					<a data-toggle="collapse" href="#stores">
+						<i class="fas fa-store"></i>
+						<p>Stores</p>
+						<span class="caret"></span>
+					</a>
+					<div class="collapse" id="stores">
+						<ul class="nav nav-collapse">
+							<li>
+								<a href="/warehouse/store-packages">
+									<span class="sub-item">Package On Hand</span>
+								</a>
+							</li>
+							<!-- <li>
+							<a href="#">
+								<span class="sub-item">Checkout</span>
+							</a>
+						</li> -->
+							<li>
+								<a href="/warehouse/store-check-in">
+									<span class="sub-item">Check In Package</span>
+								</a>
+							</li>
+
+							<!-- <li>
+							<a href="/users/add-locations">
+								<span class="sub-item">Add</span>
+							</a>
+						</li> -->
 						</ul>
 					</div>
 				</li>
@@ -203,40 +238,6 @@
 						<i class="fa fa-users"></i>
 						<p>Shippers </p>
 					</a>
-				</li>
-				<% } %>
-				<% if (user.role.includes("Admin") || user.role.includes("Store")) { %>
-				<li class="nav-item">
-					<a data-toggle="collapse" href="#stores">
-						<i class="fas fa-store"></i>
-						<p>Stores</p>
-						<span class="caret"></span>
-					</a>
-					<div class="collapse" id="stores">
-						<ul class="nav nav-collapse">
-							<li>
-								<a href="/warehouse/store-packages">
-									<span class="sub-item">Package On Hand</span>
-								</a>
-							</li>
-							<!-- <li>
-					<a href="#">
-						<span class="sub-item">Checkout</span>
-					</a>
-				</li> -->
-							<li>
-								<a href="/warehouse/store-check-in">
-									<span class="sub-item">Check In Package</span>
-								</a>
-							</li>
-
-							<!-- <li>
-					<a href="/users/add-locations">
-						<span class="sub-item">Add</span>
-					</a>
-				</li> -->
-						</ul>
-					</div>
 				</li>
 				<% } %>
 

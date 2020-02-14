@@ -4,10 +4,10 @@ var moment = require("moment");
 var fs = require("fs");
 var uniqId = require("uniqid");
 var strings = require("../Res/strings");
-
 var PackageUtil = require("../Util/packageutil").PackageUtility;
 var packageUtil = new PackageUtil();
 
+var redisearch = require('./redisearch');
 var client = require('./dataContext').redisClient;
 var lredis = require('./redis-local');
 
@@ -25,6 +25,7 @@ const LIST_PACKAGE_STATUS = strings.redis_prefix_list_package_status;
 const LIST_PACKAGE_MANIFEST = strings.redis_prefix_manifest_package_list;
 
 const PKG_STATUS = {
+  0: "Created",
   1: "Received",
   2: "Loaded on AirCraft",
   3: "In Transit",
@@ -137,15 +138,6 @@ class PackageService {
     })
   }
 
-  updatePackageLocation(trackingNumber, locationId) {
-    return new Promise((resolve, reject) => {
-      lredis.search(PREFIX, 'trackingNo', trackingNumber).then(packages => {
-        packages.forEach(pkg => pkg.location = locationId);
-        resolve({ success: true });
-      })
-    });
-  }
-
   createPackages(awbId, packages) {
     return new Promise((resolve, reject) => {
       Promise.all(packages.map(pkg => {
@@ -212,6 +204,48 @@ class PackageService {
     });
   }
 
+  getPackagesInFll() {
+    return new Promise((resolve, reject) => {
+      client.keys(PREFIX + '*', (err, keys) => {
+        Promise.all(keys.map(key => {
+          return lredis.hgetall(key);
+        })).then(packages => {
+          Promise.all(packages.map(pkg => {
+            return this.getPackageLastStatus(pkg.id);
+          })).then(stats => {
+            let pkgs = [];
+            stats.forEach((status, i) => {
+              if (status == PKG_STATUS[0] || status == PKG_STATUS[1] || status == PKG_STATUS[2])
+                pkgs.push(packages[i]);
+            })
+            resolve(pkgs);
+          })
+        })
+      })
+    });
+  }
+
+  getPackagesInNas() {
+    return new Promise((resolve, reject) => {
+      client.keys(PREFIX + '*', (err, keys) => {
+        Promise.all(keys.map(key => {
+          return lredis.hgetall(key);
+        })).then(packages => {
+          console.log(packages);
+          Promise.all(packages.map(pkg => {
+            return this.getPackageLastStatus(pkg.id);
+          })).then(stats => {
+            console.log(stats);
+            let pkgs = [];
+            stats.forEach((stat, i) => {
+              if (stat.status == PKG_STATUS[4]) pkgs.push(packages[i]);
+            })
+            resolve(pkgs);
+          })
+        })
+      })
+    });
+  }
 
   //========== Receive Packages From Truck that arrived at Airport ==========//
   getShipmentId() {
@@ -285,14 +319,39 @@ class PackageService {
   updateManifestPackageToReceived(manifestId, username) {
     return new Promise((resolve, reject) => {
       this.getPackageOnManifest(manifestId).then(packages => {
-        Promise.all(packages.map(pkg => {
-          return this.updatePackageStatus(pkg.id, 4, username);
-        })).then(results => {
-          resolve({ success: true, message: strings.string_response_updated });
-        })
+        // Promise.all(packages.map(pkg => {
+        //   return this.updatePackageStatus(pkg.id, 4, username);
+        // })).then(results => {
+        resolve({ success: true, message: strings.string_response_updated });
+        // })
       })
     });
   }
+
+  //========== Receive Packages in Nas Airport ==========//
+  receivePackageFromPlane(barcodes, username) {
+    return new Promise((resolve, reject) => {
+      let packageIds = barcodes.split(',');
+      Promise.all(packageIds.map(packageId => {
+        return this.updatePackageStatus(packageId, 4, username);
+      })).then(result => {
+        resolve({ success: true, message: strings.string_response_received });
+      })
+    })
+  }
+
+  //========== Deliver Package to the Customer ==========//
+  checkOutToCustomer(barcodes, username) {
+    return new Promise((resolve, reject) => {
+      let packageIds = barcodes.split(',');
+      Promise.all(packageIds.map(packageId => {
+        return this.updatePackageStatus(packageId, 6, username);
+      })).then(result => {
+        resolve({ success: true, message: strings.string_response_received });
+      })
+    })
+  }
+
   //========== Package Status ==========//
   updatePackageStatus(packageId, status, username) {
     return new Promise((resolve, reject) => {
@@ -310,7 +369,16 @@ class PackageService {
     });
   }
 
-  getPackageStatus(packageId) {
+  getPackageLastStatus(packageId) {
+    return new Promise((resolve, reject) => {
+      this.getPackageStatuses(packageId).then(stats => {
+        if (stats == null) resolve(PKG_STATUS[0]);
+        else resolve(stats[stats.length - 1]);
+      })
+    });
+  }
+
+  getPackageStatuses(packageId) {
     return new Promise((resolve, reject) => {
       client.smembers(LIST_PACKAGE_STATUS + packageId, (err, ids) => {
         Promise.all(ids.map(id => {
@@ -463,26 +531,6 @@ class PackageService {
       })
     })
   }
-  checkOutToCustomer(barcode, user) {
-    var srv = this;
-    return new Promise((resolve, reject) => {
-      //we want to check out set the satatus 
-      var id = getPackageIdFromBarCode(barcode);
-      srv.getPackageByDocId(id).then(pkg => {
-        console.log(pkg, "THE PKG")
-        pkg.package.status = 6 //checked out to customer 
-        pkg.package.checkoutBy = user;
-        packageIndex.update(pkg.package.id, pkg.package, (errm, reply) => {
-          if (errm) {
-            console.log(errm)
-            resolve({ updated: false })
-          }
-          resolve({ updated: true })
-        })
-      })
-
-    })
-  }
   getPackageByDocId(pkgId) {
     var srv = this;
     return new Promise((resolve, reject) => {
@@ -570,25 +618,6 @@ class PackageService {
   getCustomerPackages(skybox) { }
 
 
-  //no more skybox
-  getManifestPackagesByStatus(mid, status) {
-    return new Promise((resolve, reject) => {
-      console.log(`@mid:[${mid} ${mid}]`)
-      this.mySearch.search(
-        `@mid:[${mid} ${mid}]`,
-        { offset: 0, numberOfResults: 5000 },
-        (err, data) => {
-          var packages = [];
-          console.log(data);
-          data.results.forEach(element => {
-
-            packages.push(element.doc);
-            resolve(packages);
-          });
-        });
-    });
-
-  }
 
   //#region Pakcage Filters  
   getPackagesNasWarehouse(isNoDoc, company) {
@@ -647,8 +676,6 @@ class PackageService {
         if (err)
           console.log(err);
 
-
-
         console.log(result);
         console.log("print:fees:" + username, username);
         client.publish("print:fees:" + username, pkgIfno.awb);
@@ -678,26 +705,6 @@ class PackageService {
 
         })
         resolve({ sent: true })
-      })
-    })
-  }
-  recFromPlaneNas(barcode) {
-    return new Promise((resolve, reject) => {
-      var srv = this;
-      var pkgId = getPackageIdFromBarCode(barcode);
-      srv.mySearch.getDoc(pkgId, (err, pkg) => {
-        pkg.doc.status = 4;
-        pkg.doc.location = "Warehouse NAS";
-        if (pkg.doc.hasDocs == "undefined")
-          pkg.doc.hasDocs = 0;
-        srv.mySearch.update(pkgId, pkg.doc, (err, updateResult) => {
-
-          if (err) {
-            console.log(err)
-            reject({ updated: false })
-          }
-          resolve({ updated: true })
-        })
       })
     })
   }

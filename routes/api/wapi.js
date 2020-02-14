@@ -14,17 +14,10 @@ var packageUtil = new PackageUtil();
 
 router.post('/authenticate', (req, res, next) => {
   var body = req.body;
+  var username = req.headers.username;
   console.log(body);
-  services.userService.authenticate(body.username, body.password).then(result => {
+  services.userService.authenticate(username, body.password).then(result => {
     res.send(result);
-  })
-})
-router.post('/process-pkg-nas', (req, res, next) => {
-  var body = req.body;
-  var nas_location_id = 2;
-  console.log(req.body)
-  services.packageService.procssessPackage(body, req.body.username).then(result => {
-    res.send(result)
   })
 })
 router.post('/rm-package-from-flight', (req, res, next) => {
@@ -62,15 +55,16 @@ router.get('/get-package-detail/:trackingNo', (req, res, next) => {
 })
 router.post('/accept-package', (req, res, next) => {
   var body = req.body;
-  services.packageService.addPackageToShipment(body.trackingNumber, body.username).then((result) => {
+  var username = req.headers.username;
+  services.packageService.addPackageToShipment(body.packageIds, username).then((result) => {
     res.send(result);
   })
 })
 router.post("/consolidate-packages", (req, res, next) => {
   var pkgArray = JSON.parse(req.body.packages);
-  var user = req.body.username;
   var boxSize = req.body.boxSize;
-  services.packageService.createConsolated(pkgArray, user, boxSize).then(result => {
+  var username = req.headers.username;
+  services.packageService.createConsolated(pkgArray, username, boxSize).then(result => {
     res.send(result);
   })
 })
@@ -90,24 +84,40 @@ router.post('/add-packages-to-flight', (req, res, next) => {
   let packageIds = req.body.packageIds;
   let manifestId = req.body.manifestId;
   let compartment = req.body.compartment;
-  services.packageService.addToFlight(packageIds, manifestId, compartment).then((result) => {
+  var username = req.headers.username;
+  services.packageService.addToFlight(packageIds, manifestId, compartment, username).then((result) => {
     res.send(result)
   })
 })
 
-router.get('/plane-compartments/:planeId', (req, res, next) => {
-  var planeId = req.params.planeId;
-  services.planeService.getCompartments(planeId).then(compartments => {
-    res.send({ compartments: compartments })
-  })
-})
-
+//========== NAS Package APIs ==========//
 router.post('/rec-package-nas', (req, res, next) => {
-  var body = req.body;
-  services.packageService.recFromPlaneNas(body.barcode).then((result) => {
+  let packageIds = req.body.packageIds;
+  var username = req.headers.username;
+  services.packageService.receivePackageFromPlane(packageIds, username).then((result) => {
     res.send(result)
   })
 })
+
+router.post('/checkout-to-customer', (req, res, next) => {
+  var packageIds = req.body.packageIds;
+  var username = req.headers.username;
+  services.packageService.checkOutToCustomer(packageIds, username).then(result => {
+    res.send(result)
+  })
+})
+
+
+router.post('/process-pkg-nas', (req, res, next) => {
+  var body = req.body;
+  var username = req.headers.username;
+  var nas_location_id = 2;
+  console.log(req.body)
+  services.packageService.procssessPackage(body, username).then(result => {
+    res.send(result)
+  })
+})
+
 router.get('/get-open-deliveries', (req, res, next) => {
   services.deliveryService.getOpenDeliveries().then(deliveries => {
     res.send(deliveries);
@@ -122,21 +132,12 @@ router.post('/add-package-to-delivery', (req, res, next) => {
     res.send(result)
   })
 })
-router.post('/')
+
 router.get('/get-locations', (req, res, next) => {
   services.locationService.getLocations().then(locations => {
     res.send(locations);
   })
 });
-router.post('/checkout-to-customer', (req, res, next) => {
-  var body = req.body;
-  var barcode = body.barcode;
-  var username = body.username;
-  services.packageService.checkOutToCustomer(barcode, username).then(result => {
-    console.log(result)
-    res.send(result)
-  })
-})
 router.post('/get-package-info/', (req, res, next) => {
   var id = req.body.barcode;
   services.packageService.getPackageById(id).then((pkg => {
