@@ -62,28 +62,6 @@ function createDocument(tPackage) {
   console.log("about to add the package to the index");
   return packageDocument;
 }
-function setPackageInTransit(keys, msearcher) {
-  return new Promise((resolve, reject) => {
-    var batcher = msearcher.client.batch();
-    keys.forEach(element => {
-      var value = {
-        status: 2,
-        location: "In Transit"
-      };
-      console.log(element + "is the element");
-
-      batcher.hmset(PACKAGE_ID + element, value);
-    });
-    batcher.exec((err, result) => {
-      console.log(result);
-      //readd the documents here
-      keys.forEach(element => {
-        addPackageToIndex(element, msearcher);
-      });
-      resolve(result);
-    });
-  });
-}
 
 function addPackageToIndex(trackingNo, msearcher) {
   lredis.getPackage(trackingNo).then(pack => {
@@ -270,8 +248,6 @@ class PackageService {
           this.updatePackageStatus(packageId, 2, username),
           this.updatePackage(packageId, {
             manifestId: manifestId,
-            status: 2,
-            location: "Loaded on AirCraft",
             compartmentId: compartmentId,
           }),
           lredis.setAdd(LIST_PACKAGE_MANIFEST + manifestId, packages)
@@ -299,6 +275,18 @@ class PackageService {
       this.getPackageOnManifest(manifestId).then(packages => {
         Promise.all(packages.map(pkg => {
           return this.updatePackageStatus(pkg.id, 3, username);
+        })).then(results => {
+          resolve({ success: true, message: strings.string_response_updated });
+        })
+      })
+    });
+  }
+  //========== Receive Packages in Manifest ==========//
+  updateManifestPackageToReceived(manifestId, username) {
+    return new Promise((resolve, reject) => {
+      this.getPackageOnManifest(manifestId).then(packages => {
+        Promise.all(packages.map(pkg => {
+          return this.updatePackageStatus(pkg.id, 4, username);
         })).then(results => {
           resolve({ success: true, message: strings.string_response_updated });
         })
@@ -334,85 +322,6 @@ class PackageService {
     });
   }
 
-
-  listNoDocsFll() {
-    return new Promise((resolve, reject) => {
-      awbIndex.search("@status:[1 1] @hasDocs:[0 0]", { offset: 0, numberOfResults: 5000, sortBy: 'id', sortDir: "DESC" }, (err, awbs) => {
-        var awbList = [];
-        Promise.all(awbs.results.map(awb => customerService.getCustomer(awb.doc.customerId))).then(customers => {
-          Promise.all(awbs.results.map(awb => this.getAwbOverview(awb.doc.id))).then(details => {
-            console.log("got the customers", customers, awbs)
-            for (var i = 0; i < awbs.results.length; i++) {
-              var awb = awbs.results[i];
-              awb.doc.dateCreated = moment.unix(awb.doc.dateCreated).format("YYYY-MM-DD hh:mm A")
-              //we need to get the customer 
-              awb.doc.consignee = customers[i].name;
-              awb.doc.weight = details[i].weight;
-              awb.doc.pmb = customers[i].pmb;
-              awb.doc.description = details[i].description;
-              awb.doc.pieces = details[i].pieces;
-              if (customers[i].pmb == '') {
-                awb.doc.pmb = '9000'
-              }
-              console.log('pushing ', awb)
-              //we need to get all the packages 
-              awbList.push(awb.doc)
-            }
-            awbList = awbList.reverse();
-            resolve({ awbs: awbList })
-          })
-
-        }).catch(err => {
-          console.log(err);
-        })
-
-        //  awbs.results.forEach(awb => {
-
-
-        //  });
-
-      })
-    })
-  }
-
-  listAwbinFll() {
-    return new Promise((resolve, reject) => {
-      awbIndex.search("@status:[1 1] @hasDocs:[1 1]", { offset: 0, numberOfResults: 5000, sortBy: 'id', sortDir: 'DESC' }, (err, awbs) => {
-        var awbList = [];
-        Promise.all(awbs.results.map(awb => customerService.getCustomer(awb.doc.customerId))).then(customers => {
-          Promise.all(awbs.results.map(awb => this.getAwbOverview(awb.doc.id))).then(details => {
-            console.log("got the customers", customers, awbs)
-            for (var i = 0; i < awbs.results.length; i++) {
-              var awb = awbs.results[i];
-              awb.doc.dateCreated = moment.unix(awb.doc.dateCreated).format("YYYY-MM-DD hh:mm A")
-              //we need to get the customer 
-              awb.doc.consignee = customers[i].name;
-              awb.doc.pmb = customers[i].pmb;
-              awb.doc.weight = details[i].weight;
-              awb.doc.description = details[i].description;
-              awb.doc.pieces = details[i].pieces;
-              if (customers[i].pmb == '') {
-                awb.doc.pmb = '9000'
-              }
-              console.log('pushing ', awb)
-              //we need to get all the packages 
-              awbList.push(awb.doc)
-            }
-            resolve({ awbs: awbList })
-          })
-
-        }).catch(err => {
-          console.log(err);
-        })
-
-        //  awbs.results.forEach(awb => {
-
-
-        //  });
-
-      })
-    })
-  }
 
   createConsolated(packages, username, boxSize) {
     return new Promise((resolve, reject) => {
@@ -468,22 +377,6 @@ class PackageService {
         })
       })
       //validate the package 
-    })
-  }
-  getManifestPackages() {
-    return new Promise((resolve, reject) => {
-      this.mySearch.search(
-        `@mid:[0 0]`,
-        { offset: 0, numberOfResults: 5000 },
-        (err, data) => {
-          var packages = [];
-          console.log(data);
-          data.results.forEach(element => {
-
-            packages.push(element.doc);
-            resolve(packages);
-          });
-        });
     })
   }
   getReceivedPackages(page, pageSize) {
@@ -607,60 +500,6 @@ class PackageService {
       })
     });
   }
-  getManifestPackages(mid) {
-    return new Promise((resolve, reject) => {
-      packageIndex.search(`@mid:[${mid} ${mid}]`, { offset: 0, numberOfResults: 5000, sortBy: 'id', sortDir: "DESC" }, (err, packages1) => {
-        var packages = [];
-        packages1.results.forEach(pkg => {
-
-          packages.push(pkg.doc)
-        });
-        Promise.all(packages.map(pkgData => this.getAwb(pkgData.awb))).then(reswithAwb => {
-          for (var i = 0; i < reswithAwb.length; i++) {
-            console.log("adding ", reswithAwb[i].awb);
-            packages[i].awbInfo = reswithAwb[i].awb;
-          }
-          resolve(packages);
-        })
-
-
-        // Promise.all(awbs.results.map(awb=>customerService.getCustomer(awb.doc.customerId))).then(customers=>{
-        //   Promise.all(awbs.results.map(awb=>this.getAwbOverview(awb.doc.id))).then(details=>{
-        //    console.log("got the customers",customers, awbs)
-        //    for(var i =0 ; i < awbs.results.length ; i++ ){
-        //      var awb = awbs.results[i]; 
-        //      awb.doc.dateCreated = moment.unix(awb.doc.dateCreated).format("YYYY-MM-DD hh:mm A")
-        //      //we need to get the customer 
-        //      awb.doc.consignee = customers[i].name; 
-        //      awb.doc.weight = details[i].weight; 
-        //      awb.doc.pmb = customers[i].pmb; 
-        //      awb.doc.description = details[i].description; 
-        //      awb.doc.pieces = details[i].pieces; 
-        //      if (customers[i].pmb == ''){
-        //        awb.doc.pmb = '9000'
-        //      }
-        //      console.log('pushing ',awb)
-        //      //we need to get all the packages 
-        //      awbList.push(awb.doc)
-        //     }
-        //     awbList = awbList.reverse();
-        //     resolve({awbs:awbList})
-        //   })
-
-        //  }).catch(err=>{
-        //    console.log(err); 
-        //  })
-
-        //  awbs.results.forEach(awb => {
-
-
-        //  });
-
-      })
-    })
-  }
-  //using this 
-
 
   removePackageFromManifest(packageId, mid) {
     var msearch = this.mySearch;
@@ -697,6 +536,7 @@ class PackageService {
       });
     });
   }
+
   removePackageById(id) {
     var msearch = this.mySearch;
     return new Promise((resolve, reject) => {

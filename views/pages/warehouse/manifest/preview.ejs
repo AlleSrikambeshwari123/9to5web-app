@@ -83,8 +83,13 @@
         </div>
       </div>
       <div class="card-action">
-        <a id='btn-send' data-target="#shipManifest" data-toggle='modal' data-id="<%= manifest.id %>"
+        <% if (Number(manifest.stageId) == 1) { %>
+        <a data-target="#shipManifest" data-toggle='modal' data-id="<%= manifest.id %>"
           class='btn btn-round btn-primary ml-md-auto float-right text-white btn-send'>Send Flight</a>
+        <% } else if (Number(manifest.stageId) == 3) { %>
+        <a data-target="#receiveManifest" data-toggle='modal' data-id="<%= manifest.id %>"
+          class='btn btn-round btn-primary ml-md-auto float-right text-white btn-receive'>Receive Flight</a>
+        <% } %>
       </div>
     </div>
   </div>
@@ -105,7 +110,28 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary close-del" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-success ship-manifest" id='ship-manifest1'>Send Flight</button>
+        <button type="button" class="btn btn-success ship-manifest">Send Flight</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="shipManifest" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2"
+  aria-hidden="true" style="display: none;">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="exampleModalLabel2">Receive Flight</h2>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <h3>Are you sure?</h3>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary close-del" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-success receive-manifest">Receive Flight</button>
       </div>
     </div>
   </div>

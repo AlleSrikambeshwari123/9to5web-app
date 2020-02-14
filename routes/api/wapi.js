@@ -94,6 +94,7 @@ router.post('/add-packages-to-flight', (req, res, next) => {
     res.send(result)
   })
 })
+
 router.get('/plane-compartments/:planeId', (req, res, next) => {
   var planeId = req.params.planeId;
   services.planeService.getCompartments(planeId).then(compartments => {

@@ -11,6 +11,11 @@ router.get('/fll/manifest/manage/:id/get', middleware().checkSession, manifestCt
 // router.get('/fll/manifest/manage/:id/preview', middleware().checkSession, manifestCtrl.preview_manifest);
 router.delete('/fll/manifest/manage/:id/delete', middleware().checkSession, manifestCtrl.delete_manifest);
 router.get('/fll/manifest/manage/:id/ship', middleware().checkSession, manifestCtrl.ship_manifest);
+
 router.post('/manifest/manage/:id/close', middleware().checkSession, manifestCtrl.close_manifest);
+
+router.get('/nas/manifest/incoming', middleware().checkSession, manifestCtrl.get_incoming_manifest)
+router.get('/nas/manifest/manage/:id/get', middleware().checkSession, manifestCtrl.get_manifest_detail);
+router.get('/fll/manifest/manage/:id/receive', middleware().checkSession, manifestCtrl.ship_manifest);
 
 module.exports = router;

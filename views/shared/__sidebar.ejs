@@ -111,7 +111,7 @@
 							</li>
 							<li <% if (page.includes('/fll/manifest/list')) { %> class="active" <% } %>>
 								<a href="/warehouse/fll/manifest/list">
-									<span class="sub-item">Manifest</span>
+									<span class="sub-item">Manifests</span>
 								</a>
 							</li>
 						</ul>
@@ -132,8 +132,8 @@
 									<span class="sub-item">No Docs</span>
 								</a>
 							</li>
-							<li>
-								<a href="/warehouse/nas/incoming-flights">
+							<li <% if (page.includes('/nas/manifest/incoming')) { %> class="active" <% } %>>
+								<a href="/warehouse/nas/manifest/incoming">
 									<span class="sub-item">Incoming Flights</span>
 								</a>
 							</li>

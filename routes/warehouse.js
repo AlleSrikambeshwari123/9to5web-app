@@ -233,7 +233,7 @@ router.get('/download-flight-manifest/:mid', (req, res, next) => {
 
     services.manifestService.getManifest(mid).then(manifest => {
         console.log(manifest)
-        services.packageService.getManifestPackages(mid).then(packages => {
+        services.packageService.getPackageOnManifest(mid).then(packages => {
             console.log('packages', packages)
             flightManifest.generateManifest(manifest, packages).then(result => {
                 console.log(result);
@@ -252,7 +252,7 @@ router.get('/download-load-sheet/:mid', (req, res, next) => {
 
     services.manifestService.getManifest(mid).then(manifest => {
         console.log(manifest)
-        services.packageService.getManifestPackages(mid).then(packages => {
+        services.packageService.getPackageOnManifest(mid).then(packages => {
             console.log('packages', packages)
             loadSheet.generateManifestLoadSheet(manifest, packages).then(result => {
                 console.log(result);
@@ -369,25 +369,7 @@ router.get('/nas-packages-wh', middleware(services.userService).checkSession, (r
     pageData.RoleId = res.User.role;
     res.render('pages/warehouse/nas-packages', pageData);
 })
-router.get('/fll-no-docs', middleware(services.userService).checkSession, (req, res, next) => {
-    services.packageService.getNoDocsPackackages().then(packages => {
-        var pageData = {};
-        pageData.packages = packages;
-        pageData.title = "Packages No Documents";
-        pageData.mid = req.params.mid;
-        pageData.luser = res.User.firstName + ' ' + res.User.lastName;
-        pageData.RoleId = res.User.role;
 
-        //listNoDocsFll
-        services.packageService.listNoDocsFll().then(awblist => {
-            console.log(awblist, "AWB's")
-            pageData.records = awblist.awbs;
-            res.render('pages/warehouse/no-docs', pageData);
-        })
-
-    })
-
-})
 router.get('/store-packages', middleware(services.userService).checkSession, (req, res, next) => {
     services.packageService.getNoDocsPackackages().then(packages => {
         var pageData = {};

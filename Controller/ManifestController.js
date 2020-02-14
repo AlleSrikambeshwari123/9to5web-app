@@ -82,7 +82,32 @@ exports.ship_manifest = (req, res, next) => {
   var mid = req.params.id;
   var user = res.user.username;
   services.manifestService.shipManifest(mid, user).then((sResult) => {
-    services.packageService.updateManifestPackageToInTransit(mid);
+    services.packageService.updateManifestPackageToInTransit(mid, user);
     res.send(sResult);
   });
+}
+
+exports.get_incoming_manifest = (req, res, next) => {
+  services.manifestService.getManifestProcessing().then(manifests => {
+    Promise.all(manifests.map(manifest => {
+      return services.planeService.getPlane(manifest.planeId);
+    })).then(planes => {
+      manifests.forEach((manifest, i) => manifest.plane = planes[i]);
+      res.render('pages/warehouse/manifest/incoming', {
+        page: req.originalUrl,
+        user: res.user,
+        title: 'Incoming Flights',
+        manifests: manifests.map(utils.formattedRecord),
+      })
+    })
+  })
+}
+
+exports.receive_manifest = (req, res, next) => {
+  var mid = req.params.id;
+  var user = res.user.username;
+  services.manifestService.receiveManifest(mid, user).then(result => {
+    services.packageService.updateManifestPackageToReceived(mid, user);
+    res.send(result);
+  })
 }

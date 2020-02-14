@@ -9,23 +9,23 @@ Number.prototype.formatMoney = function (c, d, t) {
     return "$" + s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
 };
 $(function () {
-    $("#print-awb").click(function(){
+    $("#print-awb").click(function () {
         var awb = $(this).attr('data-id')
         $.ajax({
-            url:'/warehouse/print-awb/'+awb,
-            contentType:'json',
-            success:function(result){
-                console.log('result',result)
+            url: '/warehouse/print-awb/' + awb,
+            contentType: 'json',
+            success: function (result) {
+                console.log('result', result)
             }
         })
     })
-    $("#print-lbl").click(function(){
+    $("#print-lbl").click(function () {
         var awb = $(this).attr('data-id')
         $.ajax({
-            url:'/warehouse/print-awb-lbl/'+awb,
-            contentType:'json',
-            success:function(result){
-                console.log('result',result)
+            url: '/warehouse/print-awb-lbl/' + awb,
+            contentType: 'json',
+            success: function (result) {
+                console.log('result', result)
             }
         })
     })
@@ -37,18 +37,18 @@ $(function () {
     var unProcTable;
     function LoadPageData() {
         //we need to load page data based on manifest type... 
-      
-        // if (mtype != "cargo") {
-            getManifestPackages(mid, mtype, function (mailPackages) {
 
-                // displayMailPackages(mailPackages);
-                displayPackages(mailPackages, "#packageTable", mtype)
-              
-            });
+        // if (mtype != "cargo") {
+        getManifestPackages(mid, mtype, function (mailPackages) {
+
+            // displayMailPackages(mailPackages);
+            displayPackages(mailPackages, "#packageTable", mtype)
+
+        });
 
         // }
 
-      
+
 
         //we need to get the counts intially 
         LoadPackageCounters();
@@ -95,7 +95,7 @@ $(function () {
 
         var package = getPackageDetails($(this));
         //var stage = $(this).attr('data-stage');
-       // var mtype = $("#mytpe").val();
+        // var mtype = $("#mytpe").val();
         var validPackage = validatePackage(package, $(this));
         var form = $(this).closest('form');
         if (validPackage) {
@@ -324,7 +324,7 @@ $(function () {
             weight: $(form).find('.weight').val(),
             dimensions: $(form).find('.dimensions').val(),
             carrier: $(form).find('.carrier').val(),
-            issue: $("form").find('.issue').val(), 
+            issue: $("form").find('.issue').val(),
             //mid: $(form).find('.mid').val(),
             //mtype: $(form).find('.mtype').val(),
             isBusiness: $(form).find('.isBusiness').val()
@@ -512,7 +512,7 @@ $(function () {
         //     skidinput.focus();
     }
 
-    
+
 
     function displayPackages(packages, tableId, ctype) {
         //REFACTORED FUNCTION  
@@ -545,7 +545,7 @@ $(function () {
                 title: "PMB",
                 data: null,
                 render: function (data, type, row, meta) {
-                     console.log(data);
+                    console.log(data);
                     return `${data.pmb} `;
                 }
             },
@@ -634,7 +634,7 @@ $(function () {
 
             columns: colDef,
             //bInfo:false,
-            "order": [[ 3, "desc" ]],
+            "order": [[3, "desc"]],
             "language": {
                 "decimal": ",",
                 "thousands": "."
@@ -642,32 +642,32 @@ $(function () {
 
             "deferRender": true,
             drawCallback: function () {
-                $(".view-awb-details").click(function(){
-                    var id = $(this).attr('data-id'); 
-                   
+                $(".view-awb-details").click(function () {
+                    var id = $(this).attr('data-id');
+
                     $.ajax({
-                        url:'/warehouse/awb-details/'+id,
-                        contentType:'json',
-                        success:function(d){
-                            console.log(d); 
-                           
-                           
-                            
+                        url: '/warehouse/awb-details/' + id,
+                        contentType: 'json',
+                        success: function (d) {
+                            console.log(d);
+
+
+
                             $("#awb-details").find('.ad-id').html(d.awb.id)
-                            $("#awb-details").find('.ad-consignee').html(`<strong>Customer:</strong>  `+d.awb.customer.name)
-                            $("#awb-details").find(".ad-value").html(`<strong>Value:</strong>  `+Number(d.awb.value).formatMoney(2, '.', ','))
+                            $("#awb-details").find('.ad-consignee').html(`<strong>Customer:</strong>  ` + d.awb.customer.name)
+                            $("#awb-details").find(".ad-value").html(`<strong>Value:</strong>  ` + Number(d.awb.value).formatMoney(2, '.', ','))
                             var downloadInvoice = ''
-                            if (d.awb.invoice){
+                            if (d.awb.invoice) {
                                 downloadInvoice = `<a href='/util/download-file/${d.awb.invoice}'><i class='fa fa-download'></i></a>`
                             }
-                            $("#awb-details").find(".ad-invoice").html(`<strong>Invoice Number:</strong>  `+d.awb.invoiceNumber + ` ${downloadInvoice}`)
-                            $("#awb-details").find(".ad-shipper").html(`<strong>Shipper:</strong>  `+d.awb.shipper)
-                            $("#awb-details").find(".ad-carrier").html(`<strong>Carrier:</strong>  `+d.awb.carrier)
-                            $("#awb-details").find("#print-awb").attr("data-id",d.awb.id)
-                            $("#awb-details").find("#print-lbl").attr("data-id",d.awb.id)
-                            
+                            $("#awb-details").find(".ad-invoice").html(`<strong>Invoice Number:</strong>  ` + d.awb.invoiceNumber + ` ${downloadInvoice}`)
+                            $("#awb-details").find(".ad-shipper").html(`<strong>Shipper:</strong>  ` + d.awb.shipper)
+                            $("#awb-details").find(".ad-carrier").html(`<strong>Carrier:</strong>  ` + d.awb.carrier)
+                            $("#awb-details").find("#print-awb").attr("data-id", d.awb.id)
+                            $("#awb-details").find("#print-lbl").attr("data-id", d.awb.id)
+
                             //
-                             $("#packageListing").find("tr:gt(0)").remove();
+                            $("#packageListing").find("tr:gt(0)").remove();
                             d.awb.packages.forEach(pkg => {
                                 $("#awb-details").find("#packageListing").append(`<tr>
                                 <td>${pkg.trackingNo}</td>
@@ -676,7 +676,7 @@ $(function () {
                                 <td>${pkg.weight}</td>
                             </tr>`)
                             });
-                           
+
                         }
                     })
                 })
@@ -747,45 +747,12 @@ $(function () {
         })
     }
 
-    function loadPackage(trackingNo, form) {
-        console.log(form.attr('id'));
-        $.ajax({
-            url: '/warehouse/load-package/' + trackingNo,
-            contentType: 'json',
-            success: function (dResult) {
-                console.log(dResult);
-
-                form.find('.skybox').val(dResult.skybox);
-                console.log(dResult.skybox);
-                form.find('.trackingNo').val(dResult.trackingNo);
-                form.find('.shipper').val(dResult.shipper);
-                form.find('.package-value').val(dResult.value);
-                form.find('.weight').val(dResult.weight);
-                form.find('.pieces').val(dResult.pieces);
-                form.find('.description').val(dResult.description);
-                form.find('.carrier').val(dResult.carrier);
-                form.find('.dimensions').val(dResult.dimensions);
-                if (typeof dResult.bag != "undefined")
-                    form.find('.bag').val(dResult.bag);
-                else
-                    form.find('.skid').val(dResult.skid);
-
-                form.find('.skybox').trigger('change');
-
-            },
-            error: function (err) {
-
-            }
-
-        })
-    }
-
-    function deletePackage(trackingNo, type,id) {
+    function deletePackage(trackingNo, type, id) {
         $.ajax({
             url: '/warehouse/rm-package',
             type: 'post',
             data: {
-                id:trackingNo,
+                id: trackingNo,
                 trackingNo: trackingNo,
                 mid: $("#mid").val()
             },

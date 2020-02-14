@@ -95,10 +95,21 @@ class ManifestService {
         shipDate: moment().utc().unix(),
         shippedBy: username
       }, (err, result) => {
-        this.changeStage(mid, manifestStages.shipped.id);
+        this.changeStage(mid, manifestStages.shipping.id);
         resolve({ success: true, message: strings.string_response_shipped });
       })
     })
+  }
+  receiveManifest(mid, username) {
+    return new Promise((resolve, reject) => {
+      client.hmset(PREFIX + mid, {
+        receiveDate: moment().utc().unix(),
+        receivedBy: username
+      }, (err, result) => {
+        this.changeStage(mid, manifestStages.shipped.id);
+        resolve({ success: true, message: strings.string_response_received });
+      })
+    });
   }
 
   getManifest(manifestId) {

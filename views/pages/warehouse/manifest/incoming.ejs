@@ -20,7 +20,7 @@
           <tbody>
             <% manifests.forEach(function(manifest){ %>
             <tr data-record="<%= manifest.id %>">
-              <td><strong><%= manifest.title%> - <%= manifest.plane.tail_number%></strong></td>
+              <td><strong><%= manifest.title%></strong></td>
               <td>
                 <% if (manifest.stageId == 1 ) { %>
                 <span class="badge badge-secondary"><%=manifest.stage %></span>

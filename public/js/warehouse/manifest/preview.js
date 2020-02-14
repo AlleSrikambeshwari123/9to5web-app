@@ -27,3 +27,26 @@ $('.ship-manifest').click(function () {
     }
   })
 })
+
+$('.btn-receive').click(function () {
+  selected_manifestId = $(this).data('id');
+})
+
+$('.receive-manifest').click(function () {
+  $('.close-del').trigger('click');
+  $.ajax({
+    url: 'receive',
+    type: 'get',
+    success: response => {
+      swal({
+        title: response.success == true ? 'Received' : 'Failed',
+        text: response.message,
+        type: response.success == true ? 'success' : 'error',
+      }).then(res => {
+        if (response.success == true) {
+          document.location.href = "/warehouse/nas/manifest/incoming";
+        }
+      })
+    }
+  })
+})
