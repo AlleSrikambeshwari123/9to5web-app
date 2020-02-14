@@ -10,7 +10,7 @@ var UserService = require('./UserService');
 var userService = new UserService();
 var LocationService = require('./LocationService');
 var locationService = new LocationService();
-var DeliveryService = require('./RouteService');
+var DeliveryService = require('./DeliveryService');
 var deliveryService = new DeliveryService();
 var VehicleService = require('./VehicleService');
 var vehicleService = new VehicleService();
@@ -48,5 +48,6 @@ var services = {
 
 packageService.setServiceInstances(services);
 awbService.setServiceInstances(services);
+deliveryService.setServiceInstances(services);
 
 module.exports = services;

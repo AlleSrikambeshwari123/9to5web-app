@@ -62,4 +62,11 @@ class LocationService {
   }
 }
 
+//========== DB Structure ==========//
+// id:
+// phone:
+// companyId:
+// name:
+// address:
+
 module.exports = LocationService;

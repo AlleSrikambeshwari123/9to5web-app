@@ -35,11 +35,7 @@ $(function () {
   $("#add-plane-form").submit(function (event) {
     event.preventDefault(event);
     let formUrl = $(this).attr('action');
-    let formData = $(this).serializeArray();
-    let data = {};
-    $.each(formData, function (_, record) {
-      data[record.name] = record.value
-    })
+    let data = extractFormData(this);
 
     $.ajax({
       url: formUrl,

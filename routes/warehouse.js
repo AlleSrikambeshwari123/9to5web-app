@@ -351,24 +351,6 @@ router.get('/deliveries', middleware(services.userService).checkSession, (req, r
 
 
 })
-router.post('/save-delivery', middleware(services.userService).checkSession, (req, res, next) => {
-    var body = req.body;
-    body.createdBy = res.User.username;
-    body.createdDate = moment().unix();
-    services.deliveryService.saveDelivery(body).then(results => {
-        res.send(results);
-    })
-
-})
-router.get('/nas-packages-wh', middleware(services.userService).checkSession, (req, res, next) => {
-    var pageData = {};
-    pageData.packages = [];
-    pageData.title = "Packages on hand NAS";
-    pageData.mid = req.params.mid;
-    pageData.luser = res.User.firstName + ' ' + res.User.lastName;
-    pageData.RoleId = res.User.role;
-    res.render('pages/warehouse/nas-packages', pageData);
-})
 
 router.get('/store-packages', middleware(services.userService).checkSession, (req, res, next) => {
     services.packageService.getNoDocsPackackages().then(packages => {
@@ -382,14 +364,7 @@ router.get('/store-packages', middleware(services.userService).checkSession, (re
     })
 
 })
-router.post('/get-nas-packages', (req, res, next) => {
-    var company = req.body.company;
-    var id = req.body.noDocs;
-    console.log(req.body);
-    services.packageService.getPackagesNasWarehouse(id, company).then(results => {
-        res.send(results);
-    })
-});
+
 router.get('/nas-no-docs', middleware(services.userService).checkSession, (req, res, next) => {
     services.packageService.getNoDocsPackackages().then(packages => {
         var pageData = {};
@@ -400,22 +375,7 @@ router.get('/nas-no-docs', middleware(services.userService).checkSession, (req, 
         pageData.RoleId = res.User.role;
         res.render('pages/warehouse/nas-no-docs', pageData);
     })
-
 })
-router.get('/load-package/:trackNo', middleware(services.userService).checkSession, (req, res, next) => {
-    var trackingNo = req.params.trackNo;
-
-
-    console.log(trackingNo, "getting package")
-
-    services.packageService.getpackagebyRedisId(trackingNo).then(result => {
-        res.send(result);
-    })
-    // redis.getPackage(trackingNo).then((package) => {
-    //     res.send(package);
-    // });
-});
-
 router.post('/rm-package', middleware(services.userService).checkSession, (req, res, next) => {
     var trackingNo = req.body.trackingNo;
     var packageId = req.body.id;

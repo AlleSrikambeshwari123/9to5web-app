@@ -142,18 +142,8 @@
 									<span class="sub-item">Packages on Hand</span>
 								</a>
 							</li>
-							<!-- <li>
-								<a href="#">
-									<span class="sub-item">Checkout</span>
-								</a>
-							</li> -->
-							<!-- <li>
-								<a href="/warehouse/store-check-in">
-									<span class="sub-item">Check In Package</span>
-								</a>
-							</li> -->
-							<li>
-								<a href="/warehouse/deliveries">
+							<li <% if (page.includes('/nas/delivery/list')) { %> class="active" <% } %>>
+								<a href="/warehouse/nas/delivery/list">
 									<span class="sub-item">Deliveries</span>
 								</a>
 							</li>

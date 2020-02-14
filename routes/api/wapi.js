@@ -107,6 +107,14 @@ router.post('/checkout-to-customer', (req, res, next) => {
   })
 })
 
+router.post('/add-package-to-delivery', (req, res, next) => {
+  var deliveryId = req.body.deliveryId;
+  var packageIds = req.body.packageId.split(',');
+  services.deliveryService.addPackageToDelivery(deliveryId, packageIds).then(result => {
+    res.send(result)
+  })
+})
+
 
 router.post('/process-pkg-nas', (req, res, next) => {
   var body = req.body;
@@ -123,27 +131,13 @@ router.get('/get-open-deliveries', (req, res, next) => {
     res.send(deliveries);
   })
 })
-router.post('/add-package-to-delivery', (req, res, next) => {
-  var deliveryPkg = {
-    barcode: req.body.barcode,
-    deliveryId: req.body.deliveryId
-  }
-  services.deliveryService.addPackage(deliveryPkg.deliveryId, deliveryPkg.barcode).then(result => {
-    res.send(result)
-  })
-})
 
 router.get('/get-locations', (req, res, next) => {
   services.locationService.getLocations().then(locations => {
     res.send(locations);
   })
 });
-router.post('/get-package-info/', (req, res, next) => {
-  var id = req.body.barcode;
-  services.packageService.getPackageById(id).then((pkg => {
-    res.send(pkg);
-  }))
-})
+
 router.post('/check-into-store', (req, res, next) => {
   var checkin = {
     locationId: req.body.locationId,

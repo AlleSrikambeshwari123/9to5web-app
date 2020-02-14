@@ -54,12 +54,16 @@ exports.redis_prefix_manifest = "manifest:";
 exports.redis_id_manifest = "id:manifest";
 exports.redis_prefix_manifest_open_list = "list:manifest:open";
 
+exports.redis_prefix_delivery = "delivery:";
+exports.redis_id_delivery = "id:delivery";
+
 // Package
 exports.redis_prefix_package = "package:";
 exports.redis_id_package = "id:package";
 
 exports.redis_prefix_awb_package_list = "list:awb:package";
 exports.redis_prefix_manifest_package_list = "list:manifest:package";
+exports.redis_prefix_delivery_package_list = "list:delivery:package";
 
 exports.redis_prefix_package_status = "status:package:";
 exports.redis_id_package_status = "id:status:package";

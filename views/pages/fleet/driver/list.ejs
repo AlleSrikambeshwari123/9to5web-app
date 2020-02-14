@@ -7,14 +7,12 @@
         <a href='create' class='btn btn-primary btn-round ml-md-auto float-right'>Add Driver</a>
       </div>
       <div class="card-body">
-        <table class="table m-0">
+        <table class="display table table-striped table-hover dataTable driver-table">
           <thead>
             <tr>
               <th>Name</th>
               <th>Email</th>
               <th>Mobile</th>
-              <th>Driver License</th>
-              <th>Location</th>
               <th></th>
             </tr>
           </thead>
@@ -24,7 +22,10 @@
               <td><%= driver.firstName + ' ' + driver.lastName%></td>
               <td><%= driver.email%></td>
               <td><%= driver.mobile%></td>
-              <td><%= driver.location%></td>
+              <td>
+                <a href='manage/<%=driver.id%>/get'><i class="fas fa-user-edit px-3"></i></a>
+                <a href='#' class='rm-user' data-id='<%=driver.id%>'><i class="fas fa-trash px-3"></i></a>
+              </td>
             </tr>
             <% }) %>
           </tbody>
@@ -34,4 +35,5 @@
   </div>
 </div>
 
+<% block('scripts').append('<script src="/js/utils.js"></script>')%>
 <% block('scripts').append('<script src="/js/fleet/driver/list.js"></script>')%>

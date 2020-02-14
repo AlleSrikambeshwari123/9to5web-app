@@ -1,0 +1,109 @@
+<% layout('./shared/__template')%>
+
+<div class='gutters'>
+  <div class='col-xl-12 col-lg-6 col-md-12 col-sm-12'>
+    <div class='card'>
+      <div class="card-header d-flex align-items-left align-items-md-center flex-column flex-md-row">
+        <h3 class="card-title"><%=title%></h3>
+        <a href='create' class='btn btn-primary btn-round float-right ml-md-auto text-white' data-toggle='modal'
+          data-target='#addDelivery'>Create Delivery</a>
+      </div>
+      <div class="card-body">
+        <table class="display table table-striped table-hover dataTable delivery-table">
+          <thead>
+            <tr>
+              <th>Created By</th>
+              <th>Delivery Date</th>
+              <th>Destination</th>
+              <th>Package Count</th>
+              <th>Driver</th>
+              <th>Vehicle</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% deliveries.forEach(delivery => { %>
+            <tr data-record="<%= delivery.id %>">
+              <td><%= delivery.createdBy %></td>
+              <td><%= delivery.deliveryDate %></td>
+              <td><%= delivery.location.name %></td>
+              <td><%= delivery.packages.length %></td>
+              <td><%= delivery.driver.name %></td>
+              <td><%= delivery.vehicle.name %></td>
+            </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="addDelivery" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2"
+  aria-hidden="true" style="display: none;">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <form>
+        <div class="modal-header">
+          <h2 class="modal-title" id="exampleModalLabel2">Create New Delivery</h2>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class='form-group'>
+            <label for="locationId">Select Delivery Location</label>
+            <select class='form-control' id='locationId' name="locationId">
+              <option></option>
+              <% locations.forEach(location => { %>
+              <option value='<%=location.id%>'><%=location.name%></option>
+              <% }) %>
+            </select>
+          </div>
+          <div class='form-group'>
+            <label for="driverId">Select Driver</label>
+            <select class='form-control' id="driverId" name="driverId">
+              <option>Select Driver</option>
+            </select>
+          </div>
+          <div class='form-group'>
+            <label for="vehicleId">Select Vehicle</label>
+            <select class='form-control' id="vehicleId" name="vehicleId">
+              <option>Select Vehicle</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger close-modal" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary save-delivery" id='rmPackage'>Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="close-delivery" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2"
+  aria-hidden="true" style="display: none;">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="exampleModalLabel2">Close this Delivery</h2>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class='form-group'>
+          <h3>Are you sure you want to close this delivery?</h3>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary close-modal" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-info save-delivery" id='rmPackage'>Close Delivery</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<% block('scripts').append('<script src="/js/utils.js"></script>')%>
+<% block('scripts').append('<script src="/js/warehouse/delivery/list.js"></script>')%>

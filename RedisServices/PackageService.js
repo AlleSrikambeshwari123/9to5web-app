@@ -225,6 +225,20 @@ class PackageService {
     });
   }
 
+  //#region Pakcage Filters  
+  // getPackagesNasWarehouse(isNoDoc, company) {
+  //   var srv = this;
+  //   return new Promise((resolve, reject) => {
+  //     packageIndex.search(`@status:[4 4] @company:${company} @hasDocs:[${isNoDoc} ${isNoDoc}]`, {}, (err, reply) => {
+  //       console.log(reply.results);
+  //       Promise.all(reply.results.map(pkg => srv.getPackageByDocId(pkg.docId))).then(packages => {
+  //         resolve(packages);
+  //       })
+
+  //     })
+  //   })
+  // }
+
   getPackagesInNas() {
     return new Promise((resolve, reject) => {
       client.keys(PREFIX + '*', (err, keys) => {
@@ -483,37 +497,7 @@ class PackageService {
         });
     })
   }
-  getpackagebyRedisId(id) {
-    return new Promise((resolve, reject) => {
-      packageIndex.getDoc(id, (err, document) => {
-        resolve(document.doc);
-      })
-    })
-  }
-  getPackageById(barcode) {
-    var srv = this;
-    var pkgId = getPackageIdFromBarCode(barcode);
-    return new Promise((resolve, reject) => {
-      this.mySearch.getDoc(pkgId, (err, document) => {
-        //get the awb info here as well 
-        srv.getAwb(document.doc.awb).then(awbinfo => {
-          srv.getShipper(awbinfo.awb.shipper).then(shipper => {
-            console.log(awbinfo);
-            awbinfo.awb.shipper = shipper.name;
-            var response = {
-              awb: awbinfo.awb,
-              package: document.doc
-            }
-            resolve(response);
-          })
-
-        });
-
-      })
-    });
-  }
   updateStoreLocation(checkin) {
-    var srv = this;
     return new Promise((resolve, reject) => {
       var id = getPackageIdFromBarCode(checkin.barcode);
       packageIndex.getDoc(id, (err, pkg) => {
@@ -522,31 +506,13 @@ class PackageService {
         pkg.doc.status = 5;
         packageIndex.update(id, pkg, (err, result) => {
           //we need to send the email here for the package 
-          srv.getPackageByDocId(id).then(info => {
-            emailService.sendAtStoreEmail(checkin.location, info);
+          this.getPackage(id).then(pkg => {
+            emailService.sendAtStoreEmail(checkin.location, pkg);
             resolve({ updated: true });
           })
-
         });
       })
     })
-  }
-  getPackageByDocId(pkgId) {
-    var srv = this;
-    return new Promise((resolve, reject) => {
-      this.mySearch.getDoc(pkgId, (err, document) => {
-        //get the awb info here as well 
-        srv.getAwb(document.doc.awb).then(awbinfo => {
-          console.log(awbinfo);
-          var response = {
-            awb: awbinfo.awb,
-            package: document.doc
-          }
-          resolve(response);
-        });
-
-      })
-    });
   }
 
   removePackageFromManifest(packageId, mid) {
@@ -619,20 +585,6 @@ class PackageService {
 
 
 
-  //#region Pakcage Filters  
-  getPackagesNasWarehouse(isNoDoc, company) {
-    var srv = this;
-    return new Promise((resolve, reject) => {
-      packageIndex.search(`@status:[4 4] @company:${company} @hasDocs:[${isNoDoc} ${isNoDoc}]`, {}, (err, reply) => {
-        console.log(reply.results);
-        Promise.all(reply.results.map(pkg => srv.getPackageByDocId(pkg.docId))).then(packages => {
-          resolve(packages);
-        })
-
-      })
-    })
-  }
-
   //#endregion
 
 
@@ -680,7 +632,7 @@ class PackageService {
         console.log("print:fees:" + username, username);
         client.publish("print:fees:" + username, pkgIfno.awb);
 
-        srv.getPackageById(pkgIfno.barcode).then(pkg => {
+        this.getPackage(pkgIfno.barcode).then(pkg => {
           emailService.sendNoDocsEmail(pkg)
           if (pkgIfno.refLoc) {
             pkg.package.wloc = pkgIfno.refLoc;
