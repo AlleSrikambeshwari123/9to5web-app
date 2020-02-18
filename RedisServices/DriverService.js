@@ -61,5 +61,9 @@ class DriverService {
 
 //========== DB Structure =========//
 // id:
+// firstName:
+// lastName:
+// mobile:
+// email:
 
 module.exports = DriverService;

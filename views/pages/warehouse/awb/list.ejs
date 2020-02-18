@@ -84,9 +84,9 @@
                   %>
                   <tr data-record="<%= awb.id %>">
                     <td><%=awb.dateCreated%></td>
-                    <td><%=awb.customer.pmb %></td>
+                    <td><%= awb.customer && awb.customer.pmb %></td>
                     <td><a href="manage/<%=awb.id%>/preview"><%=awb.id%></a></td>
-                    <td><%=awb.customer.firstName + ' ' + awb.customer.lastName%></td>
+                    <td><%= awb.customer && awb.customer.firstName + ' ' + awb.customer.lastName%></td>
                     <td><%=awb.shipper.name %></td>
                     <td><%=awb.carrier.name %></td>
                     <td><%=awb.packages.length %></td>

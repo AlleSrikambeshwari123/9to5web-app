@@ -16,35 +16,18 @@
               <th>Model</th>
               <th>License Plate</th>
               <th>Driver</th>
-              <th>Route</th>
               <th></th>
             </tr>
           </thead>
           <tbody>
             <% vehicles.forEach(function(vehicle){%>
-            <tr data-record="<%= user.username %>">
-              <th scope="row"><%=user.role%></th>
-              <td><%=user.username%></td>
-              <td><%=user.firstName + ' ' + user.lastName%></td>
-              <td><%=user.email%></td>
-              <td><%=user.mobile %></td>
+            <tr data-record="<%= vehicle.id %>">
+              <th scope="row"><%=vehicle.vehicle_make%></th>
+              <td><%=vehicle.model%></td>
+              <td><%=vehicle.registration%></td>
+              <td><%=vehicle.driver.firstName + ' ' + vehicle.driver.lastName%></td>
               <td>
-                <% if (user.enabled == 'false'){ %>
-                <span class='badge badge-danger'>Inactive</span>
-                <% } else { %>
-                <span class='badge badge-info'>Active</span>
-                <% } %>
-              </td>
-              <td>
-                <a href='manage/<%=user.username%>/get'><i class="fas fa-user-edit"></i></a>
-                <a href='#' class='rm-user' data-id='<%=user.username%>'><i class="fas fa-trash"></i></a>
-                <% if (user.enabled == 'false'){ %>
-                <a href='#' class='enableUser' data-id='<%=user.username%>' data-value='true'> <span
-                    class='badge badge-info float-right'>Enable</span></a>
-                <% } else {%>
-                <a href='#' class='enableUser' data-id='<%=user.username%>' data-value='false'> <span
-                    class='badge badge-danger float-right'>Disable</span> </a>
-                <% } %>
+                <a href='manage/<%=vehicle.id%>/get'><i class="fas fa-user-edit"></i></a>
               </td>
             </tr>
             <%})%>

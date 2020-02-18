@@ -104,6 +104,7 @@ exports.get_awb_list = (req, res, next) => {
 exports.get_awb_no_docs = (req, res, next) => {
   services.awbService.getAwbsNoDocs().then(awbs => {
     getFullAwb(awbs).then(awbs => {
+      console.log(awbs)
       res.render('pages/warehouse/awb/no-docs', {
         page: req.originalUrl,
         title: "AirWay Bills - No Docs",
