@@ -6,6 +6,7 @@ var client = require('./dataContext').redisClient;
 
 const PREFIX = strings.redis_prefix_vehicle;
 const VEHICLE_ID = strings.redis_id_vehicle;
+const VEHICLE_LIST = strings.redis_prefid_vehicle_list;
 
 class VehicleService {
   addVehicle(vehicle) {
@@ -14,6 +15,7 @@ class VehicleService {
         if (err) resolve({ success: false, message: strings.string_response_error });
         vehicle.id = id;
         client.hmset(PREFIX + id, vehicle);
+        client.sadd(VEHICLE_LIST + vehicle.location, id);
         resolve({ success: true, message: strings.string_response_added });
       })
     })
@@ -32,8 +34,15 @@ class VehicleService {
   }
   removeVehicle(id) {
     return new Promise((resolve, reject) => {
-      client.del(PREFIX + id);
-      resolve({ success: true, message: strings.string_response_removed });
+      this.getVehicle(id).then(vehicle => {
+        if (vehicle.id == undefined) {
+          resolve({ success: false, message: strings.string_not_found_vehicle });
+        } else {
+          client.srem(VEHICLE_LIST + vehicle.location, id);
+          client.del(PREFIX + id);
+          resolve({ success: true, message: strings.string_response_removed });
+        }
+      })
     })
   }
   getVehicle(id) {
@@ -56,12 +65,19 @@ class VehicleService {
       })
     })
   }
-  getVehiclesByCountry(country) {
+  getVehiclesByLocation(location) {
     return new Promise((resolve, reject) => {
-      lredis.search(PREFIX, 'country', country).then(vehicles => {
-        resolve(vehicles);
+      client.smembers(VEHICLE_LIST + location, (err, ids) => {
+        if (err) resolve([]);
+        else {
+          Promise.all(ids.map(id => {
+            return lredis.hgetall(PREFIX + id);
+          })).then(vehicles => {
+            resolve(vehicles);
+          })
+        }
       })
-    })
+    });
   }
 }
 

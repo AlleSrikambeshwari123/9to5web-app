@@ -1,4 +1,5 @@
 var services = require('../RedisServices/RedisDataServices');
+var utils = require('../Util/utils');
 
 exports.get_driver_list = (req, res, next) => {
   services.driverService.getDrivers().then(drivers => {
@@ -6,7 +7,7 @@ exports.get_driver_list = (req, res, next) => {
       page: req.originalUrl,
       title: 'Drivers',
       user: res.user,
-      drivers: drivers,
+      drivers: drivers.map(utils.formattedRecord),
     })
   })
 }
@@ -45,5 +46,12 @@ exports.update_driver = (req, res, next) => {
 exports.delete_driver = (req, res, next) => {
   services.driverService.removeDriver(req.params.id).then(result => {
     res.send(result);
+  })
+}
+
+exports.get_location_drivers = (req, res, next) => {
+  var location = req.params.location;
+  services.driverService.getLocationDrivers(location).then(drivers => {
+    res.send(drivers.map(utils.formattedRecord));
   })
 }

@@ -9,13 +9,14 @@
         </div>
       </div>
       <div class="card-body">
-        <table class="table m-0">
+        <table class="display table table-striped table-hover dataTable vehicle-table">
           <thead>
             <tr>
               <th>Make</th>
               <th>Model</th>
               <th>License Plate</th>
               <th>Driver</th>
+              <th>Location</th>
               <th></th>
             </tr>
           </thead>
@@ -26,6 +27,7 @@
               <td><%=vehicle.model%></td>
               <td><%=vehicle.registration%></td>
               <td><%=vehicle.driver.firstName + ' ' + vehicle.driver.lastName%></td>
+              <td><%=vehicle.location%></td>
               <td>
                 <a href='manage/<%=vehicle.id%>/get'><i class="fas fa-user-edit"></i></a>
               </td>

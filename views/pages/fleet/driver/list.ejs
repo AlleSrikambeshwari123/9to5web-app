@@ -13,6 +13,7 @@
               <th>Name</th>
               <th>Email</th>
               <th>Mobile</th>
+              <th>Location</th>
               <th></th>
             </tr>
           </thead>
@@ -22,6 +23,7 @@
               <td><%= driver.firstName + ' ' + driver.lastName%></td>
               <td><%= driver.email%></td>
               <td><%= driver.mobile%></td>
+              <td><%= driver.location%></td>
               <td>
                 <a href='manage/<%=driver.id%>/get'><i class="fas fa-user-edit px-3"></i></a>
                 <a href='#' class='rm-user' data-id='<%=driver.id%>'><i class="fas fa-trash px-3"></i></a>

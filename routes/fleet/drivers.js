@@ -10,4 +10,6 @@ router.get('/driver/manage/:id/get', middleware().checkSession, driverCtrl.get_d
 router.post('/driver/manage/:id/update', middleware().checkSession, driverCtrl.update_driver);
 router.delete('/driver/manage/:id/delete', middleware().checkSession, driverCtrl.delete_driver);
 
+router.get('/driver/list/:location', middleware().checkSession, driverCtrl.get_location_drivers);
+
 module.exports = router;

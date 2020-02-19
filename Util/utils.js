@@ -35,6 +35,9 @@ exports.formattedRecord = (record) => {
   if (record.warehouse == 'fll') record.warehouse = "Warehouse FLL";
   if (record.warehouse == 'nas') record.warehouse = "Warehouse NAS";
 
+  if (record.location == 'fll') record.location = "Warehouse FLL";
+  if (record.location == 'nas') record.location = "Warehouse NAS";
+
   if (record.mobile && record.mobile.length >= 10)
     record.mobile = phoneFormatter.format(record.mobile, "(NNN) NNN-NNNN");
   if (record.phone && record.phone.length >= 10)

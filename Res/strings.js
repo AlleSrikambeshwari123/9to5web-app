@@ -23,9 +23,11 @@ exports.redis_id_location = "id:location";
 
 exports.redis_prefix_vehicle = "vehicle:";
 exports.redis_id_vehicle = "id:vehicle";
+exports.redis_prefid_vehicle_list = "list:vehicle:"; // + location
 
 exports.redis_prefix_driver = "driver:";
 exports.redis_id_driver = "id:driver";
+exports.redis_prefix_driver_list = "list:driver:"; // + location ( nas / fll )
 
 exports.redis_prefix_pilot = "pilot:";
 exports.redis_id_pilot = "id:pilot";

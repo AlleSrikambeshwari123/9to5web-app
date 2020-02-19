@@ -1,0 +1,60 @@
+<% layout('./shared/__template')%>
+<div class="card">
+  <div class="card-header">
+    <div class="card-title"><%=title%></div>
+  </div>
+  <form id="add-vehicle-form" action="update">
+    <div class="card-body">
+      <div class="form-group form-show-validation row">
+        <label for="vehicle_make" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Vehicle Make </label>
+        <div class="col-lg-4 col-md-9 col-sm-8">
+          <input type="text" class="form-control" id="vehicle_make" name="vehicle_make" placeholder="Vehicle Make"
+            value="<%= vehicle.vehicle_make %>" required>
+        </div>
+      </div>
+      <div class="form-group form-show-validation row">
+        <label for="model" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Vehicle Model </label>
+        <div class="col-lg-4 col-md-9 col-sm-8">
+          <input type="text" class="form-control" id="model" name="model" placeholder="Vehicle Model"
+            value="<%= vehicle.model %>" required>
+        </div>
+      </div>
+      <div class="form-group form-show-validation row">
+        <label for="registration" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Vehicle Registration </label>
+        <div class="col-lg-4 col-md-9 col-sm-8">
+          <input type="text" class="form-control" id="registration" name="registration"
+            placeholder="Vehicle Registration" value="<%= vehicle.registration %>" required>
+        </div>
+      </div>
+      <div class="form-group form-show-validation row">
+        <label for="location" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Location </label>
+        <div class="col-lg-4 col-md-9 col-sm-8">
+          <input type="text" class="form-control" id="location" value="<%= vehicle.location %>" readonly>
+        </div>
+      </div>
+      <div class="form-group form-show-validation row">
+        <label for="driverId" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Select Driver </label>
+        <div class="col-lg-4 col-md-9 col-sm-8">
+          <select class="form-control" id="driverId" name="driverId" required>
+            <option></option>
+            <% drivers.forEach(driver => { %>
+            <option value="<%=driver.id%>" <% if(vehicle.driverId == driver.id) { %> selected <% } %>>
+              <%=driver.firstName + ' ' + driver.lastName%> </option>
+            <% }) %>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="card-action">
+      <div class="row">
+        <div class="col-md-12">
+          <input class="btn btn-primary" type="submit" value="Update">
+          <button class="btn btn-danger" id="cancelForm">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+<% block('scripts').append('<script src="/js/utils.js"></script>')%>
+<% block('scripts').append('<script src="/js/fleet/vehicle/edit.js"></script>')%>

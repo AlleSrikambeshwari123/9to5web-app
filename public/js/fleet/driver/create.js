@@ -16,3 +16,13 @@ $("#add-driver-form").submit(function (event) {
     }
   })
 })
+
+$('#location').select2({
+  theme: 'bootstrap',
+  width: '100%',
+  placeholder: 'Select a location'
+})
+
+$('#cancel').click(function () {
+  window.history.back();
+})

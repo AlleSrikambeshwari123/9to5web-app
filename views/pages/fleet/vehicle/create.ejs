@@ -1,0 +1,59 @@
+<% layout('./shared/__template')%>
+<div class="card">
+  <div class="card-header">
+    <div class="card-title"><%=title%></div>
+  </div>
+  <form id="add-vehicle-form" action="create">
+    <div class="card-body">
+      <div class="form-group form-show-validation row">
+        <label for="vehicle_make" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Vehicle Make </label>
+        <div class="col-lg-4 col-md-9 col-sm-8">
+          <input type="text" class="form-control" id="vehicle_make" name="vehicle_make" placeholder="Vehicle Make"
+            required>
+        </div>
+      </div>
+      <div class="form-group form-show-validation row">
+        <label for="model" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Vehicle Model </label>
+        <div class="col-lg-4 col-md-9 col-sm-8">
+          <input type="text" class="form-control" id="model" name="model" placeholder="Vehicle Model" required>
+        </div>
+      </div>
+      <div class="form-group form-show-validation row">
+        <label for="registration" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Vehicle Registration </label>
+        <div class="col-lg-4 col-md-9 col-sm-8">
+          <input type="text" class="form-control" id="registration" name="registration"
+            placeholder="Vehicle Registration" required>
+        </div>
+      </div>
+      <div class="form-group form-show-validation row">
+        <label for="location" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Location </label>
+        <div class="col-lg-4 col-md-9 col-sm-8">
+          <select class="form-control" id="location" name="location" required>
+            <option></option>
+            <option value="fll">Warehouse FLL</option>
+            <option value="nas">Warehouse NAS</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group form-show-validation row">
+        <label for="driverId" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Select Driver </label>
+        <div class="col-lg-4 col-md-9 col-sm-8">
+          <select class="form-control" id="driverId" name="driverId" required>
+            <option></option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="card-action">
+      <div class="row">
+        <div class="col-md-12">
+          <input class="btn btn-primary" type="submit" value="Add">
+          <button class="btn btn-danger" id="cancelForm">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+<% block('scripts').append('<script src="/js/utils.js"></script>')%>
+<% block('scripts').append('<script src="/js/fleet/vehicle/create.js"></script>')%>

@@ -68,7 +68,7 @@ class CustomerService {
   getCustomer(id) {
     return new Promise((resolve, reject) => {
       client.hgetall(PREFIX + id, (err, customer) => {
-        if (err) resolve({});
+        if (err || !customer) resolve({});
         resolve(customer);
       })
     });
