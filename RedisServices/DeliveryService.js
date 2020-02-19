@@ -89,14 +89,15 @@ class DeliveryService {
     })
   }
 
-  addPackageToDelivery(deliveryId, packageId) {
+  addPackagesToDelivery(deliveryId, packageIds) {
     return new Promise((resolve, reject) => {
-      client.sadd(DELIVERY_SET + deliveryId, packageId, (err, reply) => {
+      client.sadd(DELIVERY_SET + deliveryId, packageIds, (err, reply) => {
         if (err) resolve({ success: false, message: strings.string_response_error });
         resolve({ success: true, message: strings.string_response_added });
       })
     })
   }
+
   getDeliveryPackages(deliveryId) {
     return new Promise((resolve, reject) => {
       client.smembers(DELIVERY_SET + deliveryId, (err, packageIds) => {

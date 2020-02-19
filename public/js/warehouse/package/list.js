@@ -9,16 +9,25 @@ $('.btn-print-pkg').click(function () {
     url: '/api/printer/pdf/generate/pkg/' + id,
     type: 'get',
     success: function (response) {
-      pdfPath = '/util/pdf' + response.filename;
-      pdfjsLib.getDocument({ url: pdfPath }).promise.then(pdfData => {
-        pdfData.getPage(1).then(page => {
-          var canvas = $('#pdf-preview')[0];
-          var canvasContext = canvas.getContext('2d');
-          const viewport = page.getViewport({ scale: 1 });
-          canvas.height = canvas.width / viewport.width * viewport.height;
-          page.render({ canvasContext, viewport })
+      if (response.success) {
+        pdfPath = '/util/pdf' + response.filename;
+        pdfjsLib.getDocument({ url: pdfPath }).promise.then(pdfData => {
+          pdfData.getPage(1).then(page => {
+            var canvas = $('#pdf-preview')[0];
+            var canvasContext = canvas.getContext('2d');
+            const viewport = page.getViewport({ scale: 1 });
+            canvas.height = canvas.width / viewport.width * viewport.height;
+            page.render({ canvasContext, viewport })
+          })
         })
-      })
+      } else {
+        $('.close-del').trigger('click');
+        swal({
+          title: 'Failed',
+          text: response.message,
+          type: 'error',
+        })
+      }
     }
   })
 })

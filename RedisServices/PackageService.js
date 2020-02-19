@@ -34,10 +34,6 @@ const PKG_STATUS = {
   6: "Delivered"
 };
 
-function getPackageVolumne(mPackage) {
-
-  return 0;
-}
 function createDocument(tPackage) {
   var packageDocument = {
     id: tPackage.id,
@@ -46,7 +42,7 @@ function createDocument(tPackage) {
     dateRecieved: moment().unix(),
     awb: 0,
     mid: 0,
-    volume: getPackageVolumne(tPackage),
+    volume: 0,
     weight: tPackage.weight,
     pieces: tPackage.pieces,
     customer: tPackage.customer,
@@ -60,7 +56,6 @@ function createDocument(tPackage) {
     value: tPackage.value,
 
   };
-  console.log("about to add the package to the index");
   return packageDocument;
 }
 
@@ -172,6 +167,7 @@ class PackageService {
         newPackage.trackingNo = uniqId();
         client.hmset(PREFIX + id, newPackage);
         client.sadd(PREFIX_PACKAGE_LIST + awbId, id);
+        this.updatePackageStatus(id, 0, "");
         resolve({ success: true });
       })
     });
@@ -206,20 +202,16 @@ class PackageService {
 
   getPackagesInFll() {
     return new Promise((resolve, reject) => {
-      client.keys(PREFIX + '*', (err, keys) => {
-        Promise.all(keys.map(key => {
-          return lredis.hgetall(key);
-        })).then(packages => {
-          Promise.all(packages.map(pkg => {
-            return this.getPackageLastStatus(pkg.id);
-          })).then(stats => {
-            let pkgs = [];
-            stats.forEach((status, i) => {
-              if (status == PKG_STATUS[0] || status == PKG_STATUS[1] || status == PKG_STATUS[2])
-                pkgs.push(packages[i]);
-            })
-            resolve(pkgs);
+      this.getAllPackages().then(packages => {
+        Promise.all(packages.map(pkg => {
+          return this.getPackageLastStatus(pkg.id);
+        })).then(stats => {
+          let pkgs = [];
+          stats.forEach((status, i) => {
+            if (status == PKG_STATUS[0] || status == PKG_STATUS[1] || status == PKG_STATUS[2])
+              pkgs.push(packages[i]);
           })
+          resolve(pkgs);
         })
       })
     });
@@ -386,7 +378,7 @@ class PackageService {
   getPackageLastStatus(packageId) {
     return new Promise((resolve, reject) => {
       this.getPackageStatuses(packageId).then(stats => {
-        if (stats == null) resolve(PKG_STATUS[0]);
+        if (stats.length == 0) resolve(PKG_STATUS[0]);
         else resolve(stats[stats.length - 1]);
       })
     });
@@ -395,6 +387,7 @@ class PackageService {
   getPackageStatuses(packageId) {
     return new Promise((resolve, reject) => {
       client.smembers(LIST_PACKAGE_STATUS + packageId, (err, ids) => {
+        if (err) resolve([]);
         Promise.all(ids.map(id => {
           return lredis.hgetall(PREFIX_PACKAGE_STATUS + id);
         })).then(status => {

@@ -107,10 +107,23 @@ router.post('/checkout-to-customer', (req, res, next) => {
   })
 })
 
-router.post('/add-package-to-delivery', (req, res, next) => {
+router.get('/get-open-deliveries', (req, res, next) => {
+  services.deliveryService.getOpenDeliveries().then(deliveries => {
+    Promise.all(deliveries.map(delivery => {
+      return services.deliveryService.getFullDelivery(delivery.id);
+    })).then(deliveries => {
+      deliveries.forEach(delivery => {
+        delivery.name = delivery.location.name + ' - ' + delivery.vehicle.model;
+      })
+      res.send({ deliveries: deliveries });
+    })
+  })
+})
+
+router.post('/add-packages-to-delivery', (req, res, next) => {
   var deliveryId = req.body.deliveryId;
-  var packageIds = req.body.packageId.split(',');
-  services.deliveryService.addPackageToDelivery(deliveryId, packageIds).then(result => {
+  var packageIds = req.body.packageIds.split(',');
+  services.deliveryService.addPackagesToDelivery(deliveryId, packageIds).then(result => {
     res.send(result)
   })
 })
@@ -123,12 +136,6 @@ router.post('/process-pkg-nas', (req, res, next) => {
   console.log(req.body)
   services.packageService.procssessPackage(body, username).then(result => {
     res.send(result)
-  })
-})
-
-router.get('/get-open-deliveries', (req, res, next) => {
-  services.deliveryService.getOpenDeliveries().then(deliveries => {
-    res.send(deliveries);
   })
 })
 

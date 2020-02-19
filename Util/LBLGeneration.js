@@ -305,11 +305,13 @@ class LBLGeneration {
           pdfDoc.pipe(filestream = fs.createWriteStream(filepath));
           pdfDoc.end();
           filestream.on('finish', async function () {
-            resolve({ path: filepath, filename: filename });
+            resolve({ success: true, path: filepath, filename: filename });
           })
         } catch (error) {
           reject(error);
         }
+      }).catch(err => {
+        resolve({ success: false, message: "Can't create the barcode because of invalid information" });
       })
     })
   }
@@ -335,6 +337,7 @@ class LBLGeneration {
     }
   }
   generateBarcode(text) {
+    console.log('Generating Barcode of ' + text);
     return new Promise((resolve, reject) => {
       bwipjs.toBuffer({
         bcid: 'code39',

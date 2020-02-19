@@ -34,11 +34,26 @@ exports.add_new_delivery = (req, res, next) => {
 exports.get_delivery_detail = (req, res, next) => {
   var deliveryId = req.params.id;
   services.deliveryService.getFullDelivery(deliveryId).then(delivery => {
-    res.render('pages/warehouse/delivery/preview', {
-      page: req.originalUrl,
-      user: res.user,
-      title: 'Delivery Detail',
-      delivery: delivery
+    Promise.all(delivery.packages.map(pkg => {
+      return getFullPackage(pkg);
+    })).then(packages => {
+      delivery.packages = packages;
+      res.render('pages/warehouse/delivery/preview', {
+        page: req.originalUrl,
+        user: res.user,
+        title: 'Delivery Detail',
+        delivery: delivery
+      })
     })
   })
 }
+
+var getFullPackage = (pkg) => {
+  return new Promise((resolve, reject) => {
+    services.awbService.getFullAwb(pkg.awbId).then(awb => {
+      pkg.customer = awb.customer;
+      pkg.shipper = awb.shipper;
+      resolve(pkg);
+    })
+  });
+} 
