@@ -10,4 +10,6 @@ router.get('/vehicle/manage/:id/get', middleware().checkSession, vehicleCtrl.get
 router.post('/vehicle/manage/:id/update', middleware().checkSession, vehicleCtrl.update_vehicle);
 router.delete('/vehicle/manage/:id/delete', middleware().checkSession, vehicleCtrl.delete_vehicle);
 
+router.get('/vehicle/list/:location', middleware().checkSession, vehicleCtrl.get_location_vehicles);
+
 module.exports = router;

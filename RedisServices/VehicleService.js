@@ -83,6 +83,10 @@ class VehicleService {
 
 //========== DB Structure ==========//
 // id:
-// 
+// vehicle_make:
+// model:
+// registration:
+// driverId:
+// location
 
 module.exports = VehicleService;

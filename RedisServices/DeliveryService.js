@@ -21,12 +21,14 @@ class DeliveryService {
   createDelivery(delivery, username) {
     return new Promise((resolve, reject) => {
       client.incr(ID_DELIVERY, (err, id) => {
+        if (err) resolve({ success: false, message: strings.string_response_error });
+
         delivery.id = id;
         delivery.status = 0;
         delivery.createdBy = username;
         delivery.dateCreated = moment().utc().unix();
         client.hmset(PREFIX + id, delivery);
-        resolve({ saved: true });
+        resolve({ success: true, message: strings.string_response_created });
       })
     })
   }
@@ -112,8 +114,9 @@ class DeliveryService {
 // locationId:
 // driverId:
 // vehicleId:
-// deliveryDate:
-// status:
 // createdBy:
+// dateCreated:
+// delivery_date:
+// status:
 
 module.exports = DeliveryService;

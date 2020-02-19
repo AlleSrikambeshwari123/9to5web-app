@@ -54,6 +54,13 @@ exports.delete_vehicle = (req, res, next) => {
   })
 }
 
+exports.get_location_vehicles = (req, res, next) => {
+  var location = req.params.location;
+  services.vehicleService.getVehiclesByLocation(location).then(vehicles => {
+    res.send(vehicles);
+  })
+}
+
 var getFullVehicles = (vehicles) => {
   return new Promise((resolve, reject) => {
     Promise.all(vehicles.map(vehicle => {

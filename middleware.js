@@ -18,15 +18,11 @@ module.exports = function (allowedRoles) {
                     res.user = user;
                     res.printer = services.printService.getUserPrinter(user.username);
                     var navMode = handleNavigation(user);
-                    console.log("NAV MODE", navMode);
-                    //if users is in role
+                    res.navigationMode = navMode;
                     if (Array.isArray(allowedRoles))
                         if (allowedRoles.indexOf(user.role) < 0) {
                             res.status(401).render('pages/401', { user: user });
                         }
-                    var navMode = handleNavigation(user);
-                    console.log("NAV MODE", navMode);
-                    res.navigationMode = navMode;
                     next();
                 }, function () {
                     res.status(401).render('pages/401', { title: 'Express', failed: '0' });

@@ -8,8 +8,8 @@ exports.get_delivery_list = (req, res, next) => {
     })).then(delivers => {
       Promise.all([
         services.locationService.getLocations(),
-        services.driverService.getDrivers(),
-        services.vehicleService.getVehicles()
+        services.driverService.getLocationDrivers('nas'),
+        services.vehicleService.getVehiclesByLocation('nas')
       ]).then(results => {
         res.render('pages/warehouse/delivery/list', {
           page: req.originalUrl,
@@ -21,6 +21,24 @@ exports.get_delivery_list = (req, res, next) => {
           vehicles: results[2],
         })
       })
+    })
+  })
+}
+
+exports.add_new_delivery = (req, res, next) => {
+  services.deliveryService.createDelivery(req.body, res.user.username).then(response => {
+    res.send(response);
+  })
+}
+
+exports.get_delivery_detail = (req, res, next) => {
+  var deliveryId = req.params.id;
+  services.deliveryService.getFullDelivery(deliveryId).then(delivery => {
+    res.render('pages/warehouse/delivery/preview', {
+      page: req.originalUrl,
+      user: res.user,
+      title: 'Delivery Detail',
+      delivery: delivery
     })
   })
 }

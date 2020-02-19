@@ -10,7 +10,7 @@ $("#location").change(function () {
     url: '/fleet/driver/list/' + location,
     type: 'get',
     success: function (drivers) {
-      $('#driverId').empty();
+      $('#driverId').empty().append('<option></option>');
       drivers.forEach(driver => {
         $('#driverId').append(`<option value="${driver.id}">${driver.firstName} ${driver.lastName}</option>`)
       })
