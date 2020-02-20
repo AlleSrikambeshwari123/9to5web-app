@@ -33,6 +33,9 @@ var warehousePackageRouter = require('./routes/warehouse/package');
 var warehousePrinterRouter = require('./routes/warehouse/print');
 var warehouseDeliveryRouter = require('./routes/warehouse/delivery');
 
+// Store
+var storeRouter = require('./routes/store/store');
+
 // API
 var apiPrinterRouter = require('./routes/api/printer');
 var apiWarehouseRouter = require('./routes/api/wapi');
@@ -70,6 +73,7 @@ app.use('/account', accountPasswordRouter, accountPrintRouter);
 app.use('/admin', adminUserRouter, adminCustRouter, adminLocaRouter);
 app.use('/warehouse', warehouse, warehouseAwbRouter, warehouseManifestRouter, warehouseShipperRouter, warehousePackageRouter, warehousePrinterRouter, warehouseDeliveryRouter);
 app.use('/fleet', fleetVehicleRouter, fleetDriverRouter, fleetPilotRouter, fleetPlaneRouter, fleetCompartmentRouter);
+app.use('/store', storeRouter);
 app.use('/util', util);
 
 app.use('/api/printer', apiPrinterRouter);

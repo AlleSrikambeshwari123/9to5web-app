@@ -10,7 +10,6 @@ class LocationService {
     return new Promise((resolve, reject) => {
       client.keys(PREFIX + '*', (err, keys) => {
         if (err) resolve([]);
-        console.log(keys);
         Promise.all(keys.map(key => {
           return lredis.hgetall(key);
         })).then(locations => {

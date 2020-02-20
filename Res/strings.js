@@ -66,10 +66,11 @@ exports.redis_id_package = "id:package";
 exports.redis_prefix_awb_package_list = "list:awb:package";
 exports.redis_prefix_manifest_package_list = "list:manifest:package";
 exports.redis_prefix_delivery_package_list = "list:delivery:package";
+exports.redis_prefix_location_package_list = "list:location:package";
 
 exports.redis_prefix_package_status = "status:package:";
 exports.redis_id_package_status = "id:status:package";
-exports.redis_prefix_list_package_status = "list:status:package:"
+exports.redis_prefix_list_package_status = "list:status:package:";
 
 // Const strings
 exports.string_response_error = "Internal Server Error !";
@@ -80,6 +81,7 @@ exports.string_response_added = "Successfully Added !";
 exports.string_response_shipped = "Successfully Shipped !";
 exports.string_response_received = "Successfully Received !";
 exports.string_response_loaded = "Successfully Loaded !";
+exports.string_response_stored = "Successfully Stored !";
 exports.string_response_already_added = "Already Added !";
 exports.string_response_print_awb = "AirWay Bill sent to the printer.";
 

@@ -1,0 +1,44 @@
+<% layout('./shared/__template')%>
+<div class='gutters'>
+	<div class="col-xl-12 col-lg-6 col-md-12 col-sm-12">
+
+		<div class="card">
+			<div class="card-header">
+				<div class="card-title"><%=title%></div>
+			</div>
+			<div class="card-body">
+				<div class="form-group row">
+					<label for="locationId" class="ml-4 my-auto text-right">Select Location </label>
+					<div class="col-lg-3 pl-0 ml-3">
+						<select id="locationId">
+							<option></option>
+							<% locations.forEach(location => { %>
+							<option value="<%= location.id %>"><%= location.name %></option>
+							<% }) %>
+						</select>
+					</div>
+				</div>
+				<div class="separator-solid"></div>
+				<div class="mt-3">
+					<table class="display table table-striped table-hover dataTable package-table">
+						<thead>
+							<tr>
+								<th>Date Received</th>
+								<th>Location</th>
+								<th>Tracking No</th>
+								<th>PMB - Consignee</th>
+								<th>AWB</th>
+								<th>Description</th>
+								<th>Weight</th>
+							</tr>
+						</thead>
+						<tbody>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<% block('scripts').append('<script src="/js/store/store-check-in.js"></script>')%>

@@ -18,11 +18,12 @@ const PREFIX_PACKAGE_LIST = strings.redis_prefix_awb_package_list; // this key +
 const LIST_PACKAGE_SHIPMENT = "list:shipment:"; // this key + shipmentId = array of packages
 const SHIPMENT_ID = "id:accept:truck";
 
+const LIST_PACKAGE_MANIFEST = strings.redis_prefix_manifest_package_list;
+const LIST_LOCATION_PACKAGE = strings.redis_prefix_location_package_list;
+
 const PREFIX_PACKAGE_STATUS = strings.redis_prefix_package_status;
 const ID_PACKAGE_STATUS = strings.redis_id_package_status;
 const LIST_PACKAGE_STATUS = strings.redis_prefix_list_package_status;
-
-const LIST_PACKAGE_MANIFEST = strings.redis_prefix_manifest_package_list;
 
 const PKG_STATUS = {
   0: "Created",
@@ -358,6 +359,34 @@ class PackageService {
     })
   }
 
+  //========== Check In Store ==========//
+  checkInStore(locationId, packageIds, username) {
+    packageIds = packageIds.split(',');
+    return new Promise((resolve, reject) => {
+      Promise.all(packageIds.map(packageId => {
+        this.updatePackage(packageId, {
+          locationId: locationId,
+        });
+        return this.updatePackageStatus(packageId, 6, username);
+      })).then(result => {
+        client.sadd(LIST_LOCATION_PACKAGE + locationId, packageIds);
+        resolve({ success: true, message: strings.string_response_stored });
+      })
+    })
+  }
+
+  getPackagesInLocation(locationId) {
+    return new Promise((resolve, reject) => {
+      client.smembers(LIST_LOCATION_PACKAGE + locationId, (err, ids) => {
+        Promise.all(ids.map(id => {
+          return this.getPackage(id);
+        })).then(pkgs => {
+          resolve(pkgs);
+        })
+      })
+    });
+  }
+
   //========== Package Status ==========//
   updatePackageStatus(packageId, status, username) {
     return new Promise((resolve, reject) => {
@@ -490,23 +519,7 @@ class PackageService {
         });
     })
   }
-  updateStoreLocation(checkin) {
-    return new Promise((resolve, reject) => {
-      var id = getPackageIdFromBarCode(checkin.barcode);
-      packageIndex.getDoc(id, (err, pkg) => {
-        pkg.doc.locationId = checkin.locationId;
-        pkg.doc.location = checkin.location;
-        pkg.doc.status = 5;
-        packageIndex.update(id, pkg, (err, result) => {
-          //we need to send the email here for the package 
-          this.getPackage(id).then(pkg => {
-            emailService.sendAtStoreEmail(checkin.location, pkg);
-            resolve({ updated: true });
-          })
-        });
-      })
-    })
-  }
+
 
   removePackageFromManifest(packageId, mid) {
     var msearch = this.mySearch;

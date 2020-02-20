@@ -1,13 +1,6 @@
 var express = require('express');
 var router = express.Router();
 var services = require('../../RedisServices/RedisDataServices');
-var middleware = require('../../middleware');
-var moment = require('moment');
-var formidable = require('formidable');
-var path = require('path');
-var fs = require('fs');
-var delfile = '';
-var uniqid = require('uniqid')
 
 var PackageUtil = require('../../Util/packageutil').PackageUtility;
 var packageUtil = new PackageUtil();
@@ -107,6 +100,7 @@ router.post('/checkout-to-customer', (req, res, next) => {
   })
 })
 
+//========== NAS Delivery APIs ==========//
 router.get('/get-open-deliveries', (req, res, next) => {
   services.deliveryService.getOpenDeliveries().then(deliveries => {
     Promise.all(deliveries.map(delivery => {
@@ -128,6 +122,22 @@ router.post('/add-packages-to-delivery', (req, res, next) => {
   })
 })
 
+//========== NAS Store Check-In APIs ==========//
+router.get('/get-locations', (req, res, next) => {
+  services.locationService.getLocations().then(locations => {
+    res.send({ locations: locations });
+  })
+});
+
+router.post('/check-in-store', (req, res, next) => {
+  var packageIds = req.body.packageIds;
+  var locationId = req.body.locationId;
+  var username = req.headers.username;
+  services.packageService.checkInStore(locationId, packageIds, username).then(result => {
+    res.send(result)
+  })
+})
+
 
 router.post('/process-pkg-nas', (req, res, next) => {
   var body = req.body;
@@ -139,23 +149,6 @@ router.post('/process-pkg-nas', (req, res, next) => {
   })
 })
 
-router.get('/get-locations', (req, res, next) => {
-  services.locationService.getLocations().then(locations => {
-    res.send(locations);
-  })
-});
-
-router.post('/check-into-store', (req, res, next) => {
-  var checkin = {
-    locationId: req.body.locationId,
-    location: req.body.location,
-    barcode: req.body.barcode,
-    username: req.body.username,
-  }
-  services.packageService.updateStoreLocation(checkin).then(result => {
-    res.send(result)
-  })
-})
 router.post('/save-package-fees', (req, res, next) => {
   res.send({ saved: true })
 })

@@ -521,13 +521,6 @@ router.post('/process-package', middleware(services.userService).checkSession, (
     });
 });
 
-router.get('/store-check-in', middleware(services.userService).checkSession, (req, res, next) => {
-    var pageData = {};
-    pageData.title = "Store Checkin";
-    pageData.luser = res.User.FirstName + ' ' + res.User.LastName;
-    pageData.RoleId = res.User.role;
-    res.render('pages/warehouse/store-checkin', pageData);
-})
 //#endregion
 
 router.post('/download-awb', function (req, res, next) {
