@@ -92,14 +92,6 @@ router.post('/rec-package-nas', (req, res, next) => {
   })
 })
 
-router.post('/checkout-to-customer', (req, res, next) => {
-  var packageIds = req.body.packageIds;
-  var username = req.headers.username;
-  services.packageService.checkOutToCustomer(packageIds, username).then(result => {
-    res.send(result)
-  })
-})
-
 //========== NAS Delivery APIs ==========//
 router.get('/get-open-deliveries', (req, res, next) => {
   services.deliveryService.getOpenDeliveries().then(deliveries => {
@@ -138,18 +130,13 @@ router.post('/check-in-store', (req, res, next) => {
   })
 })
 
-
-router.post('/process-pkg-nas', (req, res, next) => {
-  var body = req.body;
+//========== NAS Check out to Customer ==========//
+router.post('/checkout-to-customer', (req, res, next) => {
+  var packageIds = req.body.packageIds;
   var username = req.headers.username;
-  var nas_location_id = 2;
-  console.log(req.body)
-  services.packageService.procssessPackage(body, username).then(result => {
+  services.packageService.checkOutToCustomer(packageIds, username).then(result => {
     res.send(result)
   })
 })
 
-router.post('/save-package-fees', (req, res, next) => {
-  res.send({ saved: true })
-})
 module.exports = router;

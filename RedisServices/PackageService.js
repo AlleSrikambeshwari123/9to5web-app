@@ -625,49 +625,6 @@ class PackageService {
       })
     })
   }
-
-  procssessPackage(pkgIfno, username) {
-    var srv = this;
-    return new Promise((resolve, reject) => {
-      //we also need to set the warehouse location here 
-      client.hmset("fees:awb:" + pkgIfno.awb, pkgIfno, (err, result) => {
-        if (err)
-          console.log(err);
-
-        console.log(result);
-        console.log("print:fees:" + username, username);
-        client.publish("print:fees:" + username, pkgIfno.awb);
-
-        this.getPackage(pkgIfno.barcode).then(pkg => {
-          emailService.sendNoDocsEmail(pkg)
-          if (pkgIfno.refLoc) {
-            pkg.package.wloc = pkgIfno.refLoc;
-
-            pkg.package.hasDocs = pkgIfno.hasDocs;
-            pkg.package.status = 4;
-
-            //set theompany 
-            if (Number(pkg.awb.customer.pmb) > 9000) {
-              pkg.package.company = "0"
-            }
-            else
-              pkg.package.company = "1"
-            console.log('updating with ', pkg.package)
-
-            packageIndex.update(pkg.package.id, pkg.package, (errResp, response) => {
-
-              if (errResp)
-                console.log(errResp)
-            })
-          }
-
-        })
-        resolve({ sent: true })
-      })
-    })
-  }
-
-  //#endregion
 }
 
 function getPackageIdFromBarCode(barCodeValue) {
