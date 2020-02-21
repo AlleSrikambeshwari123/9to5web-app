@@ -11,13 +11,13 @@
 // }
 // client.del('customer:id');
 
-// var services = require('./RedisServices/RedisDataServices');
+var services = require('./RedisServices/RedisDataServices');
 
 //========== Firebase Test ==========//
-var firebase = require('./Util/firebase');
-firebase.sendNotification({
-  fcmToken: "epnyIxvbFvc:APA91bEb6xfEvPHt06Ba5t6OeCiiUpyCfcQlYfllZyyGmhOK_O56EoyHLw3j0o1Obqqde07zL3XDCvKtf178CBaZD47AM07YSVdI71ssSokIVxf5uLVC45NQYLnGkfAXtTBx8C0Ivmup"
-}, "Test Message", "Test Message");
+// var firebase = require('./Util/firebase');
+// firebase.sendNotification({
+//   fcmToken: "epnyIxvbFvc:APA91bEb6xfEvPHt06Ba5t6OeCiiUpyCfcQlYfllZyyGmhOK_O56EoyHLw3j0o1Obqqde07zL3XDCvKtf178CBaZD47AM07YSVdI71ssSokIVxf5uLVC45NQYLnGkfAXtTBx8C0Ivmup"
+// }, "Test Message", "Test Message");
 
 //========== AWB Service ==========//
 // services.awbService.getFullAwb('100006').then(awb => {
@@ -41,7 +41,7 @@ firebase.sendNotification({
 //   6: "Delivered"
 // };
 // console.log(PKG_STATUS['1']);
-
+services.packageService.updatePackageStatus(10, 5, 'denis').then(result => console.log(result));
 //========== Package Service ==========//
 // services.manifestService.getOpenManifest().then(manifests => {
 //   console.log(manifests);

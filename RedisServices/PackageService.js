@@ -4,8 +4,7 @@ var moment = require("moment");
 var fs = require("fs");
 var uniqId = require("uniqid");
 var strings = require("../Res/strings");
-var PackageUtil = require("../Util/packageutil").PackageUtility;
-var packageUtil = new PackageUtil();
+var firebase = require('../Util/firebase');
 
 var redisearch = require('./redisearch');
 var client = require('./dataContext').redisClient;
@@ -27,7 +26,7 @@ const LIST_PACKAGE_STATUS = strings.redis_prefix_list_package_status;
 
 const PKG_STATUS = {
   0: "Created",
-  1: "Received",
+  1: "Received in FLL",
   2: "Loaded on AirCraft",
   3: "In Transit",
   4: "Recieved in NAS",
@@ -399,6 +398,13 @@ class PackageService {
           updatedBy: username,
         });
         client.sadd(LIST_PACKAGE_STATUS + packageId, id);
+        this.getPackage(packageId).then(pkg => {
+          this.services.awbService.getAwb(pkg.awbId).then(awb => {
+            this.services.customerService.getCustomer(awb.customerId).then(customer => {
+              firebase.sendNotification(customer, "Package Status Updated", "Package-" + pkg.trackingNo + " Updated");
+            })
+          })
+        })
         resolve({ success: true, message: strings.string_response_updated });
       })
     });
