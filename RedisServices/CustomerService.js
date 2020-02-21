@@ -75,7 +75,7 @@ class CustomerService {
   }
   getCustomerWithEmail(email) {
     return new Promise((resolve, reject) => {
-      lredis.search(PREFIX, 'email', email).then(results => {
+      lredis.search(PREFIX, [{ field: 'email', value: email }]).then(results => {
         if (results.length == 0) resolve({});
         else resolve(results[0]);
       })
@@ -111,6 +111,20 @@ class CustomerService {
         })).then(result => {
           resolve(result);
         })
+      })
+    });
+  }
+
+  updateFcm(email, fcmToken) {
+    return new Promise((resolve, reject) => {
+      console.log(`Updating fcmToken of ${email}: ${fcmToken}`);
+      this.getCustomerWithEmail(email).then(customer => {
+        if (customer.id == undefined) {
+          resolve({ success: false, message: strings.string_not_found_customer });
+        } else {
+          client.hmset(PREFIX + customer.id, { fcmToken: fcmToken });
+          resolve({ success: true, message: strings.string_response_updated });
+        }
       })
     });
   }

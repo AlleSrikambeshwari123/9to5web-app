@@ -1,21 +1,3 @@
-//#region  Manifest TEST
-// var ManifestService = require('./RedisServices/ManifestService').ManifestService; 
-// var pservice =  require('./RedisServices/PackageService').PackageService; 
-// var ms = new ManifestService(); 
-// var ps = new pservice(); 
-// ps.removePackage("088",161)
-//ps.updateManifestPackageToInTransit(161)
-// .then((result)=>{
-//     console.log(result);
-// });
-
-// ms.createNewManifest(ms.mtypes.air,"stevan").then((result)=>{
-//     console.log(result)
-// }).catch((err)=>{
-//     console.log(err);
-// });
-//#endregion
-
 // var client = require('./RedisServices/dataContext').redisClient;
 
 // var user = {
@@ -28,7 +10,15 @@
 //   role: "Admin"
 // }
 // client.del('customer:id');
-var services = require('./RedisServices/RedisDataServices');
+
+// var services = require('./RedisServices/RedisDataServices');
+
+//========== Firebase Test ==========//
+var firebase = require('./Util/firebase');
+firebase.sendNotification({
+  fcmToken: "epnyIxvbFvc:APA91bEb6xfEvPHt06Ba5t6OeCiiUpyCfcQlYfllZyyGmhOK_O56EoyHLw3j0o1Obqqde07zL3XDCvKtf178CBaZD47AM07YSVdI71ssSokIVxf5uLVC45NQYLnGkfAXtTBx8C0Ivmup"
+}, "Test Message", "Test Message");
+
 //========== AWB Service ==========//
 // services.awbService.getFullAwb('100006').then(awb => {
 //   console.log(awb);
@@ -53,6 +43,6 @@ var services = require('./RedisServices/RedisDataServices');
 // console.log(PKG_STATUS['1']);
 
 //========== Package Service ==========//
-services.manifestService.getOpenManifest().then(manifests => {
-  console.log(manifests);
-})
+// services.manifestService.getOpenManifest().then(manifests => {
+//   console.log(manifests);
+// })

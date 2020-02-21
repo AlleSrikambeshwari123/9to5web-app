@@ -7,6 +7,28 @@ router.post('/login', function (req, res, next) {
     res.send(loginResult);
   })
 });
+router.post('/sign-up', function (req, res, next) {
+  var body = req.body;
+  var customer = {
+    firstName: body.firstName,
+    lastName: body.lastName,
+    email: body.email,
+    mobile: body.mobile,
+    password: body.password
+  }
+  services.customerService.signUp(customer).then(signUpResult => {
+    res.send(signUpResult);
+  });
+});
+
+router.post('/update-fcm', (req, res, next) => {
+  var email = req.body.email;
+  var fcmToken = req.body.fcmToken;
+  services.customerService.updateFcm(email, fcmToken).then(result => {
+    res.send(result);
+  })
+})
+
 router.post('/update-profile', function (req, res, next) {
   var body = req.body;
   var customer = {
@@ -20,6 +42,7 @@ router.post('/update-profile', function (req, res, next) {
 
   })
 });
+
 router.post('/change-password', function (req, res, next) {
   var body = req.body;
   var passwordRequest = {
@@ -29,6 +52,17 @@ router.post('/change-password', function (req, res, next) {
   }
   services.customerService.changePassword(passwordRequest).then(result => {
     res.send(result);
+  })
+});
+router.post('/req-pwd-reset', function (req, res, next) {
+  console.log(req.body);
+  services.customerService.requestResetPassword(req.body.skybox).then(requestResult => {
+    res.send(requestResult)
+  })
+});
+router.post('/pwd-reset', function (req, res, next) {
+  services.customerService.resetPasswd(req.body).then(pwdResult => {
+    res.send(pwdResult);
   })
 });
 router.get('/get-packages', function (req, res, next) {
@@ -56,29 +90,5 @@ router.get('/get-packages-history', function (req, res, next) {
       { packageId: 36, trackingNumber: "114-0354742-6210612", description: "USB C adapter", dateRec: "2019-07-2", dateDelivered: "2019-07-07", cost: 25.00, status: "Delivered", statusId: 5 },
     ]
   })
-});
-router.post('/req-pwd-reset', function (req, res, next) {
-  console.log(req.body);
-  services.customerService.requestResetPassword(req.body.skybox).then(requestResult => {
-    res.send(requestResult)
-  })
-});
-router.post('/pwd-reset', function (req, res, next) {
-  services.customerService.resetPasswd(req.body).then(pwdResult => {
-    res.send(pwdResult);
-  })
-});
-router.post('/sign-up', function (req, res, next) {
-  var body = req.body;
-  var customer = {
-    firstName: body.firstName,
-    lastName: body.lastName,
-    email: body.email,
-    mobile: body.mobile,
-    password: body.password
-  }
-  services.customerService.signUp(customer).then(signUpResult => {
-    res.send(signUpResult);
-  });
 });
 module.exports = router;
