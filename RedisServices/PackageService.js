@@ -1,12 +1,10 @@
 var emailService = require("../Util/EmailService")
-var redis = require("redis");
 var moment = require("moment");
 var fs = require("fs");
 var uniqId = require("uniqid");
 var strings = require("../Res/strings");
 var firebase = require('../Util/firebase');
 
-var redisearch = require('./redisearch');
 var client = require('./dataContext').redisClient;
 var lredis = require('./redis-local');
 
@@ -25,7 +23,6 @@ const ID_PACKAGE_STATUS = strings.redis_id_package_status;
 const LIST_PACKAGE_STATUS = strings.redis_prefix_list_package_status;
 
 const PKG_STATUS = {
-  0: "Created",
   1: "Received in FLL",
   2: "Loaded on AirCraft",
   3: "In Transit",
@@ -208,7 +205,7 @@ class PackageService {
         })).then(stats => {
           let pkgs = [];
           stats.forEach((status, i) => {
-            if (status == PKG_STATUS[0] || status == PKG_STATUS[1] || status == PKG_STATUS[2])
+            if (status == PKG_STATUS[1] || status == PKG_STATUS[2])
               pkgs.push(packages[i]);
           })
           resolve(pkgs);
@@ -216,20 +213,6 @@ class PackageService {
       })
     });
   }
-
-  //#region Pakcage Filters  
-  // getPackagesNasWarehouse(isNoDoc, company) {
-  //   var srv = this;
-  //   return new Promise((resolve, reject) => {
-  //     packageIndex.search(`@status:[4 4] @company:${company} @hasDocs:[${isNoDoc} ${isNoDoc}]`, {}, (err, reply) => {
-  //       console.log(reply.results);
-  //       Promise.all(reply.results.map(pkg => srv.getPackageByDocId(pkg.docId))).then(packages => {
-  //         resolve(packages);
-  //       })
-
-  //     })
-  //   })
-  // }
 
   getPackagesInNas() {
     return new Promise((resolve, reject) => {
@@ -393,6 +376,7 @@ class PackageService {
         client.hmset(PREFIX_PACKAGE_STATUS + id, {
           id: id,
           packageId: packageId,
+          statusId: status,
           status: PKG_STATUS[status],
           datetimestamp: moment().utc().unix(),
           updatedBy: username,
@@ -413,7 +397,7 @@ class PackageService {
   getPackageLastStatus(packageId) {
     return new Promise((resolve, reject) => {
       this.getPackageStatuses(packageId).then(stats => {
-        if (stats.length == 0) resolve(PKG_STATUS[0]);
+        if (stats.length == 0) resolve(PKG_STATUS[1]);
         else resolve(stats[stats.length - 1]);
       })
     });
@@ -428,6 +412,20 @@ class PackageService {
         })).then(status => {
           resolve(status);
         })
+      })
+    });
+  }
+
+  //========== Customer Package ==========//
+  getCustomerPackages(id) {
+    return new Promise((resolve, reject) => {
+      lredis.search(PREFIX, [{ field: 'customerId', value: id }]).then(packages => {
+        Promise.all(packages.map(pkg => {
+          return this.getPackageStatuses(pkg.id);
+        })).then(statuses => {
+          packages.forEach((pkg, i) => pkg.status = statuses[i]);
+        })
+        resolve(packages);
       })
     });
   }
@@ -593,12 +591,6 @@ class PackageService {
       resolve({ 'updated': true });
     })
   }
-  getCustomerPackages(skybox) { }
-
-
-
-  //#endregion
-
 
   //#region Manifest Package Functions 
 
@@ -651,6 +643,10 @@ dimensions: 1x2x3
 packageType: BOX
 trackingNo: 8k72ikk6a0zkgd // Unique ID
 description: Shoes
+customerId:
+shipperId:
+carrierId:
+hazmatId:
 W: 1
 H: 2
 L: 3
@@ -660,5 +656,12 @@ manifestId:
 compartmentId:
 location: Warehosue FLL
 */
+
+// - Package Status
+// id:
+// packageId:
+// status:
+// datetimestamp:
+// updatedBy:
 
 module.exports = PackageService;

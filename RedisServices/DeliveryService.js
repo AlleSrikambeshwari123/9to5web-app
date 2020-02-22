@@ -3,7 +3,6 @@ const strings = require('../Res/strings');
 
 var client = require('./dataContext').redisClient;
 var lredis = require("./redis-local");
-var redisearch = require('./redisearch');
 
 const PREFIX = strings.redis_prefix_delivery;
 const ID_DELIVERY = strings.redis_id_delivery;
@@ -76,7 +75,7 @@ class DeliveryService {
 
   getOpenDeliveries() {
     return new Promise((resolve, reject) => {
-      redisearch.search(PREFIX, [{ field: 'status', value: '0' }]).then(deliveries => {
+      lredis.search(PREFIX, [{ field: 'status', value: '0' }]).then(deliveries => {
         resolve(deliveries);
       })
     })

@@ -1,8 +1,9 @@
 var express = require('express');
 var router = express.Router();
 var services = require('../../RedisServices/RedisDataServices');
-/* GET home page. */
-router.post('/login', function (req, res, next) {
+var moment = require('moment');
+
+router.post('/login', (req, res, next) => {
   services.customerService.login(req.body.username, req.body.password).then(loginResult => {
     res.send(loginResult);
   })
@@ -65,20 +66,27 @@ router.post('/pwd-reset', function (req, res, next) {
     res.send(pwdResult);
   })
 });
-router.get('/get-packages', function (req, res, next) {
-  var body = req.body;
-  res.send({
-    packages: [
-      { packageId: 34, trackingNumber: "114-3477688-4697861", description: "Fog Lamps", dateRec: "2019-07-2", dateDelivered: "", cost: 0, status: "In Miami", statusId: 1 },
-      { packageId: 35, trackingNumber: "114-2440197-3408215", description: "Bose Quiet Comfort ", dateRec: "2019-07-2", dateDelivered: "", cost: 0, status: "In Transit", statusId: 2 },
-      { packageId: 36, trackingNumber: "114-0354742-6210612", description: "USB C adapter", dateRec: "2019-07-2", dateDelivered: "", cost: 0, status: "Processing", statusId: 3 },
-    ]
-  });
 
-  //   services.packageService.getCustomerPackagesByStatus(req.body.skybox,req.body.status,req.body.page).then(packageResult=>{
-  //     res.send({packages:packageResult})
-  // }); 
+router.get('/get-packages/:id', (req, res, next) => {
+  services.packageService.getCustomerPackages(req.params.id).then(packages => {
+    Promise.all(packages.map(pkg => {
+      return services.packageService.getPackageStatuses(pkg.id);
+    })).then(stats => {
+      packages.forEach((pkg, i) => {
+        pkg.status = stats[i];
+      });
+      res.send({ packages: packages });
+    })
+  })
+  // res.send({
+  //   packages: [
+  //     { packageId: 34, trackingNumber: "114-3477688-4697861", description: "Fog Lamps", dateRec: "2019-07-2", dateDelivered: "", cost: 0, status: "In Miami", statusId: 1 },
+  //     { packageId: 35, trackingNumber: "114-2440197-3408215", description: "Bose Quiet Comfort ", dateRec: "2019-07-2", dateDelivered: "", cost: 0, status: "In Transit", statusId: 2 },
+  //     { packageId: 36, trackingNumber: "114-0354742-6210612", description: "USB C adapter", dateRec: "2019-07-2", dateDelivered: "", cost: 0, status: "Processing", statusId: 3 },
+  //   ]
+  // });
 });
+
 router.get('/get-packages-history', function (req, res, next) {
   // services.packageService.getCustomerPackagesByStatus(req.body.skybox,req.body.status,req.body.page).then(packageResult=>{
   //     res.send({packages:packageResult})

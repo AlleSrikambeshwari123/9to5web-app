@@ -79,10 +79,14 @@ exports.add_new_awb = (req, res, next) => {
   let awb = req.body;
   let packages = JSON.parse(awb.packages);
   services.awbService.createAwb(awb).then(result => {
-    let awbId = result.awb.id;
-    services.packageService.createPackages(awbId, packages).then(packageResult => {
-      awb.id = awbId;
-      result.awb = awb;
+    awb = result.awb;
+    packages.forEach(pkg => {
+      pkg.customerId = awb.customerId;
+      pkg.shipperId = awb.shipper;
+      pkg.carrierId = awb.carrier;
+      pkg.hazmatId = awb.hazmatId;
+    })
+    services.packageService.createPackages(awb.id, packages).then(packageResult => {
       res.send(result);
     })
   })
