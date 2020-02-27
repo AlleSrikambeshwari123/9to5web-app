@@ -7,7 +7,7 @@ exports.get_shipper_list = (req, res, next) => {
       page: req.originalUrl,
       title: 'Shippers',
       user: res.user,
-      shippers: shippers,
+      shippers: shippers.map(utils.formattedRecord),
     })
   })
 }

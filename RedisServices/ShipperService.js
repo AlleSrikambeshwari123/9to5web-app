@@ -109,4 +109,18 @@ class ShipperService {
   }
 }
 
+//========== DB Structure ==========//
+// id:
+// name:
+// firstName:
+// lastName:
+// telephone:
+// email:
+// fax:
+// address:
+// city:
+// state:
+// country:
+// zipcode:
+
 module.exports = ShipperService;

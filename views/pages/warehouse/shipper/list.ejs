@@ -21,18 +21,12 @@
                 <!-- <th>State</th> -->
                 <!-- <th>Country</th> -->
                 <!-- <th>ZipCode</th> -->
-                <th>AccountNo</th>
-                <!-- <th>Type</th> -->
-                <!-- <th>External</th> -->
-                <!-- <th>Tran Version</th> -->
-                <!-- <th>Departure Port</th> -->
                 <th>Action</th>
               </tr>
             </thead>
             <tbody>
               <% shippers.forEach(function(shipper){%>
               <tr data-record="<%= shipper.id %>">
-                <!-- <td><%=shipper.id%></td> -->
                 <td><strong><%=shipper.name%></strong></td>
                 <td><%=shipper.firstName + ' ' + shipper.lastName%></td>
                 <td><%=shipper.email%></td>
@@ -42,11 +36,6 @@
                 <!-- <td><%=shipper.state %></td> -->
                 <!-- <td><%=shipper.country %></td> -->
                 <!-- <td><%=shipper.zipcode %></td> -->
-                <td><%=shipper.accountNo %></td>
-                <!-- <td><%=shipper.type %></td> -->
-                <!-- <td><%=shipper.isExternal %></td> -->
-                <!-- <td><%=shipper.tranVersion %></td> -->
-                <!-- <td><%=shipper.departurePortId %></td> -->
                 <td>
                   <a href='manage/<%=shipper.id%>/get'><i class="fas fa-pen"></i></a>
                   <a href='#' class='rm-shipper ml-3' data-id='<%=shipper.id%>'><i class="fas fa-trash"></i></a>
@@ -61,4 +50,5 @@
   </div>
 </div>
 
+<% block('scripts').append('<script src="/js/utils.js"></script>')%>
 <% block('scripts').append('<script src="/js/warehouse/shipper/list.js"></script>')%>
