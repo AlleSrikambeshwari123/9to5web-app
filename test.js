@@ -43,7 +43,13 @@ var services = require('./RedisServices/RedisDataServices');
 // console.log(PKG_STATUS['1']);
 // services.packageService.updatePackageStatus(10, 5, 'denis').then(result => console.log(result));
 // services.packageService.getCustomerPackages(3).then(result => console.log(result));
-//========== Package Service ==========//
+
+//========== Manifest Service ==========//
 // services.manifestService.getOpenManifest().then(manifests => {
 //   console.log(manifests);
 // })
+
+//========== Package Service ==========//
+services.hazmatService.importClassesFromCsv().then(result => {
+  console.log(result);
+})
