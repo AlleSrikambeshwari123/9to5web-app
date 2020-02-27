@@ -48,12 +48,19 @@ exports.formattedRecord = (record) => {
     record.recipient = phoneFormatter.format(record.recipient, "(NNN) NNN-NNNN");
   if (record.owner && record.owner.length >= 10)
     record.owner = phoneFormatter.format(record.owner, "(NNN) NNN-NNNN");
+  if (record.telephone && record.telephone.length >= 10)
+    record.telephone = phoneFormatter.format(record.telephone, "(NNN) NNN-NNNN");
   if (record.customer && record.customer.mobile && record.customer.mobile.length >= 10)
     record.customer.mobile = phoneFormatter.format(record.customer.mobile, "(NNN) NNN-NNNN");
   if (record.dateCreated) {
     record.dateCreated = moment(record.dateCreated * 1000).format("YYYY/MM/DD, h:mm:ss A");
   }
   return record;
+}
+
+exports.formatPhoneNumber = (phone) => {
+  if (phone && phone.length >= 10)
+    phone = phoneFormatter.format(phone, "(NNN) NNN-NNNN");
 }
 
 exports.formatDate = (unix, format) => {
