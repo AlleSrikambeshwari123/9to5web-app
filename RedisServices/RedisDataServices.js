@@ -26,6 +26,8 @@ var HazmatService = require('./HazmatService');
 var hazmatService = new HazmatService();
 var ShipperService = require('./ShipperService');
 var shipperService = new ShipperService();
+var CarrierService = require('./CarrierService');
+var carrierService = new CarrierService();
 var AwbService = require('./AwbService');
 var awbService = new AwbService();
 
@@ -43,6 +45,7 @@ var services = {
   planeService,
   hazmatService,
   shipperService,
+  carrierService,
   awbService,
 };
 

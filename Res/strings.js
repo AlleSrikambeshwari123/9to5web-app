@@ -43,6 +43,9 @@ exports.redis_id_compartment_plane = "id:compartment";
 exports.redis_prefix_shipper = "shipper:";
 exports.redis_id_shipper = "id:shipper";
 
+exports.redis_prefix_carrier = "carrier:";
+exports.redis_id_carrier = "id:carrier";
+
 exports.redis_prefix_hazmat = "hazmat:";
 exports.redis_id_hazmat = "id:hazmat";
 

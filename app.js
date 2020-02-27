@@ -29,6 +29,7 @@ var fleetCompartmentRouter = require('./routes/fleet/compartment');
 var warehouseAwbRouter = require('./routes/warehouse/awb');
 var warehouseManifestRouter = require('./routes/warehouse/manifest');
 var warehouseShipperRouter = require('./routes/warehouse/shipper');
+var warehouseCarrierRouter = require('./routes/warehouse/carrier');
 var warehousePackageRouter = require('./routes/warehouse/package');
 var warehousePrinterRouter = require('./routes/warehouse/print');
 var warehouseDeliveryRouter = require('./routes/warehouse/delivery');
@@ -55,7 +56,6 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 // uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 
 app.use(bodyParser.json());
@@ -71,7 +71,7 @@ app.use(session({
 app.use('/', adminIndexRouter, authRouter);
 app.use('/account', accountPasswordRouter, accountPrintRouter);
 app.use('/admin', adminUserRouter, adminCustRouter, adminLocaRouter);
-app.use('/warehouse', warehouse, warehouseAwbRouter, warehouseManifestRouter, warehouseShipperRouter, warehousePackageRouter, warehousePrinterRouter, warehouseDeliveryRouter);
+app.use('/warehouse', warehouse, warehouseAwbRouter, warehouseManifestRouter, warehouseShipperRouter, warehouseCarrierRouter, warehousePackageRouter, warehousePrinterRouter, warehouseDeliveryRouter);
 app.use('/fleet', fleetVehicleRouter, fleetDriverRouter, fleetPilotRouter, fleetPlaneRouter, fleetCompartmentRouter);
 app.use('/store', storeRouter);
 app.use('/util', util);
