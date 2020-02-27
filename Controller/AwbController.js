@@ -14,7 +14,7 @@ exports.preview_awb = (req, res, next) => {
     Promise.all([
       services.customerService.getCustomer(awb.customerId),
       services.shipperService.getShipper(awb.shipper),
-      services.shipperService.getShipper(awb.carrier),
+      services.carrierService.getCarrier(awb.carrier),
       services.hazmatService.getClass(awb.hazmat),
     ]).then(otherInfos => {
       awb.packages = packages;
@@ -40,6 +40,7 @@ exports.get_awb_detail = (req, res, next) => {
     services.customerService.getCustomers(),
     services.hazmatService.getAllClasses(),
     services.shipperService.getAllShippers(),
+    services.carrierService.getAllCarriers(),
     services.awbService.getAwb(id),
     services.packageService.getPackages(id),
   ]).then(results => {
@@ -51,8 +52,9 @@ exports.get_awb_detail = (req, res, next) => {
       customers: results[0],
       hazmats: results[1],
       shippers: results[2],
-      awb: results[3],
-      packages: results[4],
+      carriers: results[3],
+      awb: results[4],
+      packages: results[5],
     });
   })
 }
@@ -62,6 +64,7 @@ exports.create_awb = (req, res, next) => {
     services.customerService.getCustomers(),
     services.hazmatService.getAllClasses(),
     services.shipperService.getAllShippers(),
+    services.carrierService.getAllCarriers(),
   ]).then(results => {
     res.render('pages/warehouse/awb/create', {
       page: req.originalUrl,
@@ -71,6 +74,7 @@ exports.create_awb = (req, res, next) => {
       customers: results[0],
       hazmats: results[1],
       shippers: results[2],
+      carriers: results[3],
     });
   })
 }
@@ -155,7 +159,7 @@ function getFullAwb(awbs) {
         services.packageService.getPackages(awb.id),
         services.customerService.getCustomer(awb.customerId),
         services.shipperService.getShipper(awb.shipper),
-        services.shipperService.getShipper(awb.carrier),
+        services.carrierService.getCarrier(awb.carrier),
       ]).then(results => {
         let weight = 0;
         awb.packages = results[0];

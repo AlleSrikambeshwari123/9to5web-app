@@ -49,7 +49,7 @@ class ShipperService {
         shipper.id = id;
         client.hmset(PREFIX + id, shipper, (err, result) => {
           if (err) resolve({ success: false, message: strings.string_response_error });
-          resolve({ success: true, message: strings.string_response_added });
+          resolve({ success: true, message: strings.string_response_added, shipper: shipper });
         })
       })
     })

@@ -18,7 +18,6 @@ $(function () {
   })
   $('#shipper').select2({
     theme: 'bootstrap',
-    width: '100%',
     placeholder: "Select a shipper"
   })
   $('#carrier').select2({
@@ -142,6 +141,50 @@ $(function () {
       });
     })
   });
+
+  // Shipper / Carrier
+  $('#add-shipper-form').submit(function (event) {
+    $(".close-del").trigger('click');
+    event.preventDefault();
+    var data = extractFormData(this);
+    $.ajax({
+      url: '/warehouse/shipper/create',
+      type: 'post',
+      data: data,
+      success: function (response) {
+        swal({
+          title: response.success == true ? 'Created' : 'Failed',
+          text: response.message,
+          type: response.success == true ? 'success' : 'error',
+        }).then(() => {
+          if (response.success) {
+            $('#shipper').append(`<option value="${response.shipper.id}">${response.shipper.name}</option>`)
+          }
+        })
+      }
+    })
+  })
+  $('#add-carrier-form').submit(function (event) {
+    $(".close-del").trigger('click');
+    event.preventDefault();
+    var data = extractFormData(this);
+    $.ajax({
+      url: '/warehouse/carrier/create',
+      type: 'post',
+      data: data,
+      success: function (response) {
+        swal({
+          title: response.success == true ? 'Created' : 'Failed',
+          text: response.message,
+          type: response.success == true ? 'success' : 'error',
+        }).then(() => {
+          if (response.success) {
+            $('#carrier').append(`<option value="${response.carrier.id}">${response.carrier.name}</option>`)
+          }
+        })
+      }
+    })
+  })
 
   //#region Package / Manifest FUNCTIONS
   function uploadContentFile(fileInputctrl, completeHandler) {

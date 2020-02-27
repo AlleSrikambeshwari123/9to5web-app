@@ -34,16 +34,24 @@
                     <% }) %>
                   </select>
                 </div>
+                <div class="input-group-append">
+                  <a href="#" data-toggle="modal" data-target="#add-shipper-popup">
+                    <span class="input-group-text">+</span></a>
+                </div>
               </div>
               <div class="form-group form-show-validation row">
                 <label for="carrier" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Carrier</label>
                 <div class="col-lg-8 col-md-8 col-sm-8">
                   <select id="carrier" name="carrier" class='form-control' required>
                     <option></option>
-                    <% shippers.forEach(shipper => { %>
-                    <option value="<%=shipper.id%>"><%=shipper.name%></option>
+                    <% carriers.forEach(carrier => { %>
+                    <option value="<%=carrier.id%>"><%=carrier.name%></option>
                     <% }) %>
                   </select>
+                </div>
+                <div class="input-group-append">
+                  <a href="#" data-toggle="modal" data-target="#add-carrier-popup">
+                    <span class="input-group-text">+</span></a>
                 </div>
               </div>
               <div class="form-group form-show-validation row">
@@ -78,7 +86,7 @@
               <div class="form-group form-show-validation row">
                 <label for="value" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Value</label>
                 <div class="col-lg-8 col-md-8 col-sm-8">
-                  <input type='text' class='form-control' id='value' name='value' required />
+                  <input type='text' class='form-control' id='value' name='value' />
                   <a id='show-sed' data-toggle="modal" data-target="#alertSEDPOPUP"></a>
                   <input type='hidden' value="0" id='sedRequired' />
                 </div>
@@ -184,6 +192,169 @@
       <button class="btn btn-danger" type="button" id='btn-cancel-add'>Cancel</button>
     </div>
   </form>
+</div>
+
+<div class="modal fade" id="add-shipper-popup" tabindex="-1" role="dialog" style="display: none;">
+  <div class="modal-dialog" role="document">
+    <form method="post" id="add-shipper-form">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title">Add Shipper</h2>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class='form-group row'>
+            <label for="shipper-name" class="col-md-3 mt-sm-2 text-right">Name</label>
+            <div class="col-md-8">
+              <input type='text' class='form-control' placeholder="Name" id='shipper-name' name="name" required />
+            </div>
+          </div>
+          <div class='form-group row'>
+            <label for="shipper-firstName" class="col-md-3 mt-sm-2 text-right">Contact Name</label>
+            <div class="col-md-4">
+              <input type='text' class='form-control' placeholder="First Name" id='shipper-firstName' name="firstName"
+                required />
+            </div>
+            <div class="col-md-4">
+              <input type='text' class='form-control' placeholder="Last Name" id='shipper-lastName' name="lastName"
+                required />
+            </div>
+          </div>
+          <div class='form-group row'>
+            <label for="shipper-telephone" class="col-md-3 mt-sm-2 text-right">Phone</label>
+            <div class="col-md-8">
+              <input type='number' class='form-control' placeholder="(242) xxx-xxxx" id='shipper-telephone'
+                name="telephone" />
+            </div>
+          </div>
+          <div class='form-group row'>
+            <label for="shipper-email" class="col-md-3 mt-sm-2 text-right">Email</label>
+            <div class="col-md-8">
+              <input type="email" class='form-control' placeholder="name@example.com" id='shipper-email' name="email"
+                required />
+            </div>
+          </div>
+          <div class='form-group row'>
+            <label for="shipper-tax" class="col-md-3 mt-sm-2 text-right">Tax ID</label>
+            <div class="col-md-8">
+              <input type='text' class='form-control' placeholder="xxx-xxx-xxxx" id='shipper-tax' name="tax" />
+            </div>
+          </div>
+          <div class='form-group row'>
+            <label for="shipper-address" class="col-md-3 mt-sm-2 text-right">Address</label>
+            <div class="col-md-8">
+              <input type='text' class='form-control' placeholder="Address" id='shipper-address' name="address" />
+            </div>
+          </div>
+          <div class='form-group row'>
+            <label for="shipper-city" class="col-md-3 mt-sm-2 text-right">City</label>
+            <div class="col-md-8">
+              <input type='text' class='form-control' placeholder="City" id='shipper-city' name="city" />
+            </div>
+          </div>
+          <div class='form-group row'>
+            <label for="shipper-state" class="col-md-3 mt-sm-2 text-right">State</label>
+            <div class="col-md-8">
+              <input type='text' class='form-control' placeholder="State" id='shipper-state' name="state" />
+            </div>
+          </div>
+          <div class='form-group row'>
+            <label for="shipper-zip" class="col-md-3 mt-sm-2 text-right">Zip</label>
+            <div class="col-md-8">
+              <input type='text' class='form-control' placeholder="Zip" id='shipper-zip' name="zip" />
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger close-del" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary" id='save-shipper'>Create</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal fade" id="add-carrier-popup" tabindex="-1" role="dialog" style="display: none;">
+  <div class="modal-dialog" role="document">
+    <form method="post" id="add-carrier-form">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title">Add Carrier</h2>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class='form-group row'>
+            <label for="carrier-name" class="col-md-3 mt-sm-2 text-right">Name</label>
+            <div class="col-md-8">
+              <input type='text' class='form-control' placeholder="Name" id='carrier-name' name="name" required />
+            </div>
+          </div>
+          <div class='form-group row'>
+            <label for="carrier-firstName" class="col-md-3 mt-sm-2 text-right">Contact Name</label>
+            <div class="col-md-4">
+              <input type='text' class='form-control' placeholder="First Name" id='carrier-firstName' name="firstName"
+                required />
+            </div>
+            <div class="col-md-4">
+              <input type='text' class='form-control' placeholder="Last Name" id='carrier-lastName' name="lastName"
+                required />
+            </div>
+          </div>
+          <div class='form-group row'>
+            <label for="carrier-telephone" class="col-md-3 mt-sm-2 text-right">Phone</label>
+            <div class="col-md-8">
+              <input type='number' class='form-control' placeholder="(242) xxx-xxxx" id='carrier-telephone'
+                name="telephone" />
+            </div>
+          </div>
+          <div class='form-group row'>
+            <label for="carrier-email" class="col-md-3 mt-sm-2 text-right">Email</label>
+            <div class="col-md-8">
+              <input type="email" class='form-control' placeholder="name@example.com" id='carrier-email' name="email" />
+            </div>
+          </div>
+          <div class='form-group row'>
+            <label for="carrier-tax" class="col-md-3 mt-sm-2 text-right">Tax ID</label>
+            <div class="col-md-8">
+              <input type='text' class='form-control' placeholder="xxx-xxx-xxxx" id='carrier-tax' name="tax" />
+            </div>
+          </div>
+          <div class='form-group row'>
+            <label for="carrier-address" class="col-md-3 mt-sm-2 text-right">Address</label>
+            <div class="col-md-8">
+              <input type='text' class='form-control' placeholder="Address" id='carrier-address' name="address" />
+            </div>
+          </div>
+          <div class='form-group row'>
+            <label for="carrier-city" class="col-md-3 mt-sm-2 text-right">City</label>
+            <div class="col-md-8">
+              <input type='text' class='form-control' placeholder="City" id='carrier-city' name="city" />
+            </div>
+          </div>
+          <div class='form-group row'>
+            <label for="carrier-state" class="col-md-3 mt-sm-2 text-right">State</label>
+            <div class="col-md-8">
+              <input type='text' class='form-control' placeholder="State" id='carrier-state' name="state" />
+            </div>
+          </div>
+          <div class='form-group row'>
+            <label for="carrier-zip" class="col-md-3 mt-sm-2 text-right">Zip</label>
+            <div class="col-md-8">
+              <input type='text' class='form-control' placeholder="Zip" id='carrier-zip' name="zip" />
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger close-del" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary" id='save-carrier'>Create</button>
+        </div>
+      </div>
+    </form>
+  </div>
 </div>
 
 <div class="modal fade" id="add-purchase-order-popup" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2"
