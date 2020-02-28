@@ -164,7 +164,7 @@ class PackageService {
         newPackage.trackingNo = uniqId();
         client.hmset(PREFIX + id, newPackage);
         client.sadd(PREFIX_PACKAGE_LIST + awbId, id);
-        this.updatePackageStatus(id, 0, "");
+        this.updatePackageStatus(id, 1, "");
         resolve({ success: true });
       })
     });
@@ -205,7 +205,7 @@ class PackageService {
         })).then(stats => {
           let pkgs = [];
           stats.forEach((status, i) => {
-            if (status == PKG_STATUS[1] || status == PKG_STATUS[2])
+            if (status.status == PKG_STATUS[1] || status.status == PKG_STATUS[2])
               pkgs.push(packages[i]);
           })
           resolve(pkgs);
@@ -384,9 +384,7 @@ class PackageService {
         client.sadd(LIST_PACKAGE_STATUS + packageId, id);
         this.getPackage(packageId).then(pkg => {
           this.services.awbService.getAwb(pkg.awbId).then(awb => {
-            this.services.customerService.getCustomer(awb.customerId).then(customer => {
-              firebase.sendNotification(customer, "Package Status Updated", "Package-" + pkg.trackingNo + " Updated");
-            })
+            firebase.sendNotification(awb.customer, "Package Status Updated", "Package-" + pkg.trackingNo + " Updated");
           })
         })
         resolve({ success: true, message: strings.string_response_updated });

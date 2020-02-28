@@ -81,11 +81,13 @@ class AwbService {
   getAwb(id) {
     return new Promise((resolve, reject) => {
       client.hgetall(PREFIX + id, (err, awb) => {
-        if (err) resolve({});
-        this.services.customerService.getCustomer(awb.customerId).then(customer => {
-          awb.customer = customer;
-          resolve(awb);
-        })
+        if (err || !awb || awb == null) resolve({});
+        else {
+          this.services.customerService.getCustomer(awb.customerId).then(customer => {
+            awb.customer = customer;
+            resolve(awb);
+          })
+        }
       })
     });
   }

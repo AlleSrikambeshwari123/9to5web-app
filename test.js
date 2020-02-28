@@ -43,7 +43,6 @@ var services = require('./RedisServices/RedisDataServices');
 // console.log(PKG_STATUS['1']);
 // services.packageService.updatePackageStatus(10, 5, 'denis').then(result => console.log(result));
 // services.packageService.getCustomerPackages(3).then(result => console.log(result));
-
 //========== Manifest Service ==========//
 // services.manifestService.getOpenManifest().then(manifests => {
 //   console.log(manifests);
@@ -55,8 +54,8 @@ var services = require('./RedisServices/RedisDataServices');
 // })
 
 //========== AWB Service ==========//
-services.carrierService.getCarrier(2).then(carrier => {
-  services.carrierService.removeAll().then(res => {
-    services.carrierService.addCarrier(carrier);
-  })
-})
+// services.carrierService.getCarrier(2).then(carrier => {
+//   services.carrierService.removeAll().then(res => {
+//     services.carrierService.addCarrier(carrier);
+//   })
+// })

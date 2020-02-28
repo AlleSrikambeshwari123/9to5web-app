@@ -81,8 +81,12 @@ class LBLGeneration {
   generateSinglePackageLabel(awb, pkg) {
     return new Promise((resolve, reject) => {
       this.awb = awb;
-      var company = this.companies.nineTofive;
       console.log("awb", awb, "customer", this.awb.customer)
+      if (awb.id == undefined) {
+        resolve({ success: false, message: "Can't create the barcode because of invalid information" });
+      }
+
+      var company = this.companies.nineTofive;
       if (Number(this.awb.customer.pmb) >= 9000) {
         company = this.companies.nineTofive;
       } else if (this.awb.customer.pmb == "") {
