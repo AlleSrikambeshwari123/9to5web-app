@@ -94,5 +94,6 @@ exports.string_not_found_vehicle = "Sorry, we can't find this vehicle.";
 exports.string_not_found_driver = "Sorry, we can't find this driver.";
 exports.string_not_found_pilot = "Sorry, we can't find this pilot.";
 exports.string_not_found_plane = "Sorry, we can't find this plane.";
+exports.string_not_found_hazmat = "Sorry, we can't find this HAZMAT Class.";
 exports.string_user_exist = "Sorry, same username already exist.";
 exports.string_password_incorrect = "Incorrect Password.";

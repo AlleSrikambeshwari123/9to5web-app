@@ -30,7 +30,7 @@ class HazmatService {
       })
     });
   }
-  getClass(id) {
+  getHazmat(id) {
     return new Promise((resolve, reject) => {
       client.hgetall(PREFIX + id, (err, hazmat) => {
         if (err) resolve({ description: "" });
@@ -39,7 +39,7 @@ class HazmatService {
       })
     });
   }
-  getAllClasses() {
+  getHazmats() {
     return new Promise((resolve, reject) => {
       client.keys(PREFIX + '*', (err, keys) => {
         if (err) resolve([]);
@@ -49,6 +49,40 @@ class HazmatService {
           classes.sort((a, b) => a.id - b.id);
           resolve(classes);
         })
+      })
+    })
+  }
+  createHazmat(hazmat) {
+    return new Promise((resolve, reject) => {
+      client.incr(HAZMAT_ID, (err, id) => {
+        if (err) resolve({ success: false, message: strings.string_response_error });
+        hazmat.id = id;
+        client.hmset(PREFIX + id, hazmat);
+        resolve({ success: true, message: strings.string_response_added });
+      });
+    });
+  }
+  updateHazmat(id, hazmat) {
+    return new Promise((resolve, reject) => {
+      client.exists(PREFIX + id, (err, exist) => {
+        if (err) resolve({ success: false, message: strings.string_response_error });
+        if (Number(exist) == 1) {
+          client.hmset(PREFIX + id, hazmat);
+          resolve({ success: true, message: strings.string_response_updated });
+        } else
+          resolve({ success: false, message: strings.string_not_found_hazmat });
+      })
+    })
+  }
+  removeHazmat(id) {
+    return new Promise((resolve, reject) => {
+      this.getHazmat(id).then(hazmat => {
+        if (hazmat.id == undefined) {
+          resolve({ success: false, message: strings.string_not_found_hazmat });
+        } else {
+          client.del(PREFIX + id);
+          resolve({ success: true, message: strings.string_response_removed });
+        }
       })
     })
   }

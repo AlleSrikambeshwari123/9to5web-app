@@ -38,7 +38,7 @@ exports.get_awb_detail = (req, res, next) => {
   var id = req.params.id;
   Promise.all([
     services.customerService.getCustomers(),
-    services.hazmatService.getAllClasses(),
+    services.hazmatService.getHazmats(),
     services.shipperService.getAllShippers(),
     services.carrierService.getAllCarriers(),
     services.awbService.getAwb(id),
@@ -62,7 +62,7 @@ exports.get_awb_detail = (req, res, next) => {
 exports.create_awb = (req, res, next) => {
   Promise.all([
     services.customerService.getCustomers(),
-    services.hazmatService.getAllClasses(),
+    services.hazmatService.getHazmats(),
     services.shipperService.getAllShippers(),
     services.carrierService.getAllCarriers(),
   ]).then(results => {

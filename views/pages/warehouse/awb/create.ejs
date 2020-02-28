@@ -357,6 +357,51 @@
   </div>
 </div>
 
+<div class="modal fade" id="addCustomer" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2"
+  aria-hidden="true" style="display: none;">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="exampleModalLabel2">Add New Customer</h2>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class='form-group'>
+          <label>Customer Branch</label>
+          <input type="text" class='form-control' id="cust_branch" placeholder="Customer Branch" />
+        </div>
+        <div class='form-group'>
+          <label>Customer Name</label>
+          <input type="text" class='form-control' id="cust_name" placeholder="Customer Name" />
+        </div>
+        <div class='form-group'>
+          <label>Customer PMB</label>
+          <input type="text" class='form-control' id="cust_pmb" placeholder="Customer PMB" />
+        </div>
+        <div class='form-group'>
+          <label>Address</label>
+          <input type="text" class='form-control' id="cust_address" placeholder="Customer Address" />
+        </div>
+        <div class='form-group'>
+          <label>Phone</label>
+          <input type="text" class='form-control' id="cust_phone" placeholder="Customer Phone" />
+        </div>
+        <div class='form-group'>
+          <label>Email</label>
+          <input type="text" class='form-control' id="cust_email" placeholder="Customer Email" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary close-del" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-success saveCustomer" id='saveCustomer' data-dismiss="modal">Save
+          Customer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="modal fade" id="add-purchase-order-popup" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2"
   aria-hidden="true" style="display: none;">
   <div class="modal-dialog" role="document">

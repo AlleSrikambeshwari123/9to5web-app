@@ -220,8 +220,15 @@
 						<p>Carriers </p>
 					</a>
 				</li>
+				<li class="nav-item <% if (page.includes('/hazmat/')) { %> active <% } %>">
+					<a href="/warehouse/hazmat/list">
+						<i class="fa fa-exclamation-triangle"></i>
+						<p>Hazmat </p>
+					</a>
+				</li>
 				<% } %>
 
+				<!-- Account Options -->
 				<li class="nav-section">
 					<span class="sidebar-mini-icon">
 						<i class="fa fa-ellipsis-h"></i>
