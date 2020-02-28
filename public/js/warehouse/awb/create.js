@@ -16,6 +16,16 @@ $(function () {
     width: '100%',
     placeholder: "Select a customer"
   })
+  $('#c-companyId').select2({
+    theme: 'bootstrap',
+    width: '100%',
+    minimumResultsForSearch: -1
+  })
+  $('#c-companyId').change(function () {
+    let companyId = $(this).val();
+    if (companyId == '9to5') $('#c-pmb').val(9000);
+    else $('#c-pmb').val("");
+  })
   $('#shipper').select2({
     theme: 'bootstrap',
     placeholder: "Select a shipper"
@@ -180,6 +190,28 @@ $(function () {
         }).then(() => {
           if (response.success) {
             $('#carrier').append(`<option value="${response.carrier.id}">${response.carrier.name}</option>`)
+          }
+        })
+      }
+    })
+  })
+  $('#add-customer-form').submit(function (event) {
+    $(".close-del").trigger('click');
+    event.preventDefault();
+    var data = extractFormData(this);
+    $.ajax({
+      url: '/admin/customers/create',
+      type: 'post',
+      data: data,
+      success: function (response) {
+        swal({
+          title: response.success == true ? 'Created' : 'Failed',
+          text: response.message,
+          type: response.success == true ? 'success' : 'error',
+        }).then(() => {
+          if (response.success) {
+            var customer = response.customer;
+            $('#customerId').append(`<option value="${customer.id}">${customer.pmb} / ${customer.firstName} ${customer.lastName}</option>`)
           }
         })
       }

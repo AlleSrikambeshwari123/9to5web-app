@@ -21,10 +21,10 @@ class CustomerService {
         } else {
           client.incr(ID_COUNTER, (err, id) => {
             customer.id = id;
-            customer.password = bcrypt.hashSync(customer.password, 10);
+            if (customer.password) customer.password = bcrypt.hashSync(customer.password, 10);
             client.hmset(PREFIX + id, customer, (err, result) => {
               if (err) resolve({ success: false, message: strings.string_response_error });
-              resolve({ success: true, message: strings.string_response_created });
+              resolve({ success: true, message: strings.string_response_created, customer: customer });
             })
           })
         }

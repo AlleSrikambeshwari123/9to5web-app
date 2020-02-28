@@ -47,12 +47,10 @@ $(function () {
     $("#pick-shipper").select2({
         theme: "classic",
         placeholder: 'Select a Shipper',
-
     });
     $("#pick-carrier").select2({
         theme: "classic",
         placeholder: 'Select a Carrier',
-
     });
     $("#select-plane").select2({
         placeholder: 'Select an Plane'

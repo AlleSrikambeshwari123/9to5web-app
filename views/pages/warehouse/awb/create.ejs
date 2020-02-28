@@ -23,6 +23,10 @@
                     <% }) %>
                   </select>
                 </div>
+                <div class="input-group-append">
+                  <a href="#" data-toggle="modal" data-target="#add-customer-popup">
+                    <span class="input-group-text">+</span></a>
+                </div>
               </div>
               <div class="form-group form-show-validation row">
                 <label for="shipper" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Shipper</label>
@@ -357,47 +361,63 @@
   </div>
 </div>
 
-<div class="modal fade" id="addCustomer" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2"
-  aria-hidden="true" style="display: none;">
+<div class="modal fade" id="add-customer-popup" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
-      <div class="modal-header">
-        <h2 class="modal-title" id="exampleModalLabel2">Add New Customer</h2>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">×</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <div class='form-group'>
-          <label>Customer Branch</label>
-          <input type="text" class='form-control' id="cust_branch" placeholder="Customer Branch" />
+      <form method="POST" id="add-customer-form">
+        <div class="modal-header">
+          <h2 class="modal-title" id="exampleModalLabel2">Add New Customer</h2>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
         </div>
-        <div class='form-group'>
-          <label>Customer Name</label>
-          <input type="text" class='form-control' id="cust_name" placeholder="Customer Name" />
+        <div class="modal-body">
+          <div class="form-group form-show-validation row">
+            <label for="c-companyId" class="col-lg-3 col-md-4 col-sm-4 mt-sm-2 text-right">Company </label>
+            <div class="col-lg-9 col-md-8 col-sm-8">
+              <select id="c-companyId" name="companyId" class="form-control" required>
+                <option value='9to5'>9to5</option>
+                <option value='pmb'>Post Boxes</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group form-show-validation row">
+            <label for="c-pmb" class="col-lg-3 col-md-4 col-sm-4 mt-sm-2 text-right">PMB </label>
+            <div class="col-lg-9 col-md-8 col-sm-8">
+              <input type="number" class="form-control" id="c-pmb" name="pmb" placeholder="PMB" value="9000">
+            </div>
+          </div>
+          <div class="form-group form-show-validation row">
+            <label for="c-firstName" class="col-lg-3 col-md-4 col-sm-4 mt-sm-2 text-right">First Name </label>
+            <div class="col-lg-9 col-md-8 col-sm-8">
+              <input type="text" class="form-control" id="c-firstName" name="firstName" placeholder="First Name"
+                required>
+            </div>
+          </div>
+          <div class="form-group form-show-validation row">
+            <label for="lastName" class="col-lg-3 col-md-4 col-sm-4 mt-sm-2 text-right">Last Name </label>
+            <div class="col-lg-9 col-md-8 col-sm-8">
+              <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Last Name">
+            </div>
+          </div>
+          <div class="form-group form-show-validation row">
+            <label for="telephone" class="col-lg-3 col-md-4 col-sm-4 mt-sm-2 text-right">Telephone</label>
+            <div class="col-lg-9 col-md-8 col-sm-8">
+              <input type="tel" class="form-control" id="telephone" name="telephone" placeholder="(242)-123-4567">
+            </div>
+          </div>
+          <div class="form-group form-show-validation row">
+            <label for="email" class="col-lg-3 col-md-4 col-sm-4 mt-sm-2 text-right">Email address </label>
+            <div class="col-lg-9 col-md-8 col-sm-8">
+              <input type="email" class="form-control" id="email" name="email" placeholder="name@example.com">
+            </div>
+          </div>
         </div>
-        <div class='form-group'>
-          <label>Customer PMB</label>
-          <input type="text" class='form-control' id="cust_pmb" placeholder="Customer PMB" />
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger close-del" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Add Customer</button>
         </div>
-        <div class='form-group'>
-          <label>Address</label>
-          <input type="text" class='form-control' id="cust_address" placeholder="Customer Address" />
-        </div>
-        <div class='form-group'>
-          <label>Phone</label>
-          <input type="text" class='form-control' id="cust_phone" placeholder="Customer Phone" />
-        </div>
-        <div class='form-group'>
-          <label>Email</label>
-          <input type="text" class='form-control' id="cust_email" placeholder="Customer Email" />
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary close-del" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-success saveCustomer" id='saveCustomer' data-dismiss="modal">Save
-          Customer</button>
-      </div>
+      </form>
     </div>
   </div>
 </div>
