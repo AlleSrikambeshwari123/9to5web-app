@@ -128,7 +128,7 @@ class AwbService {
           this.services.customerService.getCustomer(awb.customerId),
           this.services.shipperService.getShipper(awb.shipper),
           this.services.carrierService.getCarrier(awb.carrier),
-          this.services.hazmatService.getClass(awb.hazmat),
+          this.services.hazmatService.getHazmat(awb.hazmat),
         ]).then(otherInfos => {
           awb.packages = packages;
           awb.customer = otherInfos[0];

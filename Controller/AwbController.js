@@ -15,7 +15,7 @@ exports.preview_awb = (req, res, next) => {
       services.customerService.getCustomer(awb.customerId),
       services.shipperService.getShipper(awb.shipper),
       services.carrierService.getCarrier(awb.carrier),
-      services.hazmatService.getClass(awb.hazmat),
+      services.hazmatService.getHazmat(awb.hazmat),
     ]).then(otherInfos => {
       awb.packages = packages;
       awb.customer = otherInfos[0];
