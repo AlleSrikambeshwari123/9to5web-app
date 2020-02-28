@@ -50,6 +50,13 @@ var services = require('./RedisServices/RedisDataServices');
 // })
 
 //========== Package Service ==========//
-services.hazmatService.importClassesFromCsv().then(result => {
-  console.log(result);
+// services.hazmatService.importClassesFromCsv().then(result => {
+//   console.log(result);
+// })
+
+//========== AWB Service ==========//
+services.carrierService.getCarrier(2).then(carrier => {
+  services.carrierService.removeAll().then(res => {
+    services.carrierService.addCarrier(carrier);
+  })
 })

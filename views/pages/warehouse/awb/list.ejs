@@ -27,7 +27,7 @@
                     <th>Carrier</th>
                     <th>Pieces</th>
                     <th>Weight</th>
-                    <th>Invoice</th>
+                    <!-- <th>Invoice</th> -->
                     <th></th>
                   </tr>
                 </thead>
@@ -41,12 +41,12 @@
                     <td><%=awb.shipper.name %></td>
                     <td><%=awb.carrier.name %></td>
                     <td><%=awb.packages.length %></td>
-                    <td><%=awb.weight %></td>
-                    <td><% if(awb.invoice) { %>
+                    <td><%=awb.weight %> lbs</td>
+                    <!-- <td><% if(awb.invoice) { %>
                       <a class="btn btn-link btn-primary btn-invoice" data-id="<%=awb.invoice%>" data-toggle="tooltip"
                         data-original-title="Invoice Attached"> <i class="fa fa-paperclip"></i> </a>
                       <% } %>
-                    </td>
+                    </td> -->
                     <td class="text-center">
                       <a class="btn btn-link btn-danger btn-rm-awb p-1" data-toggle="modal" data-id="<%=awb.id%>"
                         data-target="#confirm-delete-awb"> <i class="fa fa-trash"></i> </a>

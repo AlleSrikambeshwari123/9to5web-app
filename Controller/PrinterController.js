@@ -99,7 +99,7 @@ function getFullAwb(id) {
       Promise.all([
         services.customerService.getCustomer(awb.customerId),
         services.shipperService.getShipper(awb.shipper),
-        services.shipperService.getShipper(awb.carrier),
+        services.carrierService.getCarrier(awb.carrier),
         services.hazmatService.getClass(awb.hazmat),
       ]).then(otherInfos => {
         awb.packages = packages;

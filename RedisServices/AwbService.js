@@ -127,7 +127,7 @@ class AwbService {
         Promise.all([
           this.services.customerService.getCustomer(awb.customerId),
           this.services.shipperService.getShipper(awb.shipper),
-          this.services.shipperService.getShipper(awb.carrier),
+          this.services.carrierService.getCarrier(awb.carrier),
           this.services.hazmatService.getClass(awb.hazmat),
         ]).then(otherInfos => {
           awb.packages = packages;
