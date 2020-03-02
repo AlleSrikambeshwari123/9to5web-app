@@ -5,7 +5,7 @@
     <div class='col-xl-12 col-lg-6 col-md-12 col-sm-12'>
       <div class='card'>
         <div class="card-header">
-          <h4 class="card-title">Create New AirWay Bill</h4>
+          <h4 class="card-title"><%= title %></h4>
         </div>
         <div class="card-body">
           <h3 class="card-title text-muted">Bill Content</h3>
@@ -17,7 +17,7 @@
                   <select id="customerId" name="customerId" class='form-control' required>
                     <option></option>
                     <% customers.forEach(customer => { %>
-                    <option value="<%=customer.id%>">
+                    <option value="<%=customer.id%>" <% if(awb.customerId == customer.id) { %> selected <% } %>>
                       <%= customer.pmb + ' / ' + customer.firstName + ' ' + customer.lastName%>
                     </option>
                     <% }) %>
@@ -34,7 +34,8 @@
                   <select id="shipper" name="shipper" class='form-control' required>
                     <option></option>
                     <% shippers.forEach(shipper => { %>
-                    <option value="<%=shipper.id%>"><%=shipper.name%></option>
+                    <option value="<%=shipper.id%>" <% if(awb.shipper == shipper.id) { %> selected <% } %>>
+                      <%=shipper.name%></option>
                     <% }) %>
                   </select>
                 </div>
@@ -49,7 +50,8 @@
                   <select id="carrier" name="carrier" class='form-control' required>
                     <option></option>
                     <% carriers.forEach(carrier => { %>
-                    <option value="<%=carrier.id%>"><%=carrier.name%></option>
+                    <option value="<%=carrier.id%>" <% if(awb.carrier == carrier.id) { %> selected <% } %>>
+                      <%=carrier.name%></option>
                     <% }) %>
                   </select>
                 </div>
@@ -64,7 +66,8 @@
                   <select id="hazmat" name="hazmat" class='form-control' style='width:90%;'>
                     <option></option>
                     <% hazmats.forEach(hazmat => { %>
-                    <option value="<%=hazmat.id%>"><%=hazmat.description%></option>
+                    <option value="<%=hazmat.id%>" <% if(awb.hazmat == hazmat.id) { %> selected <% } %>>
+                      <%=hazmat.description%></option>
                     <%})%>
                   </select>
                 </div>
@@ -72,25 +75,26 @@
               <div class="form-group form-show-validation row">
                 <label for="awbNotes" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Notes</label>
                 <div class="col-lg-8 col-md-8 col-sm-8">
-                  <textarea type='text' class='form-control' id='note' name='note' required></textarea>
+                  <textarea type='text' class='form-control' id='note' name='note' required><%=awb.note%></textarea>
                 </div>
               </div>
-              <div class='form-group'>
+              <!-- <div class='form-group'>
                 <a href="#" data-toggle="modal" data-target="#add-purchase-order-popup"> ADD Purchase
                   Order </a>
-              </div>
+              </div> -->
             </div>
             <div class="col-md-6">
               <div class="form-group form-show-validation row">
                 <label for="invoiceNumber" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Invoice #</label>
                 <div class="col-lg-8 col-md-8 col-sm-8">
-                  <input type='text' class='form-control' id='invoiceNumber' name='invoiceNumber' required />
+                  <input type='text' class='form-control' id='invoiceNumber' name='invoiceNumber' required
+                    value="<%= awb.invoiceNumber%>" />
                 </div>
               </div>
               <div class="form-group form-show-validation row">
                 <label for="value" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Value</label>
                 <div class="col-lg-8 col-md-8 col-sm-8">
-                  <input type='text' class='form-control' id='value' name='value' />
+                  <input type='text' class='form-control' id='value' name='value' value="<%= awb.value%>" />
                   <a id='show-sed' data-toggle="modal" data-target="#alertSEDPOPUP"></a>
                   <input type='hidden' value="0" id='sedRequired' />
                 </div>
@@ -546,4 +550,4 @@
 </div>
 
 <% block('scripts').append('<script src="/js/utils.js"></script>')%>
-<% block('scripts').append('<script src="/js/warehouse/awb/create.js"></script>')%>
+<% block('scripts').append('<script src="/js/warehouse/awb/edit.js"></script>')%>

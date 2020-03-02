@@ -44,6 +44,7 @@ exports.get_awb_detail = (req, res, next) => {
     services.awbService.getAwb(id),
     services.packageService.getPackages(id),
   ]).then(results => {
+    console.log(results[4]);
     res.render('pages/warehouse/awb/edit', {
       page: req.originalUrl,
       title: 'AWB Details',
@@ -88,7 +89,7 @@ exports.add_new_awb = (req, res, next) => {
       pkg.customerId = awb.customerId;
       pkg.shipperId = awb.shipper;
       pkg.carrierId = awb.carrier;
-      pkg.hazmatId = awb.hazmatId;
+      pkg.hazmatId = awb.hazmat;
     })
     services.packageService.createPackages(awb.id, packages).then(packageResult => {
       res.send(result);

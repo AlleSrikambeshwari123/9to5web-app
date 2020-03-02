@@ -49,6 +49,9 @@ exports.redis_id_carrier = "id:carrier";
 exports.redis_prefix_hazmat = "hazmat:";
 exports.redis_id_hazmat = "id:hazmat";
 
+exports.redis_prefix_charge = "charge:";
+exports.redis_id_charge = "id:charged";
+
 exports.redis_id_awb_init = 100000;
 exports.redis_prefix_awb = "awb:";
 exports.redis_id_awb = "id:awb";
@@ -95,5 +98,6 @@ exports.string_not_found_driver = "Sorry, we can't find this driver.";
 exports.string_not_found_pilot = "Sorry, we can't find this pilot.";
 exports.string_not_found_plane = "Sorry, we can't find this plane.";
 exports.string_not_found_hazmat = "Sorry, we can't find this HAZMAT Class.";
+exports.string_not_found_service_charge = "Sorry, we can't find this service charge.";
 exports.string_user_exist = "Sorry, same username already exist.";
 exports.string_password_incorrect = "Incorrect Password.";

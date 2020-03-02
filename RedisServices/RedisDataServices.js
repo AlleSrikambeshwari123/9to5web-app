@@ -2,6 +2,8 @@
 
 var CustomerService = require('./CustomerService');
 var customerService = new CustomerService();
+var AwbService = require('./AwbService');
+var awbService = new AwbService();
 var ManifestService = require('./ManifestService');
 var manifestService = new ManifestService();
 var PackageService = require('./PackageService');
@@ -28,11 +30,12 @@ var ShipperService = require('./ShipperService');
 var shipperService = new ShipperService();
 var CarrierService = require('./CarrierService');
 var carrierService = new CarrierService();
-var AwbService = require('./AwbService');
-var awbService = new AwbService();
+var ChargeService = require('./ChargeService');
+var chargeService = new ChargeService();
 
 var services = {
   customerService,
+  awbService,
   manifestService,
   packageService,
   userService,
@@ -46,7 +49,7 @@ var services = {
   hazmatService,
   shipperService,
   carrierService,
-  awbService,
+  chargeService,
 };
 
 packageService.setServiceInstances(services);

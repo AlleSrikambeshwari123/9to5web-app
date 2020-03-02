@@ -1,20 +1,20 @@
 <% layout('./shared/__template')%>
 <div class='gutters'>
     <div class='col-xl-12 col-lg-6 col-md-12 col-sm-12'>
-  
-<input type='hidden' id="mid" value="0" />
-<input type='hidden' id="mtype" value="default" />
+
+        <input type='hidden' id="mid" value="0" />
+        <input type='hidden' id="mtype" value="default" />
         <div class='card'>
             <div class="card-header col-md-12">
-                <h3>Add New Package</h3> 
+                <h3>Add New Package</h3>
                 <div>
-                 
+
 
                 </div>
             </div>
             <div class="card-body">
                 <ul class="nav nav-pills nav-primary" id="myTab" role="tablist">
-                  
+
                     <li class="nav-item">
                         <a class="nav-link active" id="profile-tab" data-toggle="tab" href="#profile" role="tab"
                             aria-controls="profile" aria-selected="false" aria-expanded="false">FLL Warehouse</a>
@@ -24,52 +24,67 @@
                 </ul>
 
                 <div class="tab-content" id="myTabContent">
-                   
+
                     <div class="tab-pane active fade show" id="profile" role="tabpanel" aria-labelledby="profile-tab"
                         aria-expanded="false">
                         <div class='row'>
-                          
-                            <div class='col-md-5 pkg-form' >
+
+                            <div class='col-md-5 pkg-form'>
 
                                 <form method='post' id='cargoPackageForm'>
 
-                                     <div class='form-group'>
-                                        <button type='button'  class="btn btn-small btn-info new-awb " style='display:none;'>New AWB</button>
-                                       <span class='print-options pull-right mt-2' style='display:none;'>
-                                         <a id="print-awb" href='javascript:void(0)'><i class="fas fa-print" title='Print AWB'></i>Print AWB</a> <a href="javascript:void(0)">|</a> <a id='print-lbl' href='javascript:void(0)'><i title='Print Label' class="fas fa-print"></i>Print All Labels</a>
-
-                                       </span>
-                                    </div> 
                                     <div class='form-group'>
-                                            <label>AWB </label>
-                                            <input type='text' class='form-control awb' id='id' name='id' required  readonly value='<%=awb.id%>'/>
-                                        </div>
-                                        <div class='form-group'>
-                                            <label>Consignee <span class='text-info title customerName'></span> <br/><a href="#" class=" " data-target='#findCustomer' data-toggle='modal'>Assign Box(9-5) or PB</a> |  <a href="javascript:void(0)" data-toggle="modal" data-target="#addCustomer">Add New Customer</a></label> 
-                                            <input type='text' class='form-control skybox' id="customerName" name='pmb' required readonly value='<%=awb.customer.name%>'/>
-                                            <input type='hidden' class='customerId' id='customerId' value="<%=awb.customer.id%>" />
-                                        </div>
-                                        <div class='form-group'>
-                                            <label>Shipper  <a href='#' data-target="#findshipper" data-toggle="modal">Add New Shipper</a></label><br/>
-                                            <select id="pick-shipper" class='form-control' style='width:90%;'>
-                                                    <option>Select Shipper</option>
-                                                    <%for(var i =0; i < shipperListing.length;i++){
+                                        <button type='button' class="btn btn-small btn-info new-awb "
+                                            style='display:none;'>New AWB</button>
+                                        <span class='print-options pull-right mt-2' style='display:none;'>
+                                            <a id="print-awb" href='javascript:void(0)'><i class="fas fa-print"
+                                                    title='Print AWB'></i>Print AWB</a> <a
+                                                href="javascript:void(0)">|</a> <a id='print-lbl'
+                                                href='javascript:void(0)'><i title='Print Label'
+                                                    class="fas fa-print"></i>Print All Labels</a>
+
+                                        </span>
+                                    </div>
+                                    <div class='form-group'>
+                                        <label>AWB </label>
+                                        <input type='text' class='form-control awb' id='id' name='id' required readonly
+                                            value='<%=awb.id%>' />
+                                    </div>
+                                    <div class='form-group'>
+                                        <label>Consignee <span class='text-info title customerName'></span> <br /><a
+                                                href="#" class=" " data-target='#findCustomer'
+                                                data-toggle='modal'>Assign Box(9-5) or PB</a> | <a
+                                                href="javascript:void(0)" data-toggle="modal"
+                                                data-target="#addCustomer">Add New Customer</a></label>
+                                        <input type='text' class='form-control skybox' id="customerName" name='pmb'
+                                            required readonly value='<%=awb.customer.name%>' />
+                                        <input type='hidden' class='customerId' id='customerId'
+                                            value="<%=awb.customer.id%>" />
+                                    </div>
+                                    <div class='form-group'>
+                                        <label>Shipper <a href='#' data-target="#findshipper" data-toggle="modal">Add
+                                                New Shipper</a></label><br />
+                                        <select id="pick-shipper" class='form-control' style='width:90%;'>
+                                            <option>Select Shipper</option>
+                                            <%for(var i =0; i < shipperListing.length;i++){
                                                         var shipperSelected = ''; 
                                                         if (shipperListing[i].id == awb.shipper){
                                                             shipperSelected = 'selected'
                                                         }
                                                         %>
 
-                                                        
-                                                        <option <%=shipperSelected%> value="<%=shipperListing[i].id%>"><%=shipperListing[i].name%></option>
-                                                        <%}%>
+
+                                            <option <%=shipperSelected%> value="<%=shipperListing[i].id%>">
+                                                <%=shipperListing[i].name%></option>
+                                            <%}%>
                                                  </select>
                                         </div>  
                                         
 
                                          <div class='form-group'>
                                             <label>Carrier </label><a href='#' data-target="#findcarrier" data-toggle="modal">Add New Carrier</a>
-                                            <!-- <input type='text' class='form-control carrier' id='carrier' name='carrier' value="<%=awb.carrier%>" /> -->
+                                            <!-- <input type='text' class='form-control carrier' id='carrier' name='carrier' value="<%=awb.carrier%>"
+                                            /> -->
                                             <select id="pick-carrier" class='form-control' style='width:90%;'>
                                                 <option>Select Carrier</option>
                                                 <%for(var i =0; i < shipperListing.length;i++){
@@ -79,9 +94,10 @@
                                                     }
                                                     %>
 
-                                                    
-                                                    <option <%=shipperSelected%> value="<%=shipperListing[i].id%>"><%=shipperListing[i].name%></option>
-                                                    <%}%>
+
+                                                <option <%=shipperSelected%> value="<%=shipperListing[i].id%>">
+                                                    <%=shipperListing[i].name%></option>
+                                                <%}%>
                                              </select>
                                         </div>
 
@@ -95,8 +111,9 @@
                                                                 hazSelected = 'selected'
                                                             }
                                                             %>
-                                                            <option <%=hazSelected%> value="<%=hazmatListing[i].id%>"><%=hazmatListing[i].description%></option>
-                                                            <%}%>
+                                                <option <%=hazSelected%> value="<%=hazmatListing[i].id%>">
+                                                    <%=hazmatListing[i].description%></option>
+                                                <%}%>
                                                      </select>
                                         </div>
                                         <!-- <div class='form-group'>
@@ -115,46 +132,54 @@
                                         <div class='form-group'>
                                                 <label>Invoice # <span class='text-info title customerName '></span></label>
                                                 <input type='text' class='form-control invoice' id='invoiceNumber' name='invoiceNumber' required value="<%=awb.invoiceNumber%>"/>
-                                            </div>
-                                        <div class='form-group'>
-                                            <label> Value</label>
-                                            <input type='text' class='form-control awbValue'  id='value' name='value' required value="<%=awb.value%>" />
-                                            <a id='show-sed' data-toggle="modal" data-target="#alertSEDPOPUP"></a>
-                                            <input type ='hidden' value="0"  id='sedRequired'/>
-                                        </div>
+                                    </div>
+                                    <div class='form-group'>
+                                        <label> Value</label>
+                                        <input type='text' class='form-control awbValue' id='value' name='value'
+                                            required value="<%=awb.value%>" />
+                                        <a id='show-sed' data-toggle="modal" data-target="#alertSEDPOPUP"></a>
+                                        <input type='hidden' value="0" id='sedRequired' />
+                                    </div>
 
-                                        <div class='form-group'>
-                                                <a href="javascript:void(0)" data-toggle="modal" data-target="#addPO"> ADD Purchase Order </a>
-                                               
-                                                
-                                               
-                                            </div>
+                                    <div class='form-group'>
+                                        <a href="javascript:void(0)" data-toggle="modal" data-target="#addPO"> ADD
+                                            Purchase Order </a>
 
-                                            <div class='form-group'>
-                                                    <label>Notes <span class='text-info title customerName '></span></label>
-                                                    <input type='text' class='form-control invoice' id='awbNotes' name='awbNotes' required value=""/>
-                                                </div>
-                                        <!-- <div class='form-group'>
+
+
+                                    </div>
+
+                                    <div class='form-group'>
+                                        <label>Notes <span class='text-info title customerName '></span></label>
+                                        <input type='text' class='form-control invoice' id='awbNotes' name='awbNotes'
+                                            required value="" />
+                                    </div>
+                                    <!-- <div class='form-group'>
                                                 <label>AWB Value</label>
                                                 <input type='text' class='form-control awbValue' name='awbValue' required />
                                         </div> -->
 
-                                       
-                                       
-                                        <a id="save_awb" href="javascript:void(0)" class="btn btn-small btn-info ">Save AWB</a>
-                                        <a id="update_awb"  class="btn btn-small btn-info  " style='display:none; color:white;'>Update Awb</a>
-                                        <a id="add_package" href="#ready-popup" class="btn btn-small btn-info open-popup-link " style='display:none;'>Add Package</a>
-                                        <button type='button'  class="btn btn-small btn-info new-awb " style='display:none;'>New AWB</button>
-                                        <div class="separator-solid"></div>
-                                
-                                   
-                                  
-                           
+
+
+                                    <a id="save_awb" href="javascript:void(0)" class="btn btn-small btn-info ">Save
+                                        AWB</a>
+                                    <a id="update_awb" class="btn btn-small btn-info  "
+                                        style='display:none; color:white;'>Update Awb</a>
+                                    <a id="add_package" href="#ready-popup"
+                                        class="btn btn-small btn-info open-popup-link " style='display:none;'>Add
+                                        Package</a>
+                                    <button type='button' class="btn btn-small btn-info new-awb "
+                                        style='display:none;'>New AWB</button>
+                                    <div class="separator-solid"></div>
+
+
+
+
                                 </form>
 
                             </div>
                             <div class='col-md-7'>
-                                <h2>Packages -  <span class='awb'></span></h2>
+                                <h2>Packages - <span class='awb'></span></h2>
                                 <table id='packageTable'
                                     class='display table table-bordered table-head-bg-info table-hover'
                                     style='width:100%;'>
@@ -180,262 +205,49 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div class='form-group' >
-                <input type='text' class='form-control' id='search' name='search' placeholder="Enter Name or PMB#" > 
-            </div>
-               <table id='customerTable' class='table-bordered table' style='display:none'>
-                   <tr>
-                       <td>PMB</td>
-                       <td>Customer Name</td>
-                   </tr>
+                <div class='form-group'>
+                    <input type='text' class='form-control' id='search' name='search' placeholder="Enter Name or PMB#">
+                </div>
+                <table id='customerTable' class='table-bordered table' style='display:none'>
+                    <tr>
+                        <td>PMB</td>
+                        <td>Customer Name</td>
+                    </tr>
 
-                   <tbody id="customerlisting"></tbody>
-               </table>
-               
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary close-del" data-dismiss="modal">Close</button>
-                
-            </div>
-        </div>
-    </div>
-</div>
-<div class="modal fade" id="findshipper" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2"
-    aria-hidden="true" style="display: none;">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title" id="exampleModalLabel2">Add Shipper</h2>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">×</span>
-                </button>
-            </div>
-            <div class="modal-body">
-            
-               
-              <div class='form-group' >
-                <label> Name</label>
-                <input type ='text' class='form-control' placeholder="Name" id='sp-name'/>
-              </div>
-              <div class='form-group' >
-                    <div class='row'>
-                        <div class='col-md-6'>  <label>Contact First Name</label>
-                          <input type ='text' class='form-control' placeholder="Frist Name" id='sp-fname'/></div>
-                        <div class='col-md-6'>
-                              <label>Contact Last Name</label>
-                      <input type ='text' class='form-control' placeholder="Last Name" id='sp-lname'/>
-                        </div>
-                        
-                    </div>
-                    
-                    </div>
-                    <div class='form-group' >
-                            <label>Phone</label>
-                            <input type ='text' class='form-control' placeholder="Phone" id='sp-phone'/>
-                          </div>
-                          <div class='form-group' >
-                                <label>Email</label>
-                                <input type ='text' class='form-control' placeholder="Email" id='sp-email'/>
-                              </div>
-              <div class='form-group' >
-                <label> Tax ID</label>
-                <input type ='text' class='form-control' placeholder="Tax ID" id='sp-tax-id'/>
-              </div>
-              <div class='form-group' >
-                <label> Address</label>
-                <input type ='text' class='form-control' placeholder="Address" id='sh-address'/>
-              </div>
-              <div class='form-group' >
-                <label> City</label>
-                <input type ='text' class='form-control' placeholder="City" id='sp-city'/>
-              </div>
-              <div class='form-group' >
-                <label> State</label>
-                <input type ='text' class='form-control' placeholder="Zip" id='sp-zip'/>
-              </div>
-              <div class='form-group' >
-                <label> Zip</label>
-                <input type ='text' class='form-control' placeholder="State" id='sp-state'/>
-              </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary close-del" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary btn-success" id='save-shipper' data-dismiss="modal">Create</button>
-                
-            </div>
-        </div>
-    </div>
-</div>
-<div class="modal fade" id="findcarrier" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2"
-    aria-hidden="true" style="display: none;">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title" id="exampleModalLabel2">Add Carrier</h2>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">×</span>
-                </button>
-            </div>
-            <div class="modal-body">
-            
-               
-              <div class='form-group' >
-                <label> Name</label>
-                <input type ='text' class='form-control' placeholder="Name" id='ca-name'/>
-              </div>
-              <div class='form-group' >
-                  <div class='row'>
-                      <div class='col-md-6'>  <label>Contact First Name</label>
-                        <input type ='text' class='form-control' placeholder="Name" id='ca-fname'/></div>
-                      <div class='col-md-6'>
-                            <label>Contact Last Name</label>
-                    <input type ='text' class='form-control' placeholder="Name" id='ca-lname'/>
-                      </div>
-                      
-                  </div>
-                  
-                  </div>
-              <div class='form-group' >
-                <label> Tax ID</label>
-                <input type ='text' class='form-control' placeholder="Tax ID" id='ca-tax-id'/>
-              </div>
-              <div class='form-group' >
-                <label> Address</label>
-                <input type ='text' class='form-control' placeholder="Address" id='ca-address'/>
-              </div>
-              <div class='form-group' >
-                <label> City</label>
-                <input type ='text' class='form-control' placeholder="City" id='ca-city'/>
-              </div>
-              <div class='form-group' >
-                <label> State</label>
-                <input type ='text' class='form-control' placeholder="Zip" id='ca-zip'/>
-              </div>
-              <div class='form-group' >
-                <label> Zip</label>
-                <input type ='text' class='form-control' placeholder="State" id='ca-state'/>
-              </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary close-del" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary btn-success" id='save-shipper' data-dismiss="modal">Create</button>
-                
-            </div>
-        </div>
-    </div>
-</div>
-<div class="modal fade" id="select-class" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2"
-    aria-hidden="true" style="display: none;">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title" id="exampleModalLabel2">Select Hazmat</h2>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">×</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                
-              
+                    <tbody id="customerlisting"></tbody>
+                </table>
 
-                
-               
-               
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary close-del" data-dismiss="modal">Close</button>
-                
-            </div>
-        </div>
-    </div>
-</div>
-<div class="modal fade" id="confirmPkgDel" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2"
-    aria-hidden="true" style="display: none;">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title" id="exampleModalLabel2">Confirmation Required</h2>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">×</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <input type='hidden' id='pkg-tracking' />
-                Are you sure you want to delete this package?
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary close-del" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-danger rm-package" id='rmPackage'>Delete</button>
+
             </div>
         </div>
     </div>
 </div>
 
-<div class="modal fade" id="addCustomer" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2"
-    aria-hidden="true" style="display: none;">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title" id="exampleModalLabel2">Add New Customer</h2>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">×</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                    <div class='form-group'>
-                            <label>Customer Branch</label>
-                            <input type="text" class='form-control' id="cust_branch" placeholder="Customer Branch"/>
-                        </div>
-                <div class='form-group'>
-                    <label>Customer Name</label>
-                    <input type="text" class='form-control' id="cust_name" placeholder="Customer Name"/>
-                </div>
-                <div class='form-group'>
-                    <label>Customer PMB</label>
-                    <input type="text" class='form-control' id="cust_pmb" placeholder="Customer PMB"/>
-                </div>
-                <div class='form-group'>
-                        <label>Address</label>
-                        <input type="text" class='form-control' id="cust_address" placeholder="Customer Address"/>
-                </div>
-                <div class='form-group'>
-                        <label>Phone</label>
-                        <input type="text" class='form-control' id="cust_phone" placeholder="Customer Phone"/>
-                </div>
-                <div class='form-group'>
-                        <label>Email</label>
-                        <input type="text" class='form-control' id="cust_email" placeholder="Customer Email"/>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary close-del" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-success saveCustomer" id='saveCustomer' data-dismiss="modal">Save Customer</button>
-            </div>
-        </div>
-    </div>
-</div>
 <div id='ready-popup' class="white-popup mfp-hide">
-        <form id="prescription-form">
-          <div class="card-body">
+    <form id="prescription-form">
+        <div class="card-body">
             <div class='form-group '>
-              <h4>Add Package to AWB </h4>
-              <form method='post' id='cargoPackageForm'>
+                <h4>Add Package to AWB </h4>
+                <form method='post' id='cargoPackageForm'>
 
-                <button type='button' class="btn btn-small btn-info copy-last">Copy Last Package</button>
-                
+                    <button type='button' class="btn btn-small btn-info copy-last">Copy Last Package</button>
+
                     <div class='form-group'>
                         <label>Tracking #</label>
-                         <input type='hidden' id='pkgId' value="0" />
-                     
+                        <input type='hidden' id='pkgId' value="0" />
+
                         <input type='text' class='form-control trackingNo' id='trackingNo' name='trackingNo' required />
                     </div>
                     <div class='form-group'>
                         <label>Description</label>
-                        <textarea type='text' class='form-control description' id='description' name='description' rows="3"
-                            required > </textarea>
+                        <textarea type='text' class='form-control description' id='description' name='description'
+                            rows="3" required> </textarea>
                     </div>
-                  
-                  
+
+
                     <!-- <div class='form-group'>
                         <label>No. of Pieces</label>
                         <input type='text' class='form-control pieces' name='pieces' required />
@@ -447,53 +259,57 @@
                     </div>
                     <div class='form-group'>
                         <label>Package Type</label>
-                       <select class='form-control' id='packaging'>
-                           <option>BOX</option>
-                           <option>BAG</option>
-                           <option>Envelope</option>
-                           <option>Pallet</option>
-                           <option>Suitcase</option>
-                           <option>Can</option>
-                           <option>Shrink Wrapped Box</option>
-                           <option>Shrink Wrapped Pallet</option>
-                           <option>Shrink Wrapped Pallet</option>
-                           <option>Cooler</option>
-                           <option>Other</option>
-                       </select>
+                        <select class='form-control' id='packaging'>
+                            <option>BOX</option>
+                            <option>BAG</option>
+                            <option>Envelope</option>
+                            <option>Pallet</option>
+                            <option>Suitcase</option>
+                            <option>Can</option>
+                            <option>Shrink Wrapped Box</option>
+                            <option>Shrink Wrapped Pallet</option>
+                            <option>Shrink Wrapped Pallet</option>
+                            <option>Cooler</option>
+                            <option>Other</option>
+                        </select>
                     </div>
                     <div class='form-group'>
                         <label>Package No</label>
                         <div class='row'>
                             <div class='col-md-4'>
-                        <input type='text' class='form-control weight ' id='pkgNo' name='pkgNo' />
-                                </div>
-                                </div>
-                    </div>
-                  
-                    <div class='form-group'>
-                        <label>Dimensions</label>
-                        
-                        <div class='row'>
-                            <div class='col-md-4'><input type='text' class='form-control dimensions ' id='W' placeholder='W' /></div>
-                            <div class='col-md-4'><input type='text' class='form-control dimensions ' id='H' placeholder='H' /></div>
-                            <div class='col-md-4'><input type='text' class='form-control dimensions ' id='L' placeholder='L' /></div>
+                                <input type='text' class='form-control weight ' id='pkgNo' name='pkgNo' />
+                            </div>
                         </div>
                     </div>
-                   
+
+                    <div class='form-group'>
+                        <label>Dimensions</label>
+
+                        <div class='row'>
+                            <div class='col-md-4'><input type='text' class='form-control dimensions ' id='W'
+                                    placeholder='W' /></div>
+                            <div class='col-md-4'><input type='text' class='form-control dimensions ' id='H'
+                                    placeholder='H' /></div>
+                            <div class='col-md-4'><input type='text' class='form-control dimensions ' id='L'
+                                    placeholder='L' /></div>
+                        </div>
+                    </div>
+
                 </form>
 
             </div>
-          </div>
-          <div class="card-action text-center">
+        </div>
+        <div class="card-action text-center">
             <div class="row">
-              <div class="col-md-12">
-                <button class="btn btn-info close-popup " type="button" id='cancel-ready' data-dismiss="modal" >Done</button>
-                <button class="btn btn-primary" type="button" id='save-to-awb' value="Yes">Save</button>
-              </div>
+                <div class="col-md-12">
+                    <button class="btn btn-info close-popup " type="button" id='cancel-ready'
+                        data-dismiss="modal">Done</button>
+                    <button class="btn btn-primary" type="button" id='save-to-awb' value="Yes">Save</button>
+                </div>
             </div>
-          </div>
-        </form>
-      </div>
+        </div>
+    </form>
+</div>
 <div class="modal fade" id="shipManifest" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2"
     aria-hidden="true" style="display: none;">
     <div class="modal-dialog" role="document">
@@ -515,8 +331,8 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="addPO" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2"
-    aria-hidden="true" style="display: none;">
+<div class="modal fade" id="addPO" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2" aria-hidden="true"
+    style="display: none;">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -526,26 +342,26 @@
                 </button>
             </div>
             <div class="modal-body">
-              
+
                 <div class='form-group'>
-                        <label>P.O. #</label>
-                        <input type='text' class='form-control '>
+                    <label>P.O. #</label>
+                    <input type='text' class='form-control '>
                 </div>
                 <div class='form-group'>
-                        <label>Delivery</label>
-                        <input type='text' class='form-control '>
+                    <label>Delivery</label>
+                    <input type='text' class='form-control '>
                 </div>
                 <div class='form-group'>
-                        <label>Pickup</label>
-                        <input type='text' class='form-control '>
+                    <label>Pickup</label>
+                    <input type='text' class='form-control '>
                 </div>
                 <div class='form-group'>
-                        <label>MISC</label>
-                        <input type='text' class='form-control '>
+                    <label>MISC</label>
+                    <input type='text' class='form-control '>
                 </div>
                 <div class='form-group'>
-                        <label>Note</label>
-                        <input type='text' class='form-control '>
+                    <label>Note</label>
+                    <input type='text' class='form-control '>
                 </div>
             </div>
             <div class="modal-footer">
@@ -566,20 +382,22 @@
                 </button>
             </div>
             <div class="modal-body">
-              
-             The value of the this AWB is <span id='sedvalue'></span> which may pass the SED Limit. If one of the items are greater than $2500 this AWB requires the SED declaration. 
-               
+
+                The value of the this AWB is <span id='sedvalue'></span> which may pass the SED Limit. If one of the
+                items are greater than $2500 this AWB requires the SED declaration.
+
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary sed-click" data-dismiss="modal" data-id="0">No</button>
-                <button type="button" class="btn btn-primary btn-success sed-click " data-dismiss="modal" data-id="1" id="sed-click">SED REQUIRED</button>
-                
+                <button type="button" class="btn btn-primary btn-success sed-click " data-dismiss="modal" data-id="1"
+                    id="sed-click">SED REQUIRED</button>
+
             </div>
         </div>
     </div>
 </div>
 <script>
- var rpackages = <%- JSON.stringify(awb.packages) %>;
+    var rpackages = <% - JSON.stringify(awb.packages) %>;
 </script>
 <% block('scripts').append('<script src="/vendor/datatables/dataTables.min.js"></script>')%>
 <% block('scripts').append('<script src="/vendor/datatables/dataTables.bootstrap.min.js"></script>')%>

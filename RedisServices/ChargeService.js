@@ -5,80 +5,58 @@ const csv = require('csvtojson');
 var client = require('./dataContext').redisClient;
 var lredis = require('./redis-local');
 
-const HAZMAT_ID = strings.redis_id_hazmat;
-const PREFIX = strings.redis_prefix_hazmat;
+const CHARGE_ID = strings.redis_id_charge;
+const PREFIX = strings.redis_prefix_charge;
 
-class HazmatService {
-  importClassesFromCsv() {
+class ChargeService {
+  getCharge(id) {
     return new Promise((resolve, reject) => {
-      console.log("Importing HAZMAT Classes from the CSV file.");
-      this.removeAll().then(result => {
-        csv().fromFile("./DB_Seed/hazmat.csv").then(jsonObj => {
-          Promise.all(jsonObj.map(element => {
-            console.log(element.sClassName + '/' + element.sClassDescription);
-            client.incr(HAZMAT_ID, (err, id) => {
-              return lredis.hmset(PREFIX + id, {
-                id: id,
-                name: element.sClassName,
-                description: element.sClassDescription
-              });
-            });
-          })).then(result => {
-            resolve(result);
-          })
-        })
-      })
-    });
-  }
-  getHazmat(id) {
-    return new Promise((resolve, reject) => {
-      client.hgetall(PREFIX + id, (err, hazmat) => {
+      client.hgetall(PREFIX + id, (err, charge) => {
         if (err) resolve({ description: "" });
-        if (hazmat) resolve(hazmat);
+        if (charge) resolve(charge);
         else resolve({ description: "" });
       })
     });
   }
-  getHazmats() {
+  getCharges() {
     return new Promise((resolve, reject) => {
       client.keys(PREFIX + '*', (err, keys) => {
         if (err) resolve([]);
         Promise.all(keys.map(key => {
           return lredis.hgetall(key);
         })).then(classes => {
-          classes.sort((a, b) => a.id - b.id);
           resolve(classes);
         })
       })
     })
   }
-  createHazmat(hazmat) {
+  createCharge(charge) {
     return new Promise((resolve, reject) => {
-      client.incr(HAZMAT_ID, (err, id) => {
+      client.incr(CHARGE_ID, (err, id) => {
         if (err) resolve({ success: false, message: strings.string_response_error });
-        hazmat.id = id;
-        client.hmset(PREFIX + id, hazmat);
+        charge.id = id;
+        client.hmset(PREFIX + id, charge);
         resolve({ success: true, message: strings.string_response_added });
       });
     });
   }
-  updateHazmat(id, hazmat) {
+  updateCharge(id, charge) {
     return new Promise((resolve, reject) => {
       client.exists(PREFIX + id, (err, exist) => {
         if (err) resolve({ success: false, message: strings.string_response_error });
         if (Number(exist) == 1) {
-          client.hmset(PREFIX + id, hazmat);
+          client.hmset(PREFIX + id, charge);
           resolve({ success: true, message: strings.string_response_updated });
         } else
-          resolve({ success: false, message: strings.string_not_found_hazmat });
+          resolve({ success: false, message: strings.string_not_found_service_charge });
       })
     })
   }
-  removeHazmat(id) {
+  removeCharge(id) {
     return new Promise((resolve, reject) => {
-      this.getHazmat(id).then(hazmat => {
-        if (hazmat.id == undefined) {
-          resolve({ success: false, message: strings.string_not_found_hazmat });
+      this.getCharge(id).then(charge => {
+        if (charge.id == undefined) {
+          resolve({ success: false, message: strings.string_not_found_service_charge });
         } else {
           client.del(PREFIX + id);
           resolve({ success: true, message: strings.string_response_removed });
@@ -88,7 +66,7 @@ class HazmatService {
   }
   removeAll() {
     return new Promise((resolve, reject) => {
-      client.set(HAZMAT_ID, 0);
+      client.set(CHARGE_ID, 0);
       client.keys(PREFIX + '*', (err, keys) => {
         if (err) resolve([]);
         Promise.all(keys.map(key => {
@@ -104,6 +82,6 @@ class HazmatService {
 //========== DB Structure ==========//
 // id:
 // name:
-// description:
+// amount:
 
-module.exports = HazmatService;
+module.exports = ChargeService;
