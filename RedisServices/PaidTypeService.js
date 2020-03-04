@@ -8,7 +8,7 @@ const PREFIX = strings.redis_prefix_paid_type;
 const PAIDTYPE_ID = strings.redis_id_paid_type;
 
 class PaidTypeService {
-  importShippersFromCsv() {
+  importPaidTypeFromCsv() {
     return new Promise((resolve, reject) => {
       this.removeAll().then(result => {
         csv().fromFile("./DB_Seed/-----.csv").then(jsonObj => {
