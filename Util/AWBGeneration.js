@@ -243,7 +243,7 @@ class AWBGeneration {
           [{ margin: [1, 1], text: "Shipper Information", fillColor: "#cccccc" },
           { margin: [1, 1], text: "Consignee Information", fillColor: '#cccccc' }],
           [{ margin: [5, 5], stack: [shipperDetails, ""] },
-          { margin: [5, 5], stack: [awb.customer.firstName + ' ' + awb.customer.lastName, awb.customer.pmb, awb.customer.address] }]
+          { margin: [5, 5], stack: [awb.customer.firstName + ' ' + awb.customer.lastName, getConsigneeAddress(awb.customer)] }]
         ]
       }
     }
@@ -274,6 +274,40 @@ function calculateDimensionalWeight(dimensions) {
   dimensionparts.forEach(part => numerator *= Number(part.trim()));
   var dimWeight = numerator / 139;
   return Number(dimWeight).formatMoney(2, '.', ',')
+}
+
+function getConsigneeAddress(customer) {
+  let pmb = Number(customer.pmb);
+  let addresses = [
+    {
+      pmbMin: 1,
+      pmbMax: 1999,
+      address: `PMB ${pmb}\nCable Beach, Nassau Bahamas`,
+    },
+    {
+      pmbMin: 2000,
+      pmbMax: 2999,
+      address: `PMB ${pmb}\nVillage Road, Nassau Bahamas`,
+    },
+    {
+      pmbMin: 3000,
+      pmbMax: 3999,
+      address: `PMB ${pmb}\nAlbany, Nassau Bahamas`,
+    },
+    {
+      pmbMin: 9000,
+      pmbMax: 9000,
+      address: `PMB ${pmb}\n.#19 Industrial Park`,
+    },
+  ];
+
+  if (pmb === 9000 && String(customer.address).trim()) {
+    return customer.address;
+  }
+
+  const item = addresses.find((i) => i.pmbMin <= pmb && pmb <= i.pmbMax);
+
+  return (item && item.address) || '';
 }
 
 module.exports = AWBGeneration;
