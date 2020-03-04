@@ -30,6 +30,8 @@ var ShipperService = require('./ShipperService');
 var shipperService = new ShipperService();
 var CarrierService = require('./CarrierService');
 var carrierService = new CarrierService();
+var PaidTypeService = require('./PaidTypeService');
+var paidTypeService = new PaidTypeService();
 var ChargeService = require('./ChargeService');
 var chargeService = new ChargeService();
 
@@ -49,6 +51,7 @@ var services = {
   hazmatService,
   shipperService,
   carrierService,
+  paidTypeService,
   chargeService,
 };
 

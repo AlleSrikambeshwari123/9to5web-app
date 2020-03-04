@@ -29,6 +29,7 @@ var fleetCompartmentRouter = require('./routes/fleet/compartment');
 var warehouseAwbRouter = require('./routes/warehouse/awb');
 var warehouseManifestRouter = require('./routes/warehouse/manifest');
 var warehouseShipperRouter = require('./routes/warehouse/shipper');
+var warehousePaidTypeRouter = require('./routes/warehouse/paid-type');
 var warehouseCarrierRouter = require('./routes/warehouse/carrier');
 var warehousePackageRouter = require('./routes/warehouse/package');
 var warehousePrinterRouter = require('./routes/warehouse/print');
@@ -73,7 +74,7 @@ app.use(session({
 app.use('/', adminIndexRouter, authRouter);
 app.use('/account', accountPasswordRouter, accountPrintRouter);
 app.use('/admin', adminUserRouter, adminCustRouter, adminLocaRouter);
-app.use('/warehouse', warehouse, warehouseAwbRouter, warehouseManifestRouter, warehouseShipperRouter, warehouseCarrierRouter, warehousePackageRouter, warehousePrinterRouter, warehouseDeliveryRouter, warehouseHazmatRouter, warehouseChargeRouter);
+app.use('/warehouse', warehouse, warehouseAwbRouter, warehouseManifestRouter, warehouseShipperRouter, warehousePaidTypeRouter, warehouseCarrierRouter, warehousePackageRouter, warehousePrinterRouter, warehouseDeliveryRouter, warehouseHazmatRouter, warehouseChargeRouter);
 app.use('/fleet', fleetVehicleRouter, fleetDriverRouter, fleetPilotRouter, fleetPlaneRouter, fleetCompartmentRouter);
 app.use('/store', storeRouter);
 app.use('/util', util);
