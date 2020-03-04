@@ -222,13 +222,15 @@ class AWBGeneration {
       }]
   }
   generateShiperCosigneeTable(awb) {
-    var shipperDetails = `${awb.shipper.name} \n`;
-    if (awb.shipper.address)
-      shipperDetails += awb.shipper.address + "\n"
-    if (awb.shipper.state)
-      shipperDetails += awb.shipper.state + "\n"
-    if (awb.shipper.zipcode)
-      shipperDetails += awb.shipper.zipcode + "\n"
+    // In DB some shippers have zip field instead of zipcode
+    let shipperZipcode = awb.shipper.zipcode || awb.shipper.zip;
+    let shipperAddress = [
+      awb.shipper.name,
+      awb.shipper.address,
+      [awb.shipper.city, awb.shipper.state, shipperZipcode].filter(Boolean).join(', '),
+    ].filter(Boolean).join('\n');
+
+    var shipperDetails = `${shipperAddress} \n`;
     if (awb.shipper.taxId)
       shipperDetails += "TAX ID: " + awb.shipper.taxId + "\n"
     return {
