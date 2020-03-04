@@ -75,7 +75,7 @@
               <div class="form-group form-show-validation row">
                 <label for="awbNotes" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Notes</label>
                 <div class="col-lg-8 col-md-8 col-sm-8">
-                  <textarea type='text' class='form-control' id='note' name='note' required><%=awb.note%></textarea>
+                  <textarea type='text' class='form-control' id='note' name='note'><%=awb.note%></textarea>
                 </div>
               </div>
               <!-- <div class='form-group'>
@@ -87,7 +87,7 @@
               <div class="form-group form-show-validation row">
                 <label for="invoiceNumber" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Invoice #</label>
                 <div class="col-lg-8 col-md-8 col-sm-8">
-                  <input type='text' class='form-control' id='invoiceNumber' name='invoiceNumber' required
+                  <input type='text' class='form-control' id='invoiceNumber' name='invoiceNumber'
                     value="<%= awb.invoiceNumber%>" />
                 </div>
               </div>
@@ -143,7 +143,7 @@
           </div>
         </div>
         <div class="card-action">
-          <button class="btn btn-primary btn-round" type="submit">Create AWB</button>
+          <button class="btn btn-primary btn-round" type="submit">Update AWB</button>
         </div>
       </div>
     </div>

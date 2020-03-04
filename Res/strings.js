@@ -46,6 +46,9 @@ exports.redis_id_shipper = "id:shipper";
 exports.redis_prefix_paid_type = "paidType:";
 exports.redis_id_paid_type = "id:paidType";
 
+exports.redis_prefix_airline = "airline:";
+exports.redis_id_airline = "id:airline";
+
 exports.redis_prefix_carrier = "carrier:";
 exports.redis_id_carrier = "id:carrier";
 

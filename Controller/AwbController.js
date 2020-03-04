@@ -97,6 +97,26 @@ exports.add_new_awb = (req, res, next) => {
   })
 }
 
+exports.update_awb = (req, res, next) => {
+  let awb_id = parseInt(req.params.id);
+  let awb = req.body;
+  let packages = JSON.parse(awb.packages);
+  services.awbService.updateAwb(awb_id,awb).then(result => {
+    //awb = result.awb;
+    packages.forEach(pkg => {
+      pkg.customerId = awb.customerId;
+      pkg.shipperId = awb.shipper;
+      pkg.carrierId = awb.carrier;
+      pkg.hazmatId = awb.hazmat;
+    })
+    services.packageService.updatePackage(awb_id, packages).then(packageResult => {
+      res.send(result);
+    })
+  }).catch(err=>{
+    console.log(err);
+  })
+}
+
 exports.get_awb_list = (req, res, next) => {
   services.awbService.getAwbs().then(awbs => {
     getFullAwb(awbs).then(awbs => {
