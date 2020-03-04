@@ -150,7 +150,7 @@ $(function () {
         data: awbInfo,
         success: function (response) {
           swal({
-            title: response.success == true ? 'Created' : 'Failed',
+            title: response.success == true ? 'Updated' : 'Failed',
             text: response.message,
             type: response.success == true ? 'success' : 'error',
           }).then(res => {
