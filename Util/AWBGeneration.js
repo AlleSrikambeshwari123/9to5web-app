@@ -297,16 +297,11 @@ function getConsigneeAddress(customer) {
     {
       pmbMin: 9000,
       pmbMax: 9000,
-      address: `PMB ${pmb}\n.#19 Industrial Park`,
+      address: String(customer.address).trim() || `PMB ${pmb}\n.#19 Industrial Park`,
     },
   ];
 
-  if (pmb === 9000 && String(customer.address).trim()) {
-    return customer.address;
-  }
-
   const item = addresses.find((i) => i.pmbMin <= pmb && pmb <= i.pmbMax);
-
   return (item && item.address) || '';
 }
 
