@@ -32,6 +32,8 @@ var AirlineService = require('./AirlineService');
 var airlineService = new AirlineService()
 var CarrierService = require('./CarrierService');
 var carrierService = new CarrierService();
+var PaidTypeService = require('./PaidTypeService');
+var paidTypeService = new PaidTypeService();
 var ChargeService = require('./ChargeService');
 var chargeService = new ChargeService();
 
@@ -52,6 +54,7 @@ var services = {
   shipperService,
   airlineService,
   carrierService,
+  paidTypeService,
   chargeService,
 };
 
