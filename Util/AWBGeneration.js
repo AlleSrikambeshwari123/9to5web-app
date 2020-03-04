@@ -40,7 +40,7 @@ class AWBGeneration {
   generateAWb(awb) {
     this.awb = awb;
     return new Promise((resolve, reject) => {
-      this.generateBarcode(awb.id).then(png => {
+      this.generateBarcode(awb.id).then(async png => {
         var docDefinition = {
           footer: this.generateFooter,
           content: [
@@ -55,7 +55,7 @@ class AWBGeneration {
               table: {
                 headerRows: 2,
                 widths: ["*", "*", "*", "*", "*", "*"],
-                body: this.generatePackagesTable()
+                body: await this.generatePackagesTable()
               }
             }
           ],
@@ -97,7 +97,7 @@ class AWBGeneration {
       })
     })
   }
-  generatePackagesTable() {
+  async generatePackagesTable() {
     let body = [
       [{ text: "Pcs", fillColor: "#cccccc" },
       { text: "Package", fillColor: "#cccccc" },
@@ -114,7 +114,7 @@ class AWBGeneration {
     var totalWeight = 0;
     var totaldimWeight = 0;
 
-    this.awb.packages.forEach(pkg => {
+    for (let pkg of this.awb.packages) {
       var ptype = "Box"
       if (pkg.packageType) {
         ptype = pkg.packageType;
@@ -129,7 +129,18 @@ class AWBGeneration {
         { text: pkg.weight + " lbs" },
         { text: dimWeight }
       ])
-    });
+
+      let barcode = await this.generateBarcode(`${this.awb.customer.pmb}-${this.awb.id}-${pkg.id}`);
+      body.push([
+        {
+          image: 'data:image/jpeg;base64,' + barcode.toString('base64'),
+          width: 150,
+          alignment: 'right',
+          colSpan: 6,
+        },
+      ]);
+    }
+
     var dimw = currencyFormatter.format(totaldimWeight, {
       symbol: '',
       decimal: '.',
