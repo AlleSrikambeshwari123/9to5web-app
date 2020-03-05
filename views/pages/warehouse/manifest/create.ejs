@@ -25,6 +25,28 @@
                 </div>
               </div>
               <div class="form-group form-show-validation row">
+                <label for="airportFromId" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Airport From</label>
+                <div class="col-lg-8 col-md-8 col-sm-8">
+                  <select id="airportFromId" name="airportFromId" class='form-control' required>
+                    <option></option>
+                    <% airports.forEach(airport => { %>
+                    <option value="<%=airport.id%>"><%=airport.name%> <% if (airport.shortCode) { %> (<%=airport.shortCode%>) <% } %></option>
+                    <%})%>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group form-show-validation row">
+                <label for="airportToId" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Airport To</label>
+                <div class="col-lg-8 col-md-8 col-sm-8">
+                  <select id="airportToId" name="airportToId" class='form-control' required>
+                    <option></option>
+                    <% airports.forEach(airport => { %>
+                    <option value="<%=airport.id%>"><%=airport.name%> <% if (airport.shortCode) { %> (<%=airport.shortCode%>) <% } %></option>
+                    <%})%>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group form-show-validation row">
                 <label for="tailNumber" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Plane Tail Number</label>
                 <div class="col-lg-8 col-md-8 col-sm-8">
                   <input type='text' class='form-control' id='tailNumber' placeholder="Plane Tail Number" readonly />

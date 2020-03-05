@@ -6,6 +6,12 @@ $('#planeId').select2({
   width: '100%',
 });
 
+$('#airportFromId, #airportToId').select2({
+  theme: 'bootstrap',
+  placeholder: 'Select an airport',
+  width: '100%',
+});
+
 $('#planeId').change(function () {
   let planeId = $(this).val();
   $.ajax({

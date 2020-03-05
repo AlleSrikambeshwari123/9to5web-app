@@ -46,6 +46,9 @@ exports.redis_id_shipper = "id:shipper";
 exports.redis_prefix_container = "container:";
 exports.redis_id_container = "id:container";
 
+exports.redis_prefix_airport = "airport:";
+exports.redis_id_airport = "id:airport";
+
 exports.redis_prefix_paid_type = "paidType:";
 exports.redis_id_paid_type = "id:paidType";
 

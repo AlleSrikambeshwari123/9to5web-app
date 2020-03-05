@@ -1,0 +1,44 @@
+<% layout('./shared/__template')%>
+<div class="gutters">
+  <div class="col-xl-12 col-lg-6 col-md-12 col-sm-12">
+    <div class="card">
+      <div
+        class="card-header d-flex align-items-left align-items-md-center flex-column flex-md-row"
+      >
+        <div class="card-title"><%=title%></div>
+        <a href="create" class="btn btn-primary btn-round float-right ml-md-auto">Add Airport</a>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table id="airportTable" class="display table table-striped table-hover">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Short code</th>
+                <th>Country</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% airports.forEach(function(airport){%>
+              <tr data-record="<%= airport.id %>">
+                <td><strong><%=airport.name%></strong></td>
+                <td><%=airport.shortCode%></td>
+                <td><%=airport.country%></td>
+                <td>
+                  <a href="manage/<%=airport.id%>/get"><i class="fas fa-pen"></i></a>
+                  <a href="#" class="rm-airport ml-3" data-id="<%=airport.id%>"
+                    ><i class="fas fa-trash"></i
+                  ></a>
+                </td>
+              </tr>
+              <%})%>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<% block('scripts').append('<script src="/js/utils.js"></script>')%> 
+<% block('scripts').append('<script src="/js/fleet/airport/list.js"></script>')%>
