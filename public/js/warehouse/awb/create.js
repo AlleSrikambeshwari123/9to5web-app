@@ -94,8 +94,10 @@ $(function () {
         if (awbPackages.length > 0) $('.btn-copy-last').show()
         else $('.btn-copy-last').hide();
 
+        $('#id').val(undefined);
         $('#description').val("");
         $('#weight').val("");
+        $('#packageCalculation').val('kg');
         $('#packageType').val("");
         $('#W').val("");
         $('#H').val("");
@@ -106,8 +108,10 @@ $(function () {
   $(".btn-copy-last").click(function () {
     if (awbPackages.length > 0) {
       var lastPackage = awbPackages[awbPackages.length - 1];
+      $('#id').val(undefined);
       $("#description").val(lastPackage.description);
       $("#weight").val(lastPackage.weight);
+      $('#packageCalculation').val(lastPackage.packageCalculation||'kg');
       $('#packageType').val("");
       var dims = lastPackage.dimensions.toLowerCase().split('x');
       $("#W").val(dims[0])
@@ -121,10 +125,24 @@ $(function () {
   $('#add-package-form').submit(function (event) {
     event.preventDefault();
     let pkg = extractFormData(this);
-    pkg.id = Date.now().toString();
+    let isNew=false;
+    if(!pkg.id){
+      pkg.id = Date.now().toString();
+      isNew=true;
+    }
     pkg.location = "Warehouse FLL";
     pkg.dimensions = pkg.W + 'x' + pkg.H + 'x' + pkg.L;
-    awbPackages.push(pkg);
+    if(isNew===true){
+      awbPackages.push(pkg);
+    }else{
+      awbPackages = awbPackages.map(m=>{
+        if(m.id===pkg.id){
+          return Object.assign(m,pkg);
+        }else{
+          return m;
+        }
+      })
+    }
     displayPackages();
     $('.mfp-close').trigger("click");
   })
@@ -281,16 +299,29 @@ $(function () {
   }
 
   function displayPackages() {
-    var totalWeight = 0;
-    awbPackages.forEach(pkg => totalWeight += Number(pkg.weight));
-    $('.package-info').text(`${awbPackages.length} Pieces / ${totalWeight.toFixed(2)} lbs`);
+    var totalWeight = awbPackages.reduce((a,c)=>{
+      let weight = Number(c.weight);
+      let coef = 0.453592;
+      let lbs;
+      let kg;
+      if(c.packageCalculation==='lbs'){
+        lbs = a.lbs + weight;
+        kg = a.kg + weight*coef;
+      }else {
+        kg = a.kg + weight;
+        lbs = a.lbs +  weight/coef
+      }
+      return {kg, lbs}
+    },{lbs:0,kg:0});
+
+    $('.package-info').html(`${awbPackages.length} Pieces / ${totalWeight.lbs.toFixed(2)}(${totalWeight.kg.toFixed(2)})   <span style="margin-left:20px">lbs(kg)</span>`);
 
     packageTable.clear().draw();
     awbPackages.forEach(pkg => {
       let rowNode = packageTable.row.add([
         pkg.description,
         pkg.dimensions,
-        Number(pkg.weight).toFixed(2) + ' lbs',
+        Number(pkg.weight).toFixed(2) + ` ${pkg.packageCalculation||'kg'}`,
         `<a class="btn btn-link btn-primary btn-edit-pkg p-1" title="Edit" data-id="${pkg.id}" href="#add-package-popup">
           <i class="fa fa-pen"></i> </a>
         <a class="btn btn-link btn-danger btn-rm-pkg p-1" title="Delete" data-id="${pkg.id}" data-toggle='modal' data-target='#confirmPkgDel'>
@@ -309,9 +340,10 @@ $(function () {
         callbacks: {
           open: function () {
             $('.btn-copy-last').hide();
-
+            $('#id').val(pkg.id);
             $('#description').val(pkg.description);
             $('#weight').val(pkg.weight);
+            $('#packageCalculation').val(pkg.packageCalculation||'kg');
             $('#packageType').val(pkg.packageType);
             var dims = pkg.dimensions.toLowerCase().split('x');
             $("#W").val(dims[0])

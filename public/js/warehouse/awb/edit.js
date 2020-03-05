@@ -90,6 +90,7 @@ $(function () {
         $('#description').val("");
         $('#weight').val("");
         $('#packageType').val("");
+        $('#packageCalculation').val("kg");
         $('#W').val("");
         $('#H').val("");
         $('#L').val("");
@@ -101,6 +102,7 @@ $(function () {
       var lastPackage = awbPackages[awbPackages.length - 1];
       $("#description").val(lastPackage.description);
       $("#weight").val(lastPackage.weight);
+      $('#packageCalculation').val(lastPackage.packageCalculation||'kg');
       $('#packageType').val("");
       var dims = lastPackage.dimensions.toLowerCase().split('x');
       $("#W").val(dims[0])
@@ -114,8 +116,8 @@ $(function () {
   $('#add-package-form').submit(function (event) {
     event.preventDefault();
     let pkg = extractFormData(this);
-    console.log(pkg);
-    console.log(awbPackages);
+   // console.log(pkg);
+   // console.log(awbPackages);
     let isNew=false;
     if(!pkg.id){
       pkg.id = Date.now().toString();
@@ -176,8 +178,9 @@ $(function () {
             type: response.success == true ? 'success' : 'error',
           }).then(res => {
             if (response.success == true) {
-              location.reload(true);
-              //window.location.href = 'manage/' + response.awb.id + '/preview';
+              //location.reload(true);
+             // window.location.href = 'manage/' + response.awb.id + '/preview';
+              window.location.href = 'preview';
             }
           })
         }
@@ -293,16 +296,29 @@ $(function () {
   }
 
   function displayPackages() {
-    var totalWeight = 0;
-    awbPackages.forEach(pkg => totalWeight += Number(pkg.weight));
-    $('.package-info').text(`${awbPackages.length} Pieces / ${totalWeight.toFixed(2)} lbs`);
+    var totalWeight = awbPackages.reduce((a,c)=>{
+      let weight = Number(c.weight);
+      let coef = 0.453592;
+      let lbs;
+      let kg;
+      if(c.packageCalculation==='lbs'){
+        lbs = a.lbs + weight;
+        kg = a.kg + weight*coef;
+      }else {
+        kg = a.kg + weight;
+        lbs = a.lbs +  weight/coef
+      }
+      return {kg, lbs}
+    },{lbs:0,kg:0});
+    //awbPackages.forEach(pkg => totalWeight += Number(pkg.weight));
+    $('.package-info').html(`${awbPackages.length} Pieces / ${totalWeight.lbs.toFixed(2)}(${totalWeight.kg.toFixed(2)})   <span style="margin-left:20px">lbs(kg)</span>`);
 
     packageTable.clear().draw();
     awbPackages.forEach(pkg => {
       let rowNode = packageTable.row.add([
         pkg.description,
         pkg.dimensions,
-        Number(pkg.weight).toFixed(2) + ' lbs',
+        Number(pkg.weight).toFixed(2) + ` ${pkg.packageCalculation||'kg'}`,
         `<a class="btn btn-link btn-primary btn-edit-pkg p-1" title="Edit" data-id="${pkg.id}" href="#add-package-popup">
           <i class="fa fa-pen"></i> </a>
         <a class="btn btn-link btn-danger btn-rm-pkg p-1" title="Delete" data-id="${pkg.id}" data-toggle='modal' data-target='#confirmPkgDel'>
@@ -326,6 +342,7 @@ $(function () {
             $('#description').val(pkg.description);
             $('#weight').val(pkg.weight);
             $('#packageType').val(pkg.packageType);
+            $('#packageCalculation').val(pkg.packageCalculation||'kg');
             var dims = pkg.dimensions.toLowerCase().split('x');
             $("#W").val(dims[0])
             $("#H").val(dims[1])

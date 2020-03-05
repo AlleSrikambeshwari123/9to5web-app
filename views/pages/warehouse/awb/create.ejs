@@ -148,6 +148,7 @@
 
 <div id='add-package-popup' class="card white-popup p-0 mfp-hide">
   <form method='post' id='add-package-form'>
+    <input type='hidden' class='form-control' id='id' name='id' />
     <div class="card-header">
       <div class="card-title text-center">Add Package to AWB</div>
     </div>
@@ -162,6 +163,13 @@
       <div class='form-group'>
         <label for="weight">Weight</label>
         <input type='number' class='form-control' id='weight' name='weight' step="0.01" required />
+      </div>
+      <div class='form-group'>
+        <label for="packageType">Package calculation</label>
+        <select class='form-control' id='packageCalculation' name="packageCalculation" required>
+          <option>kg</option>
+          <option>lbs</option>
+        </select>
       </div>
       <div class='form-group'>
         <label for="packageType">Package Type</label>

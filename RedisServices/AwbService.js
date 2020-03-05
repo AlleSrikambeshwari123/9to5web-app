@@ -66,7 +66,7 @@ class AwbService {
       // awb.updated_by = awb.username;
       awb.dateUpdated = moment().utc().unix();
       client.hmset(PREFIX + id, awb);
-      resolve({ success: true, message: strings.string_response_updated });
+      resolve({ success: true, message: strings.string_response_updated, awb:{id} });
     });
   }
 

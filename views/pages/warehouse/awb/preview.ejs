@@ -93,7 +93,7 @@
                         </thead>
                         <tbody>
                           <% var totalWeight = 0;
-                          awb.packages.forEach(package => { 
+                          awb.packages.forEach(package => {
                             totalWeight += Number(package.weight);
                           %>
                           <tr>
@@ -101,7 +101,7 @@
                             <td class="text-center"><%= package.description%></td>
                             <td class="text-center"><%= package.packageType%></td>
                             <td class="text-center"><%= package.dimensions%></td>
-                            <td class="text-right"><%= Number(package.weight).toFixed(2)%> lbs</td>
+                            <td class="text-right"><%= Number(package.weight).toFixed(2)%> <%= package.packageCalculation||'kg' %></td>
                           </tr>
                           <% }) %>
                           <tr>
