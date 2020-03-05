@@ -100,6 +100,18 @@ class PackageService {
     });
   }
 
+  async getAWBPackagesWithLastStatus(awbId) {
+    const packages = await this.getPackages(awbId);
+    await Promise.all(
+      packages.map(async (pkg) => {
+        let status = await this.getPackageLastStatus(pkg.id);
+        pkg.lastStatusText = status && status.status;
+      }),
+    );
+
+    return packages;
+  }
+
   // Only show 7 trackingNo on the list;
   getPackages(awbId) {
     return new Promise((resolve, reject) => {
@@ -205,6 +217,7 @@ class PackageService {
         })).then(stats => {
           let pkgs = [];
           stats.forEach((status, i) => {
+            packages[i].lastStatusText = status.status;
             if (status.status == PKG_STATUS[1] || status.status == PKG_STATUS[2])
               pkgs.push(packages[i]);
           })
@@ -227,6 +240,7 @@ class PackageService {
             console.log(stats);
             let pkgs = [];
             stats.forEach((stat, i) => {
+              packages[i].lastStatusText = stat.status;
               if (stat.status == PKG_STATUS[4]) pkgs.push(packages[i]);
             })
             resolve(pkgs);

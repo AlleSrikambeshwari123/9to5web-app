@@ -15,6 +15,7 @@
               <th>Type</th>
               <th>Weight</th>
               <th>Dimensions</th>
+              <th>Status</th>
               <th>AWB</th>
               <th></th>
             </tr>
@@ -27,6 +28,7 @@
               <td><%= pkg.packageType %></td>
               <td><%= pkg.weight%></td>
               <td><%= pkg.dimensions %></td>
+              <td><%= pkg.lastStatusText %></td>
               <td><%= pkg.awbId %></td>
               <td class="text-center">
                 <a class="btn btn-link btn-primary btn-print-pkg" data-toggle="modal" data-id="<%=pkg.id%>"

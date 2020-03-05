@@ -42,7 +42,7 @@ exports.get_awb_detail = (req, res, next) => {
     services.shipperService.getAllShippers(),
     services.carrierService.getAllCarriers(),
     services.awbService.getAwb(id),
-    services.packageService.getPackages(id),
+    services.packageService.getAWBPackagesWithLastStatus(id),
     services.locationService.getLocations(),
   ]).then(results => {
     //console.log(results[4]);
