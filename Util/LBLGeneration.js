@@ -108,8 +108,8 @@ class LBLGeneration {
         noDocs = "***"
       }
       var notes = ""
-      if (this.awb.hazmat && pkg.pkgNo == "1") {
-        notes = this.awb.hazmat;
+      if (this.awb.hazmat && this.awb.hazmat.description) {
+        notes = this.awb.hazmat.description;
       }
       this.generateBarcode(this.awb.customer.pmb + "-" + this.awb.id.toString() + "-" + pkg.id).then(png => {
         try {
