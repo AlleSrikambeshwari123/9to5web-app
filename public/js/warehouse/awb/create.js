@@ -15,6 +15,11 @@ $(function () {
     placeholder: 'Select Location',
     width:'100%',
   })
+  $('#companyId').select2({
+    theme: 'bootstrap',
+    placeholder: 'Select company',
+    width:'100%',
+  })
 
   $('#customerId').select2({
     theme: 'bootstrap',
