@@ -24,6 +24,7 @@ var fleetDriverRouter = require('./routes/fleet/drivers');
 var fleetPilotRouter = require('./routes/fleet/pilots');
 var fleetPlaneRouter = require('./routes/fleet/plane');
 var fleetCompartmentRouter = require('./routes/fleet/compartment');
+var fleetAirportsRouter = require('./routes/fleet/airport');
 
 // Warehouse
 var warehouseAwbRouter = require('./routes/warehouse/awb');
@@ -31,6 +32,7 @@ var warehouseManifestRouter = require('./routes/warehouse/manifest');
 var warehouseShipperRouter = require('./routes/warehouse/shipper');
 var warehousePaidTypeRouter = require('./routes/warehouse/paid-type');
 var warehouseAirlineRouter = require('./routes/warehouse/airline');
+var warehouseContainerRouter = require('./routes/warehouse/container');
 
 var warehouseCarrierRouter = require('./routes/warehouse/carrier');
 var warehousePackageRouter = require('./routes/warehouse/package');
@@ -76,8 +78,8 @@ app.use(session({
 app.use('/', adminIndexRouter, authRouter);
 app.use('/account', accountPasswordRouter, accountPrintRouter);
 app.use('/admin', adminUserRouter, adminCustRouter, adminLocaRouter);
-app.use('/warehouse', warehouse, warehouseAwbRouter, warehouseManifestRouter, warehouseShipperRouter, warehousePaidTypeRouter, warehouseAirlineRouter, warehouseCarrierRouter, warehousePackageRouter, warehousePrinterRouter, warehouseDeliveryRouter, warehouseHazmatRouter, warehouseChargeRouter);
-app.use('/fleet', fleetVehicleRouter, fleetDriverRouter, fleetPilotRouter, fleetPlaneRouter, fleetCompartmentRouter);
+app.use('/warehouse', warehouse, warehouseAwbRouter, warehouseManifestRouter, warehouseShipperRouter, warehousePaidTypeRouter, warehouseAirlineRouter, warehouseContainerRouter, warehouseCarrierRouter, warehousePackageRouter, warehousePrinterRouter, warehouseDeliveryRouter, warehouseHazmatRouter, warehouseChargeRouter);
+app.use('/fleet', fleetVehicleRouter, fleetDriverRouter, fleetPilotRouter, fleetPlaneRouter, fleetCompartmentRouter, fleetAirportsRouter);
 app.use('/store', storeRouter);
 app.use('/util', util);
 

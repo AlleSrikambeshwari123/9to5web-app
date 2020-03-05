@@ -205,6 +205,11 @@
 									<span class="sub-item">Planes</span>
 								</a>
 							</li>
+							<li <% if (page.includes('/fleet/airport/')) { %> class="active" <% } %>>
+								<a href="/fleet/airport/list">
+									<span class="sub-item">Airports</span>
+								</a>
+							</li>
 						</ul>
 					</div>
 				</li>
@@ -224,6 +229,12 @@
 					<a href="/warehouse/carrier/list">
 						<i class="fa fa-people-carry"></i>
 						<p>Carriers </p>
+					</a>
+				</li>
+				<li class="nav-item <% if (page.includes('/container/')) { %> active <% } %>">
+					<a href="/warehouse/container/list">
+						<i class="fa fa-archive"></i>
+						<p>Containers </p>
 					</a>
 				</li>
 				<li class="nav-item <% if (page.includes('/hazmat/')) { %> active <% } %>">

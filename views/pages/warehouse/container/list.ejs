@@ -1,0 +1,51 @@
+<% layout('./shared/__template')%>
+<div class="gutters">
+  <div class="col-xl-12 col-lg-6 col-md-12 col-sm-12">
+    <div class="card">
+      <div
+        class="card-header d-flex align-items-left align-items-md-center flex-column flex-md-row"
+      >
+        <div class="card-title"><%=title%></div>
+        <a href="create" class="btn btn-primary btn-round float-right ml-md-auto">Add Container</a>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table id="containerTable" class="display table table-striped table-hover">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Number</th>
+                <th>Size</th>
+                <th>Weight</th>
+                <th>Date</th>
+                <th>Seal</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% containers.forEach(function(container){%>
+              <tr data-record="<%= container.id %>">
+                <td><strong><%=container.name%></strong></td>
+                <td><%=container.number%></td>
+                <td><%=container.size%></td>
+                <td><%=container.weight%></td>
+                <td><%=container.date%></td>
+                <td><%=container.seal%></td>
+                <td>
+                  <a href="manage/<%=container.id%>/get"><i class="fas fa-pen"></i></a>
+                  <a href="#" class="rm-container ml-3" data-id="<%=container.id%>"
+                    ><i class="fas fa-trash"></i
+                  ></a>
+                </td>
+              </tr>
+              <%})%>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<% block('scripts').append('<script src="/js/utils.js"></script>')%> 
+<% block('scripts').append('<script src="/js/warehouse/container/list.js"></script>')%>

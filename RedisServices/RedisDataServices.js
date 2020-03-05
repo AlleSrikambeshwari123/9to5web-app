@@ -36,6 +36,10 @@ var PaidTypeService = require('./PaidTypeService');
 var paidTypeService = new PaidTypeService();
 var ChargeService = require('./ChargeService');
 var chargeService = new ChargeService();
+var ContainerService = require('./ContainerService');
+var containerService = new ContainerService();
+var AirportService = require('./AirportService');
+var airportService = new AirportService();
 
 var services = {
   customerService,
@@ -56,6 +60,8 @@ var services = {
   carrierService,
   paidTypeService,
   chargeService,
+  containerService,
+  airportService,
 };
 
 packageService.setServiceInstances(services);
