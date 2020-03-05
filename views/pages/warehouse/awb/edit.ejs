@@ -152,6 +152,7 @@
 
 <div id='add-package-popup' class="card white-popup p-0 mfp-hide">
   <form method='post' id='add-package-form'>
+    <input type='hidden' class='form-control' id='id' name='id' />
     <div class="card-header">
       <div class="card-title text-center">Add Package to AWB</div>
     </div>
@@ -223,25 +224,25 @@
             <label for="shipper-firstName" class="col-md-3 mt-sm-2 text-right">Contact Name</label>
             <div class="col-md-4">
               <input type='text' class='form-control' placeholder="First Name" id='shipper-firstName' name="firstName"
-                required />
+                     required />
             </div>
             <div class="col-md-4">
               <input type='text' class='form-control' placeholder="Last Name" id='shipper-lastName' name="lastName"
-                required />
+                     required />
             </div>
           </div>
           <div class='form-group row'>
             <label for="shipper-telephone" class="col-md-3 mt-sm-2 text-right">Phone</label>
             <div class="col-md-8">
               <input type='number' class='form-control' placeholder="(242) xxx-xxxx" id='shipper-telephone'
-                name="telephone" />
+                     name="telephone" />
             </div>
           </div>
           <div class='form-group row'>
             <label for="shipper-email" class="col-md-3 mt-sm-2 text-right">Email</label>
             <div class="col-md-8">
               <input type="email" class='form-control' placeholder="name@example.com" id='shipper-email' name="email"
-                required />
+                     required />
             </div>
           </div>
           <div class='form-group row'>
@@ -305,18 +306,18 @@
             <label for="carrier-firstName" class="col-md-3 mt-sm-2 text-right">Contact Name</label>
             <div class="col-md-4">
               <input type='text' class='form-control' placeholder="First Name" id='carrier-firstName' name="firstName"
-                required />
+                     required />
             </div>
             <div class="col-md-4">
               <input type='text' class='form-control' placeholder="Last Name" id='carrier-lastName' name="lastName"
-                required />
+                     required />
             </div>
           </div>
           <div class='form-group row'>
             <label for="carrier-telephone" class="col-md-3 mt-sm-2 text-right">Phone</label>
             <div class="col-md-8">
               <input type='number' class='form-control' placeholder="(242) xxx-xxxx" id='carrier-telephone'
-                name="telephone" />
+                     name="telephone" />
             </div>
           </div>
           <div class='form-group row'>
@@ -350,6 +351,12 @@
             </div>
           </div>
           <div class='form-group row'>
+            <label for="carrier-state" class="col-md-3 mt-sm-2 text-right">Country</label>
+            <div class="col-md-8">
+              <input type='text' class='form-control' placeholder="Country" id='carrier-state' name="country" />
+            </div>
+          </div>
+          <div class='form-group row'>
             <label for="carrier-zip" class="col-md-3 mt-sm-2 text-right">Zip</label>
             <div class="col-md-8">
               <input type='text' class='form-control' placeholder="Zip" id='carrier-zip' name="zip" />
@@ -366,7 +373,7 @@
 </div>
 
 <div class="modal fade" id="add-customer-popup" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
-  <div class="modal-dialog" role="document">
+  <div class="modal-dialog" role="document" style="max-width: 800px;">
     <div class="modal-content">
       <form method="POST" id="add-customer-form">
         <div class="modal-header">
@@ -375,7 +382,7 @@
             <span aria-hidden="true">×</span>
           </button>
         </div>
-        <div class="modal-body">
+        <!--<div class="modal-body">
           <div class="form-group form-show-validation row">
             <label for="c-companyId" class="col-lg-3 col-md-4 col-sm-4 mt-sm-2 text-right">Company </label>
             <div class="col-lg-9 col-md-8 col-sm-8">
@@ -414,6 +421,114 @@
             <label for="email" class="col-lg-3 col-md-4 col-sm-4 mt-sm-2 text-right">Email address </label>
             <div class="col-lg-9 col-md-8 col-sm-8">
               <input type="email" class="form-control" id="email" name="email" placeholder="name@example.com">
+            </div>
+          </div>
+        </div>-->
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group form-show-validation row">
+                <label for="companyId" class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">Company </label>
+                <div class="col-lg-8 col-md-8 col-sm-8">
+                  <select id="companyId" name="companyId" class="form-control" required>
+                    <option value='9to5'>9to5</option>
+                    <option value='pmb'>Post Boxes</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group form-show-validation row">
+                <label for="pmb" class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">PMB </label>
+                <div class="col-lg-8 col-md-8 col-sm-8">
+                  <input type="number" class="form-control" id="pmb" name="pmb" placeholder="PMB" value="9000">
+                </div>
+              </div>
+              <div class="form-group form-show-validation row">
+                <label for="firstName" class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">First Name </label>
+                <div class="col-lg-8 col-md-8 col-sm-8">
+                  <input type="text" class="form-control" id="firstName" name="firstName" placeholder="First Name"
+                         required>
+                </div>
+              </div>
+              <div class="form-group form-show-validation row">
+                <label for="lastName" class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">Last Name </label>
+                <div class="col-lg-8 col-md-8 col-sm-8">
+                  <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Last Name">
+                </div>
+              </div>
+              <div class="form-group form-show-validation row">
+                <label for="telephone" class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">Telephone</label>
+                <div class="col-lg-8 col-md-8 col-sm-8">
+                  <input type="tel" class="form-control" id="telephone" name="telephone" placeholder="(242)-123-4567">
+                </div>
+              </div>
+              <div class="form-group form-show-validation row">
+                <label for="email" class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">Email address </label>
+                <div class="col-lg-8 col-md-8 col-sm-8">
+                  <input type="email" class="form-control" id="email" name="email" placeholder="name@example.com">
+                </div>
+              </div>
+              <div class="form-group form-show-validation row">
+                <label for="password" class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">Password </label>
+                <div class="col-lg-8 col-md-8 col-sm-8">
+                  <input type="password" class="form-control" id="password" name="password" placeholder="New Password">
+                </div>
+              </div>
+              <div class="form-group form-show-validation row">
+                <label for="confirmPassword" class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">Confirm Password
+                </label>
+                <div class="col-lg-8 col-md-8 col-sm-8">
+                  <input type="password" class="form-control" id='confirmPassword' name="confirmPassword"
+                         placeholder="Confirm New Password">
+                </div>
+              </div>
+              <div class="form-group form-show-validation row">
+                <label for="location" class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">Select Location </label>
+                <div class="col-lg-8 col-md-8 col-sm-8">
+                  <select id="location" name="location" class=" form-control ">
+                    <% locations.forEach(location => { %>
+                    <option value='<%=location.id%>'><%=location.name%></option>
+                    <% }) %>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group form-show-validation row">
+                <label for="address" class="col-lg-3 col-md-4 col-sm-4 mt-sm-2 text-right">Address </label>
+                <div class="col-lg-7 col-md-8 col-sm-8">
+                  <input type="text" class="form-control" id="address" name="address" placeholder="Address">
+                </div>
+              </div>
+              <div class="form-group form-show-validation row">
+                <label for="city" class="col-lg-3 col-md-4 col-sm-4 mt-sm-2 text-right">City </label>
+                <div class="col-lg-7 col-md-8 col-sm-8">
+                  <input type="text" class="form-control" id="city" name="city" placeholder="City">
+                </div>
+              </div>
+              <div class="form-group form-show-validation row">
+                <label for="state" class="col-lg-3 col-md-4 col-sm-4 mt-sm-2 text-right">State </label>
+                <div class="col-lg-7 col-md-8 col-sm-8">
+                  <input type="text" class="form-control" id="state" name="state" placeholder="State">
+                </div>
+              </div>
+              <div class="form-group form-show-validation row">
+                <label for="country" class="col-lg-3 col-md-4 col-sm-4 mt-sm-2 text-right">Country </label>
+                <div class="col-lg-7 col-md-8 col-sm-8">
+                  <input type="text" class="form-control" id="country" name="country" placeholder="Country">
+                </div>
+              </div>
+              <div class="form-group form-show-validation row">
+                <label for="zipcode" class="col-lg-3 col-md-4 col-sm-4 mt-sm-2 text-right">Zipcode </label>
+                <div class="col-lg-7 col-md-8 col-sm-8">
+                  <input type="text" class="form-control" id="zipcode" name="zipcode" placeholder="Zipcode">
+                </div>
+              </div>
+              <div class="form-group form-show-validation row">
+                <label for="note" class="col-lg-3 col-md-4 col-sm-4 mt-sm-2 text-right">Note </label>
+                <div class="col-lg-7 col-md-8 col-sm-8">
+                  <textarea id="note" class="form-control" name="note"></textarea>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -548,6 +663,8 @@
     </div>
   </div>
 </div>
-
+<script>
+  window.packages = <%- JSON.stringify(packages) %>;
+</script>
 <% block('scripts').append('<script src="/js/utils.js"></script>')%>
 <% block('scripts').append('<script src="/js/warehouse/awb/edit.js"></script>')%>

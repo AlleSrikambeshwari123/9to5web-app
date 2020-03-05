@@ -10,6 +10,11 @@ Number.prototype.formatMoney = function (c, d, t) {
 };
 $(function () {
   var upload = new FileUploadWithPreview('invoice-upload-field')
+  $('#location').select2({
+    theme: 'bootstrap',
+    placeholder: 'Select Location',
+    width:'100%',
+  })
 
   $('#customerId').select2({
     theme: 'bootstrap',

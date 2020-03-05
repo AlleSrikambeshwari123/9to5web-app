@@ -15,7 +15,7 @@ var ID_COUNTER = strings.redis_id_customer;
 class CustomerService {
   signUp(customer) {
     return new Promise((resolve, reject) => {
-      this.getCustomerWithEmail(customer.email).then(existingCustomer => {
+      this.getCustomerWithEmail(customer.email===""?undefined:customer.email).then(existingCustomer => {
         if (existingCustomer.id) {
           resolve({ success: false, message: "Account already exists" });
         } else {

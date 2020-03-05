@@ -10,7 +10,6 @@ Number.prototype.formatMoney = function (c, d, t) {
 };
 $(function () {
   var upload = new FileUploadWithPreview('invoice-upload-field')
-
   $('#customerId').select2({
     theme: 'bootstrap',
     width: '100%',
@@ -69,8 +68,12 @@ $(function () {
   })
 
   var sedAnswered = 0;
-  var awbPackages = [];
 
+  var awbPackages = packages||[];
+    //Showing old packages
+  if(awbPackages.length>0){
+    displayPackages();
+  }
   // Add Pacakge Popup
   $('.btn-add-package').magnificPopup({
     type: 'inline',
@@ -83,7 +86,7 @@ $(function () {
       open: function () {
         if (awbPackages.length > 0) $('.btn-copy-last').show()
         else $('.btn-copy-last').hide();
-
+        $('#id').val(undefined);
         $('#description').val("");
         $('#weight').val("");
         $('#packageType').val("");
@@ -111,10 +114,28 @@ $(function () {
   $('#add-package-form').submit(function (event) {
     event.preventDefault();
     let pkg = extractFormData(this);
-    pkg.id = Date.now().toString();
+    console.log(pkg);
+    console.log(awbPackages);
+    let isNew=false;
+    if(!pkg.id){
+      pkg.id = Date.now().toString();
+      isNew=true;
+    }
+
     pkg.location = "Warehouse FLL";
     pkg.dimensions = pkg.W + 'x' + pkg.H + 'x' + pkg.L;
-    awbPackages.push(pkg);
+    if(isNew===true){
+      awbPackages.push(pkg);
+    }else{
+      awbPackages = awbPackages.map(m=>{
+        if(m.id===pkg.id){
+          return Object.assign(m,pkg);
+        }else{
+          return m;
+        }
+      })
+    }
+
     displayPackages();
     $('.mfp-close').trigger("click");
   })
@@ -155,7 +176,8 @@ $(function () {
             type: response.success == true ? 'success' : 'error',
           }).then(res => {
             if (response.success == true) {
-              window.location.href = 'manage/' + response.awb.id + '/preview';
+              location.reload(true);
+              //window.location.href = 'manage/' + response.awb.id + '/preview';
             }
           })
         }
@@ -300,6 +322,7 @@ $(function () {
           open: function () {
             $('.btn-copy-last').hide();
 
+            $('#id').val(pkg.id);
             $('#description').val(pkg.description);
             $('#weight').val(pkg.weight);
             $('#packageType').val(pkg.packageType);

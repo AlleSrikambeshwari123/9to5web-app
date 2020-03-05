@@ -43,8 +43,9 @@ exports.get_awb_detail = (req, res, next) => {
     services.carrierService.getAllCarriers(),
     services.awbService.getAwb(id),
     services.packageService.getPackages(id),
+    services.locationService.getLocations(),
   ]).then(results => {
-    console.log(results[4]);
+    //console.log(results[4]);
     res.render('pages/warehouse/awb/edit', {
       page: req.originalUrl,
       title: 'AWB Details',
@@ -56,6 +57,7 @@ exports.get_awb_detail = (req, res, next) => {
       carriers: results[3],
       awb: results[4],
       packages: results[5],
+      locations: results[6],
     });
   })
 }
@@ -66,6 +68,7 @@ exports.create_awb = (req, res, next) => {
     services.hazmatService.getHazmats(),
     services.shipperService.getAllShippers(),
     services.carrierService.getAllCarriers(),
+    services.locationService.getLocations()
   ]).then(results => {
     res.render('pages/warehouse/awb/create', {
       page: req.originalUrl,
@@ -76,6 +79,7 @@ exports.create_awb = (req, res, next) => {
       hazmats: results[1],
       shippers: results[2],
       carriers: results[3],
+      locations: results[4],
     });
   })
 }
@@ -103,13 +107,25 @@ exports.update_awb = (req, res, next) => {
   let packages = JSON.parse(awb.packages);
   services.awbService.updateAwb(awb_id,awb).then(result => {
     //awb = result.awb;
+    let all =[];
     packages.forEach(pkg => {
       pkg.customerId = awb.customerId;
       pkg.shipperId = awb.shipper;
       pkg.carrierId = awb.carrier;
       pkg.hazmatId = awb.hazmat;
-    })
-    services.packageService.updatePackage(awb_id, packages).then(packageResult => {
+          //Old package need in updates
+      if(pkg.awbId!==undefined){
+        all.push(services.packageService.updatePackage(pkg.id, pkg))
+      }
+    });
+
+    const new_packages = packages.filter(f=>f.awbId===undefined);
+      //Adding new packages
+    all.push(
+        services.packageService.createPackages(awb_id, new_packages)
+    );
+
+    Promise.all(all).then(packageResult => {
       res.send(result);
     })
   }).catch(err=>{

@@ -35,6 +35,8 @@ exports.create_customer = (req, res, next) => {
 exports.add_new_customer = (req, res, next) => {
   services.customerService.signUp(req.body).then(result => {
     res.send(result);
+  }).catch(err=>{
+    console.log(err);
   })
 }
 
