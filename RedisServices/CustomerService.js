@@ -14,21 +14,36 @@ var ID_COUNTER = strings.redis_id_customer;
 
 class CustomerService {
   signUp(customer) {
-    return new Promise((resolve, reject) => {
-      this.getCustomerWithEmail(customer.email===""?undefined:customer.email).then(existingCustomer => {
-        if (existingCustomer.id) {
-          resolve({ success: false, message: "Account already exists" });
-        } else {
-          client.incr(ID_COUNTER, (err, id) => {
-            customer.id = id;
-            if (customer.password) customer.password = bcrypt.hashSync(customer.password, 10);
-            client.hmset(PREFIX + id, customer, (err, result) => {
-              if (err) resolve({ success: false, message: strings.string_response_error });
-              resolve({ success: true, message: strings.string_response_created, customer: customer });
-            })
-          })
-        }
-      })
+    return new Promise(async (resolve, reject) => {
+      Promise.resolve()
+        .then(() => {
+          if (!customer.email) {
+            return null;
+          }
+
+          return this.getCustomerWithEmail(customer.email);
+        })
+        .then((existingCustomer) => {
+          if (existingCustomer && existingCustomer.id) {
+            resolve({ success: false, message: 'Account already exists' });
+          } else {
+            client.incr(ID_COUNTER, (err, id) => {
+              customer.id = id;
+              if (customer.password) customer.password = bcrypt.hashSync(customer.password, 10);
+              client.hmset(PREFIX + id, customer, (err, result) => {
+                if (err) resolve({ success: false, message: strings.string_response_error });
+                resolve({
+                  success: true,
+                  message: strings.string_response_created,
+                  customer: customer,
+                });
+              });
+            });
+          }
+        })
+        .catch((error) => {
+          resolve({ success: false, message: strings.string_response_error });
+        });
     });
   }
 
