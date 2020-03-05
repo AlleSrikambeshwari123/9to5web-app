@@ -31,6 +31,24 @@
                   value="<%= plane.tail_number %>" readonly />
               </div>
             </div>
+            <% if (airportFrom) { %>
+            <div class="form-group form-show-validation row">
+              <label for="airtPortFromId" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Airport From</label>
+              <div class="col-lg-8 col-md-8 col-sm-8">
+                <input type='text' class='form-control' id='airtPortFromId' placeholder="Airport From"
+                  value="<%=airportFrom.name%> <% if (airportFrom.shortCode) { %> (<%=airportFrom.shortCode%>) <% } %>" readonly />
+              </div>
+            </div>
+            <% } %>
+            <% if (airportTo) { %>
+            <div class="form-group form-show-validation row">
+              <label for="airtPortToId" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Airport To</label>
+              <div class="col-lg-8 col-md-8 col-sm-8">
+                <input type='text' class='form-control' id='airtPortToId' placeholder="Airport From"
+                  value="<%=airportTo.name%> <% if (airportTo.shortCode) { %> (<%=airportTo.shortCode%>) <% } %>" readonly />
+              </div>
+            </div>
+            <% } %>
             <div class="form-group form-show-validation row">
               <label for="tailNumber" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">AirCraft Type</label>
               <div class="col-lg-8 col-md-8 col-sm-8">

@@ -21,6 +21,7 @@ exports.create_manifest = (req, res, next) => {
   Promise.all([
     services.planeService.getPlanes(),
     services.awbService.getAwbs(),
+    services.airportService.all(),
   ]).then(results => {
     res.render('pages/warehouse/manifest/create', {
       page: req.originalUrl,
@@ -28,6 +29,7 @@ exports.create_manifest = (req, res, next) => {
       title: 'Create New Manifest',
       planes: results[0],
       awbs: results[1],
+      airports: results[2],
     })
   })
 }
@@ -57,7 +59,11 @@ exports.get_manifest_detail = (req, res, next) => {
     })).then(comparts => {
       packages.forEach((pkg, i) => pkg.compartment = comparts[i]);
       console.log(packages);
-      services.planeService.getPlane(manifest.planeId).then(plane => {
+      Promise.all([
+        services.planeService.getPlane(manifest.planeId),
+        manifest.airportFromId && services.airportService.get(manifest.airportFromId),
+        manifest.airportToId && services.airportService.get(manifest.airportToId),
+      ]).then(([plane, airportFrom, airportTo]) => {
         res.render('pages/warehouse/manifest/preview', {
           page: req.originalUrl,
           user: res.user,
@@ -65,6 +71,8 @@ exports.get_manifest_detail = (req, res, next) => {
           plane: plane,
           manifest: manifest,
           packages: packages,
+          airportFrom,
+          airportTo,
         })
       })
     })
