@@ -12,6 +12,7 @@
             <tr>
               <th>Tail Number</th>
               <th>Pilot </th>
+              <th>Airline </th>
               <th>Air Craft Type</th>
               <th>Total Capacity</th>
               <th></th>
@@ -22,6 +23,7 @@
             <tr data-record="<%= plane.id%>">
               <td><%=plane.tail_number%></td>
               <td><%=plane.pilot.firstName + ' ' + plane.pilot.lastName %></td>
+              <td><%=plane.airline ? plane.airline.name : '' %></td>
               <td><%=plane.aircraft_type%></td>
               <td><%=plane.maximum_capacity%></td>
               <td>

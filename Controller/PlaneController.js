@@ -2,28 +2,33 @@ var services = require('../RedisServices/RedisDataServices');
 var utils = require('../Util/utils');
 
 exports.get_plane_list = (req, res, next) => {
-  services.planeService.getPlanes().then(planes => {
-    Promise.all(planes.map(plane => {
-      console.log(plane.pilotId);
-      return services.pilotService.getPilot(plane.pilotId);
-    })).then(pilots => {
-      console.log(pilots);
-      planes.forEach((plane, i) => plane.pilot = pilots[i]);
-      res.render('pages/fleet/plane/list', {
-        page: req.originalUrl,
-        user: res.user,
-        title: 'Planes',
-        planes: planes.map(utils.formattedRecord),
-      })
-    })
-  })
+  services.planeService.getPlanes().then(async (planes) => {
+    await Promise.all(
+      planes.map(async (plane) => {
+        let [pilot, airline] = await Promise.all([
+          services.pilotService.getPilot(plane.pilotId),
+          plane.airlineId && services.airlineService.getAirline(plane.airlineId),
+        ]);
+        plane.pilot = pilot;
+        plane.airline = airline;
+      }),
+    );
+    res.render('pages/fleet/plane/list', {
+      page: req.originalUrl,
+      user: res.user,
+      title: 'Planes',
+      planes: planes.map(utils.formattedRecord),
+    });
+  });
 }
 
-exports.create_plane = (req, res, next) => {
+exports.create_plane = async (req, res, next) => {
+  let airlines = await services.airlineService.getAllAirlines().catch(() => [])
   res.render('pages/fleet/plane/create', {
     page: req.originalUrl,
     user: res.user,
     title: 'Add New Plane',
+    airlines,
   })
 }
 
@@ -41,13 +46,17 @@ exports.delete_plane = (req, res, next) => {
 
 exports.get_plane_detail = (req, res, next) => {
   services.planeService.getPlane(req.params.id).then(plane => {
-    services.pilotService.getPilotsWarehouse(plane.warehouse).then(pilots => {
+    Promise.all([
+      services.pilotService.getPilotsWarehouse(plane.warehouse),
+      services.airlineService.getAllAirlines().catch(() => []),
+    ]).then(([pilots, airlines]) => {
       res.render('pages/fleet/plane/edit', {
         page: req.originalUrl,
         user: res.user,
         title: 'Plane Details',
         plane: utils.formattedRecord(plane),
         pilots: pilots,
+        airlines: airlines,
       })
     })
   })

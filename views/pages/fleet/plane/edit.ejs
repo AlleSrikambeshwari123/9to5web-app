@@ -43,6 +43,18 @@
           </select>
         </div>
       </div>
+      <div class="form-group form-show-validation row">
+        <label for="airlineId" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Airline </label>
+        <div class="col-lg-4 col-md-9 col-sm-8">
+          <select class="form-control" id="airlineId" name="airlineId" required>
+            <option></option>
+            <% airlines.forEach(airline => { %>
+            <option value="<%=airline.id%>" <% if (plane.airlineId == airline.id) { %> selected <% } %>>
+              <%= airline.name %></option>
+            <% }) %>
+          </select>
+        </div>
+      </div>
     </div>
     <div class="card-action">
       <div class="row">

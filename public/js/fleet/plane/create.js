@@ -8,6 +8,11 @@ $(function () {
     placeholder: 'Select a pilot',
   })
 
+  $('#airlineId').select2({
+    theme: 'bootstrap',
+    placeholder: 'Select an airline',
+  })
+
   $('#add-plane-form').find('#warehouse').change(function () {
     console.log($(this).val());
     var warehouse = $(this).val();
