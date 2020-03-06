@@ -68,6 +68,8 @@ exports.create_awb = (req, res, next) => {
     services.hazmatService.getHazmats(),
     services.shipperService.getAllShippers(),
     services.carrierService.getAllCarriers(),
+    services.serviceTypeService.getAllServiceTypes(),
+    services.awbService.getAllPO(),
     services.locationService.getLocations()
   ]).then(results => {
     res.render('pages/warehouse/awb/create', {
@@ -79,7 +81,9 @@ exports.create_awb = (req, res, next) => {
       hazmats: results[1],
       shippers: results[2],
       carriers: results[3],
-      locations: results[4],
+      serviceTypes: results[4],
+      awbpos: results[5],
+      locations: results[6],
     });
   })
 }
@@ -100,6 +104,39 @@ exports.add_new_awb = (req, res, next) => {
     })
   })
 }
+
+exports.add_new_awb_po = (req, res, next) => {
+  services.awbService.createPO(req.body).then(result => {
+    res.send(result);
+  })
+}
+
+exports.get_awb_po_list = (req, res, next) => {
+  services.awbService.getAllPO().then(awbpos => {
+    res.send(awbpos);
+  })
+}
+
+exports.get_awb_po_detail = (req, res, next) => {
+  services.awbService.getPO(req.params.id).then(awbpo => {
+    res.send(awbpo);
+  })
+}
+
+exports.update_awb_po = (req, res, next) => {
+  services.awbService.updatePO(req.params.id, req.body)
+  .then(result => {
+    res.send(result);
+  })
+  .catch(error => console.log(error))
+} 
+
+exports.delete_awb_po_service = (req, res, next) => {
+  services.awbService.deletePO(req.params.id, req.params.ids).then(result => {
+    res.send(result);
+  })
+}
+
 
 exports.update_awb = (req, res, next) => {
   let awb_id = parseInt(req.params.id);

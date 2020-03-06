@@ -7,6 +7,11 @@ var awbCtrl = require('../../Controller/AwbController');
 router.get('/fll/awb/create', middleware().checkSession, awbCtrl.create_awb)
 router.post('/fll/awb/create', middleware().checkSession, awbCtrl.add_new_awb);
 
+router.post('/fll/awb/po/create', middleware().checkSession, awbCtrl.add_new_awb_po);
+router.get('/fll/awb/po/manage/:id/get', middleware().checkSession, awbCtrl.get_awb_po_detail);
+router.post('/fll/awb/po/manage/:id/update', middleware().checkSession, awbCtrl.update_awb_po);
+router.delete('/fll/awb/po/manage/:id/:ids/delete', middleware().checkSession, awbCtrl.delete_awb_po_service);
+
 router.post('/fll/awb/manage/:id/create', middleware().checkSession, awbCtrl.update_awb);
 
 router.get('/fll/awb/manage/:id/get', middleware().checkSession, awbCtrl.get_awb_detail);

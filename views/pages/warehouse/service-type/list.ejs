@@ -1,0 +1,40 @@
+<% layout('./shared/__template')%>
+<div class='gutters'>
+  <div class="col-xl-12 col-lg-6 col-md-12 col-sm-12">
+    <div class="card">
+      <div class="card-header d-flex align-items-left align-items-md-center flex-column flex-md-row">
+        <div class="card-title"><%=title%></div>
+        <a href='create' class='btn btn-primary btn-round float-right ml-md-auto'>Add New Service Type</a>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table id="service-typeTable" class="display table table-striped table-hover">
+            <thead>
+              <tr>
+                <!-- <th>ID</th> -->
+                <th>Name</th>
+                <th>Amount</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% serviceTypes.forEach(function(serviceType){%>
+              <tr data-record="<%= serviceType.id %>">
+                <td><strong><%=serviceType.name%></strong></td>
+                <td><%=serviceType.amount%></td>
+                <td>
+                  <a href='manage/<%=serviceType.id%>/get'><i class="fas fa-pen"></i></a>
+                  <a href='#' class='rm-service-type ml-3' data-id='<%=serviceType.id%>'><i class="fas fa-trash"></i></a>
+                </td>
+              </tr>
+              <%})%>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<% block('scripts').append('<script src="/js/utils.js"></script>')%>
+<% block('scripts').append('<script src="/js/warehouse/service-type/list.js"></script>')%>

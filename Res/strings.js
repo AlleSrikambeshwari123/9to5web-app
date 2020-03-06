@@ -43,6 +43,8 @@ exports.redis_id_compartment_plane = "id:compartment";
 exports.redis_prefix_shipper = "shipper:";
 exports.redis_id_shipper = "id:shipper";
 
+exports.redis_prefix_awbpo = "awbpo:";
+exports.redis_id_awbpo = "id:awbpo";
 exports.redis_prefix_container = "container:";
 exports.redis_id_container = "id:container";
 
@@ -51,6 +53,9 @@ exports.redis_id_airport = "id:airport";
 
 exports.redis_prefix_paid_type = "paidType:";
 exports.redis_id_paid_type = "id:paidType";
+
+exports.redis_prefix_service_type = "serviceType:";
+exports.redis_id_service_type = "id:serviceType";
 
 exports.redis_prefix_airline = "airline:";
 exports.redis_id_airline = "id:airline";
