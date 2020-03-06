@@ -65,12 +65,9 @@ $(function () {
   var packageTable = $('#packageTable').DataTable({
     pageLength: 5,
     bSortable: false,
+    ordering: false,
     bLengthChange: false,
     bFilter: false,
-    columnDefs: [{
-      orderable: false,
-      targets: [0, 1, 2, 3, 4, 5]
-    }]
   })
 
   var sedAnswered = 0;
@@ -322,6 +319,7 @@ $(function () {
     packageTable.clear().draw();
     awbPackages.forEach(pkg => {
       let rowNode = packageTable.row.add([
+        `PK${pkg.id}`,
         pkg.trackingNo,
         pkg.description,
         pkg.dimensions,
@@ -336,7 +334,8 @@ $(function () {
       $(rowNode).find('td').eq(2).addClass('text-center');
       $(rowNode).find('td').eq(3).addClass('text-center');
       $(rowNode).find('td').eq(4).addClass('text-center');
-      $(rowNode).find('td').eq(5).addClass('text-right');
+      $(rowNode).find('td').eq(5).addClass('text-center');
+      $(rowNode).find('td').eq(6).addClass('text-right');
       $(rowNode).find('.btn-edit-pkg').magnificPopup({
         type: 'inline',
         midClick: true,

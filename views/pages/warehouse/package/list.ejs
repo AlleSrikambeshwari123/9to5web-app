@@ -10,6 +10,7 @@
         <table class="display table table-striped table-hover dataTable package-table">
           <thead>
             <tr>
+              <th>Number</th>
               <th>Tracking No</th>
               <th>Description</th>
               <th>Type</th>
@@ -24,6 +25,7 @@
           <tbody>
             <% packages.forEach(function(pkg){ %>
             <tr data-record="<%= pkg.id %>">
+              <td>PK<%= pkg.id%></td>
               <td><%= pkg.trackingNo%></td>
               <td><%= pkg.description %></td>
               <td><%= pkg.packageType %></td>
