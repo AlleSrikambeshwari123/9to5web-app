@@ -73,6 +73,15 @@
                 </div>
               </div>
               <div class="form-group form-show-validation row">
+                <label for="awb-isSed" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">SED</label>
+                <div class="col-lg-8 col-md-8 col-sm-8">
+                  <select id="awb-isSed" name="isSed" class='form-control' style='width:90%;'>
+                    <option value="0" <% if(awb.isSed != 1) { %> selected <% } %>>No</option>
+                    <option value="1" <% if(awb.isSed == 1) { %> selected <% } %>>Yes</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group form-show-validation row">
                 <label for="awbNotes" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Notes</label>
                 <div class="col-lg-8 col-md-8 col-sm-8">
                   <textarea type='text' class='form-control' id='note' name='note'><%=awb.note%></textarea>

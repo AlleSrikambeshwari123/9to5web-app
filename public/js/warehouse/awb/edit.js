@@ -30,6 +30,12 @@ $(function () {
     width: '100%',
     minimumResultsForSearch: -1
   })
+  $('#awb-isSed').select2({
+    theme: 'bootstrap',
+    width:'100%',
+    placeholder: "Select",
+    minimumResultsForSearch: Infinity,
+  })
   $('#po-paid-type').select2({
     theme: 'bootstrap',
     width: '100%',
@@ -159,7 +165,7 @@ $(function () {
     }
 
     var awbInfo = extractFormData(this);
-    awbInfo.isSed = sedAnswered;
+    awbInfo.isSed = sedAnswered || Number(awbInfo.isSed);
     awbInfo.packages = JSON.stringify(awbPackages);
 
     uploadContentFile($("#invFile"), result => {

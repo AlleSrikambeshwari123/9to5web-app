@@ -18,6 +18,12 @@ $(function () {
     placeholder: 'Select Location',
     width:'100%',
   })
+  $('#awb-isSed').select2({
+    theme: 'bootstrap',
+    width:'100%',
+    placeholder: "Select",
+    minimumResultsForSearch: Infinity,
+  })
   $('#companyId').select2({
     theme: 'bootstrap',
     placeholder: 'Select company',
@@ -189,7 +195,7 @@ $(function () {
     }
 
     var awbInfo = extractFormData(this);
-    awbInfo.isSed = sedAnswered;
+    awbInfo.isSed = sedAnswered || Number(awbInfo.isSed);
     awbInfo.packages = JSON.stringify(awbPackages);
 
     uploadContentFile($("#invFile"), result => {
