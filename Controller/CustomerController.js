@@ -13,7 +13,7 @@ exports.get_customer_list = (req, res, next) => {
 
     res.render('pages/admin/customers/list', {
       page: req.originalUrl,
-      title: "Customers",
+      title: "Consignee",
       user: res.user,
       customers: customers.map(utils.formattedRecord),
       locations: locations,
@@ -25,7 +25,7 @@ exports.create_customer = (req, res, next) => {
   services.locationService.getLocations().then(locations => {
     res.render('pages/admin/customers/create', {
       page: req.originalUrl,
-      title: "Create New Customer",
+      title: "Create New Consignee",
       user: res.user,
       locations: locations
     })
@@ -47,7 +47,7 @@ exports.get_customer_detail = (req, res, next) => {
   ]).then(results => {
     res.render('pages/admin/customers/edit', {
       page: req.originalUrl,
-      title: "Customer Details",
+      title: "Consignee Details",
       user: res.user,
       locations: results[0],
       customer: results[1]
