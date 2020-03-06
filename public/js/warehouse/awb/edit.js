@@ -63,7 +63,7 @@ $(function () {
     bFilter: false,
     columnDefs: [{
       orderable: false,
-      targets: [0, 1, 2, 3]
+      targets: [0, 1, 2, 3, 4, 5]
     }]
   })
 
@@ -320,6 +320,7 @@ $(function () {
         pkg.description,
         pkg.dimensions,
         Number(pkg.weight).toFixed(2) + ` ${pkg.packageCalculation||'kg'}`,
+        `${calculatePackageVolumetricWeight(pkg).toFixed(2)} lbs`,
         pkg.lastStatusText,
         `<a class="btn btn-link btn-primary btn-edit-pkg p-1" title="Edit" data-id="${pkg.id}" href="#add-package-popup">
           <i class="fa fa-pen"></i> </a>
