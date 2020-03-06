@@ -316,6 +316,7 @@ $(function () {
     packageTable.clear().draw();
     awbPackages.forEach(pkg => {
       let rowNode = packageTable.row.add([
+        pkg.trackingNo,
         pkg.description,
         pkg.dimensions,
         Number(pkg.weight).toFixed(2) + ` ${pkg.packageCalculation||'kg'}`,
@@ -325,10 +326,10 @@ $(function () {
         <a class="btn btn-link btn-danger btn-rm-pkg p-1" title="Delete" data-id="${pkg.id}" data-toggle='modal' data-target='#confirmPkgDel'>
           <i class="fa fa-trash"></i> </a>`
       ]).draw(false).node();
-      $(rowNode).find('td').eq(1).addClass('text-center');
       $(rowNode).find('td').eq(2).addClass('text-center');
       $(rowNode).find('td').eq(3).addClass('text-center');
-      $(rowNode).find('td').eq(4).addClass('text-right');
+      $(rowNode).find('td').eq(4).addClass('text-center');
+      $(rowNode).find('td').eq(5).addClass('text-right');
       $(rowNode).find('.btn-edit-pkg').magnificPopup({
         type: 'inline',
         midClick: true,
