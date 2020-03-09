@@ -15,7 +15,7 @@ exports.get_package_list = (req, res, next) => {
       );
     })
     .then((packages) => {
-      res.render('pages/warehouse/package/list', {
+      res.render('pages/warehouse/package/list-all', {
         page: req.originalUrl,
         user: res.user,
         title: 'All Packages',

@@ -73,12 +73,35 @@ router.get('/open-manifest', (req, res, next) => {
     })
   })
 })
+
+router.get('/get-manifests', (req, res, next) => {
+  let query = req.query;
+  // FIXME: we should filter by query here
+  services.manifestService
+    .getManifests()
+    .then((manifests) => {
+      res.json(manifests);
+    })
+    .catch(next);
+});
+
+router.get('/get-compartments', (req, res, next) => {
+  let query = req.query;
+  // FIXME: we should filter by query here
+  services.planeService
+    .getCompartments(query.planeId)
+    .then((compartments) => {
+      res.json(compartments);
+    })
+    .catch(next);
+});
+
 router.post('/add-packages-to-flight', (req, res, next) => {
   let packageIds = req.body.packageIds;
   let manifestId = req.body.manifestId;
-  let compartment = req.body.compartment;
+  let compartmentId = req.body.compartment || req.body.compartmentId;
   var username = req.headers.username;
-  services.packageService.addToFlight(packageIds, manifestId, compartment, username).then((result) => {
+  services.packageService.addToFlight(packageIds, manifestId, compartmentId, username).then((result) => {
     res.send(result)
   })
 })

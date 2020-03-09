@@ -1,0 +1,160 @@
+<% layout('./shared/__template')%>
+<style>
+  table.dataTable tbody > tr.selected,
+  table.dataTable tbody > tr > .selected {
+    background-color: #0275d8;
+  }
+  table.dataTable tbody tr.selected,
+  table.dataTable tbody th.selected,
+  table.dataTable tbody td.selected {
+    color: white;
+  }
+
+  table.dataTable .dataTables_info .select-info {
+    display: block;
+  }
+</style>
+<div class="gutters">
+  <div class="col-xl-12 col-lg-6 col-md-12 col-sm-12">
+    <div class="card">
+      <div
+        class="card-header d-flex align-items-left align-items-md-center flex-column flex-md-row"
+      >
+        <div class="card-title"><%= title %></div>
+        <button
+          id="add-to-manifest-button"
+          data-toggle="modal"
+          data-target="#add-to-manifest-modal"
+          class="btn btn-primary btn-round float-right ml-md-auto"
+        >
+          Add to Manifest
+        </button>
+      </div>
+      <div class="card-body">
+        <table class="display table table-striped table-hover dataTable package-table">
+          <thead>
+            <tr>
+              <th></th>
+              <th>Number</th>
+              <th>Tracking No</th>
+              <th>Description</th>
+              <th>Type</th>
+              <th>Weight</th>
+              <th>Volumetric Weight</th>
+              <th>Dimensions</th>
+              <th>Status</th>
+              <th>AWB</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% packages.forEach(function(pkg){ %>
+            <tr data-record="<%= pkg.id %>">
+              <td>
+                <input type="checkbox" class="package-select" />
+              </td>
+              <td>PK<%= pkg.id%></td>
+              <td><%= pkg.trackingNo%></td>
+              <td><%= pkg.description %></td>
+              <td><%= pkg.packageType %></td>
+              <td><%= pkg.weight%></td>
+              <td><%= helpers.calculatePackageVolumetricWeight(pkg).toFixed(2) %> lbs</td>
+              <td><%= pkg.dimensions %></td>
+              <td><%= pkg.lastStatusText %></td>
+              <td><%= pkg.awbId %></td>
+              <td class="text-center">
+                <a
+                  class="btn btn-link btn-primary btn-print-pkg"
+                  data-toggle="modal"
+                  data-id="<%=pkg.id%>"
+                  data-original-title="Print Label"
+                  data-target="#print-popup"
+                >
+                  <i class="fa fa-print"></i>
+                </a>
+              </td>
+            </tr>
+            <%})%>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  class="modal fade"
+  id="add-to-manifest-modal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="print-popup"
+  aria-hidden="true"
+  style="display: none;"
+>
+  <div class="modal-dialog" role="document">
+    <form id="add-to-manifest-form" method="post">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title">Add packages to Manifest</h2>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <input type="text" hidden name="packageIds" />
+          <div class="form-group">
+            <label for="manifestId">Manifest</label>
+            <select id="manifestId" name="manifestId" class="form-control" required>
+              <option></option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="compartmentId">Compartment</label>
+            <select id="compartmentId" name="compartmentId" class="form-control" required disabled>
+              <option></option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Add</button>
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div
+  class="modal fade"
+  id="print-popup"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="print-popup"
+  aria-hidden="true"
+  style="display: none;"
+>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="exampleModalLabel2">Print Package Label</h2>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group text-center">
+          <canvas id="pdf-preview" class="border border-dark"></canvas>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger close-del" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary print-package" id="print-package">
+          Print
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<% block('scripts').append('<script src="/js/utils.js"></script>')%>
+<% block('scripts').append('<script src="/js/warehouse/package/list-all.js"></script>')%>

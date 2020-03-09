@@ -279,7 +279,11 @@ class PackageService {
   //========== Load Packages to AirCraft (Add to Manifest) ==========//
   addToFlight(packageIds, manifestId, compartmentId, username) {
     return new Promise((resolve, reject) => {
-      let packages = packageIds.split(',');
+      let packages = packageIds.split(',').filter(Boolean);
+      if (packages.length === 0) {
+        return resolve({ success: false, message: 'Please select packages.' });
+      }
+
       Promise.all(packages.map(packageId => {
         return Promise.all([
           this.updatePackageStatus(packageId, 2, username),
