@@ -17,7 +17,7 @@ $('#addDelivery').find('#vehicleId').select2({
 })
 
 $('#addDelivery').find('#delivery_date').datetimepicker({
-  format: 'MMM DD,YYYY',
+  format: 'MMM DD,YYYY HH:mm',
   useCurrent: false,
   showTodayButton: true,
   showClear: true,
