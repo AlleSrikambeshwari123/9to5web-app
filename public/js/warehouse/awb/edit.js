@@ -36,6 +36,11 @@ $(function () {
     placeholder: "Select",
     minimumResultsForSearch: Infinity,
   })
+  $('#awb-deliveryMethod').select2({
+    theme: 'bootstrap',
+    width:'100%',
+    minimumResultsForSearch: Infinity,
+  })
   $('#po-paid-type').select2({
     theme: 'bootstrap',
     width: '100%',

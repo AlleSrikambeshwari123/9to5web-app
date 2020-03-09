@@ -11,6 +11,11 @@ const PREFIX_NO_DOCS_LIST = strings.redis_prefix_no_docs_list;
 const PREFIX_AWBPO = strings.redis_prefix_awbpo;
 const AWBPO_ID = strings.redis_id_awbpo;
 
+const DELIVERY_METHODS = {
+  DELIVERY: 1,
+  PICKUP: 2,
+};
+
 class AwbService {
   constructor() {
     this.services = {};
@@ -234,5 +239,6 @@ class AwbService {
 // dateCreated: '1581022119',
 // status: '1',
 // hasDocs: '1',
+// deliveryMethod: number, see DELIVERY_METHODS
 
 module.exports = AwbService;

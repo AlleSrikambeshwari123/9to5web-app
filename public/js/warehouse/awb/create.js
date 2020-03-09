@@ -24,6 +24,11 @@ $(function () {
     placeholder: "Select",
     minimumResultsForSearch: Infinity,
   })
+  $('#awb-deliveryMethod').select2({
+    theme: 'bootstrap',
+    width:'100%',
+    minimumResultsForSearch: Infinity,
+  })
   $('#companyId').select2({
     theme: 'bootstrap',
     placeholder: 'Select company',
