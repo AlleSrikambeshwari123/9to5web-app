@@ -7,7 +7,7 @@ var packageUtil = new PackageUtil();
 
 router.post('/authenticate', (req, res, next) => {
   var body = req.body;
-  var username = req.headers.username;
+  var username = req.headers.username || body.username;
   console.log(body);
   services.userService.authenticate(username, body.password).then(result => {
     res.send(result);
