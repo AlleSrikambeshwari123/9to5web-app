@@ -19,6 +19,9 @@
               <th>Dimensions</th>
               <th>Status</th>
               <th>AWB</th>
+              <% if (filterURL === 'in-pmb9000') { %>
+                <th>Pickup or Delivery</th>
+              <% } %>              
               <th></th>
             </tr>
           </thead>
@@ -34,6 +37,7 @@
               <td><%= pkg.dimensions %></td>
               <td><%= pkg.lastStatusText %></td>
               <td><%= pkg.awbId %></td>
+              <td><%= pkg.awbdeliveryMethod %></td>
               <td class="text-center">
                 <a class="btn btn-link btn-primary btn-print-pkg" data-toggle="modal" data-id="<%=pkg.id%>"
                   data-original-title="Print Label" data-target="#print-popup"> <i class="fa fa-print"></i> </a>

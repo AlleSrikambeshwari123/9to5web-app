@@ -16,13 +16,23 @@ exports.get_package_list = (req, res, next) => {
 
 exports.get_filtered_package_list = (req, res, next) => {
   let title = 'All Packages';
+  let filterURL = '';
 
   services.packageService
     .getAllPackagesWithLastStatus({ filter: req.params.filter })
     .then(async (packages) => {
       if (req.params.filter === 'in-manifest') {
         packages = packages.filter((i) => i.manifestId);
-        title = 'Packages in Manifest';
+        title = 'Packages';
+        filterURL = 'in-manifest';
+      }
+
+      if (req.params.filter === 'in-pmb9000') {
+        packages = packages.filter((i) => i.manifestId);
+        packages = packages.filter((i) => i.customerId);
+        packages = packages.filter((i) => i.awbId);
+        title = '9to5 Warehouse Packages';
+        filterURL = 'in-pmb9000';
       }
 
       if (req.params.filter === 'in-manifest-no-docs') {
@@ -36,14 +46,47 @@ exports.get_filtered_package_list = (req, res, next) => {
         title = 'Packages in Manifest (no docs)';
       }
 
-      return packages;
+      return Promise.all(
+        packages.map(async (pkg) => {
+          if (req.params.filter === 'in-manifest-no-docs') {
+            return pkg;
+          }
+          if (req.params.filter === 'in-manifest') {
+            let status = await services.packageService.getPackageLastStatus(pkg.id);
+            pkg.lastStatusText = status && status.status;
+            return pkg;
+          }
+          if (req.params.filter === 'in-pmb9000') {
+            let customer = await services.customerService.getCustomer(pkg.customerId);
+            if (customer.pmb === '9000') {
+              let awb = await services.awbService.getAwb(pkg.awbId);
+              if (awb.deliveryMethod) {
+                pkg.awbdeliveryMethod = awb.deliveryMethod;
+              } else {
+                pkg.awbdeliveryMethod = '';
+              }
+              let status = await services.packageService.getPackageLastStatus(pkg.id);
+              pkg.customerpmb = '9000';
+              pkg.lastStatusText = status && status.status;
+              return pkg;
+            } 
+          }
+        })
+
+      );
+
     })
     .then((packages) => {
+
+      const filtered = packages.filter((el) => {
+        return el != null;
+      });
       res.render('pages/warehouse/package/list', {
         page: req.originalUrl,
         user: res.user,
         title: title,
-        packages: packages,
+        filterURL: filterURL,
+        packages: filtered,
       });
     });
 };

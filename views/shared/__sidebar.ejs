@@ -144,7 +144,12 @@
 							</li>
 							<li <% if (page.endsWith('/package/list/in-manifest')) { %> class="active" <% } %>>
 								<a href="/warehouse/package/list/in-manifest">
-									<span class="sub-item">Packages in Manifest</span>
+									<span class="sub-item">Packages</span>
+								</a>
+							</li>
+							<li <% if (page.includes('/package/list/in-pmb9000')) { %> class="active" <% } %>>
+								<a href="/warehouse/package/list/in-pmb9000">
+									<span class="sub-item">9to5 Warehouse Packages</span>
 								</a>
 							</li>
 							<li <% if (page.endsWith('/package/list/in-manifest-no-docs')) { %> class="active" <% } %>>
