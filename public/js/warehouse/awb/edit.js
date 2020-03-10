@@ -323,19 +323,26 @@ $(function () {
 
     packageTable.clear().draw();
     awbPackages.forEach(pkg => {
-      let rowNode = packageTable.row.add([
-        `PK${pkg.id}`,
-        pkg.trackingNo,
-        pkg.description,
-        pkg.dimensions,
-        Number(pkg.weight).toFixed(2) + ` ${pkg.packageCalculation||'kg'}`,
-        `${calculatePackageVolumetricWeight(pkg).toFixed(2)} lbs`,
-        pkg.lastStatusText,
-        `<a class="btn btn-link btn-primary btn-edit-pkg p-1" title="Edit" data-id="${pkg.id}" href="#add-package-popup">
-          <i class="fa fa-pen"></i> </a>
-        <a class="btn btn-link btn-danger btn-rm-pkg p-1" title="Delete" data-id="${pkg.id}" data-toggle='modal' data-target='#confirmPkgDel'>
-          <i class="fa fa-trash"></i> </a>`
-      ]).draw(false).node();
+      // A bit hacky way to detect newly added packages, pkg.id == Date.now() for new package for 
+      // some reason
+      let isNew = pkg.id > 1e9
+      let rowNode = packageTable.row
+        .add([
+          `PK${pkg.id}`,
+          pkg.trackingNo,
+          pkg.description,
+          pkg.dimensions,
+          Number(pkg.weight).toFixed(2) + ` ${pkg.packageCalculation || 'kg'}`,
+          `${calculatePackageVolumetricWeight(pkg).toFixed(2)} lbs`,
+          pkg.lastStatusText,
+          [
+            `<a class="btn btn-link btn-primary btn-edit-pkg p-1" title="Edit" data-id="${pkg.id}" href="#add-package-popup"><i class="fa fa-pen"></i></a>`,
+            `<a class="btn btn-link btn-danger btn-rm-pkg p-1" title="Delete" data-id="${pkg.id}" data-toggle='modal' data-target='#confirmPkgDel'><i class="fa fa-trash"></i></a>`,
+            !isNew && `<a class="btn btn-link btn-primary p-1 btn-print-pkg" data-toggle="modal" data-id="${pkg.id}" data-original-title="Print Label" data-target="#print-popup"> <i class="fa fa-print"></i> </a>`,
+          ].filter(Boolean).join('\n'),
+        ])
+        .draw(false)
+        .node();
       $(rowNode).find('td').eq(2).addClass('text-center');
       $(rowNode).find('td').eq(3).addClass('text-center');
       $(rowNode).find('td').eq(4).addClass('text-center');
@@ -377,4 +384,43 @@ $(function () {
       $(".close-del").trigger('click');
     });
   }
+});
+
+
+$(function() {
+  // This logic is copied from package lists:
+  var pdfPath;
+  $('.btn-print-pkg').click(function() {
+    let id = $(this).data('id');
+    $.ajax({
+      url: '/api/printer/pdf/generate/pkg/' + id,
+      type: 'get',
+      success: function(response) {
+        if (response.success) {
+          pdfPath = '/util/pdf' + response.filename;
+          pdfjsLib.getDocument({ url: pdfPath }).promise.then((pdfData) => {
+            pdfData.getPage(1).then((page) => {
+              var canvas = $('#pdf-preview')[0];
+              var canvasContext = canvas.getContext('2d');
+              const viewport = page.getViewport({ scale: 1 });
+              canvas.height = (canvas.width / viewport.width) * viewport.height;
+              page.render({ canvasContext, viewport });
+            });
+          });
+        } else {
+          $('.close-del').trigger('click');
+          swal({
+            title: 'Failed',
+            text: response.message,
+            type: 'error',
+          });
+        }
+      },
+    });
+  });
+
+  $('.print-package').click(function() {
+    $('.close-del').trigger('click');
+    printJS(pdfPath);
+  });
 });
