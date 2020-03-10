@@ -142,6 +142,11 @@
 									<span class="sub-item">Packages on Hand</span>
 								</a>
 							</li>
+							<li <% if (page.includes('/package/list/in-manifest')) { %> class="active" <% } %>>
+								<a href="/warehouse/package/list/in-manifest">
+									<span class="sub-item">Packages in Manifest</span>
+								</a>
+							</li>
 							<li <% if (page.includes('/nas/delivery/list')) { %> class="active" <% } %>>
 								<a href="/warehouse/nas/delivery/list">
 									<span class="sub-item">Deliveries</span>

@@ -4,6 +4,7 @@ var middleware = require('../../middleware');
 var packageCtrl = require('../../Controller/PackageController');
 
 router.get('/package/list', middleware().checkSession, packageCtrl.get_package_list);
+router.get('/package/list/:filter', middleware().checkSession, packageCtrl.get_filtered_package_list);
 router.get('/fll/package/list', middleware().checkSession, packageCtrl.get_fll_package_list);
 // router.get('/fll/package/create', middleware().checkSession, packageCtrl.create_package);
 // router.post('/fll/package/create', middleware().checkSession, packageCtrl.add_new_package);
