@@ -142,9 +142,14 @@
 									<span class="sub-item">Packages on Hand</span>
 								</a>
 							</li>
-							<li <% if (page.includes('/package/list/in-manifest')) { %> class="active" <% } %>>
+							<li <% if (page.endsWith('/package/list/in-manifest')) { %> class="active" <% } %>>
 								<a href="/warehouse/package/list/in-manifest">
 									<span class="sub-item">Packages in Manifest</span>
+								</a>
+							</li>
+							<li <% if (page.endsWith('/package/list/in-manifest-no-docs')) { %> class="active" <% } %>>
+								<a href="/warehouse/package/list/in-manifest-no-docs">
+									<span class="sub-item">Packages in Manifest (no docs)</span>
 								</a>
 							</li>
 							<li <% if (page.includes('/nas/delivery/list')) { %> class="active" <% } %>>

@@ -1,3 +1,4 @@
+const Promise = require('bluebird');
 var moment = require("moment");
 var strings = require('../Res/strings');
 
@@ -182,17 +183,20 @@ class AwbService {
     });
   }
 
-  getAwbsNoDocs() {
-    return new Promise((resolve, reject) => {
-      client.smembers(PREFIX_NO_DOCS_LIST, (err, ids) => {
-        if (err) resolve([]);
-        Promise.all(ids.map(id => {
-          return lredis.hgetall(PREFIX + id);
-        })).then(awbs => {
-          resolve(awbs);
-        })
-      })
-    });
+  async getAwbsNoDocsIds() {
+    const ids = await Promise.fromCallback(cb => client.smembers(PREFIX_NO_DOCS_LIST, cb));
+    return ids;
+  }
+
+  async getAwbsNoDocs() {
+    try {
+      const ids = await this.getAwbsNoDocsIds();
+      return await Promise.all(ids.map(id => {
+        return lredis.hgetall(PREFIX + id);
+      }));
+    } catch (err) {
+      return [];
+    }
   }
 
   getFullAwb(id) {
