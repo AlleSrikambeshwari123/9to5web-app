@@ -85,6 +85,16 @@ router.get('/get-manifests', (req, res, next) => {
     .catch(next);
 });
 
+router.get('/get-deliverys', (req, res, next) => {
+
+  services.deliveryService
+    .getDeliveries()
+    .then((deliverys) => {
+      res.json(deliverys);
+    })
+    .catch(next);
+});
+
 router.get('/get-compartments', (req, res, next) => {
   let query = req.query;
   // FIXME: we should filter by query here

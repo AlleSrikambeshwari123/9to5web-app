@@ -21,14 +21,27 @@
         class="card-header d-flex align-items-left align-items-md-center flex-column flex-md-row"
       >
         <div class="card-title"><%= title %></div>
-        <button
-          id="add-to-manifest-button"
-          data-toggle="modal"
-          data-target="#add-to-manifest-modal"
-          class="btn btn-primary btn-round float-right ml-md-auto"
-        >
-          Add to Manifest
-        </button>
+        <% if (buttonName === 'Add to Delivery') { %>
+          <button
+            id="add-to-delivery-button"
+            data-toggle="modal"
+            data-target="#add-to-delivery-modal"
+            class="btn btn-primary btn-round float-right ml-md-auto"
+          >
+            Add to Delivery
+          </button>
+        <% } %>   
+        <% if (buttonName === 'Add to Manifest') { %>
+          <button
+            id="add-to-manifest-button"
+            data-toggle="modal"
+            data-target="#add-to-manifest-modal"
+            class="btn btn-primary btn-round float-right ml-md-auto"
+          >
+            Add to Manifest
+          </button>
+        <% } %> 
+
       </div>
       <div class="card-body">
         <table class="display table table-responsive table-striped table-hover dataTable package-table">
@@ -111,6 +124,42 @@
           <div class="form-group">
             <label for="compartmentId">Compartment</label>
             <select id="compartmentId" name="compartmentId" class="form-control" required disabled>
+              <option></option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Add</button>
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div
+  class="modal fade"
+  id="add-to-delivery-modal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="print-popup"
+  aria-hidden="true"
+  style="display: none;"
+>
+  <div class="modal-dialog" role="document">
+    <form id="add-to-delivery-form" method="post">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title">Add packages to Delivery</h2>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <input type="text" hidden name="packageIds" />
+          <div class="form-group">
+            <label for="deliveryId">Delivery</label>
+            <select id="deliveryId" name="deliveryId" class="form-control" required>
               <option></option>
             </select>
           </div>

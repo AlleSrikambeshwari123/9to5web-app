@@ -9,6 +9,8 @@ exports.get_package_list = (req, res, next) => {
       page: req.originalUrl,
       user: res.user,
       title: 'All Packages',
+      filterURL: '',
+      buttonName : 'Add to Manifest',
       packages: packages,
     });
   });
@@ -17,6 +19,7 @@ exports.get_package_list = (req, res, next) => {
 exports.get_filtered_package_list = (req, res, next) => {
   let title = 'All Packages';
   let filterURL = '';
+  let buttonName = '';
 
   services.packageService
     .getAllPackagesWithLastStatus({ filter: req.params.filter })
@@ -25,6 +28,13 @@ exports.get_filtered_package_list = (req, res, next) => {
         packages = packages.filter((i) => i.manifestId);
         title = 'Packages';
         filterURL = 'in-manifest';
+      }
+
+      if (req.params.filter === 'deliver') {
+        packages = packages.filter((i) => i.manifestId);
+        title = 'All Packages';
+        filterURL = 'deliver';
+        buttonName = 'Add to Delivery';
       }
 
       if (req.params.filter === 'in-pmb9000') {
@@ -49,6 +59,9 @@ exports.get_filtered_package_list = (req, res, next) => {
       return Promise.all(
         packages.map(async (pkg) => {
           if (req.params.filter === 'in-manifest-no-docs') {
+            return pkg;
+          }
+          if (req.params.filter === 'deliver') {
             return pkg;
           }
           if (req.params.filter === 'in-manifest') {
@@ -81,13 +94,25 @@ exports.get_filtered_package_list = (req, res, next) => {
       const filtered = packages.filter((el) => {
         return el != null;
       });
-      res.render('pages/warehouse/package/list', {
-        page: req.originalUrl,
-        user: res.user,
-        title: title,
-        filterURL: filterURL,
-        packages: filtered,
-      });
+      if (req.params.filter === 'deliver') {
+        res.render('pages/warehouse/package/list-all', {
+          page: req.originalUrl,
+          user: res.user,
+          title: title,
+          filterURL: filterURL,
+          buttonName: 'Add to Delivery',
+          packages: filtered,
+        });
+      } else {
+        res.render('pages/warehouse/package/list', {
+          page: req.originalUrl,
+          user: res.user,
+          title: title,
+          filterURL: filterURL,
+          packages: filtered,
+        });
+      }
+
     });
 };
 
@@ -97,6 +122,7 @@ exports.get_fll_package_list = (req, res, next) => {
       page: req.originalUrl,
       user: res.user,
       title: 'Packages On Hands Of FLL',
+      filterURL: filterURL,
       packages: packages,
     });
   });
@@ -108,6 +134,7 @@ exports.get_nas_package_list = (req, res, next) => {
       page: req.originalUrl,
       user: res.user,
       title: 'Packages On Hand Of NAS',
+      filterURL: filterURL,
       packages: packages,
     });
   });

@@ -147,6 +147,11 @@
 									<span class="sub-item">Packages</span>
 								</a>
 							</li>
+							<li <% if (page.includes('/package/list/deliver')) { %> class="active" <% } %>>
+								<a href="/warehouse/package/list/deliver">
+									<span class="sub-item">All Packages</span>
+								</a>
+							</li>
 							<li <% if (page.includes('/package/list/in-pmb9000')) { %> class="active" <% } %>>
 								<a href="/warehouse/package/list/in-pmb9000">
 									<span class="sub-item">9to5 Warehouse Packages</span>

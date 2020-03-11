@@ -52,6 +52,9 @@ $(function() {
   let addToManifestForm = $('#add-to-manifest-form');
   let compartmentIdSelect = addToManifestForm.find('[name="compartmentId"]');
 
+  let addToDeliveryModal = $('#add-to-delivery-modal');
+  let addToDeliveryForm = $('#add-to-delivery-form');
+
   compartmentIdSelect.select2({
     theme: 'bootstrap',
     width: '100%',
@@ -87,6 +90,27 @@ $(function() {
             loadCompartments(manifest.planeId);
           }
         });
+    },
+  });
+
+  $.ajax({
+    url: '/api/warehouse/get-deliverys',
+    type: 'get',
+    dataType: 'json',
+    success(data) {
+      addToDeliveryForm
+        .find('[name="deliveryId"]')
+        .select2({
+          theme: 'bootstrap',
+          width: '100%',
+          placeholder: 'Select delivery',
+          dropdownParent: addToDeliveryModal,
+          data: data.map((delivery) => ({
+            id: delivery.id,
+            text: delivery.delivery_date,
+            source: delivery,
+          })),
+        })
     },
   });
 
@@ -127,6 +151,38 @@ $(function() {
     var data = extractFormData(this);
     $.ajax({
       url: '/api/warehouse/add-packages-to-flight',
+      type: 'post',
+      data: data,
+      success: function(response) {
+        swal({
+          title: response.success ? 'Success' : 'Error',
+          type: response.success ? 'success' : 'error',
+          text: response.message,
+        });
+      },
+      error: function ()  {
+        swal({
+          title: 'Error',
+          type: 'error',
+          text: 'Unknown error',
+        });
+      }
+    });
+  });
+
+  addToDeliveryForm.submit(function(event) {
+    addToDeliveryModal.modal('hide');
+    event.preventDefault();
+    var packageIds = packageTable
+      .rows({ selected: true })
+      .nodes()
+      .map((i) => $(i).data('record'))
+      .toArray()
+      .join(',');
+    addToDeliveryForm.find('[name="packageIds"]').val(packageIds);
+    var data = extractFormData(this);
+    $.ajax({
+      url: '/api/warehouse/add-packages-to-delivery',
       type: 'post',
       data: data,
       success: function(response) {
