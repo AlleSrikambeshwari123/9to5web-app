@@ -93,9 +93,11 @@ function getFullAwb(id) {
     Promise.all([
       services.awbService.getAwb(id),
       services.packageService.getPackages(id),
+      services.invoiceService.getInvoicesByAWB(id),
     ]).then(results => {
       let awb = results[0];
       let packages = results[1];
+      let invoices = results[2];
       Promise.all([
         services.customerService.getCustomer(awb.customerId),
         services.shipperService.getShipper(awb.shipper),
@@ -103,6 +105,7 @@ function getFullAwb(id) {
         services.hazmatService.getHazmat(awb.hazmat),
       ]).then(otherInfos => {
         awb.packages = packages;
+        awb.invoices = invoices;
         awb.customer = otherInfos[0];
         delete awb.customer.password;
         delete awb.customer.confirmPassword;

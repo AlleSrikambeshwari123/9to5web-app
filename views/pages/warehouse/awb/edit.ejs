@@ -82,11 +82,14 @@
                 </div>
               </div>
               <div class="form-group form-show-validation row">
-                <label for="awb-deliveryMethod" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Delivery or Pickup</label>
+                <label for="awb-deliveryMethod" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Delivery or
+                  Pickup</label>
                 <div class="col-lg-8 col-md-8 col-sm-8">
                   <select id="awb-deliveryMethod" name="deliveryMethod" class='form-control' data-placeholder="Select">
                     <% [{ label: 'Delivery', value: '1' }, { label: 'Pickup', value: '2' }].forEach(option => { %>
-                      <option value="<%=option.value%>" <% if(typeof awb !== 'undefined' && awb.deliveryMethod == option.value) { %> selected <% } %>><%=option.label%></option>
+                    <option value="<%=option.value%>"
+                      <% if(typeof awb !== 'undefined' && awb.deliveryMethod == option.value) { %> selected <% } %>>
+                      <%=option.label%></option>
                     <%})%>
                   </select>
                 </div>
@@ -103,36 +106,46 @@
               </div> -->
             </div>
             <div class="col-md-6">
-              <div class="form-group form-show-validation row">
-                <label for="invoiceNumber" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Invoice #</label>
-                <div class="col-lg-8 col-md-8 col-sm-8">
-                  <input type='text' class='form-control' id='invoiceNumber' name='invoiceNumber'
-                    value="<%= awb.invoiceNumber%>" />
+              <script type="text/html" id="invoice-row-template">
+                <div class="row form-group invoice-upload-row">
+                  <input type="hidden" name="invoice.id" value="{ID}" />
+                  <div class="col-md-6 col-sm-12">
+                    <label>Invoice #</label>
+                    <input type="text" class="form-control" name="invoice.number" />
+                  </div>
+                  <div class="col-md-6 col-sm-12">
+                    <label>Value</label>
+                    <input type="text" class="form-control" name="invoice.value" />
+                  </div>
+                  <div class="col-md-12">
+                    <div class="custom-file-container" data-upload-id="invoice-upload-field-{CID}">
+                      <label class="custom-file-container__custom-file">
+                        <input type="file" class="custom-file-container__custom-file__custom-file-input" 
+                          name="invoice.file" accept="image/*" aria-label="Choose invoice to upload">
+                        <span class="custom-file-container__custom-file__custom-file-control"></span>
+                      </label>
+                      <div class="custom-file-container__image-preview my-2"
+                        style="overflow: hidden; border: 1px dashed; display: none;"></div>
+                      <button type="button" style="display: none;"
+                        class="custom-file-container__image-clear btn btn-round btn-danger float-right"
+                        title="Clear">Clear
+                      </button>
+                    </div>
+                  </div>
                 </div>
+              </script>
+              <div id="invoices-container">
+
               </div>
-              <div class="form-group form-show-validation row">
-                <label for="value" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Value</label>
-                <div class="col-lg-8 col-md-8 col-sm-8">
-                  <input type='text' class='form-control' id='value' name='value' value="<%= awb.value%>" />
-                  <a id='show-sed' data-toggle="modal" data-target="#alertSEDPOPUP"></a>
-                  <input type='hidden' value="0" id='sedRequired' />
-                </div>
-              </div>
-              <div class="form-group form-show-validation row">
-                <label class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Upload Invoice</label>
-                <div class="col-md-8">
-                  <div class="custom-file-container" data-upload-id="invoice-upload-field">
-                    <label class="custom-file-container__custom-file">
-                      <input type="file" class="custom-file-container__custom-file__custom-file-input" id="invFile"
-                        name="invFile" accept="image/*" aria-label="Choose File">
-                      <input type="hidden" name="MAX_FILE_SIZE" value="512000" />
-                      <span class="custom-file-container__custom-file__custom-file-control"></span>
-                    </label>
-                    <div class="custom-file-container__image-preview my-2"
-                      style="overflow: hidden; border: 1px dashed;"></div>
-                    <a href="#" class="custom-file-container__image-clear btn btn-round btn-danger float-right"
-                      title="Clear Invoice">Clear Invoice
-                    </a>
+              <div class="row form-group">
+                <div class="col-md-12">
+                  <div class="pull-right">
+                    <button class="btn btn-sm btn-primary" type="button" id="awb-form-add-invoice">
+                      Add Invoice
+                    </button>
+                    <!-- <button class="btn btn-sm btn-danger" type="button" id="awb-form-remove-invoice">
+                      Remove Invoice
+                    </button> -->
                   </div>
                 </div>
               </div>
@@ -173,15 +186,8 @@
   </div>
 </form>
 
-<div
-  class="modal fade"
-  id="print-popup"
-  tabindex="-1"
-  role="dialog"
-  aria-labelledby="print-popup"
-  aria-hidden="true"
-  style="display: none;"
->
+<div class="modal fade" id="print-popup" tabindex="-1" role="dialog" aria-labelledby="print-popup" aria-hidden="true"
+  style="display: none;">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -286,25 +292,25 @@
             <label for="shipper-firstName" class="col-md-3 mt-sm-2 text-right">Contact Name</label>
             <div class="col-md-4">
               <input type='text' class='form-control' placeholder="First Name" id='shipper-firstName' name="firstName"
-                     required />
+                required />
             </div>
             <div class="col-md-4">
               <input type='text' class='form-control' placeholder="Last Name" id='shipper-lastName' name="lastName"
-                     required />
+                required />
             </div>
           </div>
           <div class='form-group row'>
             <label for="shipper-telephone" class="col-md-3 mt-sm-2 text-right">Phone</label>
             <div class="col-md-8">
               <input type='number' class='form-control' placeholder="(242) xxx-xxxx" id='shipper-telephone'
-                     name="telephone" />
+                name="telephone" />
             </div>
           </div>
           <div class='form-group row'>
             <label for="shipper-email" class="col-md-3 mt-sm-2 text-right">Email</label>
             <div class="col-md-8">
               <input type="email" class='form-control' placeholder="name@example.com" id='shipper-email' name="email"
-                     required />
+                required />
             </div>
           </div>
           <div class='form-group row'>
@@ -368,18 +374,18 @@
             <label for="carrier-firstName" class="col-md-3 mt-sm-2 text-right">Contact Name</label>
             <div class="col-md-4">
               <input type='text' class='form-control' placeholder="First Name" id='carrier-firstName' name="firstName"
-                     required />
+                required />
             </div>
             <div class="col-md-4">
               <input type='text' class='form-control' placeholder="Last Name" id='carrier-lastName' name="lastName"
-                     required />
+                required />
             </div>
           </div>
           <div class='form-group row'>
             <label for="carrier-telephone" class="col-md-3 mt-sm-2 text-right">Phone</label>
             <div class="col-md-8">
               <input type='number' class='form-control' placeholder="(242) xxx-xxxx" id='carrier-telephone'
-                     name="telephone" />
+                name="telephone" />
             </div>
           </div>
           <div class='form-group row'>
@@ -508,7 +514,7 @@
                 <label for="firstName" class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">First Name </label>
                 <div class="col-lg-8 col-md-8 col-sm-8">
                   <input type="text" class="form-control" id="firstName" name="firstName" placeholder="First Name"
-                         required>
+                    required>
                 </div>
               </div>
               <div class="form-group form-show-validation row">
@@ -540,7 +546,7 @@
                 </label>
                 <div class="col-lg-8 col-md-8 col-sm-8">
                   <input type="password" class="form-control" id='confirmPassword' name="confirmPassword"
-                         placeholder="Confirm New Password">
+                    placeholder="Confirm New Password">
                 </div>
               </div>
               <div class="form-group form-show-validation row">
@@ -727,6 +733,8 @@
 </div>
 <script>
   window.packages = <%- JSON.stringify(packages) %>;
+  window.invoices = <%- JSON.stringify(invoices) %>;
 </script>
 <% block('scripts').append('<script src="/js/utils.js"></script>')%>
+<% block('scripts').append('<script src="/js/warehouse/awb/invoices.js"></script>')%>
 <% block('scripts').append('<script src="/js/warehouse/awb/edit.js"></script>')%>

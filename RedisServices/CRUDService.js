@@ -31,7 +31,7 @@ class CRUDService {
       throw new Error('Not found');
     }
 
-    await client.hmset(key, data);
+    await Promise.fromCallback((cb) => client.hmset(key, data, cb));
   }
 
   async remove(id) {

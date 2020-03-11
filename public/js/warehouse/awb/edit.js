@@ -8,8 +8,14 @@ Number.prototype.formatMoney = function (c, d, t) {
     j = (j = i.length) > 3 ? j % 3 : 0;
   return "$" + s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
 };
+
+if (Array.isArray(window.invoices) && window.invoices.length) {
+  window.invoices.forEach(invoice => AWBInvoices.addInvoceRow(invoice))
+} else {
+  AWBInvoices.addInvoceRow() 
+}
+
 $(function () {
-  var upload = new FileUploadWithPreview('invoice-upload-field')
   $('#customerId').select2({
     theme: 'bootstrap',
     width: '100%',
@@ -166,34 +172,61 @@ $(function () {
       return;
     }
 
-    var awbInfo = extractFormData(this);
+    var awbInfo = $(this)
+      .serializeArray()
+      .reduce((acc, item) => {
+        if (!item.name.startsWith('invoice.')) {
+          acc[item.name] = item.value;
+        }
+        return acc;
+      }, {});
     awbInfo.isSed = sedAnswered || Number(awbInfo.isSed);
     awbInfo.packages = JSON.stringify(awbPackages);
+    awbInfo.invoices = [];
 
-    uploadContentFile($("#invFile"), result => {
-      if (result.fileName) {
-        awbInfo.invoice = result.fileName;
+    let promises = AWBInvoices.getInvoices().map(({ file, ...invoice }) => {
+      if (!invoice.number && !invoice.value && !invoice.id) {
+        return;
       }
-
-      $.ajax({
-        url: 'create',
-        type: 'post',
-        data: awbInfo,
-        success: function (response) {
-          swal({
-            title: response.success == true ? 'Updated' : 'Failed',
-            text: response.message,
-            type: response.success == true ? 'success' : 'error',
-          }).then(res => {
-            if (response.success == true) {
-              //location.reload(true);
-             // window.location.href = 'manage/' + response.awb.id + '/preview';
-              window.location.href = 'preview';
-            }
-          })
+      return new Promise((r) => uploadContentFile(file, r)).then((result) => {
+        if (result.fileName) {
+          invoice.filename = result.fileName;
         }
+
+        awbInfo.invoices.push(invoice);
       });
-    })
+    });
+
+    Promise.all(promises)
+      .then(() => {
+        $.ajax({
+          url: 'create',
+          type: 'post',
+          data: JSON.stringify(awbInfo),
+          dataType: 'json',
+          contentType: 'application/json',
+          processData: false,
+          success: function(response) {
+            swal({
+              title: response.success == true ? 'Updated' : 'Failed',
+              text: response.message,
+              type: response.success == true ? 'success' : 'error',
+            }).then((res) => {
+              if (response.success == true) {
+                window.location.href = 'preview';
+              }
+            });
+          },
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+        swal({
+          title: 'Failed',
+          text: error.message || 'Unknown error',
+          type: 'error',
+        });
+      });
   });
 
   // Shipper / Carrier

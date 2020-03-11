@@ -59,20 +59,22 @@
               </div>
             </div>
             <div class="separator-solid"></div>
+            <% awb.invoices.forEach(invoice => { %>
             <div class="row">
-              <div class="col-md-7">
-                <img src="<%=invoiceLink%>"
-                  style="border: 1px dashed; border-radius: 10px; width: 100%; min-width: 100%; min-height: 100px;">
-              </div>
-              <div class="col-md-5 mb-3 mb-md-0 transfer-to">
+              <div class="offset-md-7 col-md-5 mb-3 mb-md-0 transfer-to">
                 <h5 class="sub">Invoice</h5>
                 <div class="account-transfer">
-                  <div><span>Invoice ID:</span><span>#<%= awb.invoiceNumber%></span></div>
-                  <div><span>Value:</span><span>$ <%= Number(awb.value).toFixed(2) %></span></div>
+                  <div><span>Invoice ID:</span><span>#<%= invoice.number %></span></div>
+                  <div><span>Value:</span><span>$ <%= Number(invoice.value).toFixed(2) %></span></div>
+                  <% if (invoice.link) { %>
+                  <div><span></span><span><a href="<%= invoice.link %>" target="_blank">Download</a></span></div>
+                  <% } %>
+
                 </div>
               </div>
             </div>
             <div class="separator-solid"></div>
+            <% }) %>
             <div class="row">
               <div class="col-md-12">
                 <div class="invoice-detail">
@@ -101,7 +103,8 @@
                             <td class="text-center"><%= package.description%></td>
                             <td class="text-center"><%= package.packageType%></td>
                             <td class="text-center"><%= package.dimensions%></td>
-                            <td class="text-right"><%= Number(package.weight).toFixed(2)%> <%= package.packageCalculation||'kg' %></td>
+                            <td class="text-right"><%= Number(package.weight).toFixed(2)%>
+                              <%= package.packageCalculation||'kg' %></td>
                           </tr>
                           <% }) %>
                           <tr>
@@ -130,7 +133,7 @@
               </div>
               <div class="col-sm-5 col-md-7 transfer-total">
                 <h5 class="sub">Total Amount</h5>
-                <div class="price">$<%= Number(awb.value).toFixed(2) %></div>
+                <div class="price">$<%= awb.invoices.reduce((acc, i) => acc + Number(i.value), 0).toFixed(2) %></div>
                 <% if(Number(awb.isSed) == 1) { %>
                 <span>SED Included</span>
                 <% } %>

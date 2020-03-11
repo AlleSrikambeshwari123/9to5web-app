@@ -234,11 +234,9 @@ class AwbService {
 // carrier: carrierId
 // hazmat: hazmatId
 // note: 'Test',
-// invoiceNumber: '1234',
 // value: '500',
 // isSed: '0',
 // packages: [],
-// invoice: '8k71navk6b7qx6p_1581022117.png',
 // id: '100006',
 // dateCreated: '1581022119',
 // status: '1',

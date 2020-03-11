@@ -104,7 +104,7 @@ class LBLGeneration {
   GernerateAWBLabel(pkg, company) {
     return new Promise((resolve, reject) => {
       var noDocs = ""
-      if (this.awb.invoiceNumber == "") {
+      if (this.awb.invoiceNumber == "" && (this.awb.invoices || []).length === 0) {
         noDocs = "***"
       }
       var notes = ""

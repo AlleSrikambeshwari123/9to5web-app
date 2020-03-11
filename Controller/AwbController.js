@@ -16,8 +16,15 @@ exports.preview_awb = (req, res, next) => {
       services.shipperService.getShipper(awb.shipper),
       services.carrierService.getCarrier(awb.carrier),
       services.hazmatService.getHazmat(awb.hazmat),
+      services.invoiceService.getInvoicesByAWB(awb.id),
     ]).then(otherInfos => {
       awb.packages = packages;
+      awb.invoices = otherInfos[4].map(invoice => {
+        if (invoice.filename) {
+          invoice.link = aws.getSignedUrl(invoice.filename);
+        }
+        return invoice;
+      });
       awb.customer = otherInfos[0];
       awb.dateCreated = utils.formatDate(awb.dateCreated, "MMM DD,YYYY");
       res.render('pages/warehouse/awb/preview', {
@@ -28,7 +35,6 @@ exports.preview_awb = (req, res, next) => {
         shipper: otherInfos[1],
         carrier: otherInfos[2],
         hazmat: otherInfos[3],
-        invoiceLink: awb.invoice ? aws.getSignedUrl(awb.invoice) : "",
       })
     })
   })
@@ -44,6 +50,7 @@ exports.get_awb_detail = (req, res, next) => {
     services.awbService.getAwb(id),
     services.packageService.getAWBPackagesWithLastStatus(id),
     services.locationService.getLocations(),
+    services.invoiceService.getInvoicesByAWB(id),
   ]).then(results => {
     //console.log(results[4]);
     res.render('pages/warehouse/awb/edit', {
@@ -58,6 +65,7 @@ exports.get_awb_detail = (req, res, next) => {
       awb: results[4],
       packages: results[5],
       locations: results[6],
+      invoices: results[7],
     });
   })
 }
@@ -89,10 +97,14 @@ exports.create_awb = (req, res, next) => {
 }
 
 exports.add_new_awb = (req, res, next) => {
-  let awb = req.body;
+  let { invoices, ...awb } = req.body;
   let packages = JSON.parse(awb.packages);
-  services.awbService.createAwb(awb).then(result => {
+  services.awbService.createAwb(awb).then(async result => {
     awb = result.awb;
+    await Promise.all((invoices || []).map(invoice => {
+      invoice.awbId = awb.id;
+      return services.invoiceService.create(invoice);
+    }));
     packages.forEach(pkg => {
       pkg.customerId = awb.customerId;
       pkg.shipperId = awb.shipper;
@@ -140,11 +152,22 @@ exports.delete_awb_po_service = (req, res, next) => {
 
 exports.update_awb = (req, res, next) => {
   let awb_id = parseInt(req.params.id);
-  let awb = req.body;
+  let { invoices, ...awb } = req.body;
+
   let packages = JSON.parse(awb.packages);
-  services.awbService.updateAwb(awb_id,awb).then(result => {
+  services.awbService.updateAwb(awb_id,awb).then(async result => {
     //awb = result.awb;
-    let all =[];
+    let all = (invoices || []).map(async (invoice) => {
+      invoice.awbId = awb_id;
+      if (invoice.id) {
+        console.log('UPDATE incoive', invoice)
+        await services.invoiceService.update(invoice.id, invoice);
+      } else {
+        console.log('CREATE incoive', invoice)
+        await services.invoiceService.create(invoice);
+      }
+    });
+
     packages.forEach(pkg => {
       pkg.customerId = awb.customerId;
       pkg.shipperId = awb.shipper;
