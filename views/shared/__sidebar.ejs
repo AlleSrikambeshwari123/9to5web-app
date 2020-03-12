@@ -157,6 +157,11 @@
 									<span class="sub-item">9to5 Warehouse Packages</span>
 								</a>
 							</li>
+							<li <% if (page.includes('/package/list/not-pmb9000')) { %> class="active" <% } %>>
+								<a href="/warehouse/package/list/not-pmb9000">
+									<span class="sub-item">Post Boxes Etc</span>
+								</a>
+							</li>
 							<li <% if (page.endsWith('/package/list/in-manifest-no-docs')) { %> class="active" <% } %>>
 								<a href="/warehouse/package/list/in-manifest-no-docs">
 									<span class="sub-item">Packages in Manifest (no docs)</span>

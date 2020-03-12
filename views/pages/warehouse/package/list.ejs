@@ -7,45 +7,55 @@
         <!-- <a href='create' class='btn btn-primary btn-round float-right ml-md-auto'>Add User</a> -->
       </div>
       <div class="card-body">
-        <table class="display table table-responsive table-striped table-hover dataTable package-table">
-          <thead>
-            <tr>
-              <th>Number</th>
-              <th>Tracking No</th>
-              <th>Description</th>
-              <th>Type</th>
-              <th>Weight</th>
-              <th>Volumetric Weight</th>
-              <th>Dimensions</th>
-              <th>Status</th>
-              <th>AWB</th>
-              <% if (filterURL === 'in-pmb9000') { %>
+        <div class="table-responsive">
+          <table class="display table table-striped table-hover dataTable package-table">
+            <thead>
+              <tr>
+                <th>Number</th>
+                <th>Tracking No</th>
+                <th>Description</th>
+                <th>Type</th>
+                <th>Weight</th>
+                <th>Volumetric Weight</th>
+                <th>Dimensions</th>
+                <th>Status</th>
+                <th>AWB</th>
+                <% if (typeof filterURL !== 'undefined' && filterURL === 'not-pmb9000') { %>
+                  <th>Location</th>
+                <% } %>
+                <% if (typeof filterURL !== 'undefined' && filterURL === 'in-pmb9000') { %>
                 <th>Pickup or Delivery</th>
-              <% } %>              
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            <% packages.forEach(function(pkg){ %>
-            <tr data-record="<%= pkg.id %>">
-              <td>PK<%= pkg.id%></td>
-              <td><%= pkg.trackingNo%></td>
-              <td><%= pkg.description %></td>
-              <td><%= pkg.packageType %></td>
-              <td><%= pkg.weight%></td>
-              <td><%= helpers.calculatePackageVolumetricWeight(pkg).toFixed(2) %> lbs</td>
-              <td><%= pkg.dimensions %></td>
-              <td><%= pkg.lastStatusText %></td>
-              <td><%= pkg.awbId %></td>
-              <td><%= pkg.awbdeliveryMethod %></td>
-              <td class="text-center">
-                <a class="btn btn-link btn-primary btn-print-pkg" data-toggle="modal" data-id="<%=pkg.id%>"
-                  data-original-title="Print Label" data-target="#print-popup"> <i class="fa fa-print"></i> </a>
-              </td>
-            </tr>
-            <%})%>
-          </tbody>
-        </table>
+                <% } %>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <% packages.forEach(function(pkg){ %>
+              <tr data-record="<%= pkg.id %>">
+                <td>PK<%= pkg.id%></td>
+                <td><%= pkg.trackingNo%></td>
+                <td><%= pkg.description %></td>
+                <td><%= pkg.packageType %></td>
+                <td><%= pkg.weight%></td>
+                <td><%= helpers.calculatePackageVolumetricWeight(pkg).toFixed(2) %> lbs</td>
+                <td><%= pkg.dimensions %></td>
+                <td><%= pkg.lastStatusText %></td>
+                <td><%= pkg.awbId %></td>
+                <% if (typeof filterURL !== 'undefined' && filterURL === 'not-pmb9000') { %>
+                  <td><%= pkg.location %></td>
+                <% } %>
+                <% if (typeof filterURL !== 'undefined' && filterURL === 'in-pmb9000') { %>
+                <td><%= pkg.awbdeliveryMethod %></td>
+                <% } %>
+                <td class="text-center">
+                  <a class="btn btn-link btn-primary btn-print-pkg" data-toggle="modal" data-id="<%=pkg.id%>"
+                    data-original-title="Print Label" data-target="#print-popup"> <i class="fa fa-print"></i> </a>
+                </td>
+              </tr>
+              <%})%>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
@@ -75,5 +85,5 @@
 </div>
 
 <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.2.0/sweetalert2.all.min.js"></script> -->
-<% block('scripts').append('<script src="/js/utils.js"></script>')%> 
+<% block('scripts').append('<script src="/js/utils.js"></script>')%>
 <% block('scripts').append('<script src="/js/warehouse/package/list.js"></script>')%>

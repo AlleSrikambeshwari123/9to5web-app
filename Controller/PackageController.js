@@ -45,6 +45,12 @@ exports.get_filtered_package_list = (req, res, next) => {
         filterURL = 'in-pmb9000';
       }
 
+      if (req.params.filter === 'not-pmb9000') {
+        packages = packages.filter((i) => i.manifestId && i.customerId && i.awbId);
+        title = 'Post Boxes Etc';
+        filterURL = 'not-pmb9000';
+      }
+
       if (req.params.filter === 'in-manifest-no-docs') {
         let noDocsAWBIds = await services.awbService.getAwbsNoDocsIds();
         console.log(noDocsAWBIds);
@@ -83,6 +89,18 @@ exports.get_filtered_package_list = (req, res, next) => {
               pkg.lastStatusText = status && status.status;
               return pkg;
             } 
+          }
+          if (req.params.filter === 'not-pmb9000') {
+            let customer = await services.customerService.getCustomer(pkg.customerId);
+            if (customer.pmb !== '9000') {
+              if (pkg.locationId) {
+                // There is a location (string) field already in package itself, but for some 
+                // reason it's out of sync with locatioId, so we look by locationId.
+                let location = await services.locationService.getLocation(pkg.locationId)
+                pkg.location = location && location.name;
+              }
+              return pkg;
+            }
           }
         })
 
