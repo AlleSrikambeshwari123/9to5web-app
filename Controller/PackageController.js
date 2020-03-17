@@ -140,7 +140,7 @@ exports.get_fll_package_list = (req, res, next) => {
       page: req.originalUrl,
       user: res.user,
       title: 'Packages On Hands Of FLL',
-      filterURL: filterURL,
+      filterURL: '',
       packages: packages,
     });
   });
@@ -152,7 +152,7 @@ exports.get_nas_package_list = (req, res, next) => {
       page: req.originalUrl,
       user: res.user,
       title: 'Packages On Hand Of NAS',
-      filterURL: filterURL,
+      filterURL: '',
       packages: packages,
     });
   });
