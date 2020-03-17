@@ -4,6 +4,11 @@ const CRUDService = require('./CRUDService');
 const PREFIX = strings.redis_prefix_airport;
 const AIRPORT_ID_KEY = strings.redis_id_airport;
 
+/**
+ * name: String
+ * shortCode: String
+ * country: String
+ */
 class AirportService extends CRUDService {
   constructor() {
     super({

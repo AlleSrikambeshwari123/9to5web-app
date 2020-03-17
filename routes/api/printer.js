@@ -12,4 +12,9 @@ router.get('/download-pdf/pkg/:id', printerController.download_pkg_labels);
 router.get('/pdf/generate/awb/:id', printerController.generate_awb_pdf);
 router.get('/pdf/generate/pkg/:id', printerController.generate_pkg_label_pdf);
 
+router.get(
+  '/download-pdf/manifest/:id/air-cargo-manifest',
+  printerController.downloadAirCargoManifest,
+);
+
 module.exports = router;

@@ -1,11 +1,15 @@
 var zip = require('express-zip');
+var _ = require('lodash');
 var services = require('../RedisServices/RedisDataServices');
 var utils = require('../Util/utils');
 const strings = require('../Res/strings');
 var AWBGeneration = require('../Util/AWBGeneration');
 var awbPdfGen = new AWBGeneration();
 var LBLGeneration = require('../Util/LBLGeneration');
+var AirCargoManifest = require('../Util/AirCargoManifest');
 var lblPdfGen = new LBLGeneration();
+
+const convertKgToLbs = (value) => value * 2.20462262185
 
 exports.send_print_awb = (req, res, next) => {
   var username = res.user.username;
@@ -69,6 +73,66 @@ exports.download_pkg_labels = (req, res, next) => {
     })
   })
 }
+
+exports.downloadAirCargoManifest = async (req, res, next) => {
+  try {
+    let manifest = await services.manifestService.getManifest(req.params.id);
+    let packages = await services.packageService.getPackageOnManifest(req.params.id);
+    let [airportFrom, airportTo] = await Promise.all([
+      manifest.airportFromId && services.airportService.get(manifest.airportFromId),
+      manifest.airportToId && services.airportService.get(manifest.airportToId),
+    ]);
+
+    let awbIds = _.uniqBy(packages, 'awbId')
+      .map((i) => i.awbId)
+      .filter(Boolean);
+    let awbs = await Promise.all(awbIds.map((id) => services.awbService.getFullAwb(id)));
+
+    let packagesByAWB = packages.reduce((acc, pkg) => {
+      acc[pkg.awbId] = acc[pkg.awbId] || {};
+      let item = acc[pkg.awbId];
+
+      let awb = awbs.find((i) => i.id == pkg.awbId) || {};
+
+      item.awb = awb.id;
+      item.pieces = (item.pieces || 0) + 1;
+
+      // in lbs
+      let weight =
+        pkg.packageCalculation === 'lbs' ? Number(pkg.weight) : convertKgToLbs(Number(pkg.weight));
+      item.weight = (item.weight || 0) + weight;
+      item.consignee = {
+        name: String(
+          awb.customer && [awb.customer.firstName, awb.customer.lastName].filter(Boolean).join(' '),
+        ),
+        address: String(awb.customer && awb.customer.address),
+      };
+      item.shipper = {
+        name: String(awb.shipper && awb.shipper.name),
+        address: String(awb.shipper && awb.shipper.address),
+      };
+
+      return acc;
+    }, {});
+
+    let airCargoManifest = new AirCargoManifest({
+      owner: 'Nine To Five Import Export LLC',
+      marksOfNationalityAndRegistration: 'United States - N296TA',
+      flightNumber: '',
+      date: manifest.shipDate,
+      portOfLading: String(airportFrom && airportFrom.name),
+      portOfOnlading: String(airportTo && airportTo.name),
+      rows: Object.values(packagesByAWB),
+    });
+    let stream = await airCargoManifest.generate();
+    res.type('pdf');
+    res.attachment(`${manifest.id}-ACM.pdf`);
+    stream.pipe(res);
+    stream.end();
+  } catch (error) {
+    next(error);
+  }
+};
 
 exports.generate_awb_pdf = (req, res, next) => {
   getFullAwb(req.params.id).then(awb => {

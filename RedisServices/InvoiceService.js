@@ -6,7 +6,7 @@ let client = require('./dataContext').redisClient;
 const Keys = {
   item: (id) => `invoice:${id}`,
   id: () => `id:invoice`,
-  awbInvoices: (awbId) => `awb:${awbId}:invoices`,
+  awbInvoices: (awbId) => `awbInvoices:${awbId}`,
 };
 
 class InvoiceService {
