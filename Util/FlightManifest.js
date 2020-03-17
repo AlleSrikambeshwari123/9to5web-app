@@ -1,16 +1,9 @@
-const path = require('path');
-const fs = require('fs');
 const PDFPrinter = require('pdfmake');
 const moment = require('moment');
-const _ = require('lodash');
 
 const TABLE_LAYOUT = {
   hLineColor: (i, node) => 'black',
   vLineColor: (i, node) => 'black',
-  // paddingLeft: () => 4,
-  // paddingRight: () => 4,
-  // paddingTop: () => 4,
-  // paddingBottom: () => 4,
   fillColor: (rowIndex, node, columnIndex) => {
     if (rowIndex === 0) {
       return '#ccc';

@@ -1,8 +1,5 @@
-const path = require('path');
-const fs = require('fs');
 const PDFPrinter = require('pdfmake');
 const moment = require('moment');
-const _ = require('lodash');
 
 const TABLE_LAYOUT = {
   hLineColor: (i, node) => 'black',
