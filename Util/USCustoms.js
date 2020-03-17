@@ -596,8 +596,6 @@ class USCustoms {
       },
     };
 
-    console.log(JSON.stringify(definition, null, '  '));
-
     return printer.createPdfKitDocument(definition);
   }
 }
