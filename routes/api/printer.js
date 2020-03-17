@@ -16,5 +16,6 @@ router.get(
   '/download-pdf/manifest/:id/air-cargo-manifest',
   printerController.downloadAirCargoManifest,
 );
+router.get('/download-pdf/manifest/:id/flight-manifest', printerController.downloadFlightManifest);
 
 module.exports = router;

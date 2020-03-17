@@ -17,8 +17,6 @@ var rServices = require('../RedisServices/RedisDataServices')
 var datacontext = require("../RedisServices/dataContext")
 var FlightLoadSheet = require('../Util/FlightLoadSheet').FlightLoadSheet;
 var loadSheet = new FlightLoadSheet();
-var FlightManifest = require('../Util/FlightManifest').FlightManifest;
-var flightManifest = new FlightManifest()
 
 const sumFunction = (accumulator, currentValue) => accumulator + currentValue;
 router.get('/manifest-count/:mid/:mtype', middleware(services.userService).checkSession, function (req, res, next) {
@@ -228,25 +226,6 @@ router.post('/find-customer', (req, res, next) => {
     })
 })
 //#endregion
-router.get('/download-flight-manifest/:mid', (req, res, next) => {
-    var mid = req.params.mid;
-
-    services.manifestService.getManifest(mid).then(manifest => {
-        console.log(manifest)
-        services.packageService.getPackageOnManifest(mid).then(packages => {
-            console.log('packages', packages)
-            flightManifest.generateManifest(manifest, packages).then(result => {
-                console.log(result);
-                setTimeout(() => {
-                    res.download(result.filename);
-                }, 500);
-
-            })
-        });
-
-        //loadSheet.generateManifestLoadSheet(manifest); 
-    })
-})
 router.get('/download-load-sheet/:mid', (req, res, next) => {
     var mid = req.params.mid;
 

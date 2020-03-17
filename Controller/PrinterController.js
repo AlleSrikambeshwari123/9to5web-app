@@ -7,6 +7,7 @@ var AWBGeneration = require('../Util/AWBGeneration');
 var awbPdfGen = new AWBGeneration();
 var LBLGeneration = require('../Util/LBLGeneration');
 var AirCargoManifest = require('../Util/AirCargoManifest');
+var FlightManifest = require('../Util/FlightManifest');
 var lblPdfGen = new LBLGeneration();
 
 const convertKgToLbs = (value) => value * 2.20462262185
@@ -127,6 +128,55 @@ exports.downloadAirCargoManifest = async (req, res, next) => {
     let stream = await airCargoManifest.generate();
     res.type('pdf');
     res.attachment(`${manifest.id}-ACM.pdf`);
+    stream.pipe(res);
+    stream.end();
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.downloadFlightManifest = async (req, res, next) => {
+  try {
+    let manifest = await services.manifestService.getManifest(req.params.id);
+    let packages = await services.packageService.getPackageOnManifest(req.params.id);
+
+    let awbIds = _.uniqBy(packages, 'awbId')
+      .map((i) => i.awbId)
+      .filter(Boolean);
+    let awbs = await Promise.all(awbIds.map((id) => services.awbService.getFullAwb(id)));
+
+    let rows = packages.map((pkg) => {
+      let awb = awbs.find((i) => i.id == pkg.awbId) || {};
+      return {
+        id: pkg.id,
+        awb: awb.id,
+        weight:
+          pkg.packageCalculation === 'lbs'
+            ? Number(pkg.weight)
+            : convertKgToLbs(Number(pkg.weight)),
+        consignee: {
+          name: String(
+            awb.customer &&
+              [awb.customer.firstName, awb.customer.lastName].filter(Boolean).join(' '),
+          ),
+        },
+        shipper: {
+          name: String(awb.shipper && awb.shipper.name),
+          address: String(awb.shipper && awb.shipper.address),
+        },
+      };
+    });
+
+
+    let flightManifest = new FlightManifest({
+      carrier: '???',
+      departureDate: manifest.shipDate,
+      flightNumber: '???',
+      rows,
+    });
+    let stream = await flightManifest.generate();
+    res.type('pdf');
+    res.attachment(`${manifest.id}-FM.pdf`);
     stream.pipe(res);
     stream.end();
   } catch (error) {
