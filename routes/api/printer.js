@@ -16,6 +16,11 @@ router.get(
   '/download-pdf/manifest/:id/air-cargo-manifest',
   printerController.downloadAirCargoManifest,
 );
+router.get(
+  '/download-pdf/manifest/:id/flight-load-sheet',
+  printerController.downloadFlightLoadSheet,
+);
 router.get('/download-pdf/manifest/:id/flight-manifest', printerController.downloadFlightManifest);
+router.get('/download-pdf/manifest/:id/us-customs', printerController.downloadUSCustoms);
 
 module.exports = router;

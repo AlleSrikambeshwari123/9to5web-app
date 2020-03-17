@@ -15,8 +15,6 @@ var delfile = '';
 var uniqid = require('uniqid')
 var rServices = require('../RedisServices/RedisDataServices')
 var datacontext = require("../RedisServices/dataContext")
-var FlightLoadSheet = require('../Util/FlightLoadSheet').FlightLoadSheet;
-var loadSheet = new FlightLoadSheet();
 
 const sumFunction = (accumulator, currentValue) => accumulator + currentValue;
 router.get('/manifest-count/:mid/:mtype', middleware(services.userService).checkSession, function (req, res, next) {
@@ -226,27 +224,7 @@ router.post('/find-customer', (req, res, next) => {
     })
 })
 //#endregion
-router.get('/download-load-sheet/:mid', (req, res, next) => {
-    var mid = req.params.mid;
 
-    services.manifestService.getManifest(mid).then(manifest => {
-        console.log(manifest)
-        services.packageService.getPackageOnManifest(mid).then(packages => {
-            console.log('packages', packages)
-            loadSheet.generateManifestLoadSheet(manifest, packages).then(result => {
-                console.log(result);
-                setTimeout(() => {
-                    res.download(result.filename);
-                }, 500);
-
-            })
-        });
-
-        //loadSheet.generateManifestLoadSheet(manifest); 
-    })
-})
-
-//router.get("/download-load-sheet")
 router.get('/incoming-shipment', (req, res, next) => {
     res.render('pages/warehouse/incoming-shipment', {})
 })

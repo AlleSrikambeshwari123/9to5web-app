@@ -31,20 +31,11 @@ router.get('/new-shipment-id', (req, res, next) => {
     res.send({ id: id })
   })
 })
-router.get('/get-package-detail/:trackingNo', async (req, res, next) => {
+router.get('/get-package-detail/:trackingNo', (req, res, next) => {
   let trackingNo = req.params.trackingNo;
-  // let ids = trackingNo.split('-');
-  // let packageId = ids[2];
-  // let awbId = ids[1];
-  let allService;
-  try {
-    allService = await services.packageService.getAllPackages();
-  } catch (error) {
-    console.log(error)
-  }
-  const myPackage = allService.filter((i) => i.trackingNo === trackingNo)
-  const packageId = myPackage[0].id;
-  const awbId = myPackage[0].awbId;
+  let ids = trackingNo.split('-');
+  let packageId = ids[2];
+  let awbId = ids[1];
   Promise.all([
     services.packageService.getPackage(packageId),
     services.awbService.getFullAwb(awbId),

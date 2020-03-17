@@ -1,7 +1,7 @@
 <!-- <div>
   <div class="clearfix">
     <div class="btn-group custom-btn-group float-right" role="group">
-      <a href="/warehouse/download-load-sheet/<%=manifest.mid%>" type="button" class="btn btn-primary btn-sm "> <i
+      <a href="/api/printer/download-pdf/manifest/<%=manifest.id%>/flight-load-sheet" type="button" class="btn btn-primary btn-sm "> <i
           class='fa fa-download'></i> Load Sheet</a>
       <a href='/api/printer/download-pdf/manifest/<%=manifest.id%>/flight-manifest' class="btn btn-success btn-sm "><i
           class='fa fa-download'></i> Flight Manifest</a>
@@ -24,6 +24,13 @@
             </a>
             <a href="/api/printer/download-pdf/manifest/<%=manifest.id%>/flight-manifest" class="btn btn-primary btn-sm">
               Flight Manifest &nbsp;&nbsp;<i class="fa fa-download"></i>
+            </a>
+            <a href="/api/printer/download-pdf/manifest/<%=manifest.id%>/flight-load-sheet" class="btn btn-primary btn-sm">
+              Flight Load Sheet &nbsp;&nbsp;<i class="fa fa-download"></i>
+            </a>
+            </a>
+            <a href="/api/printer/download-pdf/manifest/<%=manifest.id%>/us-customs" class="btn btn-primary btn-sm">
+              US Customs &nbsp;&nbsp;<i class="fa fa-download"></i>
             </a>
           </div>
         </div>

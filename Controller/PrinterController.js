@@ -8,9 +8,10 @@ var awbPdfGen = new AWBGeneration();
 var LBLGeneration = require('../Util/LBLGeneration');
 var AirCargoManifest = require('../Util/AirCargoManifest');
 var FlightManifest = require('../Util/FlightManifest');
+var FlightLoadSheet = require('../Util/FlightLoadSheet');
+var USCustoms = require('../Util/USCustoms');
 var lblPdfGen = new LBLGeneration();
 
-const convertKgToLbs = (value) => value * 2.20462262185
 
 exports.send_print_awb = (req, res, next) => {
   var username = res.user.username;
@@ -99,8 +100,7 @@ exports.downloadAirCargoManifest = async (req, res, next) => {
       item.pieces = (item.pieces || 0) + 1;
 
       // in lbs
-      let weight =
-        pkg.packageCalculation === 'lbs' ? Number(pkg.weight) : convertKgToLbs(Number(pkg.weight));
+      let weight = services.packageService.getPackageWeightInLBS(pkg);
       item.weight = (item.weight || 0) + weight;
       item.consignee = {
         name: String(
@@ -150,10 +150,7 @@ exports.downloadFlightManifest = async (req, res, next) => {
       return {
         id: pkg.id,
         awb: awb.id,
-        weight:
-          pkg.packageCalculation === 'lbs'
-            ? Number(pkg.weight)
-            : convertKgToLbs(Number(pkg.weight)),
+        weight: services.packageService.getPackageWeightInLBS(pkg),
         consignee: {
           name: String(
             awb.customer &&
@@ -167,7 +164,6 @@ exports.downloadFlightManifest = async (req, res, next) => {
       };
     });
 
-
     let flightManifest = new FlightManifest({
       carrier: '???',
       departureDate: manifest.shipDate,
@@ -177,6 +173,120 @@ exports.downloadFlightManifest = async (req, res, next) => {
     let stream = await flightManifest.generate();
     res.type('pdf');
     res.attachment(`${manifest.id}-FM.pdf`);
+    stream.pipe(res);
+    stream.end();
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.downloadFlightLoadSheet = async (req, res, next) => {
+  try {
+    let manifest = await services.manifestService.getManifest(req.params.id);
+    let packages = await services.packageService.getPackageOnManifest(req.params.id);
+    let compartments = await Promise.all(
+      _.uniqBy(packages, 'compartmentId').filter(i => i.compartmentId).map((pkg) =>
+        services.planeService.getCompartment(pkg.compartmentId),
+      ),
+    );
+
+    let sections = compartments.map((compartment) => {
+      return {
+        name: compartment.name,
+        packages: packages
+          .filter((pkg) => pkg.compartmentId == compartment.id)
+          .map((pkg) => {
+            return {
+              id: pkg.id,
+              awb: pkg.awbId,
+              weight: services.packageService.getPackageWeightInLBS(pkg),
+            };
+          }),
+      };
+    });
+
+    let flightLoadSheet = new FlightLoadSheet({
+      carrier: '???',
+      departureDate: manifest.shipDate,
+      flightNumber: '???',
+      sections,
+    });
+    let stream = await flightLoadSheet.generate();
+    res.type('pdf');
+    res.attachment(`${manifest.id}-FLS.pdf`);
+    stream.pipe(res);
+    stream.end();
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.downloadUSCustoms = async (req, res, next) => {
+  try {
+    let manifest = await services.manifestService.getManifest(req.params.id);
+    let packages = await services.packageService.getPackageOnManifest(req.params.id);
+    let [airportFrom, airportTo] = await Promise.all([
+      manifest.airportFromId && services.airportService.get(manifest.airportFromId),
+      manifest.airportToId && services.airportService.get(manifest.airportToId),
+    ]);
+
+    let awbIds = _.uniqBy(packages, 'awbId')
+      .map((i) => i.awbId)
+      .filter(Boolean);
+    let awbs = await Promise.all(awbIds.map((id) => services.awbService.getFullAwb(id)));
+
+    let packagesByAWB = packages.reduce((acc, pkg) => {
+      acc[pkg.awbId] = acc[pkg.awbId] || [];
+      acc[pkg.awbId].push(pkg);
+      return acc;
+    }, {});
+
+    let items = Object.values(packagesByAWB).map((packages) => {
+      let awb = awbs.find((i) => i.id == packages[0].awbId) || {};
+      let weight = packages.reduce(
+        (acc, pkg) => acc + services.packageService.getPackageWeightInLBS(pkg),
+        0,
+      );
+      return {
+        declaredValueForCustoms: '???',
+        declaredValueForCharge: '???',
+        executedOnDate: new Date(),
+        executedAtPlace: 'Fort Launderdale',
+        awb: awb.id,
+        consignee: {
+          name: String(
+            awb.customer &&
+              [awb.customer.firstName, awb.customer.lastName].filter(Boolean).join(' '),
+          ),
+        },
+        shipper: {
+          name: String(awb.shipper && awb.shipper.name),
+          address: String(awb.shipper && awb.shipper.address),
+        },
+        accountingInformation: '???',
+        pieces: packages.length,
+        weight: weight,
+        chargeableWeight: '???',
+        natureAndQuantityOfGoods: '???',
+        ultimateDestination: '???',
+      };
+    });
+
+    let usCustoms = new USCustoms({
+      departureDate: new Date(),
+      carrier: '???',
+      flightNumber: '???',
+      airportFrom: {
+        name: String(airportFrom && airportFrom.name),
+      },
+      airportTo: {
+        name: String(airportTo && airportTo.name),
+      },
+      items,
+    });
+    let stream = await usCustoms.generate();
+    res.type('pdf');
+    res.attachment(`${manifest.id}-USC.pdf`);
     stream.pipe(res);
     stream.end();
   } catch (error) {

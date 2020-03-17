@@ -156,6 +156,14 @@ class PackageService {
     });
   }
 
+  getPackageWeightInLBS(pkg) {
+    // From client side code it seems like 'kg' is default, so we check for lbs and fallback to kg
+    if (pkg.packageCalculation === 'lbs') {
+      return Number(pkg.weight);
+    }
+    return Number(pkg.weight) * 2.20462262185;
+  }
+
   createPackages(awbId, packages) {
     return new Promise((resolve, reject) => {
       Promise.all(
