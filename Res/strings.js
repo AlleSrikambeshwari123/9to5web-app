@@ -66,9 +66,6 @@ exports.redis_id_carrier = "id:carrier";
 exports.redis_prefix_hazmat = "hazmat:";
 exports.redis_id_hazmat = "id:hazmat";
 
-exports.redis_prefix_charge = "charge:";
-exports.redis_id_charge = "id:charged";
-
 exports.redis_id_awb_init = 100000;
 exports.redis_prefix_awb = "awb:";
 exports.redis_id_awb = "id:awb";
