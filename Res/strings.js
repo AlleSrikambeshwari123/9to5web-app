@@ -43,6 +43,9 @@ exports.redis_id_compartment_plane = "id:compartment";
 exports.redis_prefix_shipper = "shipper:";
 exports.redis_id_shipper = "id:shipper";
 
+exports.redis_prefix_origin_barcode = "originBarcode:";
+exports.redis_id_origin_barcode = "id:originBarcode";
+
 exports.redis_prefix_awbpo = "awbpo:";
 exports.redis_id_awbpo = "id:awbpo";
 exports.redis_prefix_container = "container:";

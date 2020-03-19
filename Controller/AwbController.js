@@ -97,6 +97,7 @@ exports.create_awb = (req, res, next) => {
     services.serviceTypeService.getAllServiceTypes(),
     services.locationService.getLocations(),
     services.paidTypeService.getAllPaidTypes(),
+    services.packageService.getAllOriginBarcode(),
   ]).then(([
     customers,
     hazmats,
@@ -105,6 +106,7 @@ exports.create_awb = (req, res, next) => {
     serviceTypes,
     locations,
     paidTypes,
+    barcodes
   ]) => {
     res.render('pages/warehouse/awb/create', {
       page: req.originalUrl,
@@ -118,6 +120,7 @@ exports.create_awb = (req, res, next) => {
       serviceTypes,
       locations,
       paidTypes,
+      barcodes
     });
   })
 }
