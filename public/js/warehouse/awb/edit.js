@@ -73,6 +73,31 @@ $(function () {
     placeholder: "Select a package type"
   })
 
+  $('form[name="add-purchase-order-item-form"] select').select2({
+    theme: 'bootstrap',
+    width: '100%',
+    minimumResultsForSearch: -1
+  })
+
+  $('form[name="add-purchase-order-item-form"]').submit(function (event) {
+    event.preventDefault();
+    let item = extractFormData(this);
+    item.paidTypeText = $(this)
+      .find('[name="paidTypeId"] option:selected')
+      .data('name');
+    item.sourceText = $(this).find('[name="source"] option:selected').text();
+    item.serviceTypeText = $(this)
+      .find('[name="serviceTypeId"] option:selected')
+      .data('name');
+    item.amount = $(this)
+      .find('[name="serviceTypeId"] option:selected')
+      .data('amount');
+
+    AWBPO.addItem(item);
+    
+    $(this).closest('.modal').modal('hide');
+  });
+
   var packageTable = $('#packageTable').DataTable({
     pageLength: 5,
     bSortable: false,
@@ -183,6 +208,8 @@ $(function () {
     awbInfo.isSed = sedAnswered || Number(awbInfo.isSed);
     awbInfo.packages = JSON.stringify(awbPackages);
     awbInfo.invoices = [];
+    awbInfo.purchaseOrder = AWBPO.getItems();
+    awbInfo.purchaseOrder = JSON.stringify(awbInfo.purchaseOrder);
 
     let promises = AWBInvoices.getInvoices().map(({ file, ...invoice }) => {
       if (!invoice.number && !invoice.value && !invoice.id) {

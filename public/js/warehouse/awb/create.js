@@ -12,9 +12,6 @@ Number.prototype.formatMoney = function (c, d, t) {
 AWBInvoices.addInvoceRow();
 
 $(function () {
-  if ($('#add-purchase-order-popup').is(':hidden')) {
-    $('#charge-table-body > tr').remove();
-  }
   $('#location').select2({
     theme: 'bootstrap',
     placeholder: 'Select Location',
@@ -160,6 +157,31 @@ $(function () {
     $('.mfp-close').trigger("click");
   })
 
+  $('form[name="add-purchase-order-item-form"] select').select2({
+    theme: 'bootstrap',
+    width: '100%',
+    minimumResultsForSearch: -1
+  })
+
+  $('form[name="add-purchase-order-item-form"]').submit(function (event) {
+    event.preventDefault();
+    let item = extractFormData(this);
+    item.paidTypeText = $(this)
+      .find('[name="paidTypeId"] option:selected')
+      .data('name');
+    item.sourceText = $(this).find('[name="source"] option:selected').text();
+    item.serviceTypeText = $(this)
+      .find('[name="serviceTypeId"] option:selected')
+      .data('name');
+    item.amount = $(this)
+      .find('[name="serviceTypeId"] option:selected')
+      .data('amount');
+
+    AWBPO.addItem(item);
+    
+    $(this).closest('.modal').modal('hide');
+  });
+
   $('#add-package-form').submit(function (event) {
     event.preventDefault();
     let pkg = extractFormData(this);
@@ -208,6 +230,8 @@ $(function () {
     awbInfo.isSed = sedAnswered || Number(awbInfo.isSed);
     awbInfo.packages = JSON.stringify(awbPackages);
     awbInfo.invoices = [];
+    awbInfo.purchaseOrder = AWBPO.getItems();
+    awbInfo.purchaseOrder = JSON.stringify(awbInfo.purchaseOrder);
 
     let promises = AWBInvoices.getInvoices().map(({ file, ...invoice }) => {
       if (!invoice.number && !invoice.value && !invoice.id) {

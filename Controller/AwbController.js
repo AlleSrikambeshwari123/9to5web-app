@@ -51,21 +51,39 @@ exports.get_awb_detail = (req, res, next) => {
     services.packageService.getAWBPackagesWithLastStatus(id),
     services.locationService.getLocations(),
     services.invoiceService.getInvoicesByAWB(id),
-  ]).then(results => {
+    services.paidTypeService.getAllPaidTypes(),
+    services.serviceTypeService.getAllServiceTypes(),
+    services.awbService.getPurchaseOrder(id),
+  ]).then(([
+    customers,
+    hazmats,
+    shippers,
+    carriers,
+    awb,
+    packages,
+    locations,
+    invoices,
+    paidTypes,
+    serviceTypes,
+    purchaseOrder,
+  ]) => {
     //console.log(results[4]);
     res.render('pages/warehouse/awb/edit', {
       page: req.originalUrl,
       title: 'AWB Details',
       user: res.user,
       printer: res.printer,
-      customers: results[0],
-      hazmats: results[1],
-      shippers: results[2],
-      carriers: results[3],
-      awb: results[4],
-      packages: results[5],
-      locations: results[6],
-      invoices: results[7],
+      customers,
+      hazmats,
+      shippers,
+      carriers,
+      awb,
+      packages,
+      locations,
+      invoices,
+      paidTypes,
+      serviceTypes,
+      purchaseOrder,
     });
   })
 }
@@ -77,23 +95,32 @@ exports.create_awb = (req, res, next) => {
     services.shipperService.getAllShippers(),
     services.carrierService.getAllCarriers(),
     services.serviceTypeService.getAllServiceTypes(),
-    services.awbService.getAllPO(),
     services.locationService.getLocations(),
+    services.paidTypeService.getAllPaidTypes(),
     services.packageService.getAllOriginBarcode(),
-  ]).then(results => {
+  ]).then(([
+    customers,
+    hazmats,
+    shippers,
+    carriers,
+    serviceTypes,
+    locations,
+    paidTypes,
+    barcodes
+  ]) => {
     res.render('pages/warehouse/awb/create', {
       page: req.originalUrl,
       title: 'Create New AWB',
       user: res.user,
       printer: res.printer,
-      customers: results[0],
-      hazmats: results[1],
-      shippers: results[2],
-      carriers: results[3],
-      serviceTypes: results[4],
-      awbpos: results[5],
-      locations: results[6],
-      barcodes: results[7]
+      customers,
+      hazmats,
+      shippers,
+      carriers,
+      serviceTypes,
+      locations,
+      paidTypes,
+      barcodes
     });
   })
 }
@@ -118,39 +145,6 @@ exports.add_new_awb = (req, res, next) => {
     })
   })
 }
-
-exports.add_new_awb_po = (req, res, next) => {
-  services.awbService.createPO(req.body).then(result => {
-    res.send(result);
-  })
-}
-
-exports.get_awb_po_list = (req, res, next) => {
-  services.awbService.getAllPO().then(awbpos => {
-    res.send(awbpos);
-  })
-}
-
-exports.get_awb_po_detail = (req, res, next) => {
-  services.awbService.getPO(req.params.id).then(awbpo => {
-    res.send(awbpo);
-  })
-}
-
-exports.update_awb_po = (req, res, next) => {
-  services.awbService.updatePO(req.params.id, req.body)
-  .then(result => {
-    res.send(result);
-  })
-  .catch(error => console.log(error))
-} 
-
-exports.delete_awb_po_service = (req, res, next) => {
-  services.awbService.deletePO(req.params.id, req.params.ids).then(result => {
-    res.send(result);
-  })
-}
-
 
 exports.update_awb = (req, res, next) => {
   let awb_id = parseInt(req.params.id);
