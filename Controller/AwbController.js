@@ -78,7 +78,8 @@ exports.create_awb = (req, res, next) => {
     services.carrierService.getAllCarriers(),
     services.serviceTypeService.getAllServiceTypes(),
     services.awbService.getAllPO(),
-    services.locationService.getLocations()
+    services.locationService.getLocations(),
+    services.packageService.getAllOriginBarcode(),
   ]).then(results => {
     res.render('pages/warehouse/awb/create', {
       page: req.originalUrl,
@@ -92,6 +93,7 @@ exports.create_awb = (req, res, next) => {
       serviceTypes: results[4],
       awbpos: results[5],
       locations: results[6],
+      barcodes: results[7]
     });
   })
 }

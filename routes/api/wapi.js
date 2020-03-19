@@ -55,6 +55,52 @@ router.get('/get-package-detail/:trackingNo', async (req, res, next) => {
     })
   })
 })
+
+router.get('/get-package-detail-barcode/:barcode', async (req, res, next) => {
+  let barcode = req.params.barcode;
+
+  let allService;
+  try {
+    allService = await services.packageService.getAllPackages();
+  } catch (error) {
+    console.log(error)
+  }
+  const myPackage = allService.filter((i) => i.originBarcode === barcode)
+  if (myPackage.length > 0) {
+    const packageId = myPackage[0].id;
+    const awbId = myPackage[0].awbId;
+    Promise.all([
+      services.packageService.getPackage(packageId),
+      services.awbService.getFullAwb(awbId),
+    ]).then(results => {
+      res.send({
+        packageInfo: results[0],
+        awb: results[1],
+      })
+    })
+  } else {
+    res.send({
+      status: 'barcode not found'
+    })    
+  }
+})
+
+router.post('/save-origin-barcode', (req, res, next) => {
+  req.body.barcode;
+  const barcode = {
+    barcode: req.body.barcode
+  };
+  services.packageService.addOriginBarcode(barcode).then((result) => {
+    res.send(result);
+  })
+})
+
+router.get('/getall-barcode', (req, res, next) => {
+  services.packageService.getAllOriginBarcode().then((result) => {
+    res.send(result);
+  })
+})
+
 router.post('/accept-package', (req, res, next) => {
   var body = req.body;
   var username = req.headers.username;

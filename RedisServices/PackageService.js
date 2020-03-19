@@ -15,6 +15,9 @@ const PREFIX_PACKAGE_LIST = strings.redis_prefix_awb_package_list; // this key +
 const LIST_PACKAGE_SHIPMENT = 'list:shipment:'; // this key + shipmentId = array of packages
 const SHIPMENT_ID = 'id:accept:truck';
 
+const PREFIX_ORIGIN_BARCODE = strings.redis_prefix_origin_barcode;
+const ORIGIN_BARCODE_ID = strings.redis_id_origin_barcode;
+
 const LIST_PACKAGE_MANIFEST = strings.redis_prefix_manifest_package_list;
 const LIST_LOCATION_PACKAGE = strings.redis_prefix_location_package_list;
 
@@ -35,6 +38,7 @@ function createDocument(tPackage) {
   var packageDocument = {
     id: tPackage.id,
     trackingNo: tPackage.trackingNo,
+    barcode: tPackage.barcode,
     skybox: tPackage.skybox,
     dateRecieved: moment().unix(),
     awb: 0,
@@ -101,6 +105,61 @@ class PackageService {
         return pkg;
       }),
     );
+  }
+
+  addOriginBarcode(originBarcode) {
+    return new Promise((resolve, reject) => {
+      client.incr(ORIGIN_BARCODE_ID, (err, id) => {
+        if (err) resolve({ success: false, message: strings.string_response_error });
+        originBarcode.id = id;
+        client.hmset(PREFIX_ORIGIN_BARCODE + id, originBarcode, (err, result) => {
+          if (err) resolve({ success: false, message: strings.string_response_error });
+          resolve({ success: true, message: strings.string_response_added, originBarcode: originBarcode });
+        })
+      })
+    })
+  }
+
+  removeOriginBarcode(id) {
+    return new Promise((resolve, reject) => {
+      client.del(PREFIX_ORIGIN_BARCODE + id, (err, result) => {
+        if (err) resolve({ success: false, message: strings.string_response_error });
+        resolve({ success: true, message: strings.string_response_removed });
+      })
+    });
+  }
+  getOriginBarcode(id) {
+    return new Promise((resolve, reject) => {
+      client.hgetall(PREFIX_ORIGIN_BARCODE + id, (err, originBarcode) => {
+        if (err) resolve({});
+        resolve(originBarcode);
+      })
+    });
+  }
+  getAllOriginBarcode() {
+    return new Promise((resolve, reject) => {
+      client.keys(PREFIX_ORIGIN_BARCODE + '*', (err, keys) => {
+        if (err) resolve([]);
+        Promise.all(keys.map(key => {
+          return lredis.hgetall(key);
+        })).then(originBarcodes => {
+          resolve(originBarcodes);
+        })
+      })
+    })
+  }
+  removeAllOriginBarcode() {
+    return new Promise((resolve, reject) => {
+      client.set(ORIGIN_BARCODE_ID, 0);
+      client.keys(PREFIX_ORIGIN_BARCODE + '*', (err, keys) => {
+        if (err) resolve([]);
+        Promise.all(keys.map(key => {
+          return lredis.del(key);
+        })).then(result => {
+          resolve(result);
+        })
+      })
+    });
   }
 
   getPackage(packageId) {
@@ -194,13 +253,20 @@ class PackageService {
     //   awb: 0,
     // }
     return new Promise((resolve, reject) => {
+      const barid = +newPackage.originBarcode.split(',')[1];
       client.incr(PACKAGE_ID, (err, id) => {
         newPackage.id = id;
         newPackage.awbId = awbId;
         newPackage.trackingNo = uniqId();
+        newPackage.originBarcode = newPackage.originBarcode.split(',')[0];
         client.hmset(PREFIX + id, newPackage);
         client.sadd(PREFIX_PACKAGE_LIST + awbId, id);
         this.updatePackageStatus(id, 1, '');
+        client.del(PREFIX_ORIGIN_BARCODE + barid, (err, result) => {
+          if (err) resolve({ success: false, message: strings.string_response_error });
+          resolve({ success: true, message: strings.string_response_removed });
+          console.log('delbar',result)
+        })
         resolve({ success: true });
       });
     });
@@ -529,6 +595,7 @@ class PackageService {
         var cPackage = {
           id: 0,
           trackingNo: uniqId(),
+          barcode: 0,
           description: 'Consolidated Package',
           weight: 0,
           dimensions: `${boxSize}x${boxSize}x${boxSize}`,
@@ -722,5 +789,9 @@ location: Warehosue FLL
 // status:
 // datetimestamp:
 // updatedBy:
+
+// - Original Barcode
+// id:
+// barcode:
 
 module.exports = PackageService;
