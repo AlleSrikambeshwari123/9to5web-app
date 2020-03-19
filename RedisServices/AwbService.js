@@ -9,8 +9,6 @@ const INIT_AWB_ID = strings.redis_id_awb_init
 const PREFIX = strings.redis_prefix_awb;
 const AWB_ID = strings.redis_id_awb;
 const PREFIX_NO_DOCS_LIST = strings.redis_prefix_no_docs_list;
-const PREFIX_AWBPO = strings.redis_prefix_awbpo;
-const AWBPO_ID = strings.redis_id_awbpo;
 
 const DELIVERY_METHODS = {
   DELIVERY: 1,
@@ -69,74 +67,23 @@ class AwbService {
     });
   }
 
-  createPO(order) {
-    return new Promise((resolve, reject) => {
-      client.incr(AWBPO_ID, (err, id) => {
-        if (err) resolve({ success: false, message: strings.string_response_error });
-        order.id = id;
-        client.hmset(PREFIX_AWBPO + id, order, (err, result) => {
-          if (err) resolve({ success: false, message: strings.string_response_error });
-          resolve({ success: true, message: strings.string_response_added, order: order });
-        })
-      })
-    })
-  }
+  async getPurchaseOrder(awbOrAWBId) {
+    let awb = null;
+    if (typeof awbOrAWBId === 'string' || typeof awbOrAWBId === 'number') {
+      awb = await this.getAwb(awbOrAWBId);
+    } else {
+      awb = awbOrAWBId;
+    }
 
-  getAllPO() {
-    return new Promise((resolve, reject) => {
-      client.keys(PREFIX_AWBPO + '*', (err, keys) => {
-        if (err) resolve([]);
-        Promise.all(keys.map(key => {
-          return lredis.hgetall(key);
-        })).then(awbpos => {
-          resolve(awbpos);
-        })
-      })
-    });
-  }
+    if (!awb) {
+      throw new Error('Not found');
+    }
 
-  updatePO(id, body) {
-    return new Promise((resolve, reject) => {
-      client.exists(PREFIX_AWBPO + id, (err, exist) => {
-        if (err) resolve({ success: false, message: strings.string_response_error });
-        if (Number(exist) == 1) {
-          client.hmset(PREFIX_AWBPO + id, body);
-          client.hgetall(PREFIX_AWBPO + id, (err, awbpoupd) => {
-            if (err) resolve({});
-            resolve({ success: true, message: strings.string_response_updated, awbpoupd: awbpoupd });
-          })
-        } else
-          resolve({ success: true, message: strings.string_not_found_customer });
-      })
-    })
-  }
+    if (awb.purchaseOrder) {
+      return JSON.parse(awb.purchaseOrder);
+    }
 
-  deletePO(id, ids) {
-    return new Promise((resolve, reject) => {
-      client.hgetall(PREFIX_AWBPO + id, (err, awbpo) => {
-        if (err) resolve({});
-        awbpo['serviceTypes['+ids+'][charge]'] = 'empty';
-        awbpo['serviceTypes['+ids+'][amount]'] = 'empty';
-        client.exists(PREFIX_AWBPO + id, (err, exist) => {
-          if (err) resolve({ success: false, message: strings.string_response_error });
-          if (Number(exist) == 1) {
-            client.hmset(PREFIX_AWBPO + id, awbpo);
-            resolve({ success: true, message: strings.string_response_updated });
-          } else
-            resolve({ success: true, message: strings.string_not_found_customer });
-        })
-        resolve({ success: true, awbpo: awbpo });
-      })
-    });
-  }
-
-  getPO(id) {
-    return new Promise((resolve, reject) => {
-      client.hgetall(PREFIX_AWBPO + id, (err, awbpo) => {
-        if (err) resolve({});
-        resolve(awbpo);
-      })
-    });
+    return [];
   }
 
   updateAwb(id, awb) {
