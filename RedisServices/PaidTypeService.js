@@ -32,11 +32,11 @@ class PaidTypeService {
   addPaidType(paidType) {
     return new Promise((resolve, reject) => {
       const newPaidType = new PaidType({name: paidType.name})
-      newPaidType.save((err, response) => {
+      newPaidType.save((err, result) => {
         if (err) {
           resolve({ success: false, message: strings.string_response_error });
         } else {
-          paidType['id'] = response['_id'];
+          paidType['id'] = result['_id'];
           resolve({ success: true, message: strings.string_response_added, paidType: paidType });
         }
       });
@@ -44,7 +44,7 @@ class PaidTypeService {
   }
   updatePaidType(id, body) {
     return new Promise((resolve, reject) => {
-      PaidType.findOneAndUpdate({_id: id}, {name: body.name}, (err, response) => {
+      PaidType.findOneAndUpdate({_id: id}, {name: body.name}, (err, result) => {
         if (err) {
           resolve({ success: false, message: strings.string_response_error });
         } else {
@@ -55,7 +55,7 @@ class PaidTypeService {
   }
   removePaidType(id) {
     return new Promise((resolve, reject) => {
-      PaidType.deleteOne({_id: id}, (err, response) => {
+      PaidType.deleteOne({_id: id}, (err, result) => {
         if (err) {
           resolve({ success: false, message: strings.string_response_error });
         } else {
@@ -66,33 +66,33 @@ class PaidTypeService {
   }
   getPaidType(id) {
     return new Promise((resolve, reject) => {
-      PaidType.findOne({_id: id}, (err, response) => {
+      PaidType.findOne({_id: id}, (err, result) => {
         if (err) {
           resolve({});
         } else {
-          resolve(response);
+          resolve(result);
         }
       })
     });
   }
   getAllPaidTypes() {
     return new Promise((resolve, reject) => {
-      PaidType.find({}, (err, response) => {
+      PaidType.find({}, (err, result) => {
         if (err) {
           resolve([]);
         } else {
-          resolve(response);
+          resolve(result);
         }
       })
     })
   }
   removeAll() {
     return new Promise((resolve, reject) => {
-      PaidType.deleteMany({}, (err, response) => {
+      PaidType.deleteMany({}, (err, result) => {
         if (err) {
           resolve([]);
         } else {
-          resolve(response);
+          resolve(result);
         }
       })
     });
