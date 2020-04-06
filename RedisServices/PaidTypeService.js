@@ -4,6 +4,8 @@ const csv = require('csvtojson');
 var client = require('./dataContext').redisClient;
 var lredis = require('./redis-local');
 
+const PaidType = require('../models/paidType');
+
 const PREFIX = strings.redis_prefix_paid_type;
 const PAIDTYPE_ID = strings.redis_id_paid_type;
 
@@ -27,69 +29,71 @@ class PaidTypeService {
       })
     });
   }
-
   addPaidType(paidType) {
     return new Promise((resolve, reject) => {
-      client.incr(PAIDTYPE_ID, (err, id) => {
-        if (err) resolve({ success: false, message: strings.string_response_error });
-        paidType.id = id;
-        client.hmset(PREFIX + id, paidType, (err, result) => {
-          if (err) resolve({ success: false, message: strings.string_response_error });
+      const newPaidType = new PaidType({name: paidType.name})
+      newPaidType.save((err, response) => {
+        if (err) {
+          resolve({ success: false, message: strings.string_response_error });
+        } else {
+          paidType['id'] = response['_id'];
           resolve({ success: true, message: strings.string_response_added, paidType: paidType });
-        })
-      })
+        }
+      });
     })
   }
   updatePaidType(id, body) {
     return new Promise((resolve, reject) => {
-      client.exists(PREFIX + id, (err, exist) => {
-        if (err) resolve({ success: false, message: strings.string_response_error });
-        if (Number(exist) == 1) {
-          client.hmset(PREFIX + id, body);
-          resolve({ success: true, message: strings.string_response_updated });
-        } else
+      PaidType.findOneAndUpdate({_id: id}, {name: body.name}, (err, response) => {
+        if (err) {
+          resolve({ success: false, message: strings.string_response_error });
+        } else {
           resolve({ success: true, message: strings.string_not_found_customer });
-      })
+        }
+      });
     })
   }
   removePaidType(id) {
     return new Promise((resolve, reject) => {
-      client.del(PREFIX + id, (err, result) => {
-        if (err) resolve({ success: false, message: strings.string_response_error });
-        resolve({ success: true, message: strings.string_response_removed });
+      PaidType.deleteOne({_id: id}, (err, response) => {
+        if (err) {
+          resolve({ success: false, message: strings.string_response_error });
+        } else {
+          resolve({ success: true, message: strings.string_response_removed });
+        }
       })
     });
   }
   getPaidType(id) {
     return new Promise((resolve, reject) => {
-      client.hgetall(PREFIX + id, (err, paidType) => {
-        if (err) resolve({});
-        resolve(paidType);
+      PaidType.findOne({_id: id}, (err, response) => {
+        if (err) {
+          resolve({});
+        } else {
+          resolve(response);
+        }
       })
     });
   }
   getAllPaidTypes() {
     return new Promise((resolve, reject) => {
-      client.keys(PREFIX + '*', (err, keys) => {
-        if (err) resolve([]);
-        Promise.all(keys.map(key => {
-          return lredis.hgetall(key);
-        })).then(paidTypes => {
-          resolve(paidTypes);
-        })
+      PaidType.find({}, (err, response) => {
+        if (err) {
+          resolve([]);
+        } else {
+          resolve(response);
+        }
       })
     })
   }
   removeAll() {
     return new Promise((resolve, reject) => {
-      client.set(PAIDTYPE_ID, 0);
-      client.keys(PREFIX + '*', (err, keys) => {
-        if (err) resolve([]);
-        Promise.all(keys.map(key => {
-          return lredis.del(key);
-        })).then(result => {
-          resolve(result);
-        })
+      PaidType.deleteMany({}, (err, response) => {
+        if (err) {
+          resolve([]);
+        } else {
+          resolve(response);
+        }
       })
     });
   }
