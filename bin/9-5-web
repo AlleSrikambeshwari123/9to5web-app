@@ -8,6 +8,7 @@ require('dotenv').config();
 var app = require('../app');
 var debug = require('debug')('tropicalcore:server');
 var http = require('http');
+const createConnection = require('../Util/mongo');
 
 /**
  * Get port from environment and store in Express.
@@ -90,4 +91,5 @@ function onListening() {
     ? 'pipe ' + addr
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
+  createConnection();
 }
