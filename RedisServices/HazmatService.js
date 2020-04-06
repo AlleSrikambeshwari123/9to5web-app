@@ -8,6 +8,8 @@ var lredis = require('./redis-local');
 const HAZMAT_ID = strings.redis_id_hazmat;
 const PREFIX = strings.redis_prefix_hazmat;
 
+const Hazmat = require('../models/hazmat');
+
 class HazmatService {
   importClassesFromCsv() {
     return new Promise((resolve, reject) => {
@@ -32,55 +34,59 @@ class HazmatService {
   }
   getHazmat(id) {
     return new Promise((resolve, reject) => {
-      client.hgetall(PREFIX + id, (err, hazmat) => {
-        if (err) resolve({ description: "" });
-        if (hazmat) resolve(hazmat);
-        else resolve({ description: "" });
+      Hazmat.findOne({_id: id}, (err, result) => {
+        if (err) {
+          resolve({});
+        } else {
+          resolve(result);
+        }
       })
     });
   }
   getHazmats() {
     return new Promise((resolve, reject) => {
-      client.keys(PREFIX + '*', (err, keys) => {
-        if (err) resolve([]);
-        Promise.all(keys.map(key => {
-          return lredis.hgetall(key);
-        })).then(classes => {
-          classes.sort((a, b) => a.id - b.id);
-          resolve(classes);
-        })
+      Hazmat.find({}, (err, result) => {
+        if (err) {
+          resolve([]);
+        } else {
+          resolve(result);
+        }
       })
     })
   }
   createHazmat(hazmat) {
     return new Promise((resolve, reject) => {
-      client.incr(HAZMAT_ID, (err, id) => {
-        if (err) resolve({ success: false, message: strings.string_response_error });
-        hazmat.id = id;
-        client.hmset(PREFIX + id, hazmat);
-        resolve({ success: true, message: strings.string_response_added });
+      const newHazmat = new Hazmat({name: hazmat.name, description: hazmat.description})
+      newHazmat.save((err, result) => {
+        if (err) {
+          resolve({ success: false, message: strings.string_response_error });
+        } else {
+          resolve({ success: true, message: strings.string_response_added });
+        }
       });
     });
   }
   updateHazmat(id, hazmat) {
     return new Promise((resolve, reject) => {
-      client.exists(PREFIX + id, (err, exist) => {
-        if (err) resolve({ success: false, message: strings.string_response_error });
-        if (Number(exist) == 1) {
-          client.hmset(PREFIX + id, hazmat);
+      const updatedHazmatData = {
+        name: hazmat.name, 
+        description: hazmat.description
+      };
+      Hazmat.findOneAndUpdate({_id: id}, updatedHazmatData, (err, result) => {
+        if (err) {
+          resolve({ success: false, message: strings.string_response_error });
+        } else {
           resolve({ success: true, message: strings.string_response_updated });
-        } else
-          resolve({ success: false, message: strings.string_not_found_hazmat });
-      })
+        }
+      });
     })
   }
   removeHazmat(id) {
     return new Promise((resolve, reject) => {
-      this.getHazmat(id).then(hazmat => {
-        if (hazmat.id == undefined) {
+      Hazmat.deleteOne({_id: id}, (err, result) => {
+        if (err) {
           resolve({ success: false, message: strings.string_not_found_hazmat });
         } else {
-          client.del(PREFIX + id);
           resolve({ success: true, message: strings.string_response_removed });
         }
       })
@@ -88,14 +94,12 @@ class HazmatService {
   }
   removeAll() {
     return new Promise((resolve, reject) => {
-      client.set(HAZMAT_ID, 0);
-      client.keys(PREFIX + '*', (err, keys) => {
-        if (err) resolve([]);
-        Promise.all(keys.map(key => {
-          return lredis.del(key);
-        })).then(classes => {
-          resolve(classes);
-        })
+      Hazmat.deleteMany({}, (err, result) => {
+        if (err) {
+          resolve([]);
+        } else {
+          resolve(result);
+        }
       })
     });
   }
