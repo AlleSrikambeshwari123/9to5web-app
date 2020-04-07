@@ -18,7 +18,7 @@
           <div class="form-group form-show-validation row">
             <label for="amount" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Amount</label>
             <div class="col-lg-4 col-md-9 col-sm-8">
-              <input type="text" class="form-control" id='amount' name="amount" placeholder="Amount"
+              <input type="number" onkeydown="return event.keyCode !== 69" min="0" class="form-control" id='amount' name="amount" placeholder="Amount"
                 value="<%=serviceType.amount%>">
             </div>
           </div>
