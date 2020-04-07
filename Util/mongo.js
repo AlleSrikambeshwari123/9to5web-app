@@ -10,18 +10,30 @@ const MONGO_URL = `mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOST}/$
 
 const MONGOOSE_OPTIONS = {
   useNewUrlParser: true,
+  useCreateIndex: true,
   useUnifiedTopology: true
 };
 
-const createConnection = () => {
-  return mongoose.connect(MONGO_URL, MONGOOSE_OPTIONS, (error) => {
+const connectMongo = (cb) => {
+  mongoose.connect(MONGO_URL, MONGOOSE_OPTIONS, (error) => {
     if (error) {
       console.log("MONGO ERROR : " + error);
       console.log('Reconnecting in 1500ms...');
-      setTimeout(() => createConnection(), 1500);
+      setTimeout(() => connectMongo(cb), 1500);
     } else {
-      console.log('Connected to mongoDB...');
+      console.log('Connected to mongoDB...', process.env.MONGO_HOST);
+      cb(null);
     }
+  })
+}
+
+const createConnection = () => {
+  return new Promise((resolve, reject) => {
+    connectMongo((err, response) => {
+      if (!err) {
+        resolve();
+      }
+    })
   })
 };
 
