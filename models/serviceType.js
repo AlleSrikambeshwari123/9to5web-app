@@ -9,7 +9,7 @@ const serviceTypeSchema = new mongoose.Schema({
   },
   amount: {
     type: Number,
-    required: 0
+    default: 0
   }
 }, {
   timestamps: true
