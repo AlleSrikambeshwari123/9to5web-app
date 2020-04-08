@@ -7,6 +7,7 @@
     "start": "node ./bin/9-5-web",
     "dev": "nodemon ./bin/9-5-web",
     "create-default-roles": "node db-scripts/add-default-roles.js",
+    "create-default-companies": "node db-scripts/add-default-companies.js",
     "ui": "browser-sync start --proxy=localhost:8000 --files='**/*.css, **/*.ejs, **/*.js,**/*.js' --ignore=node_modules --reload-delay 10 --no-ui --no-notify"
   },
   "dependencies": {
