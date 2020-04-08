@@ -5,58 +5,89 @@ var client = require('./dataContext').redisClient;
 const PREFIX = strings.redis_prefix_location;
 const ID_COUNTER = strings.redis_id_location;
 
+const Company = require('../models/company');
+const Location = require('../models/location');
+
 class LocationService {
   getLocations() {
     return new Promise((resolve, reject) => {
-      client.keys(PREFIX + '*', (err, keys) => {
-        if (err) resolve([]);
-        Promise.all(keys.map(key => {
-          return lredis.hgetall(key);
-        })).then(locations => {
-          resolve(locations);
-        })
+      Location.find({})
+      .populate('company', 'name')
+      .exec((err, result) => {
+        if (err) {
+          resolve([]);
+        } else {
+          resolve(result);
+        }
       })
     })
   }
+  getCompanies() {
+    return new Promise((resolve, reject) => {
+      Company.find({}, (err, result) => {
+        if (err) {
+          resolve([]);
+        } else {
+          resolve(result);
+        }
+      })
+    });
+  }
   addLocation(location) {
     return new Promise((resolve, reject) => {
-      client.incr(ID_COUNTER, (err, id) => {
+      const newLocationData = new Location(location);
+      newLocationData.save((err, result) => {
         if (err) {
           console.error(err);
           resolve({ success: false, message: strings.string_response_error });
-        }
-        location.id = id;
-        client.hmset(PREFIX + id, location, (err, result) => {
-          if (err) resolve({ success: false, message: strings.string_response_error });
+        } else {
           resolve({ success: true, message: strings.string_response_created });
-        })
+        }
       })
     });
   }
   getLocation(id) {
     return new Promise((resolve, reject) => {
-      client.hgetall(PREFIX + id, (err, location) => {
-        if (err) resolve({});
-        resolve(location);
-      })
+      Location.findOne({_id: id})
+      .populate('company', 'name')
+      .exec((err, result) => {
+        if (err) {
+          resolve({});
+        } else {
+          resolve(result);
+        }
+      });
     })
   }
   updateLocation(location) {
-    return new Promise((resolve, reject) => {
-      client.exists(PREFIX + location.id, (err, exist) => {
-        if (Number(exist) == 1) {
-          client.hmset(PREFIX + location.id, location);
-          resolve({ success: true, message: strings.string_response_updated });
-        } else {
-          resolve({ success: false, message: strings.string_response_error });
+    return new Promise(async (resolve, reject) => {
+      const locationData = await this.getLocation(location.id);
+      if (!(locationData && locationData._id)) {
+        return resolve({success: false, message: strings.string_not_found_location});
+      }
+
+      Location.findOneAndUpdate(
+        { _id: locationData._id }, 
+        { ...location },
+        (err, result) => {
+          if (err) {
+            resolve({ success: false, message: strings.string_response_error });
+          } else {
+            resolve({ success: true, message: strings.string_response_updated });
+          }
         }
-      })
+      )
     });
   }
   removeLocation(id) {
     return new Promise((resolve, reject) => {
-      client.del(PREFIX + id);
-      resolve({ success: true, message: strings.string_response_removed });
+      Location.deleteOne({_id: id}, (err, result) => {
+        if (err) {
+          resolve({ success: false, message: strings.string_response_error });
+        } else {
+          resolve({ success: true, message: strings.string_response_removed });
+        }
+      });
     })
   }
 }

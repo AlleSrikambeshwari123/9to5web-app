@@ -11,6 +11,10 @@ exports.role_customer_agent = "Custom Agent";
 exports.role_cashier = "Cashier";
 exports.role_store = "Stores";
 
+// Companies
+exports.company_9to5 = "9to5";
+exports.company_PostBoxes = "Post Boxes";
+
 // Redis Keys
 exports.redis_prefix_user = "user:";
 exports.redis_id_user = "id:user";
@@ -109,6 +113,7 @@ exports.string_response_already_added = "Already Added !";
 exports.string_response_print_awb = "AirWay Bill sent to the printer.";
 
 exports.string_not_found_user = "Sorry, we can't find this user.";
+exports.string_not_found_location = "Sorry, we can't find this Location.";
 exports.string_not_found_customer = "Sorry, we can't this customer.";
 exports.string_not_found_vehicle = "Sorry, we can't find this vehicle.";
 exports.string_not_found_driver = "Sorry, we can't find this driver.";

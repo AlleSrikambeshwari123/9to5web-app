@@ -1,6 +1,6 @@
 $(function () {
 
-  $('#companyId').select2({
+  $('#company').select2({
     theme: 'bootstrap',
     placeholder: 'Select a company'
   })
@@ -16,6 +16,7 @@ $(function () {
     $.each(formData, function (_, record) {
       data[record.name] = record.value
     })
+
     $.ajax({
       url: formUrl,
       type: 'post',

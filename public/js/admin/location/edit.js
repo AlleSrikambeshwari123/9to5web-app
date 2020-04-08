@@ -1,5 +1,5 @@
 $(function () {
-  $('#companyId').select2({
+  $('#company').select2({
     theme: 'bootstrap'
   })
   $("#cancelForm").click(function () {

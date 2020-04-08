@@ -6,12 +6,14 @@
   <form id="add-location-form" method='POST' action='create'>
     <div class="card-body">
       <div class="form-group form-show-validation row">
-        <label for="companyId" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Company
+        <label for="company" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Company
           <span class="required-label">*</span></label>
         <div class="col-lg-4 col-md-9 col-sm-8">
-          <select id="companyId" name="companyId" class=" form-control " required>
-            <option value='9to5'>9to5</option>
-            <option value='pmb'>Post Boxes</option>
+          <select id="company" name="company" class=" form-control " required>
+            <% companies.forEach(company => { %>
+              <option value="<%= company._id%>"> <%= company.name %>
+              </option>
+              <% }) %>
           </select>
         </div>
       </div>

@@ -20,7 +20,7 @@
           <tbody>
             <% locations.forEach(location => { %>
             <tr data-record="<%=location.id%>">
-              <td><%=location.companyId%></td>
+              <td><%=(location.company && location.company.name) || '' %></td>
               <td><%=location.name%></td>
               <td><%=location.address%></td>
               <td><%=location.phone%></td>

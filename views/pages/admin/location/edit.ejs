@@ -6,12 +6,14 @@
   <form id="add-location-form" method='POST' action='update'>
     <div class="card-body">
       <div class="form-group form-show-validation row">
-        <label for="companyId" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Company
+        <label for="company" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Company
           <span class="required-label">*</span></label>
         <div class="col-lg-4 col-md-9 col-sm-8">
-          <select id="companyId" name="companyId" class=" form-control " required>
-            <option value='9to5' <% if(location.companyId == '9to5') { %> selected <% } %>>9to5</option>
-            <option value='pmb' <% if(location.companyId == 'pmb') { %> selected <% } %>>Post Boxes</option>
+          <select id="company" name="company" class=" form-control " required>
+            <% companies.forEach(companyData => { %>
+              <option value="<%= companyData._id%>" <% if(companyData._id.toString()==location.company._id.toString()) { %> selected <% } %>> <%= companyData.name %>
+              </option>
+              <% }) %>  
           </select>
         </div>
       </div>
@@ -44,7 +46,7 @@
       <div class="row">
         <div class="col-md-12">
           <input class="btn btn-primary" type="submit" value="Update">
-          <button class="btn btn-danger" id="cancel">Cancel</button>
+          <button type="button" id="cancelForm" class="btn btn-danger">Cancel</button>
         </div>
       </div>
     </div>
