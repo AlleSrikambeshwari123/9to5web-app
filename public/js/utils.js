@@ -29,3 +29,8 @@ function calculatePackageVolumetricWeight(pkg) {
   // Assuming dimensions are in inches
   return dimensions[0] * dimensions[1] * dimensions[2] / 139;
 }
+
+function validateEmail(email) {
+  const regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  return regex.test(String(email).toLowerCase());
+}

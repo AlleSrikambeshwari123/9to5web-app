@@ -32,10 +32,13 @@ exports.get_user_detail = (req, res, next) => {
   let username = req.params.username;
   services.userService.getUser(username).then(function (user) {
     services.userService.getRoles().then(function (roles) {
+      const roleTypes = user.roles.map((role) => role.type);
+    
       res.render('pages/admin/user/edit', {
         page: req.originalUrl,
         title: 'User Details',
         user: res.user,
+        selectedRoles: roleTypes,
         userDetail: user,
         roles: roles,
       });

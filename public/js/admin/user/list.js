@@ -2,10 +2,11 @@ $(function () {
   $(".enableUser").click(function () {
     var username = $(this).data('id');
     var enabled = $(this).data('value');
+    
     $.ajax({
       url: 'manage/' + username + '/enable',
       type: 'put',
-      data: { username: username, enabled: enabled },
+      data: { username: username, enabled: enabled === 'true' ? true : false },
       success: function (response) {
         swal({
           title: response.success == true ? 'Updated' : 'Failed',

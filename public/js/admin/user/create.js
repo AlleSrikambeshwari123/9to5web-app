@@ -10,19 +10,24 @@ $(function () {
     event.preventDefault(event);
     let formUrl = $(this).attr('action');
     let formData = $(this).serializeArray();
-    let roleId = $("#userRole").val().toString();
+    let roles = $("#userRole").val().toString();
     let password = $(this).find('#password').val();
+    let email = $(this).find('#email').val();
     let confirmPassword = $(this).find('#confirmPassword').val();
     if (password != confirmPassword) {
       showNotify('Failed', "Password doesn't match", 'fa fa-info', 'danger');
-    } else if (roleId == '') {
+    } else if (roles == '') {
       showNotify('Failed', 'Please select a user role.', 'fa fa-info', 'warning');
+    } else if (email && email.trim() && !validateEmail(email)) {
+      showNotify('Failed', "Invalid Email", 'fa fa-info', 'danger');
     } else {
       let data = {};
       $.each(formData, function (_, record) {
         data[record.name] = record.value
       })
-      data.userRole = roleId;
+
+      data.roles = roles;
+      
       $.ajax({
         url: formUrl,
         type: 'post',

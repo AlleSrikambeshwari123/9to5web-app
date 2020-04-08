@@ -51,7 +51,7 @@
             <div class="col-lg-4 col-md-9 col-sm-8">
               <select class="form-control" id="userRole" name='userRole' multiple="multiple">
                 <% roles.forEach(role => { %>
-                <option value="<%= role%>" <% if(userDetail.userRole.includes(role)) { %> selected <% } %>> <%= role %>
+                <option value="<%= role._id%>" <% if(selectedRoles.includes(role.type)) { %> selected <% } %>> <%= role.type %>
                 </option>
                 <% }) %>
               </select>
@@ -67,4 +67,5 @@
   </div>
 </form>
 
+<% block('scripts').append('<script src="/js/utils.js"></script>')%>
 <% block('scripts').append('<script src="/js/admin/user/edit.js"></script>')%>

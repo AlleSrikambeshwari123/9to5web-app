@@ -18,14 +18,16 @@ router.post('/login', (req, res, next) => {
     if (authresult.authenticated == true) {
       req.session.token = authresult.token;
       var cuser = authresult.user;
-      if (cuser.role.indexOf(role_admin) > -1) {
-        res.send({ success: true, role: cuser.role, url: '/dashboard' });
-      } else if (cuser.role.indexOf(role_whfl) > -1) {
-        res.send({ success: true, role: cuser.role, url: '/warehouse/fll-new-package' });
-      } else if (cuser.role.indexOf(role_whnas) > -1) {
-        res.send({ success: true, role: cuser.role, url: 'warehouse/nas-no-docs' });
-      } else if (cuser.role.indexOf(role_store) > -1) {
-        res.send({ success: true, role: cuser.role, url: 'warehouse/store-packages' })
+      const roles = cuser.roles.map((data) => data.type);
+      
+      if (roles.indexOf(role_admin) > -1) {
+        res.send({ success: true, role: roles, url: '/dashboard' });
+      } else if (roles.indexOf(role_whfl) > -1) {
+        res.send({ success: true, role: roles, url: '/warehouse/fll-new-package' });
+      } else if (roles.indexOf(role_whnas) > -1) {
+        res.send({ success: true, role: roles, url: 'warehouse/nas-no-docs' });
+      } else if (roles.indexOf(role_store) > -1) {
+        res.send({ success: true, role: roles, url: 'warehouse/store-packages' })
       }
     } else {
       res.render('index', { title: 'Express' });
