@@ -7,24 +7,33 @@ var lredis = require('./redis-local');
 const PREFIX = strings.redis_prefix_airline;
 const AIRLINE_ID = strings.redis_id_airline;
 
+const Airline = require('../models/Airline');
+
 class AirlineService {
   importAirlinesFromCsv() {
     return new Promise((resolve, reject) => {
-      this.removeAll().then(result => {
-        csv().fromFile("./DB_Seed/----.csv").then(jsonObj => {
+       this.removeAll().then(result => {
+        csv().fromFile("./DB_Seed/shipper.csv").then(async(jsonObj) => {
           Promise.all(jsonObj.map(element => {
-            console.log(element.sCarrierName);
-            client.incr(AIRLINE_ID, (err, id) => {
-              return lredis.hmset(PREFIX + id, {
+             let body = {
                 id: id,
                 name: element.sCarrierName,
                 firstName: element.sContactFirstName,
                 lastName: element.sContactLastName,
-              });
-            });
-          })).then(result => {
-            resolve(result);
+              }
+           let obj_shipper = new Shipper(body);
+           obj_shipper.save((err, result) => {
+              if (err) {
+                console.error('Error while creating the user!!');
+                return({ success: false, message: err});
+              } else {
+                return({ success: true, message: "successfully added"});
+              }
+            })
+         })).then(result => {
+            resolve(result)
           })
+
         })
       })
     });
@@ -32,67 +41,61 @@ class AirlineService {
 
   addAirline(airline) {
     return new Promise((resolve, reject) => {
-      client.incr(AIRLINE_ID, (err, id) => {
-        if (err) resolve({ success: false, message: strings.string_response_error });
-        airline.id = id;
-        client.hmset(PREFIX + id, airline, (err, result) => {
-          if (err) resolve({ success: false, message: strings.string_response_error });
-          resolve({ success: true, message: strings.string_response_added, airline: airline });
-        })
+     let obj_airline = new Airline(airline);
+     obj_airline.save((err, result) => {
+        if (err) {
+          resolve({ success: false, message: err});
+        } else {
+          resolve({ success: true, message: "successfully added"});
+        }
       })
     })
   }
   updateAirline(id, body) {
-    return new Promise((resolve, reject) => {
-      client.exists(PREFIX + id, (err, exist) => {
-        if (err) resolve({ success: false, message: strings.string_response_error });
-        if (Number(exist) == 1) {
-          client.hmset(PREFIX + id, body);
-          resolve({ success: true, message: strings.string_response_updated });
-        } else
-          resolve({ success: true, message: strings.string_not_found_customer });
+    return new Promise(async(resolve, reject) => {
+      Airline.findOneAndUpdate({_id: id},body, (err, result) => {
+          if (err) {
+            resolve({ success: false, message: err});
+          } else {
+            resolve({ success: true, message: "successfully updated"});
+          }
       })
     })
   }
   removeAirline(id) {
-    return new Promise((resolve, reject) => {
-      client.del(PREFIX + id, (err, result) => {
-        if (err) resolve({ success: false, message: strings.string_response_error });
-        resolve({ success: true, message: strings.string_response_removed });
+     return new Promise((resolve, reject) => {
+      Airline.deleteOne({_id: id}, (err, result) => {
+          if (err) {
+            resolve({ success: false, message: err });
+          } else {
+            resolve({ success: true, message: "successfully removed"});
+          }
       })
+    
     });
   }
   getAirline(id) {
-    return new Promise((resolve, reject) => {
-      client.hgetall(PREFIX + id, (err, airline) => {
-        if (err) resolve({});
-        resolve(airline);
-      })
+     return new Promise((resolve, reject) => {
+      Airline.find({_id: id}).exec((err, result) => {
+        if (err) {
+          resolve({});
+        } else {
+
+          resolve(result[0])
+        }
+      });
     });
   }
   getAllAirlines() {
-    return new Promise((resolve, reject) => {
-      client.keys(PREFIX + '*', (err, keys) => {
-        if (err) resolve([]);
-        Promise.all(keys.map(key => {
-          return lredis.hgetall(key);
-        })).then(airlines => {
-          resolve(airlines);
-        })
-      })
+    return new Promise(async(resolve, reject) => {
+      let airlines = await Airline.find({})
+      resolve(airlines)
     })
   }
   removeAll() {
-    return new Promise((resolve, reject) => {
-      client.set(AIRLINE_ID, 0);
-      client.keys(PREFIX + '*', (err, keys) => {
-        if (err) resolve([]);
-        Promise.all(keys.map(key => {
-          return lredis.del(key);
-        })).then(result => {
-          resolve(result);
-        })
-      })
+    return new Promise(async(resolve, reject) => {
+       await Airline.remove()
+       resolve(true)
     });
   }
 }

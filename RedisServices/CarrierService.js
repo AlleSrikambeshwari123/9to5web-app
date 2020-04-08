@@ -6,71 +6,68 @@ var lredis = require('./redis-local');
 
 const PREFIX = strings.redis_prefix_carrier;
 const CARRIER_ID = strings.redis_id_carrier;
+const Carrier = require('../models/Carrier');
 
 class CarrierService {
   addCarrier(carrier) {
+    console.log(carrier)
     return new Promise((resolve, reject) => {
-      client.incr(CARRIER_ID, (err, id) => {
-        if (err) resolve({ success: false, message: strings.string_response_error });
-        carrier.id = id;
-        client.hmset(PREFIX + id, carrier, (err, result) => {
-          if (err) resolve({ success: false, message: strings.string_response_error });
-          resolve({ success: true, message: strings.string_response_added, carrier: carrier });
-        })
+     let obj_carrier = new Carrier(carrier);
+     obj_carrier.save((err, result) => {
+        if (err) {
+          resolve({ success: false, message: err});
+        } else {
+          resolve({ success: true, message: "successfully added"});
+        }
       })
     })
   }
   updateCarrier(id, body) {
-    return new Promise((resolve, reject) => {
-      client.exists(PREFIX + id, (err, exist) => {
-        if (err) resolve({ success: false, message: strings.string_response_error });
-        if (Number(exist) == 1) {
-          client.hmset(PREFIX + id, body);
-          resolve({ success: true, message: strings.string_response_updated });
-        } else
-          resolve({ success: true, message: strings.string_not_found_user });
+    console.log(body)
+    return new Promise(async(resolve, reject) => {
+      Carrier.findOneAndUpdate({_id: id},body, (err, result) => {
+          if (err) {
+            resolve({ success: false, message: err});
+          } else {
+            resolve({ success: true, message: "successfully updated"});
+          }
       })
     })
   }
   removeCarrier(id) {
-    return new Promise((resolve, reject) => {
-      client.del(PREFIX + id, (err, result) => {
-        if (err) resolve({ success: false, message: strings.string_response_error });
-        resolve({ success: true, message: strings.string_response_removed });
+   return new Promise((resolve, reject) => {
+      Carrier.deleteOne({_id: id}, (err, result) => {
+          if (err) {
+            resolve({ success: false, message: err });
+          } else {
+            resolve({ success: true, message: "successfully removed"});
+          }
       })
+    
     });
   }
   getCarrier(id) {
     return new Promise((resolve, reject) => {
-      client.hgetall(PREFIX + id, (err, carrier) => {
-        if (err) resolve({});
-        resolve(carrier);
-      })
+      Carrier.find({_id: id}).exec((err, result) => {
+        if (err) {
+          resolve({});
+        } else {
+
+          resolve(result[0])
+        }
+      });
     });
   }
   getAllCarriers() {
-    return new Promise((resolve, reject) => {
-      client.keys(PREFIX + '*', (err, keys) => {
-        if (err) resolve([]);
-        Promise.all(keys.map(key => {
-          return lredis.hgetall(key);
-        })).then(carriers => {
-          resolve(carriers);
-        })
-      })
+    return new Promise(async(resolve, reject) => {
+      let carriers = await Carrier.find({})
+      resolve(carriers)
     })
   }
   removeAll() {
-    return new Promise((resolve, reject) => {
-      client.set(CARRIER_ID, 0);
-      client.keys(PREFIX + '*', (err, keys) => {
-        if (err) resolve([]);
-        Promise.all(keys.map(key => {
-          return lredis.del(key);
-        })).then(result => {
-          resolve(result);
-        })
-      })
+    return new Promise(async(resolve, reject) => {
+       await Carrier.remove()
+       resolve(true)
     });
   }
 }
