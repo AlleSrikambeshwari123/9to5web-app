@@ -37,7 +37,8 @@ const defaultRoles = [{
 
 createConnection()
   .then(() => {
-    Role.find({}, (err, response) => {
+    console.log('******Creating Default Roles******');
+    return Role.find({}, (err, response) => {
       if (err) {
         console.error('Error while inserting the roles', err);
         process.exit();
@@ -46,13 +47,14 @@ createConnection()
         console.log('Roles default data already added!!');
         process.exit();
       }
+      return Role.deleteMany({});
     })
-    return Role.deleteMany({});
   })
   .then(() => {
     return Role.insertMany(defaultRoles);
   })
   .then(() => {
+    console.log('Roles has been successfully Added!!');
     process.exit();
   })
   .catch((error) => {
