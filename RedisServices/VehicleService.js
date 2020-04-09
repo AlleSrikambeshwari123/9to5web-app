@@ -7,76 +7,67 @@ var client = require('./dataContext').redisClient;
 const PREFIX = strings.redis_prefix_vehicle;
 const VEHICLE_ID = strings.redis_id_vehicle;
 const VEHICLE_LIST = strings.redis_prefid_vehicle_list;
+const Vehicle = require('../models/Vehicle');
+
 
 class VehicleService {
   addVehicle(vehicle) {
     return new Promise((resolve, reject) => {
-      client.incr(VEHICLE_ID, (err, id) => {
-        if (err) resolve({ success: false, message: strings.string_response_error });
-        vehicle.id = id;
-        client.hmset(PREFIX + id, vehicle);
-        client.sadd(VEHICLE_LIST + vehicle.location, id);
-        resolve({ success: true, message: strings.string_response_added });
+      console.log(vehicle)
+      let obj_vehicle = new Vehicle(vehicle);
+      obj_vehicle.save((err, result) => {
+        if (err) {
+          resolve({ success: false, message: err});
+        } else {
+          resolve({ success: true, message: strings.string_response_added, vehicle: result});
+        }
       })
     })
   }
   updateVehicle(id, vehicle) {
     return new Promise((resolve, reject) => {
-      client.exists(PREFIX + id, (err, exist) => {
-        if (err) resolve({ success: false, message: strings.string_response_error });
-        if (Number(exist) == 1) {
-          client.hmset(PREFIX + id, vehicle);
-          resolve({ success: true, message: strings.string_response_updated });
-        } else
-          resolve({ success: false, message: strings.string_not_found_vehicle });
+      Vechicle.findOneAndUpdate({_id: id},vehicle, (err, result) => {
+        if (err) {
+          resolve({ success: false, message: err});
+        } else {
+          resolve({ success: true, message:  strings.string_response_updated});
+        }
       })
     })
   }
   removeVehicle(id) {
-    return new Promise((resolve, reject) => {
-      this.getVehicle(id).then(vehicle => {
-        if (vehicle.id == undefined) {
-          resolve({ success: false, message: strings.string_not_found_vehicle });
-        } else {
-          client.srem(VEHICLE_LIST + vehicle.location, id);
-          client.del(PREFIX + id);
-          resolve({ success: true, message: strings.string_response_removed });
-        }
+     return new Promise((resolve, reject) => {
+      Vehicle.deleteOne({_id: id}, (err, result) => {
+          if (err) {
+            resolve({ success: false, message: err });
+          } else {
+            resolve({ success: true, message: strings.string_response_removed });
+          }
       })
-    })
+    
+    });
   }
   getVehicle(id) {
     return new Promise((resolve, reject) => {
-      client.hgetall(PREFIX + id, (err, vehicle) => {
-        if (err) resolve({});
-        resolve(vehicle);
-      })
-    })
+      Vehicle.findOne({_id: id}).exec((err, result) => {
+        if(err){
+          resolve({});
+        }else{
+          resolve(result)
+        }
+      });
+    });
   }
   getVehicles() {
-    return new Promise((resolve, reject) => {
-      client.keys(PREFIX + '*', (err, keys) => {
-        if (err) resolve([]);
-        Promise.all(keys.map(key => {
-          return lredis.hgetall(key);
-        })).then(vehicles => {
-          resolve(vehicles);
-        })
-      })
+    return new Promise(async(resolve, reject) => {
+      let vehicles = await Vehicle.find({})
+      resolve(vehicles)
     })
   }
   getVehiclesByLocation(location) {
-    return new Promise((resolve, reject) => {
-      client.smembers(VEHICLE_LIST + location, (err, ids) => {
-        if (err) resolve([]);
-        else {
-          Promise.all(ids.map(id => {
-            return lredis.hgetall(PREFIX + id);
-          })).then(vehicles => {
-            resolve(vehicles);
-          })
-        }
-      })
+    return new Promise(async(resolve, reject) => {
+      let vehicles = await Vehicle.find({location: location})
+      resolve(vehicles)
     });
   }
 }

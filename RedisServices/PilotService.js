@@ -7,78 +7,66 @@ var lredis = require('./redis-local');
 const PREFIX = strings.redis_prefix_pilot;
 const PILOT_ID = strings.redis_id_pilot;
 const PILOT_LIST = strings.redis_prefix_pilot_list;
+const Pilot = require('../models/Pilot');
 
 class PilotService {
     addPilot(pilot) {
-        return new Promise((resolve, reject) => {
-            client.incr(PILOT_ID, (err, id) => {
-                if (err) resolve({ success: false, message: strings.string_response_error });
-                pilot.id = id;
-                client.sadd(PILOT_LIST + pilot.warehouse, id);
-                client.hmset(PREFIX + id, pilot, (err, result) => {
-                    if (err) resolve({ success: false, message: strings.string_response_error });
-                    resolve({ success: true, message: strings.string_response_added });
-                })
-            })
+       return new Promise((resolve, reject) => {
+         let obj_pilot = new Pilot(pilot);
+         obj_pilot.save((err, result) => {
+            if (err) {
+              resolve({ success: false, message: err});
+            } else {
+              resolve({ success: true, message: strings.string_response_added, pilot: result});
+            }
+          })
         })
     }
     updatePilot(id, pilot) {
-        return new Promise((resolve, reject) => {
-            client.exists(PREFIX + id, (err, exist) => {
-                if (Number(exist) == 1) {
-                    client.hmset(PREFIX + id, pilot);
-                    resolve({ success: true, message: strings.string_response_updated });
-                } else {
-                    resolve({ success: false, message: strings.string_not_found_user });
-                }
-            });
-        });
+       return new Promise(async(resolve, reject) => {
+          Pilot.findOneAndUpdate({_id: id},pilot, (err, result) => {
+              if (err) {
+                resolve({ success: false, message: err});
+              } else {
+                resolve({ success: true, message:  strings.string_response_updated});
+              }
+          })
+        })
     }
     getPilots() {
-        return new Promise((resolve, reject) => {
-            client.keys(PREFIX + '*', (err, keys) => {
-                if (err) resolve([]);
-                Promise.all(keys.map(key => {
-                    return lredis.hgetall(key);
-                })).then(pilots => {
-                    resolve(pilots);
-                })
-            })
-        });
+      return new Promise(async(resolve, reject) => {
+          let pilots = await Pilot.find({})
+          resolve(pilots)
+      })
     }
     getPilotsWarehouse(warehouse) {
-        return new Promise((resolve, reject) => {
-            client.smembers(PILOT_LIST + warehouse, (err, ids) => {
-                if (err) resolve([]);
-                Promise.all(ids.map(id => {
-                    return lredis.hgetall(PREFIX + id);
-                })).then(pilots => {
-                    var list = pilots.filter(pilot => pilot && pilot.id);
-                    resolve(list);
-                })
-            })
+        return new Promise(async(resolve, reject) => {
+          let pilots = await Pilot.find({warehouse: warehouse})
+          console.log(pilots)
+          resolve(pilots)
         });
     }
     getPilot(id) {
-        return new Promise((resolve, reject) => {
-            client.hgetall(PREFIX + id, (err, pilot) => {
-                if (err) resolve({});
-                resolve(pilot);
-            })
-        })
+       return new Promise((resolve, reject) => {
+          Pilot.findOne({_id: id}).exec((err, result) => {
+            if(err){
+              resolve({});
+            }else{
+              resolve(result)
+            }
+          });
+        });
     }
     removePilot(id) {
-        return new Promise((resolve, reject) => {
-            client.hgetall(PREFIX + id, (err, pilot) => {
-                if (err) resolve({ success: false, message: strings.string_response_error });
-                if (pilot.id == undefined) resolve({ success: false, message: strings.string_not_found_pilot });
-                client.srem(PILOT_LIST + pilot.warehouse, id);
-                client.del(PREFIX + id, (err, result) => {
-                    if (err) resolve({ success: false, message: strings.string_response_error });
-                    resolve({ success: true, message: strings.string_response_removed });
-                })
-            })
-        });
+      return new Promise((resolve, reject) => {
+        Pilot.deleteOne({_id: id}, (err, result) => {
+          if(err){
+            resolve({ success: false, message: err });
+          }else{
+            resolve({ success: true, message: strings.string_response_removed });
+          }
+        })
+      });
     }
 }
 module.exports = PilotService;

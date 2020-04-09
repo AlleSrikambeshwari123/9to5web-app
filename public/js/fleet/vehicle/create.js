@@ -12,7 +12,7 @@ $("#location").change(function () {
     success: function (drivers) {
       $('#driverId').empty().append('<option></option>');
       drivers.forEach(driver => {
-        $('#driverId').append(`<option value="${driver.id}">${driver.firstName} ${driver.lastName}</option>`)
+        $('#driverId').append(`<option value="${driver._id}">${driver.firstName} ${driver.lastName}</option>`)
       })
     }
   })

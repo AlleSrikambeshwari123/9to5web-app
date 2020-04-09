@@ -24,7 +24,7 @@ $(function () {
         $(pilotSelect).empty();
         $(pilotSelect).append('<option><option>');
         pilots.forEach(pilot => {
-          $(pilotSelect).append(`<option value="${pilot.id}">${pilot.firstName} ${pilot.lastName}<option>`);
+          $(pilotSelect).append(`<option value="${pilot._id}">${pilot.firstName} ${pilot.lastName}<option>`);
         })
         $(pilotSelect).select2({
           theme: 'bootstrap',

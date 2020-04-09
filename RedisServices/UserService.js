@@ -10,128 +10,158 @@ var utils = require('../Util/utils');
 var client = require('./dataContext').redisClient;
 var lredis = require('./redis-local');
 
+const User = require('../models/user');
+const Role = require('../models/role');
+
 var PREFIX = strings.redis_prefix_user;
 var ID_COUNTER = strings.redis_id_user;
 
 class UserService {
-    changePassword(username, newpassword, oldpassword) {
-        return new Promise((resolve, reject) => {
-            this.authenticate(username, oldpassword).then((userInfo) => {
-                if (userInfo.authenticated == true) {
-                    client.hmset(PREFIX + username, { password: bcrypt.hashSync(newpassword, 10) }, function (err, result) {
-                        if (err) resolve({ success: false, message: strings.string_response_error });
-                        resolve({ success: true, message: strings.string_response_updated });
-                    });
-                } else resolve({ success: false, message: strings.string_password_incorrect });
-            });
-        });
-    }
-    authenticate(username, password) {
-        return new Promise((resolve, reject) => {
-            client.hgetall(PREFIX + username, (err, result) => {
-                if (err) {
-                    resolve({ authenticated: false, token: "", user: null });
-                }
-                if (result) {
-                    bcrypt.compare(password, result.password, (err, pwdsame) => {
-                        if (err) resolve({ authenticated: false, token: "", user: null });
-                        if (pwdsame) {
-                            delete result.password;
-                            utils.generateToken(result).then(function (token) {
-                                resolve({ user: result, token: token, authenticated: true });
-                            });
-                        } else {
-                            resolve({ user: null, token: "", authenticated: false });
-                        }
-                    });
-                } else {
-                    resolve({ user: null, token: "", authenticated: false });
-                }
-            });
-        });
-    }
-    getUser(username) {
-        return new Promise(function (resolve, reject) {
-            client.hgetall(PREFIX + username, (err, user) => {
-                if (err) resolve({});
-                resolve(user);
-            });
-        });
-    }
-    getRoles() {
-        return new Promise(function (resolve, reject) {
-            resolve([
-                strings.role_admin,
-                strings.role_warehouse_fl,
-                strings.role_warehouse_nas,
-                strings.role_customer_agent,
-                strings.role_location_manager,
-                strings.role_cashier,
-            ])
-        });
-    }
-    getAllUsers() {
-        return new Promise((resolve, reject) => {
-            client.keys(PREFIX + '*', (err, keys) => {
-                if (err) resolve([]);
-                Promise.all(keys.map(key => {
-                    return lredis.hgetall(key);
-                })).then(users => {
-                    users.forEach(user => delete user.password);
-                    resolve(users);
-                })
+  changePassword(username, newpassword, oldpassword) {
+    return new Promise((resolve, reject) => {
+      this.authenticate(username, oldpassword).then((userInfo) => {
+        if (userInfo.authenticated == true) {
+          const newPassword = bcrypt.hashSync(newpassword, 10);
+          User.findOneAndUpdate({username: username}, {password: newPassword}, (err, response) => {
+            if (err) {
+              resolve({ success: false, message: strings.string_response_error });
+            } else {
+              resolve({ success: true, message: strings.string_response_updated });
+            }
+          });
+        } else {
+          resolve({ success: false, message: strings.string_password_incorrect });
+        }
+      });  
+    });
+  }
+  authenticate(username, password) {
+    return new Promise(async (resolve, reject) => {
+      const user = await this.getUser(username);
+      
+      if (!(user && user['_id'])) {
+        return resolve({ authenticated: false, token: "", user: null });
+      } else {
+        user.comparePassword(password, (err, isPasswordMatch) => {
+          if (err || !isPasswordMatch) {
+            return resolve({ user: null, token: "", authenticated: false });
+          } else {
+            utils.generateToken(user)
+            .then((token) => {
+              delete user.password;
+              return resolve({ user: user, token: token, authenticated: true });
             })
-        });
-    }
-    removeUser(username) {
-        return new Promise((resolve, reject) => {
-            client.del(PREFIX + username, (err, result) => {
-                if (err) resolve({ success: false, message: strings.string_response_error });
-                resolve({ success: true, message: strings.string_response_removed });
+            .catch(() => {
+              resolve({ user: null, token: "", authenticated: false });
             })
-        });
-    }
-    enableUser(username, enabled) {
-        return new Promise((resolve, reject) => {
-            client.hmset(PREFIX + username, { enabled: enabled }, (err, result) => {
-                if (err) {
-                    resolve({ success: false, message: strings.string_response_error });
-                } else {
-                    resolve({ success: true, message: strings.string_response_updated });
-                }
-            });
-        });
-    }
-
-    createUser(user) {
-        return new Promise((resolve, reject) => {
-            client.exists(PREFIX + user.username, (err, exist) => {
-                if (Number(exist) == 1) {
-                    resolve({ success: false, message: strings.string_user_exist });
-                } else {
-                    client.incr(ID_COUNTER, (err, id) => {
-                        user.id = id;
-                        user.password = bcrypt.hashSync(user.password, 10);
-                        delete user.confirmPassword;
-                        client.hmset(PREFIX + user.username, user);
-                        resolve({ success: true, message: strings.string_response_created });
-                    })
-                }
-            })
+          }
         })
-    }
-    updateUser(user) {
-        return new Promise((resolve, reject) => {
-            client.exists(PREFIX + user.username, (err, exist) => {
-                if (Number(exist) == 1) {
-                    client.hmset(PREFIX + user.username, user);
-                    resolve({ success: true, message: strings.string_response_updated });
-                } else {
-                    resolve({ success: false, message: strings.string_not_found_user });
-                }
-            });
-        });
-    }
+      }
+    });
+  }
+  getUser(username) {
+    return new Promise(function (resolve, reject) {
+      User.findOne({username: username})
+      .populate('roles', 'type')
+      .exec((err, result) => {
+        if (err) {
+          resolve({});
+        } else {
+          resolve(result);
+        }
+      })
+    });
+  }
+  getRoles() {
+    return new Promise(function (resolve, reject) {
+      Role.find({}, (err, result) => {
+        if (err) {
+          resolve([]);
+        } else {
+          resolve(result);
+        }
+      })
+    });
+  }
+  getAllUsers() {
+    return new Promise((resolve, reject) => {
+      User.find({})
+      .populate('roles')
+      .exec((err, result) => {
+        if (err) {
+          resolve([]);
+        } else {
+          resolve(result)
+        }
+      });
+    });
+  }
+  removeUser(username) {
+    return new Promise((resolve, reject) => {
+      User.deleteOne({username: username}, (err, result) => {
+        if (err) {
+          resolve({ success: false, message: strings.string_response_error });
+        } else {
+          resolve({ success: true, message: strings.string_response_removed });
+        }
+      });
+    });
+  }
+  enableUser(username, enabledSatus) {
+    return new Promise((resolve, reject) => {
+      User.findOneAndUpdate({username: username}, {enabled: enabledSatus}, (err, result) => {
+        if (err) {
+          resolve({ success: false, message: strings.string_response_error });
+        } else {
+          resolve({ success: true, message: strings.string_response_updated });
+        }
+      })
+    });
+  }
+  createUser(user) {
+    return new Promise(async (resolve, reject) => {
+      const oldUser = await this.getUser(user.username);
+      
+      // Checking If username is already present 
+      if (oldUser && oldUser.username && oldUser.username.toLowerCase() === user.username.toLowerCase()) {
+        resolve({ success: false, message: strings.string_user_exist });
+      }
+      
+      user.roles = user.roles.split(',');
+      const newUser = new User(user);
+
+      newUser.save((err, result) => {
+        if (err) {
+          console.error('Error while creating the user!!');
+          resolve({ success: false, message: strings.string_response_error });
+        } else {
+          resolve({ success: true, message: strings.string_response_created });
+        }
+      })
+    })
+  }
+  updateUser(user) {
+    return new Promise(async (resolve, reject) => {
+      const userData = await this.getUser(user.username);
+      if (!(userData && userData._id)) {
+        return resolve({ success: false, message: strings.string_not_found_user });
+      }
+
+      User.findOneAndUpdate(
+        {_id: userData['_id']},
+        {
+          ...user,
+          roles: user.roles.split(',')  
+        }, 
+        (err, result) => {
+          if (err) {
+            resolve({ success: false, message: strings.string_response_error });
+          } else {
+            resolve({ success: true, message: strings.string_response_updated });
+          }
+        })
+      });
+  }
 }
 
 module.exports = UserService;
