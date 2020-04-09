@@ -17,7 +17,7 @@ class CarrierService {
         if (err) {
           resolve({ success: false, message: err});
         } else {
-          resolve({ success: true, message: "successfully added"});
+          resolve({ success: true, message: strings.string_response_added, carrier: result});
         }
       })
     })
@@ -29,7 +29,7 @@ class CarrierService {
           if (err) {
             resolve({ success: false, message: err});
           } else {
-            resolve({ success: true, message: "successfully updated"});
+            resolve({ success: true, message:  strings.string_response_updated });
           }
       })
     })
@@ -40,7 +40,7 @@ class CarrierService {
           if (err) {
             resolve({ success: false, message: err });
           } else {
-            resolve({ success: true, message: "successfully removed"});
+            resolve({ success: true, message: strings.string_response_removed });
           }
       })
     

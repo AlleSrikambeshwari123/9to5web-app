@@ -61,7 +61,7 @@ class ShipperService {
           console.error('Error while creating the user!!');
           resolve({ success: false, message: err});
         } else {
-          resolve({ success: true, message: "successfully added"});
+          resolve({ success: true, message:  strings.string_response_added, shipper: result});
         }
       })
     })
@@ -72,7 +72,7 @@ class ShipperService {
           if (err) {
             resolve({ success: false, message: err});
           } else {
-            resolve({ success: true, message: "successfully updated"});
+            resolve({ success: true, message: strings.string_response_updated });
           }
       })
     })
@@ -83,7 +83,7 @@ class ShipperService {
           if (err) {
             resolve({ success: false, message: err });
           } else {
-            resolve({ success: true, message: "successfully removed"});
+            resolve({ success: true, message: strings.string_response_removed});
           }
       })
     

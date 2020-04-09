@@ -46,7 +46,7 @@ class AirlineService {
         if (err) {
           resolve({ success: false, message: err});
         } else {
-          resolve({ success: true, message: "successfully added"});
+          resolve({ success: true, message: strings.string_response_added, airline: result});
         }
       })
     })
@@ -57,7 +57,7 @@ class AirlineService {
           if (err) {
             resolve({ success: false, message: err});
           } else {
-            resolve({ success: true, message: "successfully updated"});
+            resolve({ success: true, message:  strings.string_response_updated});
           }
       })
     })
@@ -68,7 +68,7 @@ class AirlineService {
           if (err) {
             resolve({ success: false, message: err });
           } else {
-            resolve({ success: true, message: "successfully removed"});
+            resolve({ success: true, message: strings.string_response_removed });
           }
       })
     
@@ -80,7 +80,6 @@ class AirlineService {
         if (err) {
           resolve({});
         } else {
-
           resolve(result[0])
         }
       });
