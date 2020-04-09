@@ -14,4 +14,4 @@ const airportSchema = new mongoose.Schema({
   timestamps: true
 });
 
-module.exports = mongoose.model('Airport', planeSchema);
+module.exports = mongoose.model('Airport', airportSchema);
