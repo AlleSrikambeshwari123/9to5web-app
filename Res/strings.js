@@ -114,7 +114,7 @@ exports.string_response_print_awb = "AirWay Bill sent to the printer.";
 
 exports.string_not_found_user = "Sorry, we can't find this user.";
 exports.string_not_found_location = "Sorry, we can't find this Location.";
-exports.string_not_found_customer = "Sorry, we can't this customer.";
+exports.string_not_found_customer = "Sorry, we can't find this customer.";
 exports.string_not_found_vehicle = "Sorry, we can't find this vehicle.";
 exports.string_not_found_driver = "Sorry, we can't find this driver.";
 exports.string_not_found_pilot = "Sorry, we can't find this pilot.";

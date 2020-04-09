@@ -9,83 +9,90 @@ const strings = require('../Res/strings');
 var lredis = require('./redis-local');
 var client = require('./dataContext').redisClient;
 
+const Customer = require('../models/customer');
+
 var PREFIX = strings.redis_prefix_customer;
 var ID_COUNTER = strings.redis_id_customer;
 
 class CustomerService {
   signUp(customer) {
     return new Promise(async (resolve, reject) => {
-      Promise.resolve()
-        .then(() => {
-          if (!customer.email) {
-            return null;
-          }
+      if (customer.email) {
+        const customerData = await this.getCustomer({email: customer.email.toLowerCase()});
+        if (customerData && customerData['_id']) {
+          return resolve({ success: false, message: 'Account already exists' });
+        } 
+      }
 
-          return this.getCustomerWithEmail(customer.email);
-        })
-        .then((existingCustomer) => {
-          if (existingCustomer && existingCustomer.id) {
-            resolve({ success: false, message: 'Account already exists' });
-          } else {
-            client.incr(ID_COUNTER, (err, id) => {
-              customer.id = id;
-              if (customer.password) customer.password = bcrypt.hashSync(customer.password, 10);
-              client.hmset(PREFIX + id, customer, (err, result) => {
-                if (err) resolve({ success: false, message: strings.string_response_error });
-                resolve({
-                  success: true,
-                  message: strings.string_response_created,
-                  customer: customer,
-                });
-              });
-            });
-          }
-        })
-        .catch((error) => {
-          resolve({ success: false, message: strings.string_response_error });
-        });
+      const customerData = new Customer(customer);
+      customerData.save((err, customer) => {
+        if (err) {
+          return resolve({ success: false, message: strings.string_response_error });
+        } else {
+          delete customer.password;
+          resolve({
+            success: true,
+            message: strings.string_response_created,
+            customer: customer,
+          });
+        }  
+      })
     });
   }
-
   login(email, password) {
+    return new Promise(async (resolve, reject) => {
+      const customer = await this.getCustomer({email: email});
+      
+      if (!(customer && customer['_id'])) {
+        resolve({ authenticated: false, message: strings.string_not_found_customer });
+      } else {
+        customer.comparePassword(password, (err, isMatch) => {
+          if (err) {
+            return resolve({ success: false, message: strings.string_response_error });
+          }
+
+          if (!isMatch) {
+            resolve({ authenticated: false, message: strings.string_password_incorrect });
+          } else {
+            delete customer.password;
+            utils.generateToken(customer)
+            .then((token) => {
+              return resolve({ authenticated: true, token: token, user: customer });
+            })
+            .catch(() => {
+              return resolve({ success: false, message: strings.string_response_error });
+            })
+          }
+        });
+      }
+    })
+  }
+  getCustomers() {
     return new Promise((resolve, reject) => {
-      this.getCustomerWithEmail(email).then(customer => {
-        if (customer.id == undefined) {
-          resolve({ authenticated: false, message: strings.string_not_found_customer });
+      Customer.find({})
+      .populate('company', 'name')
+      .populate('location', 'name')
+      .exec((err, customers) => {
+        if (err) {
+          resolve([]);
         } else {
-          bcrypt.compare(password, customer.password, (err, same) => {
-            if (same) {
-              delete customer.password;
-              utils.generateToken(customer).then(token => {
-                resolve({ authenticated: true, token: token, user: customer });
-              });
-            } else {
-              resolve({ authenticated: false, message: strings.string_password_incorrect });
-            }
-          })
+          resolve(customers);
         }
       })
     })
   }
-
-  getCustomers() {
+  getCustomer(fieldData) {
     return new Promise((resolve, reject) => {
-      client.keys(PREFIX + '*', (err, keys) => {
-        Promise.all(keys.map(key => {
-          return lredis.hgetall(key);
-        })).then(customers => {
-          resolve(customers);
-        })
-      })
-    })
-  }
-
-  getCustomer(id) {
-    return new Promise((resolve, reject) => {
-      client.hgetall(PREFIX + id, (err, customer) => {
-        if (err || !customer) resolve({});
-        resolve(customer);
-      })
+      Customer.findOne(fieldData)
+      .populate('company', 'name')
+      .populate('location', 'name')
+      .exec((err, result) => {
+        if (err || !result) {
+          resolve({});
+        } else {
+          resolve(result);
+        }
+      });
     });
   }
   getCustomerWithEmail(email) {
@@ -97,39 +104,43 @@ class CustomerService {
     });
   }
   updateCustomer(id, body) {
-    return new Promise((resolve, reject) => {
-      client.exists(PREFIX + id, (err, exist) => {
-        if (err) resolve({ success: false, message: strings.string_response_error });
-        if (Number(exist) == 1) {
-          client.hmset(PREFIX + id, body);
+    return new Promise(async (resolve, reject) => {
+      const customer = await this.getCustomer({_id: id});
+      if (!(customer && customer['_id'])) {
+        return resolve({ success: false, message: strings.string_not_found_customer });
+      } 
+
+      Customer.findOneAndUpdate({_id: id}, {...body}, (err, result) => {
+        if (err) {
+          resolve({ success: false, message: strings.string_response_error });
+        } else {
           resolve({ success: true, message: strings.string_response_updated });
-        } else
-          resolve({ success: true, message: strings.string_not_found_customer });
+        }
       })
     })
   }
   removeCustomer(id) {
     return new Promise((resolve, reject) => {
-      client.del(PREFIX + id, (err, result) => {
-        if (err) resolve({ success: false, message: strings.string_response_error });
-        resolve({ success: true, message: strings.string_response_removed });
+      Customer.deleteOne({_id: id}, (err, result) => {
+        if (err) {
+          resolve({ success: false, message: strings.string_response_error });
+        } else {
+          resolve({ success: true, message: strings.string_response_removed });
+        }
       })
     });
   }
-
   removeAll() {
     return new Promise((resolve, reject) => {
-      client.keys(PREFIX + '*', (err, keys) => {
-        if (err) resolve([]);
-        Promise.all(keys.map(key => {
-          return lredis.del(key);
-        })).then(result => {
+      Customer.deleteMany({}, (err, result) => {
+        if (err) {
+          resolve({ success: false, message: strings.string_response_error });
+        } else {
           resolve(result);
-        })
+        }
       })
     });
   }
-
   updateFcm(email, fcmToken) {
     return new Promise((resolve, reject) => {
       console.log(`Updating fcmToken of ${email}: ${fcmToken}`);
