@@ -36,22 +36,7 @@ const shipperSchema = new mongoose.Schema({
   },
   zipcode: {
     type: Number
-  },
-  accountNo: {
-    type: Number
-  },
-  type: {
-    type: String
-  },
-  isExternal: {
-    type: Boolean
-  },
-  tranVersion: {
-    type: String
-  },
-   departurePortId: {
-    type: String
-  },
+  }
 }, {
   timestamps: true
 });

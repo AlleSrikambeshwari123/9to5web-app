@@ -48,12 +48,12 @@ class CarrierService {
   }
   getCarrier(id) {
     return new Promise((resolve, reject) => {
-      Carrier.find({_id: id}).exec((err, result) => {
+      Carrier.findOne({_id: id}).exec((err, result) => {
         if (err) {
           resolve({});
         } else {
 
-          resolve(result[0])
+          resolve(result)
         }
       });
     });
@@ -65,9 +65,14 @@ class CarrierService {
     })
   }
   removeAll() {
-    return new Promise(async(resolve, reject) => {
-       await Carrier.remove()
-       resolve(true)
+    return new Promise((resolve, reject) => {
+       Carrier.deleteMany({}, (err, result) => {
+        if (err) {
+          resolve([]);
+        } else {
+          resolve(result);
+        }
+      })
     });
   }
 }
