@@ -61,6 +61,7 @@ global.uploadRoot = __dirname + '/public/uploads';
 app.engine("ejs", ejsmate);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
+app.locals.moment = require('moment');
 app.locals.helpers = require('./views/helpers');
 
 // uncomment after placing your favicon in /public

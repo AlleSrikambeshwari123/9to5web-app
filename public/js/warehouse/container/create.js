@@ -24,7 +24,19 @@ $('#container-date').datetimepicker({
 $('#add-container-form').submit(function(event) {
   event.preventDefault(event);
   let formUrl = $(this).attr('action');
-  var data = extractFormData(this);
+
+  let formData = $(this).serializeArray();
+  let data = {};
+  
+  $.each(formData, function (_, record) {
+    if (record.value !== "") {
+      // Converting the date into ISO format
+      if (record.name === 'date') {
+        record.value = moment(record.value, 'MMM DD,YYYY HH:mm').toISOString();
+      }
+      data[record.name] = record.value;
+    } 
+  })
 
   $.ajax({
     url: formUrl,
