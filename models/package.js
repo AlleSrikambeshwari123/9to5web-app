@@ -25,9 +25,7 @@ const packageSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  location: {
-    type: String
-  },
+  
   width: {
     type: String
   },
@@ -35,9 +33,6 @@ const packageSchema = new mongoose.Schema({
     type: String
   },
   dimensions: {
-    type: String
-  },
-  lastStatusText: {
     type: String
   },
   awbId: {
@@ -64,7 +59,20 @@ const packageSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId, 
     ref: 'Hazmat', 
     required: true
-  }             
+  },
+  // Additional Fields
+  lastStatusText: {
+    type: String
+  },
+  location: {
+    type: String
+  },
+  manifestId: {
+    type: String
+  },
+  compartmentId: {
+    type: String
+  }
 }, {
   timestamps: true
 });
