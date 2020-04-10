@@ -11,6 +11,9 @@ const PREFIX = strings.redis_prefix_manifest;
 const OPEN_MANIFEST_LIST = strings.redis_prefix_manifest_open_list;
 
 var PlaneService = require('./PlaneService');
+
+const Manifest = require('../models/Manifest');
+
 var planeService = new PlaneService();
 const manifestStages = {
   open: {
@@ -53,23 +56,44 @@ class ManifestService {
 
   createManifest(manifest) {
     return new Promise((resolve, reject) => {
-      client.incr(ID_COUNTER, (err, id) => {
-        manifest.id = id;
-        manifest.dateCreated = moment().utc().unix();
-        manifest.title = 'M-' + id;
-        manifest.stageId = manifestStages.open.id;
-        manifest.stage = manifestStages.open.title;
-        client.hmset(PREFIX + id, manifest);
-        client.sadd(OPEN_MANIFEST_LIST, id);
-        resolve({ success: true, message: strings.string_response_created, manifest: manifest });
+     let obj_manifest = new Manifest(manifest);
+     obj_manifest.save(async(err, result) => {
+        if (err) {
+          resolve({ success: false, message: err});
+        } else {
+
+          let title = 'M-' + result._id;
+          let stageId = manifestStages.open.id;
+          let stage = manifestStages.open.title;
+          await Manifest.findOneAndUpdate({_id: result._id},{title: title, stageId: stageId, stage: stage, dateCreated: new Date()})
+          resolve({ success: true, message: strings.string_response_created, manifest: result});
+        }
       })
-    });
+    })
+
+    // return new Promise((resolve, reject) => {
+    //   client.incr(ID_COUNTER, (err, id) => {
+    //     manifest.id = id;
+    //     manifest.dateCreated = moment().utc().unix();
+    //     manifest.title = 'M-' + id;
+    //     manifest.stageId = manifestStages.open.id;
+    //     manifest.stage = manifestStages.open.title;
+    //     client.hmset(PREFIX + id, manifest);
+    //     client.sadd(OPEN_MANIFEST_LIST, id);
+    //     resolve({ success: true, message: strings.string_response_created, manifest: manifest });
+    //   })
+    // });
   }
 
   updateManifestDetails(id, details) {
-    return new Promise((resolve, reject) => {
-      client.hmset(PREFIX + id, details);
-      resolve({ success: true, message: strings.string_response_updated });
+    return new Promise(async(resolve, reject) => {
+      Manifest.findOneAndUpdate({_id: id},details, (err, result) => {
+          if (err) {
+            resolve({ success: false, message: err});
+          } else {
+            resolve({ success: true, message:  strings.string_response_updated});
+          }
+      })
     })
   }
 
@@ -113,30 +137,24 @@ class ManifestService {
   }
 
   getManifest(manifestId) {
+    console.log(manifestId)
     return new Promise((resolve, reject) => {
-      lredis.hgetall(PREFIX + manifestId).then(manifest => {
-        if (manifest.planeId) {
-          planeService.getPlane(manifest.planeId).then(planeInfo => {
-            manifest.plane = planeInfo;
-            resolve(manifest);
-          })
-        } else {
-          resolve(manifest);
+      Manifest.findOne({_id: manifestId}).exec((err, result) => {
+        if(err){
+          resolve({});
+        }else{
+          resolve(result)
         }
-      })
-    })
+      });
+    });
   }
 
   getManifests() {
-    return new Promise((resolve, reject) => {
-      client.keys(PREFIX + '*', (err, keys) => {
-        Promise.all(keys.map(key => {
-          return lredis.hgetall(key);
-        })).then(manifests => {
-          resolve(manifests);
-        })
-      })
-    });
+    return new Promise(async(resolve, reject) => {
+      let manifest = await Manifest.find({}).populate('plane')
+      console.log(manifest)
+      resolve(manifest)
+    })
   }
 
   getOpenManifest() {
@@ -162,9 +180,14 @@ class ManifestService {
 
   deleteManifest(mid) {
     return new Promise((resolve, reject) => {
-      client.del(PREFIX + mid);
-      client.srem(OPEN_MANIFEST_LIST, mid);
-      resolve({ success: true, message: strings.string_response_removed });
+      Manifest.deleteOne({_id: mid}, (err, result) => {
+          if (err) {
+            resolve({ success: false, message: err });
+          } else {
+            resolve({ success: true, message: strings.string_response_removed });
+          }
+      })
+    
     });
   }
 
