@@ -18,8 +18,8 @@ exports.create_vehicle = (req, res, next) => {
   res.render('pages/fleet/vehicle/create', {
     page: req.originalUrl,
     title: 'Create New Vehicle',
-    user: res.user,
-  })
+    user: res.user
+  });
 }
 
 exports.add_new_vehicle = (req, res, next) => {

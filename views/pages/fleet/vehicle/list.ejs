@@ -23,7 +23,7 @@
           <tbody>
             <% vehicles.forEach(function(vehicle){%>
             <tr data-record="<%= vehicle.id %>">
-              <th scope="row"><%=vehicle.vehicle_make%></th>
+              <th scope="row"><%=vehicle.vehicleMake%></th>
               <td><%=vehicle.model%></td>
               <td><%=vehicle.registration%></td>
               <td><%=vehicle.driver.firstName + ' ' + vehicle.driver.lastName%></td>

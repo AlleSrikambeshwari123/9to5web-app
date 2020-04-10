@@ -19,11 +19,9 @@ const carrierSchema = new mongoose.Schema({
   tax: {
     type: Number
   },
-
   email: {
     type: String
   },
-
   address: {
     type: String
   },

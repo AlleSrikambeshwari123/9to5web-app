@@ -1,9 +1,9 @@
 const strings = require('../Res/strings');
 
-
 const PREFIX = strings.redis_prefix_airport;
 const AIRPORT_ID_KEY = strings.redis_id_airport;
-const Airport = require('../models/Airport');
+
+const Airport = require('../models/airport');
 
 /**
  * name: String
@@ -14,45 +14,48 @@ class AirportService {
   
   create(airport) {
     return new Promise((resolve, reject) => {
-     let obj_airport = new Airport(airport);
-     obj_airport.save((err, result) => {
+     let newAirport = new Airport(airport);
+     newAirport.save((err, result) => {
         if (err) {
-          resolve({ success: false, message: err});
+          resolve({ success: false, message: strings.string_response_error});
         } else {
-          resolve({ success: true, message: strings.string_response_added, airport: result});
+          resolve({ 
+            success: true, 
+            message: strings.string_response_added, 
+            airport: result
+          });
         }
       })
     })
   }
   update(id, body) {
     return new Promise(async(resolve, reject) => {
-      Airport.findOneAndUpdate({_id: id},body, (err, result) => {
-          if (err) {
-            resolve({ success: false, message: err});
-          } else {
-            resolve({ success: true, message:  strings.string_response_updated});
-          }
+      Airport.findOneAndUpdate({_id: id}, body, (err, result) => {
+        if (err) {
+          resolve({ success: false, message: strings.string_response_error});
+        } else {
+          resolve({ success: true, message:  strings.string_response_updated});
+        }
       })
     })
   }
   remove(id) {
-     return new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       Airport.deleteOne({_id: id}, (err, result) => {
-          if (err) {
-            resolve({ success: false, message: err });
-          } else {
-            resolve({ success: true, message: strings.string_response_removed });
-          }
+        if (err) {
+          resolve({ success: false, message: strings.string_response_error });
+        } else {
+          resolve({ success: true, message: strings.string_response_removed });
+        }
       })
-    
     });
   }
   get(id) {
-     return new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       Airport.findOne({_id: id}).exec((err, result) => {
-        if(err){
+        if (err) {
           resolve({});
-        }else{
+        } else {
           resolve(result)
         }
       });

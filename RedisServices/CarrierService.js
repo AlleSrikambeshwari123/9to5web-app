@@ -6,44 +6,46 @@ var lredis = require('./redis-local');
 
 const PREFIX = strings.redis_prefix_carrier;
 const CARRIER_ID = strings.redis_id_carrier;
-const Carrier = require('../models/Carrier');
+
+const Carrier = require('../models/carrier');
 
 class CarrierService {
   addCarrier(carrier) {
-    console.log(carrier)
     return new Promise((resolve, reject) => {
-     let obj_carrier = new Carrier(carrier);
-     obj_carrier.save((err, result) => {
+      let newCarrier = new Carrier(carrier);
+      newCarrier.save((err, result) => {
         if (err) {
-          resolve({ success: false, message: err});
+          resolve({ success: false, message: strings.string_response_error});
         } else {
-          resolve({ success: true, message: strings.string_response_added, carrier: result});
+          resolve({ 
+            success: true, 
+            message: strings.string_response_added, 
+            carrier: result
+          });
         }
       })
     })
   }
   updateCarrier(id, body) {
-    console.log(body)
     return new Promise(async(resolve, reject) => {
-      Carrier.findOneAndUpdate({_id: id},body, (err, result) => {
-          if (err) {
-            resolve({ success: false, message: err});
-          } else {
-            resolve({ success: true, message:  strings.string_response_updated });
-          }
+      Carrier.findOneAndUpdate({_id: id}, body, (err, result) => {
+        if (err) {
+          resolve({ success: false, message: strings.string_response_error});
+        } else {
+          resolve({ success: true, message: strings.string_response_updated });
+        }
       })
     })
   }
   removeCarrier(id) {
-   return new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       Carrier.deleteOne({_id: id}, (err, result) => {
-          if (err) {
-            resolve({ success: false, message: err });
-          } else {
-            resolve({ success: true, message: strings.string_response_removed });
-          }
+        if (err) {
+          resolve({ success: false, message: strings.string_response_error });
+        } else {
+          resolve({ success: true, message: strings.string_response_removed });
+        }
       })
-    
     });
   }
   getCarrier(id) {
@@ -52,7 +54,6 @@ class CarrierService {
         if (err) {
           resolve({});
         } else {
-
           resolve(result)
         }
       });
@@ -66,7 +67,7 @@ class CarrierService {
   }
   removeAll() {
     return new Promise((resolve, reject) => {
-       Carrier.deleteMany({}, (err, result) => {
+      Carrier.deleteMany({}, (err, result) => {
         if (err) {
           resolve([]);
         } else {

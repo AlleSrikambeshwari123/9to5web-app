@@ -11,19 +11,18 @@ const PLANE_LIST = strings.redis_prefix_planes_list;
 const COMPARTMENT_PREFIX = strings.redis_prefix_plane_compartment;
 const COMPARTMENT_COUNTER = strings.redis_id_compartment_plane;
 const COMPARTMENT_LIST = strings.redis_prefix_plane_compartment_list;
-const Plane = require('../models/Plane');
-const Compartment = require('../models/Compartment')
-let ObjectId = require('mongodb').ObjectID;
 
+const Plane = require('../models/plane');
+const Compartment = require('../models/compartment')
+let ObjectId = require('mongodb').ObjectID;
 
 class PlaneService {
   addPlane(plane) {
-    console.log(plane)
     return new Promise((resolve, reject) => {
-      let obj_plane = new Plane(plane);
-      obj_plane.save((err, result) => {
+      let newPlane = new Plane(plane);
+      newPlane.save((err, result) => {
         if (err) {
-          resolve({ success: false, message: err});
+          resolve({ success: false, message: strings.string_response_error});
         } else {
           resolve({ success: true, message: strings.string_response_created});
         }
@@ -32,32 +31,32 @@ class PlaneService {
   }
   updatePlane(id, plane) {
     return new Promise(async(resolve, reject) => {
-      Plane.findOneAndUpdate({_id: id},plane, (err, result) => {
-          if (err) {
-            resolve({ success: false, message: err});
-          } else {
-            resolve({ success: true, message:  strings.string_response_updated});
-          }
+      Plane.findOneAndUpdate({_id: id}, plane, (err, result) => {
+        if (err) {
+          resolve({ success: false, message: strings.string_response_error});
+        } else {
+          resolve({ success: true, message: strings.string_response_updated});
+        }
       })
     })
   }
   removePlane(planeId) {
      return new Promise((resolve, reject) => {
-      Plane.deleteOne({_id: id}, (err, result) => {
-          if (err) {
-            resolve({ success: false, message: err });
-          } else {
-            resolve({ success: true, message: strings.string_response_removed });
-          }
+      Plane.deleteOne({_id: planeId}, (err, result) => {
+        if (err) {
+          resolve({ success: false, message: strings.string_response_error });
+        } else {
+          resolve({ success: true, message: strings.string_response_removed });
+        }
       })
     });
   }
   getPlane(id) {
     return new Promise((resolve, reject) => {
       Plane.findOne({_id: id}).exec((err, result) => {
-        if(err){
-          resolve({});
-        }else{
+        if (err) {
+          resolve({ success: false, message: strings.string_response_error });
+        } else {
           resolve(result)
         }
       });
@@ -69,7 +68,6 @@ class PlaneService {
       resolve(planes)
     })
   }
-
   getFullPlane(planeId) {
     return new Promise((resolve, reject) => {
       Promise.all([
@@ -82,52 +80,47 @@ class PlaneService {
       })
     });
   }
-
   // Compartment
   addCompartment(planeId, compartment) {
     return new Promise((resolve, reject) => {
-      let obj_compartment = new Compartment(compartment);
-      obj_compartment.save((err, result) => {
+      let newCompartment = new Compartment(compartment);
+      newCompartment.save((err, result) => {
         if (err) {
-          resolve({ success: false, message: err});
+          resolve({ success: false, message: strings.string_response_error});
         } else {
           resolve({ success: true, message: strings.string_response_created});
         }
       })
     })
   }
-
   getCompartments(planeId) {
     return new Promise(async(resolve, reject) => {
       let compartments = await Compartment.find({planeId: ObjectId(planeId)})
       resolve(compartments)
     });
   }
-
   getCompartment(compartmentId) {
     return new Promise((resolve, reject) => {
-      Compartment.findOne({_id: id}).exec((err, result) => {
-        if(err){
+      Compartment.findOne({_id: compartmentId}).exec((err, result) => {
+        if (err) {
           resolve({});
-        }else{
+        } else {
           resolve(result)
         }
       });
     });
   }
-
   removeCompartment(planeId, cid) {
     return new Promise((resolve, reject) => {
       Compartment.deleteOne({_id: cid}, (err, result) => {
-          if (err) {
-            resolve({ success: false, message: err });
-          } else {
-            resolve({ success: true, message: strings.string_response_removed });
-          }
+        if (err) {
+          resolve({ success: false, message: strings.string_response_error });
+        } else {
+          resolve({ success: true, message: strings.string_response_removed });
+        }
       })
     })
   }
-
   updatePlaneCapcity(planeId) {
     return new Promise((resolve, reject) => {
       client.smembers(COMPARTMENT_LIST + planeId, (err, ids) => {

@@ -7,28 +7,31 @@ var client = require('./dataContext').redisClient;
 const PREFIX = strings.redis_prefix_vehicle;
 const VEHICLE_ID = strings.redis_id_vehicle;
 const VEHICLE_LIST = strings.redis_prefid_vehicle_list;
-const Vehicle = require('../models/Vehicle');
 
+const Vehicle = require('../models/vehicle');
 
 class VehicleService {
   addVehicle(vehicle) {
     return new Promise((resolve, reject) => {
-      console.log(vehicle)
-      let obj_vehicle = new Vehicle(vehicle);
-      obj_vehicle.save((err, result) => {
+      let newVehicle = new Vehicle(vehicle);
+      newVehicle.save((err, result) => {
         if (err) {
-          resolve({ success: false, message: err});
+          resolve({ success: false, message: strings.string_response_error});
         } else {
-          resolve({ success: true, message: strings.string_response_added, vehicle: result});
+          resolve({ 
+            success: true, 
+            message: strings.string_response_added, 
+            vehicle: result
+          });
         }
       })
     })
   }
   updateVehicle(id, vehicle) {
     return new Promise((resolve, reject) => {
-      Vechicle.findOneAndUpdate({_id: id},vehicle, (err, result) => {
+      Vehicle.findOneAndUpdate({_id: id}, vehicle, (err, result) => {
         if (err) {
-          resolve({ success: false, message: err});
+          resolve({ success: false, message: strings.string_response_error});
         } else {
           resolve({ success: true, message:  strings.string_response_updated});
         }
@@ -38,21 +41,20 @@ class VehicleService {
   removeVehicle(id) {
      return new Promise((resolve, reject) => {
       Vehicle.deleteOne({_id: id}, (err, result) => {
-          if (err) {
-            resolve({ success: false, message: err });
-          } else {
-            resolve({ success: true, message: strings.string_response_removed });
-          }
+        if (err) {
+          resolve({ success: false, message: strings.string_response_error });
+        } else {
+          resolve({ success: true, message: strings.string_response_removed });
+        }
       })
-    
     });
   }
   getVehicle(id) {
     return new Promise((resolve, reject) => {
       Vehicle.findOne({_id: id}).exec((err, result) => {
-        if(err){
+        if (err) {
           resolve({});
-        }else{
+        } else {
           resolve(result)
         }
       });

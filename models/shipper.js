@@ -20,11 +20,9 @@ const shipperSchema = new mongoose.Schema({
   fax: {
     type: Number
   },
-
   email: {
     type: String
   },
-
   address: {
     type: String
   },
