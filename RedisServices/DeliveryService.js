@@ -7,6 +7,7 @@ var lredis = require("./redis-local");
 const PREFIX = strings.redis_prefix_delivery;
 const ID_DELIVERY = strings.redis_id_delivery;
 const DELIVERY_SET = strings.redis_prefix_delivery_package_list;
+const Delivery = require('../models/Delivery');
 
 class DeliveryService {
   constructor() {
@@ -18,39 +19,38 @@ class DeliveryService {
   }
 
   createDelivery(delivery, username) {
+    delivery["createdBy"] = username
+    delivery["status"] = 0;
+    delivery["dateCreated"] = moment().utc().unix();
     return new Promise((resolve, reject) => {
-      client.incr(ID_DELIVERY, (err, id) => {
-        if (err) resolve({ success: false, message: strings.string_response_error });
-
-        delivery.id = id;
-        delivery.status = 0;
-        delivery.createdBy = username;
-        delivery.dateCreated = moment().utc().unix();
-        client.hmset(PREFIX + id, delivery);
-        resolve({ success: true, message: strings.string_response_created });
+     let obj_delivery = new Delivery(delivery);
+     obj_delivery.save((err, result) => {
+        if (err) {
+          resolve({ success: false, message: err});
+        } else {
+          resolve({ success: true, message: strings.string_response_added, delivery: result});
+        }
       })
     })
   }
 
   getDelivery(deliveryId) {
     return new Promise((resolve, reject) => {
-      client.hgetall(PREFIX + deliveryId, (err, delivery) => {
-        if (err) resolve({});
-        else resolve(delivery);
-      })
+      Delivery.findOne({_id: deliveryId}).exec((err, result) => {
+        if(err){
+          resolve({});
+        }else{
+          resolve(result)
+        }
+      });
     });
+  
   }
 
   getDeliveries() {
-    return new Promise((resolve, reject) => {
-      client.keys(PREFIX + '*', (err, keys) => {
-        if (err) resolve([]);
-        Promise.all(keys.map(key => {
-          return lredis.hgetall(key);
-        })).then(deliveries => {
-          resolve(deliveries);
-        })
-      })
+    return new Promise(async(resolve, reject) => {
+      let deliveries = await Delivery.find({})
+      resolve(deliveries)
     })
   }
 
@@ -89,12 +89,22 @@ class DeliveryService {
   }
 
   addPackagesToDelivery(deliveryId, packageIds) {
-    return new Promise((resolve, reject) => {
-      client.sadd(DELIVERY_SET + deliveryId, packageIds, (err, reply) => {
-        if (err) resolve({ success: false, message: strings.string_response_error });
-        resolve({ success: true, message: strings.string_response_added });
-      })
-    })
+    console.log(packageIds)
+    // return new Promise(async(resolve, reject) => {
+    //   Delivery.findOneAndUpdate({_id: id},{packages: packageIds}, (err, result) => {
+    //       if (err) {
+    //         resolve({ success: false, message: err});
+    //       } else {
+    //         resolve({ success: true, message:  strings.string_response_updated});
+    //       }
+    //   })
+    // })
+    // return new Promise((resolve, reject) => {
+    //   client.sadd(DELIVERY_SET + deliveryId, packageIds, (err, reply) => {
+    //     if (err) resolve({ success: false, message: strings.string_response_error });
+    //     resolve({ success: true, message: strings.string_response_added });
+    //   })
+    // })
   }
 
   getDeliveryPackages(deliveryId) {

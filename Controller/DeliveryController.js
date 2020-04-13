@@ -34,6 +34,7 @@ exports.add_new_delivery = (req, res, next) => {
 exports.get_delivery_detail = (req, res, next) => {
   var deliveryId = req.params.id;
   services.deliveryService.getFullDelivery(deliveryId).then(delivery => {
+    console.log(delivery)
     Promise.all(delivery.packages.map(pkg => {
       return getFullPackage(pkg);
     })).then(packages => {
