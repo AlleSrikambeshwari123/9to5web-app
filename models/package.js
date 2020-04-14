@@ -25,7 +25,11 @@ const packageSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  
+  // Thisid is used for package on frontend side
+  id: {
+    type: String,
+    required: true
+  },
   width: {
     type: String
   },

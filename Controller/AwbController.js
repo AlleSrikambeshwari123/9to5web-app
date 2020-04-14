@@ -3,41 +3,35 @@ const printerCtrl = require('./PrinterController');
 const utils = require('../Util/utils');
 const aws = require('../Util/aws');
 
+const mongoose = require('mongoose');
+const moment = require('moment');
+const id = mongoose.Types.ObjectId();
+
 exports.preview_awb = (req, res, next) => {
   let id = req.params.id;
-  Promise.all([
-    services.awbService.getAwb(id),
-    services.packageService.getPackages(id),
-  ]).then(results => {
-    let awb = results[0];
-    let packages = results[1];
-    Promise.all([
-      services.customerService.getCustomer(awb.customerId),
-      services.shipperService.getShipper(awb.shipper),
-      services.carrierService.getCarrier(awb.carrier),
-      services.hazmatService.getHazmat(awb.hazmat),
-      services.invoiceService.getInvoicesByAWB(awb.id),
-    ]).then(otherInfos => {
-      awb.packages = packages;
-      awb.invoices = otherInfos[4].map(invoice => {
+  
+  services.awbService.getAwbPreviewDetails(id).then((awb) => {
+    awb.dateCreated = moment(awb.createdAt).format("MMM DD,YYYY");
+    
+    if (awb.invoices && awb.invoices.length) {
+      awb.invoices = awb.invoices.map(invoice => {
         if (invoice.filename) {
           invoice.link = aws.getSignedUrl(invoice.filename);
         }
         return invoice;
       });
-      awb.customer = otherInfos[0];
-      awb.dateCreated = utils.formatDate(awb.dateCreated, "MMM DD,YYYY");
-      res.render('pages/warehouse/awb/preview', {
-        page: req.originalUrl,
-        title: "AWB #" + awb.id,
-        user: res.user,
-        awb: awb,
-        shipper: otherInfos[1],
-        carrier: otherInfos[2],
-        hazmat: otherInfos[3],
-      })
-    })
-  })
+    }
+
+    res.render('pages/warehouse/awb/preview', {
+      page: req.originalUrl,
+      title: "AWB #" + awb.id,
+      user: res.user,
+      awb: awb,
+      shipper: awb.shipper,
+      carrier: awb.carrier,
+      hazmat: awb.hazmat
+    });
+  });
 };
 
 exports.get_awb_detail = (req, res, next) => {
@@ -48,7 +42,7 @@ exports.get_awb_detail = (req, res, next) => {
     services.shipperService.getAllShippers(),
     services.carrierService.getAllCarriers(),
     services.awbService.getAwb(id),
-    services.packageService.getAWBPackagesWithLastStatus(id),
+    services.packageService.getAWBPackagesWithLastStatus_updated(id),
     services.locationService.getLocations(),
     services.invoiceService.getInvoicesByAWB(id),
     services.paidTypeService.getAllPaidTypes(),
@@ -69,6 +63,8 @@ exports.get_awb_detail = (req, res, next) => {
     purchaseOrder,
     barcodes,
   ]) => {
+    awb['customer'] = awb['customerId'];
+
     res.render('pages/warehouse/awb/edit', {
       page: req.originalUrl,
       title: 'AWB Details',
@@ -100,6 +96,7 @@ exports.create_awb = (req, res, next) => {
     services.locationService.getLocations(),
     services.paidTypeService.getAllPaidTypes(),
     services.packageService.getAllOriginBarcode(),
+    services.locationService.getCompanies()
   ]).then(([
     customers,
     hazmats,
@@ -108,7 +105,8 @@ exports.create_awb = (req, res, next) => {
     serviceTypes,
     locations,
     paidTypes,
-    barcodes
+    barcodes,
+    companies
   ]) => {
     res.render('pages/warehouse/awb/create', {
       page: req.originalUrl,
@@ -122,104 +120,188 @@ exports.create_awb = (req, res, next) => {
       serviceTypes,
       locations,
       paidTypes,
-      barcodes
+      barcodes,
+      companies
     });
   })
 };
 
-exports.add_new_awb = (req, res, next) => {
+exports.add_new_awb = async (req, res, next) => {
   let {invoices, ...awb} = req.body;
   let packages = JSON.parse(awb.packages);
-  services.awbService.createAwb(awb).then(async result => {
-    awb = result.awb;
-    await Promise.all((invoices || []).map(invoice => {
-      invoice.awbId = awb.id;
-      return services.invoiceService.create(invoice);
-    }));
-    packages.forEach(pkg => {
-      pkg.customerId = awb.customerId;
-      pkg.shipperId = awb.shipper;
-      pkg.carrierId = awb.carrier;
-      pkg.hazmatId = awb.hazmat;
+  let purchaseOrders = JSON.parse(awb.purchaseOrder);
+
+  const awbId = mongoose.Types.ObjectId();
+  const invoiceIds = [];
+
+  // Creating Invoices
+  await Promise.all((invoices || []).map(invoice => {
+    invoice['_id'] = mongoose.Types.ObjectId();
+    invoice.awbId = awbId;
+    invoiceIds.push(invoice['_id']);
+    return services.invoiceService.create(invoice);
+  }));
+
+  const packagesIds = [];
+  packages.forEach(pkg => {
+    pkg['_id'] = mongoose.Types.ObjectId();
+    pkg.customerId = awb.customerId;
+    pkg.shipperId = awb.shipper;
+    pkg.carrierId = awb.carrier;
+    pkg.hazmatId = awb.hazmat;
+    packagesIds.push(pkg['_id']);
+  });
+  // Creating Packages
+  await services.packageService.createPackages(awbId, packages);
+
+  const purchaseOrderIds = [];
+  // PurchaseOrders
+  if (purchaseOrders && purchaseOrders.length) {
+    purchaseOrders.forEach(purchaseOrder => {
+      purchaseOrder['_id'] = mongoose.Types.ObjectId();
+      purchaseOrderIds.push(purchaseOrder['_id']);
     });
-    services.packageService.createPackages(awb.id, packages)
-      .then(() => res.send(result));
+    await services.awbService.createPurchaseOrders(awbId, purchaseOrders);
+  }
+  
+  awb.packages = packagesIds;
+  awb.invoices = invoiceIds;
+  awb.purchaseOrders = purchaseOrderIds;
+
+  awb['_id'] = awbId;
+
+  services.awbService.createAwb(awb).then(async result => {
+    res.send(result);
+  })
+  .catch((error) => {
+    console.log('error While creating the AWB', error);
   });
 };
 
 exports.update_awb = (req, res, next) => {
-  let awb_id = parseInt(req.params.id);
+  let awbId = req.params.id;
   let {invoices, ...awb} = req.body;
 
   let packages = JSON.parse(awb.packages);
-  services.awbService.updateAwb(awb_id, awb).then(async result => {
-    let all = (invoices || []).map(async (invoice) => {
-      invoice.awbId = awb_id;
-      if (invoice.id) {
-        await services.invoiceService.update(invoice.id, invoice);
+  let purchaseOrders = JSON.parse(awb.purchaseOrder);
+
+  const invoiceIds = [];
+  const packageIds = [];
+  const purchaseOrderIds = [];
+  const promises = [];
+
+  // Invoice create and update
+  if (invoices && invoices.length) {
+    invoices.forEach((invoice) => {
+      if (invoice['id']) {
+        invoice.awbId = awbId;
+        invoiceIds.push(invoice['id']);
+        promises.push(() => services.invoiceService.updateInvoice(invoice.id, invoice));
       } else {
-        await services.invoiceService.create(invoice);
+        invoice.awbId = awbId;
+        invoice['_id'] = mongoose.Types.ObjectId();
+        invoiceIds.push(invoice['_id']);
+        promises.push(() => services.invoiceService.create(invoice));
+      }  
+    });
+  }
+
+  // Package create and update
+  if (packages && packages.length) {
+    packages.forEach((package) => {
+      if (package['deleted']) {
+        promises.push(() => services.packageService.removePackage_updated(package._id));
+        return;
+      }
+      if (package['awbId']) {
+        packageIds.push(package['_id']);
+        promises.push(() => services.packageService.updatePackage_updated(package._id, package));
+      } else {
+        package.awbId = awbId;
+        package.customerId = awb.customerId;
+        package.shipperId = awb.shipper;
+        package.carrierId = awb.carrier;
+        package.hazmatId = awb.hazmat;
+        package['_id'] = mongoose.Types.ObjectId();
+        packageIds.push(package['_id']);
+        promises.push(() => services.packageService.createPackages(awbId, [package]));
+      }  
+    });
+  }
+
+  // PurchaseOrders create and update
+  if (purchaseOrders && purchaseOrders.length) {
+    purchaseOrders.forEach((purchaseOrder) => {
+      if (purchaseOrder['deleted']) {
+        promises.push(() => services.awbService.removePurchaseOrder(purchaseOrder._id));
+        return;
+      }
+      if (purchaseOrder['awbId']) {
+        purchaseOrderIds.push(purchaseOrder['_id']);
+        promises.push(() => services.awbService.updatePurchaseOrder(purchaseOrder['_id'], purchaseOrder));
+      } else {
+        purchaseOrder.awbId = awbId;
+        purchaseOrder['_id'] = mongoose.Types.ObjectId();
+        purchaseOrderIds.push(purchaseOrder['_id']);
+        promises.push(() => services.awbService.createPurchaseOrders(awbId, [purchaseOrder]));
       }
     });
+  }
 
-    packages.forEach(pkg => {
-      pkg.customerId = awb.customerId;
-      pkg.shipperId = awb.shipper;
-      pkg.carrierId = awb.carrier;
-      pkg.hazmatId = awb.hazmat;
-      //Old package need in updates
-      if (pkg.awbId !== undefined) {
-        all.push(services.packageService.updatePackage(pkg.id, pkg))
-      }
-    });
+  awb.invoices = invoiceIds;
+  awb.packages = packageIds;
+  awb.purchaseOrders = purchaseOrderIds;
 
-    const new_packages = packages.filter(f => f.awbId === undefined);
-    //Adding new packages
-    all.push(
-      services.packageService.createPackages(awb_id, new_packages)
-    );
-
-    Promise.all(all).then(packageResult => {
-      res.send(result);
-    })
-  }).catch(err => {
-    console.log(err);
+  // Updating awb
+  services.awbService.updateAwb(awbId, awb)
+  .then(async (result) => {
+    // Updating or creating invoices, purchaseOrders and packages
+    await Promise.all(promises.map((promise) => promise()));
+    res.send(result);
   })
+  .catch((err) => {
+    console.log(err);
+  });
 };
 
 exports.get_awb_list = (req, res, next) => {
-  services.awbService.getAwbs().then(awbs => {
-    getFullAwb(awbs).then(awbs => {
-      res.render('pages/warehouse/awb/list', {
-        page: req.originalUrl,
-        title: "AirWay Bills",
-        user: res.user,
-        awbs: awbs,
-      })
+  services.awbService.getAwbsFull().then(awbs => {
+    awbs.forEach((awb) => {
+      awb['customer'] = awb['customerId'];
+      awb['dateCreated'] = moment(awb['createdAt']).format('MMM DD,YYYY');
+    });
+    
+    res.render('pages/warehouse/awb/list', {
+      page: req.originalUrl,
+      title: "AirWay Bills",
+      user: res.user,
+      awbs: awbs,
     })
   })
 };
 
 exports.get_awb_no_docs = (req, res, next) => {
   services.awbService.getAwbsNoDocs().then(awbs => {
-    getFullAwb(awbs).then(awbs => {
-      res.render('pages/warehouse/awb/no-docs', {
-        page: req.originalUrl,
-        title: "AirWay Bills - No Docs",
-        user: res.user,
-        awbs: awbs,
-      })
+    res.render('pages/warehouse/awb/no-docs', {
+      page: req.originalUrl,
+      title: "AirWay Bills - No Docs",
+      user: res.user,
+      awbs: awbs,
     })
   })
 };
 
 exports.delete_awb = (req, res, next) => {
   let awbId = req.params.id;
-  Promise.all([
-    services.awbService.deleteAwb(awbId),
-    services.packageService.removePackages(awbId),
-  ]).then(results => {
-    res.send(results[0]);
+  services.awbService.getAwb(awbId).then((awbData) => {
+    Promise.all([
+      services.awbService.deleteAwb_updated(awbId),
+      services.packageService.removePackages_updated(awbId),
+      services.awbService.removePurchaseOrdersByAwb(awbId),
+      services.packageService.removePackagesStatusByPackageIds(awbData.packages)
+    ]).then(results => {
+      res.send(results[0]);
+    })
   })
 };
 
@@ -231,37 +313,35 @@ exports.generate_awb_pdf = (req, res, next) => {
 
 exports.nas_no_docs = (req, res, next) => {
   services.awbService.getAwbsNoDocs().then(awbs => {
-    getFullAwb(awbs).then(awbs => {
-      res.render('pages/warehouse/awb/no-docs', {
-        page: req.originalUrl,
-        title: "AirWay Bills - No Docs",
-        user: res.user,
-        awbs: awbs,
-      })
+    res.render('pages/warehouse/awb/no-docs', {
+      page: req.originalUrl,
+      title: "AirWay Bills - No Docs",
+      user: res.user,
+      awbs: awbs,
     })
   })
 };
 
-function getFullAwb(awbs) {
-  return new Promise((resolve, reject) => {
-    Promise.all(awbs.map(awb => {
-      return Promise.all([
-        services.packageService.getPackages(awb.id),
-        services.customerService.getCustomer(awb.customerId),
-        services.shipperService.getShipper(awb.shipper),
-        services.carrierService.getCarrier(awb.carrier),
-      ]).then(results => {
-        let weight = 0;
-        awb.packages = results[0];
-        awb.packages.forEach(pkg => weight += Number(pkg.weight));
-        awb.weight = weight;
-        awb.customer = results[1];
-        awb.shipper = results[2];
-        awb.carrier = results[3];
-        awb.dateCreated = utils.formatDate(awb.dateCreated, "MMM DD, YYYY");
-      })
-    })).then(results => {
-      resolve(awbs);
-    })
-  });
-}
+// function getFullAwb(awbs) {
+//   return new Promise((resolve, reject) => {
+//     Promise.all(awbs.map(awb => {
+//       return Promise.all([
+//         services.packageService.getPackages(awb._id),
+//         services.customerService.getCustomer(awb.customerId),
+//         services.shipperService.getShipper(awb.shipper),
+//         services.carrierService.getCarrier(awb.carrier),
+//       ]).then(results => {
+//         let weight = 0;
+//         awb.packages = results[0];
+//         awb.packages.forEach(pkg => weight += Number(pkg.weight));
+//         awb.weight = weight;
+//         awb.customer = results[1];
+//         awb.shipper = results[2];
+//         awb.carrier = results[3];
+//         awb.dateCreated = utils.formatDate(awb.dateCreated, "MMM DD, YYYY");
+//       })
+//     })).then(results => {
+//       resolve(awbs);
+//     })
+//   });
+// }

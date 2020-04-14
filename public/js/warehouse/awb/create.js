@@ -294,7 +294,7 @@ $(function () {
           type: response.success == true ? 'success' : 'error',
         }).then(() => {
           if (response.success) {
-            $('#shipper').append(`<option value="${response.shipper.id}">${response.shipper.name}</option>`)
+            $('#shipper').append(`<option value="${response.shipper._id}">${response.shipper.name}</option>`)
           }
         })
       }
@@ -315,7 +315,7 @@ $(function () {
           type: response.success == true ? 'success' : 'error',
         }).then(() => {
           if (response.success) {
-            $('#carrier').append(`<option value="${response.carrier.id}">${response.carrier.name}</option>`)
+            $('#carrier').append(`<option value="${response.carrier._id}">${response.carrier.name}</option>`)
           }
         })
       }
@@ -337,7 +337,7 @@ $(function () {
         }).then(() => {
           if (response.success) {
             var customer = response.customer;
-            $('#customerId').append(`<option value="${customer.id}">${customer.pmb} / ${customer.firstName} ${customer.lastName}</option>`)
+            $('#customerId').append(`<option value="${customer._id}">${customer.pmb} / ${customer.firstName} ${customer.lastName}</option>`)
           }
         })
       }

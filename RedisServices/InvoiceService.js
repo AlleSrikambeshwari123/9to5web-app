@@ -2,6 +2,7 @@ let Promise = require('bluebird');
 let assert = require('assert');
 
 let client = require('./dataContext').redisClient;
+const Invoice = require('../models/invoice');
 
 const Keys = {
   item: (id) => `invoice:${id}`,
@@ -11,18 +12,26 @@ const Keys = {
 
 class InvoiceService {
   async create(data) {
-    data.id = await this.generateId();
-    let key = Keys.item(data.id);
+    const newInvoice = new Invoice(data);
+    await Promise.fromCallback((cb) => newInvoice.save(cb));
+    return newInvoice;
+  }
 
-    let transaction = client.multi();
-    transaction.hmset(key, data);
+  async updateInvoice(invoiceId, data) {
+    return new Promise((resolve, reject) => {
+      const updatedData = {...data};
+      if (!updatedData['filename']) {
+        delete updatedData['filename'];
+      }
 
-    if (data.awbId) {
-      transaction.sadd(Keys.awbInvoices(data.awbId), data.id);
-    }
-
-    await Promise.fromCallback((cb) => transaction.exec(cb));
-    return data;
+      Invoice.findOneAndUpdate({_id: invoiceId}, {...updatedData}, (err, result) => {
+        if (err) {
+          resolve({success: false});
+        } else {
+          resolve({success: true});
+        }
+      })
+    });
   }
 
   async getByKey(key) {
@@ -63,9 +72,15 @@ class InvoiceService {
   }
 
   async getInvoicesByAWB(awbId) {
-    let ids = await Promise.fromCallback((cb) => client.smembers(Keys.awbInvoices(awbId), cb));
-    let items = await Promise.map(ids, (id) => this.get(id));
-    return items;
+    return new Promise((resolve, reject) => {
+      Invoice.find({awbId: awbId}, (err, result) => {
+        if (err) {
+          resolve([]);
+        } else {
+          resolve(result);
+        }
+      });
+    })
   }
 
   async all() {

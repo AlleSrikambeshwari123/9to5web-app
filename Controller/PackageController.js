@@ -135,7 +135,7 @@ exports.get_filtered_package_list = (req, res, next) => {
 };
 
 exports.get_fll_package_list = (req, res, next) => {
-  services.packageService.getPackagesInFll().then((packages) => {
+  services.packageService.getPackagesInFll_updated().then((packages) => {
     res.render('pages/warehouse/package/list', {
       page: req.originalUrl,
       user: res.user,
@@ -147,7 +147,7 @@ exports.get_fll_package_list = (req, res, next) => {
 };
 
 exports.get_nas_package_list = (req, res, next) => {
-  services.packageService.getPackagesInNas().then((packages) => {
+  services.packageService.getPackagesInNas_updated().then((packages) => {
     res.render('pages/warehouse/package/list', {
       page: req.originalUrl,
       user: res.user,

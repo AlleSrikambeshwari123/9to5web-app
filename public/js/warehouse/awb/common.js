@@ -1,5 +1,6 @@
 let AWBPO = (() => {
   let items = [];
+  let deletedItems = [];
 
   let hydratedItems = $('#awbPOTable tr[data-item]')
     .map(function() {
@@ -34,7 +35,12 @@ let AWBPO = (() => {
   table.on('click', 'a[data-action="remove"]', function() {
     var data = table.row($(this).parents('tr')).data();
     items = items.filter(function(item) {
-      return item.cid !== data.cid;
+      if (item.cid !== data.cid) {
+        return true;
+      } else {
+        deletedItems.push({_id: item._id, deleted: true});
+        return false;
+      }
     });
 
     table
@@ -63,8 +69,13 @@ let AWBPO = (() => {
     return items;
   }
 
+  function getDeletedItems() {
+    return deletedItems;
+  }
+
   return {
     addItem,
     getItems,
+    getDeletedItems
   };
 })();

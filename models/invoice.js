@@ -5,16 +5,13 @@ const mongoose = require('mongoose');
 const invoiceSchema = new mongoose.Schema({
   // Invoice Number
   number: {
-    type: String,
-    required: true
+    type: String
   },
   value: {
-    type: String,
-    required: true
+    type: String
   },
   filename: {
-    type: String,
-    required: true
+    type: String
   },
   awbId: {
     type: mongoose.Schema.Types.ObjectId, 

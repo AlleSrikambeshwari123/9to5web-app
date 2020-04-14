@@ -10,6 +10,9 @@ const PREFIX = strings.redis_prefix_awb;
 const AWB_ID = strings.redis_id_awb;
 const PREFIX_NO_DOCS_LIST = strings.redis_prefix_no_docs_list;
 
+const Awb = require('../models/awb');
+const PurchaseOrder = require('../models/purchaseOrder');
+
 const DELIVERY_METHODS = {
   DELIVERY: 1,
   PICKUP: 2,
@@ -50,48 +53,39 @@ class AwbService {
 
   createAwb(awb) {
     return new Promise((resolve, reject) => {
-      this.generateAwbId().then(result => {
-        // awb.created_by = awb.username;
-        awb.id = result.awb;
-        awb.dateCreated = moment().utc().unix();
-        awb.status = 1;
-        if (awb.invoice)
-          awb.hasDocs = 1;
-        else {
-          awb.hasDocs = 0;
-          client.sadd(PREFIX_NO_DOCS_LIST, awb.id);
+      const newAwb = new Awb(awb);
+      newAwb.save((err, result) => {
+        if (err) {
+          resolve({ success: false, message: strings.string_response_error });
+        } else {
+          awb['id'] = result['_id'];
+          resolve({ success: true, message: strings.string_response_created, awb: awb });
         }
-        client.hmset(PREFIX + awb.id, awb);
-        resolve({ success: true, message: strings.string_response_created, awb: awb });
-      })
+      });
     });
   }
 
   async getPurchaseOrder(awbOrAWBId) {
-    let awb = null;
-    if (typeof awbOrAWBId === 'string' || typeof awbOrAWBId === 'number') {
-      awb = await this.getAwb(awbOrAWBId);
-    } else {
-      awb = awbOrAWBId;
-    }
-
-    if (!awb) {
-      throw new Error('Not found');
-    }
-
-    if (awb.purchaseOrder) {
-      return JSON.parse(awb.purchaseOrder);
-    }
-
-    return [];
+    return new Promise((resolve, reject) => {
+      PurchaseOrder.find({awbId: awbOrAWBId}, (err, result) => {
+        if (err) {
+          resolve([]);
+        } else {
+          resolve(result);
+        }
+      });
+    });
   }
 
   updateAwb(id, awb) {
     return new Promise((resolve, reject) => {
-      // awb.updated_by = awb.username;
-      awb.dateUpdated = moment().utc().unix();
-      client.hmset(PREFIX + id, awb);
-      resolve({ success: true, message: strings.string_response_updated, awb:{id} });
+      Awb.findOneAndUpdate({_id: id}, {...awb}, (err, result) => {
+        if (err) {
+          resolve({ success: false });
+        } else {
+          resolve({ success: true });
+        }
+      })
     });
   }
 
@@ -103,15 +97,25 @@ class AwbService {
     });
   }
 
+  deleteAwb_updated(awbId) {
+    return new Promise((resolve, reject) => {
+      Awb.deleteOne({_id: awbId}, (err, result) => {
+        if (err) {
+          resolve({ success: false, message: strings.string_response_error }); 
+        } else {
+          resolve({ success: true, message: strings.string_response_removed, data: result });
+        }
+      });
+    });
+  }
+
   getAwb(id) {
     return new Promise((resolve, reject) => {
-      client.hgetall(PREFIX + id, (err, awb) => {
-        if (err || !awb || awb == null) resolve({});
-        else {
-          this.services.customerService.getCustomer(awb.customerId).then(customer => {
-            awb.customer = customer;
-            resolve(awb);
-          })
+      Awb.findOne({_id: id}, (err, result) => {
+        if (err) {
+          resolve({});
+        } else {
+          resolve(result);
         }
       })
     });
@@ -130,24 +134,87 @@ class AwbService {
     });
   }
 
+  getAwbsFull() {
+    return new Promise((resolve, reject) => {
+      Awb.find({})
+      .populate('customerId')
+      .populate('shipper')
+      .populate('carrier')
+      .populate('hazmat')
+      .populate('packages')
+      .populate('purchaseOrders')
+      .populate('invoices')
+      .exec((err, result) => {
+        resolve(result);
+      });
+    });
+  }
+
+  getAwbPreviewDetails(id) {
+    return new Promise((resolve, reject) => {
+      Awb.findOne({_id: id})
+      .populate('customerId')
+      .populate('shipper')
+      .populate('carrier')
+      .populate('hazmat')
+      .populate('packages')
+      .populate('purchaseOrders')
+      .populate('invoices')
+      .exec((err, result) => {
+        if (result.customerId) {
+          result.customer = result.customerId;
+        }
+        resolve(result);
+      });
+    });
+  }
+
   async getAwbsNoDocsIds() {
     const ids = await Promise.fromCallback(cb => client.smembers(PREFIX_NO_DOCS_LIST, cb));
     return ids;
   }
 
   async getAwbsNoDocs() {
-    try {
-      const ids = await this.getAwbsNoDocsIds();
-      return await Promise.all(ids.map(id => {
-        return lredis.hgetall(PREFIX + id);
-      }));
-    } catch (err) {
-      return [];
-    }
+    return new Promise((resolve, reject) => {
+      Awb.find({invoices: {$eq: []}})
+      .populate('customerId')
+      .populate('shipper')
+      .populate('carrier')
+      .populate('packages')
+      .populate('purchaseOrders')
+      .exec((err, awbData) => {
+        if (err) {
+          resolve([]);
+        } else {
+          awbData.forEach((data) => {
+            data['customer'] = data['customerId'];
+            if (data['packages'] && data['packages'].length) {
+              let weight = 0;
+              data.packages.forEach(pkg => weight += Number(pkg.weight));
+              data['weight'] = weight;
+            }
+            data['dateCreated'] = moment(data['createdAt']).format("MMM DD, YYYY");
+          })
+          resolve(awbData);
+        }
+      })
+    })
   }
 
   getFullAwb(id) {
     return new Promise((resolve, reject) => {
+      // Awb.find({_id: id})
+      // .populate('customerId')
+      // .populate('shipper')
+      // .populate('carrier')
+      // .populate('hazmat')
+      // .populate('packages')
+      // .populate('purchaseOrders')
+      // .populate('invoices')
+      // .exec((err, result) => {
+      //   resolve(result);
+      // });
+
       Promise.all([
         this.getAwb(id),
         this.services.packageService.getPackages(id),
@@ -173,6 +240,68 @@ class AwbService {
       });
     });
   }
+
+  createPurchaseOrders(awbId, purchaseOrders) {
+    return new Promise((resolve, reject) => {
+      Promise.all(
+        purchaseOrders.map((pkg) => {
+          return this.createPurchaseOrder(pkg, awbId);
+        }),
+      ).then((result) => {
+        resolve({ success: true });
+      });
+    });
+  }
+
+  createPurchaseOrder(newPackageOrder, awbId) {
+    return new Promise((resolve, reject) => {
+      newPackageOrder.awbId = awbId;
+      const newPackageOrderData = new PurchaseOrder(newPackageOrder);
+      newPackageOrderData.save((err, result) => {
+        if (err) {
+          resolve({ success: false, message: strings.string_response_error });
+        } else {
+          resolve({ success: true });
+        }
+      });
+    });
+  }
+
+  updatePurchaseOrder(purchaseOrderId, purchaseOrderData) {
+    return new Promise((resolve, reject) => {
+      PurchaseOrder.findOneAndUpdate({_id: purchaseOrderId}, {...purchaseOrderData}, (err, result) => {
+        if (err) {
+          resolve({success: false});
+        } else {
+          resolve({success: true});
+        }
+      });
+    });
+  }
+
+  removePurchaseOrder(id) {
+    return new Promise((resolve, reject) => {
+      PurchaseOrder.deleteOne({_id: id}, (err, result) => {
+        if (err) {
+          resolve({success: false, message: strings.string_response_error});
+        } else {
+          resolve(result);
+        }
+      });
+    });
+  }
+
+  removePurchaseOrdersByAwb(awbId) {
+    return new Promise((resolve, reject) => {
+      PurchaseOrder.deleteMany({awbId: awbId}, (err, result) => {
+        if (err) {
+          resolve({success: false, message: strings.string_response_error});
+        } else {
+          resolve(result);
+        }
+      });
+    });
+  }
 }
 
 //========== DB Structure ==========//
@@ -189,5 +318,16 @@ class AwbService {
 // status: '1',
 // hasDocs: '1',
 // deliveryMethod: number, see DELIVERY_METHODS
+
+//========= DB Structure: Purchase order =========//
+// source: "fll"
+// paidTypeId: "5e8f17e2fcd7da7152d490ec"
+// serviceTypeId: "5e8f17eafcd7da7152d490ed"
+// notes: ""
+// paidTypeText: "www"
+// sourceText: "9-5 FLL"
+// serviceTypeText: "wwww"
+// amount: 0
+// awbId: "5e8f17eafcd7da7152d770ed"
 
 module.exports = AwbService;
