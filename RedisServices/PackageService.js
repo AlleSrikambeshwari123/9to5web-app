@@ -303,7 +303,7 @@ class PackageService {
         if (err) {
           resolve({ success: false, message: strings.string_response_error });
         } else {
-          this.updatePackageStatus(result['_id'], 1, '')
+          this.updatePackageStatus(result['_id'], 1, newPackage.createdBy)
           resolve({ success: true });
         }
       });
@@ -321,7 +321,7 @@ class PackageService {
     return new Promise((resolve, reject) => {
       Package.findOneAndUpdate({_id: id}, {...pkg}, (err, result) => {
         if (err) {
-          resolve({success: false, message: strings.string_response_error});
+          resolve({ success: false, message: strings.string_response_error });
         } else {
           resolve({ success: true });
         }
@@ -661,12 +661,12 @@ class PackageService {
   }
 
   //========== Package Status ==========//
-  updatePackageStatus(packageId, status, username) {
+  updatePackageStatus(packageId, status, userId) {
     return new Promise((resolve, reject) => {
       const packageStatus = {
         packageId: packageId,
         status: PKG_STATUS[status],
-        updatedBy: username
+        updatedBy: userId
       };
 
       const newPackageStatusData = new PackageStatus(packageStatus);

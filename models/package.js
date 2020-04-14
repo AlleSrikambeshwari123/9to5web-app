@@ -61,8 +61,7 @@ const packageSchema = new mongoose.Schema({
   },
   hazmatId: {
     type: mongoose.Schema.Types.ObjectId, 
-    ref: 'Hazmat', 
-    required: true
+    ref: 'Hazmat'
   },
   // Additional Fields
   lastStatusText: {
@@ -76,6 +75,14 @@ const packageSchema = new mongoose.Schema({
   },
   compartmentId: {
     type: String
+  },
+  isConsolidated: {
+    type: String
+  },
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'User', 
+    required: true 
   }
 }, {
   timestamps: true

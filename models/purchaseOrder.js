@@ -40,6 +40,11 @@ const purchaseOrderSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId, 
     ref: 'Awb', 
     required: true 
+  },
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'User', 
+    required: true 
   }             
 }, {
   timestamps: true
