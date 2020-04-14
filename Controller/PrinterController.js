@@ -57,7 +57,7 @@ exports.get_full_awb = (req, res, next) => {
 exports.download_pdf_awb = (req, res, next) => {
   let id = req.params.id;
   console.log("Downloading AWB PDF", id);
-  getFullAwb(id).then(awb => {
+  services.awbService.getAwbPreviewDetails(id).then((awb) => {
     awbPdfGen.generateAWb(awb).then(result => {
       res.download(result.path);
     })

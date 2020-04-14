@@ -135,7 +135,16 @@
               <div class="col-sm-7 col-md-5 mb-3 mb-md-0 transfer-to">
                 <h5 class="sub">HAZMAT</h5>
                 <div class="account-transfer">
-                  <div><span>Class:</span><span><%= hazmat.description %></span></div>
+                  <div>
+                    <span>
+                      Class:
+                    </span>
+                    <span>
+                      <% if (hazmat) { %>
+                      <%= hazmat.description %>
+                      <% } %>
+                    </span>
+                  </div>
                 </div>
               </div>
               <div class="col-sm-5 col-md-7 transfer-total">
