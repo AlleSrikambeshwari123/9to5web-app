@@ -128,7 +128,7 @@ $(function() {
           placeholder: 'Select compartment',
           dropdownParent: addToManifestModal,
           data: data.map((compartment) => ({
-            id: compartment.id,
+            id: compartment._id,
             text: compartment.name
           })),
         });

@@ -113,8 +113,8 @@ class FlightLoadSheet {
                   if (pkg) {
                     return {
                       stack: [
-                        `AWB${pkg.awb}`,
-                        `PK${pkg.id}`,
+                        `AWB-${pkg.awb}`,
+                        `PK-${pkg.id}`,
                         { text: `${Number(pkg.weight).toFixed(2)} lbs`, margin: [0, 5, 0, 10] },
                       ],
                     };
@@ -138,7 +138,7 @@ class FlightLoadSheet {
                     .reduce((acc, i) => acc + i.weight, 0)
                     .toFixed(2)} lbs`,
                   bold: true,
-                  colSpan: 3,
+                  colSpan: 1,
                   alignment: 'center',
                   margin: [0, 5, 0, 0],
                   fontSize: 13,

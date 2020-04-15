@@ -555,16 +555,9 @@ class PackageService {
     });
   }
   getPackageOnManifest(manifestId) {
-    return new Promise((resolve, reject) => {
-      client.smembers(LIST_PACKAGE_MANIFEST + manifestId, (err, ids) => {
-        Promise.all(
-          ids.map((id) => {
-            return this.getPackage(id);
-          }),
-        ).then((packages) => {
-          resolve(packages);
-        });
-      });
+    return new Promise(async(resolve, reject) => {
+      let packages = await Package.find({manifestId: manifestId})
+      resolve(packages)
     });
   }
 

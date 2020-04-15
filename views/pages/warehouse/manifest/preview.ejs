@@ -105,7 +105,7 @@
               <tbody>
                 <% packages.forEach(package => { %>
                 <tr data-record="<%= package.id %>">
-                  <td><%= package.compartment.name %></td>
+                  <td><%= package.compartment && package.compartment.name %></td>
                   <td><%= package.trackingNo %></td>
                   <td><%= package.description %></td>
                   <td><%= package.weight %> lbs</td>

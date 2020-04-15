@@ -181,6 +181,7 @@ exports.downloadFlightManifest = async (req, res, next) => {
 };
 
 exports.downloadFlightLoadSheet = async (req, res, next) => {
+  console.log("dddddddddddfsafasfasfasfasfsafsa")
   try {
     let manifest = await services.manifestService.getManifest(req.params.id);
     let packages = await services.packageService.getPackageOnManifest(req.params.id);
@@ -189,6 +190,10 @@ exports.downloadFlightLoadSheet = async (req, res, next) => {
         services.planeService.getCompartment(pkg.compartmentId),
       ),
     );
+
+    console.log("------manifest", manifest)
+    console.log("------packages", packages)
+    console.log("------compartments", compartments)
 
     let sections = compartments.map((compartment) => {
       return {
@@ -328,6 +333,7 @@ function getFullAwb(id) {
         services.carrierService.getCarrier(awb.carrier),
         services.hazmatService.getHazmat(awb.hazmat),
       ]).then(otherInfos => {
+        console.log(otherInfos)
         awb.packages = packages;
         awb.invoices = invoices;
         awb.customer = otherInfos[0];

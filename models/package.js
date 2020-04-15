@@ -79,7 +79,8 @@ const packageSchema = new mongoose.Schema({
     ref: 'Delivery'
   },
   compartmentId: {
-    type: String
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'Compartment'
   },
   isConsolidated: {
     type: String
