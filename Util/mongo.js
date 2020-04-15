@@ -6,7 +6,12 @@ const MONGO_DBNAME = process.env.MONGO_DBNAME;
 const MONGO_USERNAME = process.env.MONGO_USERNAME;
 const MONGO_PASSWORD = process.env.MONGO_PASSWORD;
 
-const MONGO_URL = `mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOST}/${MONGO_DBNAME}`;
+let MONGO_URL;
+if (MONGO_HOST === 'localhost') {
+  MONGO_URL = `mongodb://${MONGO_HOST}/${MONGO_DBNAME}`;
+} else {
+  MONGO_URL = `mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOST}/${MONGO_DBNAME}`;
+}
 
 const MONGOOSE_OPTIONS = {
   useNewUrlParser: true,

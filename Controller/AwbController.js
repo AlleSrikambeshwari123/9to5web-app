@@ -130,14 +130,14 @@ exports.add_new_awb = async (req, res, next) => {
   let {invoices, ...awb} = req.body;
   let packages = JSON.parse(awb.packages);
   let purchaseOrders = JSON.parse(awb.purchaseOrder);
-
+  
   const awbId = mongoose.Types.ObjectId();
   const invoiceIds = [];
-
   // Creating Invoices
   await Promise.all((invoices || []).map(invoice => {
     invoice['_id'] = mongoose.Types.ObjectId();
     invoice.awbId = awbId;
+    invoice['createdBy'] = req['userId'];
     invoiceIds.push(invoice['_id']);
     return services.invoiceService.create(invoice);
   }));
@@ -148,7 +148,10 @@ exports.add_new_awb = async (req, res, next) => {
     pkg.customerId = awb.customerId;
     pkg.shipperId = awb.shipper;
     pkg.carrierId = awb.carrier;
-    pkg.hazmatId = awb.hazmat;
+    if (awb.hazmat) {
+      pkg.hazmatId = awb.hazmat;
+    }
+    pkg.createdBy = req['userId'];
     packagesIds.push(pkg['_id']);
   });
   // Creating Packages
@@ -159,6 +162,7 @@ exports.add_new_awb = async (req, res, next) => {
   if (purchaseOrders && purchaseOrders.length) {
     purchaseOrders.forEach(purchaseOrder => {
       purchaseOrder['_id'] = mongoose.Types.ObjectId();
+      purchaseOrder['createdBy'] = req['userId'];
       purchaseOrderIds.push(purchaseOrder['_id']);
     });
     await services.awbService.createPurchaseOrders(awbId, purchaseOrders);
@@ -169,6 +173,7 @@ exports.add_new_awb = async (req, res, next) => {
   awb.purchaseOrders = purchaseOrderIds;
 
   awb['_id'] = awbId;
+  awb['createdBy'] = req['userId'];
 
   services.awbService.createAwb(awb).then(async result => {
     res.send(result);
@@ -200,6 +205,7 @@ exports.update_awb = (req, res, next) => {
       } else {
         invoice.awbId = awbId;
         invoice['_id'] = mongoose.Types.ObjectId();
+        invoice['createdBy'] = req['userId'];
         invoiceIds.push(invoice['_id']);
         promises.push(() => services.invoiceService.create(invoice));
       }  
@@ -221,8 +227,11 @@ exports.update_awb = (req, res, next) => {
         package.customerId = awb.customerId;
         package.shipperId = awb.shipper;
         package.carrierId = awb.carrier;
-        package.hazmatId = awb.hazmat;
+        if (awb.hazmat) {
+          package.hazmatId = awb.hazmat;
+        }
         package['_id'] = mongoose.Types.ObjectId();
+        package['createdBy'] = req['userId'];
         packageIds.push(package['_id']);
         promises.push(() => services.packageService.createPackages(awbId, [package]));
       }  
@@ -242,6 +251,7 @@ exports.update_awb = (req, res, next) => {
       } else {
         purchaseOrder.awbId = awbId;
         purchaseOrder['_id'] = mongoose.Types.ObjectId();
+        purchaseOrder['createdBy'] = req['userId'];
         purchaseOrderIds.push(purchaseOrder['_id']);
         promises.push(() => services.awbService.createPurchaseOrders(awbId, [purchaseOrder]));
       }
@@ -251,7 +261,7 @@ exports.update_awb = (req, res, next) => {
   awb.invoices = invoiceIds;
   awb.packages = packageIds;
   awb.purchaseOrders = purchaseOrderIds;
-
+  
   // Updating awb
   services.awbService.updateAwb(awbId, awb)
   .then(async (result) => {

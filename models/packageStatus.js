@@ -13,7 +13,8 @@ const packageStatusSchema = new mongoose.Schema({
     required: true
   },
   updatedBy: {
-    type: String
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'User'
   }
 }, {
   timestamps: true

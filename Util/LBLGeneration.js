@@ -344,8 +344,8 @@ class LBLGeneration {
     console.log('Generating Barcode of ' + text);
     return new Promise((resolve, reject) => {
       bwipjs.toBuffer({
-        bcid: 'code39',
-        text,
+        bcid: 'code128',
+        text: text,
         scale: 5,
         height: 10,
         includetext: true,

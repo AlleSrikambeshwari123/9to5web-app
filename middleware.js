@@ -19,6 +19,8 @@ module.exports = function (allowedRoles) {
                     res.printer = services.printService.getUserPrinter(user.username);
                     var navMode = handleNavigation(user);
                     res.navigationMode = navMode;
+                    req['userId'] = user['_id'];
+
                     if (Array.isArray(allowedRoles))
                         if (allowedRoles.indexOf(user.role) < 0) {
                             res.status(401).render('pages/401', { user: user });

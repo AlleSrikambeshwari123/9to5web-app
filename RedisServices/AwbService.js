@@ -53,6 +53,10 @@ class AwbService {
 
   createAwb(awb) {
     return new Promise((resolve, reject) => {
+      if (awb.hasOwnProperty && awb.hasOwnProperty('hazmat') && !awb['hazmat']) {
+        delete awb.hazmat;
+      }
+
       const newAwb = new Awb(awb);
       newAwb.save((err, result) => {
         if (err) {
@@ -79,6 +83,9 @@ class AwbService {
 
   updateAwb(id, awb) {
     return new Promise((resolve, reject) => {
+      if (awb.hasOwnProperty && awb.hasOwnProperty('hazmat') && !awb['hazmat']) {
+        delete awb.hazmat;
+      }
       Awb.findOneAndUpdate({_id: id}, {...awb}, (err, result) => {
         if (err) {
           resolve({ success: false });

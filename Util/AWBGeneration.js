@@ -40,7 +40,8 @@ class AWBGeneration {
   generateAWb(awb) {
     this.awb = awb;
     return new Promise((resolve, reject) => {
-      this.generateBarcode(awb.id).then(async png => {
+      this.generateBarcode(awb._id).then(async png => {
+
         var docDefinition = {
           footer: this.generateFooter,
           content: [
@@ -205,13 +206,13 @@ class AWBGeneration {
       {
         width: '*',
         stack: [
-          { text: 'Airway Bill', alignment: 'right', fontSize: 15, bold: true },
-          { image: 'data:image/jpeg;base64,' + png.toString('base64'), width: 150, alignment: "right" },
+          { text: 'Airway Bill', alignment: 'right', fontSize: 15, margin: [65, 1], bold: true },
+          { image: 'data:image/jpeg;base64,' + png.toString('base64'), margin: [15, 1], width: 150, alignment: "right" },
           {
             columns: [
               {
                 width: '*',
-                margin: [30, 5],
+                margin: [10, 5],
                 stack: [
                   { text: 'Airway Bill No:', bold: true, fontSize: 9 },
                   { margin: [0, 2], text: 'Received Date/Time:', bold: false, fontSize: 9 },
@@ -223,7 +224,7 @@ class AWBGeneration {
                 margin: [0, 5],
                 stack: [
                   { text: this.awb.id, bold: true, fontSize: 11 },
-                  { margin: [0, 5], text: moment.unix(this.awb.dateCreated).format("MM/DD/YYYY hh:mm A"), bold: false, fontSize: 9 },
+                  { margin: [0, 5], text: moment(this.awb.createdAt).format("MM/DD/YYYY hh:mm A"), bold: false, fontSize: 9 },
                   { margin: [0, 3], text: this.awb.created_by, bold: false, fontSize: 9 }
                 ]
               }
@@ -262,14 +263,16 @@ class AWBGeneration {
   generateBarcode(text) {
     return new Promise((resolve, reject) => {
       bwipjs.toBuffer({
-        bcid: 'code39',
-        text,
+        bcid: 'code128',
+        text: text && text.toString(),
         scale: 5,
         height: 10,
         includetext: true,
         textxalign: 'right'
       }, (err, png) => {
-        if (err) reject(err);
+        if (err) {
+          reject(err);
+        }
         else resolve(png);
       });
     });
