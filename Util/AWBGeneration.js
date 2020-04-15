@@ -131,7 +131,7 @@ class AWBGeneration {
         { text: dimWeight }
       ])
 
-      let barcode = await this.generateBarcode(`${this.awb.customer.pmb}-${this.awb.id}-${pkg._id}`);
+      let barcode = await this.generateBarcode(`${this.awb.customer.pmb}-${this.awb.id}-${pkg.id}`);
       body.push([
         {
           image: 'data:image/jpeg;base64,' + barcode.toString('base64'),
