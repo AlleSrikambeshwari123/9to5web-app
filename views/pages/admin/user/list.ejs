@@ -31,7 +31,7 @@
                 <%})}%>
               </td>
               <td><%=user.username%></td>
-              <td><%=user.firstName + ' ' + user.lastName%></td>
+              <td><%=helpers.getFullName(user)%></td>
               <td><%=user.email%></td>
               <td><%=user.mobile %></td>
               <td>

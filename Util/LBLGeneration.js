@@ -81,7 +81,8 @@ class LBLGeneration {
   generateSinglePackageLabel(awb, pkg) {
     return new Promise((resolve, reject) => {
       this.awb = awb;
-      console.log("awb", awb, "customer", this.awb.customer)
+      this.awb['id'] = awb['_id'];
+      
       if (awb.id == undefined) {
         resolve({ success: false, message: "Can't create the barcode because of invalid information" });
       }
@@ -104,9 +105,15 @@ class LBLGeneration {
   GernerateAWBLabel(pkg, company) {
     return new Promise((resolve, reject) => {
       var noDocs = ""
-      if (this.awb.invoiceNumber == "" && (this.awb.invoices || []).length === 0) {
+      
+      // if (this.awb.invoiceNumber == "" && (this.awb.invoices || []).length === 0) {
+      //   noDocs = "***"
+      // }
+      
+      if ((this.awb.invoices || []).length === 0) {
         noDocs = "***"
       }
+
       var notes = ""
       if (this.awb.hazmat && this.awb.hazmat.description) {
         notes = this.awb.hazmat.description;

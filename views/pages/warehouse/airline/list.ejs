@@ -21,7 +21,7 @@
               <% airlines.forEach(function(airline){%>
               <tr data-record="<%= airline.id %>">
                 <td><strong><%=airline.name%></strong></td>
-                <td><%=airline.firstName + ' ' + airline.lastName%></td>
+                <td><%=helpers.getFullName(airline)%></td>
                 <td>
                   <a href='manage/<%=airline.id%>/get'><i class="fas fa-pen"></i></a>
                   <a href='#' class='rm-airline ml-3' data-id='<%=airline.id%>'><i class="fas fa-trash"></i></a>

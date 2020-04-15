@@ -18,7 +18,7 @@
                     <option></option>
                     <% customers.forEach(customer => { %>
                     <option value="<%=customer.id%>" <% if(awb.customerId == customer.id) { %> selected <% } %>>
-                      <%= customer.pmb + ' / ' + customer.firstName + ' ' + customer.lastName%>
+                      <%= customer.pmb + ' / ' + helpers.getFullName(customer)%>
                     </option>
                     <% }) %>
                   </select>

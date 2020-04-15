@@ -38,7 +38,7 @@
               </div>
               <div class="col-md-4 info-invoice">
                 <h5 class="sub">Customer</h5>
-                <p><%= awb.customer.firstName + ' ' + awb.customer.lastName %></p>
+                <p><%=helpers.getFullName(awb.customer)%></p>
               </div>
             </div>
             <div class="separator-solid"></div>
@@ -46,14 +46,14 @@
               <div class="col-sm-7 col-md-5 mb-3 mb-md-0 transfer-to">
                 <h5 class="sub">Shipper</h5>
                 <div class="account-transfer">
-                  <div><span>Shipper Name:</span><span><%= shipper.firstName + ' ' + shipper.lastName%></span></div>
+                  <div><span>Shipper Name:</span><span><%= helpers.getFullName(shipper)%></span></div>
                   <div><span>Shipper Phone:</span><span><%= shipper.telephone%></span></div>
                 </div>
               </div>
               <div class="col-sm-7 col-md-5 mb-3 mb-md-0 transfer-to ml-auto">
                 <h5 class="sub">Carrier</h5>
                 <div class="account-transfer">
-                  <div><span>Carrier Name:</span><span><%= carrier.firstName + ' ' + carrier.lastName%></span></div>
+                  <div><span>Carrier Name:</span><span><%= helpers.getFullName(carrier)%></span></div>
                   <div><span>Carrier Phone:</span><span><%= carrier.telephone%></span></div>
                 </div>
               </div>

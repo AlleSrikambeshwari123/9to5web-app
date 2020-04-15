@@ -958,6 +958,19 @@ class PackageService {
       });
     });
   }
+
+  // getPackage
+  getPackage_updated(packageId) {
+    return new Promise((resolve, reject) => {
+      Package.findOne({_id: packageId}, (err, result) => {
+        if (err) {
+          resolve({});
+        } else {
+          resolve(result);
+        }
+      });
+    })
+  }
 }
 
 function getPackageIdFromBarCode(barCodeValue) {

@@ -28,7 +28,7 @@
               <% shippers.forEach(function(shipper){%>
               <tr data-record="<%= shipper.id %>">
                 <td><strong><%=shipper.name%></strong></td>
-                <td><%=shipper.firstName + ' ' + shipper.lastName%></td>
+                <td><%=helpers.getFullName(shipper)%></td>
                 <td><%=shipper.email%></td>
                 <td><%=shipper.telephone %></td>
                 <!-- <td><%=shipper.fax %></td> -->
