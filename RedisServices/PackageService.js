@@ -113,7 +113,8 @@ class PackageService {
   }
 
   async getAllPackagesWithLastStatus() {
-    let packages = await this.getAllPackages();
+    let packages = await this.getAllPackages_updated();
+    console.log("packages--", packages )
     return await Promise.all(
       packages.map(async (pkg) => {
         let status = await this.services.packageService.getPackageLastStatus(pkg.id);
@@ -318,11 +319,13 @@ class PackageService {
   }
 
   updatePackage_updated(id, pkg) {
-    return new Promise((resolve, reject) => {
-      Package.findOneAndUpdate({_id: id}, {...pkg}, (err, result) => {
+    return new Promise(async(resolve, reject) => {
+
+      Package.findOneAndUpdate({_id: id},pkg, (err, result) => {
         if (err) {
           resolve({ success: false, message: strings.string_response_error });
         } else {
+          console.log("packagesssssssssss,",pkg)
           resolve({ success: true });
         }
       })
@@ -526,20 +529,24 @@ class PackageService {
   //========== Load Packages to AirCraft (Add to Manifest) ==========//
   addToFlight(packageIds, manifestId, compartmentId, username) {
     return new Promise((resolve, reject) => {
+
       let packages = packageIds.split(',').filter(Boolean);
       if (packages.length === 0) {
         return resolve({ success: false, message: 'Please select packages.' });
       }
 
+
+
       Promise.all(
         packages.map((packageId) => {
+          console.log('.dd',packageId)
           return Promise.all([
             this.updatePackageStatus(packageId, 2, username),
-            this.updatePackage(packageId, {
+            this.updatePackage_updated(packageId, {
               manifestId: manifestId,
               compartmentId: compartmentId,
             }),
-            lredis.setAdd(LIST_PACKAGE_MANIFEST + manifestId, packages),
+            //lredis.setAdd(LIST_PACKAGE_MANIFEST + manifestId, packages),
           ]);
         }),
       ).then((results) => {
@@ -650,7 +657,7 @@ class PackageService {
 
   getPackage_updated(packageId) {
     return new Promise((resolve, reject) => {
-      Package.findOne({_id: id}, (err, result) => {
+      Package.findOne({_id: packageId}, (err, result) => {
         if (err) {
           resolve({});
         } else {
@@ -670,7 +677,7 @@ class PackageService {
       };
 
       const newPackageStatusData = new PackageStatus(packageStatus);
-
+      console.log("ddddddddddddddddddddddd")
       newPackageStatusData.save((err, packageStatus) => {
         if (err) {
           resolve({ success: false, message: strings.string_response_error });
@@ -684,6 +691,7 @@ class PackageService {
               );
             });
           });
+           console.log("fffffffffffffff")
           resolve({ success: true, message: strings.string_response_updated });
         }
       });

@@ -97,18 +97,18 @@ $(function() {
     url: '/api/warehouse/get-deliverys',
     type: 'get',
     dataType: 'json',
-    success(data) {
+    success(data) {      
       addToDeliveryForm
         .find('[name="deliveryId"]')
         .select2({
           theme: 'bootstrap',
           width: '100%',
           placeholder: 'Select delivery',
-          dropdownParent: addToDeliveryModal,
+ 
           data: data.map((delivery) => ({
-            id: delivery.id,
+            id: delivery._id,
             text: delivery.delivery_date,
-            source: delivery,
+            
           })),
         })
     },
@@ -129,7 +129,7 @@ $(function() {
           dropdownParent: addToManifestModal,
           data: data.map((compartment) => ({
             id: compartment.id,
-            text: compartment.name,
+            text: compartment.name
           })),
         });
 

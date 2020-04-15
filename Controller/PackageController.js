@@ -24,6 +24,9 @@ exports.get_filtered_package_list = (req, res, next) => {
   services.packageService
     .getAllPackagesWithLastStatus({ filter: req.params.filter })
     .then(async (packages) => {
+
+
+      console.log(packages)
       if (req.params.filter === 'in-manifest') {
         packages = packages.filter((i) => i.manifestId);
         title = 'Packages';

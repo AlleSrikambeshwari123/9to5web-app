@@ -71,7 +71,12 @@ const packageSchema = new mongoose.Schema({
     type: String
   },
   manifestId: {
-    type: String
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'Manifest'
+  },
+  deliveryId: {
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'Delivery'
   },
   compartmentId: {
     type: String

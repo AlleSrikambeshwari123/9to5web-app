@@ -15,11 +15,12 @@
               <div class="form-group form-show-validation row">
                 <label for="planeId" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Select Plane</label>
                 <div class="col-lg-8 col-md-8 col-sm-8">
+ 
                   <select id="planeId" name="planeId" class='form-control' required>
                     <option></option>
                     <% var test = JSON.stringify(planes); %>
                     <% planes.forEach(plane => { %>
-                    <option value="<%=plane.id%>"><%=plane.tail_number%></option>
+                    <option value="<%=plane._id%>"><%=plane.tailNumber%></option>
                     <%})%>
                   </select>
                 </div>
