@@ -7,7 +7,7 @@ var lredis = require('./redis-local');
 const PREFIX = strings.redis_prefix_shipper;
 const SHIPPER_ID = strings.redis_id_shipper;
 
-const Shipper = require('../models/Shipper');
+const Shipper = require('../models/shipper');
 
 
 class ShipperService {
@@ -53,40 +53,41 @@ class ShipperService {
   }
 
   addShipper(shipper) {
-    console.log(shipper)
     return new Promise((resolve, reject) => {
-     let obj_shipper = new Shipper(shipper);
-     obj_shipper.save((err, result) => {
+     let newShipper = new Shipper(shipper);
+     newShipper.save((err, result) => {
         if (err) {
-          console.error('Error while creating the user!!');
-          resolve({ success: false, message: err});
+          resolve({ success: false, message: strings.string_response_error});
         } else {
-          resolve({ success: true, message:  strings.string_response_added, shipper: result});
+          resolve({ 
+            success: true, 
+            message: strings.string_response_added, 
+            shipper: result
+          });
         }
       })
     })
   }
   updateShipper(id, body) {
     return new Promise(async(resolve, reject) => {
-      Shipper.findOneAndUpdate({_id: id},body, (err, result) => {
-          if (err) {
-            resolve({ success: false, message: err});
-          } else {
-            resolve({ success: true, message: strings.string_response_updated });
-          }
+      Shipper.findOneAndUpdate({_id: id}, body, (err, result) => {
+        if (err) {
+          resolve({ success: false, message: strings.string_response_error});
+        } else {
+          resolve({ success: true, message: strings.string_response_updated });
+        }
       })
     })
   }
   removeShipper(id) {
     return new Promise((resolve, reject) => {
       Shipper.deleteOne({_id: id}, (err, result) => {
-          if (err) {
-            resolve({ success: false, message: err });
-          } else {
-            resolve({ success: true, message: strings.string_response_removed});
-          }
+        if (err) {
+          resolve({ success: false, message: strings.string_response_error });
+        } else {
+          resolve({ success: true, message: strings.string_response_removed});
+        }
       })
-    
     });
   }
   getShipper(id) {
@@ -95,7 +96,6 @@ class ShipperService {
         if (err) {
           resolve({});
         } else {
-
           resolve(result)
         }
       });

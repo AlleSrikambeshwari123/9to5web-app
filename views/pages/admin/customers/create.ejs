@@ -10,11 +10,13 @@
           <div class="row">
             <div class="col-md-6">
               <div class="form-group form-show-validation row">
-                <label for="companyId" class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">Company </label>
+                <label for="company" class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">Company </label>
                 <div class="col-lg-8 col-md-8 col-sm-8">
-                  <select id="companyId" name="companyId" class="form-control" required>
-                    <option value='9to5'>9to5</option>
-                    <option value='pmb'>Post Boxes</option>
+                  <select id="company" name="company" class="form-control" required>
+                    <% companies.forEach(company => { %>
+                      <option value="<%= company._id%>"> <%= company.name %>
+                      </option>
+                      <% }) %>
                   </select>
                 </div>
               </div>
@@ -68,7 +70,7 @@
                 <div class="col-lg-8 col-md-8 col-sm-8">
                   <select id="location" name="location" class=" form-control ">
                     <% locations.forEach(location => { %>
-                    <option value='<%=location.id%>'><%=location.name%></option>
+                    <option value='<%=location._id%>'><%=location.name%></option>
                     <% }) %>
                   </select>
                 </div>
@@ -123,4 +125,5 @@
   </div>
 </form>
 
+<% block('scripts').append('<script src="/js/utils.js"></script>')%>
 <% block('scripts').append('<script src="/js/admin/customer/create.js"></script>')%>

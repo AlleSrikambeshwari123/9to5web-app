@@ -21,11 +21,11 @@
           <tbody>
             <% planes.forEach(plane => { %>
             <tr data-record="<%= plane.id%>">
-              <td><%=plane.tail_number%></td>
+              <td><%=plane.tailNumber%></td>
               <td><%=plane.pilot.firstName + ' ' + plane.pilot.lastName %></td>
               <td><%=plane.airline ? plane.airline.name : '' %></td>
-              <td><%=plane.aircraft_type%></td>
-              <td><%=plane.maximum_capacity%></td>
+              <td><%=plane.aircraftType%></td>
+              <td><%=plane.maximumCapacity%></td>
               <td>
                 <a class='config-plane ml-2' title='Setup Compartments' data-id='<%=plane.id%>'
                   href="/fleet/compartment/<%=plane.id%>/list"><i class='fa fa-cog'></i></a>

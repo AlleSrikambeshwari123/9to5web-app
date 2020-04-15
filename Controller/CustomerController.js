@@ -5,11 +5,11 @@ exports.get_customer_list = (req, res, next) => {
   Promise.all([
     services.locationService.getLocations(),
     services.customerService.getCustomers(),
+    services.locationService.getCompanies()
   ]).then(results => {
-    let locations = {};
-    results[0].forEach(location => locations[location.id] = location.name);
-    let customers = results[1];
-    customers.forEach(customer => customer.location = locations[customer.location]);
+    const locations = results[0];
+    const customers = results[1];
+    const companies = results[2];
 
     res.render('pages/admin/customers/list', {
       page: req.originalUrl,
@@ -17,19 +17,24 @@ exports.get_customer_list = (req, res, next) => {
       user: res.user,
       customers: customers.map(utils.formattedRecord),
       locations: locations,
+      companies: companies
     })
   })
 }
 
 exports.create_customer = (req, res, next) => {
-  services.locationService.getLocations().then(locations => {
+  Promise.all([
+    services.locationService.getLocations(),
+    services.locationService.getCompanies()
+  ]).then((results) => {
     res.render('pages/admin/customers/create', {
       page: req.originalUrl,
       title: "Create New Consignee",
       user: res.user,
-      locations: locations
+      locations: results[0],
+      companies: results[1]
     })
-  })
+  });
 }
 
 exports.add_new_customer = (req, res, next) => {
@@ -43,14 +48,16 @@ exports.add_new_customer = (req, res, next) => {
 exports.get_customer_detail = (req, res, next) => {
   Promise.all([
     services.locationService.getLocations(),
-    services.customerService.getCustomer(req.params.id),
+    services.customerService.getCustomer({_id: req.params.id}),
+    services.locationService.getCompanies()
   ]).then(results => {
     res.render('pages/admin/customers/edit', {
       page: req.originalUrl,
       title: "Consignee Details",
       user: res.user,
       locations: results[0],
-      customer: results[1]
+      customer: results[1],
+      companies: results[2]
     })
   })
 }

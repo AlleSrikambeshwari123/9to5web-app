@@ -19,6 +19,7 @@ $(function () {
     event.preventDefault(event);
     let formUrl = $(this).attr('action');
     let formData = $(this).serializeArray();
+    let email = $(this).find('#email').val();
     let password = $(this).find('#password').val();
     let confirmPassword = $(this).find('#confirmPassword').val();
     let data = {};
@@ -27,6 +28,8 @@ $(function () {
     })
     if (password != confirmPassword) {
       showNotify('Failed', "Password doesn't match", 'fa fa-info', 'danger');
+    } else if (email && email.trim() && !validateEmail(email)) {
+      showNotify('Failed', "Invalid Email", 'fa fa-info', 'danger');
     } else {
       $.ajax({
         url: formUrl,

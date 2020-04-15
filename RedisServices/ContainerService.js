@@ -8,56 +8,74 @@ const Container = require('../models/Container');
 const PREFIX = strings.redis_prefix_container;
 const CONTAINER_ID = strings.redis_id_container;
 
+
 class ContainerService {
   async addContainer(container) {
     return new Promise((resolve, reject) => {
-     let obj_container = new Container(container);
-     obj_container.save((err, result) => {
+      const newContainer = new Container(container);
+      newContainer.save((err, result) => {
         if (err) {
-          resolve({ success: false, message: err});
+          resolve({ success: false, message: strings.string_response_error });
         } else {
-          resolve({ success: true, message: strings.string_response_added, container: result});
+          container['id'] = result['_id'];
+          resolve({ 
+            success: true, 
+            message: strings.string_response_added, 
+            container: container 
+          });
         }
-      })
+      });
     });
   }
   updateContainer(id, body) {
-    return new Promise((resolve, reject) => {
-      Container.findOneAndUpdate({_id: id},body, (err, result) => {
-          if (err) {
-            resolve({ success: false, message: err});
-          } else {
-            resolve({ success: true, message:  strings.string_response_updated});
-          }
+    return new Promise(async (resolve, reject) => {
+      const container = await this.getContainer(id);
+      if (!(container && container['_id'])) {
+        return resolve({ success: true, message: strings.string_not_found_customer });
+      }
+
+      Container.findOneAndUpdate({_id: id}, {...body}, (err, res) => {
+        if (err) {
+          resolve({ success: false, message: strings.string_response_error });
+        } else {
+          resolve({ success: true, message: strings.string_response_updated });
+        }
+
       })
     });
   }
   removeContainer(id) {
     return new Promise((resolve, reject) => {
-     Container.deleteOne({_id: id}, (err, result) => {
-          if (err) {
-            resolve({ success: false, message: err });
-          } else {
-            resolve({ success: true, message: strings.string_response_removed });
-          }
-      })
+      Container.deleteOne({_id: id}, (err, result) => {
+        if (err) {
+          resolve({ success: false, message: strings.string_response_error });
+        } else {
+          resolve({ success: true, message: strings.string_response_removed });
+        }
+      });
+
     });
   }
   getContainer(id) {
     return new Promise((resolve, reject) => {
-     Container.findOne({_id: id}).exec((err, result) => {
-        if(err){
+      Container.findOne({_id: id}, (err, result) => {
+        if (err) {
           resolve({});
-        }else{
-          resolve(result)
+        } else {
+          resolve(result);
         }
       });
     });
   }
   getAllContainers() {
-    return new Promise(async(resolve, reject) => {
-      let containers = await Container.find({})
-      resolve(containers)
+    return new Promise((resolve, reject) => {
+      Container.find({}, (err, result) => {
+        if (err) {
+          resolve([]);
+        } else {
+          resolve(result);
+        }
+      })
     });
   }
   removeAll() {
@@ -68,7 +86,8 @@ class ContainerService {
         } else {
           resolve(result);
         }
-      })
+
+      });
     });
   }
 }

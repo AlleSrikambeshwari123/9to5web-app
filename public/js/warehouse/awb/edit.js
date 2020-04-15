@@ -10,12 +10,18 @@ Number.prototype.formatMoney = function (c, d, t) {
 };
 
 if (Array.isArray(window.invoices) && window.invoices.length) {
-  window.invoices.forEach(invoice => AWBInvoices.addInvoceRow(invoice))
+  window.invoices.forEach(invoice => {
+    invoice['id'] = invoice['_id'];
+    return AWBInvoices.addInvoceRow(invoice)
+  });
 } else {
   AWBInvoices.addInvoceRow() 
 }
 
 $(function () {
+  const deletedPackages = [];
+  const deletedPurchaseOrders = [];
+
   $('#customerId').select2({
     theme: 'bootstrap',
     width: '100%',
@@ -108,7 +114,7 @@ $(function () {
 
   var sedAnswered = 0;
 
-  var awbPackages = packages||[];
+  var awbPackages = packages || [];
     //Showing old packages
   if(awbPackages.length>0){
     displayPackages();
@@ -158,7 +164,7 @@ $(function () {
    // console.log(pkg);
    // console.log(awbPackages);
     let isNew=false;
-    if(!pkg.id){
+    if (!pkg.id) {
       pkg.id = Date.now().toString();
       isNew=true;
     }
@@ -206,10 +212,21 @@ $(function () {
         return acc;
       }, {});
     awbInfo.isSed = sedAnswered || Number(awbInfo.isSed);
+    
+    if (deletedPackages && deletedPackages.length) {
+      awbPackages = [...awbPackages, ...deletedPackages];
+    }
+
     awbInfo.packages = JSON.stringify(awbPackages);
     awbInfo.invoices = [];
-    awbInfo.purchaseOrder = AWBPO.getItems();
-    awbInfo.purchaseOrder = JSON.stringify(awbInfo.purchaseOrder);
+    let purchaseOrder = AWBPO.getItems();
+    
+    let deletedPurchaseOrders = AWBPO.getDeletedItems();
+    if (deletedPurchaseOrders && deletedPurchaseOrders.length) {
+      purchaseOrder = [...purchaseOrder, ...deletedPurchaseOrders];
+    }
+
+    awbInfo.purchaseOrder = JSON.stringify(purchaseOrder);
 
     let promises = AWBInvoices.getInvoices().map(({ file, ...invoice }) => {
       if (!invoice.number && !invoice.value && !invoice.id) {
@@ -272,7 +289,7 @@ $(function () {
           type: response.success == true ? 'success' : 'error',
         }).then(() => {
           if (response.success) {
-            $('#shipper').append(`<option value="${response.shipper.id}">${response.shipper.name}</option>`)
+            $('#shipper').append(`<option value="${response.shipper._id}">${response.shipper.name}</option>`)
           }
         })
       }
@@ -293,7 +310,7 @@ $(function () {
           type: response.success == true ? 'success' : 'error',
         }).then(() => {
           if (response.success) {
-            $('#carrier').append(`<option value="${response.carrier.id}">${response.carrier.name}</option>`)
+            $('#carrier').append(`<option value="${response.carrier._id}">${response.carrier.name}</option>`)
           }
         })
       }
@@ -315,7 +332,7 @@ $(function () {
         }).then(() => {
           if (response.success) {
             var customer = response.customer;
-            $('#customerId').append(`<option value="${customer.id}">${customer.pmb} / ${customer.firstName} ${customer.lastName}</option>`)
+            $('#customerId').append(`<option value="${customer._id}">${customer.pmb} / ${customer.firstName} ${customer.lastName}</option>`)
           }
         })
       }
@@ -385,6 +402,8 @@ $(function () {
     awbPackages.forEach(pkg => {
       // A bit hacky way to detect newly added packages, pkg.id == Date.now() for new package for 
       // some reason
+      console.error('pkg', pkg);
+
       let isNew = pkg.id > 1e9
       let rowNode = packageTable.row
         .add([
@@ -435,11 +454,19 @@ $(function () {
 
     $('.btn-rm-pkg').click(function () {
       var id = $(this).data('id');
+      console.log('id ccc', id);
       $("#rmPackage").attr('data-id', id);
     })
     $("#rmPackage").click(function () {
-      var id = $(this).data('id');
-      awbPackages = awbPackages.filter(package => package.id != id);
+      var id = $(this).attr('data-id');
+      awbPackages = awbPackages.filter((package) => {
+        if (package.id != id) {
+          return true;
+        } else {
+          deletedPackages.push({_id: package._id, deleted: true});
+          return false;
+        }
+      });
       displayPackages();
       $(".close-del").trigger('click');
     });

@@ -24,7 +24,7 @@ window.AWBInvoices = (() => {
   }
 
   function getInvoices() {
-    return container
+    const data = container
       .find('.invoice-upload-row')
       .toArray()
       .map((container) => {
@@ -42,6 +42,10 @@ window.AWBInvoices = (() => {
           file: $(container).find('[name="invoice.file"]'),
         };
       });
+    
+    console.error('data ', data);  
+
+    return data;  
   }
 
   $('#awb-form-add-invoice').click(function() {

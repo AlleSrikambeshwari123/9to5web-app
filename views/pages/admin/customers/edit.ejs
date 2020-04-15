@@ -48,7 +48,7 @@
             <div class="col-lg-4 col-md-9 col-sm-8">
               <select id="location" name="location" class="form-control">
                 <% locations.forEach(location => { %>
-                <option value='<%=location.id%>' <% if(customer.location == location.id) { %> selected <% } %>>
+                <option value='<%=location._id%>' <% if(customer.location._id.toString() == location._id.toString()) { %> selected <% } %>>
                   <%=location.name%></option>
                 <% }) %>
               </select>
@@ -64,4 +64,5 @@
   </div>
 </form>
 
+<% block('scripts').append('<script src="/js/utils.js"></script>')%>
 <% block('scripts').append('<script src="/js/admin/customer/create.js"></script>')%>

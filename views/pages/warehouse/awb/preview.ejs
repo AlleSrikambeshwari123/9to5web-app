@@ -1,11 +1,11 @@
 <% layout('./shared/__template')%>
 <div class="row justify-content-center mt--5">
-  <input type="hidden" data-id="<%= awb.id%>" id="awbId">
+  <input type="hidden" data-id="<%= awb._id%>" id="awbId">
   <div class="col-12 col-lg-10 col-xl-9">
     <div class="row align-items-center">
       <div class="ml-auto mr-3 mb-3 mt--4">
-        <a class="btn btn-danger btn-round text-white" href="/warehouse/download-pdf/awb/<%=awb.id%>"> Download PDF</a>
-        <a class="btn btn-danger btn-round text-white ml-2 btn-print-awb" data-toggle="modal" data-id="<%=awb.id%>"
+        <a class="btn btn-danger btn-round text-white" href="/warehouse/download-pdf/awb/<%=awb._id%>"> Download PDF</a>
+        <a class="btn btn-danger btn-round text-white ml-2 btn-print-awb" data-toggle="modal" data-id="<%=awb._id%>"
           data-target="#print-popup"> Print AWB </a>
       </div>
     </div>
@@ -34,7 +34,7 @@
               </div>
               <div class="col-md-4 info-invoice">
                 <h5 class="sub">Bill ID</h5>
-                <p>#<%= awb.id %></p>
+                <p>#<%= awb._id %></p>
               </div>
               <div class="col-md-4 info-invoice">
                 <h5 class="sub">Customer</h5>
@@ -65,7 +65,14 @@
                 <h5 class="sub">Invoice</h5>
                 <div class="account-transfer">
                   <div><span>Invoice ID:</span><span>#<%= invoice.number %></span></div>
-                  <div><span>Value:</span><span>$ <%= Number(invoice.value).toFixed(2) %></span></div>
+                  <div>
+                    <span>Value:</span>
+                    <span>
+                      <% if (!isNaN(invoice.value)) { %>
+                        $ <%= Number(invoice.value).toFixed(2) %>
+                      <% } %>
+                    </span>
+                </div>
                   <% if (invoice.link) { %>
                   <div><span></span><span><a href="<%= invoice.link %>" target="_blank">Download</a></span></div>
                   <% } %>
@@ -133,7 +140,7 @@
               </div>
               <div class="col-sm-5 col-md-7 transfer-total">
                 <h5 class="sub">Total Amount</h5>
-                <div class="price">$<%= awb.invoices.reduce((acc, i) => acc + Number(i.value), 0).toFixed(2) %></div>
+                <div class="price">$<%= awb.invoices.reduce((acc, i) => acc + (!isNaN(i.value) ? Number(i.value) : 0) , 0).toFixed(2) %></div>
                 <% if(Number(awb.isSed) == 1) { %>
                 <span>SED Included</span>
                 <% } %>

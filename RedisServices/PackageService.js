@@ -34,6 +34,9 @@ const PKG_STATUS = {
   6: 'Delivered',
 };
 
+const Package = require('../models/package');
+const PackageStatus = require('../models/packageStatus');
+
 function createDocument(tPackage) {
   var packageDocument = {
     id: tPackage.id,
@@ -91,6 +94,19 @@ class PackageService {
           ).then((results) => {
             resolve(results);
           });
+        }
+      });
+    });
+  }
+
+  //========== Dashboard Functions ==========//
+  getAllPackages_updated() {
+    return new Promise((resolve, reject) => {
+      Package.find({}, (err, result) => {
+        if (err) {
+          resolve([]);
+        } else {
+          resolve(result);
         }
       });
     });
@@ -183,6 +199,30 @@ class PackageService {
     return packages;
   }
 
+  async getAWBPackagesWithLastStatus_updated(awbId) {
+    const packages = await this.getPackages_updated(awbId);
+    await Promise.all(
+      packages.map(async (pkg) => {
+        let status = await this.getPackageLastStatus_updated(pkg._id);
+        pkg.lastStatusText = status && status.status;
+      }),
+    );
+
+    return packages;
+  }
+
+  getPackages_updated(awbId) {
+    return new Promise((resolve, reject) => {
+      Package.find({awbId: awbId}, (err, result) => {
+        if (err) {
+          resolve([]);
+        } else {
+          resolve(result);
+        }
+      });
+    });
+  }
+
   // Only show 7 trackingNo on the list;
   getPackages(awbId) {
     return new Promise((resolve, reject) => {
@@ -254,20 +294,18 @@ class PackageService {
     // }
     return new Promise((resolve, reject) => {
       const barid = +newPackage.originBarcode.split(',')[1];
-      client.incr(PACKAGE_ID, (err, id) => {
-        newPackage.id = id;
-        newPackage.awbId = awbId;
-        newPackage.trackingNo = uniqId();
-        newPackage.originBarcode = newPackage.originBarcode.split(',')[0];
-        client.hmset(PREFIX + id, newPackage);
-        client.sadd(PREFIX_PACKAGE_LIST + awbId, id);
-        this.updatePackageStatus(id, 1, '');
-        client.del(PREFIX_ORIGIN_BARCODE + barid, (err, result) => {
-          if (err) resolve({ success: false, message: strings.string_response_error });
-          resolve({ success: true, message: strings.string_response_removed });
-          console.log('delbar',result)
-        })
-        resolve({ success: true });
+      newPackage.awbId = awbId;
+      newPackage.id = Date.now().toString();
+      newPackage.trackingNo = uniqId();
+      newPackage.originBarcode = newPackage.originBarcode.split(',')[0];
+      const newPackageData = new Package(newPackage);
+      newPackageData.save((err, result) => {
+        if (err) {
+          resolve({ success: false, message: strings.string_response_error });
+        } else {
+          this.updatePackageStatus(result['_id'], 1, '')
+          resolve({ success: true });
+        }
       });
     });
   }
@@ -276,6 +314,54 @@ class PackageService {
     return new Promise((resolve, reject) => {
       client.hmset(PREFIX + id, pkg);
       resolve({ success: true });
+    });
+  }
+
+  updatePackage_updated(id, pkg) {
+    return new Promise((resolve, reject) => {
+      Package.findOneAndUpdate({_id: id}, {...pkg}, (err, result) => {
+        if (err) {
+          resolve({success: false, message: strings.string_response_error});
+        } else {
+          resolve({ success: true });
+        }
+      })
+    });
+  }
+
+  removePackages_updated(awbId) {
+    return new Promise((resolve, reject) => {
+      Package.deleteMany({awbId: awbId}, (err, result) => {
+        if (err) {
+          resolve({success: false, message: strings.string_response_error});
+        } else {
+          resolve(result);
+        }
+      });
+    });
+  }
+
+  removePackage_updated(awbId) {
+    return new Promise((resolve, reject) => {
+      Package.deleteMany({awbId: awbId}, (err, result) => {
+        if (err) {
+          resolve({success: false, message: strings.string_response_error});
+        } else {
+          resolve(result);
+        }
+      });
+    });
+  }
+
+  removePackage_updated(id) {
+    return new Promise((resolve, reject) => {
+      Package.deleteOne({_id: id}, (err, result) => {
+        if (err) {
+          resolve({success: false, message: strings.string_response_error});
+        } else {
+          resolve(result);
+        }
+      });
     });
   }
 
@@ -301,12 +387,47 @@ class PackageService {
     });
   }
 
+  removePackagesStatusByPackageIds(packageIds) {
+    return new Promise((resolve, reject) => {
+      if (!(packageIds && packageIds.length)) {
+        return resolve({success: true});
+      }
+      PackageStatus.deleteMany({packageId: {$in: packageIds}}, (err, result) => {
+        if (err) {
+          resolve({success: false});
+        } else {
+          resolve({success: true});
+        }
+      });
+    });
+  }
+
   getPackagesInFll() {
     return new Promise((resolve, reject) => {
       this.getAllPackages().then((packages) => {
         Promise.all(
           packages.map((pkg) => {
             return this.getPackageLastStatus(pkg.id);
+          }),
+        ).then((stats) => {
+          let pkgs = [];
+          stats.forEach((status, i) => {
+            packages[i].lastStatusText = status.status;
+            if (status.status == PKG_STATUS[1] || status.status == PKG_STATUS[2])
+              pkgs.push(packages[i]);
+          });
+          resolve(pkgs);
+        });
+      });
+    });
+  }
+
+  getPackagesInFll_updated() {
+    return new Promise((resolve, reject) => {
+      this.getAllPackages_updated().then((packages) => {
+        Promise.all(
+          packages.map((pkg) => {
+            return this.getPackageLastStatus_updated(pkg._id);
           }),
         ).then((stats) => {
           let pkgs = [];
@@ -343,6 +464,26 @@ class PackageService {
             });
             resolve(pkgs);
           });
+        });
+      });
+    });
+  }
+
+  getPackagesInNas_updated() {
+    return new Promise((resolve, reject) => {
+      this.getAllPackages_updated().then((packages) => {
+        Promise.all(
+          packages.map((pkg) => {
+            return this.getPackageLastStatus_updated(pkg._id);
+          }),
+        ).then((stats) => {
+          let pkgs = [];
+          stats.forEach((status, i) => {
+            packages[i].lastStatusText = status.status;
+            if (stat.status == PKG_STATUS[4])
+              pkgs.push(packages[i]);
+          });
+          resolve(pkgs);
         });
       });
     });
@@ -507,41 +648,99 @@ class PackageService {
     });
   }
 
+  getPackage_updated(packageId) {
+    return new Promise((resolve, reject) => {
+      Package.findOne({_id: id}, (err, result) => {
+        if (err) {
+          resolve({});
+        } else {
+          resolve(result);
+        }
+      });
+    })
+  }
+
   //========== Package Status ==========//
   updatePackageStatus(packageId, status, username) {
     return new Promise((resolve, reject) => {
-      client.incr(ID_PACKAGE_STATUS, (err, id) => {
-        client.hmset(PREFIX_PACKAGE_STATUS + id, {
-          id: id,
-          packageId: packageId,
-          statusId: status,
-          status: PKG_STATUS[status],
-          datetimestamp: moment()
-            .utc()
-            .unix(),
-          updatedBy: username,
-        });
-        client.sadd(LIST_PACKAGE_STATUS + packageId, id);
-        this.getPackage(packageId).then((pkg) => {
-          this.services.awbService.getAwb(pkg.awbId).then((awb) => {
-            firebase.sendNotification(
-              awb.customer,
-              'Package Status Updated',
-              'Package-' + pkg.trackingNo + ' Updated',
-            );
+      const packageStatus = {
+        packageId: packageId,
+        status: PKG_STATUS[status],
+        updatedBy: username
+      };
+
+      const newPackageStatusData = new PackageStatus(packageStatus);
+
+      newPackageStatusData.save((err, packageStatus) => {
+        if (err) {
+          resolve({ success: false, message: strings.string_response_error });
+        } else {
+          this.getPackage_updated(packageId).then((pkg) => {
+            this.services.awbService.getAwb(pkg.awbId).then((awb) => {
+              firebase.sendNotification(
+                awb.customer,
+                'Package Status Updated',
+                'Package-' + pkg.trackingNo + ' Updated',
+              );
+            });
           });
-        });
-        resolve({ success: true, message: strings.string_response_updated });
+          resolve({ success: true, message: strings.string_response_updated });
+        }
       });
+
+      // client.incr(ID_PACKAGE_STATUS, (err, id) => {
+      //   client.hmset(PREFIX_PACKAGE_STATUS + id, {
+      //     id: id,
+      //     packageId: packageId,
+      //     statusId: status,
+      //     status: PKG_STATUS[status],
+      //     datetimestamp: moment()
+      //       .utc()
+      //       .unix(),
+      //     updatedBy: username,
+      //   });
+      //   client.sadd(LIST_PACKAGE_STATUS + packageId, id);
+      //   this.getPackage(packageId).then((pkg) => {
+      //     this.services.awbService.getAwb(pkg.awbId).then((awb) => {
+      //       firebase.sendNotification(
+      //         awb.customer,
+      //         'Package Status Updated',
+      //         'Package-' + pkg.trackingNo + ' Updated',
+      //       );
+      //     });
+      //   });
+      //   resolve({ success: true, message: strings.string_response_updated });
+      // });
     });
   }
 
   getPackageLastStatus(packageId) {
     return new Promise((resolve, reject) => {
-      this.getPackageStatuses(packageId).then((stats) => {
+      this.getPackageStatuses_updated(packageId).then((stats) => {
         if (stats.length == 0) resolve(PKG_STATUS[1]);
         else resolve(stats[stats.length - 1]);
       });
+    });
+  }
+
+  getPackageLastStatus_updated(packageId) {
+    return new Promise((resolve, reject) => {
+      this.getPackageStatuses_updated(packageId).then((stats) => {
+        if (stats.length == 0) resolve(PKG_STATUS[1]);
+        else resolve(stats[stats.length - 1]);
+      });
+    });
+  }
+
+  getPackageStatuses_updated(packageId) {
+    return new Promise((resolve, reject) => {
+      PackageStatus.find({packageId}, (err, result) => {
+        if (err) {
+          resolve([]);
+        } else {
+          resolve(result);
+        }
+      })
     });
   }
 

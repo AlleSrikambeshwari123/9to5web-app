@@ -19,22 +19,25 @@ const defaultCompanies = [{
 
 createConnection()
   .then(() => {
-    Company.find({}, (err, response) => {
+    console.log('******Creating Default Companies******');
+    return Company.find({}, (err, response) => {
       if (err) {
         console.error('Error while inserting the companies', err);
         process.exit();
       }
+
       if (response.length === defaultCompanies.length) {
         console.log('Companies default data already added!!');
         process.exit();
       }
+      return Company.deleteMany({});
     })
-    return Company.deleteMany({});
   })
   .then(() => {
     return Company.insertMany(defaultCompanies);
   })
   .then(() => {
+    console.log('Companies default data has been successfully added!!');
     process.exit();
   })
   .catch((error) => {

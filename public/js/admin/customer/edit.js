@@ -11,22 +11,27 @@ $(function () {
     let formUrl = $(this).attr('action');
     let formData = $(this).serializeArray();
     let data = {};
+    let email = $(this).find('#email').val();
     $.each(formData, function (_, record) {
       data[record.name] = record.value
     })
 
-    $.ajax({
-      url: formUrl,
-      type: 'post',
-      data: data,
-      success: function (response) {
-        if (response.success) {
-          window.location.href = '/admin/customers/list';
-        } else {
-          showNotify('Failed', response.message, 'fa fa-info', 'danger');
+    if (email && email.trim() && !validateEmail(email)) {
+      showNotify('Failed', "Invalid Email", 'fa fa-info', 'danger');
+    } else {
+      $.ajax({
+        url: formUrl,
+        type: 'post',
+        data: data,
+        success: function (response) {
+          if (response.success) {
+            window.location.href = '/admin/customers/list';
+          } else {
+            showNotify('Failed', response.message, 'fa fa-info', 'danger');
+          }
         }
-      }
-    })
+      })
+    }
   });
 
   function showNotify(title, message, icon, type) {
