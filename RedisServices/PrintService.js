@@ -5,6 +5,7 @@ var lredis = require('../RedisServices/redis-local')
 
 const PRINTER_LIST = "fl:print:computers";
 const USER_PRINTER_PREFIX = "wh:printer:";
+const Awb = require('../models/awb');
 
 class PrintService {
     addPrinter(printer) {
@@ -53,6 +54,26 @@ class PrintService {
         var printServer = await this.getUserPrinter(username)
         console.log("printServer:", printServer)
         client.publish('print:single:lbl:' + printServer, `${awb}:${pkgId}`)
+    }
+
+    getAWBDownloadPdfData(id) {
+        return new Promise((resolve, reject) => {
+            Awb.findOne({_id: id})
+            .populate('customerId')
+            .populate('shipper')
+            .populate('carrier')
+            .populate('hazmat')
+            .populate('packages')
+            .populate('purchaseOrders')
+            .populate('invoices')
+            .populate('createdBy')
+            .exec((err, result) => {
+                if (result.customerId) {
+                    result.customer = result.customerId;
+                }
+                resolve(result);
+            });
+        });
     }
 }
 

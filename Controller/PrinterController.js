@@ -57,7 +57,7 @@ exports.get_full_awb = (req, res, next) => {
 exports.download_pdf_awb = (req, res, next) => {
   let id = req.params.id;
   console.log("Downloading AWB PDF", id);
-  services.awbService.getAwbPreviewDetails(id).then((awb) => {
+  services.printService.getAWBDownloadPdfData(id).then((awb) => {
     awbPdfGen.generateAWb(awb).then(result => {
       res.download(result.path);
     })
@@ -295,7 +295,7 @@ exports.downloadUSCustoms = async (req, res, next) => {
 };
 
 exports.generate_awb_pdf = (req, res, next) => {
-  getFullAwb(req.params.id).then(awb => {
+  services.printService.getAWBDownloadPdfData(req.params.id).then(awb => {
     awbPdfGen.generateAWb(awb).then(result => {
       res.send(result);
     })

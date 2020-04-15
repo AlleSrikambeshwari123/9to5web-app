@@ -131,7 +131,7 @@ class AWBGeneration {
         { text: dimWeight }
       ])
 
-      let barcode = await this.generateBarcode(`${this.awb.customer.pmb}-${this.awb.id}-${pkg.id}`);
+      let barcode = await this.generateBarcode(`${this.awb.customer.pmb}-${this.awb.id}-${pkg._id}`);
       body.push([
         {
           image: 'data:image/jpeg;base64,' + barcode.toString('base64'),
@@ -215,17 +215,17 @@ class AWBGeneration {
                 margin: [10, 5],
                 stack: [
                   { text: 'Airway Bill No:', bold: true, fontSize: 9 },
-                  { margin: [0, 2], text: 'Received Date/Time:', bold: false, fontSize: 9 },
-                  { margin: [0, 2], text: 'Received By:', bold: false, fontSize: 9 }
+                  { margin: [0, 5], text: 'Received Date/Time:', bold: false, fontSize: 9 },
+                  { margin: [0, 3], text: 'Received By:', bold: false, fontSize: 9 }
                 ]
               },
               {
                 width: '*',
                 margin: [0, 5],
                 stack: [
-                  { text: this.awb.id, bold: true, fontSize: 11 },
-                  { margin: [0, 5], text: moment(this.awb.createdAt).format("MM/DD/YYYY hh:mm A"), bold: false, fontSize: 9 },
-                  { margin: [0, 3], text: this.awb.created_by, bold: false, fontSize: 9 }
+                  { margin: [-5, 0], text: this.awb.id, bold: true, fontSize: 11 },
+                  { margin: [-1, 5], text: moment(this.awb.createdAt).format("MM/DD/YYYY hh:mm A"), bold: false, fontSize: 9 },
+                  { margin: [-1, 0], text: (this.awb.createdBy && this.awb.createdBy.username) || '', bold: false, fontSize: 9 }
                 ]
               }
             ]
@@ -262,9 +262,10 @@ class AWBGeneration {
   }
   generateBarcode(text) {
     return new Promise((resolve, reject) => {
+      const str = text && text.toString();
       bwipjs.toBuffer({
         bcid: 'code128',
-        text: text && text.toString(),
+        text: str,
         scale: 5,
         height: 10,
         includetext: true,
