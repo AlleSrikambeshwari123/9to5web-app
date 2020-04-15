@@ -478,7 +478,7 @@ class PackageService {
           let pkgs = [];
           stats.forEach((status, i) => {
             packages[i].lastStatusText = status.status;
-            if (stat.status == PKG_STATUS[4])
+            if (status.status == PKG_STATUS[4])
               pkgs.push(packages[i]);
           });
           resolve(pkgs);
