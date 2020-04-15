@@ -56,7 +56,7 @@ class PrintService {
         client.publish('print:single:lbl:' + printServer, `${awb}:${pkgId}`)
     }
 
-    getAWBDownloadPdfData(id) {
+    getAWBDataForAllRelatedEntities(id) {
         return new Promise((resolve, reject) => {
             Awb.findOne({_id: id})
             .populate('customerId')

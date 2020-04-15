@@ -650,7 +650,7 @@ class PackageService {
 
   getPackage_updated(packageId) {
     return new Promise((resolve, reject) => {
-      Package.findOne({_id: id}, (err, result) => {
+      Package.findOne({_id: packageId}, (err, result) => {
         if (err) {
           resolve({});
         } else {
@@ -949,6 +949,19 @@ class PackageService {
         resolve({ removed: true });
       });
     });
+  }
+
+  // getPackage
+  getPackage_updated(packageId) {
+    return new Promise((resolve, reject) => {
+      Package.findOne({_id: packageId}, (err, result) => {
+        if (err) {
+          resolve({});
+        } else {
+          resolve(result);
+        }
+      });
+    })
   }
 }
 

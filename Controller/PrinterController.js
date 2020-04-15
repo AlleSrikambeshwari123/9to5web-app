@@ -57,7 +57,7 @@ exports.get_full_awb = (req, res, next) => {
 exports.download_pdf_awb = (req, res, next) => {
   let id = req.params.id;
   console.log("Downloading AWB PDF", id);
-  services.printService.getAWBDownloadPdfData(id).then((awb) => {
+  services.printService.getAWBDataForAllRelatedEntities(id).then((awb) => {
     awbPdfGen.generateAWb(awb).then(result => {
       res.download(result.path);
     })
@@ -295,7 +295,7 @@ exports.downloadUSCustoms = async (req, res, next) => {
 };
 
 exports.generate_awb_pdf = (req, res, next) => {
-  services.printService.getAWBDownloadPdfData(req.params.id).then(awb => {
+  services.printService.getAWBDataForAllRelatedEntities(req.params.id).then(awb => {
     awbPdfGen.generateAWb(awb).then(result => {
       res.send(result);
     })
@@ -303,8 +303,8 @@ exports.generate_awb_pdf = (req, res, next) => {
 }
 
 exports.generate_pkg_label_pdf = (req, res, next) => {
-  services.packageService.getPackage(req.params.id).then(package => {
-    getFullAwb(package.awbId).then(awb => {
+  services.packageService.getPackage_updated(req.params.id).then(package => {
+    services.printService.getAWBDataForAllRelatedEntities(package.awbId).then((awb) => {
       lblPdfGen.generateSinglePackageLabel(awb, package).then(result => {
         res.send(result);
       })
