@@ -29,7 +29,7 @@
               <tr data-record="<%= carrier.id %>">
                 <!-- <td><%=carrier.id%></td> -->
                 <td><strong><%=carrier.name%></strong></td>
-                <td><%=carrier.firstName + ' ' + carrier.lastName%></td>
+                <td><%=helpers.getFullName(carrier)%></td>
                 <td><%=carrier.email%></td>
                 <td><%=carrier.telephone %></td>
                 <!-- <td><%=carrier.fax %></td> -->

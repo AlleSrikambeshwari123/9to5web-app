@@ -37,7 +37,7 @@
                     <td><%=awb.dateCreated%></td>
                     <td><%=awb.customer.pmb %></td>
                     <td><a href="manage/<%=awb._id%>/preview"><%=awb._id%></a></td>
-                    <td><%=awb.customer.firstName + ' ' + awb.customer.lastName%></td>
+                    <td><%=helpers.getFullName(awb.customer)%></td>
                     <td><%=awb.shipper.name %></td>
                     <td><%=awb.carrier.name %></td>
                     <td><%=awb.packages.length %></td>
@@ -86,7 +86,7 @@
                     <td><%=awb.dateCreated%></td>
                     <td><%= awb.customer && awb.customer.pmb %></td>
                     <td><a href="manage/<%=awb._id%>/preview"><%=awb._id%></a></td>
-                    <td><%= awb.customer && awb.customer.firstName + ' ' + awb.customer.lastName%></td>
+                    <td><%= helpers.getFullName(awb.customer)%></td>
                     <td><%=awb.shipper.name %></td>
                     <td><%=awb.carrier.name %></td>
                     <td><%=awb.packages.length %></td>
