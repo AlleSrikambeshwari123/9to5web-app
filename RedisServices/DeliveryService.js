@@ -7,7 +7,7 @@ var lredis = require("./redis-local");
 const PREFIX = strings.redis_prefix_delivery;
 const ID_DELIVERY = strings.redis_id_delivery;
 const DELIVERY_SET = strings.redis_prefix_delivery_package_list;
-const Delivery = require('../models/Delivery');
+const Delivery = require('../models/delivery');
 const Package = require('../models/package');
 class DeliveryService {
   constructor() {

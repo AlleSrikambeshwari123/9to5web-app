@@ -1,8 +1,5 @@
-
 'use strict';
-
 const mongoose = require('mongoose');
-
 const airlineSchema = new mongoose.Schema({
   name: {
     type: String,

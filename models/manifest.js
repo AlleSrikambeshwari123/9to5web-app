@@ -1,11 +1,6 @@
 'use strict';
-
 const mongoose = require('mongoose');
 const Schema  = mongoose.Schema;
-
-
-
-
 const manifestSchema = new mongoose.Schema({
   planeId: {type : Schema.Types.ObjectId, ref : 'Plane',required: true}, 
   airportFromId:  {type : Schema.Types.ObjectId, ref : 'Airport',required: true}, 
@@ -19,7 +14,6 @@ const manifestSchema = new mongoose.Schema({
 }, {
   timestamps: true
 });
-
 
 manifestSchema.virtual('plane',{
     ref: 'Plane',

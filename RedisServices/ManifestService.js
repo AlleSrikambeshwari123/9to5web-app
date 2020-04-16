@@ -12,7 +12,7 @@ const OPEN_MANIFEST_LIST = strings.redis_prefix_manifest_open_list;
 
 var PlaneService = require('./PlaneService');
 
-const Manifest = require('../models/Manifest');
+const Manifest = require('../models/manifest');
 
 var planeService = new PlaneService();
 const manifestStages = {
