@@ -3,7 +3,7 @@ const strings = require('../Res/strings');
 
 const client = require('./dataContext').redisClient;
 const lredis = require('./redis-local');
-const Container = require('../models/Container');
+const Container = require('../models/container');
 
 const PREFIX = strings.redis_prefix_container;
 const CONTAINER_ID = strings.redis_id_container;

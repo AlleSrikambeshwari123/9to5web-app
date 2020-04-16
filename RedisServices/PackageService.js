@@ -503,9 +503,7 @@ class PackageService {
     return new Promise((resolve, reject) => {
       this.getShipmentId().then((shipmentId) => {
         let packageIds = barcodes.split(',');
-        client.sadd(LIST_PACKAGE_SHIPMENT + shipmentId, packageIds, (err, reply) =>
- 
-        );
+        client.sadd(LIST_PACKAGE_SHIPMENT + shipmentId, packageIds, (err, reply) =>{});
         Promise.all(
           packageIds.map((packageId) => {
             return this.updatePackageStatus(packageId, 1, username);
