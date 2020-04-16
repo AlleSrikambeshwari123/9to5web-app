@@ -191,10 +191,6 @@ exports.downloadFlightLoadSheet = async (req, res, next) => {
       ),
     );
 
-    console.log("------manifest", manifest)
-    console.log("------packages", packages)
-    console.log("------compartments", compartments)
-
     let sections = compartments.map((compartment) => {
       return {
         name: compartment.name,

@@ -21,7 +21,6 @@ class DeliveryService {
   createDelivery(delivery, username) {
     delivery["createdBy"] = username
     delivery["status"] = 0;
-    delivery["dateCreated"] = moment().utc().unix();
     return new Promise((resolve, reject) => {
      let obj_delivery = new Delivery(delivery);
      obj_delivery.save((err, result) => {
@@ -50,7 +49,6 @@ class DeliveryService {
   getDeliveries() {
     return new Promise(async(resolve, reject) => {
       let deliveries = await Delivery.find({})
-      console.log("deliveries",deliveries)
       resolve(deliveries)
     })
   }

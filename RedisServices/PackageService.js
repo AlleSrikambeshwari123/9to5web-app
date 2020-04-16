@@ -66,7 +66,6 @@ function addPackageToIndex(trackingNo, msearcher) {
   lredis.getPackage(trackingNo).then((pack) => {
     msearcher.delDocument(PKG_IDX, `${pack.mid}-${trackingNo}`, (err, done) => {
       var document = createDocument(pack);
-      console.log('readding package to the index like a boss ' + trackingNo);
       msearcher.add(pack.mid + '-' + pack.trackingNo, document);
     });
   });
@@ -114,7 +113,6 @@ class PackageService {
 
   async getAllPackagesWithLastStatus() {
     let packages = await this.getAllPackages_updated();
-    console.log("packages--", packages )
     return await Promise.all(
       packages.map(async (pkg) => {
         let status = await this.services.packageService.getPackageLastStatus(pkg.id);
@@ -325,7 +323,6 @@ class PackageService {
         if (err) {
           resolve({ success: false, message: strings.string_response_error });
         } else {
-          console.log("packagesssssssssss,",pkg)
           resolve({ success: true });
         }
       })
@@ -453,13 +450,11 @@ class PackageService {
             return lredis.hgetall(key);
           }),
         ).then((packages) => {
-          console.log(packages);
           Promise.all(
             packages.map((pkg) => {
               return this.getPackageLastStatus(pkg.id);
             }),
           ).then((stats) => {
-            console.log(stats);
             let pkgs = [];
             stats.forEach((stat, i) => {
               packages[i].lastStatusText = stat.status;
@@ -509,7 +504,7 @@ class PackageService {
       this.getShipmentId().then((shipmentId) => {
         let packageIds = barcodes.split(',');
         client.sadd(LIST_PACKAGE_SHIPMENT + shipmentId, packageIds, (err, reply) =>
-          console.log(err, reply),
+ 
         );
         Promise.all(
           packageIds.map((packageId) => {
@@ -539,7 +534,6 @@ class PackageService {
 
       Promise.all(
         packages.map((packageId) => {
-          console.log('.dd',packageId)
           return Promise.all([
             this.updatePackageStatus(packageId, 2, username),
             this.updatePackage_updated(packageId, {
@@ -670,7 +664,6 @@ class PackageService {
       };
 
       const newPackageStatusData = new PackageStatus(packageStatus);
-      console.log("ddddddddddddddddddddddd")
       newPackageStatusData.save((err, packageStatus) => {
         if (err) {
           resolve({ success: false, message: strings.string_response_error });
@@ -684,7 +677,6 @@ class PackageService {
               );
             });
           });
-           console.log("fffffffffffffff")
           resolve({ success: true, message: strings.string_response_updated });
         }
       });
@@ -835,7 +827,6 @@ class PackageService {
     return new Promise((resolve, reject) => {
       this.mySearch.search(`@mid:[0 0]`, { offset: 0, numberOfResults: 5000 }, (err, data) => {
         var packages = [];
-        console.log(data);
         data.results.forEach((element) => {
           packages.push(element.doc);
         });
@@ -847,7 +838,6 @@ class PackageService {
     return new Promise((resolve, reject) => {
       this.mySearch.search(`@hasDocs:[0 0]`, { offset: 0, numberOfResults: 5000 }, (err, data) => {
         var packages = [];
-        console.log(data);
         data.results.forEach((element) => {
           packages.push(element.doc);
         });
@@ -863,7 +853,6 @@ class PackageService {
       var manifestKey = 'manifest:' + manifest + ':*';
 
       lredis.del('packages:' + trackingNo).then(function(result) {
-        console.log(result);
         msearch.delDocument(PKG_IDX, `${mid}-${trackingNo}`);
         //we need to remove from the index and dec the counter
         lredis.client.decr('mcounter:' + mid);
@@ -873,10 +862,7 @@ class PackageService {
           var keysCount = 0;
 
           kResult.forEach((element) => {
-            console.log(`removing ${trackingNo} package manifest set ${element} `);
             lredis.srem(element, trackingNo).then(function(rResult) {
-              console.log(rResult);
-              console.log('removed');
               if (keysCount == kResult.length - 1) keysCount++;
             });
           });
@@ -895,7 +881,6 @@ class PackageService {
     return new Promise((resolve, reject) => {
       packageIndex.delDocument(PKG_IDX, id, (err, response) => {
         if (err) console.log(err);
-        console.log(response);
         resolve({ deleted: true });
       });
     });
@@ -929,7 +914,7 @@ class PackageService {
         {},
         (err, reply) => {
           if (err) console.log(err);
-          console.log(reply, 'TOTAL SECTION Weight');
+          
           if (reply[1]) {
             var result = reply[1];
             var compartment = result[3];

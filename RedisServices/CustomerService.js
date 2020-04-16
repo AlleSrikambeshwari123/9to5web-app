@@ -143,7 +143,6 @@ class CustomerService {
   }
   updateFcm(email, fcmToken) {
     return new Promise((resolve, reject) => {
-      console.log(`Updating fcmToken of ${email}: ${fcmToken}`);
       this.getCustomerWithEmail(email).then(customer => {
         if (customer.id == undefined) {
           resolve({ success: false, message: strings.string_not_found_customer });
@@ -160,7 +159,6 @@ class CustomerService {
       this.removeAll().then(result => {
         csv().fromFile("./DB_Seed/customers.csv").then(jsonObj => {
           Promise.all(jsonObj.map(element => {
-            console.log(element.sCustomerName);
             client.incr(ID_COUNTER, (err, id) => {
               return lredis.hmset(PREFIX + id, {
                 id: id,

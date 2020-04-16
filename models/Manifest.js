@@ -9,8 +9,7 @@ const Schema  = mongoose.Schema;
 const manifestSchema = new mongoose.Schema({
   planeId: {type : Schema.Types.ObjectId, ref : 'Plane',required: true}, 
   airportFromId:  {type : Schema.Types.ObjectId, ref : 'Airport',required: true}, 
-  airportToId:  {type : Schema.Types.ObjectId, ref : 'Airport',required: true}, 
-  dateCreated: {type : Date}, 
+  airportToId:  {type : Schema.Types.ObjectId, ref : 'Airport',required: true},  
   shipDate: {type : Date}, 
   shippedBy: {type : String},
   stageId: {type:  Number}, 

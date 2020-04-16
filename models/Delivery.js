@@ -18,7 +18,6 @@ const deliverySchema = new mongoose.Schema({
   driverId: {type : Schema.Types.ObjectId, ref : 'Driver',required: true},
   vehicleId: {type : Schema.Types.ObjectId, ref : 'vehicle',required: true}, 
   createdBy: {type: String}, 
-  dateCreated: {type: Date}, 
   delivery_date: {type: Date},
   Status: {type: Number},
   packages: [{ type : Schema.Types.ObjectId, ref: "Package"}]

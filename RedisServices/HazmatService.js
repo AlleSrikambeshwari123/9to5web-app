@@ -13,11 +13,9 @@ const Hazmat = require('../models/hazmat');
 class HazmatService {
   importClassesFromCsv() {
     return new Promise((resolve, reject) => {
-      console.log("Importing HAZMAT Classes from the CSV file.");
       this.removeAll().then(result => {
         csv().fromFile("./DB_Seed/hazmat.csv").then(jsonObj => {
           Promise.all(jsonObj.map(element => {
-            console.log(element.sClassName + '/' + element.sClassDescription);
             client.incr(HAZMAT_ID, (err, id) => {
               return lredis.hmset(PREFIX + id, {
                 id: id,

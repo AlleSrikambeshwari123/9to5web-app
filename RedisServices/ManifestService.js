@@ -65,7 +65,7 @@ class ManifestService {
           let title = 'M-' + result._id;
           let stageId = manifestStages.open.id;
           let stage = manifestStages.open.title;
-          await Manifest.findOneAndUpdate({_id: result._id},{title: title, stageId: stageId, stage: stage, dateCreated: new Date()})
+          await Manifest.findOneAndUpdate({_id: result._id},{title: title, stageId: stageId, stage: stage})
           resolve({ success: true, message: strings.string_response_created, manifest: result});
         }
       })
@@ -137,7 +137,6 @@ class ManifestService {
   }
 
   getManifest(manifestId) {
-    console.log(manifestId)
     return new Promise((resolve, reject) => {
       Manifest.findOne({_id: manifestId}).exec((err, result) => {
         if(err){
@@ -152,7 +151,6 @@ class ManifestService {
   getManifests() {
     return new Promise(async(resolve, reject) => {
       let manifest = await Manifest.find({}).populate('plane')
-      console.log(manifest)
       resolve(manifest)
     })
   }
