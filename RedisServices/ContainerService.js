@@ -8,7 +8,6 @@ const Container = require('../models/container');
 const PREFIX = strings.redis_prefix_container;
 const CONTAINER_ID = strings.redis_id_container;
 
-
 class ContainerService {
   async addContainer(container) {
     return new Promise((resolve, reject) => {
@@ -86,7 +85,6 @@ class ContainerService {
         } else {
           resolve(result);
         }
-
       });
     });
   }

@@ -4,7 +4,6 @@ var utils = require('../Util/utils');
 
 exports.get_package_list = (req, res, next) => {
   services.packageService.getAllPackagesWithLastStatus().then((packages) => {
-    console.log(packages[0]);
     res.render('pages/warehouse/package/list-all', {
       page: req.originalUrl,
       user: res.user,

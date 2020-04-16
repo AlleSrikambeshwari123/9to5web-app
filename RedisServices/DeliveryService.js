@@ -7,8 +7,10 @@ var lredis = require("./redis-local");
 const PREFIX = strings.redis_prefix_delivery;
 const ID_DELIVERY = strings.redis_id_delivery;
 const DELIVERY_SET = strings.redis_prefix_delivery_package_list;
+
 const Delivery = require('../models/delivery');
 const Package = require('../models/package');
+
 class DeliveryService {
   constructor() {
     this.services = {};
@@ -18,16 +20,20 @@ class DeliveryService {
     this.services = services;
   }
 
-  createDelivery(delivery, username) {
-    delivery["createdBy"] = username
+  createDelivery(delivery) {
     delivery["status"] = 0;
+    
     return new Promise((resolve, reject) => {
-     let obj_delivery = new Delivery(delivery);
-     obj_delivery.save((err, result) => {
+      let objDelivery = new Delivery(delivery);
+      objDelivery.save((err, result) => {
         if (err) {
           resolve({ success: false, message: err});
         } else {
-          resolve({ success: true, message: strings.string_response_added, delivery: result});
+          resolve({ 
+            success: true, 
+            message: strings.string_response_added, 
+            delivery: result
+          });
         }
       })
     })
@@ -35,15 +41,14 @@ class DeliveryService {
 
   getDelivery(deliveryId) {
     return new Promise((resolve, reject) => {
-      Delivery.findOne({_id: deliveryId}).exec((err, result) => {
-        if(err){
+      Delivery.findOne({_id: deliveryId}, (err, result) => {
+        if (err) {
           resolve({});
-        }else{
+        } else {
           resolve(result)
         }
       });
     });
-  
   }
 
   getDeliveries() {
@@ -53,21 +58,50 @@ class DeliveryService {
     })
   }
 
+  getDeliveriesFullData() {
+    return new Promise(async(resolve, reject) => {
+      Delivery.find({})
+      .populate('locationId')
+      .populate('deliveryId')
+      .populate('vehicleId')
+      .populate('driverId')
+      .populate('packages')
+      .populate('createdBy', 'username')
+      .exec((err, deliveries) => {
+        if (err) {
+          return resolve([]);
+        }
+
+        deliveries = deliveries.map((delivery) => {
+          delivery.location = delivery.locationId;
+          delivery.driver = delivery.driverId;
+          delivery.vehicle = delivery.vehicleId;
+          return delivery;
+        });
+
+        resolve(deliveries);
+      })
+    })
+  }  
+
   getFullDelivery(deliveryId) {
     return new Promise((resolve, reject) => {
-      this.getDelivery(deliveryId).then(delivery => {
-        Promise.all([
-          this.services.locationService.getLocation(delivery.locationId),
-          this.services.driverService.getDriver(delivery.driverId),
-          this.services.vehicleService.getVehicle(delivery.vehicleId),
-          this.getDeliveryPackages(deliveryId)
-        ]).then(results => {
-          delivery.location = results[0];
-          delivery.driver = results[1];
-          delivery.vehicle = results[2];
-          delivery.packages = results[3];
-          resolve(delivery);
-        })
+      Delivery.findOne({_id: deliveryId})
+      .populate('locationId')
+      .populate('deliveryId')
+      .populate('vehicleId')
+      .populate('driverId')
+      .populate('packages')
+      .populate('createdBy', 'username')
+      .exec((err, delivery) => {
+        if (err) {
+          return resolve({});
+        }
+        delivery.location = delivery.locationId;
+        delivery.driver = delivery.driverId;
+        delivery.vehicle = delivery.vehicleId;
+        delivery.createdBy = delivery.createdBy && delivery.createdBy.username;
+        resolve(delivery);
       })
     });
   }
@@ -98,8 +132,8 @@ class DeliveryService {
         })
       })
       resolve({ success: true, message:  strings.string_response_updated});
-
     })
+
     // return new Promise((resolve, reject) => {
     //   client.sadd(DELIVERY_SET + deliveryId, packageIds, (err, reply) => {
     //     if (err) resolve({ success: false, message: strings.string_response_error });

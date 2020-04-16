@@ -21,7 +21,8 @@ const manifestSchema = new mongoose.Schema({
     type : Date
   }, 
   shippedBy: {
-    type : String
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'User'
   },
   stageId: {
     type:  Number
@@ -38,10 +39,10 @@ const manifestSchema = new mongoose.Schema({
 });
 
 manifestSchema.virtual('plane',{
-    ref: 'Plane',
-    localField: 'planeId',
-    foreignField: '_id',
-    justOne: true
+  ref: 'Plane',
+  localField: 'planeId',
+  foreignField: '_id',
+  justOne: true
 });
 
 manifestSchema.set('toObject', { virtuals: true });

@@ -115,7 +115,7 @@ class PackageService {
     let packages = await this.getAllPackages_updated();
     return await Promise.all(
       packages.map(async (pkg) => {
-        let status = await this.services.packageService.getPackageLastStatus(pkg.id);
+        let status = await this.services.packageService.getPackageLastStatus(pkg._id);
         pkg.lastStatusText = status && status.status;
         return pkg;
       }),
@@ -520,25 +520,22 @@ class PackageService {
   }
 
   //========== Load Packages to AirCraft (Add to Manifest) ==========//
-  addToFlight(packageIds, manifestId, compartmentId, username) {
+  addToFlight(packageIds, manifestId, compartmentId, userId) {
     return new Promise((resolve, reject) => {
-
-      let packages = packageIds.split(',').filter(Boolean);
-      if (packages.length === 0) {
+      let packages = packageIds && packageIds.length && packageIds.split(',').filter(Boolean);
+      
+      if (!packages || packages.length === 0) {
         return resolve({ success: false, message: 'Please select packages.' });
       }
-
-
 
       Promise.all(
         packages.map((packageId) => {
           return Promise.all([
-            this.updatePackageStatus(packageId, 2, username),
+            this.updatePackageStatus(packageId, 2, userId),
             this.updatePackage_updated(packageId, {
               manifestId: manifestId,
               compartmentId: compartmentId,
             }),
-            //lredis.setAdd(LIST_PACKAGE_MANIFEST + manifestId, packages),
           ]);
         }),
       ).then((results) => {
@@ -546,6 +543,7 @@ class PackageService {
       });
     });
   }
+
   getPackageOnManifest(manifestId) {
     return new Promise(async(resolve, reject) => {
       let packages = await Package.find({manifestId: manifestId})
@@ -660,6 +658,11 @@ class PackageService {
         status: PKG_STATUS[status],
         updatedBy: userId
       };
+
+      // TODO: set updatedBy
+      if (!packageStatus.updatedBy) {
+        delete packageStatus.updatedBy;
+      }
 
       const newPackageStatusData = new PackageStatus(packageStatus);
       newPackageStatusData.save((err, packageStatus) => {

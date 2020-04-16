@@ -1,5 +1,6 @@
 
 var moment = require('moment');
+const mongoose = require('mongoose');
 const strings = require('../Res/strings');
 
 var lredis = require('./redis-local');
@@ -10,8 +11,7 @@ const ID_COUNTER = strings.redis_id_manifest;
 const PREFIX = strings.redis_prefix_manifest;
 const OPEN_MANIFEST_LIST = strings.redis_prefix_manifest_open_list;
 
-var PlaneService = require('./PlaneService');
-
+const PlaneService = require('./PlaneService');
 const Manifest = require('../models/manifest');
 
 var planeService = new PlaneService();
@@ -56,43 +56,37 @@ class ManifestService {
 
   createManifest(manifest) {
     return new Promise((resolve, reject) => {
-     let obj_manifest = new Manifest(manifest);
-     obj_manifest.save(async(err, result) => {
+      const generatedUniqId = mongoose.Types.ObjectId();
+      manifest['_id'] = generatedUniqId;
+      manifest['title'] = 'M-' + generatedUniqId;
+      manifest['stageId'] = manifestStages.open.id;
+
+      manifest['stage'] = manifestStages.open.title;
+
+      let objManifest = new Manifest(manifest);
+      objManifest.save(async (err, result) => {
         if (err) {
           resolve({ success: false, message: err});
         } else {
-
-          let title = 'M-' + result._id;
-          let stageId = manifestStages.open.id;
-          let stage = manifestStages.open.title;
-          await Manifest.findOneAndUpdate({_id: result._id},{title: title, stageId: stageId, stage: stage})
-          resolve({ success: true, message: strings.string_response_created, manifest: result});
+          manifest['id'] = manifest['_id'];
+          resolve({ 
+            success: true, 
+            message: strings.string_response_created, 
+            manifest: result
+          });
         }
       })
     })
-
-    // return new Promise((resolve, reject) => {
-    //   client.incr(ID_COUNTER, (err, id) => {
-    //     manifest.id = id;
-    //     manifest.dateCreated = moment().utc().unix();
-    //     manifest.title = 'M-' + id;
-    //     manifest.stageId = manifestStages.open.id;
-    //     manifest.stage = manifestStages.open.title;
-    //     client.hmset(PREFIX + id, manifest);
-    //     client.sadd(OPEN_MANIFEST_LIST, id);
-    //     resolve({ success: true, message: strings.string_response_created, manifest: manifest });
-    //   })
-    // });
   }
 
   updateManifestDetails(id, details) {
-    return new Promise(async(resolve, reject) => {
-      Manifest.findOneAndUpdate({_id: id},details, (err, result) => {
-          if (err) {
-            resolve({ success: false, message: err});
-          } else {
-            resolve({ success: true, message:  strings.string_response_updated});
-          }
+    return new Promise((resolve, reject) => {
+      Manifest.findOneAndUpdate({_id: id}, details, (err, result) => {
+        if (err) {
+          resolve({ success: false, message: err});
+        } else {
+          resolve({ success: true, message:  strings.string_response_updated});
+        }
       })
     })
   }
@@ -179,13 +173,12 @@ class ManifestService {
   deleteManifest(mid) {
     return new Promise((resolve, reject) => {
       Manifest.deleteOne({_id: mid}, (err, result) => {
-          if (err) {
-            resolve({ success: false, message: err });
-          } else {
-            resolve({ success: true, message: strings.string_response_removed });
-          }
+        if (err) {
+          resolve({ success: false, message: err });
+        } else {
+          resolve({ success: true, message: strings.string_response_removed });
+        }
       })
-    
     });
   }
 

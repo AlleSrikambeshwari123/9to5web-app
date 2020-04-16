@@ -1,13 +1,3 @@
-
-// locationId:
-// driverId:
-// vehicleId:
-// createdBy:
-// dateCreated:
-// delivery_date:
-// status:
-
-
 'use strict';
 
 const mongoose = require('mongoose');
@@ -26,11 +16,13 @@ const deliverySchema = new mongoose.Schema({
   },
   vehicleId: {
   	type : Schema.Types.ObjectId,
-  	ref : 'vehicle',
+  	ref : 'Vehicle',
   	required: true
   }, 
   createdBy: {
-  	type: String
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'User', 
+    required: true 
   }, 
   delivery_date: {
   	type: Date
@@ -38,8 +30,11 @@ const deliverySchema = new mongoose.Schema({
   Status: {
   	type: Number
   },
-  // packages: [{ type : Schema.Types.ObjectId, ref: "Package"}]
-
+  // Additional fields
+  packages: [{ 
+    type : Schema.Types.ObjectId, 
+    ref: "Package"
+  }]
 }, {
   timestamps: true
 });

@@ -2,30 +2,27 @@ var services = require('../RedisServices/RedisDataServices');
 var utils = require('../Util/utils');
 
 exports.get_delivery_list = (req, res, next) => {
-  services.deliveryService.getDeliveries().then(deliveries => {
-    Promise.all(deliveries.map(delivery => {
-      return services.deliveryService.getFullDelivery(delivery.id)
-    })).then(delivers => {
-      Promise.all([
-        services.locationService.getLocations(),
-        services.driverService.getLocationDrivers('nas'),
-        services.vehicleService.getVehiclesByLocation('nas')
-      ]).then(results => {
-        res.render('pages/warehouse/delivery/list', {
-          page: req.originalUrl,
-          user: res.user,
-          title: 'Deliveries',
-          deliveries: delivers.map(utils.formattedRecord),
-          locations: results[0],
-          drivers: results[1],
-          vehicles: results[2],
-        })
+  services.deliveryService.getDeliveriesFullData().then((deliveries) => {
+    Promise.all([
+      services.locationService.getLocations(),
+      services.driverService.getLocationDrivers('nas'),
+      services.vehicleService.getVehiclesByLocation('nas')
+    ]).then((results) => {
+      res.render('pages/warehouse/delivery/list', {
+        page: req.originalUrl,
+        user: res.user,
+        title: 'Deliveries',
+        deliveries: deliveries.map(utils.formattedRecord),
+        locations: results[0],
+        drivers: results[1],
+        vehicles: results[2],
       })
     })
-  })
+  });
 }
 
 exports.add_new_delivery = (req, res, next) => {
+  req.body['createdBy'] = req['userId'];
   services.deliveryService.createDelivery(req.body, res.user.username).then(response => {
     res.send(response);
   })

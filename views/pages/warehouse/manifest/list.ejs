@@ -20,7 +20,7 @@
           <tbody>
             <% manifests.forEach(function(manifest){ %>
             <tr data-record="<%= manifest.id %>">
-              <td><strong><%= manifest.title%> - <%= manifest.plane.tail_number%></strong></td>
+              <td><strong><%= manifest.title%> - <%= manifest.plane &&  manifest.plane.tailNumber%></strong></td>
               <td>
                 <% if (manifest.stageId == 1 ) { %>
                 <span class="badge badge-secondary"><%=manifest.stage %></span>
@@ -34,8 +34,8 @@
                 <span class="badge badge-success"><%=manifest.stage %></span>
                 <% } %>
               </td>
-              <td><%= manifest.createdAt %></td>
-              <td><%= manifest.plane.tailNumber%></td>
+              <td><%= helpers.formatDate(manifest.createdAt) %></td>
+              <td><%= manifest.plane &&  manifest.plane.tailNumber%></td>
               <td class="text-center">
                 <a href='manage/<%=manifest.id%>/get' class="btn btn-link btn-primary px-3" data-toggle="tooltip"
                   data-original-title="View Details"> <i class="fa fa-eye"></i> </a>

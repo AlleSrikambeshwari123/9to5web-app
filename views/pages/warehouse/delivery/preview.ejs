@@ -26,10 +26,10 @@
               <% delivery.packages.forEach(package => { %>
               <tr data-record="<%= package.id %>">
                 <td><%= package.id %></td>
-                <td><%= package.customer.pmb %></td>
-                <td><%= package.customer.firstName + ' ' + package.customer.lastName %></td>
+                <td><%= package.customer && package.customer.pmb %></td>
+                <td><%= package.getFullName(package.customer) %></td>
                 <td><%= package.awbId %></td>
-                <td><%= package.shipper.firstName + ' ' + package.shipper.lastName %></td>
+                <td><%= package.getFullName(package.shipper) %></td>
                 <td><%= package.weight %> lbs</td>
               </tr>
               <% }) %>

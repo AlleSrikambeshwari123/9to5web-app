@@ -76,7 +76,7 @@
             <div class="form-group form-show-validation row">
               <label for="shipDate" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Flight Date / Time </label>
               <div class="col-lg-8 col-md-9 col-sm-8 d-flex">
-                <input type="text" class="form-control" id="shipDate" value="<%= manifest.shipDate %>" readonly>
+                <input type="text" class="form-control" id="shipDate" value="<%= helpers.formatDate(manifest.shipDate) %>" readonly>
                 <div class="input-group-append">
                   <span class="input-group-text">
                     <i class="fa fa-calendar-check"></i>

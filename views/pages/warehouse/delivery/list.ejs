@@ -24,13 +24,13 @@
           <tbody>
             <% deliveries.forEach(delivery => { %>
             <tr data-record="<%= delivery.id %>">
-              <td><%= delivery.createdBy %></td>
-              <td><%= delivery.delivery_date %></td>
+              <td><%= delivery.createdBy && delivery.createdBy.username %></td>
+              <td><%= helpers.formatDate(delivery.delivery_date) %></td>
               <td><%= delivery.location.name %></td>
               <td><%= delivery.packages.length %></td>
-              <td><%= delivery.driver.firstName + ' ' + delivery.driver.lastName %></td>
+              <td><%= helpers.getFullName(delivery.driver) %></td>
               <td>
-                <%= delivery.vehicle.vehicle_make + '-' + delivery.vehicle.model + '-' + delivery.vehicle.registration %>
+                <%= delivery.vehicle.vehicleMake + '-' + delivery.vehicle.model + '-' + delivery.vehicle.registration %>
               </td>
               <td class="text-center">
                 <a href='manage/<%=delivery.id%>/get' class="btn btn-link btn-primary px-2" data-toggle="tooltip"
@@ -73,7 +73,7 @@
             <select class='form-control' id="driverId" name="driverId" required>
               <option></option>
               <% drivers.forEach(driver => { %>
-              <option value='<%=driver.id%>'><%=driver.firstName + ' ' + driver.lastName %></option>
+              <option value='<%=driver.id%>'><%= helpers.getFullName(driver) %></option>
               <% }) %>
             </select>
           </div>
@@ -83,7 +83,7 @@
               <option></option>
               <% vehicles.forEach(vehicle => { %>
               <option value='<%=vehicle.id%>'>
-                <%= vehicle.vehicle_make + ' ' + vehicle.model + ' ' + vehicle.registration %>
+                <%= vehicle.vehicleMake + ' ' + vehicle.model + ' ' + vehicle.registration %>
               </option>
               <% }) %>
             </select>
