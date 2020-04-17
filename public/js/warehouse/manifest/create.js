@@ -48,6 +48,14 @@ $('#shipDate').datetimepicker({
 $('.add-manifest-form').submit(function (event) {
   event.preventDefault();
   var manifestInfo = extractFormData(this);
+  
+  // Validating the airportFromId and airportToId
+  // Practically, It is not possible that airport from and to have the same name. 
+  if (manifestInfo['airportFromId'] == manifestInfo['airportToId']) {
+    showNotify('Failed', `Airport 'From' and 'To' can't be same!`, 'fa fa-info', 'danger');
+    return;
+  }
+
   $.ajax({
     url: 'create',
     type: 'post',
@@ -64,4 +72,21 @@ $('.add-manifest-form').submit(function (event) {
       })
     }
   })
+
+  function showNotify(title, message, icon, type) {
+    $.notify({
+      title: title,
+      message: message,
+      icon: icon,
+      target: '_blank'
+    }, {
+      type: type,
+      placement: {
+        from: "top",
+        align: "right",
+      },
+      time: 1000,
+      delay: 3000
+    });
+  }
 })

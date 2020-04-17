@@ -16,6 +16,7 @@ exports.get_airport_list = (req, res, next) => {
     .catch(next);
 };
 
+
 exports.create_airport = (req, res, next) => {
   res.render('pages/fleet/airport/create', {
     page: req.originalUrl,
@@ -27,12 +28,8 @@ exports.create_airport = (req, res, next) => {
 exports.add_new_airport = (req, res, next) => {
   services.airportService
     .create(req.body)
-    .then((airport) => {
-      res.send({
-        success: true,
-        message: strings.string_response_added,
-        airport,
-      });
+    .then((result) => {
+      res.send(result);
     })
     .catch((error) => {
       res.send({ success: false, message: strings.string_response_error });

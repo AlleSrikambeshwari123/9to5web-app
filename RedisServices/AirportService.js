@@ -13,9 +13,15 @@ const Airport = require('../models/airport');
 class AirportService {
   
   create(airport) {
-    return new Promise((resolve, reject) => {
-     let newAirport = new Airport(airport);
-     newAirport.save((err, result) => {
+    return new Promise(async (resolve, reject) => {
+      
+      const airportData = await Airport.findOne({ name: new RegExp('^' + airport.name + '$', 'i')});
+      if (airportData && airportData['_id']) {
+        return resolve({ success: false, message: strings.string_airport_exist });
+      }
+
+      let newAirport = new Airport(airport);
+      newAirport.save((err, result) => {
         if (err) {
           resolve({ success: false, message: strings.string_response_error});
         } else {
