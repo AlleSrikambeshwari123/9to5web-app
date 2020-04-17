@@ -24,8 +24,6 @@ exports.get_filtered_package_list = (req, res, next) => {
     .getAllPackagesWithLastStatus({ filter: req.params.filter })
     .then(async (packages) => {
 
-
-      console.log(packages)
       if (req.params.filter === 'in-manifest') {
         packages = packages.filter((i) => i.manifestId);
         title = 'Packages';
@@ -73,7 +71,7 @@ exports.get_filtered_package_list = (req, res, next) => {
             return pkg;
           }
           if (req.params.filter === 'in-manifest') {
-            let status = await services.packageService.getPackageLastStatus(pkg.id);
+            let status = await services.packageService.getPackageLastStatus(pkg._id);
             pkg.lastStatusText = status && status.status;
             return pkg;
           }
@@ -86,7 +84,7 @@ exports.get_filtered_package_list = (req, res, next) => {
               } else {
                 pkg.awbdeliveryMethod = '';
               }
-              let status = await services.packageService.getPackageLastStatus(pkg.id);
+              let status = await services.packageService.getPackageLastStatus(pkg._id);
               pkg.customerpmb = '9000';
               pkg.lastStatusText = status && status.status;
               return pkg;
@@ -132,7 +130,6 @@ exports.get_filtered_package_list = (req, res, next) => {
           packages: filtered,
         });
       }
-
     });
 };
 
