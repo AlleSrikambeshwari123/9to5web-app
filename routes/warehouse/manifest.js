@@ -16,6 +16,6 @@ router.post('/manifest/manage/:id/close', middleware().checkSession, manifestCtr
 
 router.get('/nas/manifest/incoming', middleware().checkSession, manifestCtrl.get_incoming_manifest)
 router.get('/nas/manifest/manage/:id/get', middleware().checkSession, manifestCtrl.get_manifest_detail);
-router.get('/fll/manifest/manage/:id/receive', middleware().checkSession, manifestCtrl.ship_manifest);
+router.get('/fll/manifest/manage/:id/receive', middleware().checkSession, manifestCtrl.receive_manifest);
 
 module.exports = router;

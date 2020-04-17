@@ -60,7 +60,6 @@ class ManifestService {
       manifest['_id'] = generatedUniqId;
       manifest['title'] = 'M-' + generatedUniqId;
       manifest['stageId'] = manifestStages.open.id;
-
       manifest['stage'] = manifestStages.open.title;
 
       let objManifest = new Manifest(manifest);
@@ -107,32 +106,50 @@ class ManifestService {
     })
   }
 
-  shipManifest(mid, username) {
+  shipManifest(mid, userId) {
     return new Promise((resolve, reject) => {
-      client.hmset(PREFIX + mid, {
-        shipDate: moment().utc().unix(),
-        shippedBy: username
+      const stage = this.getStageById(manifestStages.shipping.id);
+
+      Manifest.findByIdAndUpdate({_id: mid}, {
+        shipDate: new Date(),
+        shippedBy: userId,
+        stageId: stage.id,
+        stage: stage.title
       }, (err, result) => {
-        this.changeStage(mid, manifestStages.shipping.id);
-        resolve({ success: true, message: strings.string_response_shipped });
-      })
+        if (err) {
+          resolve({ success: false, message: strings.string_response_error });
+        } else {
+          resolve({ success: true, message: strings.string_response_shipped });
+        }
+      });
     })
   }
-  receiveManifest(mid, username) {
+  receiveManifest(mid, userId) {
     return new Promise((resolve, reject) => {
-      client.hmset(PREFIX + mid, {
-        receiveDate: moment().utc().unix(),
-        receivedBy: username
+      const stage = this.getStageById(manifestStages.shipped.id);
+
+      Manifest.findByIdAndUpdate({_id: mid}, {
+        receiveDate: new Date(),
+        receivedBy: userId,
+        stageId: stage.id,
+        stage: stage.title
       }, (err, result) => {
-        this.changeStage(mid, manifestStages.shipped.id);
-        resolve({ success: true, message: strings.string_response_received });
-      })
+        if (err) {
+          resolve({ success: false, message: strings.string_response_error });
+        } else {
+          resolve({ success: true, message: strings.string_response_received });
+        }
+      });
     });
   }
 
   getManifest(manifestId) {
     return new Promise((resolve, reject) => {
-      Manifest.findOne({_id: manifestId}).exec((err, result) => {
+      Manifest.findOne({_id: manifestId})
+      .populate('airportFromId')
+      .populate('airportToId')
+      .populate('planeId')
+      .exec((err, result) => {
         if(err){
           resolve({});
         }else{
@@ -144,29 +161,54 @@ class ManifestService {
 
   getManifests() {
     return new Promise(async(resolve, reject) => {
-      let manifest = await Manifest.find({}).populate('plane')
-      resolve(manifest)
+      Manifest.find({})
+      .populate('planeId')
+      .exec((err, manifests) => {
+        if (err) {
+          resolve([]);
+        } else {
+          resolve(manifests);
+        }
+      });
     })
   }
 
   getOpenManifest() {
     return new Promise((resolve, reject) => {
-      client.smembers(OPEN_MANIFEST_LIST, (err, ids) => {
-        Promise.all(ids.map(id => {
-          return lredis.hgetall(PREFIX + id);
-        })).then(manifests => {
+      Manifest.find({stageId : manifestStages.open.id}, (err, manifests) => {
+        if (err) {
+          resolve([]);
+        } else {
           resolve(manifests);
-        })
-      })
+        }
+      });
+      // client.smembers(OPEN_MANIFEST_LIST, (err, ids) => {
+      //   Promise.all(ids.map(id => {
+      //     return lredis.hgetall(PREFIX + id);
+      //   })).then(manifests => {
+      //     resolve(manifests);
+      //   })
+      // })
     });
   }
 
   getManifestProcessing() {
     return new Promise((resolve, reject) => {
-      this.getManifests().then(manifests => {
-        var list = manifests.filter(manifest => manifest.stageId == manifestStages.shipped.id || manifest.stageId == manifestStages.verified.id);
-        resolve(list);
-      })
+      Manifest.find({$or: [
+        {stageId: manifestStages.shipped.id},
+        {stageId: manifestStages.verified.id}
+      ]})
+      .populate('planeId')
+      .exec((err, manifests) => {
+        if (err) {
+          resolve([]);
+        } else {
+          manifests.forEach((manifest) => {
+            manifest['plane'] = manifest['planeId'];
+          })
+          resolve(manifests);
+        }
+      });
     });
   }
 
@@ -188,6 +230,9 @@ class ManifestService {
     }
     if (id == manifestStages.closed.id) {
       return manifestStages.closed;
+    }
+    if (id == manifestStages.shipping.id) {
+      return manifestStages.shipping;
     }
     if (id == manifestStages.shipped.id) {
       return manifestStages.shipped;

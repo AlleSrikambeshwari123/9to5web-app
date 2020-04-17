@@ -34,8 +34,8 @@
                 <span class="badge badge-success"><%=manifest.stage %></span>
                 <% } %>
               </td>
-              <td><%= manifest.dateCreated %></td>
-              <td><%= manifest.plane.tail_number%></td>
+              <td><%= helpers.formatDate(manifest.createdAt) %></td>
+              <td><%= manifest.plane && manifest.plane.tailNumber%></td>
               <td class="text-center">
                 <a href='manage/<%=manifest.id%>/get' class="btn btn-link btn-primary px-3" data-toggle="tooltip"
                   data-original-title="View Details"> <i class="fa fa-eye"></i> </a>

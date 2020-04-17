@@ -521,6 +521,7 @@ class PackageService {
 
   //========== Load Packages to AirCraft (Add to Manifest) ==========//
   addToFlight(packageIds, manifestId, compartmentId, userId) {
+
     return new Promise((resolve, reject) => {
       let packages = packageIds && packageIds.length && packageIds.split(',').filter(Boolean);
       
@@ -545,19 +546,26 @@ class PackageService {
   }
 
   getPackageOnManifest(manifestId) {
-    return new Promise(async(resolve, reject) => {
-      let packages = await Package.find({manifestId: manifestId})
-      resolve(packages)
+    return new Promise((resolve, reject) => {
+      Package.find({manifestId: manifestId})
+      .populate('compartmentId')
+      .exec((err, packages) => {
+        if (err) {
+          resolve([]);
+        } else {
+          resolve(packages);
+        }
+      })
     });
   }
 
   //========== Ship Packages in Manifest ==========//
-  updateManifestPackageToInTransit(manifestId, username) {
+  updateManifestPackageToInTransit(manifestId, userId) {
     return new Promise((resolve, reject) => {
       this.getPackageOnManifest(manifestId).then((packages) => {
         Promise.all(
           packages.map((pkg) => {
-            return this.updatePackageStatus(pkg.id, 3, username);
+            return this.updatePackageStatus(pkg._id, 3, userId);
           }),
         ).then((results) => {
           resolve({ success: true, message: strings.string_response_updated });
@@ -566,14 +574,14 @@ class PackageService {
     });
   }
   //========== Receive Packages in Manifest ==========//
-  updateManifestPackageToReceived(manifestId, username) {
+  updateManifestPackageToReceived(manifestId, userId) {
     return new Promise((resolve, reject) => {
       this.getPackageOnManifest(manifestId).then((packages) => {
-        // Promise.all(packages.map(pkg => {
-        //   return this.updatePackageStatus(pkg.id, 4, username);
-        // })).then(results => {
-        resolve({ success: true, message: strings.string_response_updated });
-        // })
+        Promise.all(packages.map(pkg => {
+          return this.updatePackageStatus(pkg._id, 4, userId);
+        })).then(results => {
+          resolve({ success: true, message: strings.string_response_updated });
+        })
       });
     });
   }

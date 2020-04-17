@@ -24,6 +24,14 @@ const manifestSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId, 
     ref: 'User'
   },
+  // received manifest field
+  receivedBy: {
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'User'
+  },
+  receiveDate: {
+    type: Date
+  },
   stageId: {
     type:  Number
   }, 

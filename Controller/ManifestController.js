@@ -3,16 +3,12 @@ var utils = require('../Util/utils');
 
 exports.get_manifest_list = (req, res, next) => {
   services.manifestService.getManifests().then(manifests => {
-    Promise.all(manifests.map(manifest => {
-      return services.planeService.getPlane(manifest.planeId);
-    })).then(planes => {
-      manifests.forEach((manifest, i) => manifest.plane = planes[i]);
-      res.render('pages/warehouse/manifest/list', {
-        page: req.originalUrl,
-        user: res.user,
-        title: 'Manifests',
-        manifests: manifests.map(utils.formattedRecord),
-      })
+    manifests.forEach((manifest, i) => manifest.plane = manifest.planeId);
+    res.render('pages/warehouse/manifest/list', {
+      page: req.originalUrl,
+      user: res.user,
+      title: 'Manifests',
+      manifests: manifests.map(utils.formattedRecord),
     })
   })
 }
@@ -47,36 +43,27 @@ exports.delete_manifest = (req, res, next) => {
 }
 
 exports.get_manifest_detail = (req, res, next) => {
-  var manifestId = req.params.id;
+  const manifestId = req.params.id;
   Promise.all([
     services.manifestService.getManifest(manifestId),
-    services.packageService.getPackageOnManifest(manifestId),
-  ]).then(results => {
-    var manifest = results[0];
-    var packages = results[1];
-    Promise.all(packages.map(pkg => {
-      return services.planeService.getCompartment(pkg.compartmentId);
-    })).then(comparts => {
-      packages.forEach((pkg, i) => pkg.compartment = comparts[i]);
-      console.log(packages);
-      Promise.all([
-        services.planeService.getPlane(manifest.planeId),
-        manifest.airportFromId && services.airportService.get(manifest.airportFromId),
-        manifest.airportToId && services.airportService.get(manifest.airportToId),
-      ]).then(([plane, airportFrom, airportTo]) => {
-        res.render('pages/warehouse/manifest/preview', {
-          page: req.originalUrl,
-          user: res.user,
-          title: 'Preview Manifest ' + manifest.title,
-          plane: plane,
-          manifest: manifest,
-          packages: packages,
-          airportFrom,
-          airportTo,
-        })
-      })
+    services.packageService.getPackageOnManifest(manifestId)
+  ]).then((results) => {
+    const manifest = results[0];
+    const packages = results[1];
+
+    packages.forEach((pkg, i) => pkg.compartment = pkg.compartmentId);
+    
+    res.render('pages/warehouse/manifest/preview', {
+      page: req.originalUrl,
+      user: res.user,
+      title: 'Preview Manifest ' + manifest.title,
+      plane: manifest['planeId'],
+      manifest: manifest,
+      packages: packages,
+      airportFrom: manifest['airportFromId'],
+      airportTo: manifest['airportToId'],
     })
-  })
+  });
 }
 
 exports.close_manifest = (req, res, next) => {
@@ -88,35 +75,30 @@ exports.close_manifest = (req, res, next) => {
 
 exports.ship_manifest = (req, res, next) => {
   var mid = req.params.id;
-  var user = res.user.username;
-  services.manifestService.shipManifest(mid, user).then((sResult) => {
-    services.packageService.updateManifestPackageToInTransit(mid, user);
+  // var user = res.user.username;
+  const userId = req['userId'];
+  services.manifestService.shipManifest(mid, userId).then((sResult) => {
+    services.packageService.updateManifestPackageToInTransit(mid, userId);
     res.send(sResult);
   });
 }
 
-
 exports.get_incoming_manifest = (req, res, next) => {
   services.manifestService.getManifestProcessing().then(manifests => {
-    Promise.all(manifests.map(manifest => {
-      return services.planeService.getPlane(manifest.planeId);
-    })).then(planes => {
-      manifests.forEach((manifest, i) => manifest.plane = planes[i]);
-      res.render('pages/warehouse/manifest/incoming', {
-        page: req.originalUrl,
-        user: res.user,
-        title: 'Incoming Flights',
-        manifests: manifests.map(utils.formattedRecord),
-      })
-    })
+    res.render('pages/warehouse/manifest/incoming', {
+      page: req.originalUrl,
+      user: res.user,
+      title: 'Incoming Flights',
+      manifests: manifests.map(utils.formattedRecord),
+    });
   })
 }
 
 exports.receive_manifest = (req, res, next) => {
   var mid = req.params.id;
-  var user = res.user.username;
-  services.manifestService.receiveManifest(mid, user).then(result => {
-    services.packageService.updateManifestPackageToReceived(mid, user);
+  const userId = req['userId'];
+  services.manifestService.receiveManifest(mid, userId).then(result => {
+    services.packageService.updateManifestPackageToReceived(mid, userId);
     res.send(result);
   })
 }
