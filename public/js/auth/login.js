@@ -13,6 +13,8 @@ $(function() {
       success: function(res) {
         if (res.success) {
           window.location.href = res.url;
+        } else {
+          showNotify('Failed', "Invalid username or password!", 'fa fa-info', 'danger');
         }
       },
     });
@@ -20,4 +22,21 @@ $(function() {
   $('.forgot-password').click(function() {
     window.location.replace('./forgot-password');
   });
+
+  function showNotify(title, message, icon, type) {
+    $.notify({
+      title: title,
+      message: message,
+      icon: icon,
+      target: '_blank'
+    }, {
+      type: type,
+      placement: {
+        from: "top",
+        align: "right",
+      },
+      time: 1000,
+      delay: 3000
+    });
+  }
 });

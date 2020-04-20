@@ -30,7 +30,7 @@ router.post('/login', (req, res, next) => {
         res.send({ success: true, role: roles, url: 'warehouse/store-packages' })
       }
     } else {
-      res.render('index', { title: 'Express' });
+      res.send({ success: false });
     }
   });
 });
