@@ -52,13 +52,10 @@ exports.get_filtered_package_list = (req, res, next) => {
       }
 
       if (req.params.filter === 'in-manifest-no-docs') {
-        let noDocsAWBIds = await services.awbService.getAwbsNoDocsIds();
-        console.log(noDocsAWBIds);
-        let noDocsAWBIdsIndex = noDocsAWBIds.reduce((acc, i) => {
-          acc[i] = true;
-          return acc;
-        }, {});
-        packages = packages.filter((i) => i.manifestId && noDocsAWBIdsIndex[i.awbId]);
+        let noDocsAWBIds = await services.awbService.getInManifestNoInvoiceIds();
+        packages = packages.filter((i) => {
+          return (i.manifestId && noDocsAWBIds.includes(i.awbId.toString()))
+        });
         title = 'Packages in Manifest (no docs)';
       }
 
@@ -77,7 +74,7 @@ exports.get_filtered_package_list = (req, res, next) => {
           }
           if (req.params.filter === 'in-pmb9000') {
             let customer = await services.customerService.getCustomer(pkg.customerId);
-            if (customer.pmb === '9000') {
+            if (customer.pmb == '9000') {
               let awb = await services.awbService.getAwb(pkg.awbId);
               if (awb.deliveryMethod) {
                 pkg.awbdeliveryMethod = awb.deliveryMethod;
@@ -92,7 +89,7 @@ exports.get_filtered_package_list = (req, res, next) => {
           }
           if (req.params.filter === 'not-pmb9000') {
             let customer = await services.customerService.getCustomer(pkg.customerId);
-            if (customer.pmb !== '9000') {
+            if (customer.pmb != '9000') {
               if (pkg.locationId) {
                 // There is a location (string) field already in package itself, but for some 
                 // reason it's out of sync with locatioId, so we look by locationId.
@@ -158,7 +155,7 @@ exports.get_nas_package_list = (req, res, next) => {
 };
 
 exports.get_awb_packages = (req, res, next) => {
-  services.packageService.getPackages(req.params.awbId).then((packages) => {
+  services.packageService.getPackages_updated(req.params.awbId).then((packages) => {
     res.send(packages);
   });
 };

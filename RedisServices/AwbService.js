@@ -181,6 +181,20 @@ class AwbService {
     return ids;
   }
 
+  async getInManifestNoInvoiceIds() {
+    return new Promise((resolve, reject) => {
+      Awb.find({invoices: {$eq: []}}, '_id')
+      .exec((err, awbData) => {
+        if (err) {
+          resolve([]);
+        } else {
+          awbData = awbData.map((data) => data['_id'].toString());
+          resolve(awbData);
+        }
+      })
+    })
+  }
+
   async getAwbsNoDocs() {
     return new Promise((resolve, reject) => {
       Awb.find({invoices: {$eq: []}})

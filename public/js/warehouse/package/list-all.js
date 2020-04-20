@@ -86,8 +86,9 @@ $(function() {
           compartmentIdSelect.prop('disabled', true);
 
           let manifest = event.params.data && event.params.data.source;
-          if (manifest && manifest.planeId) {
-            loadCompartments(manifest.planeId);
+          const manifestPlanId = (manifest && (manifest.planeId['_id'] || manifest.planeId)); 
+          if (manifestPlanId) {
+            loadCompartments(manifestPlanId);
           }
         });
     },

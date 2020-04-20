@@ -181,7 +181,6 @@ exports.downloadFlightManifest = async (req, res, next) => {
 };
 
 exports.downloadFlightLoadSheet = async (req, res, next) => {
-  console.log("dddddddddddfsafasfasfasfasfsafsa")
   try {
     let manifest = await services.manifestService.getManifest(req.params.id);
     let packages = await services.packageService.getPackageOnManifest(req.params.id);
