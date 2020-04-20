@@ -777,6 +777,27 @@ class PackageService {
     });
   }
 
+  getPackagesDataByDeliveryId(deliveryId) {
+    return new Promise((resolve, reject) => {
+      Package.find({deliveryId})
+      .populate('shipperId')
+      .populate('carrierId')
+      .populate('customerId')
+      .exec((error, packages) => {
+        if (error) {
+          resolve({success: false})
+        } else {
+          packages.forEach((data) => {
+            data['shipper'] = data['shipperId'];
+            data['carrier'] = data['carrierId'];
+            data['customer'] = data['customerId'];
+          });
+          resolve(packages);
+        }
+      })
+    })
+  }
+
   createConsolated(packages, username, boxSize) {
     return new Promise((resolve, reject) => {
       var awbInfo = {

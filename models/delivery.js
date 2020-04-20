@@ -27,7 +27,7 @@ const deliverySchema = new mongoose.Schema({
   delivery_date: {
   	type: Date
   },
-  Status: {
+  status: {
   	type: Number
   },
   // Additional fields

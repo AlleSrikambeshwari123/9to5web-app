@@ -20,8 +20,9 @@ class DeliveryService {
     this.services = services;
   }
 
-  createDelivery(delivery) {
+  createDelivery(delivery, userId) {
     delivery["status"] = 0;
+    delivery["createdBy"] = userId;
     
     return new Promise((resolve, reject) => {
       let objDelivery = new Delivery(delivery);
@@ -76,6 +77,7 @@ class DeliveryService {
           delivery.location = delivery.locationId;
           delivery.driver = delivery.driverId;
           delivery.vehicle = delivery.vehicleId;
+          delivery['delivery_date'] = moment(delivery['delivery_date']).format("MMM DD, YYYY");
           return delivery;
         });
 
@@ -91,7 +93,6 @@ class DeliveryService {
       .populate('deliveryId')
       .populate('vehicleId')
       .populate('driverId')
-      .populate('packages')
       .populate('createdBy', 'username')
       .exec((err, delivery) => {
         if (err) {
@@ -124,34 +125,26 @@ class DeliveryService {
   addPackagesToDelivery(deliveryId, packageIds) {
     return new Promise(async(resolve, reject) => {
       packageIds.forEach(async(id) => {
-        Package.findOneAndUpdate({_id: id},{deliveryId: deliveryId}, (err, result) => {
+        Package.findOneAndUpdate({_id: id}, {deliveryId: deliveryId}, (err, result) => {
           if (err) {
             resolve({ success: false, message: err});
-          } else {
           }
         })
       })
       resolve({ success: true, message:  strings.string_response_updated});
     })
-
-    // return new Promise((resolve, reject) => {
-    //   client.sadd(DELIVERY_SET + deliveryId, packageIds, (err, reply) => {
-    //     if (err) resolve({ success: false, message: strings.string_response_error });
-    //     resolve({ success: true, message: strings.string_response_added });
-    //   })
-    // })
   }
 
-  getDeliveryPackages(deliveryId) {
-    return new Promise((resolve, reject) => {
-      client.smembers(DELIVERY_SET + deliveryId, (err, packageIds) => {
-        if (err) resolve([]);
-        Promise.all(packageIds.map(id => this.services.packageService.getPackage(id))).then(packages => {
-          resolve(packages)
-        })
-      })
-    })
-  }
+  // getDeliveryPackages(deliveryId) {
+  //   return new Promise((resolve, reject) => {
+  //     client.smembers(DELIVERY_SET + deliveryId, (err, packageIds) => {
+  //       if (err) resolve([]);
+  //       Promise.all(packageIds.map(id => this.services.packageService.getPackage(id))).then(packages => {
+  //         resolve(packages)
+  //       })
+  //     })
+  //   })
+  // }
 }
 
 //========== DB Structure ==========//

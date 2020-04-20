@@ -219,14 +219,16 @@ exports.update_awb = (req, res, next) => {
         promises.push(() => services.packageService.removePackage_updated(package._id));
         return;
       }
+
+      package.customerId = awb.customerId;
+      package.shipperId = awb.shipper;
+      package.carrierId = awb.carrier;
+
       if (package['awbId']) {
         packageIds.push(package['_id']);
         promises.push(() => services.packageService.updatePackage_updated(package._id, package));
       } else {
         package.awbId = awbId;
-        package.customerId = awb.customerId;
-        package.shipperId = awb.shipper;
-        package.carrierId = awb.carrier;
         if (awb.hazmat) {
           package.hazmatId = awb.hazmat;
         }

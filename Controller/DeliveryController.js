@@ -22,36 +22,24 @@ exports.get_delivery_list = (req, res, next) => {
 }
 
 exports.add_new_delivery = (req, res, next) => {
-  req.body['createdBy'] = req['userId'];
-  services.deliveryService.createDelivery(req.body, res.user.username).then(response => {
+  const createdBy = req['userId'];
+  services.deliveryService.createDelivery(req.body, createdBy).then(response => {
     res.send(response);
   })
 }
 
 exports.get_delivery_detail = (req, res, next) => {
   var deliveryId = req.params.id;
-  services.deliveryService.getFullDelivery(deliveryId).then(delivery => {
-    console.log(delivery)
-    Promise.all(delivery.packages.map(pkg => {
-      return getFullPackage(pkg);
-    })).then(packages => {
-      delivery.packages = packages;
-      res.render('pages/warehouse/delivery/preview', {
-        page: req.originalUrl,
-        user: res.user,
-        title: 'Delivery Detail',
-        delivery: delivery
-      })
+  Promise.all([
+    services.deliveryService.getFullDelivery(deliveryId),
+    services.packageService.getPackagesDataByDeliveryId(deliveryId)
+  ]).then(([delivery, packages]) => {
+    delivery.packages = packages;
+    res.render('pages/warehouse/delivery/preview', {
+      page: req.originalUrl,
+      user: res.user,
+      title: 'Delivery Detail',
+      delivery: delivery
     })
   })
 }
-
-var getFullPackage = (pkg) => {
-  return new Promise((resolve, reject) => {
-    services.awbService.getFullAwb(pkg.awbId).then(awb => {
-      pkg.customer = awb.customer;
-      pkg.shipper = awb.shipper;
-      resolve(pkg);
-    })
-  });
-} 

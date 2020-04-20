@@ -108,8 +108,7 @@ $(function() {
  
           data: data.map((delivery) => ({
             id: delivery._id,
-            text: delivery.delivery_date,
-            
+            text: formatDate(delivery.delivery_date)
           })),
         })
     },
