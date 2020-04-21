@@ -21,6 +21,7 @@ exports.create_carrier = (req, res, next) => {
 }
 
 exports.add_new_carrier = (req, res, next) => {
+  req.body['createdBy'] = req['userId'];
   services.carrierService.addCarrier(req.body).then(result => {
     res.send(result);
   })

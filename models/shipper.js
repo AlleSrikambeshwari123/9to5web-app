@@ -34,6 +34,11 @@ const shipperSchema = new mongoose.Schema({
   },
   zipcode: {
     type: Number
+  },
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'User', 
+    required: true 
   }
 }, {
   timestamps: true

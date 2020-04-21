@@ -21,6 +21,7 @@ exports.create_service_type = (req, res, next) => {
 }
 
 exports.add_new_service_type = (req, res, next) => {
+  req.body['createdBy'] = req['userId'];
   services.serviceTypeService.addServiceType(req.body).then(result => {
     res.send(result);
   })

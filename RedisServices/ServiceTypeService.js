@@ -33,7 +33,7 @@ class ServiceTypeService {
 
   addServiceType(serviceType) {
     return new Promise((resolve, reject) => {
-      const newServiceType = new ServiceType({name: serviceType.name, amount: serviceType.amount})
+      const newServiceType = new ServiceType(serviceType);
       newServiceType.save((err, result) => {
         if (err) {
           resolve({ success: false, message: strings.string_response_error });

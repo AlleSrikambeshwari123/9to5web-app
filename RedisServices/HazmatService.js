@@ -54,7 +54,7 @@ class HazmatService {
   }
   createHazmat(hazmat) {
     return new Promise((resolve, reject) => {
-      const newHazmat = new Hazmat({name: hazmat.name, description: hazmat.description})
+      const newHazmat = new Hazmat(hazmat)
       newHazmat.save((err, result) => {
         if (err) {
           resolve({ success: false, message: strings.string_response_error });

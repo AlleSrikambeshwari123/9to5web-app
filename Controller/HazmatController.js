@@ -13,6 +13,7 @@ exports.get_hazmat_list = (req, res, next) => {
 }
 
 exports.add_new_hazmat = (req, res, next) => {
+  req.body['createdBy'] = req['userId'];
   services.hazmatService.createHazmat(req.body).then(result => {
     res.send(result);
   })

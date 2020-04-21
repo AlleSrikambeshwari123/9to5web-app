@@ -31,7 +31,7 @@ class PaidTypeService {
   }
   addPaidType(paidType) {
     return new Promise((resolve, reject) => {
-      const newPaidType = new PaidType({name: paidType.name})
+      const newPaidType = new PaidType(paidType)
       newPaidType.save((err, result) => {
         if (err) {
           resolve({ success: false, message: strings.string_response_error });

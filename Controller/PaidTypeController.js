@@ -21,6 +21,7 @@ exports.create_paid_type = (req, res, next) => {
 }
 
 exports.add_new_paid_type = (req, res, next) => {
+  req.body['createdBy'] = req['userId'];
   services.paidTypeService.addPaidType(req.body).then(result => {
     res.send(result);
   })

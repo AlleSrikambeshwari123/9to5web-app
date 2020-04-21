@@ -21,6 +21,7 @@ exports.create_shipper = (req, res, next) => {
 }
 
 exports.add_new_shipper = (req, res, next) => {
+  req.body['createdBy'] = req['userId'];
   services.shipperService.addShipper(req.body).then(result => {
     res.send(result);
   })

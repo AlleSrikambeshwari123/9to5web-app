@@ -21,6 +21,7 @@ exports.create_container = (req, res, next) => {
 };
 
 exports.add_new_container = (req, res, next) => {
+  req.body['createdBy'] = req['userId'];
   services.containerService.addContainer(req.body).then((result) => {
     res.send(result);
   });
