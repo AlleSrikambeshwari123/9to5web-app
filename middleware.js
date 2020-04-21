@@ -16,10 +16,12 @@ module.exports = function (allowedRoles) {
             if (token) {
                 utils.verifyToken(token).then(function (user) {
                     res.user = user;
-                    res.printer = services.printService.getUserPrinter(user.username);
+                    // Temporary disable the printer
+                    // res.printer = services.printService.getUserPrinter(user.username);
                     var navMode = handleNavigation(user);
                     res.navigationMode = navMode;
                     req['userId'] = user['_id'];
+                    req['username'] = user['username'];
 
                     if (Array.isArray(allowedRoles))
                         if (allowedRoles.indexOf(user.role) < 0) {

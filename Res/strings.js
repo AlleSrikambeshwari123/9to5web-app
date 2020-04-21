@@ -124,3 +124,4 @@ exports.string_not_found_service_charge = "Sorry, we can't find this service cha
 exports.string_user_exist = "Sorry, same username already exist.";
 exports.string_password_incorrect = "Incorrect Password.";
 exports.string_airport_exist = "Sorry, same airport name already exist!.";
+exports.string_restrict_action = "Sorry, you can't perform this action for your own account.";

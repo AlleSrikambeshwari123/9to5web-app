@@ -54,7 +54,7 @@ exports.update_user = (req, res, next) => {
 }
 
 exports.delete_user = (req, res, next) => {
-  services.userService.removeUser(req.params.username).then(result => {
+  services.userService.removeUser(req.params.username, req['username']).then(result => {
     res.send(result);
   })
 }
@@ -63,7 +63,7 @@ exports.enable_user = (req, res, next) => {
   let username = req.params.username;
   let enabled = req.body.enabled;
 
-  services.userService.enableUser(username, enabled).then(result => {
+  services.userService.enableUser(username, enabled, req['username']).then(result => {
     res.send(result);
   })
 }

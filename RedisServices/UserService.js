@@ -49,7 +49,16 @@ class UserService {
             utils.generateToken(user)
             .then((token) => {
               delete user.password;
-              return resolve({ user: user, token: token, authenticated: true });
+              let isUserEnabled = true;
+              if (!user.enabled) {
+                isUserEnabled = false;
+              }
+              return resolve({ 
+                user, 
+                token, 
+                isUserEnabled,
+                authenticated: true 
+              });
             })
             .catch(() => {
               resolve({ user: null, token: "", authenticated: false });
@@ -96,8 +105,12 @@ class UserService {
       });
     });
   }
-  removeUser(username) {
+  removeUser(username, loggedInUserName) {
     return new Promise((resolve, reject) => {
+      if (username === loggedInUserName) {
+        resolve({ success: false, message: strings.string_restrict_action });
+        return;
+      }
       User.deleteOne({username: username}, (err, result) => {
         if (err) {
           resolve({ success: false, message: strings.string_response_error });
@@ -107,8 +120,12 @@ class UserService {
       });
     });
   }
-  enableUser(username, enabledSatus) {
+  enableUser(username, enabledSatus, loggedInUserName) {
     return new Promise((resolve, reject) => {
+      if (username === loggedInUserName) {
+        resolve({ success: false, message: strings.string_restrict_action });
+        return;
+      }
       User.findOneAndUpdate({username: username}, {enabled: enabledSatus}, (err, result) => {
         if (err) {
           resolve({ success: false, message: strings.string_response_error });

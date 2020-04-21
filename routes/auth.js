@@ -14,8 +14,7 @@ router.post('/login', (req, res, next) => {
   var username = req.body.username;
   var password = req.body.password;
   services.userService.authenticate(username, password).then(function (authresult) {
-    console.log(authresult);
-    if (authresult.authenticated == true) {
+    if (authresult.authenticated == true && authresult.isUserEnabled) {
       req.session.token = authresult.token;
       var cuser = authresult.user;
       const roles = cuser.roles.map((data) => data.type);
@@ -30,7 +29,11 @@ router.post('/login', (req, res, next) => {
         res.send({ success: true, role: roles, url: 'warehouse/store-packages' })
       }
     } else {
-      res.send({ success: false });
+      res.send({ 
+        success: false, 
+        authenticated: authresult.authenticated,
+        isUserEnabled: authresult.isUserEnabled 
+      });
     }
   });
 });
