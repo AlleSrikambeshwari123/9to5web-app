@@ -21,6 +21,7 @@ $('#addDelivery').find('#delivery_date').datetimepicker({
   useCurrent: false,
   showTodayButton: true,
   showClear: true,
+  minDate: new Date(),
   toolbarPlacement: 'bottom',
   sideBySide: true,
   icons: {
@@ -34,6 +35,8 @@ $('#addDelivery').find('#delivery_date').datetimepicker({
     clear: "fa fa-trash"
   }
 });
+
+$("#delivery_date").attr("autocomplete", "off");
 
 $('.delivery-form').submit(function (event) {
   $('.close-modal').trigger('click');

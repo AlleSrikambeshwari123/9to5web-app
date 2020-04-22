@@ -31,6 +31,7 @@ $('#shipDate').datetimepicker({
   useCurrent: false,
   showTodayButton: true,
   showClear: true,
+  minDate: new Date(),
   toolbarPlacement: 'bottom',
   sideBySide: true,
   icons: {
@@ -44,6 +45,8 @@ $('#shipDate').datetimepicker({
     clear: "fa fa-trash"
   }
 });
+
+$("#shipDate").attr("autocomplete", "off");
 
 $('.add-manifest-form').submit(function (event) {
   event.preventDefault();
