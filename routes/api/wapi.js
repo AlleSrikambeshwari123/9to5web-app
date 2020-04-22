@@ -183,12 +183,12 @@ router.get('/get-compartments', (req, res, next) => {
     .catch(next);
 });
 
-router.post('/add-packages-to-flight', (req, res, next) => {
+router.post('/add-packages-to-flight', middleware().checkSession, (req, res, next) => {
   let packageIds = req.body.packageIds;
   let manifestId = req.body.manifestId;
   let compartmentId = req.body.compartment || req.body.compartmentId;
-  var username = req.headers.username;
-  services.packageService.addToFlight(packageIds, manifestId, compartmentId, username).then((result) => {
+  var userId = req['userId'];
+  services.packageService.addToFlight(packageIds, manifestId, compartmentId, userId).then((result) => {
     res.send(result)
   })
 })

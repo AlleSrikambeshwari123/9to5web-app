@@ -3,11 +3,27 @@ var utils = require('../Util/utils');
 
 exports.get_delivery_list = (req, res, next) => {
   services.deliveryService.getDeliveriesFullData().then((deliveries) => {
+    
     Promise.all([
       services.locationService.getLocations(),
       services.driverService.getLocationDrivers('nas'),
-      services.vehicleService.getVehiclesByLocation('nas')
+      services.vehicleService.getVehiclesByLocation('nas'),
+      services.packageService.getAllDeliveryPackagesData()
     ]).then((results) => {
+      const deliveryPackages = results[3];
+      const packageDataByDeliveryId = {};
+      
+      deliveryPackages.forEach((deliveryPackage) => {
+        if (!packageDataByDeliveryId[deliveryPackage['deliveryId']]) {
+          packageDataByDeliveryId[deliveryPackage['deliveryId']] = [];
+        }
+        packageDataByDeliveryId[deliveryPackage['deliveryId']].push(deliveryPackage)
+      });
+
+      deliveries.forEach((delivery) => {
+        delivery.packages = packageDataByDeliveryId[delivery._id];
+      });
+
       res.render('pages/warehouse/delivery/list', {
         page: req.originalUrl,
         user: res.user,

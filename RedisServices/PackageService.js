@@ -695,7 +695,7 @@ class PackageService {
           ]);
         }),
       ).then((results) => {
-        resolve({ success: true, message: strings.string_response_loaded });
+        resolve({ success: true, message: strings.string_response_loaded, status: PKG_STATUS[2] });
       });
     });
   }
@@ -946,6 +946,23 @@ class PackageService {
             data['carrier'] = data['carrierId'];
             data['customer'] = data['customerId'];
           });
+          resolve(packages);
+        }
+      })
+    })
+  }
+
+  getAllDeliveryPackagesData(deliveryIds) {
+    return new Promise((resolve, reject) => {
+      let query = {};
+      if (deliveryIds && deliveryIds.length) {
+        query = {deliveryId: {'$in': deliveryIds }}
+      }
+
+      Package.find(query, (error, packages) => {
+        if (error) {
+          resolve({success: false})
+        } else {
           resolve(packages);
         }
       })

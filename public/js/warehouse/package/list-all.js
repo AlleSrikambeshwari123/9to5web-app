@@ -149,6 +149,7 @@ $(function() {
       .join(',');
     addToManifestForm.find('[name="packageIds"]').val(packageIds);
     var data = extractFormData(this);
+   
     $.ajax({
       url: '/api/warehouse/add-packages-to-flight',
       type: 'post',
@@ -159,6 +160,12 @@ $(function() {
           type: response.success ? 'success' : 'error',
           text: response.message,
         });
+        const statusText = response.status;
+        const packageIds = (data['packageIds'] || '').split(',');
+
+        packageIds.forEach((packageId) => {
+          $(`tr[data-record="${packageId}"] > .lastStatusText_field`).text(statusText);
+        })
       },
       error: function ()  {
         swal({
