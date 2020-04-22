@@ -246,11 +246,11 @@ class PackageService {
             noDocs.push({_id: pkg.id, last_status: packageStatus.status, awb: pkg.awbId.id, customer_email: pkg.customerId.email})
           }
 
-          if (pkg.customerId.pmb == "9000" && pkg.manifestId && query.filter_for === "9to5" && (query.package_status === packageStatus.status || query.package_status === "all" )) {
+          if (pkg.customerId.pmb == 9000 && pkg.manifestId && query.filter_for === "9to5" && (query.package_status === packageStatus.status || query.package_status === "all" )) {
             nineToPackages.push({_id: pkg.id, last_status: packageStatus.status, awb: pkg.awbId._id, customer_email: pkg.customerId.email})
           }
 
-          if (pkg.customerId.pmb != "9000" && pkg.manifestId && query.filter_for === "postBox" &&  (query.package_status === packageStatus.status || query.package_status === "all" )) { 
+          if (pkg.customerId.pmb != 9000 && pkg.manifestId && query.filter_for === "postBox" &&  (query.package_status === packageStatus.status || query.package_status === "all" )) { 
             postBox.push({_id: pkg.id, last_status: packageStatus.status, awb: pkg.awbId._id, customer_email: pkg.customerId.email})
           }
         }))

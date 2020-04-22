@@ -74,7 +74,7 @@ exports.get_filtered_package_list = (req, res, next) => {
           }
           if (req.params.filter === 'in-pmb9000') {
             let customer = await services.customerService.getCustomer(pkg.customerId);
-            if (customer.pmb == '9000') {
+            if (customer.pmb == 9000) {
               let awb = await services.awbService.getAwb(pkg.awbId);
               if (awb.deliveryMethod) {
                 pkg.awbdeliveryMethod = awb.deliveryMethod;
@@ -89,7 +89,7 @@ exports.get_filtered_package_list = (req, res, next) => {
           }
           if (req.params.filter === 'not-pmb9000') {
             let customer = await services.customerService.getCustomer(pkg.customerId);
-            if (customer.pmb != '9000') {
+            if (customer.pmb != 9000) {
               if (pkg.locationId) {
                 // There is a location (string) field already in package itself, but for some 
                 // reason it's out of sync with locatioId, so we look by locationId.
