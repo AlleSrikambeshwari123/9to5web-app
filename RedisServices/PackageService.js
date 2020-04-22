@@ -3,7 +3,8 @@ var moment = require('moment');
 var fs = require('fs');
 var uniqId = require('uniqid');
 var strings = require('../Res/strings');
-var firebase = require('../Util/firebase');
+var firebase = require('../Util/firebase'); 
+var _  = require("lodash")
 
 var client = require('./dataContext').redisClient;
 var lredis = require('./redis-local');
@@ -36,7 +37,7 @@ const PKG_STATUS = {
 
 const Package = require('../models/package');
 const PackageStatus = require('../models/packageStatus');
-
+const Customer = require('../models/customer');
 function createDocument(tPackage) {
   var packageDocument = {
     id: tPackage.id,
@@ -81,6 +82,93 @@ class PackageService {
   }
 
   //========== Dashboard Functions ==========//
+  getPackageStatus() {
+    return new Promise(async(resolve, reject) => {
+      let packages = await Package.find({})
+      let obj = {
+        received_fill: 0,
+        loaded_craft: 0,
+        in_transit: 0,
+        received_nas: 0,
+        ready_pd: 0,
+        delivered: 0,
+      };
+      
+      let result = await Promise.all(
+        packages.map(async(item) => {
+          let packagesStatus = await PackageStatus.find({packageId: item._id});
+          packagesStatus = packagesStatus[packagesStatus.length -1];
+          
+          obj["received_fill"] =  obj["received_fill"] + (packagesStatus.status == PKG_STATUS[1] ? 1 : 0) 
+          obj["loaded_craft"] = obj["loaded_craft"] + (packagesStatus.status == PKG_STATUS[2] ? 1 : 0)
+          obj["in_transit"] = obj["in_transit"] + (packagesStatus.status == PKG_STATUS[3] ? 1 : 0)
+          obj["received_nas"] = obj["received_nas"] + (packagesStatus.status == PKG_STATUS[4] ? 1 : 0)
+          obj["ready_pd"] = obj["ready_pd"] + (packagesStatus.status == PKG_STATUS[5] ? 1 : 0)
+          obj["delivered"] = obj["delivered"] + (packagesStatus.status == PKG_STATUS[6] ? 1 : 0)
+          obj["total_packages"] = packages.length
+        })
+      )
+
+      resolve(obj)
+    })
+  }
+  
+  getPackage7daysStatus() {
+    return new Promise((resolve, reject) => {
+      const LAST_DAYS = 6;
+
+      const dateObj = {
+        $lte: moment().endOf('day').toDate(),
+        $gte: moment().subtract(LAST_DAYS, 'days').startOf('day').toDate()
+      };
+
+      const final_obj = {};
+
+      for (let index = LAST_DAYS; index >= 0; index--) {
+        final_obj[moment().subtract(index, 'days').format('DD/MM')] = {
+          received_fill: 0,
+          received_nas: 0,
+          loaded_craft: 0,
+          ready_pd: 0,
+          delivered: 0,
+        };
+      }
+
+      Package.find({createdAt: dateObj}, null, {sort: {createdAt: 1}}, async (err, packages) => {
+        if (err) {
+          console.error('Error occuring while fetching the packages', err);
+          resolve(final_obj);
+        } else {
+          const packageIds = packages.map((data) => data['_id']);
+          const packagesStatus = await PackageStatus.find({packageId: {'$in': packageIds}}).populate('packageId');
+          // key value pair by packageId
+          const packageStatusDataById = {};
+          packagesStatus.forEach((pkgData) => {
+            if (!packageStatusDataById[pkgData['packageId']]) {
+              packageStatusDataById[pkgData['packageId']] = [];
+            } 
+            packageStatusDataById[pkgData['packageId']].push(pkgData);
+          });
+
+          Object.keys(packageStatusDataById).forEach((packageId) => {
+            const dataByPackageId = packageStatusDataById[packageId];
+            const lastStatusData = dataByPackageId[dataByPackageId.length - 1];
+            const date = moment(lastStatusData.packageId.createdAt).format('DD/MM');
+
+            let obj = final_obj[date];
+            obj["received_fill"] =  obj["received_fill"] + (lastStatusData.status == PKG_STATUS[1] ? 1 : 0) 
+            obj["loaded_craft"] = obj["loaded_craft"] + (lastStatusData.status == PKG_STATUS[2] ? 1 : 0)
+            obj["received_nas"] = obj["received_nas"] + (lastStatusData.status == PKG_STATUS[4] ? 1 : 0)
+            obj["ready_pd"] = obj["ready_pd"] + (lastStatusData.status == PKG_STATUS[5] ? 1 : 0)
+            obj["delivered"] = obj["delivered"] + (lastStatusData.status == PKG_STATUS[6] ? 1 : 0) 
+          });
+
+          return resolve(final_obj);
+        }
+      })
+    });
+  }
+
   getAllPackages() {
     return new Promise((resolve, reject) => {
       client.keys(PREFIX + '*', (err, keys) => {
@@ -109,6 +197,73 @@ class PackageService {
         }
       });
     });
+  }
+
+  getPackageWithFilter(filter, query) {
+    return new Promise(async(resolve, reject) => {
+      let nineToPackages = [], postBox =[] ,noDocs = [];
+      if (filter === 'all') {
+        let packages = await Package.find({}).populate("awbId").populate('customerId');
+
+        let result = await Promise.all( packages.map(async(pkg) => {
+          let statuses = await PackageStatus.find({packageId: pkg._id})  || [];
+          let packageStatus = statuses[statuses.length - 1];
+          
+          if (pkg.awbId.invoices.length == 0) {
+            noDocs.push({_id: pkg.id, last_status: packageStatus.status, awb: pkg.awbId.id, customer_email: pkg.customerId.email})
+          }
+
+          if (pkg.customerId.pmb == "9000" && pkg.manifestId) {
+            nineToPackages.push({_id: pkg.id, last_status: packageStatus.status, awb: pkg.awbId._id, customer_email: pkg.customerId.email})
+          }
+
+          if (pkg.customerId.pmb != "9000" && pkg.manifestId) { 
+            postBox.push({_id: pkg.id, last_status: packageStatus.status, awb: pkg.awbId._id, customer_email: pkg.customerId.email})
+          }
+        }))
+
+        resolve({nineToPackages, postBox, noDocs});
+
+      } else {
+        let dbQuery = {};
+        
+        if (query.filter_date && query.filter_date !== '') {
+          dbQuery = {
+            'createdAt': {
+              $lte: moment(query.filter_date, 'MM-DD-YYYY').endOf('day').toDate(), 
+              $gte: moment(query.filter_date, 'MM-DD-YYYY').startOf('day').toDate()
+            }
+          }
+        }   
+        
+        const packages = await Package.find(dbQuery).populate("awbId").populate("customerId");
+
+        let result = await Promise.all( packages.map(async(pkg) => {
+          let statuses = await PackageStatus.find({packageId: pkg._id})  || [];
+          let packageStatus = statuses[statuses.length - 1];
+          
+          if (pkg.awbId.invoices.length == 0 && query.filter_for === "noDocs" && (query.package_status === packageStatus.status || query.package_status === "all")) {
+            noDocs.push({_id: pkg.id, last_status: packageStatus.status, awb: pkg.awbId.id, customer_email: pkg.customerId.email})
+          }
+
+          if (pkg.customerId.pmb == "9000" && pkg.manifestId && query.filter_for === "9to5" && (query.package_status === packageStatus.status || query.package_status === "all" )) {
+            nineToPackages.push({_id: pkg.id, last_status: packageStatus.status, awb: pkg.awbId._id, customer_email: pkg.customerId.email})
+          }
+
+          if (pkg.customerId.pmb != "9000" && pkg.manifestId && query.filter_for === "postBox" &&  (query.package_status === packageStatus.status || query.package_status === "all" )) { 
+            postBox.push({_id: pkg.id, last_status: packageStatus.status, awb: pkg.awbId._id, customer_email: pkg.customerId.email})
+          }
+        }))
+
+        if (query.filter_for === "noDocs") {
+          resolve({ noDocs })
+        } else if(query.filter_for === "9to5") {
+          resolve({ nineToPackages })
+        } else if(query.filter_for === "postBox") {
+          resolve({ postBox })
+        }
+      }  
+    })
   }
 
   async getAllPackagesWithLastStatus() {
@@ -544,7 +699,6 @@ class PackageService {
       });
     });
   }
-
   getPackageOnManifest(manifestId) {
     return new Promise((resolve, reject) => {
       Package.find({manifestId: manifestId})

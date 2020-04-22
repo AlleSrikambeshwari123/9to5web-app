@@ -15,6 +15,14 @@ router.get('/dashboard', middleware(services.userService).checkSession, function
     page: req.originalUrl,
     title: "Dashboard",
     user: res.user,
+    package_status: {
+      1: 'Received in FLL',
+      2: 'Loaded on AirCraft',
+      3: 'In Transit',
+      4: 'Recieved in NAS',
+      5: 'Ready for Pickup / Delivery',
+      6: 'Delivered',
+	  }
   });
 });
 

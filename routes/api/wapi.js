@@ -3,6 +3,7 @@ var router = express.Router();
 var services = require('../../RedisServices/RedisDataServices');
 
 var PackageUtil = require('../../Util/packageutil').PackageUtility;
+var middleware = require('../../middleware');
 var packageUtil = new PackageUtil();
 
 router.post('/authenticate', (req, res, next) => {
@@ -83,6 +84,27 @@ router.get('/get-package-detail-barcode/:barcode', async (req, res, next) => {
       status: 'barcode not found'
     })    
   }
+})
+
+router.get("/get_packages_status", middleware().checkSession, (req,res,next) => {
+  services.packageService.getPackageStatus().then((result)=> {
+    res.send(result)
+  })
+})
+
+
+router.get("/get_packages_7days_status", middleware().checkSession, (req,res,next) => {
+  services.packageService.getPackage7daysStatus().then((result)=> {
+    res.send(result)
+  })
+})
+
+
+router.get("/get_packages_filter/:filter", middleware().checkSession, (req, res, next) => {
+  console.log('req.query', req.query);
+  services.packageService.getPackageWithFilter(req.params.filter, req.query).then((result)=>{
+    res.send(result)
+  })
 })
 
 router.post('/save-origin-barcode', (req, res, next) => {

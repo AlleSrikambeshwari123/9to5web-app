@@ -1,4 +1,7 @@
 <% layout('./shared/__template')%>
+  <script src="/js/jquery.js"></script>
+  <script src="/assets/js/plugin/datatables/datatables.min.js"></script>
+
 <div class="row mt--2">
     <div class="col-md-6">
         <div class="card full-height">
@@ -8,47 +11,37 @@
                 <div class="d-flex flex-wrap justify-content-around pb-2 pt-4">
                     <div class="px-2 pb-2 pb-md-0 text-center">
                         <div id="circles-1"></div>
-                        <h6 class="fw-bold mt-3 mb-0">New Users</h6>
+                        <h6 class="fw-bold mt-3 mb-0">Received in FLL</h6>
                     </div>
                     <div class="px-2 pb-2 pb-md-0 text-center">
                         <div id="circles-2"></div>
-                        <h6 class="fw-bold mt-3 mb-0">Sales</h6>
+                        <h6 class="fw-bold mt-3 mb-0">Loaded on AirCraft</h6>
                     </div>
                     <div class="px-2 pb-2 pb-md-0 text-center">
                         <div id="circles-3"></div>
-                        <h6 class="fw-bold mt-3 mb-0">Subscribers</h6>
+                        <h6 class="fw-bold mt-3 mb-0">In Transit</h6>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-6">
-        <div class="card full-height">
-            <div class="card-body">
-                <div class="card-title">Total income & spend statistics</div>
-                <div class="row py-3">
-                    <div class="col-md-4 d-flex flex-column justify-content-around">
-                        <div>
-                            <h6 class="fw-bold text-uppercase text-success op-8">Total Income</h6>
-                            <h3 class="fw-bold">$9.782</h3>
-                        </div>
-                        <div>
-                            <h6 class="fw-bold text-uppercase text-danger op-8">Total Spend</h6>
-                            <h3 class="fw-bold">$1,248</h3>
-                        </div>
+
+                 <div class="d-flex flex-wrap justify-content-around pb-2 pt-4">
+                     <div class="px-2 pb-2 pb-md-0 text-center">
+                        <div id="circles-4"></div>
+                        <h6 class="fw-bold mt-3 mb-0">Recieved in NAS</h6>
                     </div>
-                    <div class="col-md-8">
-                        <div id="chart-container">
-                            <canvas id="totalIncomeChart"></canvas>
-                        </div>
+                    <div class="px-2 pb-2 pb-md-0 text-center">
+                        <div id="circles-5"></div>
+                        <h6 class="fw-bold mt-3 mb-0">Ready for Pickup / Delivery</h6>
+                    </div>
+                    <div class="px-2 pb-2 pb-md-0 text-center">
+                        <div id="circles-6"></div>
+                        <h6 class="fw-bold mt-3 mb-0">Delivered</h6>
+                    </div>
                     </div>
                 </div>
-            </div>
+  
         </div>
     </div>
-</div>
-<div class="row">
-    <div class="col-md-8">
+        <div class="col-md-6">
         <div class="card">
             <div class="card-header">
                 <div class="card-head-row">
@@ -77,32 +70,170 @@
             </div>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="card card-primary">
-            <div class="card-header">
-                <div class="card-title">Daily Sales</div>
-                <div class="card-category">March 25 - April 02</div>
-            </div>
-            <div class="card-body pb-0">
-                <div class="mb-4 mt-2">
-                    <h1>$4,578.58</h1>
+   
+</div>
+<div class="row">
+  <div class="col-md-12">
+    <div class="card full-height">
+      <div class="card-header">
+        <div class="row">
+          <div class="card-title pd-18 col-md-4 ">Post by Etc Packages</div>
+          <div class="card-tools  pd-18 col-md-8">
+           <form method="post" onsubmit="filterData(event)">
+            <div class="row">
+              <div class="col-md-5">
+                <div class="row">
+
+                  <span class="col-md-5 pt-10" style="margin-top: 8px;">Package Status</span>
+                  <div class="col-md-7">
+                    <select class="form-control" name="package_status">
+                      <option value='all'>All</option>
+                      <%Object.keys(package_status).map(function(st){ %>
+                        <option value="<%=package_status[st]%>" ><%=package_status[st]%></option>
+                      <%})%>
+                    </select>
+                  </div>
                 </div>
-                <div class="pull-in">
-                    <canvas id="dailySalesChart"></canvas>
+              </div>
+              <input type="hidden" name="filter_for" value="postBox" />
+              <div class="col-md-5">
+                <div class="row">
+                <label class="col-md-4 pt-10" style="margin-top: 8px;">Created At</label>
+                <input type="text" class="filter-date form-control col-md-7" name="filter_date" />
                 </div>
+              </div>
+              <div class="pl-10">
+                <input type="submit" value="Filter" class="btn btn-primary" />
+              </div>
             </div>
+           </form> 
+          </div>
         </div>
-        <div class="card">
-            <div class="card-body pb-0">
-                <div class="h1 fw-bold float-right text-warning">+7%</div>
-                <h2 class="mb-2">213</h2>
-                <p class="text-muted">Transactions</p>
-                <div class="pull-in sparkline-fix">
-                    <div id="lineChart"></div>
-                </div>
-            </div>
-        </div>
+      </div>
+      <div class="card-body">
+        <table id="post_packages" class="display table table-striped table-hover dataTable manifest-table">
+            <thead>
+                <tr>
+                    <th>package ID#</th>
+                    <th>package status</th>
+                    <th>Awb Number</th>
+                    <th>Customer Email</th>
+                </tr>
+            </thead>
+            <tbody>
+          </tbody>
+        </table>
+      </div>
     </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-12">
+    <div class="card full-height">
+      <div class="card-header">
+        <div class="row">
+          <div class="card-title pd-18 col-md-4">9to5 packages</div>
+          <div class="card-tools  pd-18 col-md-8">
+           <form method="post"  onsubmit="filterData(event)">
+            <div class="row">
+              <div class="col-md-5">
+                <div class="row">
+                  <span class="col-md-5 pt-10" style="margin-top: 8px;" >Package Status</span>
+                  <div class="col-md-7">
+                    <select class="form-control" name="package_status">
+                      <option value='all'>All</option>
+                      <%Object.keys(package_status).map(function(st){ %>
+                        <option value="<%=package_status[st]%>" ><%=package_status[st]%></option>
+                      <%})%>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <input type="hidden" name="filter_for" value="9to5" />
+              <div class="col-md-5">
+                <div class="row">
+                <label class="col-md-4 pt-10" style="margin-top: 8px;">Created At</label>
+                <input type="text" class="filter-date form-control col-md-7" name="filter_date" />
+                </div>
+              </div>
+              <div class="pl-10">
+                <input type="submit" value="Filter" class="btn btn-primary" />
+              </div>
+            </div>
+           </form> 
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <table id="9to5packages" class="display table table-striped table-hover dataTable manifest-table">
+          <thead>
+            <tr>
+              <th>Package ID#</th>
+              <th>Package Status</th>
+              <th>Awb Number</th>
+              <th>Customer Email</th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-12">
+    <div class="card full-height">
+      <div class="card-header">
+        <div class="row">
+          <div class="card-title pd-18 col-md-4">No docs </div>
+       <div class="card-tools  pd-18 col-md-8">
+           <form method="post"  onsubmit="filterData(event)">
+            <div class="row">
+              <div class="col-md-5">
+                <div class="row">
+                  <span class="col-md-5 pt-10" style="margin-top: 8px;">Package Status</span>
+                  <div class="col-md-7">
+                    <select class="form-control" name="package_status">
+                      <option value='all'>All</option>
+                      <%Object.keys(package_status).map(function(st){ %>
+                        <option value="<%=package_status[st]%>" ><%=package_status[st]%></option>
+                      <%})%>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <input type="hidden" name="filter_for" value="noDocs" />
+              <div class="col-md-5">
+                <div class="row">
+                <label class="col-md-4 pt-10" style="margin-top: 8px;" >Created At</label>
+                <input type="text" class="filter-date form-control col-md-7" name="filter_date" />
+                </div>
+              </div>
+              <div class="pl-10">
+                <input type="submit" value="Filter" class="btn btn-primary" />
+              </div>
+            </div>
+           </form> 
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <table id="no_docs_packages" class="display table table-striped table-hover dataTable manifest-table">
+          <thead>
+            <tr>
+              <th>Package ID#</th>
+              <th>Package Status</th>
+              <th>Awb Number</th>
+              <th>Customer Email</th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 </div>
 <div class="row row-card-no-pd">
     <div class="col-md-12">
@@ -510,3 +641,97 @@
         </div>
     </div>
 </div>
+
+
+<script type="text/javascript">
+    function filterData(event) {
+        event.preventDefault()
+        const data = $(event.currentTarget).serializeArray();
+        const obj = {}
+        data.map((i)=> {obj[i.name] = i.value})
+        $.ajax({
+            url: "/api/warehouse/get_packages_filter/" + obj.filter_for,
+            dataType: "json",
+            data: obj,
+            type: "GET",
+            success: function(data) {
+                let nineToPackages = data.nineToPackages;
+                let noDocs = data.noDocs;
+                let postBox = data.postBox;
+                data.nineToPackages ?  data9to5(nineToPackages) : null;
+                data.noDocs ? dataNoDocs(noDocs) :  null;
+                data.postBox ? dataPostBox(postBox) : null;
+            }
+        })
+    }
+    $.ajax({
+        url: '/api/warehouse/get_packages_filter/all',
+        dataType: "json",
+        type: "GET",
+        success: function(data){
+            let nineToPackages = data.nineToPackages;
+            let noDocs = data.noDocs;
+            let postBox = data.postBox;
+            data9to5(nineToPackages);
+            dataNoDocs(noDocs);
+            dataPostBox(postBox);
+        }
+    })
+
+    function data9to5(data){
+        let result = data.map((row) => {
+            if(row !== null) {
+                return Tbody(row)
+            }
+        })
+
+        if ($("#9to5packages > tbody > tr").length)  {
+            $("#9to5packages > tbody > tr").empty();
+        }
+
+        $("#9to5packages tbody").html("")
+        $("#9to5packages tbody").append(result)
+        if (!( $.fn.dataTable.isDataTable( '#9to5packages' ) ) ){
+            $("#9to5packages").DataTable({searching: false,"bLengthChange": false});
+        }
+    }
+
+    function dataNoDocs(data){
+        let result = data.map((row) => {
+            if(row !== null){
+                return Tbody(row)
+            }
+        })
+        
+        if ($("#no_docs_packages > tbody > tr").length)  {
+            $("#no_docs_packages > tbody > tr").empty();
+        }
+
+        $("#no_docs_packages tbody").append(result)
+        if (!( $.fn.dataTable.isDataTable( '#no_docs_packages' ) ) ){
+            $("#no_docs_packages").DataTable({searching: false,"bLengthChange": false});
+        }
+    }
+
+    function dataPostBox(data){
+        let result = data.map((row) => {
+            console.log('row', row);
+            if(row !== null){
+                return Tbody(row)
+            }
+        })
+
+        if ($("#post_packages > tbody > tr").length)  {
+            $("#post_packages > tbody > tr").empty();
+        }
+
+        $("#post_packages tbody").append(result)
+        if (!( $.fn.dataTable.isDataTable( '#post_packages' ) ) ){
+            $("#post_packages").DataTable({searching: false,"bLengthChange": false});
+        }
+    }
+
+    function Tbody(row){
+        return "<tr><td>"+row._id+"</td><td>"+row.last_status+"</td><td>"+row.awb+"</td><td>"+row.customer_email+"</td></tr>"
+    }
+</script>
