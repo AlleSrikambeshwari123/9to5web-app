@@ -26,4 +26,10 @@ router.get('/dashboard', middleware(services.userService).checkSession, function
   });
 });
 
+router.post("/global-search", middleware().checkSession, (req,res,next) => {
+  services.packageService.getGlobalSearchData(req.body).then((result)=> {
+    res.send(result);
+  })
+})
+
 module.exports = router;

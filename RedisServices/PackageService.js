@@ -38,6 +38,8 @@ const PKG_STATUS = {
 const Package = require('../models/package');
 const PackageStatus = require('../models/packageStatus');
 const Customer = require('../models/customer');
+const Awb = require('../models/awb');
+
 function createDocument(tPackage) {
   var packageDocument = {
     id: tPackage.id,
@@ -1148,6 +1150,48 @@ class PackageService {
           resolve(result);
         }
       });
+    })
+  }
+
+  // This method is used when we're performing the global search 
+  getGlobalSearchData(bodyData) {
+    return new Promise((resolve, reject) => {
+      let {selectedOption, inputField} = bodyData;
+      if (!selectedOption || selectedOption === 'default' || !(inputField && inputField.trim())) {
+        return resolve({ success: false, message: strings.string_global_search_error });
+      }
+      
+      if (selectedOption === "Package") {
+        Package.find({description: {$regex: 'aWB package  post box', $options:'i' }}, 'id', (err, packages) => {
+          if (err) {
+            resolve([]);
+          } else {
+            resolve(packages);
+          }
+        })
+      }
+  
+      else if (selectedOption === "Awb") {
+        inputField = inputField.trim().toLowerCase();
+        Awb.findOne({_id: inputField}, '_id', (err, awb) => {
+          if (err) {
+            resolve([]);
+          } else {
+            resolve([awb]);
+          }
+        });
+      }
+  
+      else {
+        inputField = inputField.trim();
+        Customer.find({email: {$regex: '^' + inputField + '$', $options:'i' }}, '_id', (err, customers) => {
+          if (err) {
+            resolve([]);
+          } else {
+            resolve(customers);
+          }
+        });
+      } 
     })
   }
 }
