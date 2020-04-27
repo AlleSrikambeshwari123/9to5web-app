@@ -27,7 +27,7 @@
               <td><%= delivery.createdBy && delivery.createdBy.username %></td>
               <td><%= helpers.formatDate(delivery.delivery_date) %></td>
               <td><%= delivery.location.name %></td>
-              <td><%= delivery.packages.length %></td>
+              <td><%= delivery.packages && delivery.packages.length %></td>
               <td><%= helpers.getFullName(delivery.driver) %></td>
               <td>
                 <%= delivery.vehicle.vehicleMake + '-' + delivery.vehicle.model + '-' + delivery.vehicle.registration %>

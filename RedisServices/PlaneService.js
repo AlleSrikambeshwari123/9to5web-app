@@ -29,6 +29,7 @@ class PlaneService {
       })
     })
   }
+
   updatePlane(id, plane) {
     return new Promise(async(resolve, reject) => {
       Plane.findOneAndUpdate({_id: id}, plane, (err, result) => {
@@ -88,11 +89,17 @@ class PlaneService {
         if (err) {
           resolve({ success: false, message: strings.string_response_error});
         } else {
+           // Updating the maximum capacity of plane
+          this.getPlane(planeId).then(plane => {
+            plane.maximumCapacity += newCompartment.weight;
+            this.updatePlane(planeId, plane);
+          });
           resolve({ success: true, message: strings.string_response_created});
         }
       })
     })
   }
+  
   getCompartments(planeId) {
     return new Promise(async(resolve, reject) => {
       let compartments = await Compartment.find({planeId: ObjectId(planeId)})
@@ -112,10 +119,22 @@ class PlaneService {
   }
   removeCompartment(planeId, cid) {
     return new Promise((resolve, reject) => {
+      let weightCapacityReduced = 0;
+      this.getCompartment(cid).then(compartment => {
+        weightCapacityReduced = compartment.weight;
+      })
       Compartment.deleteOne({_id: cid}, (err, result) => {
         if (err) {
           resolve({ success: false, message: strings.string_response_error });
         } else {
+          // Updating the maximum capacity of plane
+          this.getPlane(planeId).then(plane => {
+            plane.maximumCapacity -= weightCapacityReduced;
+            if (plane.maximumCapacity < 0) {
+              plane.maximumCapacity = 0;
+            }
+            this.updatePlane(planeId, plane);
+          });
           resolve({ success: true, message: strings.string_response_removed });
         }
       })
