@@ -10,7 +10,8 @@
     "create-default-companies": "node db-scripts/add-default-companies.js",
     "create-default-user": "node db-scripts/add-default-user.js",
     "create-default-location": "node db-scripts/add-default-locations.js",
-    "db-seed": "npm run create-default-roles && npm run create-default-companies && npm run create-default-user && npm run create-default-location",
+    "create-default-barcodes": "node db-scripts/add-default-barcodes.js",
+    "db-seed": "npm run create-default-roles && npm run create-default-companies && npm run create-default-user && npm run create-default-location && npm run create-default-barcodes",
     "ui": "browser-sync start --proxy=localhost:8000 --files='**/*.css, **/*.ejs, **/*.js,**/*.js' --ignore=node_modules --reload-delay 10 --no-ui --no-notify"
   },
   "dependencies": {

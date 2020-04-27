@@ -22,7 +22,8 @@ const packageSchema = new mongoose.Schema({
     required: true
   },
   originBarcode: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'Barcode', 
     required: true
   },
   // Thisid is used for package on frontend side

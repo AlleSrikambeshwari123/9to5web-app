@@ -8,6 +8,7 @@ var _  = require("lodash")
 
 var client = require('./dataContext').redisClient;
 var lredis = require('./redis-local');
+const Barcode = require('../models/barcode');
 
 const PREFIX = strings.redis_prefix_package;
 const PACKAGE_ID = strings.redis_id_package;
@@ -281,56 +282,93 @@ class PackageService {
 
   addOriginBarcode(originBarcode) {
     return new Promise((resolve, reject) => {
-      client.incr(ORIGIN_BARCODE_ID, (err, id) => {
-        if (err) resolve({ success: false, message: strings.string_response_error });
-        originBarcode.id = id;
-        client.hmset(PREFIX_ORIGIN_BARCODE + id, originBarcode, (err, result) => {
-          if (err) resolve({ success: false, message: strings.string_response_error });
+      const barcode = new Barcode(originBarcode);
+      barcode.save((err, result) => {
+        if (err) {
+          return resolve({ success: false, message: strings.string_response_error });
+        } else {
           resolve({ success: true, message: strings.string_response_added, originBarcode: originBarcode });
-        })
-      })
+        }
+      });
+      
+      // client.incr(ORIGIN_BARCODE_ID, (err, id) => {
+      //   if (err) resolve({ success: false, message: strings.string_response_error });
+      //   originBarcode.id = id;
+      //   client.hmset(PREFIX_ORIGIN_BARCODE + id, originBarcode, (err, result) => {
+      //     if (err) resolve({ success: false, message: strings.string_response_error });
+      //     resolve({ success: true, message: strings.string_response_added, originBarcode: originBarcode });
+      //   })
+      // })
     })
   }
 
   removeOriginBarcode(id) {
     return new Promise((resolve, reject) => {
-      client.del(PREFIX_ORIGIN_BARCODE + id, (err, result) => {
-        if (err) resolve({ success: false, message: strings.string_response_error });
-        resolve({ success: true, message: strings.string_response_removed });
-      })
+      Barcode.deleteOne({_id: id}, (err, result) => {
+        if (err) {
+          resolve({ success: false, message: strings.string_response_error });
+        } else {
+          resolve({ success: true, message: strings.string_response_removed });
+        }
+      });
+      // client.del(PREFIX_ORIGIN_BARCODE + id, (err, result) => {
+      //   if (err) resolve({ success: false, message: strings.string_response_error });
+      //   resolve({ success: true, message: strings.string_response_removed });
+      // })
     });
   }
   getOriginBarcode(id) {
     return new Promise((resolve, reject) => {
-      client.hgetall(PREFIX_ORIGIN_BARCODE + id, (err, originBarcode) => {
-        if (err) resolve({});
-        resolve(originBarcode);
-      })
+      Barcode.findOne({_id: id}, (err, result) => {
+        if (err) {
+          resolve({});
+        } else {
+          resolve(result);
+        }
+      });
+      // client.hgetall(PREFIX_ORIGIN_BARCODE + id, (err, originBarcode) => {
+      //   if (err) resolve({});
+      //   resolve(originBarcode);
+      // })
     });
   }
   getAllOriginBarcode() {
     return new Promise((resolve, reject) => {
-      client.keys(PREFIX_ORIGIN_BARCODE + '*', (err, keys) => {
-        if (err) resolve([]);
-        Promise.all(keys.map(key => {
-          return lredis.hgetall(key);
-        })).then(originBarcodes => {
-          resolve(originBarcodes);
-        })
+      Barcode.find({}, (err, barCodes) => {
+        if (err) {
+          resolve([]);
+        } else {
+          resolve(barCodes);
+        }
       })
+      // client.keys(PREFIX_ORIGIN_BARCODE + '*', (err, keys) => {
+      //   if (err) resolve([]);
+      //   Promise.all(keys.map(key => {
+      //     return lredis.hgetall(key);
+      //   })).then(originBarcodes => {
+      //     resolve(originBarcodes);
+      //   })
+      // })
     })
   }
   removeAllOriginBarcode() {
     return new Promise((resolve, reject) => {
-      client.set(ORIGIN_BARCODE_ID, 0);
-      client.keys(PREFIX_ORIGIN_BARCODE + '*', (err, keys) => {
-        if (err) resolve([]);
-        Promise.all(keys.map(key => {
-          return lredis.del(key);
-        })).then(result => {
+      Barcode.deleteMany({}, (err, result) => {
+        if (err) {
+          resolve([]);
+        } else {
           resolve(result);
-        })
+        }
       })
+      // client.set(ORIGIN_BARCODE_ID, 0);
+      // client.keys(PREFIX_ORIGIN_BARCODE + '*', (err, keys) => {
+      //   if (err) resolve([]);
+      //   Promise.all(keys.map(key => {
+      //     return lredis.del(key);
+      //   })).then(result => {
+      //     resolve(result);
+      //   })
+      // })
     });
   }
 
@@ -449,11 +487,12 @@ class PackageService {
     //   awb: 0,
     // }
     return new Promise((resolve, reject) => {
-      const barid = +newPackage.originBarcode.split(',')[1];
       newPackage.awbId = awbId;
       newPackage.id = Date.now().toString();
       newPackage.trackingNo = uniqId();
-      newPackage.originBarcode = newPackage.originBarcode.split(',')[0];
+      // Here as per the frontend logic, we're getting the 
+      // values like 43322211,398749844904894
+      newPackage.originBarcode = newPackage.originBarcode.split(',')[1];
       const newPackageData = new Package(newPackage);
       newPackageData.save((err, result) => {
         if (err) {
@@ -475,8 +514,7 @@ class PackageService {
 
   updatePackage_updated(id, pkg) {
     return new Promise(async(resolve, reject) => {
-
-      Package.findOneAndUpdate({_id: id},pkg, (err, result) => {
+      Package.findOneAndUpdate({_id: id}, pkg, (err, result) => {
         if (err) {
           resolve({ success: false, message: strings.string_response_error });
         } else {
