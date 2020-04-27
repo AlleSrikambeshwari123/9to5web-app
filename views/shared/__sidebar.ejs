@@ -143,7 +143,7 @@
 									<span class="sub-item">Packages on Hand</span>
 								</a>
 							</li>
-							<li <% if (page.endsWith('/package/list/in-manifest')) { %> class="active" <% } %>>
+							<li <% if (page && page.endsWith && page.endsWith('/package/list/in-manifest')) { %> class="active" <% } %>>
 								<a href="/warehouse/package/list/in-manifest">
 									<span class="sub-item">Packages</span>
 								</a>
@@ -163,7 +163,7 @@
 									<span class="sub-item">Post Boxes Etc</span>
 								</a>
 							</li>
-							<li <% if (page.endsWith('/package/list/in-manifest-no-docs')) { %> class="active" <% } %>>
+							<li <% if (page && page.endsWith && page.endsWith('/package/list/in-manifest-no-docs')) { %> class="active" <% } %>>
 								<a href="/warehouse/package/list/in-manifest-no-docs">
 									<span class="sub-item">Packages in Manifest (no docs)</span>
 								</a>

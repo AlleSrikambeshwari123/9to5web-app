@@ -22,6 +22,7 @@ module.exports = function (allowedRoles) {
                     res.navigationMode = navMode;
                     req['userId'] = user['_id'];
                     req['username'] = user['username'];
+                    req['user'] = user;
 
                     if (Array.isArray(allowedRoles))
                         if (allowedRoles.indexOf(user.role) < 0) {

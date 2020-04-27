@@ -327,9 +327,12 @@ router.get('/nas-no-docs', middleware(services.userService).checkSession, (req, 
         var pageData = {};
         pageData.packages = packages;
         pageData.title = "Packages with no documents";
+        
         pageData.mid = req.params.mid;
-        pageData.luser = res.User.firstName + ' ' + res.User.lastName;
-        pageData.RoleId = res.User.role;
+        pageData.user = req.user;
+        pageData.luser = res.user.firstName + ' ' + res.user.lastName;
+        // pageData.RoleId = res.User.role;
+        pageData.page = [];
         res.render('pages/warehouse/nas-no-docs', pageData);
     })
 })

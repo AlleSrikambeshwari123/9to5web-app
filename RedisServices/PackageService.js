@@ -1038,17 +1038,33 @@ class PackageService {
     });
   }
   getNoDocsPackackages(page, pageSize) {
+    // return new Promise((resolve, reject) => {
+    //   this.mySearch.search(`@hasDocs:[0 0]`, { offset: 0, numberOfResults: 5000 }, (err, data) => {
+    //     var packages = [];
+    //     data.results.forEach((element) => {
+    //       packages.push(element.doc);
+    //     });
+    //     resolve(packages);
+    //   });
+    // });
+    // Redis Integration
     return new Promise((resolve, reject) => {
-      this.mySearch.search(`@hasDocs:[0 0]`, { offset: 0, numberOfResults: 5000 }, (err, data) => {
-        var packages = [];
-        data.results.forEach((element) => {
-          packages.push(element.doc);
-        });
-        resolve(packages);
-      });
-    });
+      Awb.find({invoices: {$eq: []}})
+      .populate('packages')
+      .select('packages')
+      .exec((err, awbData) => {
+        if (err) {
+          resolve([]);
+        } else {
+          let packages = [];
+          awbData.forEach((data) => {
+            packages = [...packages, ...data.packages];
+          })
+          resolve(packages);
+        }
+      })
+    })
   }
-
   removePackageFromManifest(packageId, mid) {
     var msearch = this.mySearch;
     return new Promise((resolve, reject) => {
