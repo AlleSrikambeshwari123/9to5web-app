@@ -8,6 +8,8 @@ router.get('/nas/delivery/list', middleware().checkSession, deliveryCtrl.get_del
 // router.get('/nas/delivery/create', middleware().checkSession, deliveryCtrl.create_delivery)
 router.post('/nas/delivery/create', middleware().checkSession, deliveryCtrl.add_new_delivery);
 router.get('/nas/delivery/manage/:id/get', middleware().checkSession, deliveryCtrl.get_delivery_detail);
+
+router.post('/nas/delivery/manage/:id/close', middleware().checkSession, deliveryCtrl.close_delivery);
 // router.delete('/nas/delivery/manage/:id/delete', middleware().checkSession, deliveryCtrl.delete_delivery);
 
 module.exports = router;

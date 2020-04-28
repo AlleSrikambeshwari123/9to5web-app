@@ -28,7 +28,7 @@ class DeliveryService {
       let objDelivery = new Delivery(delivery);
       objDelivery.save((err, result) => {
         if (err) {
-          resolve({ success: false, message: err});
+          resolve({ success: false, message: strings.string_response_error});
         } else {
           resolve({ 
             success: true, 
@@ -40,6 +40,17 @@ class DeliveryService {
     })
   }
 
+  closeDelivery(deliveryId) {
+    return new Promise((resolve, reject) => {
+      Delivery.findOneAndUpdate({_id: deliveryId}, {status: 1}, (err, result) => {
+        if (err) {
+          resolve({ success: false, message: strings.string_response_error});
+        } else {
+          resolve({ success: true });
+        }
+      })
+    });
+  }
   getDelivery(deliveryId) {
     return new Promise((resolve, reject) => {
       Delivery.findOne({_id: deliveryId}, (err, result) => {
@@ -61,7 +72,7 @@ class DeliveryService {
 
   getDeliveriesFullData() {
     return new Promise(async(resolve, reject) => {
-      Delivery.find({})
+      Delivery.find({status: {$ne: 1}})
       .populate('locationId')
       .populate('deliveryId')
       .populate('vehicleId')
@@ -109,9 +120,16 @@ class DeliveryService {
 
   getOpenDeliveries() {
     return new Promise((resolve, reject) => {
-      lredis.search(PREFIX, [{ field: 'status', value: '0' }]).then(deliveries => {
-        resolve(deliveries);
+      Delivery.find({status: 0}, (err, deliveries) => {
+        if (err) {
+          resolve([]);
+        } else {
+          resolve(deliveries);
+        }
       })
+      // lredis.search(PREFIX, [{ field: 'status', value: '0' }]).then(deliveries => {
+      //   resolve(deliveries);
+      // })
     })
   }
 
@@ -127,7 +145,7 @@ class DeliveryService {
       packageIds.forEach(async(id) => {
         Package.findOneAndUpdate({_id: id}, {deliveryId: deliveryId}, (err, result) => {
           if (err) {
-            resolve({ success: false, message: err});
+            resolve({ success: false, message: strings.string_response_error});
           }
         })
       })

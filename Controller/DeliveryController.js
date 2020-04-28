@@ -59,3 +59,9 @@ exports.get_delivery_detail = (req, res, next) => {
     })
   })
 }
+
+exports.close_delivery = (req,res, next) => {
+  services.deliveryService.closeDelivery(req.params.id).then((response) => {
+    res.send(response);
+  });
+};

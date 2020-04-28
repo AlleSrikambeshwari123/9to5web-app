@@ -38,7 +38,7 @@ class LocationService {
       const newLocationData = new Location(location);
       newLocationData.save((err, result) => {
         if (err) {
-          console.error(err);
+          console.error(err);  
           resolve({ success: false, message: strings.string_response_error });
         } else {
           resolve({ success: true, message: strings.string_response_created });

@@ -63,3 +63,31 @@ $('.delivery-form').submit(function (event) {
 $('.delivery-table').DataTable({
   pageLength: 10
 })
+
+$('.close-deliveryy').click(function() {
+  var id = $(this).data('id');
+
+  swal({
+    title: "Are you sure you want to close this delivery?",
+    showCancelButton: true,
+    confirmButtonText: 'Close Delivery',
+  }).then(response => {
+    if (response.value) {
+      $.ajax({
+        url: 'manage/' + id + '/close',
+        type: 'post',
+        success: function (response) {
+          swal({
+            title: response.success == true ? 'Closed' : 'Failed',
+            text: response.message,
+            type: response.success == true ? 'success' : 'error',
+          }).then(res => {
+            if (response.success == true) {
+              $(`tr[data-record="${id}"]`).fadeOut('slow', () => $(`tr[data-record="${id}"]`).remove())
+            }
+          })
+        }
+      });
+    }
+  })
+});  
