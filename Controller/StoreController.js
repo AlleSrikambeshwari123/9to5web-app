@@ -2,14 +2,18 @@ var services = require('../RedisServices/RedisDataServices');
 var utils = require('../Util/utils');
 
 exports.render_store_check_in = (req, res, next) => {
-  services.locationService.getLocations().then(locations => {
+  Promise.all([
+    services.packageService.getPackagesForStores(),
+    services.locationService.getLocations()
+  ]).then(([packages, locations]) => {
     res.render('pages/store/store-check-in', {
       page: req.originalUrl,
       title: 'Store Packages',
       user: res.user,
+      packages: packages,
       locations: locations
     })
-  })
+  });
 }
 
 exports.get_location_packages = (req, res, next) => {

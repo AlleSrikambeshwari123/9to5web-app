@@ -1,33 +1,38 @@
-$('#locationId').select2({
-  theme: 'bootstrap',
-  width: '100%',
-  placeholder: 'Select a location'
-})
+$(function () {
+  let initialPackages = packages;
 
-var packageTable = $('.package-table').DataTable({
-  pageLenth: 10,
-  order: [[0, 'desc']]
-})
+  $('#locationId').select2({
+    theme: 'bootstrap',
+    width: '100%',
+    placeholder: 'Select a location'
+  })
+  
+  var packageTable = $('.package-table').DataTable({
+    pageLenth: 10,
+    order: [[0, 'desc']]
+  })
+  
+  $('#locationId').change(function () {
+    var locationId = $(this).val();
+    var locationName = $('#locationId option:selected').text();
+    
+    // Clearing the previous data
+    $('.package-table').dataTable().fnClearTable();
 
-$('#locationId').change(function () {
-  var locationId = $(this).val();
-  var locationName = $('#locationId option:selected').text();
-  packageTable.clear();
-  $.ajax({
-    url: '/store/package/location/' + locationId,
-    type: 'get',
-    success: packages => {
-      packages.forEach(pkg => {
+    initialPackages.forEach(pkg => {
+      if (pkg.customerId.location === locationId || locationId == 'All') {
         packageTable.row.add([
-          pkg.status.datetimestamp,
+          formatDate(pkg.createdAt),
           locationName,
           pkg.trackingNo,
-          pkg.customer.pmb + ' - ' + pkg.customer.firstName + ' ' + pkg.customer.lastName,
+          pkg.customerId.pmb + ' - ' + getFullName(pkg.customerId),
           pkg.awbId,
           pkg.description,
           pkg.weight + ' lbs'
         ]).draw(false);
-      })
-    }
+      }
+    })
   })
-})
+});  
+
+

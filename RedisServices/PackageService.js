@@ -753,6 +753,21 @@ class PackageService {
     });
   }
 
+  //======== Packages for store ========//
+  getPackagesForStores() {
+    return new Promise((resolve, reject) => {
+      Package.find({})
+      .populate('customerId')
+      .exec((err, packages) => {
+        if (err) {
+          resolve([]);
+        } else {
+          resolve(packages);
+        }
+      })
+    });
+  }
+
   //========== Ship Packages in Manifest ==========//
   updateManifestPackageToInTransit(manifestId, userId) {
     return new Promise((resolve, reject) => {

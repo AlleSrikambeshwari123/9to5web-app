@@ -1,7 +1,6 @@
 <% layout('./shared/__template')%>
 <div class='gutters'>
 	<div class="col-xl-12 col-lg-6 col-md-12 col-sm-12">
-
 		<div class="card">
 			<div class="card-header">
 				<div class="card-title"><%=title%></div>
@@ -11,7 +10,7 @@
 					<label for="locationId" class="ml-4 my-auto text-right">Select Location </label>
 					<div class="col-lg-3 pl-0 ml-3">
 						<select id="locationId">
-							<option></option>
+							<option value="All" selected>All</option>
 							<% locations.forEach(location => { %>
 							<option value="<%= location.id %>"><%= location.name %></option>
 							<% }) %>
@@ -19,7 +18,7 @@
 					</div>
 				</div>
 				<div class="separator-solid"></div>
-				<div class="mt-3">
+				<div class="table-responsive">
 					<table class="display table table-striped table-hover dataTable package-table">
 						<thead>
 							<tr>
@@ -33,7 +32,18 @@
 							</tr>
 						</thead>
 						<tbody>
-						</tbody>
+							<% packages.forEach(function(pkg){ %>
+							<tr data-record="<%= pkg.id %>">
+								<td><%= helpers.formatDate(pkg.createdAt)%></td>
+								<td><%= pkg.location%></td>
+								<td><%= pkg.trackingNo %></td>
+								<td><%= pkg.customerId.pmb + '-' + helpers.getFullName(pkg.customerId) %></td>
+								<td><%= pkg.awbId %></td> 
+								<td><%= pkg.description %></td>
+								<td><%= pkg.weight + ' lbs'%></td>
+							</tr>
+							<%})%>
+						  </tbody>
 					</table>
 				</div>
 			</div>
@@ -41,4 +51,9 @@
 	</div>
 </div>
 
+<script>
+	window.packages = <%- JSON.stringify(packages) %>;
+</script>
+
+<% block('scripts').append('<script src="/js/utils.js"></script>')%>
 <% block('scripts').append('<script src="/js/store/store-check-in.js"></script>')%>
