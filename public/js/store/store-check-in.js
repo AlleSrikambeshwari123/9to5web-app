@@ -14,8 +14,6 @@ $(function () {
   
   $('#locationId').change(function () {
     var locationId = $(this).val();
-    var locationName = $('#locationId option:selected').text();
-    
     // Clearing the previous data
     $('.package-table').dataTable().fnClearTable();
 
@@ -23,7 +21,7 @@ $(function () {
       if (pkg.customerId.location === locationId || locationId == 'All') {
         packageTable.row.add([
           formatDate(pkg.createdAt),
-          locationName,
+          pkg.location,
           pkg.trackingNo,
           pkg.customerId.pmb + ' - ' + getFullName(pkg.customerId),
           pkg.awbId,
