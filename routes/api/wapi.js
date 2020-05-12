@@ -44,6 +44,7 @@ router.get('/get-package-detail/:trackingNo', async (req, res, next) => {
     console.log(error)
   }
   const myPackage = allService.filter((i) => i.trackingNo === trackingNo)
+  if(myPackage == '') res.send('Tracking No. Not Found')
   const packageId = myPackage[0].id;
   const awbId = myPackage[0].awbId;
   Promise.all([
@@ -66,7 +67,7 @@ router.get('/get-package-detail-barcode/:barcode', async (req, res, next) => {
   } catch (error) {
     console.log(error)
   }
-  const myPackage = allService.filter((i) => i.originBarcode === barcode)
+  const myPackage = allService.filter((i) => i.originBarcode.toString() === barcode)
   if (myPackage.length > 0) {
     const packageId = myPackage[0].id;
     const awbId = myPackage[0].awbId;

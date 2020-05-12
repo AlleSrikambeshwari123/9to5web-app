@@ -15,7 +15,8 @@ const PACKAGE_ID = strings.redis_id_package;
 const PREFIX_PACKAGE_LIST = strings.redis_prefix_awb_package_list; // this key + awbId = array of packages
 
 const LIST_PACKAGE_SHIPMENT = 'list:shipment:'; // this key + shipmentId = array of packages
-const SHIPMENT_ID = 'id:accept:truck';
+// const SHIPMENT_ID = 'id:accept:truck';
+const SHIPMENT_ID = 34;
 
 const PREFIX_ORIGIN_BARCODE = strings.redis_prefix_origin_barcode;
 const ORIGIN_BARCODE_ID = strings.redis_id_origin_barcode;
@@ -174,18 +175,26 @@ class PackageService {
 
   getAllPackages() {
     return new Promise((resolve, reject) => {
-      client.keys(PREFIX + '*', (err, keys) => {
-        if (err) resolve([]);
-        else {
-          Promise.all(
-            keys.map((key) => {
-              return lredis.hgetall(key);
-            }),
-          ).then((results) => {
-            resolve(results);
-          });
+      Package.find({},(err,result) =>{
+        if(err){
+          resolve([])
+        }else{
+          resolve(result)
         }
-      });
+      })
+      // client.keys(PREFIX + '*', (err, keys) => {
+      //   if (err) resolve([]);
+      //   else {
+      //     Promise.all(
+      //       keys.map((key) => {
+      //         return lredis.hgetall(key);
+      //       }),
+      //     ).then((results) => {
+      //       console.log(results);
+      //       resolve(results);
+      //     });
+      //   }
+      // });
     });
   }
 
@@ -354,11 +363,8 @@ class PackageService {
   removeAllOriginBarcode() {
     return new Promise((resolve, reject) => {
       Barcode.deleteMany({}, (err, result) => {
-        if (err) {
-          resolve([]);
-        } else {
-          resolve(result);
-        }
+        if (err || result == null) resolve([]);
+        else resolve(result);
       })
       // client.set(ORIGIN_BARCODE_ID, 0);
       // client.keys(PREFIX_ORIGIN_BARCODE + '*', (err, keys) => {
@@ -374,7 +380,7 @@ class PackageService {
 
   getPackage(packageId) {
     return new Promise((resolve, reject) => {
-      client.hgetall(PREFIX + packageId, (err, pkg) => {
+      Package.find({id:packageId}, (err, pkg) => {
         if (err || pkg == null) resolve({});
         else resolve(pkg);
       });
@@ -420,16 +426,20 @@ class PackageService {
   // Only show 7 trackingNo on the list;
   getPackages(awbId) {
     return new Promise((resolve, reject) => {
-      client.smembers(PREFIX_PACKAGE_LIST + awbId, (err, ids) => {
-        if (err) resolve([]);
-        Promise.all(
-          ids.map((id) => {
-            return lredis.hgetall(PREFIX + id);
-          }),
-        ).then((packages) => {
-          resolve(packages);
-        });
-      });
+      Awb.find({_id:awbId},(err,response)=>{
+        if(err || response == null) resolve([])
+        else { resolve(response)}
+      })
+      // client.smembers(PREFIX_PACKAGE_LIST + awbId, (err, ids) => {
+      //   if (err) resolve([]);
+      //   Promise.all(
+      //     ids.map((id) => {
+      //       return lredis.hgetall(PREFIX + id);
+      //     }),
+      //   ).then((packages) => {
+      //     resolve(packages);
+      //   });
+      // });
     });
   }
 
@@ -683,22 +693,24 @@ class PackageService {
   }
 
   //========== Receive Packages From Truck that arrived at Airport ==========//
+  
   getShipmentId() {
     return new Promise((resolve, reject) => {
-      client.incr(SHIPMENT_ID, (err, reply) => {
-        if (err) {
-          console.error(err);
-          resolve(null);
-        }
-        resolve(reply);
-      });
+      resolve(SHIPMENT_ID)
+      // client.incr(SHIPMENT_ID, (err, reply) => {
+      //   if (err) {
+      //     console.error(err);
+      //     resolve(null);
+      //   }
+      //   resolve(reply);
+      // });
     });
   }
   addPackageToShipment(barcodes, username) {
     return new Promise((resolve, reject) => {
       this.getShipmentId().then((shipmentId) => {
         let packageIds = barcodes.split(',');
-        client.sadd(LIST_PACKAGE_SHIPMENT + shipmentId, packageIds, (err, reply) =>{});
+        // client.sadd(LIST_PACKAGE_SHIPMENT + shipmentId, packageIds, (err, reply) =>{});
         Promise.all(
           packageIds.map((packageId) => {
             return this.updatePackageStatus(packageId, 1, username);
@@ -829,13 +841,13 @@ class PackageService {
     return new Promise((resolve, reject) => {
       Promise.all(
         packageIds.map((packageId) => {
-          this.updatePackage(packageId, {
-            locationId: locationId,
-          });
+          // this.updatePackage(packageId, {
+          //   locationId: locationId,
+          // });
           return this.updatePackageStatus(packageId, 6, username);
         }),
       ).then((result) => {
-        client.sadd(LIST_LOCATION_PACKAGE + locationId, packageIds);
+        // client.sadd(LIST_LOCATION_PACKAGE + locationId, packageIds);
         resolve({ success: true, message: strings.string_response_stored });
       });
     });
