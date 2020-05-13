@@ -10,11 +10,8 @@ router.post('/login', (req, res, next) => {
 });
 router.post('/sign-up', function (req, res, next) {
   var body = req.body;
-  var customer = {
-    firstName: body.firstName,
-    lastName: body.lastName,
-    email: body.email,
-    mobile: body.mobile,
+  var customer = {    
+    email: body.email,    
     password: body.password
   }
   services.customerService.signUp(customer).then(signUpResult => {

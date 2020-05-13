@@ -126,3 +126,4 @@ exports.string_password_incorrect = "Incorrect Password.";
 exports.string_airport_exist = "Sorry, same airport name already exist!.";
 exports.string_restrict_action = "Sorry, you can't perform this action for your own account.";
 exports.string_global_search_error = "Sorry, select or input field is invalid!";
+exports.string_customer_not_exists ="Sorry you do not exist in your records. Please contact 9to5."
