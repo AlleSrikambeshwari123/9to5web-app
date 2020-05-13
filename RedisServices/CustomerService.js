@@ -19,21 +19,23 @@ class CustomerService {
     return new Promise(async (resolve, reject) => {
       if (customer.email) {
         const customerData = await this.getCustomer({email: customer.email.toLowerCase()});
-        if (customerData && customerData['_id']) {
-          return resolve({ success: false, message: 'Account already exists' });
+        
+        if (!customerData.id ) {
+          return resolve({ success: false, message: strings.string_customer_not_exists });
         } 
-      }
-
-      const customerData = new Customer(customer);
-      customerData.save((err, customer) => {
+      }            
+      const password = bcrypt.hashSync(customer.password, 10);
+      Customer.updateOne({email:customer.email}, {password:password}).exec(async(err, updateCustomer) => {
         if (err) {
           return resolve({ success: false, message: strings.string_response_error });
         } else {
-          delete customer.password;
+          let customerDetail = await this.getCustomer({email: customer.email.toLowerCase()});
+          customerDetail = JSON.parse(JSON.stringify(customerDetail));
+          delete customerDetail.password;
           resolve({
             success: true,
             message: strings.string_response_created,
-            customer: customer,
+            customer: customerDetail,
           });
         }  
       })
