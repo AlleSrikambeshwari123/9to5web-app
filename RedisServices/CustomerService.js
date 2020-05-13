@@ -97,7 +97,7 @@ class CustomerService {
   }
   getCustomerWithEmail(email) {
     return new Promise((resolve, reject) => {
-      lredis.search(PREFIX, [{ field: 'email', value: email }]).then(results => {
+      Customer.find({email: email }).then(results => {
         if (results.length == 0) resolve({});
         else resolve(results[0]);
       })
@@ -147,8 +147,9 @@ class CustomerService {
         if (customer.id == undefined) {
           resolve({ success: false, message: strings.string_not_found_customer });
         } else {
-          client.hmset(PREFIX + customer.id, { fcmToken: fcmToken });
-          resolve({ success: true, message: strings.string_response_updated });
+          Customer.updateOne({email:email},{ fcmToken: fcmToken }).exec((err,updateData)=>{
+            resolve({ success: true, message: strings.string_response_updated });
+          })
         }
       })
     });

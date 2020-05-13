@@ -52,6 +52,9 @@ const customerSchema = new mongoose.Schema({
   note: {
     type: String
   }, 
+  fcmToken:{
+    tyep:String
+  },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId, 
     ref: 'User', 
