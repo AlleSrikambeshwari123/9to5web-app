@@ -134,6 +134,17 @@ class CustomerService {
       })
     });
   }
+  saveProfile(body) {
+    return new Promise(async (resolve, reject) => {
+      Customer.findOneAndUpdate({email: body.email}, {...body}, (err, result) => {
+        if (err) {
+          resolve({ success: false, message: strings.string_response_error });
+        } else {
+          resolve({ success: true, message: strings.string_response_updated });
+        }
+      })
+    })
+  }
   updateCustomer(id, body) {
     return new Promise(async (resolve, reject) => {
       const customer = await this.getCustomer({_id: id});
