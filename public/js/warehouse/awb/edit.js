@@ -78,6 +78,11 @@ $(function () {
     width: '100%',
     placeholder: "Select a package type"
   })
+  $('#packageCalculation').select2({
+    theme: 'bootstrap',
+    width: '100%',
+    placeholder: "Select a package calculation"
+  })
 
   $('form[name="add-purchase-order-item-form"] select').select2({
     theme: 'bootstrap',

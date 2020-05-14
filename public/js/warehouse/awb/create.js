@@ -10,8 +10,7 @@ Number.prototype.formatMoney = function (c, d, t) {
 };
 
 AWBInvoices.addInvoceRow();
-
-$(function () {
+$(function () {  
   $('#location').select2({
     theme: 'bootstrap',
     placeholder: 'Select Location',
@@ -90,6 +89,11 @@ $(function () {
     theme: 'bootstrap',
     width: '100%',
     placeholder: "Select a package type"
+  })
+  $('#packageCalculation').select2({
+    theme: 'bootstrap',
+    width: '100%',
+    placeholder: "Select a package calculation"
   })
 
   var packageTable = $('#packageTable').DataTable({
