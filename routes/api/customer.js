@@ -29,12 +29,13 @@ router.post('/update-fcm', (req, res, next) => {
 
 router.post('/update-profile', function (req, res, next) {
   var body = req.body;
-  var customer = {
-    firstName: body.firstName,
-    lastName: body.lastName,
-    email: body.email,
-    mobile: body.mobile,
-  }
+  var customer = {... req.body};
+  // var customer = {
+  //   firstName: body.firstName,
+  //   lastName: body.lastName,
+  //   email: body.email,
+  //   mobile: body.mobile,
+  // }
   services.customerService.saveProfile(customer).then(loginResult => {
     res.send(loginResult);
 

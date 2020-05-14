@@ -983,18 +983,30 @@ class PackageService {
   }
 
   //========== Customer Package ==========//
-  getCustomerPackages(id) {
+  // getCustomerPackages(id) {
+  //   return new Promise((resolve, reject) => {
+  //     lredis.search(PREFIX, [{ field: 'customerId', value: id }]).then((packages) => {
+  //       Promise.all(
+  //         packages.map((pkg) => {
+  //           return this.getPackageStatuses(pkg.id);
+  //         }),
+  //       ).then((statuses) => {
+  //         packages.forEach((pkg, i) => (pkg.status = statuses[i]));
+  //       });
+  //       resolve(packages);
+  //     });
+  //   });
+  // }
+  getCustomerPackages(customerId) {
     return new Promise((resolve, reject) => {
-      lredis.search(PREFIX, [{ field: 'customerId', value: id }]).then((packages) => {
-        Promise.all(
-          packages.map((pkg) => {
-            return this.getPackageStatuses(pkg.id);
-          }),
-        ).then((statuses) => {
-          packages.forEach((pkg, i) => (pkg.status = statuses[i]));
-        });
-        resolve(packages);
-      });
+      Package.find({customerId})
+      .exec((error, packages) => {
+        if(error) {
+          resolve({success: false})
+        } else {
+          resolve(packages);
+        }
+      })
     });
   }
 

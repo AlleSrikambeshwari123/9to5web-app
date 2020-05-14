@@ -38,8 +38,7 @@ class UserService {
   }
   authenticate(username, password) {
     return new Promise(async (resolve, reject) => {
-      const user = await this.getUser(username);
-      console.log(user)
+      const user = await this.getUser(username);      
       if (!(user && user['_id'])) {
         return resolve({ authenticated: false, token: "", user: null });
       } else {
@@ -69,6 +68,21 @@ class UserService {
       }
     });
   }
+
+  getUserByEmail(email){
+    return new Promise(function (resolve, reject) {
+      User.findOne({email: email})
+      .populate('roles', 'type')
+      .exec((err, result) => {
+        if (err) {
+          resolve({});
+        } else {
+          resolve(result);
+        }
+      })
+    });
+  }
+
   getUser(username) {
     return new Promise(function (resolve, reject) {
       User.findOne({username: username})
