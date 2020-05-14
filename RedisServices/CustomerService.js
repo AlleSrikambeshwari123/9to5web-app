@@ -69,6 +69,35 @@ class CustomerService {
       }
     })
   }
+  changePassword(updateData) {
+    let { email, password, oldPassword } = updateData;
+    console.log(oldPassword);
+    return new Promise(async (resolve, reject) => {
+      const customer = await this.getCustomer({email: email});
+      console.log(customer);
+      if (!(customer && customer['_id'])) {
+        resolve({ authenticated: false, message: strings.string_not_found_customer });
+      } else {
+        customer.comparePassword(oldPassword, (err, isMatch) => {
+          if (err) {
+            return resolve({ success: false, message: strings.string_response_error });
+          }
+          if (!isMatch) {
+            resolve({ authenticated: false, message: strings.string_password_incorrect });
+          } else {
+            password = bcrypt.hashSync(password, 10);
+            Customer.findOneAndUpdate({_id: customer['_id']}, {password: password}, (err, result) => {
+              if (err) {
+                resolve({ success: false, message: strings.string_response_error });
+              } else {
+                resolve({ success: true, message: strings.string_response_updated });
+              }
+            })
+          }
+        });
+      }
+    })
+  }
   getCustomers() {
     return new Promise((resolve, reject) => {
       Customer.find({})
