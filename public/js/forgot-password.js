@@ -1,7 +1,7 @@
-var remote = require('electron').remote;
-var main = remote.require('./main.js');
-var axios = require('axios');
-const { ipcRenderer } = require('electron');
+// var remote = require('electron').remote;
+// var main = remote.require('./main.js');
+// var axios = require('axios');
+// const { ipcRenderer } = require('electron');
 
 var username = document.getElementById('reset_password_username');
 var loginBtn = document.getElementById('send_request');
@@ -29,9 +29,8 @@ loginBtn.addEventListener('click', function () {
 		email: username.value
 	};
 	console.log(user)
-	axios.post('http://209.97.151.217:3000/users/request-pwd-reset', user).then(function (response) {
-		console.log(response.data);
-		if (response.data.code != "") {
+	$.post('/users/request-pwd-reset', user).then(function (response) {
+		if (response.success) {
 			showResetPassword = false;
 			showResetSent = true;
 			isWrongPassword = false;
@@ -53,7 +52,7 @@ document.getElementById('back').addEventListener('click', function () {
 	window.location = "login.html";
 })
 document.getElementById('back2').addEventListener('click', function () {
-	window.location = "login.html";
+	window.location = "/";
 })
 
 $("back").on("click", function () {

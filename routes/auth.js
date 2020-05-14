@@ -38,13 +38,36 @@ router.post('/login', (req, res, next) => {
   });
 });
 
-router.get('/forgot-password', function (req, res, next) {
-  console.log("HERE");
+router.get('/forgot-password', function (req, res, next) {  
   res.render('forgot_password');
 });
+
+router.get('/reset-password/user/:id',async function(req, res, next){
+  const result = await services.userService.getUserByResetPasswordToken(req.params.id);    
+  result.reset_link = 'user/' + req.params.id;
+  res.render('password-set-new',result); 
+});
+
+router.post('/reset-password/user/:id', async function(req, res, next){
+  const result = await services.userService.resetPassword(req.params.id, req.body.password); 
+  res.send(result);
+})
+
+router.get('/reset-password/success', function(req,res, next){
+  res.render('password-set-success', {
+    loginUrl: req.query.login
+  })
+})
+
 router.get('/logout', function (req, res, next) {
   req.session.reset();
   res.redirect('/');
+});
+
+router.post('/users/request-pwd-reset',async function(req,res,next){
+  const webUrl = req.protocol + '://' + req.get('host'); 
+  const result = await services.userService.requestPasswordReset(req.body.email, webUrl);
+  res.send(result);
 });
 
 module.exports = router;

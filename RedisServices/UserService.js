@@ -12,6 +12,7 @@ var lredis = require('./redis-local');
 
 const User = require('../models/user');
 const Role = require('../models/role');
+const mail = require('../Util/mail');
 
 var PREFIX = strings.redis_prefix_user;
 var ID_COUNTER = strings.redis_id_user;
@@ -38,7 +39,7 @@ class UserService {
   authenticate(username, password) {
     return new Promise(async (resolve, reject) => {
       const user = await this.getUser(username);
-      
+      console.log(user)
       if (!(user && user['_id'])) {
         return resolve({ authenticated: false, token: "", user: null });
       } else {
@@ -157,6 +158,7 @@ class UserService {
       })
     })
   }
+
   updateUser(user) {
     return new Promise(async (resolve, reject) => {
       const userData = await this.getUser(user.username);
@@ -179,6 +181,63 @@ class UserService {
         })
       });
   }
+  requestPasswordReset(email, webUrl){
+    return new Promise(async (resolve, reject) => {
+      try {       
+        let user = await User.findOne({ email: email });              
+        if (!user) {
+          return resolve({ success: false, message: strings.string_user_not_found });
+        } 
+        this.sendEmail('reset_password', user, webUrl);
+        resolve({ success: true, message: strings.string_password_reseted });
+      }catch(error){
+        console.log(error);
+        resolve({ success: false, message: strings.string_response_error });
+      }
+    })
+  }
+
+  sendEmail(emailType, user, webUrl){
+    if(emailType == "reset_password"){
+      mail.send('reset_password/user.html', {
+        email: user.email,
+        subject: "Password Reset Request",
+        NAME: user.firstName,
+        CONFIRM_LINK: webUrl + '/reset-password/user/' + user.id
+      });
+    }
+  }
+
+  getUserByResetPasswordToken(id) {
+    console.log(id)
+    return new Promise(async (resolve, reject) => {
+      try {
+        let user = await User.findById(id);
+        if (!user) return resolve({ success: false, message: string.string_password_token_invalid });
+        
+        resolve({ success: true, user: user, token: id });
+      } catch (error) {
+        console.log(error.message);
+        resolve({ success: false, message: error.message });
+      }
+    });
+  }
+
+  resetPassword(id, password){
+    return new Promise(async (resolve, reject) => {
+      try {
+        let user = await User.findById(id);
+        if (!user) return resolve({ success: false, message: strings.string_user_not_found });
+        user.password = password;        
+        await user.save();
+        resolve({ success: true, message: strings.string_response_updated });
+      } catch (error) {
+        console.log(error.message);
+        resolve({ success: false, message: strings.string_response_error });
+      }
+    });
+  }
+
 }
 
 module.exports = UserService;
