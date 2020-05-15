@@ -15,21 +15,44 @@ var PREFIX = strings.redis_prefix_customer;
 var ID_COUNTER = strings.redis_id_customer;
 
 class CustomerService {
-  signUp(customer) {
+  createCustomer(customer) {
     return new Promise(async (resolve, reject) => {
       if (customer.email) {
-        const customerData = await this.getCustomer({email: customer.email.toLowerCase()});
-        
-        if (!customerData.id ) {
-          return resolve({ success: false, message: strings.string_customer_not_exists });
+        const customerData = await this.getCustomerWithEmail(customer.email);
+        if (customerData && customerData['_id']) {
+          return resolve({ success: false, message: 'Account already exists' });
         } 
-      }            
-      const password = bcrypt.hashSync(customer.password, 10);
-      Customer.updateOne({email:customer.email}, {password:password}).exec(async(err, updateCustomer) => {
+      }
+      
+      const customerData = new Customer(customer);
+      customerData.save((err, customer) => {
         if (err) {
           return resolve({ success: false, message: strings.string_response_error });
         } else {
-          let customerDetail = await this.getCustomer({email: customer.email.toLowerCase()});
+          delete customer.password;
+          resolve({
+            success: true,
+            message: strings.string_response_created,
+            customer: customer,
+          });
+        }  
+      })
+    });
+  }
+  signUp(customer) {
+    return new Promise(async (resolve, reject) => {
+      const customerData = await this.getCustomerWithEmail(customer.email);
+        
+      if (!customerData['_id'] ) {
+        return resolve({ success: false, message: strings.string_customer_not_exists });
+      } 
+                  
+      const password = bcrypt.hashSync(customer.password, 10);
+      Customer.updateOne({_id: customerData['_id']}, {password:password}).exec(async(err, updateCustomer) => {
+        if (err) {
+          return resolve({ success: false, message: strings.string_response_error });
+        } else {
+          let customerDetail = await this.getCustomerWithEmail(customer.email);
           customerDetail = JSON.parse(JSON.stringify(customerDetail));
           delete customerDetail.password;
           resolve({
@@ -43,7 +66,7 @@ class CustomerService {
   }
   login(email, password) {
     return new Promise(async (resolve, reject) => {
-      const customer = await this.getCustomer({email: email});
+      const customer = await this.getCustomerWithEmail(email);
       
       if (!(customer && customer['_id'])) {
         resolve({ authenticated: false, message: strings.string_not_found_customer });
@@ -71,10 +94,9 @@ class CustomerService {
   }
   changePassword(updateData) {
     let { email, password, oldPassword } = updateData;
-    console.log(oldPassword);
     return new Promise(async (resolve, reject) => {
-      const customer = await this.getCustomer({email: email});
-      console.log(customer);
+      const customer = await this.getCustomerWithEmail(email);
+
       if (!(customer && customer['_id'])) {
         resolve({ authenticated: false, message: strings.string_not_found_customer });
       } else {
@@ -128,7 +150,8 @@ class CustomerService {
   }
   getCustomerWithEmail(email) {
     return new Promise((resolve, reject) => {
-      Customer.find({email: email }).then(results => {
+      Customer.find({email: new RegExp('^' + email + '$', 'i')})
+      .then(results => {
         if (results.length == 0) resolve({});
         else resolve(results[0]);
       })
@@ -136,13 +159,18 @@ class CustomerService {
   }
   saveProfile(body) {
     return new Promise(async (resolve, reject) => {
-      Customer.findOneAndUpdate({email: body.email}, {...body}, (err, result) => {
-        if (err) {
-          resolve({ success: false, message: strings.string_response_error });
-        } else {
-          resolve({ success: true, message: strings.string_response_updated });
-        }
-      })
+      const customer = await this.getCustomerWithEmail(email);
+      if (!(customer && customer['_id'])) {
+        resolve({ authenticated: false, message: strings.string_not_found_customer });
+      } else {
+        Customer.findOneAndUpdate({_id: customer['_id']}, {...body}, (err, result) => {
+          if (err) {
+            resolve({ success: false, message: strings.string_response_error });
+          } else {
+            resolve({ success: true, message: strings.string_response_updated });
+          }
+        })
+      }
     })
   }
   updateCustomer(id, body) {

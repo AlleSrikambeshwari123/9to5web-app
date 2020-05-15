@@ -20,11 +20,13 @@ const customerSchema = new mongoose.Schema({
   lastName: {
     type: String
   },
-  telePhone: {
+  telephone: {
     type: String
   }, 
   email: {
-    type: String
+    type: String,
+    required: true,
+    unique: true
   },
   password: {
     type: String
