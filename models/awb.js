@@ -3,35 +3,38 @@
 const mongoose = require('mongoose');
 
 const awbSchema = new mongoose.Schema({
+  awbId: {
+    type: String
+  },
   customerId: {
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'Customer', 
-    required: true 
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Customer',
+    required: true
   },
   shipper: {
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'Shipper', 
-    required: true 
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Shipper',
+    required: true
   },
   carrier: {
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'Carrier', 
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Carrier',
     required: true
   },
   hazmat: {
-    type: mongoose.Schema.Types.ObjectId, 
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'Hazmat'
   },
   packages: [{
-    type: mongoose.Schema.Types.ObjectId, 
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'Package'
   }],
   purchaseOrders: [{
-    type: mongoose.Schema.Types.ObjectId, 
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'PurchaseOrder'
   }],
   invoices: [{
-    type: mongoose.Schema.Types.ObjectId, 
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'Invoice'
   }],
   deliveryMethod: {
@@ -43,12 +46,12 @@ const awbSchema = new mongoose.Schema({
   },
   note: {
     type: String
-  }, 
+  },
   createdBy: {
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'User', 
-    required: true 
-  }   
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  }
 }, {
   timestamps: true
 });

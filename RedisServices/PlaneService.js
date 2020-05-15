@@ -19,6 +19,7 @@ let ObjectId = require('mongodb').ObjectID;
 class PlaneService {
   addPlane(plane) {
     return new Promise((resolve, reject) => {
+      let data = new Date()
       let newPlane = new Plane(plane);
       newPlane.save((err, result) => {
         if (err) {

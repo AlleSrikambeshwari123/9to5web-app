@@ -56,7 +56,7 @@ class AwbService {
       if (awb.hasOwnProperty && awb.hasOwnProperty('hazmat') && !awb['hazmat']) {
         delete awb.hazmat;
       }
-
+      awb.awbId = 'AWB' + (Math.floor(100000 + Math.random() * 900000))
       const newAwb = new Awb(awb);
       newAwb.save((err, result) => {
         if (err) {
@@ -71,7 +71,7 @@ class AwbService {
 
   async getPurchaseOrder(awbOrAWBId) {
     return new Promise((resolve, reject) => {
-      PurchaseOrder.find({awbId: awbOrAWBId}, (err, result) => {
+      PurchaseOrder.find({ awbId: awbOrAWBId }, (err, result) => {
         if (err) {
           resolve([]);
         } else {
@@ -86,7 +86,7 @@ class AwbService {
       if (awb.hasOwnProperty && awb.hasOwnProperty('hazmat') && !awb['hazmat']) {
         delete awb.hazmat;
       }
-      Awb.findOneAndUpdate({_id: id}, {...awb}, (err, result) => {
+      Awb.findOneAndUpdate({ _id: id }, { ...awb }, (err, result) => {
         if (err) {
           resolve({ success: false });
         } else {
@@ -106,9 +106,9 @@ class AwbService {
 
   deleteAwb_updated(awbId) {
     return new Promise((resolve, reject) => {
-      Awb.deleteOne({_id: awbId}, (err, result) => {
+      Awb.deleteOne({ _id: awbId }, (err, result) => {
         if (err) {
-          resolve({ success: false, message: strings.string_response_error }); 
+          resolve({ success: false, message: strings.string_response_error });
         } else {
           resolve({ success: true, message: strings.string_response_removed, data: result });
         }
@@ -118,13 +118,13 @@ class AwbService {
 
   getAwb(id) {
     return new Promise((resolve, reject) => {
-      Awb.findOne({_id: id}, (err, result) => {
+      Awb.findOne({ _id: id }, (err, result) => {
         if (err) {
           resolve({});
         } else {
           resolve(result);
         }
-      })
+      }).populate('customerId', 'fcmToken')
     });
   }
 
@@ -144,35 +144,35 @@ class AwbService {
   getAwbsFull() {
     return new Promise((resolve, reject) => {
       Awb.find({})
-      .populate('customerId')
-      .populate('shipper')
-      .populate('carrier')
-      .populate('hazmat')
-      .populate('packages')
-      .populate('purchaseOrders')
-      .populate('invoices')
-      .exec((err, result) => {
-        resolve(result);
-      });
+        .populate('customerId')
+        .populate('shipper')
+        .populate('carrier')
+        .populate('hazmat')
+        .populate('packages')
+        .populate('purchaseOrders')
+        .populate('invoices')
+        .exec((err, result) => {
+          resolve(result);
+        });
     });
   }
 
   getAwbPreviewDetails(id) {
     return new Promise((resolve, reject) => {
-      Awb.findOne({_id: id})
-      .populate('customerId')
-      .populate('shipper')
-      .populate('carrier')
-      .populate('hazmat')
-      .populate('packages')
-      .populate('purchaseOrders')
-      .populate('invoices')
-      .exec((err, result) => {
-        if (result.customerId) {
-          result.customer = result.customerId;
-        }
-        resolve(result);
-      });
+      Awb.findOne({ _id: id })
+        .populate('customerId')
+        .populate('shipper')
+        .populate('carrier')
+        .populate('hazmat')
+        .populate('packages')
+        .populate('purchaseOrders')
+        .populate('invoices')
+        .exec((err, result) => {
+          if (result.customerId) {
+            result.customer = result.customerId;
+          }
+          resolve(result);
+        });
     });
   }
 
@@ -183,42 +183,42 @@ class AwbService {
 
   async getInManifestNoInvoiceIds() {
     return new Promise((resolve, reject) => {
-      Awb.find({invoices: {$eq: []}}, '_id')
-      .exec((err, awbData) => {
-        if (err) {
-          resolve([]);
-        } else {
-          awbData = awbData.map((data) => data['_id'].toString());
-          resolve(awbData);
-        }
-      })
+      Awb.find({ invoices: { $eq: [] } }, '_id')
+        .exec((err, awbData) => {
+          if (err) {
+            resolve([]);
+          } else {
+            awbData = awbData.map((data) => data['_id'].toString());
+            resolve(awbData);
+          }
+        })
     })
   }
 
   async getAwbsNoDocs() {
     return new Promise((resolve, reject) => {
-      Awb.find({invoices: {$eq: []}})
-      .populate('customerId')
-      .populate('shipper')
-      .populate('carrier')
-      .populate('packages')
-      .populate('purchaseOrders')
-      .exec((err, awbData) => {
-        if (err) {
-          resolve([]);
-        } else {
-          awbData.forEach((data) => {
-            data['customer'] = data['customerId'];
-            if (data['packages'] && data['packages'].length) {
-              let weight = 0;
-              data.packages.forEach(pkg => weight += Number(pkg.weight));
-              data['weight'] = weight;
-            }
-            data['dateCreated'] = moment(data['createdAt']).format("MMM DD, YYYY");
-          })
-          resolve(awbData);
-        }
-      })
+      Awb.find({ invoices: { $eq: [] } })
+        .populate('customerId')
+        .populate('shipper')
+        .populate('carrier')
+        .populate('packages')
+        .populate('purchaseOrders')
+        .exec((err, awbData) => {
+          if (err) {
+            resolve([]);
+          } else {
+            awbData.forEach((data) => {
+              data['customer'] = data['customerId'];
+              if (data['packages'] && data['packages'].length) {
+                let weight = 0;
+                data.packages.forEach(pkg => weight += Number(pkg.weight));
+                data['weight'] = weight;
+              }
+              data['dateCreated'] = moment(data['createdAt']).format("MMM DD, YYYY");
+            })
+            resolve(awbData);
+          }
+        })
     })
   }
 
@@ -290,11 +290,11 @@ class AwbService {
 
   updatePurchaseOrder(purchaseOrderId, purchaseOrderData) {
     return new Promise((resolve, reject) => {
-      PurchaseOrder.findOneAndUpdate({_id: purchaseOrderId}, {...purchaseOrderData}, (err, result) => {
+      PurchaseOrder.findOneAndUpdate({ _id: purchaseOrderId }, { ...purchaseOrderData }, (err, result) => {
         if (err) {
-          resolve({success: false});
+          resolve({ success: false });
         } else {
-          resolve({success: true});
+          resolve({ success: true });
         }
       });
     });
@@ -302,9 +302,9 @@ class AwbService {
 
   removePurchaseOrder(id) {
     return new Promise((resolve, reject) => {
-      PurchaseOrder.deleteOne({_id: id}, (err, result) => {
+      PurchaseOrder.deleteOne({ _id: id }, (err, result) => {
         if (err) {
-          resolve({success: false, message: strings.string_response_error});
+          resolve({ success: false, message: strings.string_response_error });
         } else {
           resolve(result);
         }
@@ -314,9 +314,9 @@ class AwbService {
 
   removePurchaseOrdersByAwb(awbId) {
     return new Promise((resolve, reject) => {
-      PurchaseOrder.deleteMany({awbId: awbId}, (err, result) => {
+      PurchaseOrder.deleteMany({ awbId: awbId }, (err, result) => {
         if (err) {
-          resolve({success: false, message: strings.string_response_error});
+          resolve({ success: false, message: strings.string_response_error });
         } else {
           resolve(result);
         }

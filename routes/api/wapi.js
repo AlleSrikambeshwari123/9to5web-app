@@ -1,7 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var services = require('../../RedisServices/RedisDataServices');
-
+var passport = require('passport');
+require('./authHelper')
 var PackageUtil = require('../../Util/packageutil').PackageUtility;
 var middleware = require('../../middleware');
 var packageUtil = new PackageUtil();
@@ -14,7 +15,7 @@ router.post('/authenticate', (req, res, next) => {
     res.send(result);
   })
 })
-router.post('/rm-package-from-flight', (req, res, next) => {
+router.post('/rm-package-from-flight', passport.authenticate('jwt', { session: false }),(req, res, next) => {
   var body = req.body;
   var action = {
     mid: body.mid,
@@ -32,7 +33,7 @@ router.get('/new-shipment-id', (req, res, next) => {
     res.send({ id: id })
   })
 })
-router.get('/get-package-detail/:trackingNo', async (req, res, next) => {
+router.get('/get-package-detail/:trackingNo', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
   let trackingNo = req.params.trackingNo;
   // // let ids = trackingNo.split('-');
   // // let packageId = ids[2];
@@ -62,7 +63,7 @@ router.get('/get-package-detail/:trackingNo', async (req, res, next) => {
   });
 })
 
-router.get('/get-package-detail-barcode/:barcode', async (req, res, next) => {
+router.get('/get-package-detail-barcode/:barcode', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
   let barcode = req.params.barcode;
 
   let allService;
@@ -115,7 +116,7 @@ router.get("/get_packages_filter/:filter", middleware().checkSession, (req, res,
   })
 })
 
-router.post('/save-origin-barcode', (req, res, next) => {
+router.post('/save-origin-barcode', passport.authenticate('jwt', { session: false }), (req, res, next) => {
   req.body.barcode;
   const barcode = {
     barcode: req.body.barcode
@@ -125,20 +126,20 @@ router.post('/save-origin-barcode', (req, res, next) => {
   })
 })
 
-router.get('/getall-barcode', (req, res, next) => {
+router.get('/getall-barcode', passport.authenticate('jwt', { session: false }), (req, res, next) => {
   services.packageService.getAllOriginBarcode().then((result) => {
     res.send(result);
   })
 })
 
-router.post('/accept-package', (req, res, next) => {
+router.post('/accept-package', passport.authenticate('jwt', { session: false }), (req, res, next) => {
   var body = req.body;
   var username = req.headers.username;
   services.packageService.addPackageToShipment(body.packageIds, username).then((result) => {
     res.send(result);
   })
 })
-router.post("/consolidate-packages", (req, res, next) => {
+router.post("/consolidate-packages", passport.authenticate('jwt', { session: false }), (req, res, next) => {
   var pkgArray = JSON.parse(req.body.packages);
   var boxSize = req.body.boxSize;
   var username = req.headers.username;

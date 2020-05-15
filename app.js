@@ -5,7 +5,8 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var ejsmate = require('ejs-mate');
-var session = require('client-sessions');
+var helmet = require('helmet')
+var session = require('express-session');
 
 // Account
 var accountPasswordRouter = require('./routes/account/password');
@@ -54,6 +55,12 @@ var util = require('./routes/util');
 
 var app = express();
 
+// Use Helmet
+app.use(helmet())
+
+// Xss Filter
+app.use(helmet.xssFilter())
+
 // view engine setup
 global.appRoot = __dirname;
 global.uploadRoot = __dirname + '/public/uploads';
@@ -71,16 +78,23 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.set('trust proxy');
 app.use(session({
-  cookieName: 'session',
-  secret: 'Silver123.',
-  duration: 60 * 60 * 1000,
-  activeDuration: 60 * 60 * 1000
+  secret: 'secret',
+  resave: false,
+  saveUninitialized: false,
+  proxy: true,
+  secureProxy: true,
+  cookie: {
+    secure: (process.env.NODE_ENV === "development" ? false : true),
+    httpOnly: true,
+    maxAge: 5184000000 // 60 days
+  }
 }));
 app.use('/', adminIndexRouter, authRouter);
 app.use('/account', accountPasswordRouter, accountPrintRouter);
 app.use('/admin', adminUserRouter, adminCustRouter, adminLocaRouter);
-app.use('/warehouse', warehouse, warehouseAwbRouter, warehouseManifestRouter,warehouseServiceTypeRouter, warehouseShipperRouter, warehousePaidTypeRouter, warehouseAirlineRouter, warehouseContainerRouter, warehouseCarrierRouter, warehousePackageRouter, warehousePrinterRouter, warehouseDeliveryRouter, warehouseHazmatRouter);
+app.use('/warehouse', warehouse, warehouseAwbRouter, warehouseManifestRouter, warehouseServiceTypeRouter, warehouseShipperRouter, warehousePaidTypeRouter, warehouseAirlineRouter, warehouseContainerRouter, warehouseCarrierRouter, warehousePackageRouter, warehousePrinterRouter, warehouseDeliveryRouter, warehouseHazmatRouter);
 app.use('/fleet', fleetVehicleRouter, fleetDriverRouter, fleetPilotRouter, fleetPlaneRouter, fleetCompartmentRouter, fleetAirportsRouter);
 app.use('/store', storeRouter);
 app.use('/util', util);

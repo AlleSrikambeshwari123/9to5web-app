@@ -3,6 +3,10 @@ $(function () {
     theme: 'bootstrap',
     placeholder: 'Select a warehouse',
   })
+  $('#add-plane-form').find('#time').select2({
+    theme: 'bootstrap',
+    placeholder: 'Select a time',
+  })
   $('#add-plane-form').find('#pilotId').select2({
     theme: 'bootstrap',
     placeholder: 'Select a pilot',
