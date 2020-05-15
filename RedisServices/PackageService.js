@@ -3,8 +3,8 @@ var moment = require('moment');
 var fs = require('fs');
 var uniqId = require('uniqid');
 var strings = require('../Res/strings');
-var firebase = require('../Util/firebase'); 
-var _  = require("lodash")
+var firebase = require('../Util/firebase');
+var _ = require("lodash")
 
 var client = require('./dataContext').redisClient;
 var lredis = require('./redis-local');
@@ -87,7 +87,7 @@ class PackageService {
 
   //========== Dashboard Functions ==========//
   getPackageStatus() {
-    return new Promise(async(resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       let packages = await Package.find({})
       let obj = {
         received_fill: 0,
@@ -97,13 +97,13 @@ class PackageService {
         ready_pd: 0,
         delivered: 0,
       };
-      
+
       let result = await Promise.all(
-        packages.map(async(item) => {
-          let packagesStatus = await PackageStatus.find({packageId: item._id});
-          packagesStatus = packagesStatus[packagesStatus.length -1];
-          
-          obj["received_fill"] =  obj["received_fill"] + (packagesStatus.status == PKG_STATUS[1] ? 1 : 0) 
+        packages.map(async (item) => {
+          let packagesStatus = await PackageStatus.find({ packageId: item._id });
+          packagesStatus = packagesStatus[packagesStatus.length - 1];
+
+          obj["received_fill"] = obj["received_fill"] + (packagesStatus.status == PKG_STATUS[1] ? 1 : 0)
           obj["loaded_craft"] = obj["loaded_craft"] + (packagesStatus.status == PKG_STATUS[2] ? 1 : 0)
           obj["in_transit"] = obj["in_transit"] + (packagesStatus.status == PKG_STATUS[3] ? 1 : 0)
           obj["received_nas"] = obj["received_nas"] + (packagesStatus.status == PKG_STATUS[4] ? 1 : 0)
@@ -116,7 +116,7 @@ class PackageService {
       resolve(obj)
     })
   }
-  
+
   getPackage7daysStatus() {
     return new Promise((resolve, reject) => {
       const LAST_DAYS = 6;
@@ -138,19 +138,19 @@ class PackageService {
         };
       }
 
-      Package.find({createdAt: dateObj}, null, {sort: {createdAt: 1}}, async (err, packages) => {
+      Package.find({ createdAt: dateObj }, null, { sort: { createdAt: 1 } }, async (err, packages) => {
         if (err) {
           console.error('Error occuring while fetching the packages', err);
           resolve(final_obj);
         } else {
           const packageIds = packages.map((data) => data['_id']);
-          const packagesStatus = await PackageStatus.find({packageId: {'$in': packageIds}}).populate('packageId');
+          const packagesStatus = await PackageStatus.find({ packageId: { '$in': packageIds } }).populate('packageId');
           // key value pair by packageId
           const packageStatusDataById = {};
           packagesStatus.forEach((pkgData) => {
             if (!packageStatusDataById[pkgData['packageId']]) {
               packageStatusDataById[pkgData['packageId']] = [];
-            } 
+            }
             packageStatusDataById[pkgData['packageId']].push(pkgData);
           });
 
@@ -160,11 +160,11 @@ class PackageService {
             const date = moment(lastStatusData.packageId.createdAt).format('DD/MM');
 
             let obj = final_obj[date];
-            obj["received_fill"] =  obj["received_fill"] + (lastStatusData.status == PKG_STATUS[1] ? 1 : 0) 
+            obj["received_fill"] = obj["received_fill"] + (lastStatusData.status == PKG_STATUS[1] ? 1 : 0)
             obj["loaded_craft"] = obj["loaded_craft"] + (lastStatusData.status == PKG_STATUS[2] ? 1 : 0)
             obj["received_nas"] = obj["received_nas"] + (lastStatusData.status == PKG_STATUS[4] ? 1 : 0)
             obj["ready_pd"] = obj["ready_pd"] + (lastStatusData.status == PKG_STATUS[5] ? 1 : 0)
-            obj["delivered"] = obj["delivered"] + (lastStatusData.status == PKG_STATUS[6] ? 1 : 0) 
+            obj["delivered"] = obj["delivered"] + (lastStatusData.status == PKG_STATUS[6] ? 1 : 0)
           });
 
           return resolve(final_obj);
@@ -175,10 +175,10 @@ class PackageService {
 
   getAllPackages() {
     return new Promise((resolve, reject) => {
-      Package.find({},(err,result) =>{
-        if(err){
+      Package.find({}, (err, result) => {
+        if (err) {
           resolve([])
-        }else{
+        } else {
           resolve(result)
         }
       })
@@ -212,69 +212,69 @@ class PackageService {
   }
 
   getPackageWithFilter(filter, query) {
-    return new Promise(async(resolve, reject) => {
-      let nineToPackages = [], postBox =[] ,noDocs = [];
+    return new Promise(async (resolve, reject) => {
+      let nineToPackages = [], postBox = [], noDocs = [];
       if (filter === 'all') {
         let packages = await Package.find({}).populate("awbId").populate('customerId');
 
-        let result = await Promise.all( packages.map(async(pkg) => {
-          let statuses = await PackageStatus.find({packageId: pkg._id})  || [];
+        let result = await Promise.all(packages.map(async (pkg) => {
+          let statuses = await PackageStatus.find({ packageId: pkg._id }) || [];
           let packageStatus = statuses[statuses.length - 1];
-          
+
           if (pkg.awbId.invoices.length == 0) {
-            noDocs.push({_id: pkg.id, last_status: packageStatus.status, awb: pkg.awbId.id, customer_email: pkg.customerId.email})
+            noDocs.push({ _id: pkg.id, last_status: packageStatus.status, awb: pkg.awbId.id, customer_email: pkg.customerId.email })
           }
 
           if (pkg.customerId.pmb == "9000" && pkg.manifestId) {
-            nineToPackages.push({_id: pkg.id, last_status: packageStatus.status, awb: pkg.awbId._id, customer_email: pkg.customerId.email})
+            nineToPackages.push({ _id: pkg.id, last_status: packageStatus.status, awb: pkg.awbId._id, customer_email: pkg.customerId.email })
           }
 
-          if (pkg.customerId.pmb != "9000" && pkg.manifestId) { 
-            postBox.push({_id: pkg.id, last_status: packageStatus.status, awb: pkg.awbId._id, customer_email: pkg.customerId.email})
+          if (pkg.customerId.pmb != "9000" && pkg.manifestId) {
+            postBox.push({ _id: pkg.id, last_status: packageStatus.status, awb: pkg.awbId._id, customer_email: pkg.customerId.email })
           }
         }))
 
-        resolve({nineToPackages, postBox, noDocs});
+        resolve({ nineToPackages, postBox, noDocs });
 
       } else {
         let dbQuery = {};
-        
+
         if (query.filter_date && query.filter_date !== '') {
           dbQuery = {
             'createdAt': {
-              $lte: moment(query.filter_date, 'MM-DD-YYYY').endOf('day').toDate(), 
+              $lte: moment(query.filter_date, 'MM-DD-YYYY').endOf('day').toDate(),
               $gte: moment(query.filter_date, 'MM-DD-YYYY').startOf('day').toDate()
             }
           }
-        }   
-        
+        }
+
         const packages = await Package.find(dbQuery).populate("awbId").populate("customerId");
 
-        let result = await Promise.all( packages.map(async(pkg) => {
-          let statuses = await PackageStatus.find({packageId: pkg._id})  || [];
+        let result = await Promise.all(packages.map(async (pkg) => {
+          let statuses = await PackageStatus.find({ packageId: pkg._id }) || [];
           let packageStatus = statuses[statuses.length - 1];
-          
+
           if (pkg.awbId.invoices.length == 0 && query.filter_for === "noDocs" && (query.package_status === packageStatus.status || query.package_status === "all")) {
-            noDocs.push({_id: pkg.id, last_status: packageStatus.status, awb: pkg.awbId.id, customer_email: pkg.customerId.email})
+            noDocs.push({ _id: pkg.id, last_status: packageStatus.status, awb: pkg.awbId.id, customer_email: pkg.customerId.email })
           }
 
-          if (pkg.customerId.pmb == 9000 && pkg.manifestId && query.filter_for === "9to5" && (query.package_status === packageStatus.status || query.package_status === "all" )) {
-            nineToPackages.push({_id: pkg.id, last_status: packageStatus.status, awb: pkg.awbId._id, customer_email: pkg.customerId.email})
+          if (pkg.customerId.pmb == 9000 && pkg.manifestId && query.filter_for === "9to5" && (query.package_status === packageStatus.status || query.package_status === "all")) {
+            nineToPackages.push({ _id: pkg.id, last_status: packageStatus.status, awb: pkg.awbId._id, customer_email: pkg.customerId.email })
           }
 
-          if (pkg.customerId.pmb != 9000 && pkg.manifestId && query.filter_for === "postBox" &&  (query.package_status === packageStatus.status || query.package_status === "all" )) { 
-            postBox.push({_id: pkg.id, last_status: packageStatus.status, awb: pkg.awbId._id, customer_email: pkg.customerId.email})
+          if (pkg.customerId.pmb != 9000 && pkg.manifestId && query.filter_for === "postBox" && (query.package_status === packageStatus.status || query.package_status === "all")) {
+            postBox.push({ _id: pkg.id, last_status: packageStatus.status, awb: pkg.awbId._id, customer_email: pkg.customerId.email })
           }
         }))
 
         if (query.filter_for === "noDocs") {
           resolve({ noDocs })
-        } else if(query.filter_for === "9to5") {
+        } else if (query.filter_for === "9to5") {
           resolve({ nineToPackages })
-        } else if(query.filter_for === "postBox") {
+        } else if (query.filter_for === "postBox") {
           resolve({ postBox })
         }
-      }  
+      }
     })
   }
 
@@ -290,16 +290,29 @@ class PackageService {
   }
 
   addOriginBarcode(originBarcode) {
-    return new Promise((resolve, reject) => {
-      const barcode = new Barcode(originBarcode);
-      barcode.save((err, result) => {
-        if (err) {
-          return resolve({ success: false, message: strings.string_response_error });
+    return new Promise(async (resolve, reject) => {
+      await Barcode.findOne(originBarcode, (err, res) => {
+        if (res === null || res === undefined) {
+          const barcode = new Barcode(originBarcode);
+          barcode.save((err, result) => {
+            if (err) {
+              return resolve({
+                success: false,
+                message: strings.string_response_error,
+              });
+            } else {
+              resolve({
+                success: true,
+                message: strings.string_response_added,
+                originBarcode: result,
+              });
+            }
+          });
         } else {
-          resolve({ success: true, message: strings.string_response_added, originBarcode: originBarcode });
+          return resolve({ success: false, message: 'Barcode Already Added' });
         }
       });
-      
+
       // client.incr(ORIGIN_BARCODE_ID, (err, id) => {
       //   if (err) resolve({ success: false, message: strings.string_response_error });
       //   originBarcode.id = id;
@@ -308,12 +321,13 @@ class PackageService {
       //     resolve({ success: true, message: strings.string_response_added, originBarcode: originBarcode });
       //   })
       // })
-    })
+    });
   }
+
 
   removeOriginBarcode(id) {
     return new Promise((resolve, reject) => {
-      Barcode.deleteOne({_id: id}, (err, result) => {
+      Barcode.deleteOne({ _id: id }, (err, result) => {
         if (err) {
           resolve({ success: false, message: strings.string_response_error });
         } else {
@@ -328,7 +342,7 @@ class PackageService {
   }
   getOriginBarcode(id) {
     return new Promise((resolve, reject) => {
-      Barcode.findOne({_id: id}, (err, result) => {
+      Barcode.findOne({ _id: id }, (err, result) => {
         if (err) {
           resolve({});
         } else {
@@ -341,6 +355,19 @@ class PackageService {
       // })
     });
   }
+
+  getOriginalBarcodeByCode(barcode) {
+    return new Promise((resolve, reject) => {
+      Barcode.findOne({ barcode: barcode }, (err, result) => {
+        if (err) {
+          resolve({});
+        } else {
+          resolve(result);
+        }
+      });
+    })
+  }
+
   getAllOriginBarcode() {
     return new Promise((resolve, reject) => {
       Barcode.find({}, (err, barCodes) => {
@@ -380,7 +407,7 @@ class PackageService {
 
   getPackage(packageId) {
     return new Promise((resolve, reject) => {
-      Package.find({id:packageId}, (err, pkg) => {
+      Package.find({ id: packageId }, (err, pkg) => {
         if (err || pkg == null) resolve({});
         else resolve(pkg);
       });
@@ -413,7 +440,7 @@ class PackageService {
 
   getPackages_updated(awbId) {
     return new Promise((resolve, reject) => {
-      Package.find({awbId: awbId}, (err, result) => {
+      Package.find({ awbId: awbId }, (err, result) => {
         if (err) {
           resolve([]);
         } else {
@@ -426,9 +453,9 @@ class PackageService {
   // Only show 7 trackingNo on the list;
   getPackages(awbId) {
     return new Promise((resolve, reject) => {
-      Awb.find({_id:awbId},(err,response)=>{
-        if(err || response == null) resolve([])
-        else { resolve(response)}
+      Awb.find({ _id: awbId }, (err, response) => {
+        if (err || response == null) resolve([])
+        else { resolve(response) }
       })
       // client.smembers(PREFIX_PACKAGE_LIST + awbId, (err, ids) => {
       //   if (err) resolve([]);
@@ -523,8 +550,8 @@ class PackageService {
   }
 
   updatePackage_updated(id, pkg) {
-    return new Promise(async(resolve, reject) => {
-      Package.findOneAndUpdate({_id: id}, pkg, (err, result) => {
+    return new Promise(async (resolve, reject) => {
+      Package.findOneAndUpdate({ _id: id }, pkg, (err, result) => {
         if (err) {
           resolve({ success: false, message: strings.string_response_error });
         } else {
@@ -536,9 +563,9 @@ class PackageService {
 
   removePackages_updated(awbId) {
     return new Promise((resolve, reject) => {
-      Package.deleteMany({awbId: awbId}, (err, result) => {
+      Package.deleteMany({ awbId: awbId }, (err, result) => {
         if (err) {
-          resolve({success: false, message: strings.string_response_error});
+          resolve({ success: false, message: strings.string_response_error });
         } else {
           resolve(result);
         }
@@ -548,9 +575,9 @@ class PackageService {
 
   removePackage_updated(awbId) {
     return new Promise((resolve, reject) => {
-      Package.deleteMany({awbId: awbId}, (err, result) => {
+      Package.deleteMany({ awbId: awbId }, (err, result) => {
         if (err) {
-          resolve({success: false, message: strings.string_response_error});
+          resolve({ success: false, message: strings.string_response_error });
         } else {
           resolve(result);
         }
@@ -560,9 +587,9 @@ class PackageService {
 
   removePackage_updated(id) {
     return new Promise((resolve, reject) => {
-      Package.deleteOne({_id: id}, (err, result) => {
+      Package.deleteOne({ _id: id }, (err, result) => {
         if (err) {
-          resolve({success: false, message: strings.string_response_error});
+          resolve({ success: false, message: strings.string_response_error });
         } else {
           resolve(result);
         }
@@ -595,13 +622,13 @@ class PackageService {
   removePackagesStatusByPackageIds(packageIds) {
     return new Promise((resolve, reject) => {
       if (!(packageIds && packageIds.length)) {
-        return resolve({success: true});
+        return resolve({ success: true });
       }
-      PackageStatus.deleteMany({packageId: {$in: packageIds}}, (err, result) => {
+      PackageStatus.deleteMany({ packageId: { $in: packageIds } }, (err, result) => {
         if (err) {
-          resolve({success: false});
+          resolve({ success: false });
         } else {
-          resolve({success: true});
+          resolve({ success: true });
         }
       });
     });
@@ -693,7 +720,7 @@ class PackageService {
   }
 
   //========== Receive Packages From Truck that arrived at Airport ==========//
-  
+
   getShipmentId() {
     return new Promise((resolve, reject) => {
       resolve(SHIPMENT_ID)
@@ -706,24 +733,43 @@ class PackageService {
       // });
     });
   }
-  addPackageToShipment(barcodes, username) {
-    return new Promise((resolve, reject) => {
-      this.getShipmentId().then((shipmentId) => {
-        let packageIds = barcodes.split(',');
-        // client.sadd(LIST_PACKAGE_SHIPMENT + shipmentId, packageIds, (err, reply) =>{});
-        Promise.all(
-          packageIds.map((packageId) => {
-            return this.updatePackageStatus(packageId, 1, username);
-          }),
-        ).then((result) => {
-          resolve({
-            success: true,
-            message: strings.string_response_received,
-            shipmentId: shipmentId,
-          });
-        });
+  async addPackageToShipment(barcodes, username) {
+    try {
+      let packageIds = barcodes.split(',');
+      let errors = [];
+      let response = [];
+      return Promise.all(
+        packageIds.map(async (packageId) => {
+          let br = await Barcode.findOne({ barcode: packageId });
+          if (br !== null) {
+            let pkg = await Package.findOne({ originBarcode: br.id });
+            if (pkg !== null) {
+              response.push(await this.updatePackageStatus(pkg._id, 1, username));
+            } else {
+              errors.push({
+                success: false,
+                message: `No Package Found Associated with this Barcode ${packageId}`,
+              });
+            }
+          } else {
+            errors.push({
+              success: false,
+              message: `Barcode ${packageId} Not Found !`,
+            });
+          }
+        })
+      ).then((result) => {
+        if (errors.length > 0) return errors;
+        else return {
+          success: true,
+          message: strings.string_response_received,
+        };
       });
-    });
+
+    } catch (error) {
+      console.error('addPackaeToShipment', error);
+      return error;
+    }
   }
 
   //========== Load Packages to AirCraft (Add to Manifest) ==========//
@@ -731,7 +777,7 @@ class PackageService {
 
     return new Promise((resolve, reject) => {
       let packages = packageIds && packageIds.length && packageIds.split(',').filter(Boolean);
-      
+
       if (!packages || packages.length === 0) {
         return resolve({ success: false, message: 'Please select packages.' });
       }
@@ -753,15 +799,15 @@ class PackageService {
   }
   getPackageOnManifest(manifestId) {
     return new Promise((resolve, reject) => {
-      Package.find({manifestId: manifestId})
-      .populate('compartmentId')
-      .exec((err, packages) => {
-        if (err) {
-          resolve([]);
-        } else {
-          resolve(packages);
-        }
-      })
+      Package.find({ manifestId: manifestId })
+        .populate('compartmentId')
+        .exec((err, packages) => {
+          if (err) {
+            resolve([]);
+          } else {
+            resolve(packages);
+          }
+        })
     });
   }
 
@@ -769,14 +815,14 @@ class PackageService {
   getPackagesForStores() {
     return new Promise((resolve, reject) => {
       Package.find({})
-      .populate('customerId')
-      .exec((err, packages) => {
-        if (err) {
-          resolve([]);
-        } else {
-          resolve(packages);
-        }
-      })
+        .populate('customerId')
+        .exec((err, packages) => {
+          if (err) {
+            resolve([]);
+          } else {
+            resolve(packages);
+          }
+        })
     });
   }
 
@@ -869,7 +915,7 @@ class PackageService {
 
   getPackage_updated(packageId) {
     return new Promise((resolve, reject) => {
-      Package.findOne({_id: packageId}, (err, result) => {
+      Package.findOne({ _id: packageId }, (err, result) => {
         if (err) {
           resolve({});
         } else {
@@ -957,7 +1003,7 @@ class PackageService {
 
   getPackageStatuses_updated(packageId) {
     return new Promise((resolve, reject) => {
-      PackageStatus.find({packageId}, (err, result) => {
+      PackageStatus.find({ packageId }, (err, result) => {
         if (err) {
           resolve([]);
         } else {
@@ -999,35 +1045,35 @@ class PackageService {
   // }
   getCustomerPackages(customerId) {
     return new Promise((resolve, reject) => {
-      Package.find({customerId})
-      .exec((error, packages) => {
-        if(error) {
-          resolve({success: false})
-        } else {
-          resolve(packages);
-        }
-      })
+      Package.find({ customerId })
+        .exec((error, packages) => {
+          if (error) {
+            resolve({ success: false })
+          } else {
+            resolve(packages);
+          }
+        })
     });
   }
 
   getPackagesDataByDeliveryId(deliveryId) {
     return new Promise((resolve, reject) => {
-      Package.find({deliveryId})
-      .populate('shipperId')
-      .populate('carrierId')
-      .populate('customerId')
-      .exec((error, packages) => {
-        if (error) {
-          resolve({success: false})
-        } else {
-          packages.forEach((data) => {
-            data['shipper'] = data['shipperId'];
-            data['carrier'] = data['carrierId'];
-            data['customer'] = data['customerId'];
-          });
-          resolve(packages);
-        }
-      })
+      Package.find({ deliveryId })
+        .populate('shipperId')
+        .populate('carrierId')
+        .populate('customerId')
+        .exec((error, packages) => {
+          if (error) {
+            resolve({ success: false })
+          } else {
+            packages.forEach((data) => {
+              data['shipper'] = data['shipperId'];
+              data['carrier'] = data['carrierId'];
+              data['customer'] = data['customerId'];
+            });
+            resolve(packages);
+          }
+        })
     })
   }
 
@@ -1035,12 +1081,12 @@ class PackageService {
     return new Promise((resolve, reject) => {
       let query = {};
       if (deliveryIds && deliveryIds.length) {
-        query = {deliveryId: {'$in': deliveryIds }}
+        query = { deliveryId: { '$in': deliveryIds } }
       }
 
       Package.find(query, (error, packages) => {
         if (error) {
-          resolve({success: false})
+          resolve({ success: false })
         } else {
           resolve(packages);
         }
@@ -1126,20 +1172,20 @@ class PackageService {
     // });
     // Redis Integration
     return new Promise((resolve, reject) => {
-      Awb.find({invoices: {$eq: []}})
-      .populate('packages')
-      .select('packages')
-      .exec((err, awbData) => {
-        if (err) {
-          resolve([]);
-        } else {
-          let packages = [];
-          awbData.forEach((data) => {
-            packages = [...packages, ...data.packages];
-          })
-          resolve(packages);
-        }
-      })
+      Awb.find({ invoices: { $eq: [] } })
+        .populate('packages')
+        .select('packages')
+        .exec((err, awbData) => {
+          if (err) {
+            resolve([]);
+          } else {
+            let packages = [];
+            awbData.forEach((data) => {
+              packages = [...packages, ...data.packages];
+            })
+            resolve(packages);
+          }
+        })
     })
   }
   removePackageFromManifest(packageId, mid) {
@@ -1148,7 +1194,7 @@ class PackageService {
       var manifest = mid;
       var manifestKey = 'manifest:' + manifest + ':*';
 
-      lredis.del('packages:' + trackingNo).then(function(result) {
+      lredis.del('packages:' + trackingNo).then(function (result) {
         msearch.delDocument(PKG_IDX, `${mid}-${trackingNo}`);
         //we need to remove from the index and dec the counter
         lredis.client.decr('mcounter:' + mid);
@@ -1158,7 +1204,7 @@ class PackageService {
           var keysCount = 0;
 
           kResult.forEach((element) => {
-            lredis.srem(element, trackingNo).then(function(rResult) {
+            lredis.srem(element, trackingNo).then(function (rResult) {
               if (keysCount == kResult.length - 1) keysCount++;
             });
           });
@@ -1210,7 +1256,7 @@ class PackageService {
         {},
         (err, reply) => {
           if (err) console.log(err);
-          
+
           if (reply[1]) {
             var result = reply[1];
             var compartment = result[3];
@@ -1236,7 +1282,7 @@ class PackageService {
   // getPackage
   getPackage_updated(packageId) {
     return new Promise((resolve, reject) => {
-      Package.findOne({_id: packageId}, (err, result) => {
+      Package.findOne({ _id: packageId }, (err, result) => {
         if (err) {
           resolve({});
         } else {
@@ -1249,13 +1295,13 @@ class PackageService {
   // This method is used when we're performing the global search 
   getGlobalSearchData(bodyData) {
     return new Promise((resolve, reject) => {
-      let {selectedOption, inputField} = bodyData;
+      let { selectedOption, inputField } = bodyData;
       if (!selectedOption || selectedOption === 'default' || !(inputField && inputField.trim())) {
         return resolve({ success: false, message: strings.string_global_search_error });
       }
-      
+
       if (selectedOption === "Package") {
-        Package.find({description: {$regex: 'aWB package  post box', $options:'i' }}, 'id', (err, packages) => {
+        Package.find({ description: { $regex: 'aWB package  post box', $options: 'i' } }, 'id', (err, packages) => {
           if (err) {
             resolve([]);
           } else {
@@ -1263,10 +1309,10 @@ class PackageService {
           }
         })
       }
-  
+
       else if (selectedOption === "Awb") {
         inputField = inputField.trim().toLowerCase();
-        Awb.findOne({_id: inputField}, '_id', (err, awb) => {
+        Awb.findOne({ _id: inputField }, '_id', (err, awb) => {
           if (err) {
             resolve([]);
           } else {
@@ -1274,17 +1320,17 @@ class PackageService {
           }
         });
       }
-  
+
       else {
         inputField = inputField.trim();
-        Customer.find({email: {$regex: '^' + inputField + '$', $options:'i' }}, '_id', (err, customers) => {
+        Customer.find({ email: { $regex: '^' + inputField + '$', $options: 'i' } }, '_id', (err, customers) => {
           if (err) {
             resolve([]);
           } else {
             resolve(customers);
           }
         });
-      } 
+      }
     })
   }
 }

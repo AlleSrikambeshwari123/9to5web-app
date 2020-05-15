@@ -44,7 +44,7 @@ router.get('/get-package-detail/:trackingNo', async (req, res, next) => {
     console.log(error)
   }
   const myPackage = allService.filter((i) => i.trackingNo === trackingNo)
-  if(myPackage == '') res.send('Tracking No. Not Found')
+  if (myPackage == '') res.send('Tracking No. Not Found')
   const packageId = myPackage[0].id;
   const awbId = myPackage[0].awbId;
   Promise.all([
@@ -67,7 +67,10 @@ router.get('/get-package-detail-barcode/:barcode', async (req, res, next) => {
   } catch (error) {
     console.log(error)
   }
-  const myPackage = allService.filter((i) => i.originBarcode.toString() === barcode)
+  const barcodeId = await services.packageService.getOriginalBarcodeByCode(barcode);
+  console.log('sdfd', barcodeId);
+  if (barcodeId === null) return res.send({ status: 'barcode Not Found' })
+  const myPackage = allService.filter((i) => i.originBarcode.toString() === barcodeId.id)
   if (myPackage.length > 0) {
     const packageId = myPackage[0].id;
     const awbId = myPackage[0].awbId;
@@ -83,19 +86,19 @@ router.get('/get-package-detail-barcode/:barcode', async (req, res, next) => {
   } else {
     res.send({
       status: 'barcode not found'
-    })    
+    })
   }
 })
 
-router.get("/get_packages_status", middleware().checkSession, (req,res,next) => {
-  services.packageService.getPackageStatus().then((result)=> {
+router.get("/get_packages_status", middleware().checkSession, (req, res, next) => {
+  services.packageService.getPackageStatus().then((result) => {
     res.send(result)
   })
 })
 
 
-router.get("/get_packages_7days_status", middleware().checkSession, (req,res,next) => {
-  services.packageService.getPackage7daysStatus().then((result)=> {
+router.get("/get_packages_7days_status", middleware().checkSession, (req, res, next) => {
+  services.packageService.getPackage7daysStatus().then((result) => {
     res.send(result)
   })
 })
@@ -103,7 +106,7 @@ router.get("/get_packages_7days_status", middleware().checkSession, (req,res,nex
 
 router.get("/get_packages_filter/:filter", middleware().checkSession, (req, res, next) => {
   console.log('req.query', req.query);
-  services.packageService.getPackageWithFilter(req.params.filter, req.query).then((result)=>{
+  services.packageService.getPackageWithFilter(req.params.filter, req.query).then((result) => {
     res.send(result)
   })
 })
