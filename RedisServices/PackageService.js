@@ -540,10 +540,14 @@ class PackageService {
       newPackage.trackingNo = uniqId();
       // Here as per the frontend logic, we're getting the 
       // values like 43322211,398749844904894
-      newPackage.originBarcode = newPackage.originBarcode.split(',')[1];
+      const obarCode = newPackage.originBarcode.split(',');      
+      if(obarCode.length>1){
+        newPackage.originBarcode = newPackage.originBarcode.split(',')[1];
+       }      
       const newPackageData = new Package(newPackage);
       newPackageData.save((err, result) => {
         if (err) {
+          console.log(err);
           resolve({ success: false, message: strings.string_response_error });
         } else {
           this.updatePackageStatus(result['_id'], 1, newPackage.createdBy)
