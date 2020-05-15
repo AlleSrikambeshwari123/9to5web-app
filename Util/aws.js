@@ -2,16 +2,16 @@
 var fs = require('fs');
 var path = require('path');
 const aws = require('aws-sdk');
-var accessKeyId = 'GP7BVXDKARIP6RZDPOJA';
-var secretAccessKey = '3Z4gwjLptLFsUhhzWVh9mI2FfbdMG6/EXqdMpnNjyvY';
-const spacesEndpoint = new aws.Endpoint('sfo2.digitaloceanspaces.com');
+var accessKeyId = 'ZUCGQ6ERKLI7JHJULMA5';
+var secretAccessKey = 'gjNffDxIkWyB7ydmrH8MS5t1ZaUN9TGp/Zj2sNjyOqw';
+const spacesEndpoint = new aws.Endpoint('nyc3.digitaloceanspaces.com');
 const s3 = new aws.S3({
   accessKeyId: accessKeyId,
   secretAccessKey: secretAccessKey,
   endpoint: spacesEndpoint
 });
 
-const bucket = 'vela-space';
+const bucket = '9to5';
 const signedUrlExpireSeconds = 60 * 5;
 
 exports.uploadFile = (filePath, fileName) => {

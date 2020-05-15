@@ -19,32 +19,33 @@ let ObjectId = require('mongodb').ObjectID;
 class PlaneService {
   addPlane(plane) {
     return new Promise((resolve, reject) => {
-      let data = new Date()
+      let date = new Date()
+      plane.tailNumber = plane.tailNumber + ("0" + date.getDate(2)).slice(-2) +   ("0" + (date.getMonth() + 1)).slice(-2)+ (date.getFullYear().toString().substr(-2))+ "/"+ plane.time
       let newPlane = new Plane(plane);
       newPlane.save((err, result) => {
         if (err) {
-          resolve({ success: false, message: strings.string_response_error});
+          resolve({ success: false, message: strings.string_response_error });
         } else {
-          resolve({ success: true, message: strings.string_response_created});
+          resolve({ success: true, message: strings.string_response_created });
         }
       })
     })
   }
 
   updatePlane(id, plane) {
-    return new Promise(async(resolve, reject) => {
-      Plane.findOneAndUpdate({_id: id}, plane, (err, result) => {
+    return new Promise(async (resolve, reject) => {
+      Plane.findOneAndUpdate({ _id: id }, plane, (err, result) => {
         if (err) {
-          resolve({ success: false, message: strings.string_response_error});
+          resolve({ success: false, message: strings.string_response_error });
         } else {
-          resolve({ success: true, message: strings.string_response_updated});
+          resolve({ success: true, message: strings.string_response_updated });
         }
       })
     })
   }
   removePlane(planeId) {
-     return new Promise((resolve, reject) => {
-      Plane.deleteOne({_id: planeId}, (err, result) => {
+    return new Promise((resolve, reject) => {
+      Plane.deleteOne({ _id: planeId }, (err, result) => {
         if (err) {
           resolve({ success: false, message: strings.string_response_error });
         } else {
@@ -55,7 +56,7 @@ class PlaneService {
   }
   getPlane(id) {
     return new Promise((resolve, reject) => {
-      Plane.findOne({_id: id}).exec((err, result) => {
+      Plane.findOne({ _id: id }).exec((err, result) => {
         if (err) {
           resolve({ success: false, message: strings.string_response_error });
         } else {
@@ -65,7 +66,7 @@ class PlaneService {
     });
   }
   getPlanes() {
-    return new Promise(async(resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       let planes = await Plane.find({})
       resolve(planes)
     })
@@ -88,28 +89,28 @@ class PlaneService {
       let newCompartment = new Compartment(compartment);
       newCompartment.save((err, result) => {
         if (err) {
-          resolve({ success: false, message: strings.string_response_error});
+          resolve({ success: false, message: strings.string_response_error });
         } else {
-           // Updating the maximum capacity of plane
+          // Updating the maximum capacity of plane
           this.getPlane(planeId).then(plane => {
             plane.maximumCapacity += newCompartment.weight;
             this.updatePlane(planeId, plane);
           });
-          resolve({ success: true, message: strings.string_response_created});
+          resolve({ success: true, message: strings.string_response_created });
         }
       })
     })
   }
-  
+
   getCompartments(planeId) {
-    return new Promise(async(resolve, reject) => {
-      let compartments = await Compartment.find({planeId: ObjectId(planeId)})
+    return new Promise(async (resolve, reject) => {
+      let compartments = await Compartment.find({ planeId: ObjectId(planeId) })
       resolve(compartments)
     });
   }
   getCompartment(compartmentId) {
     return new Promise((resolve, reject) => {
-      Compartment.findOne({_id: compartmentId}).exec((err, result) => {
+      Compartment.findOne({ _id: compartmentId }).exec((err, result) => {
         if (err) {
           resolve({});
         } else {
@@ -124,7 +125,7 @@ class PlaneService {
       this.getCompartment(cid).then(compartment => {
         weightCapacityReduced = compartment.weight;
       })
-      Compartment.deleteOne({_id: cid}, (err, result) => {
+      Compartment.deleteOne({ _id: cid }, (err, result) => {
         if (err) {
           resolve({ success: false, message: strings.string_response_error });
         } else {

@@ -200,7 +200,7 @@ class PackageService {
 
   getPackageByTrackingId(trackingNo) {
     return new Promise((resolve, reject) => {
-      Package.find({trackingNo}, (err, result) => {
+      Package.find({ trackingNo }, (err, result) => {
         if (err) {
           resolve({});
         } else {
