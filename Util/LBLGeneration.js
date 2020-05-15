@@ -118,7 +118,7 @@ class LBLGeneration {
       if (this.awb.hazmat && this.awb.hazmat.description) {
         notes = this.awb.hazmat.description;
       }
-      this.generateBarcode(this.awb.customer.pmb + "-" + this.awb.id.toString() + "-" + pkg.id).then(png => {
+      this.generateBarcode(pkg.trackingNo).then(png => {
         try {
           var docDefinition = {
             pageSize: {
@@ -136,7 +136,7 @@ class LBLGeneration {
                     [{
                       margin: [1, 5], stack: [
                         { image: company.logo, width: 70, alignment: 'center' }, { text: '' },
-                        { margin: [5, 6], qr: this.awb.customer.pmb + "-" + this.awb.id + "-" + pkg.id, fit: '60', alignment: 'center' }
+                        { margin: [5, 6], qr: pkg.trackingNo, fit: '60', alignment: 'center' }
                       ],
                       border: [false, false, false, true]
                     },

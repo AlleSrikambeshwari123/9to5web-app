@@ -159,7 +159,7 @@ class CustomerService {
   }
   saveProfile(body) {
     return new Promise(async (resolve, reject) => {
-      const customer = await this.getCustomerWithEmail(email);
+      const customer = await this.getCustomerWithEmail(body.email);
       if (!(customer && customer['_id'])) {
         resolve({ authenticated: false, message: strings.string_not_found_customer });
       } else {
