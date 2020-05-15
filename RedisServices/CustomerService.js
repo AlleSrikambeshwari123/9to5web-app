@@ -143,6 +143,7 @@ class CustomerService {
         if (err || !result) {
           resolve({});
         } else {
+          delete result._doc.password
           resolve(result);
         }
       });

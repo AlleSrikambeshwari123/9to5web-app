@@ -11,7 +11,6 @@ let options = {
 }
 
 passport.use(new JwtStrategy(options, function (payload, done) {
-  console.log(payload)
   var bytes = cryptojs.AES.decrypt(payload.token, strings.user_auth_key);
   var tokenData = JSON.parse(bytes.toString(cryptojs.enc.Utf8));
   services.userService.getUser(tokenData.username).then(user => {

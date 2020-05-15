@@ -124,7 +124,7 @@ class AwbService {
         } else {
           resolve(result);
         }
-      }).populate('customerId', 'fcmToken')
+      }).populate('customerId')
     });
   }
 
@@ -221,6 +221,13 @@ class AwbService {
         })
     })
   }
+  renameKey = (obj, key, newKey) => {
+    const awb = Object.assign({}, obj);
+    const customer = awb._doc[key];
+    delete awb._doc[key];
+    awb._doc[newKey] = customer;
+    return awb._doc;
+  };
 
   getFullAwb(id) {
     return new Promise((resolve, reject) => {
@@ -249,14 +256,12 @@ class AwbService {
           this.services.hazmatService.getHazmat(awb.hazmat),
         ]).then(otherInfos => {
           awb.packages = packages;
-          awb.customer = otherInfos[0];
-          delete awb.customer.password;
-          delete awb.customer.confirmPassword;
+          awb.customerId = otherInfos[0];
+          delete awb.customerId.password;
           awb.shipper = otherInfos[1];
           awb.carrier = otherInfos[2];
           awb.hazmat = otherInfos[3];
-
-          resolve(awb);
+          resolve(this.renameKey(awb, 'customerId', 'customer'));
         })
       });
     });
