@@ -14,11 +14,11 @@ const driverSchema = new mongoose.Schema({
   },  
   mobile: {
     type: Number,
-    required: true
+    //required: true
   },
   email: {
     type: String,
-    required: true
+    //required: true
   },
   location: {
     type: String,
