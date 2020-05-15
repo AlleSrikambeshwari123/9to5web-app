@@ -35,28 +35,32 @@ router.get('/new-shipment-id', (req, res, next) => {
 })
 router.get('/get-package-detail/:trackingNo', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
   let trackingNo = req.params.trackingNo;
-  // let ids = trackingNo.split('-');
-  // let packageId = ids[2];
-  // let awbId = ids[1];
-  let allService;
-  try {
-    allService = await services.packageService.getAllPackages();
-  } catch (error) {
-    console.log(error)
-  }
-  const myPackage = allService.filter((i) => i.trackingNo === trackingNo)
-  if (myPackage == '') res.send('Tracking No. Not Found')
-  const packageId = myPackage[0].id;
-  const awbId = myPackage[0].awbId;
-  Promise.all([
-    services.packageService.getPackage(packageId),
-    services.awbService.getFullAwb(awbId),
-  ]).then(results => {
-    res.send({
-      packageInfo: results[0],
-      awb: results[1],
-    })
-  })
+  // // let ids = trackingNo.split('-');
+  // // let packageId = ids[2];
+  // // let awbId = ids[1];
+  // let allService;
+  // try {
+  //   allService = await services.packageService.getAllPackages();
+  // } catch (error) {
+  //   console.log(error)
+  // }
+  // const myPackage = allService.filter((i) => i.trackingNo === trackingNo)
+  // if (myPackage == '') res.send('Tracking No. Not Found')
+  // const packageId = myPackage[0].id;
+  // const awbId = myPackage[0].awbId;
+  // Promise.all([
+  //   services.packageService.getPackage(packageId),
+  //   services.awbService.getFullAwb(awbId),
+  // ]).then(results => {
+  //   res.send({
+  //     packageInfo: results[0],
+  //     awb: results[1],
+  //   })
+  // })
+  services.packageService.getPackageByTrackingId(trackingNo)
+  .then( result => {
+    res.send(result);
+  });
 })
 
 router.get('/get-package-detail-barcode/:barcode', passport.authenticate('jwt', { session: false }), async (req, res, next) => {

@@ -198,6 +198,17 @@ class PackageService {
     });
   }
 
+  getPackageByTrackingId(trackingNo) {
+    return new Promise((resolve, reject) => {
+      Package.find({trackingNo}, (err, result) => {
+        if (err) {
+          resolve({});
+        } else {
+          resolve(result);
+        }
+      })
+    })
+  }
   //========== Dashboard Functions ==========//
   getAllPackages_updated() {
     return new Promise((resolve, reject) => {
