@@ -46,9 +46,9 @@ class UserService {
           if (err || !isPasswordMatch) {
             return resolve({ user: null, token: "", authenticated: false });
           } else {
+            delete user._doc.password;
             utils.generateToken(user)
             .then((token) => {
-              delete user.password;
               let isUserEnabled = true;
               if (!user.enabled) {
                 isUserEnabled = false;

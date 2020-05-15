@@ -359,8 +359,8 @@ class PackageService {
   getOriginalBarcodeByCode(barcode) {
     return new Promise((resolve, reject) => {
       Barcode.findOne({ barcode: barcode }, (err, result) => {
-        if (err) {
-          resolve({});
+        if (err || result === null) {
+          resolve([]);
         } else {
           resolve(result);
         }
@@ -733,39 +733,20 @@ class PackageService {
       // });
     });
   }
-  async addPackageToShipment(barcodes, username) {
+  async addPackageToShipment(packages, username) {
     try {
-      let packageIds = barcodes.split(',');
-      let errors = [];
-      let response = [];
+      let packageIds = packages.split(',');
       return Promise.all(
         packageIds.map(async (packageId) => {
-          let br = await Barcode.findOne({ barcode: packageId });
-          if (br !== null) {
-            let pkg = await Package.findOne({ originBarcode: br.id });
-            if (pkg !== null) {
-              response.push(await this.updatePackageStatus(pkg._id, 1, username));
-            } else {
-              errors.push({
-                success: false,
-                message: `No Package Found Associated with this Barcode ${packageId}`,
-              });
-            }
-          } else {
-            errors.push({
-              success: false,
-              message: `Barcode ${packageId} Not Found !`,
-            });
-          }
+          return await this.updatePackageStatus(packageId, 1, username);
         })
       ).then((result) => {
-        if (errors.length > 0) return errors;
-        else return {
+        console.log(result)
+        return {
           success: true,
           message: strings.string_response_received,
         };
       });
-
     } catch (error) {
       console.error('addPackaeToShipment', error);
       return error;
@@ -947,10 +928,11 @@ class PackageService {
           this.getPackage_updated(packageId).then((pkg) => {
             this.services.awbService.getAwb(pkg.awbId).then((awb) => {
               firebase.sendNotification(
-                awb.customer,
+                awb.customerId,
                 'Package Status Updated',
                 'Package-' + pkg.trackingNo + ' Updated',
               );
+
             });
           });
           resolve({ success: true, message: strings.string_response_updated });
