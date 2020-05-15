@@ -9,6 +9,10 @@ Number.prototype.formatMoney = function (c, d, t) {
   return "$" + s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
 };
 
+function closeAddPackage(){  
+  $('.mfp-close').trigger("click");
+}
+
 AWBInvoices.addInvoceRow();
 $(function () {  
   $('#location').select2({
@@ -342,6 +346,31 @@ $(function () {
           if (response.success) {
             var customer = response.customer;
             $('#customerId').append(`<option value="${customer._id}">${customer.pmb} / ${customer.firstName} ${customer.lastName}</option>`)
+          }
+        })
+      }
+    })
+  })
+
+  $('#add-barcode-form').submit(function (event) {
+    $(".close-del").trigger('click');
+    event.preventDefault();
+    var data = extractFormData(this);
+    $.ajax({
+      url: '/warehouse/fll/awb/create-barcode',
+      type: 'post',
+      data: data,
+      success: function (response) {
+        swal({
+          title: response.success == true ? 'Created' : 'Failed',
+          text: response.message,
+          type: response.success == true ? 'success' : 'error',
+        }).then(() => {
+          if (response.success) {
+            $("#link-add-package-popup").trigger('click');
+            var barCode = response.data;
+            console.log(barCode);
+            $('#originBarcode').append(`<option value="${barCode.barcode},${barCode._id}">${barCode.barcode}</option>`)
           }
         })
       }

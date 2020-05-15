@@ -11,6 +11,7 @@ const AWB_ID = strings.redis_id_awb;
 const PREFIX_NO_DOCS_LIST = strings.redis_prefix_no_docs_list;
 
 const Awb = require('../models/awb');
+const Barcode = require('../models/barcode');
 const PurchaseOrder = require('../models/purchaseOrder');
 
 const DELIVERY_METHODS = {
@@ -322,6 +323,20 @@ class AwbService {
         }
       });
     });
+  }
+
+  addBarcode(detail){
+    console.log(detail)
+    return new Promise((resolve, reject) => {
+      const newBarcode = new Barcode({barcode: detail.barcode});
+      newBarcode.save((err, result) => {
+          if (err) {
+            resolve({success: false, message: strings.string_response_error});
+          } else {
+            resolve({success: true, data: result});
+          }
+      });
+    })  
   }
 }
 

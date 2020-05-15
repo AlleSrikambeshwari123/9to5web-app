@@ -334,6 +334,11 @@ exports.nas_no_docs = (req, res, next) => {
   })
 };
 
+exports.add_bar_code = async (req, res, next)=>{
+  const result = await services.awbService.addBarcode(req.body);
+  res.send(result);
+}
+
 // function getFullAwb(awbs) {
 //   return new Promise((resolve, reject) => {
 //     Promise.all(awbs.map(awb => {
