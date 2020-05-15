@@ -16,6 +16,10 @@ const planeSchema = new mongoose.Schema({
   tailNumber: {
     type: String,
     required: true
+  },
+  flightName:{
+    type: String,
+    required: true
   },  
   aircraftType: {
     type: String,
