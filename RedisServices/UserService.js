@@ -60,7 +60,7 @@ class UserService {
                 authenticated: true 
               });
             })
-            .catch(() => {
+            .catch((err) => {
               resolve({ user: null, token: "", authenticated: false });
             })
           }
