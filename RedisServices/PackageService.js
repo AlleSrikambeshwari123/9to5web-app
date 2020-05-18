@@ -200,11 +200,24 @@ class PackageService {
 
   getPackageByTrackingId(trackingNo) {
     return new Promise((resolve, reject) => {
-      Package.find({ trackingNo }, (err, result) => {
+      Package.find({ trackingNo })
+      .populate(['customerId','shipperId','carrierId','awbId','hazmatId','createdBy','manifestId','compartmentId','deliveryId'])
+      .exec((err, result) => {
         if (err) {
           resolve({});
         } else {
-          resolve(result);
+          if (result[0] && result[0].id) {
+            let pkg = result[0] 
+            resolve({
+              success: true,
+              package : pkg
+            });
+          } else {
+            resolve({
+              success : false,
+              message : strings.string_not_found_package
+            })
+          }
         }
       })
     })
