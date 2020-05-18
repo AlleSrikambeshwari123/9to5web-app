@@ -166,6 +166,23 @@ class PlaneService {
       })
     });
   }
+  async getFlieghtName(trailNumber){
+    let now = new Date();
+    let year = "" + now.getFullYear();
+        year = year.toString().substr(-2);
+    let month = "" + (now.getMonth() + 1); if (month.length == 1) { month = "0" + month; }
+    let day = "" + now.getDate(); if (day.length == 1) { day = "0" + day; }
+    let hour = "" + now.getHours(); if (hour.length == 1) { hour = "0" + hour; }
+    let minute = "" + now.getMinutes(); if (minute.length == 1) { minute = "0" + minute; }
+    var h = "1A";
+    if(parseInt(hour)>12){
+      h ="2A";
+    }
+    if(parseInt(hour)==12 && parseInt(minute)>0){
+      h ="2A";
+    }    
+    return month + day +  year + "-" + h ;    
+  }
 }
 
 //========== DB Structure / Plane ==========//

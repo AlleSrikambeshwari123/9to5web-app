@@ -22,7 +22,7 @@ exports.get_plane_list = (req, res, next) => {
   });
 }
 
-exports.create_plane = async (req, res, next) => {
+exports.create_plane = async (req, res, next) => {  
   let airlines = await services.airlineService.getAllAirlines().catch(() => [])
   res.render('pages/fleet/plane/create', {
     page: req.originalUrl,
@@ -32,7 +32,9 @@ exports.create_plane = async (req, res, next) => {
   })
 }
 
-exports.add_new_plane = (req, res, next) => {
+exports.add_new_plane = async (req, res, next) => {
+  const flightName = await services.planeService.getFlieghtName(req.body.tailNumber);
+  req.body.flightName = req.body.tailNumber+flightName;
   services.planeService.addPlane(req.body).then(result => {
     res.send(result);
   })
@@ -62,7 +64,7 @@ exports.get_plane_detail = (req, res, next) => {
   })
 }
 
-exports.update_plane = (req, res, next) => {
+exports.update_plane = (req, res, next) => { 
   services.planeService.updatePlane(req.params.id, req.body).then(result => {
     res.send(result);
   })
