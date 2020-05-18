@@ -88,7 +88,7 @@ app.use(session({
   proxy: true,
   secureProxy: true,
   cookie: {
-    secure: (process.env.NODE_ENV === "development" ? false : true),
+    secure: (process.env.NODE_ENV === "development" ? false : false),
     httpOnly: true,
     sameSite:'strict',
     expires: sessionExpireDuration,
