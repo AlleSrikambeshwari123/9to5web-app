@@ -97,7 +97,7 @@ app.use(session({
 
 app.use(function (req, res, next) {
   if (req.headers.cookie && !req.session.token) {
-    res.clearCookie('usr_token');
+    res.clearCookie('session');
   }
   next();
 });
