@@ -37,8 +37,7 @@ class UserService {
   }
   authenticate(username, password) {
     return new Promise(async (resolve, reject) => {
-      const user = await this.getUserByEmail(username);
-      
+      const user = await this.getUserByEmail(username);      
       if (!(user && user['_id'])) {
         return resolve({ authenticated: false, token: "", user: null });
       } else {
