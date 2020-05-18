@@ -54,6 +54,7 @@ var warehouse = require('./routes/warehouse');
 var util = require('./routes/util');
 
 var app = express();
+app.set('trust proxy');
 
 // Use Helmet
 app.use(helmet())
@@ -78,19 +79,30 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.set('trust proxy');
+let sessionExpireDuration = 15 * 60 * 1000; // 15 min
 app.use(session({
+  key:'usr_token',
   secret: 'secret',
-  resave: false,
-  saveUninitialized: false,
+  resave: true,
+  saveUninitialized: true,
   proxy: true,
   secureProxy: true,
   cookie: {
     secure: (process.env.NODE_ENV === "development" ? false : true),
     httpOnly: true,
-    maxAge: 5184000000 // 60 days
+    sameSite:'strict',
+    expires: sessionExpireDuration,
   }
 }));
+
+app.use(function (req, res, next) {
+  if (req.headers.cookie && !req.session.token) {
+    res.clearCookie('usr_token');
+  }
+  next();
+});
+
+
 app.use('/', adminIndexRouter, authRouter);
 app.use('/account', accountPasswordRouter, accountPrintRouter);
 app.use('/admin', adminUserRouter, adminCustRouter, adminLocaRouter);
@@ -109,6 +121,7 @@ app.use(function (req, res, next) {
   err.status = 404;
   next(err);
 });
+
 
 // error handler
 app.use(function (err, req, res, next) {
