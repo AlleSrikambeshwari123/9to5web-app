@@ -13,7 +13,6 @@ $(function() {
       success: function(res) {
         console.log(res);
        if (res.success) {
-         console.log('resUrl',res.url)
           window.location.href = res.url;
         } else if (!res.authenticated) {
           // displaying error message when credentials is wrong.

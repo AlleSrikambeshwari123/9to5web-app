@@ -4,7 +4,6 @@ var middleware = require('../middleware');
 var services = require('../RedisServices/RedisDataServices');
 
 router.get('/', function (req, res, next) {
-  console.log('req.sessions',req.session)
   if (req.session.token)
     res.redirect('/dashboard');
   else
