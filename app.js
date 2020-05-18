@@ -6,7 +6,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var ejsmate = require('ejs-mate');
 var helmet = require('helmet')
-var session = require('express-session');
+var session = require('cookie-session');
 
 // Account
 var accountPasswordRouter = require('./routes/account/password');
@@ -83,14 +83,15 @@ let sessionExpireDuration = 15 * 60 * 1000; // 15 min
 app.use(session({
   key:'usr_token',
   secret: 'secret',
-  resave: true,
-  saveUninitialized: true,
-  proxy: true,
-  secureProxy: true,
+  // resave: true,
+  // saveUninitialized: true,
+  // proxy: true,
+  // secureProxy: true,
   cookie: {
-    secure: (process.env.NODE_ENV === "development" ? false : false),
+    secure: (process.env.NODE_ENV === "development" ? true : true),
     httpOnly: true,
     sameSite:'strict',
+    path:'/',
     expires: sessionExpireDuration,
   }
 }));
