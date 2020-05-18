@@ -104,7 +104,7 @@ app.use(session({
     path: '/', 
     ephemeral: false, 
     httpOnly: true, 
-    secure: false 
+    secure: (process.env.NODE_ENV === "development" ? true : true),
   }
 }));
 
