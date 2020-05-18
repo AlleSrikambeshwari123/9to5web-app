@@ -54,14 +54,7 @@ router.post('/pwd-reset', function (req, res, next) {
 
 router.get('/get-packages/:id', (req, res, next) => {
   services.packageService.getCustomerPackages(req.params.id).then(packages => {
-    Promise.all(packages.map(pkg => {
-      return services.packageService.getPackageStatuses(pkg.id);
-    })).then(stats => {
-      packages.forEach((pkg, i) => {
-        pkg.status = stats[i];
-      });
-      res.send({ packages: packages });
-    })
+    res.send(packages);
   })
 });
 

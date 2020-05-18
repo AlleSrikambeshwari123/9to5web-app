@@ -794,7 +794,7 @@ class PackageService {
       Promise.all(
         packages.map((packageId) => {
           return Promise.all([
-            this.updatePackageStatus(packageId, 2, userId),
+            // this.updatePackageStatus(packageId, 2, userId),
             this.updatePackage_updated(packageId, {
               manifestId: manifestId,
               compartmentId: compartmentId,
@@ -1038,7 +1038,6 @@ class PackageService {
     });
   }
 
-  //========== Customer Package ==========//
   // getCustomerPackages(id) {
   //   return new Promise((resolve, reject) => {
   //     lredis.search(PREFIX, [{ field: 'customerId', value: id }]).then((packages) => {
@@ -1053,14 +1052,32 @@ class PackageService {
   //     });
   //   });
   // }
+
+  //========== Customer Package ==========//
   getCustomerPackages(customerId) {
     return new Promise((resolve, reject) => {
       Package.find({ customerId })
         .exec((error, packages) => {
-          if (error) {
-            resolve({ success: false })
+          if (error || packages.length == 0) {
+            resolve({ 
+              success: false,
+              message : strings.string_package_not_found_customer
+            })
           } else {
-            resolve(packages);
+            Promise.all(
+              packages.map((pkg) => {
+                return this.getPackageLastStatus_updated(pkg._id);
+              })
+            ).then((stats) => {
+              let pkgs = [];
+              stats.forEach((status, i) => {
+                packages[i].lastStatusText = status.status;
+              });
+              resolve({
+                success : true, 
+                packages : packages
+              });
+            });
           }
         })
     });

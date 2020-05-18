@@ -121,6 +121,7 @@ exports.string_not_found_pilot = "Sorry, we can't find this pilot.";
 exports.string_not_found_plane = "Sorry, we can't find this plane.";
 exports.string_not_found_hazmat = "Sorry, we can't find this HAZMAT Class.";
 exports.string_not_found_package = "Sorry, we can't find this package with given tracking number.";
+exports.string_package_not_found_customer = "Sorry, we can't find packages of this customerId";
 exports.string_not_found_service_charge = "Sorry, we can't find this service charge.";
 exports.string_user_exist = "Sorry, same username already exist.";
 exports.string_password_incorrect = "Incorrect Password.";
