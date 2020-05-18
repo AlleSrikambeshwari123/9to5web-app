@@ -102,6 +102,7 @@ $(function () {
 
   var packageTable = $('#packageTable').DataTable({
     pageLength: 5,
+    order: [],
     bSortable: false,
     bLengthChange: false,
     bFilter: false,
