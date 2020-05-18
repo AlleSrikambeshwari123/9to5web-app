@@ -102,12 +102,12 @@ app.use(session({
   activeDuration: 60 * 60 * 1000
 }));
 
-app.use(function (req, res, next) {
-  if (req.headers.cookie && !req.session.token) {
-    res.clearCookie('usr_token');
-  }
-  next();
-});
+// app.use(function (req, res, next) {
+//   if (req.headers.cookie && !req.session.token) {
+//     res.clearCookie('usr_token');
+//   }
+//   next();
+// });
 
 
 app.use('/', adminIndexRouter, authRouter);
