@@ -1,11 +1,11 @@
 const Promise = require('bluebird');
-var moment = require("moment");
+var moment = require('moment');
 var strings = require('../Res/strings');
 
-var lredis = require("./redis-local");
+var lredis = require('./redis-local');
 var client = require('./dataContext').redisClient;
 
-const INIT_AWB_ID = strings.redis_id_awb_init
+const INIT_AWB_ID = strings.redis_id_awb_init;
 const PREFIX = strings.redis_prefix_awb;
 const AWB_ID = strings.redis_id_awb;
 const PREFIX_NO_DOCS_LIST = strings.redis_prefix_no_docs_list;
@@ -40,15 +40,15 @@ class AwbService {
         if (Number(exist) != 1) {
           client.set(AWB_ID, INIT_AWB_ID, (err, result) => {
             client.incr(AWB_ID, (err, newId) => {
-              resolve({ awb: newId })
-            })
-          })
+              resolve({ awb: newId });
+            });
+          });
         } else {
           client.incr(AWB_ID, (err, newId) => {
-            resolve({ awb: newId })
-          })
+            resolve({ awb: newId });
+          });
         }
-      })
+      });
     });
   }
 
@@ -57,7 +57,7 @@ class AwbService {
       if (awb.hasOwnProperty && awb.hasOwnProperty('hazmat') && !awb['hazmat']) {
         delete awb.hazmat;
       }
-      awb.awbId = 'AWB' + (Math.floor(100000 + Math.random() * 900000))
+      awb.awbId = 'AWB' + Math.floor(100000 + Math.random() * 900000);
       const newAwb = new Awb(awb);
       newAwb.save((err, result) => {
         if (err) {
@@ -93,7 +93,7 @@ class AwbService {
         } else {
           resolve({ success: true });
         }
-      })
+      });
     });
   }
 
@@ -125,7 +125,7 @@ class AwbService {
         } else {
           resolve(result);
         }
-      }).populate('customerId')
+      }).populate('customerId');
     });
   }
 
@@ -133,12 +133,14 @@ class AwbService {
     return new Promise((resolve, reject) => {
       client.keys(PREFIX + '*', (err, keys) => {
         if (err) resolve([]);
-        Promise.all(keys.map(key => {
-          return lredis.hgetall(key);
-        })).then(awbs => {
+        Promise.all(
+          keys.map((key) => {
+            return lredis.hgetall(key);
+          })
+        ).then((awbs) => {
           resolve(awbs);
-        })
-      })
+        });
+      });
     });
   }
 
@@ -178,22 +180,21 @@ class AwbService {
   }
 
   async getAwbsNoDocsIds() {
-    const ids = await Promise.fromCallback(cb => client.smembers(PREFIX_NO_DOCS_LIST, cb));
+    const ids = await Promise.fromCallback((cb) => client.smembers(PREFIX_NO_DOCS_LIST, cb));
     return ids;
   }
 
   async getInManifestNoInvoiceIds() {
     return new Promise((resolve, reject) => {
-      Awb.find({ invoices: { $eq: [] } }, '_id')
-        .exec((err, awbData) => {
-          if (err) {
-            resolve([]);
-          } else {
-            awbData = awbData.map((data) => data['_id'].toString());
-            resolve(awbData);
-          }
-        })
-    })
+      Awb.find({ invoices: { $eq: [] } }, '_id').exec((err, awbData) => {
+        if (err) {
+          resolve([]);
+        } else {
+          awbData = awbData.map((data) => data['_id'].toString());
+          resolve(awbData);
+        }
+      });
+    });
   }
 
   async getAwbsNoDocs() {
@@ -212,23 +213,24 @@ class AwbService {
               data['customer'] = data['customerId'];
               if (data['packages'] && data['packages'].length) {
                 let weight = 0;
-                data.packages.forEach(pkg => weight += Number(pkg.weight));
+                data.packages.forEach((pkg) => (weight += Number(pkg.weight)));
                 data['weight'] = weight;
               }
-              data['dateCreated'] = moment(data['createdAt']).format("MMM DD, YYYY");
-            })
+              data['dateCreated'] = moment(data['createdAt']).format('MMM DD, YYYY');
+            });
             resolve(awbData);
           }
-        })
-    })
+        });
+    });
   }
-  renameKey = (obj, key, newKey) => {
+
+  renameKey(obj, key, newKey) {
     const awb = Object.assign({}, obj);
     const customer = awb._doc[key];
     delete awb._doc[key];
     awb._doc[newKey] = customer;
     return awb._doc;
-  };
+  }
 
   getFullAwb(id) {
     return new Promise((resolve, reject) => {
@@ -244,10 +246,7 @@ class AwbService {
       //   resolve(result);
       // });
 
-      Promise.all([
-        this.getAwb(id),
-        this.services.packageService.getPackages(id),
-      ]).then(results => {
+      Promise.all([this.getAwb(id), this.services.packageService.getPackages(id)]).then((results) => {
         let awb = results[0];
         let packages = results[1];
         Promise.all([
@@ -255,7 +254,7 @@ class AwbService {
           this.services.shipperService.getShipper(awb.shipper),
           this.services.carrierService.getCarrier(awb.carrier),
           this.services.hazmatService.getHazmat(awb.hazmat),
-        ]).then(otherInfos => {
+        ]).then((otherInfos) => {
           awb.packages = packages;
           awb.customerId = otherInfos[0];
           delete awb.customerId.password;
@@ -263,7 +262,7 @@ class AwbService {
           awb.carrier = otherInfos[2];
           awb.hazmat = otherInfos[3];
           resolve(this.renameKey(awb, 'customerId', 'customer'));
-        })
+        });
       });
     });
   }
@@ -273,7 +272,7 @@ class AwbService {
       Promise.all(
         purchaseOrders.map((pkg) => {
           return this.createPurchaseOrder(pkg, awbId);
-        }),
+        })
       ).then((result) => {
         resolve({ success: true });
       });
@@ -330,18 +329,18 @@ class AwbService {
     });
   }
 
-  addBarcode(detail){
-    console.log(detail)
+  addBarcode(detail) {
+    console.log(detail);
     return new Promise((resolve, reject) => {
-      const newBarcode = new Barcode({barcode: detail.barcode});
+      const newBarcode = new Barcode({ barcode: detail.barcode });
       newBarcode.save((err, result) => {
-          if (err) {
-            resolve({success: false, message: strings.string_response_error});
-          } else {
-            resolve({success: true, data: result});
-          }
+        if (err) {
+          resolve({ success: false, message: strings.string_response_error });
+        } else {
+          resolve({ success: true, data: result });
+        }
       });
-    })  
+    });
   }
 }
 
