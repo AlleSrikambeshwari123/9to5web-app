@@ -99,7 +99,13 @@ app.use(session({
   cookieName: 'session',
   secret: 'Silver123.',
   duration: 60 * 60 * 1000,
-  activeDuration: 60 * 60 * 1000
+  activeDuration: 60 * 60 * 1000,
+  cookie: {
+    path: '/', 
+    ephemeral: false, 
+    httpOnly: true, 
+    secure: false 
+  }
 }));
 
 // app.use(function (req, res, next) {

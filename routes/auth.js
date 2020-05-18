@@ -61,7 +61,7 @@ router.get('/reset-password/success', function(req,res, next){
 
 router.get('/logout', function (req, res, next) {
   // req.session.destroy();
-  req.session = null;
+  req.session.token = null;
   res.redirect('/');
 });
 
