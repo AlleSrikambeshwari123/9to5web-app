@@ -40,6 +40,7 @@ class DriverService {
       let newDriver = new Driver(driver);
       newDriver.save((err, result) => {
         if (err) {
+          console.log(err);
           resolve({ success: false, message: strings.string_response_error});
         } else {
           resolve({ 

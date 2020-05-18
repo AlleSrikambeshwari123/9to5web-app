@@ -16,11 +16,11 @@ const pilotSchema = new mongoose.Schema({
   }, 
   mobile: {
     type: Number,
-    required: true
+    //required: true
   },
   email: {
     type: String,
-    required: true
+    //required: true
   },
   warehouse: {
     type : String,
