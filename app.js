@@ -80,40 +80,27 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 let sessionExpireDuration = 15 * 60 * 1000; // 15 min
-// app.use(session({
-//   key:'usr_token',
-//   secret: 'secret',
-//   // resave: true,
-//   // saveUninitialized: true,
-//   // proxy: true,
-//   // secureProxy: true,
-//   cookie: {
-//     secure: (process.env.NODE_ENV === "development" ? true : true),
-//     httpOnly: true,
-//     sameSite:'strict',
-//     path:'/',
-//     expires: sessionExpireDuration,
-//   }
-// }));
+
 app.use(session({
   cookieName: 'session',
   secret: 'Silver123.',
-  duration: 60 * 60 * 1000,
-  activeDuration: 60 * 60 * 1000,
+  duration: sessionExpireDuration,
+  activeDuration: sessionExpireDuration,
   cookie: {
     path: '/', 
     ephemeral: false, 
     httpOnly: true, 
+    sameSite:'strict',
     secureProxy: (process.env.NODE_ENV === "development" ? false : true),
   }
 }));
 
-// app.use(function (req, res, next) {
-//   if (req.headers.cookie && !req.session.token) {
-//     res.clearCookie('usr_token');
-//   }
-//   next();
-// });
+app.use(function (req, res, next) {
+  if (req.headers.cookie && !req.session.token) {
+    res.clearCookie('usr_token');
+  }
+  next();
+});
 
 
 app.use('/', adminIndexRouter, authRouter);
