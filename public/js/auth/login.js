@@ -11,7 +11,9 @@ $(function() {
         password: password.value,
       },
       success: function(res) {
-        if (res.success) {
+        console.log(res);
+       /* if (res.success) {
+
           window.location.href = res.url;
         } else if (!res.authenticated) {
           // displaying error message when credentials is wrong.
@@ -19,7 +21,7 @@ $(function() {
         } else if (!res.isUserEnabled) {
           // displaying error message when account is disabled.
           showNotify('Failed', "Your account is temporary disabled!", 'fa fa-info', 'danger');
-        }
+        }*/
       },
     });
   });
