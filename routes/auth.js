@@ -45,7 +45,6 @@ router.get('/forgot-password', function (req, res, next) {
 router.get('/reset-password/user/:id',async function(req, res, next){
   const result = await services.userService.getUserByResetPasswordToken(req.params.id);    
   result.reset_link = '/reset-password/user/' + req.params.id;
-  console.log('auth',result);
   res.render('password-set-new',result); 
 });
 
@@ -69,7 +68,6 @@ router.get('/reset-password/customer/success', function(req,res, next){
 router.get('/reset-password/customer/:id',async function(req, res, next){
   const result = await services.customerService.getUserByResetPasswordToken(req.params.id);
   result.reset_link = '/reset-password/customer/' + req.params.id;
-  console.log('cus',result);
   res.render('password-set-new-customer',result);     
 });
 
