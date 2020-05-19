@@ -285,7 +285,7 @@ class CustomerService {
         email: user.email,
         subject: "Password Reset Request",
         NAME: user.firstName,
-        CONFIRM_LINK: webUrl + 'api/customer/reset-password/verify/' + user.id
+        CONFIRM_LINK: webUrl + '/api/customer/reset-password/verify/' + user.id
       });
     }
   }
