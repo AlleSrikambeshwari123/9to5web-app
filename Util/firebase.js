@@ -10,12 +10,13 @@ exports.sendNotification = (customer, title, body) => {
   console.log("Sending Notification...\n" + title + '\n' + body);
   if (customer.fcmToken) {
     var payload = {
-      token: customer.fcmToken,
+      token: customer.fcmToken.toString(),
       notification: {
         title: title,
         body: body
       }
     };
+    console.log('payload',payload)
     var messaging = firebase.messaging();
     messaging.send(payload).then(result => {
       console.log("Notification Sent");

@@ -5,7 +5,7 @@ var bcrypt = require('bcrypt');
 var utils = require('../Util/utils');
 const csv = require('csvtojson');
 const strings = require('../Res/strings');
-
+const mail = require('../Util/mail');
 var lredis = require('./redis-local');
 var client = require('./dataContext').redisClient;
 
@@ -219,7 +219,7 @@ class CustomerService {
           resolve({ success: false, message: strings.string_not_found_customer });
         } else {
           Customer.updateOne({email:email},{ fcmToken: fcmToken }).exec((err,updateData)=>{
-            resolve({ success: true, message: strings.string_response_updated });
+            resolve({ success:  true, message: strings.string_response_updated });
           })
         }
       })
@@ -262,6 +262,64 @@ class CustomerService {
       })
     });
   }
+
+  requestResetPassword(email, webUrl){
+    return new Promise(async (resolve, reject) => {
+      try {       
+        let customer = await Customer.findOne({ email: email });              
+        if (!customer) {
+          return resolve({ success: false, message: strings.string_not_found_customer });
+        } 
+        this.sendEmail('reset_password', customer, webUrl);
+        resolve({ success: true, message: strings.string_password_reseted });
+      }catch(error){
+        console.log(error);
+        resolve({ success: false, message: strings.string_response_error });
+      }
+    })
+  }
+  
+  sendEmail(emailType, user, webUrl){
+    if(emailType == "reset_password"){
+      mail.send('reset_password/user.html', {
+        email: user.email,
+        subject: "Password Reset Request",
+        NAME: user.firstName,
+        CONFIRM_LINK: webUrl + 'api/customer/reset-password/verify/' + user.id
+      });
+    }
+  }
+  
+  getUserByResetPasswordToken(id) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        let customer = await Customer.findById(id);
+        if (!customer) return resolve({ success: false, message: string.string_password_token_invalid });
+        
+        resolve({ success: true, customer: customer, token: id });
+      } catch (error) {
+        console.log(error.message);
+        resolve({ success: false, message: error.message });
+      }
+    });
+  }
+  
+  resetPassword(id, password){
+    return new Promise(async (resolve, reject) => {
+      try {
+        let customer = await Customer.findById(id);
+        if (!customer) return resolve({ success: false, message: strings.string_not_found_customer });
+        customer.password = password;        
+        await customer.save();
+        resolve({ success: true, message: strings.string_response_updated });
+      } catch (error) {
+        console.log(error.message);
+        resolve({ success: false, message: strings.string_response_error });
+      }
+    });
+  }  
 }
+
+
 
 module.exports = CustomerService;
