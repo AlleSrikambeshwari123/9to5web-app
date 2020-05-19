@@ -981,10 +981,12 @@ class PackageService {
         } else {
           this.getPackage_updated(packageId).then((pkg) => {
             this.services.awbService.getAwb(pkg.awbId).then((awb) => {
+              let fParam = {trackingNo:pkg.trackingNo,screenName:'PACKAGE_DETAIL'}
               firebase.sendNotification(
                 awb.customerId,
                 'Package Status Updated',
                 'Package-' + pkg.trackingNo + ' Updated',
+                fParam
               );
 
             });
