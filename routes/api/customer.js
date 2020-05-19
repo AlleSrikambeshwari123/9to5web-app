@@ -50,18 +50,6 @@ router.post('/req-pwd-reset', function (req, res, next) {
   })
 });
 
-
-router.get('/reset-password/verify/:id',async function(req, res, next){
-  const result = await services.customerService.getUserByResetPasswordToken(req.params.id);    
-  res.send(result);
-});
-
-router.post('/reset-password/:id', function (req, res, next) {
-  services.customerService.resetPassword(req.params.id, req.body.password).then(pwdResult => {
-    res.send(pwdResult);
-  })
-});
-
 router.get('/get-packages/:id', passport.authenticate('jwt', { session: false }),(req, res, next) => {
   services.packageService.getCustomerPackages(req.params.id).then(packages => {
     res.send(packages);
