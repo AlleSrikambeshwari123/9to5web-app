@@ -6,7 +6,7 @@ var firebase = admin.initializeApp({
   databaseURL: "https://imports-8f957.firebaseio.com"
 });
 
-exports.sendNotification = (customer, title, body) => {
+exports.sendNotification = (customer, title, body,fparam) => {
   console.log("Sending Notification...\n" + title + '\n' + body);
   if (customer.fcmToken) {
     var payload = {
@@ -14,7 +14,9 @@ exports.sendNotification = (customer, title, body) => {
       notification: {
         title: title,
         body: body
-      }
+      },
+      data:fparam
+      
     };
     console.log('payload',payload)
     var messaging = firebase.messaging();
