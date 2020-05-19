@@ -189,7 +189,7 @@ class LBLGeneration {
                     [{
                       margin: [1, 1], stack: [
                         { text: "AWB No", fontSize: 4, bold: true },
-                        { margin: [0, 5], text: "AWB" + this.awb.id, fontSize: 18, bold: true },
+                        { margin: [0, 5], text: "AWB-" + this.awb.id, fontSize: 16, bold: true },
                       ], border: [false, false, false, true]
                     }, //logo for lbl 
                     ]
