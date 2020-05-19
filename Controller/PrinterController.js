@@ -84,41 +84,33 @@ exports.downloadAirCargoManifest = async (req, res, next) => {
       manifest.airportToId && services.airportService.get(manifest.airportToId),
     ]);
 
-    let awbIds = _.uniqBy(packages, 'awbId')
-      .map((i) => i.awbId)
-      .filter(Boolean);
-    let awbs = await Promise.all(awbIds.map((id) => services.awbService.getFullAwb(id)));
-
     let packagesByAWB = packages.reduce((acc, pkg) => {
       acc[pkg.awbId] = acc[pkg.awbId] || {};
       let item = acc[pkg.awbId];
 
-      let awb = awbs.find((i) => i.id == pkg.awbId) || {};
-
-      item.awb = awb.id;
+      item.awb = String(pkg.awbId);
       item.pieces = (item.pieces || 0) + 1;
-
       // in lbs
       let weight = services.packageService.getPackageWeightInLBS(pkg);
       item.weight = (item.weight || 0) + weight;
       item.consignee = {
         name: String(
-          awb.customer && [awb.customer.firstName, awb.customer.lastName].filter(Boolean).join(' '),
+          pkg.customerId && [pkg.customerId.firstName, pkg.customerId.lastName].filter(Boolean).join(' '),
         ),
-        address: String(awb.customer && awb.customer.address),
+        address: String(pkg.customerId && pkg.customerId.address),
       };
       item.shipper = {
-        name: String(awb.shipper && awb.shipper.name),
-        address: String(awb.shipper && awb.shipper.address),
+        name: String(pkg.shipperId && pkg.shipperId.name),
+        address: String(pkg.shipperId && pkg.shipperId.address),
       };
-
+      item.hazmat = (pkg.hazmatId && pkg.hazmatId.description) || " ";
       return acc;
     }, {});
-
+    
     let airCargoManifest = new AirCargoManifest({
       owner: 'Nine To Five Import Export LLC',
       marksOfNationalityAndRegistration: 'United States - N296TA',
-      flightNumber: '',
+      flightNumber: manifest.planeId.tailNumber,
       date: manifest.shipDate,
       portOfLading: String(airportFrom && airportFrom.name),
       portOfOnlading: String(airportTo && airportTo.name),
@@ -139,34 +131,28 @@ exports.downloadFlightManifest = async (req, res, next) => {
     let manifest = await services.manifestService.getManifest(req.params.id);
     let packages = await services.packageService.getPackageOnManifest(req.params.id);
 
-    let awbIds = _.uniqBy(packages, 'awbId')
-      .map((i) => i.awbId)
-      .filter(Boolean);
-    let awbs = await Promise.all(awbIds.map((id) => services.awbService.getFullAwb(id)));
-
     let rows = packages.map((pkg) => {
-      let awb = awbs.find((i) => i.id == pkg.awbId) || {};
       return {
         id: pkg.id,
-        awb: awb.id,
+        awb: pkg.awbId,
         weight: services.packageService.getPackageWeightInLBS(pkg),
         consignee: {
           name: String(
-            awb.customer &&
-              [awb.customer.firstName, awb.customer.lastName].filter(Boolean).join(' '),
-          ),
+            pkg.customerId &&
+              [pkg.customerId.firstName, pkg.customerId.lastName].filter(Boolean).join(' '),
+          ),  
         },
         shipper: {
-          name: String(awb.shipper && awb.shipper.name),
-          address: String(awb.shipper && awb.shipper.address),
+          name: String(pkg.shipperId && pkg.shipperId.name),
+          address: String(pkg.shipperId && pkg.shipperId.address),
         },
       };
     });
 
     let flightManifest = new FlightManifest({
-      carrier: '???',
+      carrier:"Nine To Five Import Export",
       departureDate: manifest.shipDate,
-      flightNumber: '???',
+      flightNumber:  manifest.planeId.tailNumber,
       rows,
     });
     let stream = await flightManifest.generate();
@@ -193,7 +179,7 @@ exports.downloadFlightLoadSheet = async (req, res, next) => {
       return {
         name: compartment.name,
         packages: packages
-          .filter((pkg) => pkg.compartmentId == compartment.id)
+          .filter((pkg) => (pkg.compartmentId && pkg.compartmentId._id) == compartment.id)
           .map((pkg) => {
             return {
               id: pkg.id,
@@ -205,10 +191,10 @@ exports.downloadFlightLoadSheet = async (req, res, next) => {
     });
 
     let flightLoadSheet = new FlightLoadSheet({
-      carrier: '???',
+      carrier: "Nine To Five Import Export",
       departureDate: manifest.shipDate,
-      flightNumber: '???',
-      sections,
+      flightNumber: manifest.planeId.tailNumber,
+      sections: sections,
     });
     let stream = await flightLoadSheet.generate();
     res.type('pdf');
@@ -232,6 +218,7 @@ exports.downloadUSCustoms = async (req, res, next) => {
     let awbIds = _.uniqBy(packages, 'awbId')
       .map((i) => i.awbId)
       .filter(Boolean);
+    
     let awbs = await Promise.all(awbIds.map((id) => services.awbService.getFullAwb(id)));
 
     let packagesByAWB = packages.reduce((acc, pkg) => {
@@ -239,24 +226,32 @@ exports.downloadUSCustoms = async (req, res, next) => {
       acc[pkg.awbId].push(pkg);
       return acc;
     }, {});
-
+    
+    let natureOfGoods = {awbCount:0, isSed:0, hazmat:0};
     let items = Object.values(packagesByAWB).map((packages) => {
-      let awb = awbs.find((i) => i.id == packages[0].awbId) || {};
+      let awb = awbs.find((i) => String(i._id) == String(packages[0].awbId)) || {};
       let weight = packages.reduce(
         (acc, pkg) => acc + services.packageService.getPackageWeightInLBS(pkg),
         0,
       );
+      if (awb) {
+        natureOfGoods.awbCount += 1;
+        if (awb.isSed) natureOfGoods.isSed += 1;
+        if (awb.hazmat) natureOfGoods.hazmat += 1;
+      }
+      
       return {
         declaredValueForCustoms: '???',
         declaredValueForCharge: '???',
         executedOnDate: new Date(),
         executedAtPlace: 'Fort Launderdale',
-        awb: awb.id,
+        awb: awb._id,
         consignee: {
           name: String(
             awb.customer &&
               [awb.customer.firstName, awb.customer.lastName].filter(Boolean).join(' '),
           ),
+          address: String(awb.customer && awb.customer.address)
         },
         shipper: {
           name: String(awb.shipper && awb.shipper.name),
@@ -265,16 +260,16 @@ exports.downloadUSCustoms = async (req, res, next) => {
         accountingInformation: '???',
         pieces: packages.length,
         weight: weight,
-        chargeableWeight: '???',
+        chargeableWeight: 'BBB',
         natureAndQuantityOfGoods: '???',
-        ultimateDestination: '???',
+        ultimateDestination: 'BAHAMAS',
       };
     });
 
     let usCustoms = new USCustoms({
       departureDate: new Date(),
-      carrier: '???',
-      flightNumber: '???',
+      carrier: "Nine To Five Import Export",
+      flightNumber: manifest.planeId.tailNumber,
       airportFrom: {
         name: String(airportFrom && airportFrom.name),
       },
@@ -282,6 +277,7 @@ exports.downloadUSCustoms = async (req, res, next) => {
         name: String(airportTo && airportTo.name),
       },
       items,
+      natureOfGoods
     });
     let stream = await usCustoms.generate();
     res.type('pdf');

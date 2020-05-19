@@ -73,16 +73,16 @@ class FlightManifest {
           layout: 'noBorders',
           headerRows: 0,
           table: {
-            widths: ['25%', '25%', '25%', '25%'],
+            widths: ['20%', '40%', '25%', '25%'],
             body: [
               [
-                { text: 'Departure Date:', bold: true, margin: [20, 0, 0, 0] },
+                { text: 'Departure Date:', bold: true, margin: [0, 0, 0, 0] },
                 { text: moment(this.data.departureDate).format('MM/DD/YYYY') },
                 { text: 'Departure Time:', bold: true, margin: [20, 0, 0, 0] },
                 { text: moment(this.data.departureDate).format('hh:mm A') },
               ],
               [
-                { text: 'Carrier:', bold: true, margin: [20, 0, 0, 0] },
+                { text: 'Carrier:', bold: true, margin: [0, 0, 0, 0] },
                 { text: String(this.data.carrier) },
                 { text: 'Airline Flight #:', bold: true, margin: [20, 0, 0, 0] },
                 { text: String(this.data.flightNumber) },
@@ -106,10 +106,10 @@ class FlightManifest {
               ],
               ...this.data.rows.map((item) => [
                 `AWB${item.awb}`,
-                item.shipper.name,
+                { text: item.shipper.name, alignment: 'center'},
                 `PK${item.id}`,
-                item.consignee.name,
-                { text: Number(item.weight).toFixed(2), alignment: 'right' },
+                {text: item.consignee.name, alignment: 'center'},
+                { text: Number(item.weight).toFixed(2), alignment: 'center' },
               ]),
             ],
           },

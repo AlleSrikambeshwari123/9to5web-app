@@ -40,7 +40,7 @@ class FlightLoadSheet {
     let definition = {
       pageSize: 'A4',
       pageMargins: 40,
-      pageOrientation: 'landscape',
+      pageOrientation: 'portrait',
       footer: (currentPage, pageCount) => ({
         text: `Page No: ${currentPage}/${pageCount}`,
         alignment: 'right',
@@ -68,22 +68,22 @@ class FlightLoadSheet {
           layout: 'noBorders',
           headerRows: 0,
           table: {
-            widths: ['25%', '25%', '25%', '25%'],
+            widths: ['20%', '40%', '25%', '25%'],
             body: [
               [
-                { text: 'Departure Date:', bold: true, margin: [20, 0, 0, 0] },
+                { text: 'Departure Date:', bold: true, margin: [0, 0, 0, 0] },
                 { text: moment(this.data.departureDate).format('MM/DD/YYYY') },
-                { text: 'Departure Time:', bold: true, margin: [20, 0, 0, 0] },
+                { text: 'Departure Time:', bold: true, margin: [30, 0, 0, 0] },
                 { text: moment(this.data.departureDate).format('hh:mm A') },
               ],
               [
-                { text: 'Carrier:', bold: true, margin: [20, 0, 0, 0] },
+                { text: 'Carrier:', bold: true, margin: [0, 0, 0, 0] },
                 { text: String(this.data.carrier) },
-                { text: 'Airline Flight #:', bold: true, margin: [20, 0, 0, 0] },
+                { text: 'Airline Flight #:', bold: true, margin: [30, 0, 0, 0] },
                 { text: String(this.data.flightNumber) },
               ],
               [
-                { text: 'Flight Notes:', bold: true, margin: [20, 10, 0, 0] },
+                { text: 'Flight Notes:', bold: true, margin: [0, 10, 0, 0] },
                 { text: String(this.data.flightNotes || '') },
                 '',
                 '',
@@ -96,7 +96,7 @@ class FlightLoadSheet {
           margin: [0, 10],
           table: {
             headerRows: 0,
-            widths: ['*', '*', '*', '*', '*', '*'],
+            // widths: ['*', '*', '*', '*', '*', '*'],
             body: [
               [
                 {
@@ -108,31 +108,29 @@ class FlightLoadSheet {
                 },
                 ..._.times(PACKAGES_PER_ROW - 1, _.constant({})),
               ],
-              ..._.chunk(section.packages, PACKAGES_PER_ROW).map((packages) =>
+              ..._.chunk(section.packages, 1).map((packages) =>
                 _.times(PACKAGES_PER_ROW, (i) => packages[i] || null).map((pkg) => {
                   if (pkg) {
                     return {
-                      stack: [
-                        `AWB-${pkg.awb}`,
-                        `PK-${pkg.id}`,
-                        { text: `${Number(pkg.weight).toFixed(2)} lbs`, margin: [0, 5, 0, 10] },
+                      columns: [
+                        {  text:`AWB-${pkg.awb}`, alignment: "left"},
+                        {  text: `PK-${pkg.id}`, alignment: "center"},
+                        {  text: `${Number(pkg.weight).toFixed(2)} lbs`, alignment:"center" },
                       ],
                     };
                   }
                   return {};
                 }),
               ),
-              [
+              [ 
                 {
                   text: `Piece Count: ${section.packages.length}`,
                   bold: true,
-                  colSpan: 3,
-                  alignment: 'center',
-                  margin: [0, 5, 0, 0],
+                  colSpan: 1,
+                  // alignment: 'center',
+                  margin: [70, 0, 0, 0],
                   fontSize: 13,
                 },
-                {},
-                {},
                 {
                   text: `Section Total: ${section.packages
                     .reduce((acc, i) => acc + i.weight, 0)
@@ -140,15 +138,18 @@ class FlightLoadSheet {
                   bold: true,
                   colSpan: 1,
                   alignment: 'center',
-                  margin: [0, 5, 0, 0],
+                  margin: [-200, 0, 0, 0],
                   fontSize: 13,
                 },
                 {},
                 {},
+                {},
+                {}
               ],
             ],
           },
-        })),
+        }
+        )),
       ],
       styles: {},
       defaultStyle: {

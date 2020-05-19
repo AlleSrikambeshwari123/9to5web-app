@@ -222,6 +222,32 @@ class PackageService {
       })
     })
   }
+
+  getCustomerPackagesByStatus(statusId) {
+    return new Promise((resolve, reject) => {
+      Package.find({})
+        .exec((error, packages) => {
+          Promise.all(
+            packages.map((pkg) => {
+              return this.getPackageLastStatus_updated(pkg._id);
+            })
+          ).then((stats) => {
+            let pkgs = [];
+            stats.forEach((status, i) => {
+              packages[i].lastStatusText = status.status;
+              if (status.status === PKG_STATUS[statusId]) {
+                pkgs.push(packages[i]);
+              }
+            });
+            resolve({
+              success : true, 
+              packages : pkgs
+            });
+          });
+        })
+    });
+  }
+
   //========== Dashboard Functions ==========//
   getAllPackages_updated() {
     return new Promise((resolve, reject) => {
@@ -776,7 +802,7 @@ class PackageService {
         };
       });
     } catch (error) {
-      console.error('addPackaeToShipment', error);
+      console.error('addPackageToShipment', error);
       return error;
     }
   }
@@ -809,7 +835,7 @@ class PackageService {
   getPackageOnManifest(manifestId) {
     return new Promise((resolve, reject) => {
       Package.find({ manifestId: manifestId })
-        .populate('compartmentId')
+        .populate(['compartmentId','shipperId','carrierId','customerId','hazmatId'])
         .exec((err, packages) => {
           if (err) {
             resolve([]);
@@ -1069,7 +1095,6 @@ class PackageService {
                 return this.getPackageLastStatus_updated(pkg._id);
               })
             ).then((stats) => {
-              let pkgs = [];
               stats.forEach((status, i) => {
                 packages[i].lastStatusText = status.status;
               });

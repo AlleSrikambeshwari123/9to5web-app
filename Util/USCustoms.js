@@ -457,7 +457,13 @@ class USCustoms {
                       },
                       { text: '0.00', border: [true, false, true, false], fontSize: 10 },
                       { text: '0.00', border: [true, false, true, false], fontSize: 10 },
-                      { text: '???', border: [true, false, true, false], fontSize: 10 },
+                      { 
+                        stack: [
+                        {text: "AS PER ATTACHED MANIFEST", margin: [0,0,0,20], fontSize: 10},
+                        {text: "No of AWBs:      " + String(this.data.natureOfGoods.awbCount), margin:[0,0,0,5], fontSize: 10 },
+                        {text: "No of SEDs:      " + String(this.data.natureOfGoods.isSed), margin:[0,0,0,5], fontSize: 10 },
+                        {text: "No of Hazmat:   " + String(this.data.natureOfGoods.hazmat), margin:[0,0,0,5], fontSize: 10 },
+                      ], margin: [10,20,0,0]}
                     ],
                     _.times(8, _.constant({ text: '', border: [true, false, true, false] })),
                     [
