@@ -61,6 +61,11 @@ router.get('/reset-password/success', function(req,res, next){
   })
 })
 
+router.get('/reset-password/customer/success', function(req,res, next){
+  res.render('password-set-customer-success', {
+    loginUrl: req.query.login
+  })
+})
 router.get('/reset-password/customer/:id',async function(req, res, next){
   const result = await services.customerService.getUserByResetPasswordToken(req.params.id);
   result.reset_link = '/reset-password/customer/' + req.params.id;
