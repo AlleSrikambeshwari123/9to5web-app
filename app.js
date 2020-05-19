@@ -41,6 +41,7 @@ var warehousePackageRouter = require('./routes/warehouse/package');
 var warehousePrinterRouter = require('./routes/warehouse/print');
 var warehouseDeliveryRouter = require('./routes/warehouse/delivery');
 var warehouseHazmatRouter = require('./routes/warehouse/hazmat');
+var warehouseCubeRouter = require('./routes/warehouse/cube');
 
 // Store
 var storeRouter = require('./routes/store/store');
@@ -49,6 +50,7 @@ var storeRouter = require('./routes/store/store');
 var apiPrinterRouter = require('./routes/api/printer');
 var apiWarehouseRouter = require('./routes/api/wapi');
 var apiCustomerRouter = require('./routes/api/customer');
+var apiCubeRouter = require('./routes/api/cube');
 
 var warehouse = require('./routes/warehouse');
 var util = require('./routes/util');
@@ -106,7 +108,7 @@ app.use(function (req, res, next) {
 app.use('/', adminIndexRouter, authRouter);
 app.use('/account', accountPasswordRouter, accountPrintRouter);
 app.use('/admin', adminUserRouter, adminCustRouter, adminLocaRouter);
-app.use('/warehouse', warehouse, warehouseAwbRouter, warehouseManifestRouter, warehouseServiceTypeRouter, warehouseShipperRouter, warehousePaidTypeRouter, warehouseAirlineRouter, warehouseContainerRouter, warehouseCarrierRouter, warehousePackageRouter, warehousePrinterRouter, warehouseDeliveryRouter, warehouseHazmatRouter);
+app.use('/warehouse', warehouse, warehouseAwbRouter, warehouseManifestRouter, warehouseServiceTypeRouter, warehouseShipperRouter, warehousePaidTypeRouter, warehouseAirlineRouter, warehouseContainerRouter, warehouseCarrierRouter, warehousePackageRouter, warehousePrinterRouter, warehouseDeliveryRouter, warehouseHazmatRouter,warehouseCubeRouter);
 app.use('/fleet', fleetVehicleRouter, fleetDriverRouter, fleetPilotRouter, fleetPlaneRouter, fleetCompartmentRouter, fleetAirportsRouter);
 app.use('/store', storeRouter);
 app.use('/util', util);
@@ -114,6 +116,7 @@ app.use('/util', util);
 app.use('/api/printer', apiPrinterRouter);
 app.use('/api/warehouse', apiWarehouseRouter);
 app.use('/api/customer', apiCustomerRouter);
+app.use('/api/cube', apiCubeRouter)
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
