@@ -2,6 +2,8 @@ var express = require('express');
 var router = express.Router();
 var services = require('../../RedisServices/RedisDataServices');
 var moment = require('moment');
+var passport = require('passport');
+require('./authHelper')
 
 router.post('/login', (req, res, next) => {
   services.customerService.login(req.body.email, req.body.password).then(loginResult => {
@@ -14,7 +16,7 @@ router.post('/sign-up', function (req, res, next) {
   });
 });
 
-router.post('/update-fcm', (req, res, next) => {
+router.post('/update-fcm',passport.authenticate('jwt', { session: false }), (req, res, next) => {
   var email = req.body.email;
   var fcmToken = req.body.fcmToken;
   services.customerService.updateFcm(email, fcmToken).then(result => {
@@ -22,7 +24,7 @@ router.post('/update-fcm', (req, res, next) => {
   })
 })
 
-router.post('/update-profile', function (req, res, next) {
+router.post('/update-profile', passport.authenticate('jwt', { session: false }),function (req, res, next) {
   services.customerService.saveProfile(req.body).then(loginResult => {
     res.send(loginResult);
 
@@ -41,24 +43,32 @@ router.post('/change-password', function (req, res, next) {
   })
 });
 router.post('/req-pwd-reset', function (req, res, next) {
-  console.log(req.body);
-  services.customerService.requestResetPassword(req.body.skybox).then(requestResult => {
+ const email = req.body.email;
+ const webUrl = req.protocol + '://' + req.get('host'); 
+  services.customerService.requestResetPassword(email,webUrl).then(requestResult => {
     res.send(requestResult)
   })
 });
-router.post('/pwd-reset', function (req, res, next) {
-  services.customerService.resetPasswd(req.body).then(pwdResult => {
+
+
+router.get('/reset-password/verify/:id',async function(req, res, next){
+  const result = await services.customerService.getUserByResetPasswordToken(req.params.id);    
+  res.send(result);
+});
+
+router.post('/reset-password/:id', function (req, res, next) {
+  services.customerService.resetPassword(req.params.id, req.body.password).then(pwdResult => {
     res.send(pwdResult);
   })
 });
 
-router.get('/get-packages/:id', (req, res, next) => {
+router.get('/get-packages/:id', passport.authenticate('jwt', { session: false }),(req, res, next) => {
   services.packageService.getCustomerPackages(req.params.id).then(packages => {
     res.send(packages);
   })
 });
 
-router.get('/get-packages-history', function (req, res, next) {
+router.get('/get-packages-history', passport.authenticate('jwt', { session: false }),function (req, res, next) {
   // services.packageService.getCustomerPackagesByStatus(req.body.skybox,req.body.status,req.body.page).then(packageResult=>{
   //     res.send({packages:packageResult})
   // }); 
