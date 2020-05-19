@@ -1,0 +1,211 @@
+
+const strings = require('../Res/strings');
+const csv = require('csvtojson');
+const mongoose = require('mongoose');
+
+var client = require('./dataContext').redisClient;
+var lredis = require('./redis-local');
+var uniqId = require('uniqid');
+
+const HAZMAT_ID = strings.redis_id_hazmat;
+const PREFIX = strings.redis_prefix_hazmat;
+
+const Cube = require('../models/cube');
+const Package = require('../models/package');
+
+class CubeService {  
+  getCubes() {
+    return new Promise((resolve, reject) => {
+      Cube.find({}, (err, result) => {
+        if (err) {
+          resolve([]);
+        } else {
+          resolve(result);
+        }
+      })
+    })
+  }
+  createCube(cube) {
+    return new Promise((resolve, reject) => {
+      const newCube = new Cube(cube)
+      newCube.save(async (err, result) => {
+        if (err) {
+          console.log(err);
+          resolve({ success: false, message: strings.string_response_error, data:null });
+        } else {
+          const cubeData = await this.getCube(result._id);          
+          resolve({ success: true, message: strings.string_response_added, data:cubeData });
+        }
+      });
+    });
+  }
+  updateCube(id, cube) {
+    return new Promise((resolve, reject) => {
+      const updatedCubeData = {
+        name: cube.name, 
+        description: cube.description
+      };
+      Cube.findOneAndUpdate({_id: id}, updatedCubeData, (err, result) => {
+        if (err) {
+          resolve({ success: false, message: strings.string_response_error });
+        } else {
+          resolve({ success: true, message: strings.string_response_updated });
+        }
+      });
+    })
+  }
+  removeCube(id) {
+    return new Promise((resolve, reject) => {
+      Cube.deleteOne({_id: id}, (err, result) => {
+        if (err) {
+          resolve({ success: false, message: strings.string_not_found_hazmat });
+        } else {
+          resolve({ success: true, message: strings.string_response_removed });
+        }
+      })
+    })
+  }
+  removeAll() {
+    return new Promise((resolve, reject) => {
+      Cube.deleteMany({}, (err, result) => {
+        if (err) {
+          resolve([]);
+        } else {
+          resolve(result);
+        }
+      })
+    });
+  }
+
+ async createPackage(body){
+    const detail = {
+      id:Date.now().toString(),
+      trackingNo:uniqId(),
+      description:body.name,
+      weight:100,
+      dimensions:'10x10x10',
+      packageCalculation:'lbs',
+      customerId:body.userId,
+      packageType:'Suitcase',
+      awbId:"5ebbbe48c9e18c20ddf224c0",
+      shipperId:"5ebbbe48c9e18c20ddf224c0",
+      carrierId:"5ebbbe48c9e18c20ddf224c0",
+      createdBy:"5eba4413b3492b2b5608d4f2",
+      originBarcode:"5eba4416cf8a5a2b8b57b384"
+    };
+    
+    const newPackage = new Package(detail)
+    return await newPackage.save();
+  }
+
+  updatePackage(body,id){
+    return new Promise((resolve, reject) => { 
+      Package.updateOne({_id:id},{description:body.name}).exec((err,data)=>{
+        if (err) {
+          resolve({ success: false, message: strings.string_response_error });
+        } else {
+          resolve({ success: true, message: strings.string_response_updated });
+        }
+      })
+    })
+  }
+
+  assignPackage(id, updatedCubeData){
+    return new Promise((resolve, reject) => {     
+      Cube.updateOne({_id: id}, updatedCubeData, (err, result) => {
+        if (err) {
+          resolve({ success: false, message: strings.string_response_error });
+        } else {
+          resolve({ success: true, message: strings.string_response_updated });
+        }
+      });
+    })
+  }
+
+  getPackageIds(trackingNo){
+    return new Promise((resolve, reject) => {     
+      Package.find({trackingNo: {$in:trackingNo}}).exec((err, result) => {
+        if (err) {
+          resolve({ success: false, message: strings.string_response_error });
+        } else {          
+          const packageIds = [];
+          result.map((packageData)=>{
+            packageIds.push(packageData._id)
+          });          
+          resolve(packageIds);
+        }
+      });
+    })
+  }
+
+ allCubes(){
+   return new Promise((resolve, reject) => { 
+    Cube.aggregate([
+      {
+        $lookup:{
+          from:"packages",
+          localField:"packages",
+          foreignField:"_id",
+          as:"packages"
+        }
+      },
+      {
+        $lookup:{
+            from:"packages",
+            localField:"cubepackageId",
+            foreignField:"_id",
+            as:"cubeDetail"
+          }
+      },
+      {$unwind:"$cubeDetail"},
+      {
+        $project:{_id:1, packages:1,name:1, "cubeDetail._id":1, "cubeDetail._id":1, "cubeDetail.trackingNo":1}
+      }
+      ]).exec((err, result) => {
+        resolve(result);
+      })    
+    })
+ }
+
+  getCube(id){
+    if(typeof id == "string"){
+      id = mongoose.Types.ObjectId(id);
+    }
+    return new Promise((resolve, reject) => { 
+    Cube.aggregate([
+      {
+        $match:{_id:id}
+      },  
+      {
+        $lookup:{
+          from:"packages",
+          localField:"packages",
+          foreignField:"_id",
+          as:"packages"
+        }
+      },
+      {
+        $lookup:{
+            from:"packages",
+            localField:"cubepackageId",
+            foreignField:"_id",
+            as:"cubeDetail"
+          }
+      },
+      {$unwind:"$cubeDetail"},
+      {
+        $project:{_id:1, packages:1,name:1, "cubeDetail._id":1, "cubeDetail._id":1, "cubeDetail.trackingNo":1}
+      }
+      ]).exec((err, result) => {
+        if(result && result.length>0){
+          resolve(result[0]);
+        }else{
+          resolve({})
+        }
+        
+      })    
+    })
+  }
+
+}
+module.exports = CubeService;
