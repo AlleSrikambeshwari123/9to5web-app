@@ -9,6 +9,10 @@ const compartmentSchema = new mongoose.Schema({
     ref : 'Plane',
     required: true
   }, 
+  packages:[{
+      type:Schema.Types.ObjectId,
+      ref:'Package'
+    }],
   weight: {
     type: Number
   },  
@@ -17,6 +21,11 @@ const compartmentSchema = new mongoose.Schema({
   },  
   volume: {
     type: Number
+  },
+  createdBy:{
+    type:Schema.Types.ObjectId,
+    ref: 'User', 
+    required: true 
   }
 }, {
   timestamps: true

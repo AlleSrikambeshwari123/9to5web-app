@@ -102,6 +102,13 @@ class PlaneService {
     })
   }
 
+  async getAllCompartments(){
+    try {
+      return await Compartment.find()
+    } catch (error) {
+      return []
+    }
+  }
   getCompartments(planeId) {
     return new Promise(async (resolve, reject) => {
       let compartments = await Compartment.find({ planeId: ObjectId(planeId) })
