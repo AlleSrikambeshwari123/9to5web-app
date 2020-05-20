@@ -98,21 +98,21 @@ class PackageService {
         delivered: 0,
       };
 
-      let result = await Promise.all(
+      await Promise.all(
         packages.map(async (item) => {
           let packagesStatus = await PackageStatus.find({ packageId: item._id });
-          packagesStatus = packagesStatus[packagesStatus.length - 1];
-
-          obj["received_fill"] = obj["received_fill"] + (packagesStatus.status == PKG_STATUS[1] ? 1 : 0)
-          obj["loaded_craft"] = obj["loaded_craft"] + (packagesStatus.status == PKG_STATUS[2] ? 1 : 0)
-          obj["in_transit"] = obj["in_transit"] + (packagesStatus.status == PKG_STATUS[3] ? 1 : 0)
-          obj["received_nas"] = obj["received_nas"] + (packagesStatus.status == PKG_STATUS[4] ? 1 : 0)
-          obj["ready_pd"] = obj["ready_pd"] + (packagesStatus.status == PKG_STATUS[5] ? 1 : 0)
-          obj["delivered"] = obj["delivered"] + (packagesStatus.status == PKG_STATUS[6] ? 1 : 0)
-          obj["total_packages"] = packages.length
+          if(packagesStatus.length > 0){
+            packagesStatus = packagesStatus[packagesStatus.length - 1];
+            obj["received_fill"] = obj["received_fill"] + (packagesStatus.status == PKG_STATUS[1] ? 1 : 0)
+            obj["loaded_craft"] = obj["loaded_craft"] + (packagesStatus.status == PKG_STATUS[2] ? 1 : 0)
+            obj["in_transit"] = obj["in_transit"] + (packagesStatus.status == PKG_STATUS[3] ? 1 : 0)
+            obj["received_nas"] = obj["received_nas"] + (packagesStatus.status == PKG_STATUS[4] ? 1 : 0)
+            obj["ready_pd"] = obj["ready_pd"] + (packagesStatus.status == PKG_STATUS[5] ? 1 : 0)
+            obj["delivered"] = obj["delivered"] + (packagesStatus.status == PKG_STATUS[6] ? 1 : 0)
+            obj["total_packages"] = packages.length
+          }
         })
       )
-
       resolve(obj)
     })
   }
@@ -269,18 +269,20 @@ class PackageService {
 
         let result = await Promise.all(packages.map(async (pkg) => {
           let statuses = await PackageStatus.find({ packageId: pkg._id }) || [];
-          let packageStatus = statuses[statuses.length - 1];
+          if(statuses.length > 0){
+            let packageStatus = statuses[statuses.length - 1];
 
-          if (pkg.awbId.invoices.length == 0) {
-            noDocs.push({ _id: pkg.id, last_status: packageStatus.status, awb: pkg.awbId.id, customer_email: pkg.customerId.email })
-          }
-
-          if (pkg.customerId.pmb == "9000" && pkg.manifestId) {
-            nineToPackages.push({ _id: pkg.id, last_status: packageStatus.status, awb: pkg.awbId._id, customer_email: pkg.customerId.email })
-          }
-
-          if (pkg.customerId.pmb != "9000" && pkg.manifestId) {
-            postBox.push({ _id: pkg.id, last_status: packageStatus.status, awb: pkg.awbId._id, customer_email: pkg.customerId.email })
+            if (pkg.awbId.invoices.length == 0) {
+              noDocs.push({ _id: pkg.id, last_status: packageStatus.status, awb: pkg.awbId.id, customer_email: pkg.customerId.email })
+            }
+  
+            if (pkg.customerId.pmb == "9000" && pkg.manifestId) {
+              nineToPackages.push({ _id: pkg.id, last_status: packageStatus.status, awb: pkg.awbId._id, customer_email: pkg.customerId.email })
+            }
+  
+            if (pkg.customerId.pmb != "9000" && pkg.manifestId) {
+              postBox.push({ _id: pkg.id, last_status: packageStatus.status, awb: pkg.awbId._id, customer_email: pkg.customerId.email })
+            }
           }
         }))
 
@@ -1021,6 +1023,13 @@ class PackageService {
     });
   }
 
+  async getPackageInfo(){
+    try {
+      return await PackageStatus.find().populate({path:"packageId",populate:{path:"awbId"}})
+    } catch (error) {
+      return []
+    }
+  }
   getPackageLastStatus(packageId) {
     return new Promise((resolve, reject) => {
       this.getPackageStatuses_updated(packageId).then((stats) => {
