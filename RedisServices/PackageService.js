@@ -209,10 +209,15 @@ class PackageService {
         } else {
           if (result[0] && result[0].id) {
             let pkg = result[0] 
-            resolve({
-              success: true,
-              package : pkg
-            });
+            PackageStatus.find({ packageId:pkg._id })
+            .populate("updatedBy", "username")
+            .exec((error, stats) => {
+              resolve({
+                success: true,
+                package: pkg,
+                status: stats
+              });  
+            }) 
           } else {
             resolve({
               success : false,

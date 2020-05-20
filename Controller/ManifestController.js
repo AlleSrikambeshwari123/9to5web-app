@@ -78,7 +78,7 @@ exports.ship_manifest = (req, res, next) => {
   // var user = res.user.username;
   const userId = req['userId'];
   services.manifestService.shipManifest(mid, userId).then((sResult) => {
-    services.packageService.updateManifestPackageToInTransit(mid, userId);
+    // services.packageService.updateManifestPackageToInTransit(mid, userId);
     res.send(sResult);
   });
 }
@@ -98,7 +98,7 @@ exports.receive_manifest = (req, res, next) => {
   var mid = req.params.id;
   const userId = req['userId'];
   services.manifestService.receiveManifest(mid, userId).then(result => {
-    services.packageService.updateManifestPackageToReceived(mid, userId);
+    // services.packageService.updateManifestPackageToReceived(mid, userId);
     res.send(result);
   })
 }
