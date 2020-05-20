@@ -93,6 +93,12 @@ router.get('/get-package-detail-barcode/:barcode', passport.authenticate('jwt', 
     })
   }
 })
+router.get("/get-package-info",passport.authenticate('jwt', { session: false }), (req, res, next) => {
+  services.packageService.getPackageInfo().then((result) => {
+    res.send(result)
+  })
+})
+
 
 router.get("/get_packages_status", middleware().checkSession, (req, res, next) => {
   services.packageService.getPackageStatus().then((result) => {
