@@ -22,5 +22,6 @@ router.get(
 );
 router.get('/download-pdf/manifest/:id/flight-manifest', printerController.downloadFlightManifest);
 router.get('/download-pdf/manifest/:id/us-customs', printerController.downloadUSCustoms);
+router.get('/download-pdf/delivery-report/:id', printerController.downloadDeliveryReport);
 
 module.exports = router;

@@ -10,6 +10,7 @@ var AirCargoManifest = require('../Util/AirCargoManifest');
 var FlightManifest = require('../Util/FlightManifest');
 var FlightLoadSheet = require('../Util/FlightLoadSheet');
 var USCustoms = require('../Util/USCustoms');
+var DeliveryReport = require("../Util/DeliveryReport");
 var lblPdfGen = new LBLGeneration();
 
 
@@ -282,6 +283,36 @@ exports.downloadUSCustoms = async (req, res, next) => {
     let stream = await usCustoms.generate();
     res.type('pdf');
     res.attachment(`${manifest.id}-USC.pdf`);
+    stream.pipe(res);
+    stream.end();
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.downloadDeliveryReport = async (req, res, next) => {
+  try {
+    let delivery = await services.deliveryService.getFullDelivery(req.params.id);
+    let packages = await services.packageService.getPackagesDataByDeliveryId(req.params.id);
+    let rows = packages.map((pkg) => {
+      return {
+        id: pkg.id,
+        awb: pkg.awbId,
+        weight: services.packageService.getPackageWeightInLBS(pkg),
+        pmb: pkg.customerId && pkg.customerId.pmb,
+        description: pkg.description
+      };
+    });
+  
+    let deliveryReport = new DeliveryReport({
+      carrier:"Nine To Five Import Export",
+      deliveryDate: delivery.delivery_date,
+      vehicleNo:  delivery.vehicleId.registration,
+      rows,
+    });
+    let stream = await deliveryReport.generate();
+    res.type('pdf');
+    res.attachment(`${delivery.id}-FM.pdf`);
     stream.pipe(res);
     stream.end();
   } catch (error) {
