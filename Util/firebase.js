@@ -18,12 +18,13 @@ exports.sendNotification = (customer, title, body,fparam) => {
       data:fparam
       
     };
-    console.log('payload',payload)
-    var messaging = firebase.messaging();
-    messaging.send(payload).then(result => {
-      console.log("Notification Sent");
-    }).catch(function (err) {
-      console.log(err);
-    });
+    if(payload.token !== ''){
+      var messaging = firebase.messaging();
+      messaging.send(payload).then(result => {
+        console.log("Notification Sent");
+      }).catch(function (err) {
+        console.log(err);
+      });
+    }
   }
 }

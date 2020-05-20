@@ -970,15 +970,11 @@ class PackageService {
     });
   }
 
-  getPackage_updated(packageId) {
-    return new Promise((resolve, reject) => {
-      Package.findOne({ _id: packageId }, (err, result) => {
-        if (err) {
-          resolve({});
-        } else {
-          resolve(result);
-        }
-      });
+  getPackage_updated(packageId,pkgStatus) {
+    return new Promise(async (resolve, reject) => {
+      let pkg = await Package.findOneAndUpdate({_id:packageId},{lastStatusText:pkgStatus})
+      if(!pkg) resolve({})
+      else resolve(pkg)
     })
   }
 
@@ -990,27 +986,24 @@ class PackageService {
         status: PKG_STATUS[status],
         updatedBy: userId
       };
-
       // TODO: set updatedBy
       if (!packageStatus.updatedBy) {
         delete packageStatus.updatedBy;
       }
-
       const newPackageStatusData = new PackageStatus(packageStatus);
       newPackageStatusData.save((err, packageStatus) => {
         if (err) {
           resolve({ success: false, message: strings.string_response_error });
         } else {
-          this.getPackage_updated(packageId).then((pkg) => {
+          this.getPackage_updated(packageId,packageStatus['status']).then((pkg) => {
             this.services.awbService.getAwb(pkg.awbId).then((awb) => {
               let fParam = {trackingNo:pkg.trackingNo,screenName:'PACKAGE_DETAIL'}
-              firebase.sendNotification(
-                awb.customerId,
-                'Package Status Updated',
-                'Package-' + pkg.trackingNo + ' Updated',
-                fParam
-              );
-
+                firebase.sendNotification(
+                  awb.customerId,
+                  'Package Status Updated',
+                  'Package-' + pkg.trackingNo + ' Updated',
+                  fParam
+                );
             });
           });
           resolve({ success: true, message: strings.string_response_updated });
@@ -1360,19 +1353,6 @@ class PackageService {
         resolve({ removed: true });
       });
     });
-  }
-
-  // getPackage
-  getPackage_updated(packageId) {
-    return new Promise((resolve, reject) => {
-      Package.findOne({ _id: packageId }, (err, result) => {
-        if (err) {
-          resolve({});
-        } else {
-          resolve(result);
-        }
-      });
-    })
   }
 
   // This method is used when we're performing the global search 
