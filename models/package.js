@@ -83,6 +83,10 @@ const packageSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId, 
     ref: 'Compartment'
   },
+  cubeId:{
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'Cube'
+  },
   isConsolidated: {
     type: String
   },

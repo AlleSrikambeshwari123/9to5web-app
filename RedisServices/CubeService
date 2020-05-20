@@ -32,9 +32,8 @@ class CubeService {
         if (err) {
           console.log(err);
           resolve({ success: false, message: strings.string_response_error, data:null });
-        } else {
-          const cubeData = await this.getCube(result._id);          
-          resolve({ success: true, message: strings.string_response_added, data:cubeData });
+        } else {                  
+          resolve({ success: true, message: strings.string_response_added, data:result });
         }
       });
     });
@@ -65,6 +64,7 @@ class CubeService {
       })
     })
   }
+
   removeAll() {
     return new Promise((resolve, reject) => {
       Cube.deleteMany({}, (err, result) => {
@@ -77,25 +77,33 @@ class CubeService {
     });
   }
 
- async createPackage(body){
-    const detail = {
-      id:Date.now().toString(),
-      trackingNo:uniqId(),
-      description:body.name,
-      weight:100,
-      dimensions:'10x10x10',
-      packageCalculation:'lbs',
-      customerId:body.userId,
-      packageType:'Suitcase',
-      awbId:"5ebbbe48c9e18c20ddf224c0",
-      shipperId:"5ebbbe48c9e18c20ddf224c0",
-      carrierId:"5ebbbe48c9e18c20ddf224c0",
-      createdBy:"5eba4413b3492b2b5608d4f2",
-      originBarcode:"5eba4416cf8a5a2b8b57b384"
-    };
-    
-    const newPackage = new Package(detail)
-    return await newPackage.save();
+  async packageDetail(packageId){
+    const packageDetail = await Package.findOne({_id:packageId});
+    return packageDetail;
+  }
+
+ async createPackage(cubeData, packageDetail){
+   return new Promise(async (resolve, reject) => {    
+      const detail = {
+        id:Date.now().toString(),
+        trackingNo:uniqId(),
+        description:cubeData.name,
+        weight:0,
+        dimensions:packageDetail.dimensions,
+        packageCalculation:packageDetail.packageCalculation,
+        customerId:cubeData.createdBy,
+        packageType:packageDetail.packageType,
+        awbId:packageDetail.awbId,
+        shipperId:packageDetail.shipperId,
+        carrierId:packageDetail.carrierId,
+        createdBy:packageDetail.createdBy,
+        originBarcode:packageDetail.originBarcode, 
+      };      
+      const newPackage = new Package(detail)
+      const result = await newPackage.save();
+      await Package.updateOne({_id:(result._id).toString()},{originBarcode:result._id});
+      resolve(result);
+   });
   }
 
   updatePackage(body,id){
@@ -120,6 +128,10 @@ class CubeService {
         }
       });
     })
+  }
+
+  updatePackageCubeId(packageIds, cubeId){
+    return Package.updateMany({_id: {$in:packageIds}}, {"$set":{cubeId: cubeId}});
   }
 
   getPackageIds(trackingNo){
@@ -165,7 +177,12 @@ class CubeService {
         resolve(result);
       })    
     })
- }
+  }
+
+  async getCubeDetail(id){
+    const data = await Cube.findOne({_id:id});
+    return data;
+  }
 
   getCube(id){
     if(typeof id == "string"){
@@ -206,6 +223,5 @@ class CubeService {
       })    
     })
   }
-
 }
 module.exports = CubeService;
