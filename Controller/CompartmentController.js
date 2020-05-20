@@ -18,7 +18,8 @@ exports.get_compartment_list = (req, res, next) => {
 }
 
 exports.add_new_compartment = (req, res, next) => {
-  services.planeService.addCompartment(req.params.planeId, req.body).then(result => {
+  const body = {...req.body,createdBy:req['userId']}
+  services.planeService.addCompartment(req.params.planeId, body).then(result => {
     res.send(result);
   })
 }

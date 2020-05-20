@@ -186,6 +186,22 @@ router.get('/get-deliverys', (req, res, next) => {
     .catch(next);
 });
 
+router.get('/get-flights', (req, res, next) => {
+  services.planeService.getPlanes().then((plane) => {
+      res.json(plane);
+    })
+    .catch(next);
+});
+
+router.get('/get-all-compartments', (req, res, next) => {
+  services.planeService
+    .getAllCompartments()
+    .then((compartments) => {
+      res.json(compartments);
+    })
+    .catch(next);
+});
+
 router.get('/get-compartments', (req, res, next) => {
   let query = req.query;
   // FIXME: we should filter by query here
@@ -196,6 +212,15 @@ router.get('/get-compartments', (req, res, next) => {
     })
     .catch(next);
 });
+
+router.post('/add-packages-to-compartment', (req, res, next) => {
+  let packageIds = req.body.packageIds;
+  let compartmentId = req.body.compartmentId;
+  var userId =  req.body.userId;
+  services.packageService.addPackagesToCompartment(packageIds,compartmentId, userId).then((result) => {
+    res.send(result)
+  })
+})
 
 router.post('/add-packages-to-flight', middleware().checkSession, (req, res, next) => {
   let packageIds = req.body.packageIds;
