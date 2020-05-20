@@ -6,6 +6,11 @@ const cubeTypeSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true
+  }, 
+  userId:{
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'Customer', 
+    required: true 
   },
   packages:[mongoose.Schema.Types.ObjectId],
   createdBy: {
@@ -15,8 +20,7 @@ const cubeTypeSchema = new mongoose.Schema({
   },
   cubepackageId:{
       type: mongoose.Schema.Types.ObjectId,
-      ref:'Package',
-      required:true
+      ref:'Package'
   }
 }, {
   timestamps: true
