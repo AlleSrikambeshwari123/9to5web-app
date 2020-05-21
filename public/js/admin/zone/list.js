@@ -1,5 +1,5 @@
 $(function () {
-  $('.rm-location').click(function () {
+  $('.rm-zone').click(function () {
     var id = $(this).data('id');
     swal({
       title: "Are you sure?",
@@ -18,6 +18,7 @@ $(function () {
             }).then(res => {
               if (response.success == true) {
                 $('tr[data-record="' + id + '"]').fadeOut('slow', () => $('tr[data-record="' + id + '"]').remove())
+               
               }
             })
           }
@@ -26,7 +27,7 @@ $(function () {
     })
   });
 
-  $('.location-table').DataTable({
+  $('.zone-table').DataTable({
     "pageLength": 10,
   });
 })
