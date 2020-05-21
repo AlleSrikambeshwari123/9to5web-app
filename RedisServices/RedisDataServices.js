@@ -44,6 +44,8 @@ var InvoiceService = require('./InvoiceService');
 var invoiceService = new InvoiceService();
 var CubeService = require('./CubeService');
 var cubeService = new CubeService();
+var ZoneService = require('./ZoneService');
+var zoneService = new ZoneService();
 
 var services = {
   customerService,
@@ -67,7 +69,8 @@ var services = {
   containerService,
   airportService,
   invoiceService,
-  cubeService
+  cubeService,
+  zoneService
 };
 
 packageService.setServiceInstances(services);
