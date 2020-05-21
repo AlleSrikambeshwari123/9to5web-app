@@ -23,7 +23,11 @@ const deliverySchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId, 
     ref: 'User', 
     required: true 
-  }, 
+  },
+  updatedBy: {
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'User', 
+  },  
   delivery_date: {
   	type: Date
   },

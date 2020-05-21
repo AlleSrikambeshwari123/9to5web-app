@@ -42,6 +42,7 @@ const Compartment = require('../models/compartment');
 const PackageStatus = require('../models/packageStatus');
 const Customer = require('../models/customer');
 const Awb = require('../models/awb');
+const Zone = require('../models/zone')
 
 function createDocument(tPackage) {
   var packageDocument = {
@@ -606,8 +607,12 @@ class PackageService {
 
   updatePackage(id, pkg) {
     return new Promise((resolve, reject) => {
-      client.hmset(PREFIX + id, pkg);
-      resolve({ success: true });
+      Package.updateOne({_id:id},pkg,(err,result)=> {
+        if(err) resolve({ success: false, message: strings.string_response_error });
+        else resolve({ success: true });
+
+      })
+    
     });
   }
 
@@ -943,20 +948,32 @@ class PackageService {
     });
   }
 
+  /* Update Zone On Package Delivered */
+async updateZone(id,pkgs){
+  try {
+    return await Zone.findByIdAndUpdate({_id:id},{$push:{packages:pkgs}})
+  } catch (error) {
+    console.error('PackageServiceUpdateZone',error)
+  }
+}
+
   //========== Check In Store ==========//
-  checkInStore(locationId, packageIds, username) {
-    packageIds = packageIds.split(',');
+  checkInStore(data, username) {
+    let packageIds = data.packageIds.split(',');
     return new Promise((resolve, reject) => {
       Promise.all(
         packageIds.map((packageId) => {
-          // this.updatePackage(packageId, {
-          //   locationId: locationId,
-          // });
+          this.updatePackage(packageId, {
+            location: data.location,
+            companyId: data.companyId,
+            zoneId:data.zoneId
+          });
           return this.updatePackageStatus(packageId, 6, username);
-        }),
-      ).then((result) => {
-        // client.sadd(LIST_LOCATION_PACKAGE + locationId, packageIds);
-        resolve({ success: true, message: strings.string_response_stored });
+        },
+        this.updateZone(data.zoneId,packageIds)
+        ),
+        ).then((result) => {
+        resolve({ success: true, message: strings.string_response_received });
       });
     });
   }
@@ -977,7 +994,7 @@ class PackageService {
 
   getPackage_updated(packageId,pkgStatus) {
     return new Promise(async (resolve, reject) => {
-      let pkg = await Package.findOneAndUpdate({_id:packageId},{lastStatusText:pkgStatus})
+      let pkg = await Package.findOneAndUpdate({_id:packageId},{lastStatusText:pkgStatus},{new:true})
       if(!pkg) resolve({})
       else resolve(pkg)
     })
