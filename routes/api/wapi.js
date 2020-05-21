@@ -258,7 +258,8 @@ router.get('/get-open-deliveries', (req, res, next) => {
 router.post('/add-packages-to-delivery', (req, res, next) => {
   var deliveryId = req.body.deliveryId;
   var packageIds = req.body.packageIds.split(',');
-  services.deliveryService.addPackagesToDelivery(deliveryId, packageIds).then(result => {
+  var username = req.headers.username || req.body.username;
+  services.deliveryService.addPackagesToDelivery(deliveryId, packageIds,username).then(result => {
     res.send(result)
   })
 })
@@ -271,10 +272,8 @@ router.get('/get-locations', (req, res, next) => {
 });
 
 router.post('/check-in-store', (req, res, next) => {
-  var packageIds = req.body.packageIds;
-  var locationId = req.body.locationId;
-  var username = req.headers.username;
-  services.packageService.checkInStore(locationId, packageIds, username).then(result => {
+  var username = req.headers.username || req.body.username;
+  services.packageService.checkInStore(req.body, username).then(result => {
     res.send(result)
   })
 })
@@ -282,7 +281,7 @@ router.post('/check-in-store', (req, res, next) => {
 //========== NAS Check out to Customer ==========//
 router.post('/checkout-to-customer', (req, res, next) => {
   var packageIds = req.body.packageIds;
-  var username = req.headers.username;
+  var username = req.headers.username || req.body.username;
   services.packageService.checkOutToCustomer(packageIds, username).then(result => {
     res.send(result)
   })

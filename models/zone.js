@@ -6,7 +6,11 @@ const zoneSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true
-  },   
+  },  
+  packages:[{
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'Package',
+  }], 
   location: { 
     type: mongoose.Schema.Types.ObjectId, 
     ref: 'Location', 

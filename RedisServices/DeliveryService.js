@@ -141,9 +141,9 @@ class DeliveryService {
     })
   }
 
-  addPackagesToDelivery(deliveryId, packageIds) {
+  addPackagesToDelivery(deliveryId, packageIds,user) {
     return new Promise(async(resolve, reject) => {
-      Delivery.findOneAndUpdate({_id:deliveryId},{$push:{packages:packageIds}}).then((err,delivery)=>{
+      Delivery.findOneAndUpdate({_id:deliveryId},{$push:{packages:packageIds},updatedBy:user}).then((err,delivery)=>{
         if (err) {
           resolve({ success: false, message: strings.string_response_error});
         }

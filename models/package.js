@@ -40,6 +40,14 @@ const packageSchema = new mongoose.Schema({
   dimensions: {
     type: String
   },
+  companyId:{
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'Company', 
+  },
+  zoneId:{
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'Zone', 
+  },
   awbId: {
     type: mongoose.Schema.Types.ObjectId, 
     ref: 'Awb', 
