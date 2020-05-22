@@ -12,7 +12,7 @@ const cubeTypeSchema = new mongoose.Schema({
     ref: 'Customer', 
     required: true 
   },
-  packages:[mongoose.Schema.Types.ObjectId],
+  packages:[{ type: mongoose.Schema.Types.ObjectId,ref:"Package"}],
   createdBy: {
     type: mongoose.Schema.Types.ObjectId, 
     ref: 'Customer', 
