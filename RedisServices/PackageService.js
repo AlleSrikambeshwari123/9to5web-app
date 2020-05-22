@@ -44,6 +44,7 @@ const PackageStatus = require('../models/packageStatus');
 const Customer = require('../models/customer');
 const Awb = require('../models/awb');
 const Zone = require('../models/zone')
+const ProcessPackage = require('../models/processPkg')
 
 function createDocument(tPackage) {
   var packageDocument = {
@@ -972,46 +973,68 @@ class PackageService {
     });
   }
 
-  //========= Update Zone On Package Delivered ======//
-async updateZone(id,pkgs){
-  try {
-    return await Zone.findByIdAndUpdate({_id:id},{$push:{packages:pkgs}})
-  } catch (error) {
-    console.error('updateZone',error)
+  // ======== Process Package ==========//
+  async processPackage(barcode,userId){
+    try {
+      let bar = await Barcode.findOne({barcode:barcode});
+        if (bar === null || bar === undefined){
+           return { success: false, message: 'Barcode Does not Exist' }
+          }
+           else{
+             
+             const process = await ProcessPackage.findOneAndUpdate({barcode:barcode,userId:userId},{userId:userId,barcode:barcode},{upsert:true,new:true})
+             return {
+              success: true,
+              message: strings.string_response_added,
+              originBarcode: process,
+            }
+             
+           }
+    } catch (error) {
+      console.error('updateZone',error)
+    }
   }
-}
 
-async updateAwbPackages(id,pkgs){
-  try {
-    return await Awb.findByIdAndUpdate({_id:id},{$push:{packages:pkgs}})
-  } catch (error) {
-    console.error('updateAwbPackages',error)
+  //========= Update Zone On Package Delivered ======//
+  async updateZone(id,pkgs){
+    try {
+      return await Zone.findByIdAndUpdate({_id:id},{$push:{packages:pkgs}})
+    } catch (error) {
+      console.error('updateZone',error)
+    }
   }
-}
+
+  async updateAwbPackages(id,pkgs){
+    try {
+      return await Awb.findByIdAndUpdate({_id:id},{$push:{packages:pkgs}})
+    } catch (error) {
+      console.error('updateAwbPackages',error)
+    }
+  }
 
 
 // =========== addPackages to No Docs ==============//
 
-async addAwbsPkgNoDocs(data){
-  try {
-    let packageIds = data.packageIds.split(',');
-    await Promise.all(
-      packageIds.map(packageId=>{
-        this.updatePackage(packageId, {
-          location: data.location,
-          zoneId:data.zoneId
-        });
-        return this.updatePackageStatus(packageId, 7, data.userId);
-      },
-      this.updateAwbPackages(data.awbId,packageIds),
-      this.updateZone(data.zoneId,packageIds)
+  async addAwbsPkgNoDocs(data){
+    try {
+      let packageIds = data.packageIds.split(',');
+      await Promise.all(
+        packageIds.map(packageId=>{
+          this.updatePackage(packageId, {
+            location: data.location,
+            zoneId:data.zoneId
+          });
+          return this.updatePackageStatus(packageId, 7, data.userId);
+        },
+        this.updateAwbPackages(data.awbId,packageIds),
+        this.updateZone(data.zoneId,packageIds)
+        )
       )
-    )
-    return { success: true, message: strings.string_response_received,status: PKG_STATUS[7] }
-  } catch (error) {
-    console.error('addAwbsPkgNoDocs',error)
+      return { success: true, message: strings.string_response_received,status: PKG_STATUS[7] }
+    } catch (error) {
+      console.error('addAwbsPkgNoDocs',error)
+    }
   }
-}
   //========== Check In Store ==========//
   checkInStore(data, username) {
     let packageIds = data.packageIds.split(',');
