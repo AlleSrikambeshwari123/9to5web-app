@@ -985,8 +985,8 @@ class PackageService {
            return { success: false, message: 'Barcode Does not Exist' }
           }
            else{
-             
-             const process = await ProcessPackage.findOneAndUpdate({barcode:barcode,userId:userId},{userId:userId,barcode:barcode},{upsert:true,new:true})
+             const process = await ProcessPackage.findOneAndUpdate({userId:userId},{userId:userId,barcode:bar.id},{upsert:true,new:true})
+             if(process == null)  return { success: false, message: strings.string_response_error }
              return {
               success: true,
               message: strings.string_response_added,
