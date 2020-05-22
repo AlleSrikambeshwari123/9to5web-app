@@ -35,6 +35,7 @@ const PKG_STATUS = {
   4: 'Recieved in NAS',
   5: 'Ready for Pickup / Delivery',
   6: 'Delivered',
+  7: 'No Invoice Present'
 };
 
 const Package = require('../models/package');
@@ -845,6 +846,7 @@ class PackageService {
     });
   }
   
+  // Add Packages To Compartment
   async addPackagesToCompartment(packageIds,compartmentId,userId){
     try {
       let error = []
@@ -864,6 +866,28 @@ class PackageService {
       return { success: false, message: strings.string_response_error }
     }
   }
+  
+  // Receive Package To Flight
+  async receivePackageToFlight(packageIds,userId){
+    try {
+      let error = []
+      let packages = packageIds && packageIds.length && packageIds.split(',').filter(Boolean);
+      await Promise.all(packages.map(async packageId=>{
+        // check packageId Exists
+        if(await Package.findById(packageId)){
+          await this.updatePackageStatus(packageId, 2, userId);
+        }else{
+          error.push(`Package ${packageId} doesn't Exist`)
+        }
+      }))
+      if(error.length >0) return { success: false, message: error }
+      return { success: true, message: strings.string_response_loaded, status: PKG_STATUS[2] }
+    } catch (error) {
+      return { success: false, message: strings.string_response_error }
+    }
+  }
+  
+  
   getPackageOnManifest(manifestId) {
     return new Promise((resolve, reject) => {
       Package.find({ manifestId: manifestId })
@@ -929,7 +953,7 @@ class PackageService {
           return this.updatePackageStatus(packageId, 4, username);
         }),
       ).then((result) => {
-        resolve({ success: true, message: strings.string_response_received });
+        resolve({ success: true, message: strings.string_response_received,status: PKG_STATUS[4] });
       });
     });
   }
@@ -943,20 +967,51 @@ class PackageService {
           return this.updatePackageStatus(packageId, 6, username);
         }),
       ).then((result) => {
-        resolve({ success: true, message: strings.string_response_received });
+        resolve({ success: true, message: strings.string_response_received,status: PKG_STATUS[6] });
       });
     });
   }
 
-  /* Update Zone On Package Delivered */
+  //========= Update Zone On Package Delivered ======//
 async updateZone(id,pkgs){
   try {
     return await Zone.findByIdAndUpdate({_id:id},{$push:{packages:pkgs}})
   } catch (error) {
-    console.error('PackageServiceUpdateZone',error)
+    console.error('updateZone',error)
   }
 }
 
+async updateAwbPackages(id,pkgs){
+  try {
+    return await Awb.findByIdAndUpdate({_id:id},{$push:{packages:pkgs}})
+  } catch (error) {
+    console.error('updateAwbPackages',error)
+  }
+}
+
+
+// =========== addPackages to No Docs ==============//
+
+async addAwbsPkgNoDocs(data){
+  try {
+    let packageIds = data.packageIds.split(',');
+    await Promise.all(
+      packageIds.map(packageId=>{
+        this.updatePackage(packageId, {
+          location: data.location,
+          zoneId:data.zoneId
+        });
+        return this.updatePackageStatus(packageId, 7, data.userId);
+      },
+      this.updateAwbPackages(data.awbId,packageIds),
+      this.updateZone(data.zoneId,packageIds)
+      )
+    )
+    return { success: true, message: strings.string_response_received }
+  } catch (error) {
+    console.error('addAwbsPkgNoDocs',error)
+  }
+}
   //========== Check In Store ==========//
   checkInStore(data, username) {
     let packageIds = data.packageIds.split(',');
@@ -973,7 +1028,7 @@ async updateZone(id,pkgs){
         this.updateZone(data.zoneId,packageIds)
         ),
         ).then((result) => {
-        resolve({ success: true, message: strings.string_response_received });
+        resolve({ success: true, message: strings.string_response_received,status: PKG_STATUS[6] });
       });
     });
   }
