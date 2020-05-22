@@ -1,175 +1,134 @@
 <% layout('./shared/__template')%>
-  <script src="/js/jquery.js"></script>
-  <script src="/assets/js/plugin/datatables/datatables.min.js"></script>
+<script src="/js/jquery.js"></script>
+<script src="/assets/js/plugin/datatables/datatables.min.js"></script>
 
 <div class="row mt--2">
-    <div class="col-md-6">
-        <div class="card full-height">
-            <div class="card-body">
-                <div class="card-title">Overall statistics</div>
-                <div class="card-category">Daily information about statistics in system</div>
-                <div class="d-flex flex-wrap justify-content-around pb-2 pt-4">
-                    <div class="px-2 pb-2 pb-md-0 text-center">
-                        <div id="circles-1"></div>
-                        <h6 class="fw-bold mt-3 mb-0">Received in FLL</h6>
-                    </div>
-                    <div class="px-2 pb-2 pb-md-0 text-center">
-                        <div id="circles-2"></div>
-                        <h6 class="fw-bold mt-3 mb-0">Loaded on AirCraft</h6>
-                    </div>
-                    <div class="px-2 pb-2 pb-md-0 text-center">
-                        <div id="circles-3"></div>
-                        <h6 class="fw-bold mt-3 mb-0">In Transit</h6>
-                    </div>
-                </div>
+  <div class="col-md-6">
+    <div class="card full-height">
+      <div class="card-body">
+        <div class="card-title">Overall statistics</div>
+        <div class="card-category">Daily information about statistics in system</div>
+        <div class="d-flex flex-wrap justify-content-around pb-2 pt-4">
+          <div class="px-2 pb-2 pb-md-0 text-center">
+            <div id="circles-1"></div>
+            <h6 class="fw-bold mt-3 mb-0">Received in FLL</h6>
+          </div>
+          <div class="px-2 pb-2 pb-md-0 text-center">
+            <div id="circles-2"></div>
+            <h6 class="fw-bold mt-3 mb-0">Loaded on AirCraft</h6>
+          </div>
+          <div class="px-2 pb-2 pb-md-0 text-center">
+            <div id="circles-3"></div>
+            <h6 class="fw-bold mt-3 mb-0">In Transit</h6>
+          </div>
+        </div>
 
-                 <div class="d-flex flex-wrap justify-content-around pb-2 pt-4">
-                     <div class="px-2 pb-2 pb-md-0 text-center">
-                        <div id="circles-4"></div>
-                        <h6 class="fw-bold mt-3 mb-0">Recieved in NAS</h6>
-                    </div>
-                    <div class="px-2 pb-2 pb-md-0 text-center">
-                        <div id="circles-5"></div>
-                        <h6 class="fw-bold mt-3 mb-0">Ready for Pickup / Delivery</h6>
-                    </div>
-                    <div class="px-2 pb-2 pb-md-0 text-center">
-                        <div id="circles-6"></div>
-                        <h6 class="fw-bold mt-3 mb-0">Delivered</h6>
-                    </div>
-                    </div>
-                </div>
-  
+        <div class="d-flex flex-wrap justify-content-around pb-2 pt-4">
+          <div class="px-2 pb-2 pb-md-0 text-center">
+            <div id="circles-4"></div>
+            <h6 class="fw-bold mt-3 mb-0">Recieved in NAS</h6>
+          </div>
+          <div class="px-2 pb-2 pb-md-0 text-center">
+            <div id="circles-5"></div>
+            <h6 class="fw-bold mt-3 mb-0">Ready for Pickup / Delivery</h6>
+          </div>
+          <div class="px-2 pb-2 pb-md-0 text-center">
+            <div id="circles-6"></div>
+            <h6 class="fw-bold mt-3 mb-0">Delivered</h6>
+          </div>
         </div>
+      </div>
+
     </div>
-        <div class="col-md-6">
-        <div class="card">
-            <div class="card-header">
-                <div class="card-head-row">
-                    <div class="card-title">User Statistics</div>
-                    <div class="card-tools">
-                        <a href="#" class="btn btn-info btn-border btn-round btn-sm mr-2">
-                            <span class="btn-label">
-                                <i class="fa fa-pencil"></i>
-                            </span>
-                            Export
-                        </a>
-                        <a href="#" class="btn btn-info btn-border btn-round btn-sm">
-                            <span class="btn-label">
-                                <i class="fa fa-print"></i>
-                            </span>
-                            Print
-                        </a>
-                    </div>
-                </div>
-            </div>
-            <div class="card-body">
-                <div class="chart-container" style="min-height: 375px">
-                    <canvas id="statisticsChart"></canvas>
-                </div>
-                <div id="myChartLegend"></div>
-            </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-head-row">
+          <div class="card-title">User Statistics</div>
+          <div class="card-tools">
+            <a href="#" class="btn btn-info btn-border btn-round btn-sm mr-2">
+              <span class="btn-label">
+                <i class="fa fa-pencil"></i>
+              </span>
+              Export
+            </a>
+            <a href="#" class="btn btn-info btn-border btn-round btn-sm">
+              <span class="btn-label">
+                <i class="fa fa-print"></i>
+              </span>
+              Print
+            </a>
+          </div>
         </div>
+      </div>
+      <div class="card-body">
+        <div class="chart-container" style="min-height: 375px">
+          <canvas id="statisticsChart"></canvas>
+        </div>
+        <div id="myChartLegend"></div>
+      </div>
     </div>
-   
+  </div>
+
 </div>
 <div class="row">
   <div class="col-md-12">
     <div class="card full-height">
       <div class="card-header">
         <div class="row">
-          <div class="card-title pd-18 col-md-4 ">Post by Etc Packages</div>
-          <div class="card-tools  pd-18 col-md-8">
-           <form method="post" onsubmit="filterData(event)">
-            <div class="row">
-              <div class="col-md-5">
-                <div class="row">
-
-                  <span class="col-md-5 pt-10" style="margin-top: 8px;">Package Status</span>
-                  <div class="col-md-7">
-                    <select class="form-control" name="package_status">
-                      <option value='all'>All</option>
-                      <%Object.keys(package_status).map(function(st){ %>
-                        <option value="<%=package_status[st]%>" ><%=package_status[st]%></option>
-                      <%})%>
-                    </select>
+          <div class="card-title pd-18 col-md-2 ">Post by Etc Packages</div>
+          <div class="card-tools  pd-18 col-md-10">
+            <form method="post" onsubmit="filterData(event)">
+              <div class="row">
+                <div class="col-md-3">
+                  <div class="row">
+                    <span class="col-md-5 pt-10" style="margin-top: 8px;">By User</span>
+                    <div class="col-md-7">
+                      <select class="form-control" name="users">
+                        <option value='all'>All</option>
+                        <%users.forEach(function(user){ %>
+                        <option value="<%=user._id%>"><%=user.username%></option>
+                        <%})%>
+                      </select>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <input type="hidden" name="filter_for" value="postBox" />
-              <div class="col-md-5">
-                <div class="row">
-                <label class="col-md-4 pt-10" style="margin-top: 8px;">Created At</label>
-                <input type="text" class="filter-date form-control col-md-7" name="filter_date" />
+                <div class="col-md-4">
+                  <div class="row">
+
+                    <span class="col-md-5 pt-10" style="margin-top: 8px;">Package Status</span>
+                    <div class="col-md-7">
+                      <select class="form-control" name="package_status">
+                        <option value='all'>All</option>
+                        <%Object.keys(package_status).map(function(st){ %>
+                        <option value="<%=package_status[st]%>"><%=package_status[st]%></option>
+                        <%})%>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <input type="hidden" name="filter_for" value="postBox" />
+                <div class="col-md-3">
+                  <div class="row">
+                    <label class="col-md-5 pt-10" style="margin-top: 8px;">Created At</label>
+                    <input type="text" class="filter-date form-control col-md-7" name="filter_date" />
+                  </div>
+                </div>
+                <div class="col-md-2 pl-10">
+                  <input type="submit" value="Filter" class="btn btn-primary" />
                 </div>
               </div>
-              <div class="pl-10">
-                <input type="submit" value="Filter" class="btn btn-primary" />
-              </div>
-            </div>
-           </form> 
+            </form>
           </div>
         </div>
       </div>
       <div class="card-body">
         <table id="post_packages" class="display table table-striped table-hover dataTable manifest-table">
-            <thead>
-                <tr>
-                    <th>package ID#</th>
-                    <th>package status</th>
-                    <th>Awb Number</th>
-                    <th>Customer Email</th>
-                </tr>
-            </thead>
-            <tbody>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-</div>
-<div class="row">
-  <div class="col-md-12">
-    <div class="card full-height">
-      <div class="card-header">
-        <div class="row">
-          <div class="card-title pd-18 col-md-4">9to5 packages</div>
-          <div class="card-tools  pd-18 col-md-8">
-           <form method="post"  onsubmit="filterData(event)">
-            <div class="row">
-              <div class="col-md-5">
-                <div class="row">
-                  <span class="col-md-5 pt-10" style="margin-top: 8px;" >Package Status</span>
-                  <div class="col-md-7">
-                    <select class="form-control" name="package_status">
-                      <option value='all'>All</option>
-                      <%Object.keys(package_status).map(function(st){ %>
-                        <option value="<%=package_status[st]%>" ><%=package_status[st]%></option>
-                      <%})%>
-                    </select>
-                  </div>
-                </div>
-              </div>
-              <input type="hidden" name="filter_for" value="9to5" />
-              <div class="col-md-5">
-                <div class="row">
-                <label class="col-md-4 pt-10" style="margin-top: 8px;">Created At</label>
-                <input type="text" class="filter-date form-control col-md-7" name="filter_date" />
-                </div>
-              </div>
-              <div class="pl-10">
-                <input type="submit" value="Filter" class="btn btn-primary" />
-              </div>
-            </div>
-           </form> 
-          </div>
-        </div>
-      </div>
-      <div class="card-body">
-        <table id="9to5packages" class="display table table-striped table-hover dataTable manifest-table">
           <thead>
             <tr>
-              <th>Package ID#</th>
-              <th>Package Status</th>
+              <th>package ID#</th>
+              <th>package status</th>
               <th>Awb Number</th>
               <th>Customer Email</th>
             </tr>
@@ -186,35 +145,115 @@
     <div class="card full-height">
       <div class="card-header">
         <div class="row">
-          <div class="card-title pd-18 col-md-4">No docs </div>
-       <div class="card-tools  pd-18 col-md-8">
-           <form method="post"  onsubmit="filterData(event)">
-            <div class="row">
-              <div class="col-md-5">
-                <div class="row">
-                  <span class="col-md-5 pt-10" style="margin-top: 8px;">Package Status</span>
-                  <div class="col-md-7">
-                    <select class="form-control" name="package_status">
-                      <option value='all'>All</option>
-                      <%Object.keys(package_status).map(function(st){ %>
-                        <option value="<%=package_status[st]%>" ><%=package_status[st]%></option>
-                      <%})%>
-                    </select>
+          <div class="card-title pd-18 col-md-2 ">9to5 packages</div>
+          <div class="card-tools  pd-18 col-md-10">
+            <form method="post" onsubmit="filterData(event)">
+              <div class="row">
+                <div class="col-md-3">
+                  <div class="row">
+                    <span class="col-md-5 pt-10" style="margin-top: 8px;">By User</span>
+                    <div class="col-md-7">
+                      <select class="form-control" name="users">
+                        <option value='all'>All</option>
+                        <%users.forEach(function(user){ %>
+                        <option value="<%=user._id%>"><%=user.username%></option>
+                        <%})%>
+                      </select>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <input type="hidden" name="filter_for" value="noDocs" />
-              <div class="col-md-5">
-                <div class="row">
-                <label class="col-md-4 pt-10" style="margin-top: 8px;" >Created At</label>
-                <input type="text" class="filter-date form-control col-md-7" name="filter_date" />
+                <div class="col-md-4">
+                  <div class="row">
+                    <span class="col-md-5 pt-10" style="margin-top: 8px;">Package Status</span>
+                    <div class="col-md-7">
+                      <select class="form-control" name="package_status">
+                        <option value='all'>All</option>
+                        <%Object.keys(package_status).map(function(st){ %>
+                        <option value="<%=package_status[st]%>"><%=package_status[st]%></option>
+                        <%})%>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <input type="hidden" name="filter_for" value="9to5" />
+                <div class="col-md-3"">
+                <div class=" row">
+                  <label class="col-md-5 pt-10" style="margin-top: 8px;">Created At</label>
+                  <input type="text" class="filter-date form-control col-md-7" name="filter_date" />
                 </div>
               </div>
-              <div class="pl-10">
+              <div class="col-md-2 pl-10">
                 <input type="submit" value="Filter" class="btn btn-primary" />
               </div>
-            </div>
-           </form> 
+          </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <table id="9to5packages" class="display table table-striped table-hover dataTable manifest-table">
+        <thead>
+          <tr>
+            <th>Package ID#</th>
+            <th>Package Status</th>
+            <th>Awb Number</th>
+            <th>Customer Email</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</div>
+<div class="row">
+  <div class="col-md-12">
+    <div class="card full-height">
+      <div class="card-header">
+        <div class="row">
+          <div class="card-title pd-18 col-md-2">No docs </div>
+          <div class="card-tools  pd-18 col-md-10">
+            <form method="post" onsubmit="filterData(event)">
+              <div class="row">
+                <div class="col-md-3">
+                  <div class="row">
+                    <span class="col-md-5 pt-10" style="margin-top: 8px;">By User</span>
+                    <div class="col-md-7">
+                      <select class="form-control" name="users">
+                        <option value='all'>All</option>
+                        <%users.forEach(function(user){ %>
+                        <option value="<%=user._id%>"><%=user.username%></option>
+                        <%})%>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="row">
+                    <span class="col-md-5 pt-10" style="margin-top: 8px;">Package Status</span>
+                    <div class="col-md-7">
+                      <select class="form-control" name="package_status">
+                        <option value='all'>All</option>
+                        <%Object.keys(package_status).map(function(st){ %>
+                        <option value="<%=package_status[st]%>"><%=package_status[st]%></option>
+                        <%})%>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <input type="hidden" name="filter_for" value="noDocs" />
+                <div class="col-md-3">
+                  <div class="row">
+                    <label class="col-md-5 pt-10" style="margin-top: 8px;">Created At</label>
+                    <input type="text" class="filter-date form-control col-md-7" name="filter_date" />
+                  </div>
+                </div>
+                <div class="col-md-2 pl-10">
+                  <input type="submit" value="Filter" class="btn btn-primary" />
+                </div>
+              </div>
+            </form>
           </div>
         </div>
       </div>
@@ -239,94 +278,94 @@
 
 
 <script type="text/javascript">
-    function filterData(event) {
-        event.preventDefault()
-        const data = $(event.currentTarget).serializeArray();
-        const obj = {}
-        data.map((i)=> {obj[i.name] = i.value})
-        $.ajax({
-            url: "/api/warehouse/get_packages_filter/" + obj.filter_for,
-            dataType: "json",
-            data: obj,
-            type: "GET",
-            success: function(data) {
-                let nineToPackages = data.nineToPackages;
-                let noDocs = data.noDocs;
-                let postBox = data.postBox;
-                data.nineToPackages ?  data9to5(nineToPackages) : null;
-                data.noDocs ? dataNoDocs(noDocs) :  null;
-                data.postBox ? dataPostBox(postBox) : null;
-            }
-        })
-    }
+  function filterData(event) {
+    event.preventDefault()
+    const data = $(event.currentTarget).serializeArray();
+    const obj = {}
+    data.map((i) => { obj[i.name] = i.value })
     $.ajax({
-        url: '/api/warehouse/get_packages_filter/all',
-        dataType: "json",
-        type: "GET",
-        success: function(data){
-            let nineToPackages = data.nineToPackages;
-            let noDocs = data.noDocs;
-            let postBox = data.postBox;
-            data9to5(nineToPackages);
-            dataNoDocs(noDocs);
-            dataPostBox(postBox);
-        }
+      url: "/api/warehouse/get_packages_filter/" + obj.filter_for,
+      dataType: "json",
+      data: obj,
+      type: "GET",
+      success: function (data) {
+        let nineToPackages = data.nineToPackages;
+        let noDocs = data.noDocs;
+        let postBox = data.postBox;
+        data.nineToPackages ? data9to5(nineToPackages) : null;
+        data.noDocs ? dataNoDocs(noDocs) : null;
+        data.postBox ? dataPostBox(postBox) : null;
+      }
+    })
+  }
+  $.ajax({
+    url: '/api/warehouse/get_packages_filter/all',
+    dataType: "json",
+    type: "GET",
+    success: function (data) {
+      let nineToPackages = data.nineToPackages;
+      let noDocs = data.noDocs;
+      let postBox = data.postBox;
+      data9to5(nineToPackages);
+      dataNoDocs(noDocs);
+      dataPostBox(postBox);
+    }
+  })
+
+  function data9to5(data) {
+    let result = data.map((row) => {
+      if (row !== null) {
+        return Tbody(row)
+      }
     })
 
-    function data9to5(data){
-        let result = data.map((row) => {
-            if(row !== null) {
-                return Tbody(row)
-            }
-        })
-
-        if ($("#9to5packages > tbody > tr").length)  {
-            $("#9to5packages > tbody > tr").empty();
-        }
-
-        $("#9to5packages tbody").html("")
-        $("#9to5packages tbody").append(result)
-        if (!( $.fn.dataTable.isDataTable( '#9to5packages' ) ) ){
-            $("#9to5packages").DataTable({searching: false,"bLengthChange": false});
-        }
+    if ($("#9to5packages > tbody > tr").length) {
+      $("#9to5packages > tbody > tr").empty();
     }
 
-    function dataNoDocs(data){
-        let result = data.map((row) => {
-            if(row !== null){
-                return Tbody(row)
-            }
-        })
-        
-        if ($("#no_docs_packages > tbody > tr").length)  {
-            $("#no_docs_packages > tbody > tr").empty();
-        }
+    $("#9to5packages tbody").html("")
+    $("#9to5packages tbody").append(result)
+    if (!($.fn.dataTable.isDataTable('#9to5packages'))) {
+      $("#9to5packages").DataTable({ searching: false, "bLengthChange": false });
+    }
+  }
 
-        $("#no_docs_packages tbody").append(result)
-        if (!( $.fn.dataTable.isDataTable( '#no_docs_packages' ) ) ){
-            $("#no_docs_packages").DataTable({searching: false,"bLengthChange": false});
-        }
+  function dataNoDocs(data) {
+    let result = data.map((row) => {
+      if (row !== null) {
+        return Tbody(row)
+      }
+    })
+
+    if ($("#no_docs_packages > tbody > tr").length) {
+      $("#no_docs_packages > tbody > tr").empty();
     }
 
-    function dataPostBox(data){
-        let result = data.map((row) => {
-            console.log('row', row);
-            if(row !== null){
-                return Tbody(row)
-            }
-        })
+    $("#no_docs_packages tbody").append(result)
+    if (!($.fn.dataTable.isDataTable('#no_docs_packages'))) {
+      $("#no_docs_packages").DataTable({ searching: false, "bLengthChange": false });
+    }
+  }
 
-        if ($("#post_packages > tbody > tr").length)  {
-            $("#post_packages > tbody > tr").empty();
-        }
+  function dataPostBox(data) {
+    let result = data.map((row) => {
+      console.log('row', row);
+      if (row !== null) {
+        return Tbody(row)
+      }
+    })
 
-        $("#post_packages tbody").append(result)
-        if (!( $.fn.dataTable.isDataTable( '#post_packages' ) ) ){
-            $("#post_packages").DataTable({searching: false,"bLengthChange": false});
-        }
+    if ($("#post_packages > tbody > tr").length) {
+      $("#post_packages > tbody > tr").empty();
     }
 
-    function Tbody(row){
-        return "<tr><td>"+row._id+"</td><td>"+row.last_status+"</td><td>"+row.awb+"</td><td>"+row.customer_email+"</td></tr>"
+    $("#post_packages tbody").append(result)
+    if (!($.fn.dataTable.isDataTable('#post_packages'))) {
+      $("#post_packages").DataTable({ searching: false, "bLengthChange": false });
     }
+  }
+
+  function Tbody(row) {
+    return "<tr><td>" + row._id + "</td><td>" + row.last_status + "</td><td>" + row.awb + "</td><td>" + row.customer_email + "</td></tr>"
+  }
 </script>
