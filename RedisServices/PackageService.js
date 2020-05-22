@@ -307,6 +307,10 @@ class PackageService {
             }
           }
         }
+        
+        if (query.users && query.users != "all") {
+          dbQuery['createdBy'] = query.users;
+        }
 
         const packages = await Package.find(dbQuery).populate("awbId").populate("customerId");
 
@@ -1441,7 +1445,7 @@ async addAwbsPkgNoDocs(data){
       }
 
       if (selectedOption === "Package") {
-        Package.find({ description: { $regex: 'aWB package  post box', $options: 'i' } }, 'id', (err, packages) => {
+        Package.find({ description: { $regex: inputField, $options: 'i' } }, 'id', (err, packages) => {
           if (err) {
             resolve([]);
           } else {
