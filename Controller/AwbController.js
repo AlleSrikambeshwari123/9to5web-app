@@ -86,7 +86,7 @@ exports.get_awb_detail = (req, res, next) => {
   })
 };
 
-exports.create_awb = (req, res, next) => {
+exports.create_awb = (req, res, next) => {  
   Promise.all([
     services.customerService.getCustomers(),
     services.hazmatService.getHazmats(),
@@ -96,6 +96,7 @@ exports.create_awb = (req, res, next) => {
     services.locationService.getLocations(),
     services.paidTypeService.getAllPaidTypes(),
     services.packageService.getAllOriginBarcode(),
+    services.packageService.getProcessOriginBarcode(res.user),
     services.locationService.getCompanies()
   ]).then(([
     customers,
@@ -106,6 +107,7 @@ exports.create_awb = (req, res, next) => {
     locations,
     paidTypes,
     barcodes,
+    processBarcode,
     companies
   ]) => {
     res.render('pages/warehouse/awb/create', {
@@ -121,6 +123,7 @@ exports.create_awb = (req, res, next) => {
       locations,
       paidTypes,
       barcodes,
+      processBarcode,
       companies
     });
   })
