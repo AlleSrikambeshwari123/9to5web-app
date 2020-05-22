@@ -604,11 +604,16 @@ class PackageService {
           console.log(err);
           resolve({ success: false, message: strings.string_response_error });
         } else {
+          this.removeProcessPackage(newPackage.originBarcode, newPackage.createdBy)
           this.updatePackageStatus(result['_id'], 1, newPackage.createdBy)
           resolve({ success: true });
         }
       });
     });
+  }
+
+  async removeProcessPackage(barcode,userId){
+    return await ProcessPackage.deleteOne({barcode:barcode, userId});
   }
 
   updatePackage(id, pkg) {
@@ -1499,6 +1504,20 @@ class PackageService {
         });
       }
     })
+  }
+  getProcessOriginBarcode(user){
+    const userId = user._id;
+    return new Promise((resolve, reject) => {
+      ProcessPackage.findOne({userId:userId}).exec((err,data)=>{
+        if(err){
+          console.log(err)
+          resolve({});
+        }else{
+          console.log(data)
+          resolve(data)
+        }
+      })
+    });
   }
 }
 
