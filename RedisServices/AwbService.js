@@ -96,7 +96,18 @@ class AwbService {
       });
     });
   }
-
+  addAwbsPkgNoDocs(data,user){
+    return new Promise((resolve, reject) => {
+      let packageIds = data.packageIds.split(',')
+      Awb.findOneAndUpdate({ _id: data.id }, {$push:{packages:packageIds}}, (err, result) => {
+        if (err) {
+          resolve({ success: false, message: strings.string_response_error });
+        } else {
+          resolve({ success: true, message: strings.string_response_updated });;
+        }
+      });
+    });
+  }
   deleteAwb(awbId) {
     return new Promise((resolve, reject) => {
       client.del(PREFIX + awbId);
