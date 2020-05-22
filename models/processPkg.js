@@ -8,8 +8,8 @@ const processPkgSchema = new mongoose.Schema({
         ref:'User'
     },
     barcode: {
-      type:mongoose.Schema.Types.ObjectId,
-      ref:'Barcode'
+        type : String,
+        required: true
   }
 }, {
   timestamps: true

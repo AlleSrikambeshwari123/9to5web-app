@@ -222,12 +222,33 @@ router.post('/add-packages-to-compartment', (req, res, next) => {
   })
 })
 
+router.post('/receive-packages-to-flight', (req, res, next) => {
+  let packageIds = req.body.packageIds;
+  var userId =  req.body.userId;
+  services.packageService.receivePackageToFlight(packageIds,userId).then((result) => {
+    res.send(result)
+  })
+})
+
 router.post('/add-packages-to-flight', middleware().checkSession, (req, res, next) => {
   let packageIds = req.body.packageIds;
   let manifestId = req.body.manifestId;
   let compartmentId = req.body.compartment || req.body.compartmentId;
   var userId = req['userId'];
   services.packageService.addToFlight(packageIds, manifestId, compartmentId, userId).then((result) => {
+    res.send(result)
+  })
+})
+
+//========== No-Docs ===================//
+router.get('/no-docs',(req,res)=>{
+  services.awbService.getAwbsNoDocs().then((result)=>{
+    res.send(result)
+  })
+})
+
+router.post('/add-packages-to-nodoc',(req,res)=>{
+  services.packageService.addAwbsPkgNoDocs(req.body).then((result)=>{
     res.send(result)
   })
 })
@@ -258,7 +279,8 @@ router.get('/get-open-deliveries', (req, res, next) => {
 router.post('/add-packages-to-delivery', (req, res, next) => {
   var deliveryId = req.body.deliveryId;
   var packageIds = req.body.packageIds.split(',');
-  services.deliveryService.addPackagesToDelivery(deliveryId, packageIds).then(result => {
+  var username = req.headers.username || req.body.username;
+  services.deliveryService.addPackagesToDelivery(deliveryId, packageIds,username).then(result => {
     res.send(result)
   })
 })
@@ -266,15 +288,19 @@ router.post('/add-packages-to-delivery', (req, res, next) => {
 //========== NAS Store Check-In APIs ==========//
 router.get('/get-locations', (req, res, next) => {
   services.locationService.getLocations().then(locations => {
-    res.send({ locations: locations });
+    res.send(locations);
+  })
+});
+
+router.get('/get-zones', (req, res, next) => {
+  services.zoneService.getZones().then(zones => {
+    res.send(zones);
   })
 });
 
 router.post('/check-in-store', (req, res, next) => {
-  var packageIds = req.body.packageIds;
-  var locationId = req.body.locationId;
-  var username = req.headers.username;
-  services.packageService.checkInStore(locationId, packageIds, username).then(result => {
+  var username = req.headers.username || req.body.username;
+  services.packageService.checkInStore(req.body, username).then(result => {
     res.send(result)
   })
 })
@@ -282,10 +308,19 @@ router.post('/check-in-store', (req, res, next) => {
 //========== NAS Check out to Customer ==========//
 router.post('/checkout-to-customer', (req, res, next) => {
   var packageIds = req.body.packageIds;
-  var username = req.headers.username;
+  var username = req.headers.username || req.body.username;
   services.packageService.checkOutToCustomer(packageIds, username).then(result => {
     res.send(result)
   })
 })
+
+//========== Process Package =============//
+  router.post('/process-package', (req, res, next) => {
+    var barcode = req.body.barcode;
+    var userId = req.headers.userId || req.body.userId;
+    services.packageService.processPackage(barcode, userId).then(result => {
+      res.send(result)
+    })
+  })
 
 module.exports = router;

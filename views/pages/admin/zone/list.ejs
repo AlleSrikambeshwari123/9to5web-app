@@ -1,0 +1,36 @@
+<% layout('./shared/__template')%>
+<div class='gutters'>
+  <div class="col-xl-12 col-lg-6 col-md-12 col-sm-12">
+    <div class="card">
+      <div class="card-header d-flex align-items-left align-items-md-center flex-column flex-md-row">
+        <div class="card-title"><%= title %></div>
+        <a href='create' class='btn btn-primary btn-round ml-md-auto float-right'>Add Zone</a>
+      </div>
+      <div class="card-body">
+        <table class="display table table-striped table-hover dataTable zone-table ">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Location Name</th>              
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% zones.forEach(zone => { %>
+            <tr data-record="<%=zone.id%>">
+              <td><%=zone.name%></td>
+              <td><%=(zone.location && zone.location.name) || '' %></td>                            
+              <td>
+                <a href="manage/<%=zone.id%>/get"><i class='fas fa-pencil-alt'></i></a>
+                <a href='#' class='rm-zone ml-3' data-id='<%=zone.id%>'><i class="fas fa-trash"></i></a>
+              </td>
+            </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<% block('scripts').append('<script src="/js/admin/zone/list.js"></script>')%>

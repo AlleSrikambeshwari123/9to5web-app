@@ -3,8 +3,15 @@
 <div class='gutters'>
   <div class='col-xl-12 col-lg-6 col-md-12 col-sm-12'>
     <div class='card'>
-      <div class="card-header d-flex align-items-left align-items-md-center flex-column flex-md-row">
-        <h3 class="card-title"><%=title%> - <%=delivery.id%></h3>
+      <div class="card-header">
+        <div class="pull-right">
+          <div class="btn-group custom-btn-group float-right" role="group">
+            <a href="/api/printer/download-pdf/delivery-report/<%=delivery.id%>" class="btn btn-primary btn-sm">
+              Download Report &nbsp;&nbsp;<i class="fa fa-download"></i>
+            </a>
+          </div>
+        </div>
+        <h4 class="card-title"><%=title%> - <%=delivery.id%></h4>
       </div>
       <div class="card-body">
         <h3 class="card-title text-muted">Delivery Info</h3>

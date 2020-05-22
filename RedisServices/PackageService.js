@@ -35,6 +35,7 @@ const PKG_STATUS = {
   4: 'Recieved in NAS',
   5: 'Ready for Pickup / Delivery',
   6: 'Delivered',
+  7: 'No Invoice Present'
 };
 
 const Package = require('../models/package');
@@ -42,6 +43,8 @@ const Compartment = require('../models/compartment');
 const PackageStatus = require('../models/packageStatus');
 const Customer = require('../models/customer');
 const Awb = require('../models/awb');
+const Zone = require('../models/zone')
+const ProcessPackage = require('../models/processPkg')
 
 function createDocument(tPackage) {
   var packageDocument = {
@@ -304,6 +307,10 @@ class PackageService {
               $gte: moment(query.filter_date, 'MM-DD-YYYY').startOf('day').toDate()
             }
           }
+        }
+        
+        if (query.users && query.users != "all") {
+          dbQuery['createdBy'] = query.users;
         }
 
         const packages = await Package.find(dbQuery).populate("awbId").populate("customerId");
@@ -606,8 +613,12 @@ class PackageService {
 
   updatePackage(id, pkg) {
     return new Promise((resolve, reject) => {
-      client.hmset(PREFIX + id, pkg);
-      resolve({ success: true });
+      Package.updateOne({_id:id},pkg,(err,result)=> {
+        if(err) resolve({ success: false, message: strings.string_response_error });
+        else resolve({ success: true });
+
+      })
+    
     });
   }
 
@@ -840,6 +851,7 @@ class PackageService {
     });
   }
   
+  // Add Packages To Compartment
   async addPackagesToCompartment(packageIds,compartmentId,userId){
     try {
       let error = []
@@ -859,6 +871,28 @@ class PackageService {
       return { success: false, message: strings.string_response_error }
     }
   }
+  
+  // Receive Package To Flight
+  async receivePackageToFlight(packageIds,userId){
+    try {
+      let error = []
+      let packages = packageIds && packageIds.length && packageIds.split(',').filter(Boolean);
+      await Promise.all(packages.map(async packageId=>{
+        // check packageId Exists
+        if(await Package.findById(packageId)){
+          await this.updatePackageStatus(packageId, 2, userId);
+        }else{
+          error.push(`Package ${packageId} doesn't Exist`)
+        }
+      }))
+      if(error.length >0) return { success: false, message: error }
+      return { success: true, message: strings.string_response_loaded, status: PKG_STATUS[2] }
+    } catch (error) {
+      return { success: false, message: strings.string_response_error }
+    }
+  }
+  
+  
   getPackageOnManifest(manifestId) {
     return new Promise((resolve, reject) => {
       Package.find({ manifestId: manifestId })
@@ -924,7 +958,7 @@ class PackageService {
           return this.updatePackageStatus(packageId, 4, username);
         }),
       ).then((result) => {
-        resolve({ success: true, message: strings.string_response_received });
+        resolve({ success: true, message: strings.string_response_received,status: PKG_STATUS[4] });
       });
     });
   }
@@ -938,7 +972,7 @@ class PackageService {
           return this.updatePackageStatus(packageId, 6, username);
         }),
       ).then((result) => {
-        resolve({ success: true, message: strings.string_response_received });
+        resolve({ success: true, message: strings.string_response_received,status: PKG_STATUS[6] });
       });
     });
   }
@@ -952,7 +986,7 @@ class PackageService {
           }
            else{
              
-             const process = await ProcessPackage.findOneAndUpdate({barcode:bar.id,userId:userId},{userId:userId,barcode:barcode},{upsert:true,new:true})
+             const process = await ProcessPackage.findOneAndUpdate({barcode:barcode,userId:userId},{userId:userId,barcode:barcode},{upsert:true,new:true})
              return {
               success: true,
               message: strings.string_response_added,
@@ -1006,19 +1040,22 @@ class PackageService {
     }
   }
   //========== Check In Store ==========//
-  checkInStore(locationId, packageIds, username) {
-    packageIds = packageIds.split(',');
+  checkInStore(data, username) {
+    let packageIds = data.packageIds.split(',');
     return new Promise((resolve, reject) => {
       Promise.all(
         packageIds.map((packageId) => {
-          // this.updatePackage(packageId, {
-          //   locationId: locationId,
-          // });
+          this.updatePackage(packageId, {
+            location: data.location,
+            companyId: data.companyId,
+            zoneId:data.zoneId
+          });
           return this.updatePackageStatus(packageId, 6, username);
-        }),
-      ).then((result) => {
-        // client.sadd(LIST_LOCATION_PACKAGE + locationId, packageIds);
-        resolve({ success: true, message: strings.string_response_stored });
+        },
+        this.updateZone(data.zoneId,packageIds)
+        ),
+        ).then((result) => {
+        resolve({ success: true, message: strings.string_response_received,status: PKG_STATUS[6] });
       });
     });
   }
@@ -1039,7 +1076,7 @@ class PackageService {
 
   getPackage_updated(packageId,pkgStatus) {
     return new Promise(async (resolve, reject) => {
-      let pkg = await Package.findOneAndUpdate({_id:packageId},{lastStatusText:pkgStatus})
+      let pkg = await Package.findOneAndUpdate({_id:packageId},{lastStatusText:pkgStatus},{new:true})
       if(!pkg) resolve({})
       else resolve(pkg)
     })
@@ -1431,7 +1468,7 @@ class PackageService {
       }
 
       if (selectedOption === "Package") {
-        Package.find({ description: { $regex: 'aWB package  post box', $options: 'i' } }, 'id', (err, packages) => {
+        Package.find({ description: { $regex: inputField, $options: 'i' } }, 'id', (err, packages) => {
           if (err) {
             resolve([]);
           } else {
