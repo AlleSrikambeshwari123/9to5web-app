@@ -130,8 +130,14 @@ $(function () {
     },
     callbacks: {
       open: function () {
-        if (awbPackages.length > 0) $('.btn-copy-last').show()
-        else $('.btn-copy-last').hide();
+        if (awbPackages.length > 0) {
+          $('.btn-copy-last').show()
+          $('.copy-package').show()
+        }
+        else{
+           $('.btn-copy-last').hide();
+           $('.copy-package').hide()
+        }
 
         $('#id').val(undefined);
         $('#description').val("");
@@ -207,7 +213,13 @@ $(function () {
     pkg.location = "Warehouse FLL";
     pkg.dimensions = pkg.W + 'x' + pkg.H + 'x' + pkg.L;
     if(isNew===true){
-      awbPackages.push(pkg);
+      if(parseInt(pkg.copy)>1){
+        for(var i=0;i<parseInt(pkg.copy);i++){
+          awbPackages.push(pkg);
+        }
+      }else{
+        awbPackages.push(pkg);
+      }
     }else{
       awbPackages = awbPackages.map(m=>{
         if(m.id===pkg.id){
