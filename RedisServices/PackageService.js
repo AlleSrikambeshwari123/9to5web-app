@@ -1007,7 +1007,7 @@ async addAwbsPkgNoDocs(data){
       this.updateZone(data.zoneId,packageIds)
       )
     )
-    return { success: true, message: strings.string_response_received }
+    return { success: true, message: strings.string_response_received,status: PKG_STATUS[7] }
   } catch (error) {
     console.error('addAwbsPkgNoDocs',error)
   }
