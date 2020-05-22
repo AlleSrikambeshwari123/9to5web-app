@@ -99,6 +99,11 @@ $(function () {
     width: '100%',
     placeholder: "Select a package calculation"
   })
+  $('#originBarcode').select2({
+    theme: 'bootstrap',
+    width: '100%',
+    placeholder: "Select a Barcode"
+  })
 
   var packageTable = $('#packageTable').DataTable({
     pageLength: 5,

@@ -314,4 +314,13 @@ router.post('/checkout-to-customer', (req, res, next) => {
   })
 })
 
+//========== Process Package =============//
+  router.post('/process-package', (req, res, next) => {
+    var barcode = req.body.barcode;
+    var userId = req.headers.userId || req.body.userId;
+    services.packageService.processPackage(barcode, userId).then(result => {
+      res.send(result)
+    })
+  })
+
 module.exports = router;
