@@ -260,10 +260,11 @@
         <label for="originBarcode">Origin barcode</label>
         <div class="row">
           <div class="col-lg-11 col-md-11 col-sm-11">
+            <%const pbarcode = processBarcode?processBarcode.barcode:'';%>
             <select id="originBarcode" name="originBarcode" class='form-control' required>
               <option></option>
-              <% barcodes.forEach(barcode => { %>
-              <option value="<%= barcode.barcode+','+barcode.id %>"><%=barcode.barcode%></option>
+              <% barcodes.forEach(barcode => {%>
+              <option <%if( pbarcode== barcode.id ){%>selected=="selected"<%}%> value="<%= barcode.barcode+','+barcode.id %>"><%=barcode.barcode%></option>
               <% }) %>
             </select>
           </div>
