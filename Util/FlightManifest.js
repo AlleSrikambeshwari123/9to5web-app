@@ -95,19 +95,19 @@ class FlightManifest {
           margin: [0, 20],
           table: {
             headerRows: 1,
-            widths: ['auto', '*', 'auto', '*', 'auto'],
+            widths: ['*', '*', 'auto', '*', 'auto'],
             body: [
               [
-                { text: 'AWB #' },
-                { text: 'Shipper' },
-                { text: 'Package No' },
-                { text: 'Consignee' },
-                { text: 'Weight (lbs)', alignment: 'right' },
+                { text: 'AWB #', alignment: 'center'},
+                { text: 'Shipper', alignment: 'center' },
+                { text: 'Package No', alignment: 'center' },
+                { text: 'Consignee', alignment: 'center' },
+                { text: 'Weight (lbs)', alignment: 'center' },
               ],
               ...this.data.rows.map((item) => [
-                `AWB${item.awb}`,
+                { text: `AWB-${item.awb}`, alignment: 'center'},
                 { text: item.shipper.name, alignment: 'center'},
-                `PK${item.id}`,
+                `PK-${item.id}`,
                 {text: item.consignee.name, alignment: 'center'},
                 { text: Number(item.weight).toFixed(2), alignment: 'center' },
               ]),

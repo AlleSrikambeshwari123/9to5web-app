@@ -55,7 +55,7 @@ class USCustoms {
     this.data = data;
   }
 
-  generateItem(item) {
+  generateItem(item, natureOfGood, i) {
     return [
       {
         text: item.awb,
@@ -457,19 +457,13 @@ class USCustoms {
                       },
                       { text: '0.00', border: [true, false, true, false], fontSize: 10 },
                       { text: '0.00', border: [true, false, true, false], fontSize: 10 },
-                      { 
-                        stack: [
-                        {text: "AS PER ATTACHED MANIFEST", margin: [0,0,0,20], fontSize: 10},
-                        {text: "No of AWBs:      " + String(this.data.natureOfGoods.awbCount), margin:[0,0,0,5], fontSize: 10 },
-                        {text: "No of SEDs:      " + String(this.data.natureOfGoods.isSed), margin:[0,0,0,5], fontSize: 10 },
-                        {text: "No of Hazmat:   " + String(this.data.natureOfGoods.hazmat), margin:[0,0,0,5], fontSize: 10 },
-                      ], margin: [10,20,0,0]}
+                      natureOfGood
                     ],
                     _.times(8, _.constant({ text: '', border: [true, false, true, false] })),
                     [
-                      { text: item.pieces, border: [true, true, true, false], fontSize: 10 },
+                      { text: i==0 ? this.data.totalPieces:item.pieces, border: [true, true, true, false], fontSize: 10 },
                       {
-                        text: Number(item.weight).toFixed(2),
+                        text: Number(i==0 ? this.data.totalWeight:item.weight).toFixed(2),
                         border: [true, true, true, false],
                         fontSize: 10,
                       },
@@ -588,11 +582,21 @@ class USCustoms {
       pageSize: 'A4',
       pageMargins: 30,
       content: [
-        ..._.flatMap(this.data.items, (item, i, array) =>
-          this.generateItem({
+        ..._.flatMap(this.data.items, (item, i, array) => {
+          let natureOfGood = {text: String(item.natureOfAwb.toUpperCase()), margin:[0,10,0,5], fontSize: 11, alignment: "center" };
+          if (i==0) {
+            natureOfGood = { 
+              stack: [
+              {text: "AS PER ATTACHED MANIFEST", margin: [0,0,0,20], fontSize: 10},
+              {text: "No of AWBs:      " + String(this.data.natureOfGoods.awbCount), margin:[0,0,0,5], fontSize: 10 },
+              {text: "No of SEDs:      " + String(this.data.natureOfGoods.isSed), margin:[0,0,0,5], fontSize: 10 },
+              {text: "No of Hazmat:   " + String(this.data.natureOfGoods.hazmat), margin:[0,0,0,5], fontSize: 10 },
+            ], margin: [10,20,0,0]}
+          }
+          return this.generateItem({
             ...item,
             isLast: i === array.length - 1,
-          }),
+          }, natureOfGood, i)}
         ),
       ],
       styles: {},

@@ -89,7 +89,7 @@ exports.downloadAirCargoManifest = async (req, res, next) => {
       acc[pkg.awbId] = acc[pkg.awbId] || {};
       let item = acc[pkg.awbId];
 
-      item.awb = String(pkg.awbId);
+      item.awb = String(pkg.awbId.awbId);
       item.pieces = (item.pieces || 0) + 1;
       // in lbs
       let weight = services.packageService.getPackageWeightInLBS(pkg);
@@ -135,7 +135,7 @@ exports.downloadFlightManifest = async (req, res, next) => {
     let rows = packages.map((pkg) => {
       return {
         id: pkg.id,
-        awb: pkg.awbId,
+        awb: pkg.awbId.awbId,
         weight: services.packageService.getPackageWeightInLBS(pkg),
         consignee: {
           name: String(
@@ -184,7 +184,7 @@ exports.downloadFlightLoadSheet = async (req, res, next) => {
           .map((pkg) => {
             return {
               id: pkg.id,
-              awb: pkg.awbId,
+              awb: pkg.awbId.awbId,
               weight: services.packageService.getPackageWeightInLBS(pkg),
             };
           }),
@@ -229,12 +229,16 @@ exports.downloadUSCustoms = async (req, res, next) => {
     }, {});
     
     let natureOfGoods = {awbCount:0, isSed:0, hazmat:0};
+    let totalWeight = 0;
+    let totalPieces = 0;
     let items = Object.values(packagesByAWB).map((packages) => {
-      let awb = awbs.find((i) => String(i._id) == String(packages[0].awbId)) || {};
+      let awb = awbs.find((i) => String(i._id) == String(packages[0].awbId.id)) || {};
       let weight = packages.reduce(
         (acc, pkg) => acc + services.packageService.getPackageWeightInLBS(pkg),
         0,
       );
+      totalWeight += weight;
+      totalPieces += packages.length;
       if (awb) {
         natureOfGoods.awbCount += 1;
         if (awb.isSed) natureOfGoods.isSed += 1;
@@ -264,6 +268,7 @@ exports.downloadUSCustoms = async (req, res, next) => {
         chargeableWeight: 'BBB',
         natureAndQuantityOfGoods: '???',
         ultimateDestination: 'BAHAMAS',
+        natureOfAwb: awb.hazmat ? awb.hazmat.description : ""
       };
     });
 
@@ -278,7 +283,9 @@ exports.downloadUSCustoms = async (req, res, next) => {
         name: String(airportTo && airportTo.name),
       },
       items,
-      natureOfGoods
+      natureOfGoods,
+      totalWeight,
+      totalPieces
     });
     let stream = await usCustoms.generate();
     res.type('pdf');

@@ -9,7 +9,7 @@ exports.get_package_list = (req, res, next) => {
       user: res.user,
       title: 'All Packages',
       filterURL: '',
-      buttonName : 'Add to Delivery',
+      buttonName : 'Add to Manifest',
       packages: packages,
     });
   });

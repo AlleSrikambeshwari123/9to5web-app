@@ -165,7 +165,7 @@ class AirCargoManifest {
                 { stack: ['17. Nature of Goods'], fontSize: 9, alignment: 'left' },
               ],
               ...this.data.rows.map((pkg) => [
-                { text: pkg.awb, alignment: 'center' },
+                { text: "AWB#"+pkg.awb, alignment: 'center' },
                 { text: pkg.pieces, alignment: 'center' },
                 { text: pkg.weight.toFixed(2), alignment: 'center' },
                 { text: convertLbsToKg(pkg.weight).toFixed(2), alignment: 'center' },

@@ -260,7 +260,9 @@ class PackageService {
   //========== Dashboard Functions ==========//
   getAllPackages_updated() {
     return new Promise((resolve, reject) => {
-      Package.find({}, (err, result) => {
+      Package.find({})
+      .populate('awbId')
+      .exec((err, result) => {
         if (err) {
           resolve([]);
         } else {
@@ -280,21 +282,23 @@ class PackageService {
           let statuses = await PackageStatus.find({ packageId: pkg._id }) || [];
           if(statuses.length > 0){
             let packageStatus = statuses[statuses.length - 1];
-
+            // console.log(pkg.customerId.pmb, pkg);
             if (pkg.awbId.invoices.length == 0) {
-              noDocs.push({ _id: pkg.id, last_status: packageStatus.status, awb: pkg.awbId.id, customer_email: pkg.customerId.email })
+              noDocs.push({ _id: pkg.id, last_status: packageStatus.status, awb: "AWB"+pkg.awbId.awbId, customer_email: pkg.customerId.email})
             }
   
-            if (pkg.customerId.pmb == "9000" && pkg.manifestId) {
-              nineToPackages.push({ _id: pkg.id, last_status: packageStatus.status, awb: pkg.awbId._id, customer_email: pkg.customerId.email })
+            if (pkg.customerId.pmb == "9000") {
+              nineToPackages.push({ _id: pkg.id, last_status: packageStatus.status, awb: "AWB"+pkg.awbId.awbId, customer_email: pkg.customerId.email})
             }
   
-            if (pkg.customerId.pmb != "9000" && pkg.manifestId) {
-              postBox.push({ _id: pkg.id, last_status: packageStatus.status, awb: pkg.awbId._id, customer_email: pkg.customerId.email })
+            if (pkg.customerId.pmb != "9000") {
+              postBox.push({ _id: pkg.id, last_status: packageStatus.status, awb: "AWB"+pkg.awbId.awbId, customer_email: pkg.customerId.email})
             }
           }
         }))
-
+        // console.log("PostBox", postBox);
+        // console.log("No Docs", noDocs);
+        
         resolve({ nineToPackages, postBox, noDocs });
 
       } else {
@@ -901,7 +905,7 @@ class PackageService {
   getPackageOnManifest(manifestId) {
     return new Promise((resolve, reject) => {
       Package.find({ manifestId: manifestId })
-        .populate(['compartmentId','shipperId','carrierId','customerId','hazmatId'])
+        .populate(['awbId','compartmentId','shipperId','carrierId','customerId','hazmatId'])
         .exec((err, packages) => {
           if (err) {
             resolve([]);
@@ -1484,7 +1488,7 @@ class PackageService {
 
       else if (selectedOption === "Awb") {
         inputField = inputField.trim().toLowerCase();
-        Awb.findOne({ _id: inputField }, '_id', (err, awb) => {
+        Awb.findOne({ awbId: inputField }, 'awbId', (err, awb) => {
           if (err) {
             resolve([]);
           } else {

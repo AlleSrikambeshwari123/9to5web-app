@@ -130,7 +130,7 @@ class FlightLoadSheet {
                   // alignment: 'center',
                   margin: [70, 0, 0, 0],
                   fontSize: 13,
-                },
+                },{},
                 {
                   text: `Section Total: ${section.packages
                     .reduce((acc, i) => acc + i.weight, 0)
@@ -138,10 +138,9 @@ class FlightLoadSheet {
                   bold: true,
                   colSpan: 1,
                   alignment: 'center',
-                  margin: [-200, 0, 0, 0],
+                  margin: [0, 0, 0, 0],
                   fontSize: 13,
                 },
-                {},
                 {},
                 {},
                 {}
