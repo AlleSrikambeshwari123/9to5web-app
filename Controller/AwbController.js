@@ -24,7 +24,7 @@ exports.preview_awb = (req, res, next) => {
 
     res.render('pages/warehouse/awb/preview', {
       page: req.originalUrl,
-      title: "AWB #" + awb.id,
+      title: "AWB #" + awb.awbId,
       user: res.user,
       awb: awb,
       shipper: awb.shipper,

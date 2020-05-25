@@ -40,7 +40,7 @@
                 <td><%= helpers.calculatePackageVolumetricWeight(pkg).toFixed(2) %> lbs</td>
                 <td><%= pkg.dimensions %></td>
                 <td><%= pkg.lastStatusText %></td>
-                <td><%= pkg.awbId %></td>
+                <td><%= pkg.awbId.awbId %></td>
                 <% if (typeof filterURL !== 'undefined' && filterURL === 'not-pmb9000') { %>
                   <td><%= pkg.location %></td>
                 <% } %>

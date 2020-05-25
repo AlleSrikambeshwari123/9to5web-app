@@ -57,7 +57,7 @@ class AwbService {
       if (awb.hasOwnProperty && awb.hasOwnProperty('hazmat') && !awb['hazmat']) {
         delete awb.hazmat;
       }
-      awb.awbId = 'AWB' + Math.floor(100000 + Math.random() * 900000);
+      // awb.awbId = 'AWB' + Math.floor(100000 + Math.random() * 900000);
       const newAwb = new Awb(awb);
       newAwb.save((err, result) => {
         if (err) {

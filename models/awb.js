@@ -1,10 +1,14 @@
 'use strict';
 
 const mongoose = require('mongoose');
+const  autoIncrement = require('mongoose-auto-increment');
+autoIncrement.initialize(mongoose.connection);
 
 const awbSchema = new mongoose.Schema({
   awbId: {
-    type: String
+    type: Number,
+    // default: 0, 
+    unique: true
   },
   customerId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -54,6 +58,12 @@ const awbSchema = new mongoose.Schema({
   }
 }, {
   timestamps: true
+});
+
+awbSchema.plugin(autoIncrement.plugin, {
+  model: 'awbSchema', 
+  field: 'awbId', 
+  startAt: 100000
 });
 
 module.exports = mongoose.model('Awb', awbSchema);

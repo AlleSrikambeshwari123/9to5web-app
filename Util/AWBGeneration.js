@@ -223,7 +223,7 @@ class AWBGeneration {
                 width: '*',
                 margin: [0, 5],
                 stack: [
-                  { margin: [-5, 0], text: this.awb.id, bold: true, fontSize: 11 },
+                  { margin: [-3, 0], text: "AWB"+this.awb.awbId, bold: true, fontSize: 11 },
                   { margin: [-1, 5], text: moment(this.awb.createdAt).format("MM/DD/YYYY hh:mm A"), bold: false, fontSize: 9 },
                   { margin: [-1, 0], text: (this.awb.createdBy && this.awb.createdBy.username) || '', bold: false, fontSize: 9 }
                 ]
