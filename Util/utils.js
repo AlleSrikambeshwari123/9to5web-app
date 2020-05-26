@@ -10,7 +10,7 @@ exports.generateToken = (user) => {
     var encryptedData = cryptojs.AES.encrypt(stringData, strings.user_auth_key).toString();
     var token = jwt.sign({
       token: encryptedData
-    }, strings.user_auth_key);
+    }, strings.user_auth_key,{ expiresIn: "15m" });
     resolve(token);
   });
 }

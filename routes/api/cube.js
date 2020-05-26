@@ -1,10 +1,12 @@
 var express = require('express');
 var router = express.Router();
+var passport = require('passport');
+require('./authHelper')
 const strings = require('../../Res/strings');
 var services = require('../../RedisServices/RedisDataServices');
 var moment = require('moment');
 
-router.post('/create-cube', async(req, res, next) => {
+router.post('/create-cube', passport.authenticate('jwt', { session: false }), async(req, res, next) => {
     try{        
         const detail = {
             cubepackageId:null,
@@ -36,7 +38,7 @@ router.post('/update-cube/:id', async(req, res, next) => {
   }
 });
 
-router.post('/assign-packages/:id',async (req,res,next)=>{
+router.post('/assign-packages/:id',passport.authenticate('jwt', { session: false }), async (req,res,next)=>{
     try{
       const cubeData = await services.cubeService.getCubeDetail(req.params.id);
       if(!cubeData){
@@ -68,7 +70,7 @@ router.post('/assign-packages/:id',async (req,res,next)=>{
     }
 })
 
-router.get('/all-cubes',async (req,res,next)=>{
+router.get('/all-cubes', passport.authenticate('jwt', { session: false }), async (req,res,next)=>{
   try{
     const cubeData = await services.cubeService.allCubes();
     res.send(cubeData);

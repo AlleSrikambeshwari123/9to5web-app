@@ -186,14 +186,14 @@ router.get('/get-deliverys', (req, res, next) => {
     .catch(next);
 });
 
-router.get('/get-flights', (req, res, next) => {
+router.get('/get-flights', passport.authenticate('jwt', { session: false }),(req, res, next) => {
   services.planeService.getPlanes().then((plane) => {
       res.json(plane);
     })
     .catch(next);
 });
 
-router.get('/get-all-compartments', (req, res, next) => {
+router.get('/get-all-compartments', passport.authenticate('jwt', { session: false }),(req, res, next) => {
   services.planeService
     .getAllCompartments()
     .then((compartments) => {
@@ -202,7 +202,7 @@ router.get('/get-all-compartments', (req, res, next) => {
     .catch(next);
 });
 
-router.get('/get-compartments', (req, res, next) => {
+router.get('/get-compartments', passport.authenticate('jwt', { session: false }), (req, res, next) => {
   let query = req.query;
   // FIXME: we should filter by query here
   services.planeService
@@ -213,7 +213,7 @@ router.get('/get-compartments', (req, res, next) => {
     .catch(next);
 });
 
-router.post('/add-packages-to-compartment', (req, res, next) => {
+router.post('/add-packages-to-compartment', passport.authenticate('jwt', { session: false }), (req, res, next) => {
   let packageIds = req.body.packageIds;
   let compartmentId = req.body.compartmentId;
   var userId =  req.body.userId;
@@ -222,7 +222,7 @@ router.post('/add-packages-to-compartment', (req, res, next) => {
   })
 })
 
-router.post('/receive-packages-to-flight', (req, res, next) => {
+router.post('/receive-packages-to-flight', passport.authenticate('jwt', { session: false }),(req, res, next) => {
   let packageIds = req.body.packageIds;
   var userId =  req.body.userId;
   services.packageService.receivePackageToFlight(packageIds,userId).then((result) => {
@@ -241,13 +241,13 @@ router.post('/add-packages-to-flight', middleware().checkSession, (req, res, nex
 })
 
 //========== No-Docs ===================//
-router.get('/no-docs',(req,res)=>{
+router.get('/no-docs',passport.authenticate('jwt', { session: false }),(req,res)=>{
   services.awbService.getAwbsNoDocs().then((result)=>{
     res.send(result)
   })
 })
 
-router.post('/add-packages-to-nodoc',(req,res)=>{
+router.post('/add-packages-to-nodoc',passport.authenticate('jwt', { session: false }), (req,res)=>{
   services.packageService.addAwbsPkgNoDocs(req.body).then((result)=>{
     res.send(result)
   })
@@ -276,7 +276,7 @@ router.get('/get-open-deliveries', (req, res, next) => {
   })
 })
 
-router.post('/add-packages-to-delivery', (req, res, next) => {
+router.post('/add-packages-to-delivery', passport.authenticate('jwt', { session: false }), (req, res, next) => {
   var deliveryId = req.body.deliveryId;
   var packageIds = req.body.packageIds.split(',');
   var username = req.headers.username || req.body.username;
@@ -286,19 +286,19 @@ router.post('/add-packages-to-delivery', (req, res, next) => {
 })
 
 //========== NAS Store Check-In APIs ==========//
-router.get('/get-locations', (req, res, next) => {
+router.get('/get-locations', passport.authenticate('jwt', { session: false }), (req, res, next) => {
   services.locationService.getLocations().then(locations => {
     res.send(locations);
   })
 });
 
-router.get('/get-zones', (req, res, next) => {
+router.get('/get-zones', passport.authenticate('jwt', { session: false }), (req, res, next) => {
   services.zoneService.getZones().then(zones => {
     res.send(zones);
   })
 });
 
-router.post('/check-in-store', (req, res, next) => {
+router.post('/check-in-store', passport.authenticate('jwt', { session: false }), (req, res, next) => {
   var username = req.headers.username || req.body.username;
   services.packageService.checkInStore(req.body, username).then(result => {
     res.send(result)
@@ -306,7 +306,7 @@ router.post('/check-in-store', (req, res, next) => {
 })
 
 //========== NAS Check out to Customer ==========//
-router.post('/checkout-to-customer', (req, res, next) => {
+router.post('/checkout-to-customer', passport.authenticate('jwt', { session: false }), (req, res, next) => {
   var packageIds = req.body.packageIds;
   var username = req.headers.username || req.body.username;
   services.packageService.checkOutToCustomer(packageIds, username).then(result => {
@@ -315,7 +315,7 @@ router.post('/checkout-to-customer', (req, res, next) => {
 })
 
 //========== Process Package =============//
-  router.post('/process-package', (req, res, next) => {
+  router.post('/process-package', passport.authenticate('jwt', { session: false }),(req, res, next) => {
     var barcode = req.body.barcode;
     var userId = req.headers.userId || req.body.userId;
     services.packageService.processPackage(barcode, userId).then(result => {
