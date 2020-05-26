@@ -12,6 +12,18 @@ Number.prototype.formatMoney = function (c, d, t) {
 function closeAddPackage(){  
   $('.mfp-close').trigger("click");
 }
+function refreshBarcode(){  
+  $.ajax({
+    url: 'refresh-barcode',
+    type: 'get',
+    success: function (response) {
+      if (response) {
+        var barcode = response.barcode;
+         $("#originBarcode option:contains('"+barcode+"')").attr("selected",true) 
+      }
+    }
+  })
+}
 
 AWBInvoices.addInvoceRow();
 $(function () { 

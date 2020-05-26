@@ -17,6 +17,7 @@ router.get('/fll/awb/manage/:awbId/print', middleware().checkSession, awbCtrl.ge
 router.get('/fll/awb/list', middleware().checkSession, awbCtrl.get_awb_list);
 router.get('/fll/awb/no-docs', middleware().checkSession, awbCtrl.get_awb_no_docs);
 router.post('/fll/awb/create-barcode', awbCtrl.add_bar_code);
+router.get('/fll/awb/refresh-barcode', awbCtrl.refresh_barcode);
 
 //========== NAS AirWay Bills ==========//
 router.get('/nas/awb/no-docs', middleware().checkSession, awbCtrl.nas_no_docs);

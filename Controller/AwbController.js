@@ -333,9 +333,15 @@ exports.nas_no_docs = (req, res, next) => {
       title: "AirWay Bills - No Docs",
       user: res.user,
       awbs: awbs,
-    })
+    })  
   })
 };
+
+exports.refresh_barcode = async (req, res)=>{
+  services.packageService.getProcessOriginBarcode(req.session.userId).then(result => {
+    res.send(result)
+  })
+}
 
 exports.add_bar_code = async (req, res, next)=>{
   const result = await services.awbService.addBarcode(req.body);
