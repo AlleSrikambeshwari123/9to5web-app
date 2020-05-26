@@ -25,7 +25,6 @@ function refreshBarcode(){
     }
   })
 }
-
 if (Array.isArray(window.invoices) && window.invoices.length) {
   window.invoices.forEach(invoice => {
     invoice['id'] = invoice['_id'];
