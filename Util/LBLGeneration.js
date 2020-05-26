@@ -57,7 +57,7 @@ class LBLGeneration {
     return new Promise((resolve, reject) => {
       this.awb = awb;
       var company = this.companies.nineTofive;
-      console.log("awb", awb, "customer", this.awb.customer)
+      console.log("awb", awb)
       if (Number(this.awb.customer.pmb) >= 9000) {
         company = this.companies.nineTofive;
       } else if (this.awb.customer.pmb == "") {
@@ -69,13 +69,17 @@ class LBLGeneration {
       console.log("company logo" + company.logo);
 
       var packages = this.awb.packages;
-      Promise.all(packages.map(pkg => this.GernerateAWBLabel(pkg, company))).then(results => {
-        console.log(results);
-        resolve(results);
-      }).catch(err => {
-        console.error(err);
-        reject(err);
+      packages.map( pkg => {
+        console.log(pkg.id, company); 
       })
+      
+      // Promise.all(packages.map(pkg => this.GernerateAWBLabel(pkg, company))).then(results => {
+      //   console.log(results);
+      //   resolve(results);
+      // }).catch(err => {
+      //   console.error(err);
+      //   reject(err);
+      // })
     })
   }
   generateSinglePackageLabel(awb, pkg) {
@@ -216,7 +220,7 @@ class LBLGeneration {
                 table: {
                   margin: [0, 0],
                   headerRows: 0,
-                  widths: [60, '*', 50],
+                  widths: [200, 50],
                   body: [
                     [{
                       margin: [1, 1], stack: [
@@ -224,12 +228,12 @@ class LBLGeneration {
                         { margin: [0, 5], text: "PK00" + pkg.id, fontSize: 14, bold: true },
                       ], border: [false, false, false, true]
                     }, //logo for lbl 
-                    {
-                      margin: [1, 1], stack: [
-                        { text: "TRACKING NO", fontSize: 6, bold: true },
-                        { margin: [10, 5], text: pkg.trackingNo, fontSize: 12, bold: true },
-                      ], border: [true, false, false, true]
-                    },
+                    // {
+                    //   margin: [1, 1], stack: [
+                    //     { text: "TRACKING NO", fontSize: 6, bold: true },
+                    //     { margin: [10, 5], text: pkg.trackingNo, fontSize: 12, bold: true },
+                    //   ], border: [true, false, false, true]
+                    // },
                     {
                       margin: [1, 1], stack: [
                         { text: "TOTAL PIECES", fontSize: 6, bold: true },
