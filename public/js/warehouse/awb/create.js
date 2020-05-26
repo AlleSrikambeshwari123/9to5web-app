@@ -18,8 +18,12 @@ function refreshBarcode(){
     type: 'get',
     success: function (response) {
       if (response) {
-        var barcode = response.barcode;
-         $("#originBarcode option:contains('"+barcode+"')").attr("selected",true) 
+        var barcodeId = (response.barcode)?response.barcode._id:'';
+        var barcode = (response.barcode)?response.barcode.barcode:'';
+        var selectBarcode = barcode+','+barcodeId;
+        $('#originBarcode').val(selectBarcode).trigger('change');
+      }else{
+        $('#originBarcode').val('').trigger('change');
       }
     }
   })

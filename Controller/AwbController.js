@@ -48,6 +48,7 @@ exports.get_awb_detail = (req, res, next) => {
     services.paidTypeService.getAllPaidTypes(),
     services.serviceTypeService.getAllServiceTypes(),
     services.awbService.getPurchaseOrder(id),
+    services.packageService.getProcessOriginBarcode(res.user),
     services.packageService.getAllOriginBarcode(),
   ]).then(([
     customers,
@@ -61,6 +62,7 @@ exports.get_awb_detail = (req, res, next) => {
     paidTypes,
     serviceTypes,
     purchaseOrder,
+    processBarcode,
     barcodes,
   ]) => {
     awb['customer'] = awb['customerId'];
@@ -81,6 +83,7 @@ exports.get_awb_detail = (req, res, next) => {
       paidTypes,
       serviceTypes,
       purchaseOrder,
+      processBarcode,
       barcodes,
     });
   })

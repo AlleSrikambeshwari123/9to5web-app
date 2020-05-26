@@ -1513,7 +1513,7 @@ class PackageService {
     let userId = user._id;
     userId = user._id == undefined ? user: user._id
     return new Promise((resolve, reject) => {
-      ProcessPackage.findOne({userId:userId}).exec((err,data)=>{
+      ProcessPackage.findOne({userId:userId}).populate('barcode').exec((err,data)=>{
         if(err){
           console.log(err)
           resolve({});
