@@ -17,6 +17,7 @@ router.post('/login', (req, res, next) => {
     if (authresult.authenticated == true && authresult.isUserEnabled) {
       req.session.token = authresult.token;
       var cuser = authresult.user;
+      req.session.userId = cuser._id
       const roles = cuser.roles.map((data) => data.type);
       
       if (roles.indexOf(role_admin) > -1) {

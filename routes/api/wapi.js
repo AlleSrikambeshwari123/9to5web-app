@@ -73,6 +73,7 @@ router.get('/get-package-detail-barcode/:barcode', passport.authenticate('jwt', 
     console.log(error)
   }
   const barcodeId = await services.packageService.getOriginalBarcodeByCode(barcode);
+  console.log(barcodeId);
   if (barcodeId === null) return res.send({ status: 'barcode Not Found' })
   const myPackage = allService.filter((i) => i.originBarcode.toString() === barcodeId.id)
   if (myPackage.length > 0) {

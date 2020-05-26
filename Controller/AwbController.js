@@ -48,6 +48,7 @@ exports.get_awb_detail = (req, res, next) => {
     services.paidTypeService.getAllPaidTypes(),
     services.serviceTypeService.getAllServiceTypes(),
     services.awbService.getPurchaseOrder(id),
+    services.packageService.getProcessOriginBarcode(res.user),
     services.packageService.getAllOriginBarcode(),
   ]).then(([
     customers,
@@ -61,6 +62,7 @@ exports.get_awb_detail = (req, res, next) => {
     paidTypes,
     serviceTypes,
     purchaseOrder,
+    processBarcode,
     barcodes,
   ]) => {
     awb['customer'] = awb['customerId'];
@@ -81,6 +83,7 @@ exports.get_awb_detail = (req, res, next) => {
       paidTypes,
       serviceTypes,
       purchaseOrder,
+      processBarcode,
       barcodes,
     });
   })
@@ -333,9 +336,15 @@ exports.nas_no_docs = (req, res, next) => {
       title: "AirWay Bills - No Docs",
       user: res.user,
       awbs: awbs,
-    })
+    })  
   })
 };
+
+exports.refresh_barcode = async (req, res)=>{
+  services.packageService.getProcessOriginBarcode(req.session.userId).then(result => {
+    res.send(result)
+  })
+}
 
 exports.add_bar_code = async (req, res, next)=>{
   const result = await services.awbService.addBarcode(req.body);

@@ -12,6 +12,22 @@ Number.prototype.formatMoney = function (c, d, t) {
 function closeAddPackage(){  
   $('.mfp-close').trigger("click");
 }
+function refreshBarcode(){  
+  $.ajax({
+    url: 'refresh-barcode',
+    type: 'get',
+    success: function (response) {
+      if (response) {
+        var barcodeId = (response.barcode)?response.barcode._id:'';
+        var barcode = (response.barcode)?response.barcode.barcode:'';
+        var selectBarcode = barcode+','+barcodeId;
+        $('#originBarcode').val(selectBarcode).trigger('change');
+      }else{
+        $('#originBarcode').val('').trigger('change');
+      }
+    }
+  })
+}
 
 AWBInvoices.addInvoceRow();
 $(function () { 

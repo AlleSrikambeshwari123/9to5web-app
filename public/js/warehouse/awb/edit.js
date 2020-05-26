@@ -11,7 +11,20 @@ Number.prototype.formatMoney = function (c, d, t) {
 function closeAddPackage(){  
   $('.mfp-close').trigger("click");
 }
-
+function refreshBarcode(){  
+  $.ajax({
+    url: '/warehouse/fll/awb/refresh-barcode',
+    type: 'get',
+    success: function (response) {
+      if (response) {
+        var barcodeId = (response.barcode)?response.barcode._id:'';        
+        $('#originBarcode').val(barcodeId).trigger('change');
+      }else{
+        $('#originBarcode').val(barcodeId).trigger('change');
+      }
+    }
+  })
+}
 if (Array.isArray(window.invoices) && window.invoices.length) {
   window.invoices.forEach(invoice => {
     invoice['id'] = invoice['_id'];
