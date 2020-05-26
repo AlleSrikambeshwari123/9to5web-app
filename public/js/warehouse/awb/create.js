@@ -14,7 +14,15 @@ function closeAddPackage(){
 }
 
 AWBInvoices.addInvoceRow();
-$(function () {  
+$(function () { 
+  $(".copy-package-button").click(function(){    
+    $(".copy-package-text").show();
+  });
+  $("#link-add-package-popup").click(function(){    
+    $(".copy-package-text").hide();
+    $("#copy").val(1);
+  });
+
   $('#location').select2({
     theme: 'bootstrap',
     placeholder: 'Select Location',
@@ -131,12 +139,10 @@ $(function () {
     callbacks: {
       open: function () {
         if (awbPackages.length > 0) {
-          $('.btn-copy-last').show()
-          $('.copy-package').show()
+          $('.btn-copy-last').show()          
         }
         else{
            $('.btn-copy-last').hide();
-           $('.copy-package').hide()
         }
 
         $('#id').val(undefined);
