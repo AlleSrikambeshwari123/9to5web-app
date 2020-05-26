@@ -69,9 +69,9 @@ exports.download_pkg_labels = (req, res, next) => {
   console.log("Downloading Package Label PDF", id);
   getFullAwb(id).then(awb => {
     lblPdfGen.generateAllPackageLabels(awb).then(results => {
-      console.log(results);
+      // console.log(results);
       res.zip(results)
-      // res.download(results);
+      res.download(results);
     })
   })
 }
@@ -211,11 +211,13 @@ exports.downloadUSCustoms = async (req, res, next) => {
   try {
     let manifest = await services.manifestService.getManifest(req.params.id);
     let packages = await services.packageService.getPackageOnManifest(req.params.id);
+    let airline = await services.airlineService.getAirline(manifest.planeId.airlineId);
+   
     let [airportFrom, airportTo] = await Promise.all([
       manifest.airportFromId && services.airportService.get(manifest.airportFromId),
       manifest.airportToId && services.airportService.get(manifest.airportToId),
     ]);
-
+      
     let awbIds = _.uniqBy(packages, 'awbId')
       .map((i) => i.awbId)
       .filter(Boolean);
@@ -244,10 +246,14 @@ exports.downloadUSCustoms = async (req, res, next) => {
         if (awb.isSed) natureOfGoods.isSed += 1;
         if (awb.hazmat) natureOfGoods.hazmat += 1;
       }
-      
+
+      let declaredValueForCustoms = 0;
+      awb.invoices.forEach(invoice => {
+        declaredValueForCustoms += parseInt(invoice.value);
+      });
       return {
-        declaredValueForCustoms: '???',
-        declaredValueForCharge: '???',
+        declaredValueForCustoms,
+        declaredValueForCharge: 'NVD',
         executedOnDate: new Date(),
         executedAtPlace: 'Fort Launderdale',
         awb: awb._id,
@@ -262,13 +268,13 @@ exports.downloadUSCustoms = async (req, res, next) => {
           name: String(awb.shipper && awb.shipper.name),
           address: String(awb.shipper && awb.shipper.address),
         },
-        accountingInformation: '???',
+        accountingInformation: manifest.planeId.tailNumber,
         pieces: packages.length,
         weight: weight,
         chargeableWeight: 'BBB',
         natureAndQuantityOfGoods: '???',
         ultimateDestination: 'BAHAMAS',
-        natureOfAwb: awb.hazmat ? awb.hazmat.description : ""
+        natureOfAwb: awb.hazmat ? awb.hazmat.description : "",
       };
     });
 
@@ -282,9 +288,12 @@ exports.downloadUSCustoms = async (req, res, next) => {
       airportTo: {
         name: String(airportTo && airportTo.name),
       },
+      mawb : manifest.planeId.tailNumber,
+      to : 'GAC',
+      byFirstCarrier: airline.name,
       items,
       natureOfGoods,
-      totalWeight,
+      totalWeight,  
       totalPieces
     });
     let stream = await usCustoms.generate();
@@ -336,6 +345,7 @@ exports.generate_awb_pdf = (req, res, next) => {
 }
 
 exports.generate_pkg_label_pdf = (req, res, next) => {
+  console.log("DWLD PACKAGE LABEL")
   services.packageService.getPackage_updated(req.params.id).then(package => {
     services.printService.getAWBDataForAllRelatedEntities(package.awbId).then((awb) => {
       lblPdfGen.generateSinglePackageLabel(awb, package).then(result => {

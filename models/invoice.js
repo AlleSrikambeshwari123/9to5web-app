@@ -8,7 +8,7 @@ const invoiceSchema = new mongoose.Schema({
     type: String
   },
   value: {
-    type: String
+    type: Number
   },
   filename: {
     type: String

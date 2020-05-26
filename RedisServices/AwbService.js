@@ -136,7 +136,7 @@ class AwbService {
         } else {
           resolve(result);
         }
-      }).populate('customerId');
+      }).populate(['customerId', 'invoices']);
     });
   }
 

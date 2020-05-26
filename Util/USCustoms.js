@@ -175,7 +175,7 @@ class USCustoms {
               {
                 stack: [
                   { text: 'Accounting Information', margin: [0, 0, 0, 5] },
-                  { text: item.accountingInformation, fontSize: 10 },
+                  { text: "MAWB: "+item.accountingInformation, fontSize: 10 },
                 ],
                 margin: 4,
               },
@@ -184,7 +184,7 @@ class USCustoms {
               {
                 stack: [
                   {
-                    text: 'Airport of Departure (Addr. of First Carrierr) and Requested Routing',
+                    text: 'Airport of Departure (Addr. of First Carrier) and Requested Routing',
                     margin: [0, 0, 0, 5],
                   },
                   { text: this.data.airportFrom.name, fontSize: 10 },
@@ -223,13 +223,13 @@ class USCustoms {
                       {
                         stack: [
                           { text: 'To', margin: [0, 0, 0, 5] },
-                          { text: '???', fontSize: 10 },
+                          { text: this.data.to, fontSize: 10 },
                         ],
                       },
                       {
                         stack: [
                           { text: 'By First Carrier', margin: [0, 0, 0, 5] },
-                          { text: '???', fontSize: 10 },
+                          { text: this.data.byFirstCarrier, fontSize: 10 },
                         ],
                       },
                     ],
