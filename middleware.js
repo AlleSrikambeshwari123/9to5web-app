@@ -30,7 +30,8 @@ module.exports = function (allowedRoles) {
                         }
                     next();
                 }, function () {
-                    res.status(401).render('pages/401', { title: 'Express', failed: '0' });
+                    res.redirect('/')
+                    // res.status(401).render('pages/401', { title: 'Express', failed: '0' });
                 });
             }
             else
