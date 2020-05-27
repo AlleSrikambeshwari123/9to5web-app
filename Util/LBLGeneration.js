@@ -27,7 +27,6 @@ var fonts = {
 var PdfPrinter = require('pdfmake');
 var printer = new PdfPrinter(fonts);
 var fs = require('fs');
-var archiver = require('archiver');
 var bwipjs = require('bwip-js')
 Number.prototype.formatMoney = function (c, d, t) {
   var n = this,
