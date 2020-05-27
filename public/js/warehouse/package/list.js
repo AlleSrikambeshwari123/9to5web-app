@@ -3,7 +3,7 @@ $('.package-table').DataTable({
 })
 
 var pdfPath;
-$('.btn-print-pkg').click(function () {
+$("#package-table").on("click",'.btn-print-pkg',function() {
   let id = $(this).data('id');
   $.ajax({
     url: '/api/printer/pdf/generate/pkg/' + id,
