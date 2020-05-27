@@ -27,6 +27,7 @@ var fonts = {
 var PdfPrinter = require('pdfmake');
 var printer = new PdfPrinter(fonts);
 var fs = require('fs');
+var archiver = require('archiver');
 var bwipjs = require('bwip-js')
 Number.prototype.formatMoney = function (c, d, t) {
   var n = this,
@@ -56,8 +57,13 @@ class LBLGeneration {
   generateAllPackageLabels(awb) {
     return new Promise((resolve, reject) => {
       this.awb = awb;
+      this.awb['id'] = awb['_id'];
+
+      if (awb.id == undefined) {
+        resolve({ success: false, message: "Can't create the barcode because of invalid information" });
+      }
+
       var company = this.companies.nineTofive;
-      console.log("awb", awb)
       if (Number(this.awb.customer.pmb) >= 9000) {
         company = this.companies.nineTofive;
       } else if (this.awb.customer.pmb == "") {
@@ -68,25 +74,25 @@ class LBLGeneration {
       console.log(this.awb.packages.length, "- no of labels to generate.");
       console.log("company logo" + company.logo);
 
-      var packages = this.awb.packages;
-      packages.map( pkg => {
-        console.log(pkg.id, company); 
-      })
-      
-      // Promise.all(packages.map(pkg => this.GernerateAWBLabel(pkg, company))).then(results => {
-      //   console.log(results);
-      //   resolve(results);
-      // }).catch(err => {
-      //   console.error(err);
-      //   reject(err);
-      // })
+      Promise.all(awb.packages.map(pkg => this.GernerateAWBLabel(pkg, company)))
+        .then(results => {
+          results.forEach((result,i) => {
+            results[i]['name'] = results[i].filename;
+            delete results[i].filename;
+          })
+          console.log(results)
+          resolve(results);
+        }).catch(err => {
+          console.error(err);
+          reject(err);
+        })
     })
   }
   generateSinglePackageLabel(awb, pkg) {
     return new Promise((resolve, reject) => {
       this.awb = awb;
       this.awb['id'] = awb['_id'];
-      
+
       if (awb.id == undefined) {
         resolve({ success: false, message: "Can't create the barcode because of invalid information" });
       }
@@ -99,6 +105,7 @@ class LBLGeneration {
         company = this.companies.nineTofive;
       } else company = this.companies.postBoxes
       this.GernerateAWBLabel(pkg, company).then(result => {
+        console.log(result);
         resolve(result);
       }).catch(err => {
         console.error(err);
@@ -109,11 +116,11 @@ class LBLGeneration {
   GernerateAWBLabel(pkg, company) {
     return new Promise((resolve, reject) => {
       var noDocs = ""
-      
+
       // if (this.awb.invoiceNumber == "" && (this.awb.invoices || []).length === 0) {
       //   noDocs = "***"
       // }
-      
+
       if ((this.awb.invoices || []).length === 0) {
         noDocs = "***"
       }

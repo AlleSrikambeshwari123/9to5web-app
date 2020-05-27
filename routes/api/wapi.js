@@ -203,7 +203,7 @@ router.get('/get-all-compartments', passport.authenticate('jwt', { session: fals
     .catch(next);
 });
 
-router.get('/get-compartments', passport.authenticate('jwt', { session: false }), (req, res, next) => {
+router.get('/get-compartments', (req, res, next) => {
   let query = req.query;
   // FIXME: we should filter by query here
   services.planeService
