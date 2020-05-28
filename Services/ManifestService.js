@@ -3,13 +3,13 @@ var moment = require('moment');
 const mongoose = require('mongoose');
 const strings = require('../Res/strings');
 
-var lredis = require('./redis-local');
-var client = require('./dataContext').redisClient;
+// var lredis = require('./redis-local');
+// var client = require('./dataContext').redisClient;
 
-const INIT_ID = strings.redis_id_manifest_init;
-const ID_COUNTER = strings.redis_id_manifest;
-const PREFIX = strings.redis_prefix_manifest;
-const OPEN_MANIFEST_LIST = strings.redis_prefix_manifest_open_list;
+// const INIT_ID = strings.redis_id_manifest_init;
+// const ID_COUNTER = strings.redis_id_manifest;
+// const PREFIX = strings.redis_prefix_manifest;
+// const OPEN_MANIFEST_LIST = strings.redis_prefix_manifest_open_list;
 
 const PlaneService = require('./PlaneService');
 const Manifest = require('../models/manifest');
@@ -39,17 +39,17 @@ const manifestStages = {
 }
 
 class ManifestService {
-  constructor() {
-    this.mstages = manifestStages;
-    this.checkSetup();
-  }
-  checkSetup() {
-    client.exists(ID_COUNTER, (err, exist) => {
-      if (Number(exist) == 0) {
-        client.set(ID_COUNTER, INIT_ID);
-      }
-    });
-  }
+  // constructor() {
+  //   this.mstages = manifestStages;
+  //   this.checkSetup();
+  // }
+  // checkSetup() {
+  //   client.exists(ID_COUNTER, (err, exist) => {
+  //     if (Number(exist) == 0) {
+  //       client.set(ID_COUNTER, INIT_ID);
+  //     }
+  //   });
+  // }
   getStages() {
     return this.manifestStages;
   }
@@ -90,21 +90,21 @@ class ManifestService {
     })
   }
 
-  changeStage(mid, stageId) {
-    return new Promise((resolve, reject) => {
-      var stage = this.getStageById(stageId);
-      client.hmset(PREFIX + mid, {
-        stageId: stage.id,
-        stage: stage.title
-      }, (err, result) => {
-        if (stage.id == manifestStages.open.id)
-          client.sadd(OPEN_MANIFEST_LIST, mid);
-        else
-          client.srem(OPEN_MANIFEST_LIST, mid);
-        resolve({ success: true, message: strings.string_response_updated });
-      });
-    })
-  }
+  // changeStage(mid, stageId) {
+  //   return new Promise((resolve, reject) => {
+  //     var stage = this.getStageById(stageId);
+  //     client.hmset(PREFIX + mid, {
+  //       stageId: stage.id,
+  //       stage: stage.title
+  //     }, (err, result) => {
+  //       if (stage.id == manifestStages.open.id)
+  //         client.sadd(OPEN_MANIFEST_LIST, mid);
+  //       else
+  //         client.srem(OPEN_MANIFEST_LIST, mid);
+  //       resolve({ success: true, message: strings.string_response_updated });
+  //     });
+  //   })
+  // }
 
   shipManifest(mid, userId) {
     return new Promise((resolve, reject) => {
@@ -182,13 +182,6 @@ class ManifestService {
           resolve(manifests);
         }
       });
-      // client.smembers(OPEN_MANIFEST_LIST, (err, ids) => {
-      //   Promise.all(ids.map(id => {
-      //     return lredis.hgetall(PREFIX + id);
-      //   })).then(manifests => {
-      //     resolve(manifests);
-      //   })
-      // })
     });
   }
 

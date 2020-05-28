@@ -1,6 +1,6 @@
 var zip = require('express-zip');
 var _ = require('lodash');
-var services = require('../RedisServices/RedisDataServices');
+var services = require('../Services/RedisDataServices');
 var utils = require('../Util/utils');
 const strings = require('../Res/strings');
 var AWBGeneration = require('../Util/AWBGeneration');

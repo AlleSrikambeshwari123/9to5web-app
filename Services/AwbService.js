@@ -2,13 +2,13 @@ const Promise = require('bluebird');
 var moment = require('moment');
 var strings = require('../Res/strings');
 
-var lredis = require('./redis-local');
-var client = require('./dataContext').redisClient;
+// var lredis = require('./redis-local');
+// var client = require('./dataContext').redisClient;
 
-const INIT_AWB_ID = strings.redis_id_awb_init;
-const PREFIX = strings.redis_prefix_awb;
-const AWB_ID = strings.redis_id_awb;
-const PREFIX_NO_DOCS_LIST = strings.redis_prefix_no_docs_list;
+// const INIT_AWB_ID = strings.redis_id_awb_init;
+// const PREFIX = strings.redis_prefix_awb;
+// const AWB_ID = strings.redis_id_awb;
+// const PREFIX_NO_DOCS_LIST = strings.redis_prefix_no_docs_list;
 
 const Awb = require('../models/awb');
 const Barcode = require('../models/barcode');
@@ -28,29 +28,29 @@ class AwbService {
     this.services = services;
   }
 
-  resetAwbId() {
-    return new Promise((resolve, reject) => {
-      client.set(AWB_ID, INIT_AWB_ID);
-      resolve({ success: true });
-    });
-  }
-  generateAwbId() {
-    return new Promise((resolve, reject) => {
-      client.exists(AWB_ID, (err, exist) => {
-        if (Number(exist) != 1) {
-          client.set(AWB_ID, INIT_AWB_ID, (err, result) => {
-            client.incr(AWB_ID, (err, newId) => {
-              resolve({ awb: newId });
-            });
-          });
-        } else {
-          client.incr(AWB_ID, (err, newId) => {
-            resolve({ awb: newId });
-          });
-        }
-      });
-    });
-  }
+  // resetAwbId() {
+  //   return new Promise((resolve, reject) => {
+  //     client.set(AWB_ID, INIT_AWB_ID);
+  //     resolve({ success: true });
+  //   });
+  // }
+  // generateAwbId() {
+  //   return new Promise((resolve, reject) => {
+  //     client.exists(AWB_ID, (err, exist) => {
+  //       if (Number(exist) != 1) {
+  //         client.set(AWB_ID, INIT_AWB_ID, (err, result) => {
+  //           client.incr(AWB_ID, (err, newId) => {
+  //             resolve({ awb: newId });
+  //           });
+  //         });
+  //       } else {
+  //         client.incr(AWB_ID, (err, newId) => {
+  //           resolve({ awb: newId });
+  //         });
+  //       }
+  //     });
+  //   });
+  // }
 
   createAwb(awb) {
     return new Promise((resolve, reject) => {
@@ -108,13 +108,13 @@ class AwbService {
       });
     });
   }
-  deleteAwb(awbId) {
-    return new Promise((resolve, reject) => {
-      client.del(PREFIX + awbId);
-      client.srem(PREFIX_NO_DOCS_LIST, awbId);
-      resolve({ success: true, message: strings.string_response_removed });
-    });
-  }
+  // deleteAwb(awbId) {
+  //   return new Promise((resolve, reject) => {
+  //     client.del(PREFIX + awbId);
+  //     client.srem(PREFIX_NO_DOCS_LIST, awbId);
+  //     resolve({ success: true, message: strings.string_response_removed });
+  //   });
+  // }
 
   deleteAwb_updated(awbId) {
     return new Promise((resolve, reject) => {
@@ -140,20 +140,20 @@ class AwbService {
     });
   }
 
-  getAwbs() {
-    return new Promise((resolve, reject) => {
-      client.keys(PREFIX + '*', (err, keys) => {
-        if (err) resolve([]);
-        Promise.all(
-          keys.map((key) => {
-            return lredis.hgetall(key);
-          })
-        ).then((awbs) => {
-          resolve(awbs);
-        });
-      });
-    });
-  }
+  // getAwbs() {
+  //   return new Promise((resolve, reject) => {
+  //     client.keys(PREFIX + '*', (err, keys) => {
+  //       if (err) resolve([]);
+  //       Promise.all(
+  //         keys.map((key) => {
+  //           return lredis.hgetall(key);
+  //         })
+  //       ).then((awbs) => {
+  //         resolve(awbs);
+  //       });
+  //     });
+  //   });
+  // }
 
   getAwbsFull() {
     return new Promise((resolve, reject) => {
@@ -190,10 +190,10 @@ class AwbService {
     });
   }
 
-  async getAwbsNoDocsIds() {
-    const ids = await Promise.fromCallback((cb) => client.smembers(PREFIX_NO_DOCS_LIST, cb));
-    return ids;
-  }
+  // async getAwbsNoDocsIds() {
+  //   const ids = await Promise.fromCallback((cb) => client.smembers(PREFIX_NO_DOCS_LIST, cb));
+  //   return ids;
+  // }
 
   async getInManifestNoInvoiceIds() {
     return new Promise((resolve, reject) => {
@@ -245,18 +245,6 @@ class AwbService {
 
   getFullAwb(id) {
     return new Promise((resolve, reject) => {
-      // Awb.find({_id: id})
-      // .populate('customerId')
-      // .populate('shipper')
-      // .populate('carrier')
-      // .populate('hazmat')
-      // .populate('packages')
-      // .populate('purchaseOrders')
-      // .populate('invoices')
-      // .exec((err, result) => {
-      //   resolve(result);
-      // });
-
       Promise.all([this.getAwb(id), this.services.packageService.getPackages(id)]).then((results) => {
         let awb = results[0];
         let packages = results[1];

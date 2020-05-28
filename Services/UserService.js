@@ -7,15 +7,14 @@ const strings = require('../Res/strings');
 var utils = require('../Util/utils');
 
 // Redis
-var client = require('./dataContext').redisClient;
-var lredis = require('./redis-local');
+// var client = require('./dataContext').redisClient;
+// var lredis = require('./redis-local');
+// var PREFIX = strings.redis_prefix_user;
+// var ID_COUNTER = strings.redis_id_user;
 
 const User = require('../models/user');
 const Role = require('../models/role');
 const mail = require('../Util/mail');
-
-var PREFIX = strings.redis_prefix_user;
-var ID_COUNTER = strings.redis_id_user;
 
 class UserService {
   changePassword(username, newpassword, oldpassword) {

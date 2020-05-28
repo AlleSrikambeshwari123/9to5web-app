@@ -6,13 +6,13 @@ var utils = require('../Util/utils');
 const csv = require('csvtojson');
 const strings = require('../Res/strings');
 const mail = require('../Util/mail');
-var lredis = require('./redis-local');
-var client = require('./dataContext').redisClient;
+
+// var lredis = require('./redis-local');
+// var client = require('./dataContext').redisClient;
+// var PREFIX = strings.redis_prefix_customer;
+// var ID_COUNTER = strings.redis_id_customer;
 
 const Customer = require('../models/customer');
-
-var PREFIX = strings.redis_prefix_customer;
-var ID_COUNTER = strings.redis_id_customer;
 
 class CustomerService {
   createCustomer(customer) {
@@ -226,42 +226,42 @@ class CustomerService {
     });
   }
 
-  importShippersFromCsv() {
-    return new Promise((resolve, reject) => {
-      this.removeAll().then(result => {
-        csv().fromFile("./DB_Seed/customers.csv").then(jsonObj => {
-          Promise.all(jsonObj.map(element => {
-            client.incr(ID_COUNTER, (err, id) => {
-              return lredis.hmset(PREFIX + id, {
-                id: id,
-                name: element.sCustomerName,
-                firstName: element.sFirstName,
-                lastName: element.sLastName,
-                telephone: element.sTelephone,
-                address: element.sAddress,
-                pmb: element.iPMBID,
-                email: element.sEmail,
-                city: element.sCity,
-                state: element.sState,
-                zipcode: element.sZipcode,
-                company: element.sCompany,
-                country: element.sCountry,
-                priorityLevel: element.iPriorityLevel,
-                notOnPmb: element.bNotOnPMB,
-                note: element.sNotes,
-                createdBy: element.iCreatedBy,
-                createdOn: element.dtCreatedOn,
-                tranVersion: element.msrepl_tran_version,
-                poeRequired: element.bPOERequired,
-              });
-            });
-          })).then(result => {
-            resolve(result);
-          })
-        })
-      })
-    });
-  }
+  // importShippersFromCsv() {
+  //   return new Promise((resolve, reject) => {
+  //     this.removeAll().then(result => {
+  //       csv().fromFile("./DB_Seed/customers.csv").then(jsonObj => {
+  //         Promise.all(jsonObj.map(element => {
+  //           client.incr(ID_COUNTER, (err, id) => {
+  //             return lredis.hmset(PREFIX + id, {
+  //               id: id,
+  //               name: element.sCustomerName,
+  //               firstName: element.sFirstName,
+  //               lastName: element.sLastName,
+  //               telephone: element.sTelephone,
+  //               address: element.sAddress,
+  //               pmb: element.iPMBID,
+  //               email: element.sEmail,
+  //               city: element.sCity,
+  //               state: element.sState,
+  //               zipcode: element.sZipcode,
+  //               company: element.sCompany,
+  //               country: element.sCountry,
+  //               priorityLevel: element.iPriorityLevel,
+  //               notOnPmb: element.bNotOnPMB,
+  //               note: element.sNotes,
+  //               createdBy: element.iCreatedBy,
+  //               createdOn: element.dtCreatedOn,
+  //               tranVersion: element.msrepl_tran_version,
+  //               poeRequired: element.bPOERequired,
+  //             });
+  //           });
+  //         })).then(result => {
+  //           resolve(result);
+  //         })
+  //       })
+  //     })
+  //   });
+  // }
 
   requestResetPassword(email, webUrl){
     return new Promise(async (resolve, reject) => {
@@ -319,7 +319,5 @@ class CustomerService {
     });
   }  
 }
-
-
 
 module.exports = CustomerService;

@@ -1,4 +1,4 @@
-// var client = require('./RedisServices/dataContext').redisClient;
+// var client = require('./Services/dataContext').redisClient;
 
 // var user = {
 //   username: "admin",
@@ -11,7 +11,7 @@
 // }
 // client.del('customer:id');
 
-var services = require('./RedisServices/RedisDataServices');
+var services = require('./Services/RedisDataServices');
 
 //========== Firebase Test ==========//
 // var firebase = require('./Util/firebase');

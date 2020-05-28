@@ -1,5 +1,5 @@
 /*
-var services = require('../RedisServices/RedisDataServices');
+var services = require('../Services/RedisDataServices');
 var user = {
    username: "admin",
    firstName: "admin",
@@ -15,7 +15,7 @@ services.userService.createUser(user)
     })
     .catch(err=>console.log(err));
 */
-var services = require('../RedisServices/RedisDataServices');
+var services = require('../Services/RedisDataServices');
 
 services.customerService.importShippersFromCsv()
     .then(d=>{

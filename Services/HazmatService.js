@@ -2,34 +2,34 @@
 const strings = require('../Res/strings');
 const csv = require('csvtojson');
 
-var client = require('./dataContext').redisClient;
-var lredis = require('./redis-local');
+// var client = require('./dataContext').redisClient;
+// var lredis = require('./redis-local');
 
-const HAZMAT_ID = strings.redis_id_hazmat;
-const PREFIX = strings.redis_prefix_hazmat;
+// const HAZMAT_ID = strings.redis_id_hazmat;
+// const PREFIX = strings.redis_prefix_hazmat;
 
 const Hazmat = require('../models/hazmat');
 
 class HazmatService {
-  importClassesFromCsv() {
-    return new Promise((resolve, reject) => {
-      this.removeAll().then(result => {
-        csv().fromFile("./DB_Seed/hazmat.csv").then(jsonObj => {
-          Promise.all(jsonObj.map(element => {
-            client.incr(HAZMAT_ID, (err, id) => {
-              return lredis.hmset(PREFIX + id, {
-                id: id,
-                name: element.sClassName,
-                description: element.sClassDescription
-              });
-            });
-          })).then(result => {
-            resolve(result);
-          })
-        })
-      })
-    });
-  }
+  // importClassesFromCsv() {
+  //   return new Promise((resolve, reject) => {
+  //     this.removeAll().then(result => {
+  //       csv().fromFile("./DB_Seed/hazmat.csv").then(jsonObj => {
+  //         Promise.all(jsonObj.map(element => {
+  //           client.incr(HAZMAT_ID, (err, id) => {
+  //             return lredis.hmset(PREFIX + id, {
+  //               id: id,
+  //               name: element.sClassName,
+  //               description: element.sClassDescription
+  //             });
+  //           });
+  //         })).then(result => {
+  //           resolve(result);
+  //         })
+  //       })
+  //     })
+  //   });
+  // }
   getHazmat(id) {
     return new Promise((resolve, reject) => {
       Hazmat.findOne({_id: id}, (err, result) => {

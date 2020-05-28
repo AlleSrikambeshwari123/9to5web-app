@@ -1,11 +1,11 @@
 const strings = require('../Res/strings');
 const csv = require('csvtojson');
 
-var client = require('./dataContext').redisClient;
-var lredis = require('./redis-local');
+// var client = require('./dataContext').redisClient;
+// var lredis = require('./redis-local');
 
-const PREFIX = strings.redis_prefix_carrier;
-const CARRIER_ID = strings.redis_id_carrier;
+// const PREFIX = strings.redis_prefix_carrier;
+// const CARRIER_ID = strings.redis_id_carrier;
 
 const Carrier = require('../models/carrier');
 

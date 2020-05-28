@@ -1,11 +1,11 @@
 var express = require('express');
 var router = express.Router();
-var services = require('../RedisServices/RedisDataServices');
+var services = require('../Services/RedisDataServices');
 var middleware = require('../middleware');
 var moment = require('moment');
 
-var lredis = require('../RedisServices/redis-local');
-var redis = lredis;
+// var lredis = require('../Services/redis-local');
+// var redis = lredis;
 var PackageUtil = require('../Util/packageutil').PackageUtility;
 var packageUtil = new PackageUtil();
 var formidable = require('formidable');
@@ -13,33 +13,32 @@ var path = require('path');
 var fs = require('fs');
 var delfile = '';
 var uniqid = require('uniqid')
-var rServices = require('../RedisServices/RedisDataServices')
-var datacontext = require("../RedisServices/dataContext")
+var rServices = require('../Services/RedisDataServices')
 
 const sumFunction = (accumulator, currentValue) => accumulator + currentValue;
-router.get('/manifest-count/:mid/:mtype', middleware(services.userService).checkSession, function (req, res, next) {
-    var mid = req.params.mid;
-    var mtype = req.params.mtype;
-    var manifestKeys = `manifest:${mid}:${mtype}:*`;
+// router.get('/manifest-count/:mid/:mtype', middleware(services.userService).checkSession, function (req, res, next) {
+//     var mid = req.params.mid;
+//     var mtype = req.params.mtype;
+//     var manifestKeys = `manifest:${mid}:${mtype}:*`;
 
-    var packageCount = 0;
+//     var packageCount = 0;
 
 
-    redis.getKeys(manifestKeys).then((keys) => {
-        //foreach key get the cardinality of the set and add it 
+//     redis.getKeys(manifestKeys).then((keys) => {
+//         //foreach key get the cardinality of the set and add it 
 
-        Promise.all(keys.map(redis.setSize)).then((sizes) => {
+//         Promise.all(keys.map(redis.setSize)).then((sizes) => {
 
-            if (sizes.length > 0) {
-                var sumResult = { mtype: mtype, size: sizes.reduce(sumFunction) }
-                res.send(sumResult);
-            }
-            else
-                res.send({ mtype: mtype, count: 0 });
-        });
-    });
+//             if (sizes.length > 0) {
+//                 var sumResult = { mtype: mtype, size: sizes.reduce(sumFunction) }
+//                 res.send(sumResult);
+//             }
+//             else
+//                 res.send({ mtype: mtype, count: 0 });
+//         });
+//     });
 
-});
+// });
 
 router.get('/mlist', middleware(services.userService).checkSession, (req, res, next) => {
     services.manifestService.listAllManifest().then((result) => {
@@ -47,86 +46,85 @@ router.get('/mlist', middleware(services.userService).checkSession, (req, res, n
     });
 });
 
-router.get('/export-manifest/:mid', middleware(services.userService).checkSession, (req, res, next) => {
+// router.get('/export-manifest/:mid', middleware(services.userService).checkSession, (req, res, next) => {
 
-    var mid = Number(req.params.mid);
-    var dir = __dirname.replace("routes", "public\\manifest_files");
-    console.log('dirname:' + __dirname);
-    console.log('dir: ' + dir);
-    //send the package array since there is a problem doing this in c# itself 
-    var manifestKey = `manifest:${mid}:*`;
+//     var mid = Number(req.params.mid);
+//     var dir = __dirname.replace("routes", "public\\manifest_files");
+//     console.log('dirname:' + __dirname);
+//     console.log('dir: ' + dir);
+//     //send the package array since there is a problem doing this in c# itself 
+//     var manifestKey = `manifest:${mid}:*`;
 
-    //so we get the keys 
-    redis.getKeys(manifestKey).then((data) => {
-        console.log(data);
-        if (data.length == 0) {
-            res.redirect('/warehouse/m-packages/' + mid);
-            return;
-        }
+//     //so we get the keys 
+//     redis.getKeys(manifestKey).then((data) => {
+//         console.log(data);
+//         if (data.length == 0) {
+//             res.redirect('/warehouse/m-packages/' + mid);
+//             return;
+//         }
 
-        redis.union(data).then(function (result) {
-            console.log(result)
-            //we need the actual packages now 
-            Promise.all(result.map(redis.getPackage)).then(function (packages) {
-                // console.log(packages);
-                //get the manist 
-                redis.hgetall("tew:manifest:" + mid).then((manifest) => {
-                    var packagesString = JSON.stringify(packages);
-                    //
-                    services.manifestService.exportExcel(manifest.title, Number(manifest.mtypeId), packagesString, dir).then((mREsult) => {
-                        // res.send({"packages":packagesString}); 
-                        res.download(mREsult.file);
-                    });
-                });
-            });
-        });
-    });
-});
-router.post('/email-manifest', middleware(services.userService).checkSession, (req, res, next) => {
-    var body = req.body;
-    var mid = Number(body.mid);
-    var email = body.email;
-    var brokerName = body.name;
-    var dir = __dirname.replace("routes", "public\\manifest_files");
-    console.log('dirname:' + __dirname);
-    console.log('dir: ' + dir);
-    //send the package array since there is a problem doing this in c# itself 
-    var manifestKey = `manifest:${mid}:*`;
+//         redis.union(data).then(function (result) {
+//             console.log(result)
+//             //we need the actual packages now 
+//             Promise.all(result.map(redis.getPackage)).then(function (packages) {
+//                 // console.log(packages);
+//                 //get the manist 
+//                 redis.hgetall("tew:manifest:" + mid).then((manifest) => {
+//                     var packagesString = JSON.stringify(packages);
+//                     //
+//                     services.manifestService.exportExcel(manifest.title, Number(manifest.mtypeId), packagesString, dir).then((mREsult) => {
+//                         // res.send({"packages":packagesString}); 
+//                         res.download(mREsult.file);
+//                     });
+//                 });
+//             });
+//         });
+//     });
+// });
+// router.post('/email-manifest', middleware(services.userService).checkSession, (req, res, next) => {
+//     var body = req.body;
+//     var mid = Number(body.mid);
+//     var email = body.email;
+//     var brokerName = body.name;
+//     var dir = __dirname.replace("routes", "public\\manifest_files");
+//     console.log('dirname:' + __dirname);
+//     console.log('dir: ' + dir);
+//     //send the package array since there is a problem doing this in c# itself 
+//     var manifestKey = `manifest:${mid}:*`;
 
-    //so we get the keys 
-    redis.getKeys(manifestKey).then((data) => {
-        console.log(data);
-        if (data.length == 0) {
-            res.send({ message: 'no packages to export' });
-            return;
-        }
-        redis.union(data).then(function (result) {
-            console.log(result)
-            //we need the actual packages now 
-            Promise.all(result.map(redis.getPackage)).then(function (packages) {
-                // console.log(packages);
-                var packagesString = JSON.stringify(packages);
-                //
-                lredis.hgetall("tew:manifest:" + mid).then((manifest) => {
-                    var emailRequest = {
-                        title: manifest.title,
-                        mtypeId: Number(manifest.mtypeId),
-                        packages: packagesString,
-                        dir_loc: dir,
-                        email: email,
-                        name: brokerName
-                    };
-                    services.manifestService.emailBroker(emailRequest).then((result) => {
-                        res.send({ message: 'Email Sent' })
-                    });
-                })
+//     //so we get the keys 
+//     redis.getKeys(manifestKey).then((data) => {
+//         console.log(data);
+//         if (data.length == 0) {
+//             res.send({ message: 'no packages to export' });
+//             return;
+//         }
+//         redis.union(data).then(function (result) {
+//             console.log(result)
+//             //we need the actual packages now 
+//             Promise.all(result.map(redis.getPackage)).then(function (packages) {
+//                 // console.log(packages);
+//                 var packagesString = JSON.stringify(packages);
+//                 //
+//                 lredis.hgetall("tew:manifest:" + mid).then((manifest) => {
+//                     var emailRequest = {
+//                         title: manifest.title,
+//                         mtypeId: Number(manifest.mtypeId),
+//                         packages: packagesString,
+//                         dir_loc: dir,
+//                         email: email,
+//                         name: brokerName
+//                     };
+//                     services.manifestService.emailBroker(emailRequest).then((result) => {
+//                         res.send({ message: 'Email Sent' })
+//                     });
+//                 })
 
-            });
+//             });
 
-        });
-    });
-
-});
+//         });
+//     });
+// });
 router.post('/verify-manifest', middleware(services.userService).checkSession, (req, res, next) => {
     //handle file upload 
     //pass to .net for process 
@@ -160,25 +158,25 @@ router.post('/rm-manifest', middleware(services.userService).checkSession, (req,
 
 //#region AWB
 
-router.post('/get-customer-info', middleware(services.userService).checkSession, (req, res, next) => {
-    //get customer information 
-    var skybox = req.body.box;
-    lredis.hgetall('tew:owners:' + skybox).then((result) => {
-        console.log(result);
-        if (result == null)
-            res.send({
-                err: 'Could not get customer information'
-            });
-        //send err
-        else
-            res.send(result);
-    }).catch((err) => {
-        res.send({
-            err: 'Could not get customer information'
-        });
-    });
+// router.post('/get-customer-info', middleware(services.userService).checkSession, (req, res, next) => {
+//     //get customer information 
+//     var skybox = req.body.box;
+//     lredis.hgetall('tew:owners:' + skybox).then((result) => {
+//         console.log(result);
+//         if (result == null)
+//             res.send({
+//                 err: 'Could not get customer information'
+//             });
+//         //send err
+//         else
+//             res.send(result);
+//     }).catch((err) => {
+//         res.send({
+//             err: 'Could not get customer information'
+//         });
+//     });
 
-});
+// });
 router.post('/get-mpackages/', middleware(services.userService).checkSession, (req, res, next) => {
     services.packageService.getReceivedPackages(0, 1).then(packages => {
         res.send(packages);
@@ -305,8 +303,6 @@ router.get('/deliveries', middleware(services.userService).checkSession, (req, r
             res.render('pages/warehouse/deliveries', pageData);
         });
     })
-
-
 })
 
 router.get('/store-packages', middleware(services.userService).checkSession, (req, res, next) => {
@@ -368,20 +364,20 @@ router.post('/save-package', middleware(services.userService).checkSession, (req
 router.get('/no-docs/', middleware(services.userService).checkSession, (req, res, next) => {
 
 })
-router.post('/packages', middleware(services.userService).checkSession, (req, res, next) => {
-    var body = req.body;
-    var package = {
-        trackingNo: body.trackingNo,
-        description: body.description,
-        shipper: body.shipper,
-        value: Number(body.value),
-        pieces: Number(body.pieces),
-        weight: Number(body.weight)
-    };
-    redis.hmset('packages:' + package.trackingNo, package);
-    console.log(package);
-    res.redirect('/warehouse/packages');
-});
+// router.post('/packages', middleware(services.userService).checkSession, (req, res, next) => {
+//     var body = req.body;
+//     var package = {
+//         trackingNo: body.trackingNo,
+//         description: body.description,
+//         shipper: body.shipper,
+//         value: Number(body.value),
+//         pieces: Number(body.pieces),
+//         weight: Number(body.weight)
+//     };
+//     redis.hmset('packages:' + package.trackingNo, package);
+//     console.log(package);
+//     res.redirect('/warehouse/packages');
+// });
 
 function NewPackageAlert(package) {
     var emailBody = "";
@@ -456,30 +452,30 @@ router.get('/get-processing/:mid', middleware(services.userService).checkSession
         res.send(packages);
     })
 });
-router.post('/process-package', middleware(services.userService).checkSession, (req, res, next) => {
+// router.post('/process-package', middleware(services.userService).checkSession, (req, res, next) => {
 
-    //1. find the package 
-    //2. we need update the status 
-    //3. we need to re-index the record 
-    var body = req.body;
-    console.log(body);
-    //make sure it exists 
-    lredis.client.exists("packages:" + body.package, (err, result) => {
-        console.log('first result' + result);
-        if (result == 1) {
-            lredis.hmset("packages:" + body.package, { "status": 3, "processedBy": res.User.Username }).then((err) => {
-                lredis.getPackage(body.package).then(function (rpackage) {
-                    rServices.packageService.updatePackageIndex(body.package);
-                    res.send({ 'updated': true, package: rpackage });
-                });
+//     //1. find the package 
+//     //2. we need update the status 
+//     //3. we need to re-index the record 
+//     var body = req.body;
+//     console.log(body);
+//     //make sure it exists 
+//     lredis.client.exists("packages:" + body.package, (err, result) => {
+//         console.log('first result' + result);
+//         if (result == 1) {
+//             lredis.hmset("packages:" + body.package, { "status": 3, "processedBy": res.User.Username }).then((err) => {
+//                 lredis.getPackage(body.package).then(function (rpackage) {
+//                     rServices.packageService.updatePackageIndex(body.package);
+//                     res.send({ 'updated': true, package: rpackage });
+//                 });
 
-            });
-        }
-        else {
-            res.send({ updated: false });
-        }
-    });
-});
+//             });
+//         }
+//         else {
+//             res.send({ updated: false });
+//         }
+//     });
+// });
 
 //#endregion
 

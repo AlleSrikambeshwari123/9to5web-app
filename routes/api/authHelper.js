@@ -2,7 +2,7 @@ let passport = require('passport');
 let JwtStrategy = require('passport-jwt').Strategy;
 let ExtractJwt = require('passport-jwt').ExtractJwt;
 var cryptojs = require('crypto-js');
-var services = require('../../RedisServices/RedisDataServices');
+var services = require('../../Services/RedisDataServices');
 const strings = require('../../Res/strings');
 
 let options = {

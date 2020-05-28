@@ -1,8 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var middleware = require('../middleware');
-var RedisDataService = require("../RedisServices/RedisDataServices")
-var services = require('../RedisServices/RedisDataServices');
+var RedisDataService = require("../Services/RedisDataServices")
+var services = require('../Services/RedisDataServices');
 
 const strings = require('../Res/strings');
 const role_admin = strings.role_admin;

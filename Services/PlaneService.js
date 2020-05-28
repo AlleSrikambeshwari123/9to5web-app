@@ -1,16 +1,15 @@
 const strings = require('../Res/strings');
 
 // Redis
-var lredis = require('./redis-local');
-var client = require('./dataContext').redisClient;
+// var lredis = require('./redis-local');
+// var client = require('./dataContext').redisClient;
+// const PREFIX = strings.redis_prefix_planes;
+// const PLANE_COUNTER = strings.redis_id_plane;
+// const PLANE_LIST = strings.redis_prefix_planes_list;
 
-const PREFIX = strings.redis_prefix_planes;
-const PLANE_COUNTER = strings.redis_id_plane;
-const PLANE_LIST = strings.redis_prefix_planes_list;
-
-const COMPARTMENT_PREFIX = strings.redis_prefix_plane_compartment;
-const COMPARTMENT_COUNTER = strings.redis_id_compartment_plane;
-const COMPARTMENT_LIST = strings.redis_prefix_plane_compartment_list;
+// const COMPARTMENT_PREFIX = strings.redis_prefix_plane_compartment;
+// const COMPARTMENT_COUNTER = strings.redis_id_compartment_plane;
+// const COMPARTMENT_LIST = strings.redis_prefix_plane_compartment_list;
 
 const Plane = require('../models/plane');
 const Compartment = require('../models/compartment')
@@ -149,30 +148,30 @@ class PlaneService {
       })
     })
   }
-  updatePlaneCapcity(planeId) {
-    return new Promise((resolve, reject) => {
-      client.smembers(COMPARTMENT_LIST + planeId, (err, ids) => {
-        Promise.all(ids.map(id => {
-          return lredis.hgetall(COMPARTMENT_PREFIX + id);
-        })).then(comparts => {
-          var total_weight = 0;
-          var total_volume = 0;
-          comparts.forEach(compart => {
-            total_weight += Number(compart.weight);
-            total_volume += Number(compart.volume);
-          })
-          this.getPlane(planeId).then(plane => {
-            plane.maximum_capacity = total_weight;
-            this.updatePlane(planeId, plane);
-            resolve({
-              total_weight: total_weight,
-              total_volume: total_volume,
-            });
-          })
-        })
-      })
-    });
-  }
+  // updatePlaneCapcity(planeId) {
+  //   return new Promise((resolve, reject) => {
+  //     client.smembers(COMPARTMENT_LIST + planeId, (err, ids) => {
+  //       Promise.all(ids.map(id => {
+  //         return lredis.hgetall(COMPARTMENT_PREFIX + id);
+  //       })).then(comparts => {
+  //         var total_weight = 0;
+  //         var total_volume = 0;
+  //         comparts.forEach(compart => {
+  //           total_weight += Number(compart.weight);
+  //           total_volume += Number(compart.volume);
+  //         })
+  //         this.getPlane(planeId).then(plane => {
+  //           plane.maximum_capacity = total_weight;
+  //           this.updatePlane(planeId, plane);
+  //           resolve({
+  //             total_weight: total_weight,
+  //             total_volume: total_volume,
+  //           });
+  //         })
+  //       })
+  //     })
+  //   });
+  // }
   async getFlieghtName(trailNumber){
     let now = new Date();
     let year = "" + now.getFullYear();

@@ -2,13 +2,12 @@
 const strings = require('../Res/strings');
 const csv = require('csvtojson');
 const mongoose = require('mongoose');
-
-var client = require('./dataContext').redisClient;
-var lredis = require('./redis-local');
 var uniqId = require('uniqid');
 
-const HAZMAT_ID = strings.redis_id_hazmat;
-const PREFIX = strings.redis_prefix_hazmat;
+// var client = require('./dataContext').redisClient;
+// var lredis = require('./redis-local');
+// const HAZMAT_ID = strings.redis_id_hazmat;
+// const PREFIX = strings.redis_prefix_hazmat;
 
 const Cube = require('../models/cube');
 const Package = require('../models/package');

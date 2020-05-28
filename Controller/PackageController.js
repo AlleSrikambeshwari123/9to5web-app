@@ -1,4 +1,4 @@
-var services = require('../RedisServices/RedisDataServices');
+var services = require('../Services/RedisDataServices');
 var printerCtrl = require('./PrinterController');
 var utils = require('../Util/utils');
 

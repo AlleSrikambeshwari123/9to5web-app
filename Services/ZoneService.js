@@ -1,42 +1,32 @@
 const strings = require('../Res/strings');
 
-var lredis = require('./redis-local');
-var client = require('./dataContext').redisClient;
-const PREFIX = strings.redis_prefix_location;
-const ID_COUNTER = strings.redis_id_location;
+// var lredis = require('./redis-local');
+// var client = require('./dataContext').redisClient;
+// const PREFIX = strings.redis_prefix_location;
+// const ID_COUNTER = strings.redis_id_location;
 
-const Company = require('../models/company');
 const Location = require('../models/location');
+const Zone = require('../models/zone');
 
-class LocationService {
-  getLocations() {
+class ZoneService {
+  getZones() {
     return new Promise((resolve, reject) => {
-      Location.find({})
-      .populate('company', 'name')
+      Zone.find()
+      .populate('location')
       .exec((err, result) => {
         if (err) {
           resolve([]);
         } else {
+            console.log(result)
           resolve(result);
         }
       })
     })
   }
-  getCompanies() {
+  addZone(zone) {
     return new Promise((resolve, reject) => {
-      Company.find({}, (err, result) => {
-        if (err) {
-          resolve([]);
-        } else {
-          resolve(result);
-        }
-      })
-    });
-  }
-  addLocation(location) {
-    return new Promise((resolve, reject) => {
-      const newLocationData = new Location(location);
-      newLocationData.save((err, result) => {
+      const newZoneData = new Zone(zone);
+      newZoneData.save((err, result) => {
         if (err) {
           console.error(err);  
           resolve({ success: false, message: strings.string_response_error });
@@ -46,10 +36,10 @@ class LocationService {
       })
     });
   }
-  getLocation(id) {
+  getZone(id) {
     return new Promise((resolve, reject) => {
-      Location.findOne({_id: id})
-      .populate('company', 'name')
+      Zone.findOne({_id: id})
+      .populate('location', 'name')
       .exec((err, result) => {
         if (err) {
           resolve({});
@@ -59,16 +49,16 @@ class LocationService {
       });
     })
   }
-  updateLocation(location) {
+  updateZone(zone) {
     return new Promise(async (resolve, reject) => {
-      const locationData = await this.getLocation(location.id);
-      if (!(locationData && locationData._id)) {
+      const zoneData = await this.getZone(zone.id);
+      if (!(zoneData && zoneData._id)) {
         return resolve({success: false, message: strings.string_not_found_location});
       }
 
-      Location.findOneAndUpdate(
-        { _id: locationData._id }, 
-        { ...location },
+      Zone.findOneAndUpdate(
+        { _id: zoneData._id }, 
+        zone,
         (err, result) => {
           if (err) {
             resolve({ success: false, message: strings.string_response_error });
@@ -79,9 +69,9 @@ class LocationService {
       )
     });
   }
-  removeLocation(id) {
+  removeZone(id) {
     return new Promise((resolve, reject) => {
-      Location.deleteOne({_id: id}, (err, result) => {
+      Zone.deleteOne({_id: id}, (err, result) => {
         if (err) {
           resolve({ success: false, message: strings.string_response_error });
         } else {
@@ -90,13 +80,19 @@ class LocationService {
       });
     })
   }
+  getLocations(){
+    return new Promise((resolve, reject) => {
+        Location.find()
+        .exec((err, result) => {
+          if (err) {
+            resolve([]);
+          } else {
+              console.log(result)
+            resolve(result);
+          }
+        })
+      })  
+  }
 }
 
-//========== DB Structure ==========//
-// id:
-// phone:
-// companyId:
-// name:
-// address:
-
-module.exports = LocationService;
+module.exports = ZoneService;

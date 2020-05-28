@@ -1,12 +1,12 @@
 const Promise = require('bluebird');
 const strings = require('../Res/strings');
 
-const client = require('./dataContext').redisClient;
-const lredis = require('./redis-local');
-const Container = require('../models/container');
+// const client = require('./dataContext').redisClient;
+// const lredis = require('./redis-local');
+// const PREFIX = strings.redis_prefix_container;
+// const CONTAINER_ID = strings.redis_id_container;
 
-const PREFIX = strings.redis_prefix_container;
-const CONTAINER_ID = strings.redis_id_container;
+const Container = require('../models/container');
 
 class ContainerService {
   async addContainer(container) {

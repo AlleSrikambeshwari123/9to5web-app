@@ -1,12 +1,12 @@
 const strings = require('../Res/strings');
 
 // Redis
-var client = require('./dataContext').redisClient;
-var lredis = require('./redis-local');
+// var client = require('./dataContext').redisClient;
+// var lredis = require('./redis-local');
 
-const PREFIX = strings.redis_prefix_pilot;
-const PILOT_ID = strings.redis_id_pilot;
-const PILOT_LIST = strings.redis_prefix_pilot_list;
+// const PREFIX = strings.redis_prefix_pilot;
+// const PILOT_ID = strings.redis_id_pilot;
+// const PILOT_LIST = strings.redis_prefix_pilot_list;
 
 const Pilot = require('../models/pilot');
 
