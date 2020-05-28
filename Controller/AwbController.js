@@ -351,26 +351,3 @@ exports.add_bar_code = async (req, res, next)=>{
   res.send(result);
 }
 
-// function getFullAwb(awbs) {
-//   return new Promise((resolve, reject) => {
-//     Promise.all(awbs.map(awb => {
-//       return Promise.all([
-//         services.packageService.getPackages(awb._id),
-//         services.customerService.getCustomer(awb.customerId),
-//         services.shipperService.getShipper(awb.shipper),
-//         services.carrierService.getCarrier(awb.carrier),
-//       ]).then(results => {
-//         let weight = 0;
-//         awb.packages = results[0];
-//         awb.packages.forEach(pkg => weight += Number(pkg.weight));
-//         awb.weight = weight;
-//         awb.customer = results[1];
-//         awb.shipper = results[2];
-//         awb.carrier = results[3];
-//         awb.dateCreated = utils.formatDate(awb.dateCreated, "MMM DD, YYYY");
-//       })
-//     })).then(results => {
-//       resolve(awbs);
-//     })
-//   });
-// }

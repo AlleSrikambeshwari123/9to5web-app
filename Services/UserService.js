@@ -6,14 +6,9 @@ var bcrypt = require('bcrypt');
 const strings = require('../Res/strings');
 var utils = require('../Util/utils');
 
-// Redis
-// var client = require('./dataContext').redisClient;
-// var lredis = require('./redis-local');
-// var PREFIX = strings.redis_prefix_user;
-// var ID_COUNTER = strings.redis_id_user;
-
 const User = require('../models/user');
 const Role = require('../models/role');
+const Awb = require('../models/awb');
 const mail = require('../Util/mail');
 
 class UserService {
@@ -22,7 +17,7 @@ class UserService {
       this.authenticate(username, oldpassword).then((userInfo) => {
         if (userInfo.authenticated == true) {
           const newPassword = bcrypt.hashSync(newpassword, 10);
-          User.findOneAndUpdate({username: username}, {password: newPassword}, (err, response) => {
+          User.findOneAndUpdate({ username: username }, { password: newPassword }, (err, response) => {
             if (err) {
               resolve({ success: false, message: strings.string_response_error });
             } else {
@@ -32,12 +27,12 @@ class UserService {
         } else {
           resolve({ success: false, message: strings.string_password_incorrect });
         }
-      });  
+      });
     });
   }
   authenticate(username, password) {
     return new Promise(async (resolve, reject) => {
-      const user = await this.getUserByEmail(username);      
+      const user = await this.getUserByEmail(username);
       if (!(user && user['_id'])) {
         return resolve({ authenticated: false, token: "", user: null });
       } else {
@@ -47,52 +42,50 @@ class UserService {
           } else {
             delete user._doc.password;
             utils.generateToken(user)
-            .then((token) => {
-              let isUserEnabled = true;
-              if (!user.enabled) {
-                isUserEnabled = false;
-              }
-              return resolve({ 
-                user, 
-                token, 
-                isUserEnabled,
-                authenticated: true 
-              });
-            })
-            .catch((err) => {
-              resolve({ user: null, token: "", authenticated: false });
-            })
+              .then((token) => {
+                let isUserEnabled = true;
+                if (!user.enabled) {
+                  isUserEnabled = false;
+                }
+                return resolve({
+                  user,
+                  token,
+                  isUserEnabled,
+                  authenticated: true
+                });
+              })
+              .catch((err) => {
+                resolve({ user: null, token: "", authenticated: false });
+              })
           }
         })
       }
     });
   }
-
-  getUserByEmail(email){
+  getUserByEmail(email) {
     return new Promise(function (resolve, reject) {
-      User.findOne({email: email})
-      .populate('roles', 'type')
-      .exec((err, result) => {
-        if (err) {
-          resolve({});
-        } else {
-          resolve(result);
-        }
-      })
+      User.findOne({ email: email })
+        .populate('roles', 'type')
+        .exec((err, result) => {
+          if (err) {
+            resolve({});
+          } else {
+            resolve(result);
+          }
+        })
     });
   }
-
   getUser(username) {
     return new Promise(function (resolve, reject) {
-      User.findOne({username: username})
-      .populate('roles', 'type')
-      .exec((err, result) => {
-        if (err) {
-          resolve({});
-        } else {
-          resolve(result);
-        }
-      })
+      User.findOne({ username: username })
+        .populate('roles', 'type')
+        .exec((err, result) => {
+          if (err) {
+            resolve({});
+          } else {
+            resolve(result);
+          }
+        })
     });
   }
   getRoles() {
@@ -109,14 +102,33 @@ class UserService {
   getAllUsers() {
     return new Promise((resolve, reject) => {
       User.find({})
-      .populate('roles')
-      .exec((err, result) => {
-        if (err) {
-          resolve([]);
-        } else {
-          resolve(result)
-        }
-      });
+        .populate('roles')
+        .exec((err, users) => {
+          if (err) {
+            resolve([]);
+          } else {
+            // Creating the user ids array i.e ['id1', 'id2']
+            const userIds = users.map((user) => user['_id']);
+
+            // Searching by array
+            Awb.find({ createdBy: { '$in': userIds } }, (err, awbs) => {
+              const awbByUserIds = {};
+              awbs.forEach((awb) => {
+                if (!awbByUserIds[awb['createdBy']]) {
+                  awbByUserIds[awb['createdBy']] = 0;
+                }
+                awbByUserIds[awb['createdBy']] += 1
+              })
+              users = users.map((user) => {
+                let newUser = user._doc;
+                if (awbByUserIds[user._id]) newUser['awbCount'] = awbByUserIds[user._id];
+                else newUser['awbCount'] = 0;
+                return newUser;
+              })
+              resolve(users);
+            });
+          }
+        });
     });
   }
   removeUser(username, loggedInUserName) {
@@ -125,7 +137,7 @@ class UserService {
         resolve({ success: false, message: strings.string_restrict_action });
         return;
       }
-      User.deleteOne({username: username}, (err, result) => {
+      User.deleteOne({ username: username }, (err, result) => {
         if (err) {
           resolve({ success: false, message: strings.string_response_error });
         } else {
@@ -140,7 +152,7 @@ class UserService {
         resolve({ success: false, message: strings.string_restrict_action });
         return;
       }
-      User.findOneAndUpdate({username: username}, {enabled: enabledSatus}, (err, result) => {
+      User.findOneAndUpdate({ username: username }, { enabled: enabledSatus }, (err, result) => {
         if (err) {
           resolve({ success: false, message: strings.string_response_error });
         } else {
@@ -152,12 +164,12 @@ class UserService {
   createUser(user) {
     return new Promise(async (resolve, reject) => {
       const oldUser = await this.getUser(user.username);
-      
+
       // Checking If username is already present 
       if (oldUser && oldUser.username && oldUser.username.toLowerCase() === user.username.toLowerCase()) {
         resolve({ success: false, message: strings.string_user_exist });
       }
-      
+
       user.roles = user.roles.split(',');
       const newUser = new User(user);
 
@@ -171,7 +183,6 @@ class UserService {
       })
     })
   }
-
   updateUser(user) {
     return new Promise(async (resolve, reject) => {
       const userData = await this.getUser(user.username);
@@ -180,11 +191,11 @@ class UserService {
       }
 
       User.findOneAndUpdate(
-        {_id: userData['_id']},
+        { _id: userData['_id'] },
         {
           ...user,
-          roles: user.roles.split(',')  
-        }, 
+          roles: user.roles.split(',')
+        },
         (err, result) => {
           if (err) {
             resolve({ success: false, message: strings.string_response_error });
@@ -192,26 +203,26 @@ class UserService {
             resolve({ success: true, message: strings.string_response_updated });
           }
         })
-      });
+    });
   }
-  requestPasswordReset(email, webUrl){
+  requestPasswordReset(email, webUrl) {
     return new Promise(async (resolve, reject) => {
-      try {       
-        let user = await User.findOne({ email: email });              
+      try {
+        let user = await User.findOne({ email: email });
         if (!user) {
           return resolve({ success: false, message: strings.string_user_not_found });
-        } 
+        }
         this.sendEmail('reset_password', user, webUrl);
         resolve({ success: true, message: strings.string_password_reseted });
-      }catch(error){
+      } catch (error) {
         console.log(error);
         resolve({ success: false, message: strings.string_response_error });
       }
     })
   }
 
-  sendEmail(emailType, user, webUrl){
-    if(emailType == "reset_password"){
+  sendEmail(emailType, user, webUrl) {
+    if (emailType == "reset_password") {
       mail.send('reset_password/user.html', {
         email: user.email,
         subject: "Password Reset Request",
@@ -227,7 +238,7 @@ class UserService {
       try {
         let user = await User.findById(id);
         if (!user) return resolve({ success: false, message: string.string_password_token_invalid });
-        
+
         resolve({ success: true, user: user, token: id });
       } catch (error) {
         console.log(error.message);
@@ -236,12 +247,12 @@ class UserService {
     });
   }
 
-  resetPassword(id, password){
+  resetPassword(id, password) {
     return new Promise(async (resolve, reject) => {
       try {
         let user = await User.findById(id);
         if (!user) return resolve({ success: false, message: strings.string_user_not_found });
-        user.password = password;        
+        user.password = password;
         await user.save();
         resolve({ success: true, message: strings.string_response_updated });
       } catch (error) {

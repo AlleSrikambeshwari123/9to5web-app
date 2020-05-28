@@ -595,6 +595,7 @@ class PackageService {
     return new Promise((resolve, reject) => {
       newPackage.awbId = awbId;
       newPackage.id = Date.now().toString();
+      console.log(newPackage.id)
       newPackage.trackingNo = uniqId();
       // Here as per the frontend logic, we're getting the 
       // values like 43322211,398749844904894
