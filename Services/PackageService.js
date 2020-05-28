@@ -865,8 +865,7 @@ class PackageService {
     try {
       let error = []
       let packages = packageIds && packageIds.length && packageIds.split(',').filter(Boolean);
-      const compartment = await Compartment.findOneAndUpdate({_id:compartmentId},{$push:{packages:packages}},{new:true})
-      // await Manifest.findOneAndUpdate({_id:compartment.planeId},{$push:{packages:packages}})
+      await Compartment.findOneAndUpdate({_id:compartmentId},{$push:{packages:packages}})
       await Promise.all(packages.map(async packageId=>{
         // check packageId Exists
         if(await Package.findById(packageId)){
@@ -882,6 +881,27 @@ class PackageService {
     }
   }
   
+    // Add Packages To Compartment
+    async addPackagesToManifests(packageIds,manifestId,userId){
+      try {
+        let error = []
+        let packages = packageIds && packageIds.length && packageIds.split(',').filter(Boolean);
+        await Manifest.findOneAndUpdate({_id:manifestId},{$push:{packages:packages}})
+        await Promise.all(packages.map(async packageId=>{
+          // check packageId Exists
+          if(await Package.findById(packageId)){
+            await this.updatePackageStatus(packageId, 2, userId);
+          }else{
+            error.push(`Package ${packageId} doesn't Exist`)
+          }
+        }))
+        if(error.length >0) return { success: false, message: error }
+        return { success: true, message: strings.string_response_loaded, status: PKG_STATUS[2] }
+      } catch (error) {
+        return { success: false, message: strings.string_response_error }
+      }
+    }
+    
   // Receive Package To Flight
   async receivePackageToFlight(packageIds,userId){
     try {

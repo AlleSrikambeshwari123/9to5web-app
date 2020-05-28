@@ -1,8 +1,8 @@
 var domain = 'mg.coral.media';
-var api_key = process.env.MAILGUN_KEY;
+// var api_key = process.env.MAILGUN_KEY;
 // var api_key = 'key-26b3924502603002f75c25ebde19be8e';
 
-var mailgun = require('mailgun-js')({ apiKey: api_key, domain: domain });
+// var mailgun = require('mailgun-js')({ apiKey: api_key, domain: domain });
 const path = require('path');
 const fs = require('fs');
 require('dotenv').config();

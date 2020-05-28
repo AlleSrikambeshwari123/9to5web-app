@@ -177,6 +177,15 @@ router.get('/get-manifests', (req, res, next) => {
     .catch(next);
 });
 
+router.post('/add-packages-to-manifests', passport.authenticate('jwt', { session: false }), (req, res, next) => {
+  let packageIds = req.body.packageIds;
+  let manifestId = req.body.manifestId;
+  var userId =  req.body.userId;
+  services.packageService.addPackagesToManifests(packageIds,manifestId, userId).then((result) => {
+    res.send(result)
+  })
+})
+
 router.get('/get-deliverys', (req, res, next) => {
 
   services.deliveryService
