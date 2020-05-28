@@ -1,5 +1,5 @@
 const strings = require('../Res/strings');
-const services = require('../RedisServices/RedisDataServices');
+const services = require('../Services/RedisDataServices');
 const utils = require('../Util/utils');
 
 exports.get_airport_list = (req, res, next) => {

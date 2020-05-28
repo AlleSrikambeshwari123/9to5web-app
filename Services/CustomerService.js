@@ -6,13 +6,13 @@ var utils = require('../Util/utils');
 const csv = require('csvtojson');
 const strings = require('../Res/strings');
 const mail = require('../Util/mail');
-var lredis = require('./redis-local');
-var client = require('./dataContext').redisClient;
+
+// var lredis = require('./redis-local');
+// var client = require('./dataContext').redisClient;
+// var PREFIX = strings.redis_prefix_customer;
+// var ID_COUNTER = strings.redis_id_customer;
 
 const Customer = require('../models/customer');
-
-var PREFIX = strings.redis_prefix_customer;
-var ID_COUNTER = strings.redis_id_customer;
 
 class CustomerService {
   createCustomer(customer) {
@@ -346,7 +346,5 @@ class CustomerService {
     });
   }  
 }
-
-
 
 module.exports = CustomerService;

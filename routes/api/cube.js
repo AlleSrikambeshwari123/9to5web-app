@@ -3,7 +3,7 @@ var router = express.Router();
 var passport = require('passport');
 require('./authHelper')
 const strings = require('../../Res/strings');
-var services = require('../../RedisServices/RedisDataServices');
+var services = require('../../Services/RedisDataServices');
 var moment = require('moment');
 
 router.post('/create-cube', passport.authenticate('jwt', { session: false }), async(req, res, next) => {

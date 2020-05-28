@@ -1,12 +1,12 @@
 
 const strings = require('../Res/strings');
 
-var lredis = require('./redis-local');
-var client = require('./dataContext').redisClient;
+// var lredis = require('./redis-local');
+// var client = require('./dataContext').redisClient;
 
-const PREFIX = strings.redis_prefix_vehicle;
-const VEHICLE_ID = strings.redis_id_vehicle;
-const VEHICLE_LIST = strings.redis_prefid_vehicle_list;
+// const PREFIX = strings.redis_prefix_vehicle;
+// const VEHICLE_ID = strings.redis_id_vehicle;
+// const VEHICLE_LIST = strings.redis_prefid_vehicle_list;
 
 const Vehicle = require('../models/vehicle');
 

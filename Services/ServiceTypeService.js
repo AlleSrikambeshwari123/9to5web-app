@@ -1,35 +1,34 @@
 const strings = require('../Res/strings');
 const csv = require('csvtojson');
 
-var client = require('./dataContext').redisClient;
-var lredis = require('./redis-local');
+// var client = require('./dataContext').redisClient;
+// var lredis = require('./redis-local');
+// const PREFIX = strings.redis_prefix_service_type;
+// const SERVICETYPE_ID = strings.redis_id_service_type;
 
 const ServiceType = require('../models/serviceType');
 
-const PREFIX = strings.redis_prefix_service_type;
-const SERVICETYPE_ID = strings.redis_id_service_type;
-
 class ServiceTypeService {
-  importServiceTypeFromCsv() {
-    return new Promise((resolve, reject) => {
-      this.removeAll().then(result => {
-        csv().fromFile("./DB_Seed/-----.csv").then(jsonObj => {
-          Promise.all(jsonObj.map(element => {
-            console.log(element.sCarrierName);
-            client.incr(SERVICETYPE_ID, (err, id) => {
-              return lredis.hmset(PREFIX + id, {
-                id: id,
-                name: element.sCarrierName,
-                amount: element.Amount,
-              });
-            });
-          })).then(result => {
-            resolve(result);
-          })
-        })
-      })
-    });
-  }
+  // importServiceTypeFromCsv() {
+  //   return new Promise((resolve, reject) => {
+  //     this.removeAll().then(result => {
+  //       csv().fromFile("./DB_Seed/-----.csv").then(jsonObj => {
+  //         Promise.all(jsonObj.map(element => {
+  //           console.log(element.sCarrierName);
+  //           client.incr(SERVICETYPE_ID, (err, id) => {
+  //             return lredis.hmset(PREFIX + id, {
+  //               id: id,
+  //               name: element.sCarrierName,
+  //               amount: element.Amount,
+  //             });
+  //           });
+  //         })).then(result => {
+  //           resolve(result);
+  //         })
+  //       })
+  //     })
+  //   });
+  // }
 
   addServiceType(serviceType) {
     return new Promise((resolve, reject) => {

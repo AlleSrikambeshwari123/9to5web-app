@@ -6,27 +6,27 @@ var strings = require('../Res/strings');
 var firebase = require('../Util/firebase');
 var _ = require("lodash")
 
-var client = require('./dataContext').redisClient;
-var lredis = require('./redis-local');
-const Barcode = require('../models/barcode');
+// var client = require('./dataContext').redisClient;
+// var lredis = require('./redis-local');
+// const PREFIX = strings.redis_prefix_package;
+// const PACKAGE_ID = strings.redis_id_package;
+// const PREFIX_PACKAGE_LIST = strings.redis_prefix_awb_package_list; // this key + awbId = array of packages
 
-const PREFIX = strings.redis_prefix_package;
-const PACKAGE_ID = strings.redis_id_package;
-const PREFIX_PACKAGE_LIST = strings.redis_prefix_awb_package_list; // this key + awbId = array of packages
+const Barcode = require('../models/barcode');
 
 const LIST_PACKAGE_SHIPMENT = 'list:shipment:'; // this key + shipmentId = array of packages
 // const SHIPMENT_ID = 'id:accept:truck';
 const SHIPMENT_ID = 34;
 
-const PREFIX_ORIGIN_BARCODE = strings.redis_prefix_origin_barcode;
-const ORIGIN_BARCODE_ID = strings.redis_id_origin_barcode;
+// const PREFIX_ORIGIN_BARCODE = strings.redis_prefix_origin_barcode;
+// const ORIGIN_BARCODE_ID = strings.redis_id_origin_barcode;
 
-const LIST_PACKAGE_MANIFEST = strings.redis_prefix_manifest_package_list;
-const LIST_LOCATION_PACKAGE = strings.redis_prefix_location_package_list;
+// const LIST_PACKAGE_MANIFEST = strings.redis_prefix_manifest_package_list;
+// const LIST_LOCATION_PACKAGE = strings.redis_prefix_location_package_list;
 
-const PREFIX_PACKAGE_STATUS = strings.redis_prefix_package_status;
-const ID_PACKAGE_STATUS = strings.redis_id_package_status;
-const LIST_PACKAGE_STATUS = strings.redis_prefix_list_package_status;
+// const PREFIX_PACKAGE_STATUS = strings.redis_prefix_package_status;
+// const ID_PACKAGE_STATUS = strings.redis_id_package_status;
+// const LIST_PACKAGE_STATUS = strings.redis_prefix_list_package_status;
 
 const PKG_STATUS = {
   1: 'Received in FLL',
@@ -72,14 +72,14 @@ function createDocument(tPackage) {
   return packageDocument;
 }
 
-function addPackageToIndex(trackingNo, msearcher) {
-  lredis.getPackage(trackingNo).then((pack) => {
-    msearcher.delDocument(PKG_IDX, `${pack.mid}-${trackingNo}`, (err, done) => {
-      var document = createDocument(pack);
-      msearcher.add(pack.mid + '-' + pack.trackingNo, document);
-    });
-  });
-}
+// function addPackageToIndex(trackingNo, msearcher) {
+//   lredis.getPackage(trackingNo).then((pack) => {
+//     msearcher.delDocument(PKG_IDX, `${pack.mid}-${trackingNo}`, (err, done) => {
+//       var document = createDocument(pack);
+//       msearcher.add(pack.mid + '-' + pack.trackingNo, document);
+//     });
+//   });
+// }
 
 class PackageService {
   constructor() {
@@ -679,27 +679,27 @@ class PackageService {
     });
   }
 
-  removePackages(awbId) {
-    return new Promise((resolve, reject) => {
-      client.smembers(PREFIX_PACKAGE_LIST + awbId, (err, ids) => {
-        Promise.all(
-          ids.map((id) => {
-            return this.removePackage(awbId, id);
-          }),
-        ).then((results) => {
-          resolve(results);
-        });
-      });
-    });
-  }
+  // removePackages(awbId) {
+  //   return new Promise((resolve, reject) => {
+  //     client.smembers(PREFIX_PACKAGE_LIST + awbId, (err, ids) => {
+  //       Promise.all(
+  //         ids.map((id) => {
+  //           return this.removePackage(awbId, id);
+  //         }),
+  //       ).then((results) => {
+  //         resolve(results);
+  //       });
+  //     });
+  //   });
+  // }
 
-  removePackage(awbId, id) {
-    return new Promise((resolve, reject) => {
-      client.del(PREFIX + id);
-      client.srem(PREFIX_PACKAGE_LIST + awbId, id);
-      resolve({ success: true });
-    });
-  }
+  // removePackage(awbId, id) {
+  //   return new Promise((resolve, reject) => {
+  //     client.del(PREFIX + id);
+  //     client.srem(PREFIX_PACKAGE_LIST + awbId, id);
+  //     resolve({ success: true });
+  //   });
+  // }
 
   removePackagesStatusByPackageIds(packageIds) {
     return new Promise((resolve, reject) => {
@@ -756,30 +756,30 @@ class PackageService {
     });
   }
 
-  getPackagesInNas() {
-    return new Promise((resolve, reject) => {
-      client.keys(PREFIX + '*', (err, keys) => {
-        Promise.all(
-          keys.map((key) => {
-            return lredis.hgetall(key);
-          }),
-        ).then((packages) => {
-          Promise.all(
-            packages.map((pkg) => {
-              return this.getPackageLastStatus(pkg.id);
-            }),
-          ).then((stats) => {
-            let pkgs = [];
-            stats.forEach((stat, i) => {
-              packages[i].lastStatusText = stat.status;
-              if (stat.status == PKG_STATUS[4]) pkgs.push(packages[i]);
-            });
-            resolve(pkgs);
-          });
-        });
-      });
-    });
-  }
+  // getPackagesInNas() {
+  //   return new Promise((resolve, reject) => {
+  //     client.keys(PREFIX + '*', (err, keys) => {
+  //       Promise.all(
+  //         keys.map((key) => {
+  //           return lredis.hgetall(key);
+  //         }),
+  //       ).then((packages) => {
+  //         Promise.all(
+  //           packages.map((pkg) => {
+  //             return this.getPackageLastStatus(pkg.id);
+  //           }),
+  //         ).then((stats) => {
+  //           let pkgs = [];
+  //           stats.forEach((stat, i) => {
+  //             packages[i].lastStatusText = stat.status;
+  //             if (stat.status == PKG_STATUS[4]) pkgs.push(packages[i]);
+  //           });
+  //           resolve(pkgs);
+  //         });
+  //       });
+  //     });
+  //   });
+  // }
 
   getPackagesInNas_updated() {
     return new Promise((resolve, reject) => {
@@ -1070,19 +1070,19 @@ class PackageService {
     });
   }
 
-  getPackagesInLocation(locationId) {
-    return new Promise((resolve, reject) => {
-      client.smembers(LIST_LOCATION_PACKAGE + locationId, (err, ids) => {
-        Promise.all(
-          ids.map((id) => {
-            return this.getPackage(id);
-          }),
-        ).then((pkgs) => {
-          resolve(pkgs);
-        });
-      });
-    });
-  }
+  // getPackagesInLocation(locationId) {
+  //   return new Promise((resolve, reject) => {
+  //     client.smembers(LIST_LOCATION_PACKAGE + locationId, (err, ids) => {
+  //       Promise.all(
+  //         ids.map((id) => {
+  //           return this.getPackage(id);
+  //         }),
+  //       ).then((pkgs) => {
+  //         resolve(pkgs);
+  //       });
+  //     });
+  //   });
+  // }
 
   getPackage_updated(packageId,pkgStatus) {
     return new Promise(async (resolve, reject) => {
@@ -1187,20 +1187,20 @@ class PackageService {
     });
   }
 
-  getPackageStatuses(packageId) {
-    return new Promise((resolve, reject) => {
-      client.smembers(LIST_PACKAGE_STATUS + packageId, (err, ids) => {
-        if (err) resolve([]);
-        Promise.all(
-          ids.map((id) => {
-            return lredis.hgetall(PREFIX_PACKAGE_STATUS + id);
-          }),
-        ).then((status) => {
-          resolve(status);
-        });
-      });
-    });
-  }
+  // getPackageStatuses(packageId) {
+  //   return new Promise((resolve, reject) => {
+  //     client.smembers(LIST_PACKAGE_STATUS + packageId, (err, ids) => {
+  //       if (err) resolve([]);
+  //       Promise.all(
+  //         ids.map((id) => {
+  //           return lredis.hgetall(PREFIX_PACKAGE_STATUS + id);
+  //         }),
+  //       ).then((status) => {
+  //         resolve(status);
+  //       });
+  //     });
+  //   });
+  // }
 
   // getCustomerPackages(id) {
   //   return new Promise((resolve, reject) => {
@@ -1284,72 +1284,72 @@ class PackageService {
     })
   }
 
-  createConsolated(packages, username, boxSize) {
-    return new Promise((resolve, reject) => {
-      var awbInfo = {
-        id: '',
-        isSed: 0,
-        hasDocs: '0',
-        invoiceNumber: '',
-        value: '0',
-        customerId: 24197,
-        shipper: '482', // we should get an id here
-        carrier: 'USPS',
-        hazmat: '',
-        username: username,
-      };
-      this.saveAwb(awbInfo).then((awbResult) => {
-        //add
-        var cPackage = {
-          id: 0,
-          trackingNo: uniqId(),
-          barcode: 0,
-          description: 'Consolidated Package',
-          weight: 0,
-          dimensions: `${boxSize}x${boxSize}x${boxSize}`,
-          awb: awbResult.id,
-          isConsolidated: '1',
-          created_by: username,
-        };
-        srv.savePackageToAwb(cPackage).then((pkgResult) => {
-          // get the id
-          //
-          var batch = client.batch();
-          var pkgBatch = client.batch();
+  // createConsolated(packages, username, boxSize) {
+  //   return new Promise((resolve, reject) => {
+  //     var awbInfo = {
+  //       id: '',
+  //       isSed: 0,
+  //       hasDocs: '0',
+  //       invoiceNumber: '',
+  //       value: '0',
+  //       customerId: 24197,
+  //       shipper: '482', // we should get an id here
+  //       carrier: 'USPS',
+  //       hazmat: '',
+  //       username: username,
+  //     };
+  //     this.saveAwb(awbInfo).then((awbResult) => {
+  //       //add
+  //       var cPackage = {
+  //         id: 0,
+  //         trackingNo: uniqId(),
+  //         barcode: 0,
+  //         description: 'Consolidated Package',
+  //         weight: 0,
+  //         dimensions: `${boxSize}x${boxSize}x${boxSize}`,
+  //         awb: awbResult.id,
+  //         isConsolidated: '1',
+  //         created_by: username,
+  //       };
+  //       srv.savePackageToAwb(cPackage).then((pkgResult) => {
+  //         // get the id
+  //         //
+  //         var batch = client.batch();
+  //         var pkgBatch = client.batch();
 
-          packages.forEach((pkg) => {
-            //these are barcodes
-            batch.sadd('consolidated:pkg:' + pkgResult.id, pkg);
-            pkgBatch.hmget(PACKAGE_ID + getPackageIdFromBarCode(pkg), 'weight');
-          });
-          batch.exec((err, results) => {
-            //
-            pkgBatch.exec((err1, results) => {
-              var totalWeight = 0;
-              results.forEach((weight) => {
-                if (isNaN(Number(weight)) == false) totalWeight += Number(weight);
-              });
-              //we need to update the total weight of the package now
-              srv.packageIndex.update(cPackage.id, { weight: totalWeight });
-            });
-            resolve({ saved: true, id: pkgResult.id });
-          });
-        });
-      });
-      //validate the package
-    });
-  }
-  getReceivedPackages(page, pageSize) {
-    return new Promise((resolve, reject) => {
-      this.mySearch.search(`@mid:[0 0]`, { offset: 0, numberOfResults: 5000 }, (err, data) => {
-        var packages = [];
-        data.results.forEach((element) => {
-          packages.push(element.doc);
-        });
-        resolve(packages);
-      });
-    });
-  }
+  //         packages.forEach((pkg) => {
+  //           //these are barcodes
+  //           batch.sadd('consolidated:pkg:' + pkgResult.id, pkg);
+  //           pkgBatch.hmget(PACKAGE_ID + getPackageIdFromBarCode(pkg), 'weight');
+  //         });
+  //         batch.exec((err, results) => {
+  //           //
+  //           pkgBatch.exec((err1, results) => {
+  //             var totalWeight = 0;
+  //             results.forEach((weight) => {
+  //               if (isNaN(Number(weight)) == false) totalWeight += Number(weight);
+  //             });
+  //             //we need to update the total weight of the package now
+  //             srv.packageIndex.update(cPackage.id, { weight: totalWeight });
+  //           });
+  //           resolve({ saved: true, id: pkgResult.id });
+  //         });
+  //       });
+  //     });
+  //     //validate the package
+  //   });
+  // }
+  // getReceivedPackages(page, pageSize) {
+  //   return new Promise((resolve, reject) => {
+  //     this.mySearch.search(`@mid:[0 0]`, { offset: 0, numberOfResults: 5000 }, (err, data) => {
+  //       var packages = [];
+  //       data.results.forEach((element) => {
+  //         packages.push(element.doc);
+  //       });
+  //       resolve(packages);
+  //     });
+  //   });
+  // }
   getNoDocsPackackages(page, pageSize) {
     // return new Promise((resolve, reject) => {
     //   this.mySearch.search(`@hasDocs:[0 0]`, { offset: 0, numberOfResults: 5000 }, (err, data) => {
@@ -1378,96 +1378,96 @@ class PackageService {
         })
     })
   }
-  removePackageFromManifest(packageId, mid) {
-    var msearch = this.mySearch;
-    return new Promise((resolve, reject) => {
-      var manifest = mid;
-      var manifestKey = 'manifest:' + manifest + ':*';
+  // removePackageFromManifest(packageId, mid) {
+  //   var msearch = this.mySearch;
+  //   return new Promise((resolve, reject) => {
+  //     var manifest = mid;
+  //     var manifestKey = 'manifest:' + manifest + ':*';
 
-      lredis.del('packages:' + trackingNo).then(function (result) {
-        msearch.delDocument(PKG_IDX, `${mid}-${trackingNo}`);
-        //we need to remove from the index and dec the counter
-        lredis.client.decr('mcounter:' + mid);
-        //rServices.packageService.rmPackage(mid, trackingNo);
-        lredis.getKeys(manifestKey).then((kResult) => {
-          //the list of all the sets ...we need to remove the key from each one
-          var keysCount = 0;
+  //     lredis.del('packages:' + trackingNo).then(function (result) {
+  //       msearch.delDocument(PKG_IDX, `${mid}-${trackingNo}`);
+  //       //we need to remove from the index and dec the counter
+  //       lredis.client.decr('mcounter:' + mid);
+  //       //rServices.packageService.rmPackage(mid, trackingNo);
+  //       lredis.getKeys(manifestKey).then((kResult) => {
+  //         //the list of all the sets ...we need to remove the key from each one
+  //         var keysCount = 0;
 
-          kResult.forEach((element) => {
-            lredis.srem(element, trackingNo).then(function (rResult) {
-              if (keysCount == kResult.length - 1) keysCount++;
-            });
-          });
-          resolve({
-            deleted: true,
-          });
-        });
+  //         kResult.forEach((element) => {
+  //           lredis.srem(element, trackingNo).then(function (rResult) {
+  //             if (keysCount == kResult.length - 1) keysCount++;
+  //           });
+  //         });
+  //         resolve({
+  //           deleted: true,
+  //         });
+  //       });
 
-        //we also need to remove from any sets
-      });
-    });
-  }
+  //       //we also need to remove from any sets
+  //     });
+  //   });
+  // }
 
-  removePackageById(id) {
-    var msearch = this.mySearch;
-    return new Promise((resolve, reject) => {
-      packageIndex.delDocument(PKG_IDX, id, (err, response) => {
-        if (err) console.log(err);
-        resolve({ deleted: true });
-      });
-    });
-  }
-  storePackageForPickup(trackingNo, bin) {
-    var searcher = this.mySearch;
-    return new Promise((resolve, reject) => {
-      lredis.hmset(PACKAGE_ID + trackingNo, { status: 4, location: bin }).then((result) => {
-        lredis.getPackage(trackingNo).then((pkg) => {
-          addPackageToIndex(trackingNo, searcher);
-          resolve(pkg);
-        });
-      });
-    });
-  }
-  updatePackageIndex(tracking) {
-    return new Promise((resolve, reject) => {
-      var msearch = this.mySearch;
-      addPackageToIndex(tracking, msearch);
-      resolve({ updated: true });
-    });
-  }
+  // removePackageById(id) {
+  //   var msearch = this.mySearch;
+  //   return new Promise((resolve, reject) => {
+  //     packageIndex.delDocument(PKG_IDX, id, (err, response) => {
+  //       if (err) console.log(err);
+  //       resolve({ deleted: true });
+  //     });
+  //   });
+  // }
+  // storePackageForPickup(trackingNo, bin) {
+  //   var searcher = this.mySearch;
+  //   return new Promise((resolve, reject) => {
+  //     lredis.hmset(PACKAGE_ID + trackingNo, { status: 4, location: bin }).then((result) => {
+  //       lredis.getPackage(trackingNo).then((pkg) => {
+  //         addPackageToIndex(trackingNo, searcher);
+  //         resolve(pkg);
+  //       });
+  //     });
+  //   });
+  // }
+  // updatePackageIndex(tracking) {
+  //   return new Promise((resolve, reject) => {
+  //     var msearch = this.mySearch;
+  //     addPackageToIndex(tracking, msearch);
+  //     resolve({ updated: true });
+  //   });
+  // }
 
   //#region Manifest Package Functions
 
   //get the compartment weight
-  getFlightCompartmentWeight(mid, compartment) {
-    return new Promise((resolve, reject) => {
-      this.mySearch.aggregate(
-        `@mid:[${mid} ${mid}] @compartment:${compartment}`,
-        {},
-        (err, reply) => {
-          if (err) console.log(err);
+  // getFlightCompartmentWeight(mid, compartment) {
+  //   return new Promise((resolve, reject) => {
+  //     this.mySearch.aggregate(
+  //       `@mid:[${mid} ${mid}] @compartment:${compartment}`,
+  //       {},
+  //       (err, reply) => {
+  //         if (err) console.log(err);
 
-          if (reply[1]) {
-            var result = reply[1];
-            var compartment = result[3];
-            var weight = result[5];
-          }
-          resolve({ compartment: compartment, weight: weight });
-        },
-      );
-    });
-  }
+  //         if (reply[1]) {
+  //           var result = reply[1];
+  //           var compartment = result[3];
+  //           var weight = result[5];
+  //         }
+  //         resolve({ compartment: compartment, weight: weight });
+  //       },
+  //     );
+  //   });
+  // }
   //remove from flight
-  removeFromFlight(action) {
-    return new Promise((resolve, reject) => {
-      var packageNo = getPackageIdFromBarCode(action.barcode);
-      this.mySearch.update(packageNo, { mid: action.mid }, (err, result) => {
-        if (err) resolve({ removed: false });
+  // removeFromFlight(action) {
+  //   return new Promise((resolve, reject) => {
+  //     var packageNo = getPackageIdFromBarCode(action.barcode);
+  //     this.mySearch.update(packageNo, { mid: action.mid }, (err, result) => {
+  //       if (err) resolve({ removed: false });
 
-        resolve({ removed: true });
-      });
-    });
-  }
+  //       resolve({ removed: true });
+  //     });
+  //   });
+  // }
 
   // This method is used when we're performing the global search 
   getGlobalSearchData(bodyData) {

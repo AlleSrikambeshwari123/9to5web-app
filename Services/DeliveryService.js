@@ -1,12 +1,12 @@
 var moment = require("moment");
 const strings = require('../Res/strings');
 
-var client = require('./dataContext').redisClient;
-var lredis = require("./redis-local");
+// var client = require('./dataContext').redisClient;
+// var lredis = require("./redis-local");
 
-const PREFIX = strings.redis_prefix_delivery;
-const ID_DELIVERY = strings.redis_id_delivery;
-const DELIVERY_SET = strings.redis_prefix_delivery_package_list;
+// const PREFIX = strings.redis_prefix_delivery;
+// const ID_DELIVERY = strings.redis_id_delivery;
+// const DELIVERY_SET = strings.redis_prefix_delivery_package_list;
 
 const Delivery = require('../models/delivery');
 const Package = require('../models/package');
@@ -134,12 +134,12 @@ class DeliveryService {
     })
   }
 
-  sendDelivery(deliveryId) {
-    return new Promise((resolve, reject) => {
-      client.hmset(PREFIX + deliveryId, { status: 1 });
-      resolve({ success: true, message: strings.string_response_updated });
-    })
-  }
+  // sendDelivery(deliveryId) {
+  //   return new Promise((resolve, reject) => {
+  //     client.hmset(PREFIX + deliveryId, { status: 1 });
+  //     resolve({ success: true, message: strings.string_response_updated });
+  //   })
+  // }
 
   addPackagesToDelivery(deliveryId, packageIds,user) {
     return new Promise(async(resolve, reject) => {

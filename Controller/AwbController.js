@@ -1,4 +1,4 @@
-const services = require('../RedisServices/RedisDataServices');
+const services = require('../Services/RedisDataServices');
 const printerCtrl = require('./PrinterController');
 const utils = require('../Util/utils');
 const aws = require('../Util/aws');

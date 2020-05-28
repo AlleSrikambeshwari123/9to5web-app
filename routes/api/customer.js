@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var services = require('../../RedisServices/RedisDataServices');
+var services = require('../../Services/RedisDataServices');
 var moment = require('moment');
 var passport = require('passport');
 require('./authHelper')

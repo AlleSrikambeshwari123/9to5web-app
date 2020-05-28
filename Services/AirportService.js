@@ -1,7 +1,7 @@
 const strings = require('../Res/strings');
 
-const PREFIX = strings.redis_prefix_airport;
-const AIRPORT_ID_KEY = strings.redis_id_airport;
+// const PREFIX = strings.redis_prefix_airport;
+// const AIRPORT_ID_KEY = strings.redis_id_airport;
 
 const Airport = require('../models/airport');
 

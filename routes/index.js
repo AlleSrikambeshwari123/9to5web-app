@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var middleware = require('../middleware');
-var services = require('../RedisServices/RedisDataServices');
+var services = require('../Services/RedisDataServices');
 
 router.get('/', function (req, res, next) {
   if (req.session.token)

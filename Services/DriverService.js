@@ -2,12 +2,12 @@
 
 const strings = require('../Res/strings');
 
-var client = require('./dataContext').redisClient;
-var lredis = require('./redis-local');
+// var client = require('./dataContext').redisClient;
+// var lredis = require('./redis-local');
 
-const PREFIX = strings.redis_prefix_driver;
-const DRIVER_ID = strings.redis_id_driver;
-const DRIVER_LIST = strings.redis_prefix_driver_list;
+// const PREFIX = strings.redis_prefix_driver;
+// const DRIVER_ID = strings.redis_id_driver;
+// const DRIVER_LIST = strings.redis_prefix_driver_list;
 
 const Driver = require('../models/driver');
 

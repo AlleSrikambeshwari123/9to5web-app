@@ -1,4 +1,4 @@
-var services = require('../RedisServices/RedisDataServices');
+var services = require('../Services/RedisDataServices');
 
 exports.create_user = (req, res, next) => {
   services.userService.getRoles().then(function (roles) {

@@ -1,4 +1,4 @@
-var services = require('../RedisServices/RedisDataServices');
+var services = require('../Services/RedisDataServices');
 var utils = require('../Util/utils');
 
 exports.get_airline_list = (req, res, next) => {

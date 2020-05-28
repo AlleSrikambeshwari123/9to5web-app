@@ -1,4 +1,4 @@
-var services = require('../RedisServices/RedisDataServices');
+var services = require('../Services/RedisDataServices');
 var utils = require('../Util/utils');
 
 exports.render_store_check_in = (req, res, next) => {

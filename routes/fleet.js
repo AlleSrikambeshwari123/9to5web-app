@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var services = require('../RedisServices/RedisDataServices');
+var services = require('../Services/RedisDataServices');
 var middleware = require('../middleware');
 
 router.get('/planes', middleware(services.userService).checkSession, function (req, res, next) {
