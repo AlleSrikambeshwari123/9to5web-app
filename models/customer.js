@@ -55,6 +55,12 @@ const customerSchema = new mongoose.Schema({
   fcmToken:{
     tyep:String
   },
+  notificationStatus:{
+    type:Number
+  },
+  deviceId:{
+    type:String
+  },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId, 
     ref: 'User', 

@@ -5,6 +5,8 @@ var api_key = 'key-26b3924502603002f75c25ebde19be8e';
 var mailgun = require('mailgun-js')({ apiKey: api_key, domain: domain });
 const path = require('path');
 const fs = require('fs');
+require('dotenv').config();
+const axios = require('axios')
 
 // NOTE: Don't forget to change it before push.
 // http://paylanes-dev.sprocket.solutions:3000/
@@ -76,14 +78,35 @@ exports.send = (filePath, mailData) => {
           subject: mailData.subject,
           html: html
         };
-        mailgun.messages().send(data, function (error, body) {
-          if (error) {
-            console.error(error);
-          } else {
-            console.log("Message sent successfully to " + mailData.email);
+        axios.get(`${process.env.NODEMAIL_BASEURL}`).then(token=>{
+          if(token.data.success){
+            setAuthToken(token.data.token)
+            axios.post(`${process.env.NODEMAIL_BASEURL}/nodemail`,data).then(result=>{
+              const {data} = result
+              if(data.success){
+                console.log("Message sent successfully to " + mailData.email);
+              }else{
+                console.error(data.error ? data.error: data.message);
+              }
+            })
           }
         })
+       
+        // mailgun.messages().send(data, function (error, body) {
+        //   if (error) {
+        //     console.error(error);
+        //   } else {
+        //     console.log("Message sent successfully to " + mailData.email);
+        //   }
+        // })
       //})
     }
   })
 }
+
+const setAuthToken = token => {
+  if (token) {
+    const newToken = `Bearer ${token}`;
+    axios.defaults.headers.common["Authorization"] = newToken;
+  }
+};

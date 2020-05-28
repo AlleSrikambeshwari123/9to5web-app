@@ -226,6 +226,33 @@ class CustomerService {
     });
   }
 
+  notificationStatus(email, status) {
+    return new Promise((resolve, reject) => {
+      this.getCustomerWithEmail(email).then(customer => {
+        if (customer.id == undefined) {
+          resolve({ success: false, message: strings.string_not_found_customer });
+        } else {
+          Customer.updateOne({email:email},{ notificationStatus: status }).exec((err,updateData)=>{
+            resolve({ success:  true, message: strings.string_response_updated });
+          })
+        }
+      })
+    });
+  }
+  deviceUniqueId(email, id) {
+    return new Promise((resolve, reject) => {
+      this.getCustomerWithEmail(email).then(customer => {
+        if (customer.id == undefined) {
+          resolve({ success: false, message: strings.string_not_found_customer });
+        } else {
+          Customer.updateOne({email:email},{ deviceId: id }).exec((err,updateData)=>{
+            resolve({ success:  true, message: strings.string_response_updated });
+          })
+        }
+      })
+    });
+  }
+
   importShippersFromCsv() {
     return new Promise((resolve, reject) => {
       this.removeAll().then(result => {

@@ -23,6 +23,20 @@ router.post('/update-fcm',passport.authenticate('jwt', { session: false }), (req
     res.send(result);
   })
 })
+router.post('/update-notification-status',passport.authenticate('jwt', { session: false }), (req, res, next) => {
+  var email = req.body.email;
+  var status = req.body.status;
+  services.customerService.notificationStatus(email, status).then(result => {
+    res.send(result);
+  })
+})
+router.post('/update-device-id',passport.authenticate('jwt', { session: false }), (req, res, next) => {
+  var email = req.body.email;
+  var deviceId = req.body.deviceId;
+  services.customerService.deviceUniqueId(email, deviceId).then(result => {
+    res.send(result);
+  })
+})
 
 router.post('/update-profile', passport.authenticate('jwt', { session: false }),function (req, res, next) {
   services.customerService.saveProfile(req.body).then(loginResult => {

@@ -6,7 +6,11 @@ const manifestSchema = new mongoose.Schema({
     type : Schema.Types.ObjectId,
     ref : 'Plane',
     required: true
-  }, 
+  },
+  packages:[{
+    type:Schema.Types.ObjectId,
+    ref:'Package'
+  }], 
   airportFromId:  {
     type : Schema.Types.ObjectId, 
     ref : 'Airport',

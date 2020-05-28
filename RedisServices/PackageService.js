@@ -40,6 +40,7 @@ const PKG_STATUS = {
 
 const Package = require('../models/package');
 const Compartment = require('../models/compartment');
+const Manifest = require('../models/manifest');
 const PackageStatus = require('../models/packageStatus');
 const Customer = require('../models/customer');
 const Awb = require('../models/awb');
@@ -864,7 +865,8 @@ class PackageService {
     try {
       let error = []
       let packages = packageIds && packageIds.length && packageIds.split(',').filter(Boolean);
-      await Compartment.findOneAndUpdate({_id:compartmentId},{$push:{packages:packages}})
+      const compartment = await Compartment.findOneAndUpdate({_id:compartmentId},{$push:{packages:packages}},{new:true})
+      // await Manifest.findOneAndUpdate({_id:compartment.planeId},{$push:{packages:packages}})
       await Promise.all(packages.map(async packageId=>{
         // check packageId Exists
         if(await Package.findById(packageId)){
