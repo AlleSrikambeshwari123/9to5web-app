@@ -163,7 +163,7 @@ class PackageService {
         return upcomingWeight+= pk.weight
       }))
       if(totalPkgWeight+pkgs[0] > cv.planeId.maximumCapacity){
-        return {success:false, message:`Total Packages Weight ${totalPkgWeight+pkgs[0]} Should be less than Compartment Capacity ${cv.planeId.maximumCapacity}`}
+        return {success:false, message:`Total Packages Weight ${totalPkgWeight+pkgs[0]} Should be less than Plane Capacity ${cv.planeId.maximumCapacity}`}
       }
       await Manifest.findOneAndUpdate({_id:manifestId},{$push:{packages:packages}})
       await Promise.all(packages.map(async packageId=>{
