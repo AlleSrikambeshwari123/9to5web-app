@@ -16,7 +16,7 @@ exports.get_manifest_list = (req, res, next) => {
 exports.create_manifest = (req, res, next) => {
   Promise.all([
     services.planeService.getPlanes(),
-    services.awbService.getAwbs(),
+    services.awbService.getAwbsFull(),
     services.airportService.all(),
   ]).then(results => {
     res.render('pages/warehouse/manifest/create', {
