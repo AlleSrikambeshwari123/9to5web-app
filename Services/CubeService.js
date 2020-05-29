@@ -222,5 +222,18 @@ class CubeService {
       })    
     })
   }
+
+  async getCubeName(name, type){
+    let now = new Date();
+    let year = "" + now.getFullYear();
+        year = year.toString().substr(-2);
+    let month = "" + (now.getMonth() + 1); if (month.length == 1) { month = "0" + month; }
+    let day = "" + now.getDate(); if (day.length == 1) { day = "0" + day; }
+    let hour = "" + now.getHours(); if (hour.length == 1) { hour = "0" + hour; }
+    let minute = "" + now.getMinutes(); if (minute.length == 1) { minute = "0" + minute; }
+       
+    return name+month + day +  year + "-" + type ;    
+  }
 }
+
 module.exports = CubeService;

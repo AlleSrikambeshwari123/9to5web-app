@@ -81,6 +81,35 @@ $('#add-cube-form').submit(function (event) {
       }
     })
   });
+
+  function cubePackaceDetail(cubeId){
+    $.ajax({
+      url: 'manage/' + cubeId + '/get',
+      type: 'get',
+      success: function (response) {
+        console.log(response);
+        if(response._id){
+          console.log(1);
+          var row = '';
+          const packages = response.packages;
+          for(let i=0;i<packages.length;i++){
+            row = row+`<tr>
+              <td>Pk${packages[i].id}</td>
+              <td>${packages[i].trackingNo}</td>
+              <td>${packages[i].description}</td>
+            </tr>
+            `;
+           
+          }
+          $("#package-row").html(row)
+        }else{
+          console.log(2);
+          var row = '<tr><td colspan="3">Package not found</td></tr>';
+          $("#package-row").html(row)
+        }
+      }
+    })
+  }
   
   $('#cubeTable').DataTable({
     pageLength: 10,

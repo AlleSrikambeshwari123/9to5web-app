@@ -7,12 +7,17 @@ var services = require('../../Services/RedisDataServices');
 var moment = require('moment');
 
 router.post('/create-cube', passport.authenticate('jwt', { session: false }), async(req, res, next) => {
-    try{        
+    
+  try{
+        if(!req.body.type || !req.body.name){
+          return res.send({ success: false, message: strings.string_response_error });
+        } 
+        const cubeName = await services.cubeService.getCubeName(req.body.name, req.body.type);       
         const detail = {
             cubepackageId:null,
             userId:req.body.userId,
             createdBy:req.body.userId,
-            name:req.body.name
+            name:cubeName
         }       
         services.cubeService.createCube(detail).then(async result => {          
             res.send(result);
