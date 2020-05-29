@@ -35,7 +35,8 @@ const PKG_STATUS = {
   4: 'Recieved in NAS',
   5: 'Ready for Pickup / Delivery',
   6: 'Delivered',
-  7: 'No Invoice Present'
+  7: 'No Invoice Present',
+  8: 'Assigned to cube'
 };
 
 const Package = require('../models/package');

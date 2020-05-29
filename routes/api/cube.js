@@ -43,7 +43,7 @@ router.post('/update-cube/:id', async(req, res, next) => {
   }
 });
 
-router.post('/assign-packages/:id',passport.authenticate('jwt', { session: false }), async (req,res,next)=>{
+router.post('/assign-packages/:id',/*passport.authenticate('jwt', { session: false }),*/ async (req,res,next)=>{
     try{
       const cubeData = await services.cubeService.getCubeDetail(req.params.id);
       if(!cubeData){
@@ -53,6 +53,9 @@ router.post('/assign-packages/:id',passport.authenticate('jwt', { session: false
       const trackingNumber = req.body.trackingNumber;
       const packageIds = await services.cubeService.getPackageIds(trackingNumber);
             package = package.concat(packageIds); 
+      for(let i=0;i<package.length;i++){
+        await services.packageService.updatePackageStatus(package[0],8,req.body.userId)
+      }
       if(!package && package.length==0){
         return res.send({ success: false, message: strings.string_response_error });
       }   
