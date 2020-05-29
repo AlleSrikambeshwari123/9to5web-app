@@ -161,12 +161,17 @@ class ManifestService {
 
   getManifests() {
     return new Promise(async(resolve, reject) => {
+      let totalPkgWeight = 0
       Manifest.find({})
-      .populate('planeId')
+      .populate([{path:'packages',select:'weight'},{path:'planeId'}])
       .exec((err, manifests) => {
         if (err) {
           resolve([]);
         } else {
+          manifests.map(cp=>{
+            cp.packages.map(w => totalPkgWeight+= w.weight)
+            cp._doc['available_weight'] = (cp.planeId.maximumCapacity - totalPkgWeight).toFixed(2)
+          })
           resolve(manifests);
         }
       });

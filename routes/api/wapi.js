@@ -142,13 +142,7 @@ router.get('/getall-barcode', passport.authenticate('jwt', { session: false }), 
   })
 })
 
-router.post('/accept-package', passport.authenticate('jwt', { session: false }), (req, res, next) => {
-  var body = req.body;
-  var username = req.headers.username;
-  services.packageService.addPackageToShipment(body.packageIds, username).then((result) => {
-    res.send(result);
-  })
-})
+
 router.post("/consolidate-packages", passport.authenticate('jwt', { session: false }), (req, res, next) => {
   var pkgArray = JSON.parse(req.body.packages);
   var boxSize = req.body.boxSize;
@@ -227,22 +221,7 @@ router.get('/get-compartments', (req, res, next) => {
     .catch(next);
 });
 
-router.post('/add-packages-to-compartment', passport.authenticate('jwt', { session: false }), (req, res, next) => {
-  let packageIds = req.body.packageIds;
-  let compartmentId = req.body.compartmentId;
-  var userId =  req.body.userId;
-  services.packageService.addPackagesToCompartment(packageIds,compartmentId, userId).then((result) => {
-    res.send(result)
-  })
-})
 
-router.post('/receive-packages-to-flight', passport.authenticate('jwt', { session: false }),(req, res, next) => {
-  let packageIds = req.body.packageIds;
-  var userId =  req.body.userId;
-  services.packageService.receivePackageToFlight(packageIds,userId).then((result) => {
-    res.send(result)
-  })
-})
 
 router.post('/add-packages-to-flight', middleware().checkSession, (req, res, next) => {
   let packageIds = req.body.packageIds;
@@ -261,11 +240,6 @@ router.get('/no-docs',passport.authenticate('jwt', { session: false }),(req,res)
   })
 })
 
-router.post('/add-packages-to-nodoc',passport.authenticate('jwt', { session: false }), (req,res)=>{
-  services.packageService.addAwbsPkgNoDocs(req.body).then((result)=>{
-    res.send(result)
-  })
-})
 
 //========== NAS Package APIs ==========//
 router.post('/rec-package-nas', (req, res, next) => {
@@ -290,14 +264,7 @@ router.get('/get-open-deliveries', (req, res, next) => {
   })
 })
 
-router.post('/add-packages-to-delivery', passport.authenticate('jwt', { session: false }), (req, res, next) => {
-  var deliveryId = req.body.deliveryId;
-  var packageIds = req.body.packageIds.split(',');
-  var username = req.headers.username || req.body.username;
-  services.deliveryService.addPackagesToDelivery(deliveryId, packageIds,username).then(result => {
-    res.send(result)
-  })
-})
+
 
 //========== NAS Store Check-In APIs ==========//
 router.get('/get-locations', passport.authenticate('jwt', { session: false }), (req, res, next) => {
@@ -312,21 +279,7 @@ router.get('/get-zones', passport.authenticate('jwt', { session: false }), (req,
   })
 });
 
-router.post('/check-in-store', passport.authenticate('jwt', { session: false }), (req, res, next) => {
-  var username = req.headers.username || req.body.username;
-  services.packageService.checkInStore(req.body, username).then(result => {
-    res.send(result)
-  })
-})
 
-//========== NAS Check out to Customer ==========//
-router.post('/checkout-to-customer', passport.authenticate('jwt', { session: false }), (req, res, next) => {
-  var packageIds = req.body.packageIds;
-  var username = req.headers.username || req.body.username;
-  services.packageService.checkOutToCustomer(packageIds, username).then(result => {
-    res.send(result)
-  })
-})
 
 //========== Process Package =============//
   router.post('/process-package', passport.authenticate('jwt', { session: false }),(req, res, next) => {
@@ -336,5 +289,69 @@ router.post('/checkout-to-customer', passport.authenticate('jwt', { session: fal
       res.send(result)
     })
   })
+
+
+/* All Package Scans */
+//Received in FLL [1]
+router.post('/accept-package', passport.authenticate('jwt', { session: false }), (req, res, next) => {
+  var body = req.body;
+  var username = req.headers.username;
+  services.packageService.addPackageToShipment(body.packageIds, username).then((result) => {
+    res.send(result);
+  })
+})
+
+//Loaded on AirCraft - [2]
+router.post('/add-packages-to-compartment', passport.authenticate('jwt', { session: false }), (req, res, next) => {
+  let packageIds = req.body.packageIds;
+  let compartmentId = req.body.compartmentId;
+  var userId =  req.body.userId;
+  services.packageService.addPackagesToCompartment(packageIds,compartmentId, userId).then((result) => {
+    res.send(result)
+  })
+})
+//In Transit - [3]
+router.post('/add-packages-to-delivery', passport.authenticate('jwt', { session: false }), (req, res, next) => {
+  var deliveryId = req.body.deliveryId;
+  var packageIds = req.body.packageIds.split(',');
+  var username = req.headers.username || req.body.username;
+  services.packageService.addPackagesToDelivery(deliveryId, packageIds,username).then(result => {
+    res.send(result)
+  })
+})
+
+// Recieved in NAS -[4]
+router.post('/receive-packages-to-flight', passport.authenticate('jwt', { session: false }),(req, res, next) => {
+  let packageIds = req.body.packageIds;
+  var userId =  req.body.userId;
+  services.packageService.receivePackageToFlight(packageIds,userId).then((result) => {
+    res.send(result)
+  })
+})
+
+//Ready for Pickup / Delivery - [5]
+router.post('/checkout-to-customer', passport.authenticate('jwt', { session: false }), (req, res, next) => {
+  var packageIds = req.body.packageIds;
+  var username = req.headers.username || req.body.username;
+  services.packageService.checkOutToCustomer(packageIds, username).then(result => {
+    res.send(result)
+  })
+})
+
+//No Invoice Present - [7]
+router.post('/add-packages-to-nodoc',passport.authenticate('jwt', { session: false }), (req,res)=>{
+  services.packageService.addAwbsPkgNoDocs(req.body).then((result)=>{
+    res.send(result)
+  })
+})
+
+//Delivered to Store - [9]
+router.post('/check-in-store', passport.authenticate('jwt', { session: false }), (req, res, next) => {
+  var username = req.headers.username || req.body.username;
+  services.packageService.checkInStore(req.body, username).then(result => {
+    res.send(result)
+  })
+})
+
 
 module.exports = router;

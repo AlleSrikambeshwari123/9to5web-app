@@ -56,10 +56,12 @@ const customerSchema = new mongoose.Schema({
     tyep:String
   },
   notificationStatus:{
-    type:Number
+    type:Number,
+    default:1
   },
   deviceId:{
-    type:String
+    type:String,
+    unique:true
   },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId, 

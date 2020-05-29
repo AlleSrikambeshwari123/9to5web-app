@@ -141,25 +141,6 @@ class DeliveryService {
   //   })
   // }
 
-  addPackagesToDelivery(deliveryId, packageIds,user) {
-    return new Promise(async(resolve, reject) => {
-      Delivery.findOneAndUpdate({_id:deliveryId},{$push:{packages:packageIds},updatedBy:user}).then((err,delivery)=>{
-        if (err) {
-          resolve({ success: false, message: strings.string_response_error});
-        }
-
-      })
-      packageIds.forEach(async(id) => {
-        Package.findOneAndUpdate({_id: id}, {deliveryId: deliveryId}, (err, result) => {
-          if (err) {
-            resolve({ success: false, message: strings.string_response_error});
-          }
-        })
-      })
-      resolve({ success: true, message:  strings.string_response_updated});
-    })
-  }
-
   // getDeliveryPackages(deliveryId) {
   //   return new Promise((resolve, reject) => {
   //     client.smembers(DELIVERY_SET + deliveryId, (err, packageIds) => {

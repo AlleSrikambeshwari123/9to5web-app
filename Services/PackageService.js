@@ -1,4 +1,5 @@
 var emailService = require('../Util/EmailService');
+var mongoose = require('mongoose')
 var moment = require('moment');
 var fs = require('fs');
 var uniqId = require('uniqid');
@@ -36,12 +37,14 @@ const PKG_STATUS = {
   5: 'Ready for Pickup / Delivery',
   6: 'Delivered',
   7: 'No Invoice Present',
-  8: 'Assigned to cube'
+  8: 'Assigned to cube',
+  9: 'Delivered to Store'
 };
 
 const Package = require('../models/package');
 const Compartment = require('../models/compartment');
 const Manifest = require('../models/manifest');
+const Delivery = require('../models/delivery');
 const PackageStatus = require('../models/packageStatus');
 const Customer = require('../models/customer');
 const Awb = require('../models/awb');
@@ -90,6 +93,186 @@ class PackageService {
   setServiceInstances(services) {
     this.services = services;
   }
+
+  // 1: 'Received in FLL',
+  async addPackageToShipment(packages, username) {
+    try {
+      let packageIds = packages.split(',');
+      return Promise.all(
+        packageIds.map(async (packageId) => {
+          return await this.updatePackageStatus(packageId, 1, username);
+        })
+      ).then((result) => {
+        return {
+          success: true,
+          message: strings.string_response_received,
+          status: PKG_STATUS[1]
+        };
+      });
+    } catch (error) {
+      console.error('addPackageToShipment', error);
+      return error;
+    }
+  }
+
+  //2: 'Loaded on AirCraft',
+  async addPackagesToCompartment(packageIds,compartmentId,userId){
+    try {
+      let error = []
+      let totalPkgWeight = 0
+      let upcomingWeight =  0
+      let packages = packageIds && packageIds.length && packageIds.split(',').filter(Boolean);
+      const cv = await Compartment.findById(compartmentId).populate({path:'packages',select:'weight'}).
+      select('packages weight')
+      cv.packages.map(w => totalPkgWeight+= w.weight)
+      const pkgs = await Promise.all(packages.map(async pkgId=>{
+        const pk = await Package.findById(pkgId).select('weight')
+        return upcomingWeight+= pk.weight
+      }))
+      if(totalPkgWeight+pkgs[0] > cv.weight){
+        return {success:false, message:`Total Packages Weight ${totalPkgWeight+pkgs[0]} Should be less than Compartment Capacity ${cv.weight}`}
+      }
+      await Compartment.findOneAndUpdate({_id:compartmentId},{$push:{packages:packages}})
+      await Promise.all(packages.map(async packageId=>{
+        // check packageId Exists
+        if(await Package.findById(packageId)){
+          await this.updatePackageStatus(packageId, 2, userId);
+        }else{
+          error.push(`Package ${packageId} doesn't Exist`)
+        }
+      }))
+      if(error.length >0) return { success: false, message: error }
+      return { success: true, message: strings.string_response_loaded, status: PKG_STATUS[2] }
+    } catch (error) {
+      return { success: false, message: strings.string_response_error }
+    }
+  }
+
+   // Add Packages To Manifest 2: 'Loaded on AirCraft',
+   async addPackagesToManifests(packageIds,manifestId,userId){
+    try {
+      let error = []
+       let totalPkgWeight = 0
+      let upcomingWeight =  0
+      let packages = packageIds && packageIds.length && packageIds.split(',').filter(Boolean);
+      const cv = await Manifest.findById(manifestId).populate([{path:'packages',select:'weight'},{path:'planeId',select:'maximumCapacity'}]).
+      select('packages planeId')
+      cv.packages.map(w => totalPkgWeight+= w.weight)
+      const pkgs = await Promise.all(packages.map(async pkgId=>{
+        const pk = await Package.findById(pkgId).select('weight')
+        return upcomingWeight+= pk.weight
+      }))
+      if(totalPkgWeight+pkgs[0] > cv.planeId.maximumCapacity){
+        return {success:false, message:`Total Packages Weight ${totalPkgWeight+pkgs[0]} Should be less than Compartment Capacity ${cv.planeId.maximumCapacity}`}
+      }
+      await Manifest.findOneAndUpdate({_id:manifestId},{$push:{packages:packages}})
+      await Promise.all(packages.map(async packageId=>{
+        // check packageId Exists
+        if(await Package.findById(packageId)){
+          await this.updatePackageStatus(packageId, 2, userId);
+        }else{
+          error.push(`Package ${packageId} doesn't Exist`)
+        }
+      }))
+      if(error.length >0) return { success: false, message: error }
+      return { success: true, message: strings.string_response_loaded, status: PKG_STATUS[2] }
+    } catch (error) {
+      return { success: false, message: strings.string_response_error }
+    }
+  }
+
+  // 3: 'In Transit',
+  addPackagesToDelivery(deliveryId, packageIds,user) {
+    return new Promise(async(resolve, reject) => {
+      Delivery.findOneAndUpdate({_id:deliveryId},{$push:{packages:packageIds},updatedBy:user}).then((err,delivery)=>{
+        if (err) {
+          resolve({ success: false, message: strings.string_response_error});
+        }
+      })
+      packageIds.forEach(async(packageId) => {
+        this.updatePackage(packageId, {deliveryId: deliveryId});
+        return this.updatePackageStatus(packageId, 3, user);  
+      })
+      resolve({ success: true, message:  strings.string_response_updated,status: PKG_STATUS[3]});
+    })
+  }
+
+  // 4: 'Recieved in NAS',
+  async receivePackageToFlight(packageIds,userId){
+    try {
+      let error = []
+      let packages = packageIds && packageIds.length && packageIds.split(',').filter(Boolean);
+      await Promise.all(packages.map(async packageId=>{
+        // check packageId Exists
+        if(await Package.findById(packageId)){
+          await this.updatePackageStatus(packageId, 4, userId);
+        }else{
+          error.push(`Package ${packageId} doesn't Exist`)
+        }
+      }))
+      if(error.length >0) return { success: false, message: error }
+      return { success: true, message: strings.string_response_loaded, status: PKG_STATUS[4] }
+    } catch (error) {
+      return { success: false, message: strings.string_response_error }
+    }
+  }
+
+  // 5: 'Ready for Pickup / Delivery',
+  checkOutToCustomer(barcodes, username) {
+    return new Promise((resolve, reject) => {
+      let packageIds = barcodes.split(',');
+      Promise.all(
+        packageIds.map((packageId) => {
+          return this.updatePackageStatus(packageId, 5, username);
+        }),
+      ).then((result) => {
+        resolve({ success: true, message: strings.string_response_received,status: PKG_STATUS[5] });
+      });
+    });
+  }
+
+// 7: 'No Invoice Present',
+async addAwbsPkgNoDocs(data){
+  try {
+    let packageIds = data.packageIds.split(',');
+    await Promise.all(
+      packageIds.map(packageId=>{
+        this.updatePackage(packageId, {
+          location: data.location,
+          zoneId:data.zoneId
+        });
+        return this.updatePackageStatus(packageId, 7, data.userId);
+      },
+      this.updateAwbPackages(data.awbId,packageIds),
+      this.updateZone(data.zoneId,packageIds)
+      )
+    )
+    return { success: true, message: strings.string_response_received,status: PKG_STATUS[7] }
+  } catch (error) {
+    console.error('addAwbsPkgNoDocs',error)
+  }
+}
+
+// 9: 'Delivered to Store'
+checkInStore(data, username) {
+  let packageIds = data.packageIds.split(',');
+  return new Promise((resolve, reject) => {
+    Promise.all(
+      packageIds.map((packageId) => {
+        this.updatePackage(packageId, {
+          location: data.location,
+          companyId: data.companyId,
+          zoneId:data.zoneId
+        });
+        return this.updatePackageStatus(packageId, 9, username);
+      },
+      this.updateZone(data.zoneId,packageIds)
+      ),
+      ).then((result) => {
+      resolve({ success: true, message: strings.string_response_received,status: PKG_STATUS[9] });
+    });
+  });
+}
 
   //========== Dashboard Functions ==========//
   getPackageStatus() {
@@ -817,25 +1000,7 @@ class PackageService {
       // });
     });
   }
-  async addPackageToShipment(packages, username) {
-    try {
-      let packageIds = packages.split(',');
-      return Promise.all(
-        packageIds.map(async (packageId) => {
-          return await this.updatePackageStatus(packageId, 1, username);
-        })
-      ).then((result) => {
-        console.log(result)
-        return {
-          success: true,
-          message: strings.string_response_received,
-        };
-      });
-    } catch (error) {
-      console.error('addPackageToShipment', error);
-      return error;
-    }
-  }
+ 
 
   //========== Load Packages to AirCraft (Add to Manifest) ==========//
   addToFlight(packageIds, manifestId, compartmentId, userId) {
@@ -861,69 +1026,6 @@ class PackageService {
       });
     });
   }
-  
-  // Add Packages To Compartment
-  async addPackagesToCompartment(packageIds,compartmentId,userId){
-    try {
-      let error = []
-      let packages = packageIds && packageIds.length && packageIds.split(',').filter(Boolean);
-      await Compartment.findOneAndUpdate({_id:compartmentId},{$push:{packages:packages}})
-      await Promise.all(packages.map(async packageId=>{
-        // check packageId Exists
-        if(await Package.findById(packageId)){
-          await this.updatePackageStatus(packageId, 2, userId);
-        }else{
-          error.push(`Package ${packageId} doesn't Exist`)
-        }
-      }))
-      if(error.length >0) return { success: false, message: error }
-      return { success: true, message: strings.string_response_loaded, status: PKG_STATUS[2] }
-    } catch (error) {
-      return { success: false, message: strings.string_response_error }
-    }
-  }
-  
-    // Add Packages To Compartment
-    async addPackagesToManifests(packageIds,manifestId,userId){
-      try {
-        let error = []
-        let packages = packageIds && packageIds.length && packageIds.split(',').filter(Boolean);
-        await Manifest.findOneAndUpdate({_id:manifestId},{$push:{packages:packages}})
-        await Promise.all(packages.map(async packageId=>{
-          // check packageId Exists
-          if(await Package.findById(packageId)){
-            await this.updatePackageStatus(packageId, 2, userId);
-          }else{
-            error.push(`Package ${packageId} doesn't Exist`)
-          }
-        }))
-        if(error.length >0) return { success: false, message: error }
-        return { success: true, message: strings.string_response_loaded, status: PKG_STATUS[2] }
-      } catch (error) {
-        return { success: false, message: strings.string_response_error }
-      }
-    }
-    
-  // Receive Package To Flight
-  async receivePackageToFlight(packageIds,userId){
-    try {
-      let error = []
-      let packages = packageIds && packageIds.length && packageIds.split(',').filter(Boolean);
-      await Promise.all(packages.map(async packageId=>{
-        // check packageId Exists
-        if(await Package.findById(packageId)){
-          await this.updatePackageStatus(packageId, 2, userId);
-        }else{
-          error.push(`Package ${packageId} doesn't Exist`)
-        }
-      }))
-      if(error.length >0) return { success: false, message: error }
-      return { success: true, message: strings.string_response_loaded, status: PKG_STATUS[2] }
-    } catch (error) {
-      return { success: false, message: strings.string_response_error }
-    }
-  }
-  
   
   getPackageOnManifest(manifestId) {
     return new Promise((resolve, reject) => {
@@ -995,19 +1097,6 @@ class PackageService {
     });
   }
 
-  //========== Deliver Package to the Customer ==========//
-  checkOutToCustomer(barcodes, username) {
-    return new Promise((resolve, reject) => {
-      let packageIds = barcodes.split(',');
-      Promise.all(
-        packageIds.map((packageId) => {
-          return this.updatePackageStatus(packageId, 6, username);
-        }),
-      ).then((result) => {
-        resolve({ success: true, message: strings.string_response_received,status: PKG_STATUS[6] });
-      });
-    });
-  }
 
   // ======== Process Package ==========//
   async processPackage(barcode,userId){
@@ -1046,50 +1135,6 @@ class PackageService {
     } catch (error) {
       console.error('updateAwbPackages',error)
     }
-  }
-
-
-// =========== addPackages to No Docs ==============//
-
-  async addAwbsPkgNoDocs(data){
-    try {
-      let packageIds = data.packageIds.split(',');
-      await Promise.all(
-        packageIds.map(packageId=>{
-          this.updatePackage(packageId, {
-            location: data.location,
-            zoneId:data.zoneId
-          });
-          return this.updatePackageStatus(packageId, 7, data.userId);
-        },
-        this.updateAwbPackages(data.awbId,packageIds),
-        this.updateZone(data.zoneId,packageIds)
-        )
-      )
-      return { success: true, message: strings.string_response_received,status: PKG_STATUS[7] }
-    } catch (error) {
-      console.error('addAwbsPkgNoDocs',error)
-    }
-  }
-  //========== Check In Store ==========//
-  checkInStore(data, username) {
-    let packageIds = data.packageIds.split(',');
-    return new Promise((resolve, reject) => {
-      Promise.all(
-        packageIds.map((packageId) => {
-          this.updatePackage(packageId, {
-            location: data.location,
-            companyId: data.companyId,
-            zoneId:data.zoneId
-          });
-          return this.updatePackageStatus(packageId, 6, username);
-        },
-        this.updateZone(data.zoneId,packageIds)
-        ),
-        ).then((result) => {
-        resolve({ success: true, message: strings.string_response_received,status: PKG_STATUS[6] });
-      });
-    });
   }
 
   // getPackagesInLocation(locationId) {
@@ -1553,6 +1598,7 @@ function getPackageIdFromBarCode(barCodeValue) {
   if (parts.length == 3) if (typeof parts[2] != 'undefined') return parts[2].trim();
   return '';
 }
+
 
 //========== DB Structure ==========//
 /*          Package Record
