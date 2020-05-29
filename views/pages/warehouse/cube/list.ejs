@@ -3,9 +3,7 @@
   <div class="col-xl-12 col-lg-6 col-md-12 col-sm-12">
     <div class="card">
       <div class="card-header d-flex align-items-left align-items-md-center flex-column flex-md-row">
-        <div class="card-title"><%=title%></div>
-        <a href='#' data-target="#add-cube" data-toggle='modal'
-          class='btn btn-primary btn-round ml-md-auto float-right'>Add New Cube</a>
+        <div class="card-title"><%=title%></div>        
       </div>
       <div class="card-body">
         <div class="table-responsive">
@@ -14,21 +12,17 @@
               <tr>
                 <th>ID</th>
                 <th>Name</th>
-                <th>Description</th>
-                <th>Action</th>
+                <th>Packages</th>                
+                
               </tr>
             </thead>
             <tbody>
               <% cubes.forEach(function(cube){ %>
               <tr data-record="<%= cube.id %>">
                 <td><%=cube.id%></td>
-                <td><strong><%=cube.name%></strong></td>
-                <td><%=cube.description%></td>
-                <td>
-                  <a href='#' data-id='<%=cube.id%>' data-target="#edit-cube" data-toggle='modal'
-                    class='btn-edit-cube mx-3'><i class="fas fa-pen"></i></a>
-                  <a href='#' class='rm-cube ml-3' data-id='<%=cube.id%>'><i class="fas fa-trash"></i></a>
-                </td>
+                <td><strong><%=cube.name%></strong></td> 
+                <td><a href="" data-id='<%=cube.id%>' data-target="#package-cube" data-toggle='modal' class="package-detail" onclick="cubePackaceDetail('<%=cube._id%>')"><i class="fas fa-eye"></i></a></td>              
+                
               </tr>
               <%})%>
             </tbody>
@@ -96,6 +90,23 @@
           <button type="button" class="btn btn-danger close-del" data-dismiss="modal">Close</button>
         </div>
       </form>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="package-cube" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <table class="table" id="package-cube-table">
+        <tr>
+          <th>Number</th>
+          <th>Tracking Number</th>
+          <th>Description</th>
+        </tr>
+        <tbody id="package-row">
+
+        </tbody>
+      </table>
+
     </div>
   </div>
 </div>

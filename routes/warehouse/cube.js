@@ -9,4 +9,5 @@ router.get('/cube/manage/:id/get', middleware().checkSession, cubeCtrl.get_cube_
 router.post('/cube/manage/:id/update', middleware().checkSession, cubeCtrl.update_cube);
 router.delete('/cube/manage/:id/delete', middleware().checkSession, cubeCtrl.delete_cube);
 
+
 module.exports = router;
