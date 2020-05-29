@@ -5,10 +5,9 @@ var firebase = admin.initializeApp({
   credential: admin.credential.cert(firebaseConfig),
   databaseURL: "https://imports-8f957.firebaseio.com"
 });
-var topic = 'PUSH_NOTIFICATION';
 exports.sendNotification = (customer, title, body,fparam) => {
   console.log("Sending Notification...\n" + title + '\n' + body);
-  if (customer.fcmToken) {
+  if (customer.notificationStatus) {
     var payload = {
       token: customer.fcmToken.toString(),
       notification: {
@@ -17,7 +16,6 @@ exports.sendNotification = (customer, title, body,fparam) => {
       },
       data:fparam
     };
-    customer.firebaseTopic == 1 ? (payload['topic'] = topic ): '';
     var messaging = firebase.messaging();
     messaging.send(payload).then(result => {
       console.log("Notification Sent");
