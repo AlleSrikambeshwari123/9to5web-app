@@ -222,7 +222,7 @@
                     <div class="col-md-7">
                       <select class="form-control" name="users">
                         <option value='all'>All</option>
-                        <%users.forEach(function(user){ %>
+                        <% users.forEach(function(user){ %>
                         <option value="<%=user._id%>"><%=user.username%></option>
                         <%})%>
                       </select>
@@ -275,7 +275,31 @@
   </div>
 </div>
 
-
+<div class="row">
+  <div class="col-md-12">
+    <div class="card full-height">
+      <div class="card-header">
+        <div class="row">
+          <div class="card-title pd-18 col-md-2">Users </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <table id="user_table" class=" display table table-striped table-hover dataTable ">
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Name</th>
+              <th>Total AWB Created</th>
+              <th>User Email</th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script type="text/javascript">
   function filterData(event) {
@@ -306,9 +330,11 @@
       let nineToPackages = data.nineToPackages;
       let noDocs = data.noDocs;
       let postBox = data.postBox;
+      let users = data.users;
       data9to5(nineToPackages);
       dataNoDocs(noDocs);
       dataPostBox(postBox);
+      usersData(users);
     }
   })
 
@@ -361,6 +387,27 @@
     $("#post_packages tbody").append(result)
     if (!($.fn.dataTable.isDataTable('#post_packages'))) {
       $("#post_packages").DataTable({ searching: false, "bLengthChange": false });
+    }
+  }
+
+  function usersData(data) {
+    let result = data.map((user) => {
+      if (user !== null) {
+        return `<tr><td>` + user.username + `</td>
+          <td>` + user.firstName + " " + user.lastName + `</td>
+          <td>` + user.awbCount + `</td>
+          <td>` + user.email +
+          `</td></tr>`;
+      }
+    })
+
+    if ($("#user_table > tbody > tr").length) {
+      $("#user_table > tbody > tr").empty();
+    }
+
+    $("#user_table tbody").append(result)
+    if (!($.fn.dataTable.isDataTable('#user_table'))) {
+      $("#user_table").DataTable({ searching: false, "bLengthChange": false });
     }
   }
 
