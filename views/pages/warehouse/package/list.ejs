@@ -11,12 +11,10 @@
           <table id = "package-table" class="display table table-striped table-hover dataTable package-table">
             <thead>
               <tr>
-                <th>Number</th>
                 <th>Tracking No</th>
                 <th>Description</th>
                 <th>Type</th>
                 <th>Weight</th>
-                <th>Dimensions</th>
                 <th>Status</th>
                 <th>AWB</th>
                 <% if (typeof filterURL !== 'undefined' && filterURL === 'not-pmb9000') { %>
@@ -32,12 +30,10 @@
             <tbody>
               <% packages.forEach(function(pkg){ %>
               <tr data-record="<%= pkg.id %>">
-                <td>PK<%= pkg.id%></td>
                 <td><%= pkg.trackingNo%></td>
                 <td><%= pkg.description %></td>
                 <td><%= pkg.packageType %></td>
                 <td><%= pkg.weight%></td>
-                <td><%= pkg.dimensions %></td>
                 <td><%= pkg.lastStatusText %></td>
                 <td><%= pkg.awbId.awbId %></td>
                 <% if (typeof filterURL !== 'undefined' && filterURL === 'not-pmb9000') { %>

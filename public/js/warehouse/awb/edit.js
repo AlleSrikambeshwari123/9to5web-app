@@ -470,12 +470,10 @@ $(function () {
       let isNew = pkg.id > 1e9
       let rowNode = packageTable.row
         .add([
-          `PK${pkg.id}`,
           pkg.trackingNo,
           pkg.description,
           pkg.dimensions,
           Number(pkg.weight).toFixed(2) + ` ${pkg.packageCalculation || 'kg'}`,
-          `${calculatePackageVolumetricWeight(pkg).toFixed(2)} lbs`,
           pkg.lastStatusText ? pkg.lastStatusText : '',
           [
             `<a class="btn btn-link btn-primary btn-edit-pkg p-1" title="Edit" data-id="${pkg.id}" href="#add-package-popup"><i class="fa fa-pen"></i></a>`,
