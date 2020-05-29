@@ -37,7 +37,7 @@
 								<td><%= helpers.formatDate(pkg.createdAt)%></td>
 								<td><%= pkg.location%></td>
 								<td><%= pkg.trackingNo %></td>
-								<td><%= pkg.customerId.pmb + '-' + helpers.getFullName(pkg.customerId) %></td>
+								<td><%= pkg.customerId ? pkg.customerId.pmb + '-' + helpers.getFullName(pkg.customerId) : "" %></td>
 								<td><%= pkg.awbId %></td> 
 								<td><%= pkg.description %></td>
 								<td><%= pkg.weight + ' lbs'%></td>

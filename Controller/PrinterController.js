@@ -64,12 +64,41 @@ exports.download_pdf_awb = (req, res, next) => {
   })
 }
 
+exports.download_pkg_label = (req, res, next) => {
+  services.packageService.getPackage_updated(req.params.id).then(package => {
+    services.printService.getAWBDataForAllRelatedEntities(package.awbId).then((awb) => {
+      lblPdfGen.generateSinglePackageLabel(awb, package).then(result => {
+        res.download(result.path);
+      })
+    })
+  })
+}
+
 exports.download_pkg_labels = (req, res, next) => {
   let id = req.params.id;
   console.log("Downloading Package Label PDF", id);
   getFullAwb(id).then(awb => {
     lblPdfGen.generateAllPackageLabels(awb).then(results => {
       res.zip(results);
+    })
+  })
+}
+
+exports.generate_awb_pdf = (req, res, next) => {
+  services.printService.getAWBDataForAllRelatedEntities(req.params.id).then(awb => {
+    awbPdfGen.generateAWb(awb).then(result => {
+      res.send(result);
+    })
+  })
+}
+
+exports.generate_pkg_label_pdf = (req, res, next) => {
+  console.log("DWLD PACKAGE LABEL")
+  services.packageService.getPackage_updated(req.params.id).then(package => {
+    services.printService.getAWBDataForAllRelatedEntities(package.awbId).then((awb) => {
+      lblPdfGen.generateSinglePackageLabel(awb, package).then(result => {
+        res.send(result);
+      })
     })
   })
 }
@@ -334,24 +363,9 @@ exports.downloadDeliveryReport = async (req, res, next) => {
   }
 };
 
-exports.generate_awb_pdf = (req, res, next) => {
-  services.printService.getAWBDataForAllRelatedEntities(req.params.id).then(awb => {
-    awbPdfGen.generateAWb(awb).then(result => {
-      res.send(result);
-    })
-  })
-}
 
-exports.generate_pkg_label_pdf = (req, res, next) => {
-  console.log("DWLD PACKAGE LABEL")
-  services.packageService.getPackage_updated(req.params.id).then(package => {
-    services.printService.getAWBDataForAllRelatedEntities(package.awbId).then((awb) => {
-      lblPdfGen.generateSinglePackageLabel(awb, package).then(result => {
-        res.send(result);
-      })
-    })
-  })
-}
+
+
 
 function getFullAwb(id) {
   return new Promise((resolve, reject) => {

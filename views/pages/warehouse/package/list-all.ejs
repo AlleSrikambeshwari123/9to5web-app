@@ -53,13 +53,13 @@
               <th>Description</th>
               <th>Type</th>
               <th>Weight</th>
-              <th>Volumetric Weight</th>
               <th>Dimensions</th>
               <th>Status</th>
               <th>AWB</th>
               <th></th>
+              <th></th>
             </tr>
-          </thead>
+          </thead>  
           <tbody>
             <% packages.forEach(function(pkg){ %>
             <tr data-record="<%= pkg._id %>">
@@ -71,10 +71,10 @@
               <td><%= pkg.description %></td>
               <td><%= pkg.packageType %></td>
               <td><%= pkg.weight%></td>
-              <td><%= helpers.calculatePackageVolumetricWeight(pkg).toFixed(2) %> lbs</td>
               <td><%= pkg.dimensions %></td>
               <td class="lastStatusText_field"><%= pkg.lastStatusText %></td>
               <td><%= pkg.awbId.awbId %></td>
+              <td><a href="../pkg-label/download/<%=pkg._id%>"><i class="fa fa-download"></i></a></td>
               <td class="text-center">
                 <a
                   class="btn btn-link btn-primary btn-print-pkg"

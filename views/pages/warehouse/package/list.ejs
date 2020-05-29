@@ -16,7 +16,6 @@
                 <th>Description</th>
                 <th>Type</th>
                 <th>Weight</th>
-                <th>Volumetric Weight</th>
                 <th>Dimensions</th>
                 <th>Status</th>
                 <th>AWB</th>
@@ -26,6 +25,7 @@
                 <% if (typeof filterURL !== 'undefined' && filterURL === 'in-pmb9000') { %>
                 <th>Pickup or Delivery</th>
                 <% } %>
+                <th></th>
                 <th></th>
               </tr>
             </thead>
@@ -37,7 +37,6 @@
                 <td><%= pkg.description %></td>
                 <td><%= pkg.packageType %></td>
                 <td><%= pkg.weight%></td>
-                <td><%= helpers.calculatePackageVolumetricWeight(pkg).toFixed(2) %> lbs</td>
                 <td><%= pkg.dimensions %></td>
                 <td><%= pkg.lastStatusText %></td>
                 <td><%= pkg.awbId.awbId %></td>
@@ -47,9 +46,10 @@
                 <% if (typeof filterURL !== 'undefined' && filterURL === 'in-pmb9000') { %>
                 <td><%= pkg.awbdeliveryMethod %></td>
                 <% } %>
+                <td><a href="../../pkg-label/download/<%=pkg._id%>"><i class="fa fa-download"></i></a></td>
                 <td class="text-center">
                   <a class="btn btn-link btn-primary btn-print-pkg" data-toggle="modal" data-id="<%=pkg._id%>"
-                    data-original-title="Print Label" data-target="#print-popup"> <i class="fa fa-print"></i> </a>
+                    data-original-title="Print Label" data-target="#print-popup"><i class="fa fa-print"></i> </a>
                 </td>
               </tr>
               <%})%>

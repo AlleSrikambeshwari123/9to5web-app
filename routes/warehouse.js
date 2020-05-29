@@ -6,8 +6,8 @@ var moment = require('moment');
 
 // var lredis = require('../Services/redis-local');
 // var redis = lredis;
-var PackageUtil = require('../Util/packageutil').PackageUtility;
-var packageUtil = new PackageUtil();
+// var PackageUtil = require('../Util/packageutil').PackageUtility;
+// var packageUtil = new PackageUtil();
 var formidable = require('formidable');
 var path = require('path');
 var fs = require('fs');
@@ -154,7 +154,6 @@ router.post('/rm-manifest', middleware(services.userService).checkSession, (req,
 });
 
 //#endregion
-
 
 //#region AWB
 
