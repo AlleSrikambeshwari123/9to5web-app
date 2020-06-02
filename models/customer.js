@@ -53,7 +53,7 @@ const customerSchema = new mongoose.Schema({
     type: String
   }, 
   fcmToken:{
-    tyep:String
+    type:String
   },
   notificationStatus:{
     type:Number,
