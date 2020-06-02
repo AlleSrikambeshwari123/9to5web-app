@@ -27,6 +27,7 @@ class CustomerService {
       const customerData = new Customer(customer);
       customerData.save((err, customer) => {
         if (err) {
+          console.log("Create-customer error:",err)
           return resolve({ success: false, message: strings.string_response_error });
         } else {
           delete customer.password;
