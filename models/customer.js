@@ -60,8 +60,8 @@ const customerSchema = new mongoose.Schema({
     default:1
   },
   deviceId:{
-    type:String,
-    unique:true
+    type:String
+    //unique:true
   },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId, 
