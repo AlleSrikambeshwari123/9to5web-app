@@ -189,11 +189,14 @@ class PackageService {
           resolve({ success: false, message: strings.string_response_error});
         }
       })
-      packageIds.forEach(async(packageId) => {
-        this.updatePackage(packageId, {deliveryId: deliveryId});
-        return this.updatePackageStatus(packageId, 3, user);  
-      })
-      resolve({ success: true, message:  strings.string_response_updated,status: PKG_STATUS[3]});
+      Promise.all(
+        packageIds.map((packageId) => {
+          this.updatePackage(packageId, {deliveryId: deliveryId});
+          return this.updatePackageStatus(packageId, 3, user);  
+        }),
+      ).then((result) => {
+        resolve({ success: true, message: strings.string_response_received,status: PKG_STATUS[3] });
+      });
     })
   }
 
