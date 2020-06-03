@@ -50,7 +50,7 @@ router.get('/get-packages-detail/:trackingNo', passport.authenticate('jwt', { se
     console.log(error)
   }
   const myPackage = allService.filter((i) => i.trackingNo === trackingNo)
-  if (myPackage === null) return res.send({ status: 'Tracking No. Not Found' })
+  if (myPackage === null || myPackage.length === 0) return res.send({ status:false,message: "Please scan one of the system generated labels" })
   const packageId = myPackage[0].id;
   const awbId = myPackage[0].awbId;
   Promise.all([
