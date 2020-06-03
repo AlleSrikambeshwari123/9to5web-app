@@ -4,6 +4,7 @@ var services = require('../../Services/RedisDataServices');
 var passport = require('passport');
 require('./authHelper')
 var PackageUtil = require('../../Util/packageutil').PackageUtility;
+var checkEmpty = require('../../Util/utils').checkEmpty
 var middleware = require('../../middleware');
 var packageUtil = new PackageUtil();
 
@@ -50,7 +51,7 @@ router.get('/get-packages-detail/:trackingNo', passport.authenticate('jwt', { se
     console.log(error)
   }
   const myPackage = allService.filter((i) => i.trackingNo === trackingNo)
-  if (myPackage === null) return res.send({ status: 'Tracking No. Not Found' })
+  if (myPackage === null || myPackage.length === 0) return res.send({ status:false,message: "Please scan one of the system generated labels" })
   const packageId = myPackage[0].id;
   const awbId = myPackage[0].awbId;
   Promise.all([
@@ -295,8 +296,10 @@ router.get('/get-zones', passport.authenticate('jwt', { session: false }), (req,
 //Received in FLL [1]
 router.post('/accept-package', passport.authenticate('jwt', { session: false }), (req, res, next) => {
   var body = req.body;
-  var username = req.headers.username;
-  services.packageService.addPackageToShipment(body.packageIds, username).then((result) => {
+  var userId = req.headers.userId || req.body.userId;
+  const {valid,errors} = checkEmpty({packageIds:body.packageIds,userId:userId})
+  if(!valid) return res.send({success:false,message:errors})
+  services.packageService.addPackageToShipment(body.packageIds, userId).then((result) => {
     res.send(result);
   })
 })
@@ -306,6 +309,8 @@ router.post('/add-packages-to-compartment', passport.authenticate('jwt', { sessi
   let packageIds = req.body.packageIds;
   let compartmentId = req.body.compartmentId;
   var userId =  req.body.userId;
+  const {valid,errors} = checkEmpty({packageIds:packageIds,compartmentId :compartmentId,userId:userId})
+  if(!valid) return res.send({success:false,message:errors})
   services.packageService.addPackagesToCompartment(packageIds,compartmentId, userId).then((result) => {
     res.send(result)
   })
@@ -313,9 +318,11 @@ router.post('/add-packages-to-compartment', passport.authenticate('jwt', { sessi
 //In Transit - [3]
 router.post('/add-packages-to-delivery', passport.authenticate('jwt', { session: false }), (req, res, next) => {
   var deliveryId = req.body.deliveryId;
-  var packageIds = req.body.packageIds.split(',');
-  var username = req.headers.username || req.body.username;
-  services.packageService.addPackagesToDelivery(deliveryId, packageIds,username).then(result => {
+  var packageIds = req.body.packageIds
+  var userId = req.headers.userId || req.body.userId;
+  const {valid,errors} = checkEmpty({packageIds:packageIds,deliveryId :deliveryId,userId:userId})
+  if(!valid) return res.send({success:false,message:errors})
+  services.packageService.addPackagesToDelivery(deliveryId, packageIds,userId).then(result => {
     res.send(result)
   })
 })
@@ -324,6 +331,8 @@ router.post('/add-packages-to-delivery', passport.authenticate('jwt', { session:
 router.post('/receive-packages-to-flight', passport.authenticate('jwt', { session: false }),(req, res, next) => {
   let packageIds = req.body.packageIds;
   var userId =  req.body.userId;
+  const {valid,errors} = checkEmpty({packageIds:packageIds,userId:userId})
+  if(!valid) return res.send({success:false,message:errors})
   services.packageService.receivePackageToFlight(packageIds,userId).then((result) => {
     res.send(result)
   })
@@ -332,14 +341,18 @@ router.post('/receive-packages-to-flight', passport.authenticate('jwt', { sessio
 //Ready for Pickup / Delivery - [5]
 router.post('/checkout-to-customer', passport.authenticate('jwt', { session: false }), (req, res, next) => {
   var packageIds = req.body.packageIds;
-  var username = req.headers.username || req.body.username;
-  services.packageService.checkOutToCustomer(packageIds, username).then(result => {
+  var userId = req.headers.userId || req.body.userId;
+  const {valid,errors} = checkEmpty({packageIds:packageIds,userId:userId})
+  if(!valid) return res.send({success:false,message:errors})
+  services.packageService.checkOutToCustomer(packageIds, userId).then(result => {
     res.send(result)
   })
 })
 
 //No Invoice Present - [7]
 router.post('/add-packages-to-nodoc',passport.authenticate('jwt', { session: false }), (req,res)=>{
+  const {valid,errors} = checkEmpty({packageIds:req.body.packageIds,awbId:req.body.awbId,zoneId:req.body.zoneId,userId:req.body.userId})
+  if(!valid) return res.send({success:false,message:errors})
   services.packageService.addAwbsPkgNoDocs(req.body).then((result)=>{
     res.send(result)
   })
@@ -347,8 +360,15 @@ router.post('/add-packages-to-nodoc',passport.authenticate('jwt', { session: fal
 
 //Delivered to Store - [9]
 router.post('/check-in-store', passport.authenticate('jwt', { session: false }), (req, res, next) => {
-  var username = req.headers.username || req.body.username;
-  services.packageService.checkInStore(req.body, username).then(result => {
+  var userId = req.headers.userId || req.body.userId;
+  const {valid,errors} = checkEmpty({
+    packageIds:req.body.packageIds,
+    location: req.body.location,
+    companyId: req.body.companyId,
+    zoneId:req.body.zoneId,
+    userId:userId})
+    if(!valid) return res.send({success:false,message:errors})
+  services.packageService.checkInStore(req.body, userId).then(result => {
     res.send(result)
   })
 })
