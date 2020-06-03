@@ -51,7 +51,8 @@
 	<!-- Loading ends -->
 
 	<!-- Global Search Modal Start -->
-	<div class="modal fade" id="global-search-data-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal fade" id="global-search-data-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+		aria-hidden="true">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
 				<div class="modal-header">
@@ -60,7 +61,7 @@
 						<span aria-hidden="true">&times;</span>
 					</button>
 				</div>
-				<div class="modal-body"> 
+				<div class="modal-body">
 					<div class="table-responsive">
 						<table id="global-search-table-data" class="display table table-striped table-hover">
 							<thead>
@@ -69,16 +70,17 @@
 									<th><i class="fa fa-search" aria-hidden="true"></i></th>
 								</tr>
 							</thead>
-							<tbody></tbody>    
+							<tbody></tbody>
 						</table>
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button type="button" id="global-search-close-button" class="btn btn-primary" data-dismiss="modal">Close</button>
+					<button type="button" id="global-search-close-button" class="btn btn-primary"
+						data-dismiss="modal">Close</button>
 				</div>
 			</div>
 		</div>
-	</div> 
+	</div>
 	<!-- Global Search Modal End -->
 
 	<div class="wrapper">
@@ -221,107 +223,107 @@
 					clear: 'fa fa-trash',
 				},
 			});
-			
+
 			$.ajax({
 				url: '/api/warehouse/get_packages_status',
 				dataType: "json",
 				type: "GET",
-				success: function(data){
+				success: function (data) {
 					chartData(data)
 				}
 			})
-		
+
 			$('.flightdate').datetimepicker({
 				format: 'MM/DD/YYYY',
 			});
 
 			function chartData(data) {
-			Circles.create({
-				id: 'circles-1',
-				radius: 45,
-				value: data.received_fill,
-				maxValue: data.total_packages,
-				width: 7,
-				text: data.received_fill.toString(),
-				colors: ['#f1f1f1', '#FF9E27'],
-				duration: 400,
-				wrpClass: 'circles-wrp',
-				textClass: 'circles-text',
-				styleWrapper: true,
-				styleText: true
-			})
-			Circles.create({
-				id: 'circles-2',
-				radius: 45,
-				value: data.loaded_craft,
-				maxValue: data.total_packages,
-				width: 7,
-				text: data.loaded_craft.toString(),
-				colors: ['#f1f1f1', '#2BB930'],
-				duration: 400,
-				wrpClass: 'circles-wrp',
-				textClass: 'circles-text',
-				styleWrapper: true,
-				styleText: true
-			})
-			Circles.create({
-				id: 'circles-3',
-				radius: 45,
-				value: data.in_transit,
-				maxValue: data.total_packages,
-				width: 7,
-				text: data.in_transit.toString(),
-				colors: ['#f1f1f1', '#F25961'],
-				duration: 400,
-				wrpClass: 'circles-wrp',
-				textClass: 'circles-text',
-				styleWrapper: true,
-				styleText: true
-			})
-			Circles.create({
-				id: 'circles-4',
-				radius: 45,
-				value: data.received_nas,
-				maxValue: data.total_packages,
-				width: 7,
-				text: data.received_nas.toString(),
-				colors: ['#f1f1f1', '#FF9E27'],
-				duration: 400,
-				wrpClass: 'circles-wrp',
-				textClass: 'circles-text',
-				styleWrapper: true,
-				styleText: true
-			})
-			Circles.create({
-				id: 'circles-5',
-				radius: 45,
-				value: data.ready_pd,
-				maxValue: data.total_packages,
-				width: 7,
-				text: data.ready_pd.toString(),
-				colors: ['#f1f1f1', '#2BB930'],
-				duration: 400,
-				wrpClass: 'circles-wrp',
-				textClass: 'circles-text',
-				styleWrapper: true,
-				styleText: true
-			})
-			Circles.create({
-				id: 'circles-6',
-				radius: 45,
-				value: data.delivered,
-				maxValue: data.total_packages,
-				width: 7,
-				text: data.delivered.toString(),
-				colors: ['#f1f1f1', '#F25961'],
-				duration: 400,
-				wrpClass: 'circles-wrp',
-				textClass: 'circles-text',
-				styleWrapper: true,
-				styleText: true
-			})
-		}	
-		
+				Circles.create({
+					id: 'circles-1',
+					radius: 45,
+					value: data.received_fill,
+					maxValue: data.total_packages,
+					width: 7,
+					text: data.received_fill.toString(),
+					colors: ['#f1f1f1', '#FF9E27'],
+					duration: 400,
+					wrpClass: 'circles-wrp',
+					textClass: 'circles-text',
+					styleWrapper: true,
+					styleText: true
+				})
+				Circles.create({
+					id: 'circles-2',
+					radius: 45,
+					value: data.loaded_craft,
+					maxValue: data.total_packages,
+					width: 7,
+					text: data.loaded_craft.toString(),
+					colors: ['#f1f1f1', '#2BB930'],
+					duration: 400,
+					wrpClass: 'circles-wrp',
+					textClass: 'circles-text',
+					styleWrapper: true,
+					styleText: true
+				})
+				Circles.create({
+					id: 'circles-3',
+					radius: 45,
+					value: data.in_transit,
+					maxValue: data.total_packages,
+					width: 7,
+					text: data.in_transit.toString(),
+					colors: ['#f1f1f1', '#F25961'],
+					duration: 400,
+					wrpClass: 'circles-wrp',
+					textClass: 'circles-text',
+					styleWrapper: true,
+					styleText: true
+				})
+				Circles.create({
+					id: 'circles-4',
+					radius: 45,
+					value: data.received_nas,
+					maxValue: data.total_packages,
+					width: 7,
+					text: data.received_nas.toString(),
+					colors: ['#f1f1f1', '#FF9E27'],
+					duration: 400,
+					wrpClass: 'circles-wrp',
+					textClass: 'circles-text',
+					styleWrapper: true,
+					styleText: true
+				})
+				Circles.create({
+					id: 'circles-5',
+					radius: 45,
+					value: data.ready_pd,
+					maxValue: data.total_packages,
+					width: 7,
+					text: data.ready_pd.toString(),
+					colors: ['#f1f1f1', '#2BB930'],
+					duration: 400,
+					wrpClass: 'circles-wrp',
+					textClass: 'circles-text',
+					styleWrapper: true,
+					styleText: true
+				})
+				Circles.create({
+					id: 'circles-6',
+					radius: 45,
+					value: data.delivered,
+					maxValue: data.total_packages,
+					width: 7,
+					text: data.delivered.toString(),
+					colors: ['#f1f1f1', '#F25961'],
+					duration: 400,
+					wrpClass: 'circles-wrp',
+					textClass: 'circles-text',
+					styleWrapper: true,
+					styleText: true
+				})
+			}
+
 			$('#lineChart').sparkline([105, 103, 123, 100, 95, 105, 115], {
 				type: 'line',
 				height: '70',
@@ -331,127 +333,127 @@
 				fillColor: 'rgba(255, 165, 52, .14)'
 			});
 			function userStatistics(data) {
-			let labels = Object.keys(data);
+				let labels = Object.keys(data);
 
-			let received_fill = [];
-			let received_nas = [];
-			let loaded_craft = [];
-			let ready_pd = [];
-			let delivered = [];
+				let received_fill = [];
+				let received_nas = [];
+				let loaded_craft = [];
+				let ready_pd = [];
+				let delivered = [];
 
-			labels.forEach((key) => {
-				received_fill.push(data[key]['received_fill']);
-				received_nas.push(data[key]['received_nas']);
-				loaded_craft.push(data[key]['loaded_craft']);
-				ready_pd.push(data[key]['ready_pd']);
-				delivered.push(data[key]['delivered']);
-			});
+				labels.forEach((key) => {
+					received_fill.push(data[key]['received_fill']);
+					received_nas.push(data[key]['received_nas']);
+					loaded_craft.push(data[key]['loaded_craft']);
+					ready_pd.push(data[key]['ready_pd']);
+					delivered.push(data[key]['delivered']);
+				});
 
-			var ctx = document.getElementById('statisticsChart').getContext('2d');
-			
-			var statisticsChart = new Chart(ctx, {
-				type: 'line',
-				data: {
-					labels: labels,
-					datasets: [ {
-						label: "Received FILL",
-						borderColor: '#f3545d',
-						pointBackgroundColor: 'rgba(243, 84, 93, 0.6)',
-						pointRadius: 0,
-						backgroundColor: 'rgba(243, 84, 93, 0.4)',
-						legendColor: '#f3545d',
-						fill: true,
-						borderWidth: 2,
-						data: received_fill
-					}, {
-						label: "Received NAS",
-						borderColor: '#fdaf4b',
-						pointBackgroundColor: 'rgba(253, 175, 75, 0.6)',
-						pointRadius: 0,
-						backgroundColor: 'rgba(253, 175, 75, 0.4)',
-						legendColor: '#fdaf4b',
-						fill: true,
-						borderWidth: 2,
-						data: received_nas
-					}, {
-						label: "Ready for Pickup/Delivery",
-						borderColor: '#177dff',
-						pointBackgroundColor: 'rgba(23, 125, 255, 0.6)',
-						pointRadius: 0,
-						backgroundColor: 'rgba(23, 125, 255, 0.4)',
-						legendColor: '#177dff',
-						fill: true,
-						borderWidth: 2,
-						data: ready_pd
-					},{
-						label: "Delivered",
-						borderColor: '#264733',
-						pointBackgroundColor: '#264733',
-						pointRadius: 0,
-						backgroundColor: '#26ba61',
-						legendColor: '#26ba61',
-						fill: true,
-						borderWidth: 2,
-						data: delivered
+				var ctx = document.getElementById('statisticsChart').getContext('2d');
+
+				var statisticsChart = new Chart(ctx, {
+					type: 'line',
+					data: {
+						labels: labels,
+						datasets: [{
+							label: "Received FILL",
+							borderColor: '#f3545d',
+							pointBackgroundColor: 'rgba(243, 84, 93, 0.6)',
+							pointRadius: 0,
+							backgroundColor: 'rgba(243, 84, 93, 0.4)',
+							legendColor: '#f3545d',
+							fill: true,
+							borderWidth: 2,
+							data: received_fill
+						}, {
+							label: "Received NAS",
+							borderColor: '#fdaf4b',
+							pointBackgroundColor: 'rgba(253, 175, 75, 0.6)',
+							pointRadius: 0,
+							backgroundColor: 'rgba(253, 175, 75, 0.4)',
+							legendColor: '#fdaf4b',
+							fill: true,
+							borderWidth: 2,
+							data: received_nas
+						}, {
+							label: "Ready for Pickup/Delivery",
+							borderColor: '#177dff',
+							pointBackgroundColor: 'rgba(23, 125, 255, 0.6)',
+							pointRadius: 0,
+							backgroundColor: 'rgba(23, 125, 255, 0.4)',
+							legendColor: '#177dff',
+							fill: true,
+							borderWidth: 2,
+							data: ready_pd
+						}, {
+							label: "Delivered",
+							borderColor: '#264733',
+							pointBackgroundColor: '#264733',
+							pointRadius: 0,
+							backgroundColor: '#26ba61',
+							legendColor: '#26ba61',
+							fill: true,
+							borderWidth: 2,
+							data: delivered
+						}
+						]
+					},
+					options: {
+						responsive: true,
+						maintainAspectRatio: false,
+						legend: {
+							display: false
+						},
+						tooltips: {
+							bodySpacing: 4,
+							mode: "nearest",
+							intersect: 0,
+							position: "nearest",
+							xPadding: 10,
+							yPadding: 10,
+							caretPadding: 10
+						},
+						layout: {
+							padding: { left: 5, right: 5, top: 15, bottom: 15 }
+						},
+						scales: {
+							yAxes: [{
+								ticks: {
+									fontStyle: "500",
+									beginAtZero: false,
+									maxTicksLimit: 5,
+									padding: 10
+								},
+								gridLines: {
+									drawTicks: false,
+									display: false
+								}
+							}],
+							xAxes: [{
+								gridLines: {
+									zeroLineColor: "transparent"
+								},
+								ticks: {
+									padding: 10,
+									fontStyle: "500"
+								}
+							}]
+						},
+						legendCallback: function (chart) {
+							var text = [];
+							text.push('<ul class="' + chart.id + '-legend html-legend">');
+							for (var i = 0; i < chart.data.datasets.length; i++) {
+								text.push('<li><span style="background-color:' + chart.data.datasets[i].legendColor + '"></span>');
+								if (chart.data.datasets[i].label) {
+									text.push(chart.data.datasets[i].label);
+								}
+								text.push('</li>');
+							}
+							text.push('</ul>');
+							return text.join('');
+						}
 					}
-					]
-				},
-				options : {
-					responsive: true, 
-					maintainAspectRatio: false,
-					legend: {
-						display: false
-					},
-					tooltips: {
-						bodySpacing: 4,
-						mode:"nearest",
-						intersect: 0,
-						position:"nearest",
-						xPadding:10,
-						yPadding:10,
-						caretPadding:10
-					},
-					layout:{
-						padding:{left:5,right:5,top:15,bottom:15}
-					},
-					scales: {
-						yAxes: [{
-							ticks: {
-								fontStyle: "500",
-								beginAtZero: false,
-								maxTicksLimit: 5,
-								padding: 10
-							},
-							gridLines: {
-								drawTicks: false,
-								display: false
-							}
-						}],
-						xAxes: [{
-							gridLines: {
-								zeroLineColor: "transparent"
-							},
-							ticks: {
-								padding: 10,
-								fontStyle: "500"
-							}
-						}]
-					}, 
-					legendCallback: function(chart) { 
-						var text = []; 
-						text.push('<ul class="' + chart.id + '-legend html-legend">'); 
-						for (var i = 0; i < chart.data.datasets.length; i++) { 
-							text.push('<li><span style="background-color:' + chart.data.datasets[i].legendColor + '"></span>'); 
-							if (chart.data.datasets[i].label) { 
-								text.push(chart.data.datasets[i].label); 
-							} 
-							text.push('</li>'); 
-						} 
-						text.push('</ul>'); 
-						return text.join(''); 
-					}  
-				}
-			});
+				});
 				var myLegendContainer = document.getElementById("myChartLegend");
 				// generate HTML legend
 				myLegendContainer.innerHTML = statisticsChart.generateLegend();
@@ -461,15 +463,36 @@
 					legendItems[i].addEventListener("click", legendClickCallback, false);
 				}
 			}
-				$.ajax({
-					url: '/api/warehouse/get_packages_7days_status',
-					dataType: "json",
-					type: "GET",
-					success: function(data) {
-						userStatistics(data)
-					}
-				})
-			}
+			$.ajax({
+				url: '/api/warehouse/get_packages_7days_status',
+				dataType: "json",
+				type: "GET",
+				success: function (data) {
+					userStatistics(data)
+				}
+			})
+		}
+
+		if (window.location.pathname === '/report') {
+			$('.filter-date').datetimepicker({
+				format: 'MM-DD-YYYY',
+				useCurrent: false,
+				showTodayButton: true,
+				showClear: true,
+				toolbarPlacement: 'bottom',
+				sideBySide: true,
+				icons: {
+					date: 'fa fa-calendar',
+					up: 'fa fa-arrow-up',
+					down: 'fa fa-arrow-down',
+					previous: 'fa fa-chevron-left',
+					next: 'fa fa-chevron-right',
+					today: 'fa fa-clock',
+					clear: 'fa fa-trash',
+				},
+			});
+		}
+
 	</script>
 </body>
 

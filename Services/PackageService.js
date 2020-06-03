@@ -7,29 +7,14 @@ var strings = require('../Res/strings');
 var firebase = require('../Util/firebase');
 var _ = require("lodash")
 
-// var client = require('./dataContext').redisClient;
-// var lredis = require('./redis-local');
-// const PREFIX = strings.redis_prefix_package;
-// const PACKAGE_ID = strings.redis_id_package;
-// const PREFIX_PACKAGE_LIST = strings.redis_prefix_awb_package_list; // this key + awbId = array of packages
-
 const Barcode = require('../models/barcode');
 
 const LIST_PACKAGE_SHIPMENT = 'list:shipment:'; // this key + shipmentId = array of packages
 // const SHIPMENT_ID = 'id:accept:truck';
 const SHIPMENT_ID = 34;
 
-// const PREFIX_ORIGIN_BARCODE = strings.redis_prefix_origin_barcode;
-// const ORIGIN_BARCODE_ID = strings.redis_id_origin_barcode;
-
-// const LIST_PACKAGE_MANIFEST = strings.redis_prefix_manifest_package_list;
-// const LIST_LOCATION_PACKAGE = strings.redis_prefix_location_package_list;
-
-// const PREFIX_PACKAGE_STATUS = strings.redis_prefix_package_status;
-// const ID_PACKAGE_STATUS = strings.redis_id_package_status;
-// const LIST_PACKAGE_STATUS = strings.redis_prefix_list_package_status;
-
 const PKG_STATUS = {
+  0: 'Package Created',
   1: 'Received in FLL',
   2: 'Loaded on AirCraft',
   3: 'In Transit',
@@ -50,6 +35,8 @@ const Customer = require('../models/customer');
 const Awb = require('../models/awb');
 const Zone = require('../models/zone')
 const ProcessPackage = require('../models/processPkg')
+const DeliveryService = require('./DeliveryService');
+const deliveryService = new DeliveryService();
 
 function createDocument(tPackage) {
   var packageDocument = {
@@ -75,15 +62,6 @@ function createDocument(tPackage) {
   };
   return packageDocument;
 }
-
-// function addPackageToIndex(trackingNo, msearcher) {
-//   lredis.getPackage(trackingNo).then((pack) => {
-//     msearcher.delDocument(PKG_IDX, `${pack.mid}-${trackingNo}`, (err, done) => {
-//       var document = createDocument(pack);
-//       msearcher.add(pack.mid + '-' + pack.trackingNo, document);
-//     });
-//   });
-// }
 
 class PackageService {
   constructor() {
@@ -121,32 +99,32 @@ class PackageService {
   }
 
   //2: 'Loaded on AirCraft',
-  async addPackagesToCompartment(packageIds,compartmentId,userId){
+  async addPackagesToCompartment(packageIds, compartmentId, userId) {
     try {
       let error = []
       let totalPkgWeight = 0
-      let upcomingWeight =  0
+      let upcomingWeight = 0
       let packages = packageIds && packageIds.length && packageIds.split(',').filter(Boolean);
-      const cv = await Compartment.findById(compartmentId).populate({path:'packages',select:'weight'}).
-      select('packages weight')
-      cv.packages.map(w => totalPkgWeight+= w.weight)
-      const pkgs = await Promise.all(packages.map(async pkgId=>{
+      const cv = await Compartment.findById(compartmentId).populate({ path: 'packages', select: 'weight' }).
+        select('packages weight')
+      cv.packages.map(w => totalPkgWeight += w.weight)
+      const pkgs = await Promise.all(packages.map(async pkgId => {
         const pk = await Package.findById(pkgId).select('weight')
-        return upcomingWeight+= pk.weight
+        return upcomingWeight += pk.weight
       }))
-      if(totalPkgWeight+pkgs[0] > cv.weight){
-        return {success:false, message:`Total Packages Weight ${totalPkgWeight+pkgs[0]} Should be less than Compartment Capacity ${cv.weight}`}
+      if (totalPkgWeight + pkgs[0] > cv.weight) {
+        return { success: false, message: `Total Packages Weight ${totalPkgWeight + pkgs[0]} Should be less than Compartment Capacity ${cv.weight}` }
       }
-      await Compartment.findOneAndUpdate({_id:compartmentId},{$push:{packages:packages}})
-      await Promise.all(packages.map(async packageId=>{
+      await Compartment.findOneAndUpdate({ _id: compartmentId }, { $push: { packages: packages } })
+      await Promise.all(packages.map(async packageId => {
         // check packageId Exists
-        if(await Package.findById(packageId)){
+        if (await Package.findById(packageId)) {
           await this.updatePackageStatus(packageId, 2, userId);
-        }else{
+        } else {
           error.push(`Package ${packageId} doesn't Exist`)
         }
       }))
-      if(error.length >0) return { success: false, message: error }
+      if (error.length > 0) return { success: false, message: error }
       return { success: true, message: strings.string_response_loaded, status: PKG_STATUS[2] }
     } catch (error) {
       console.log(error);
@@ -154,33 +132,33 @@ class PackageService {
     }
   }
 
-   // Add Packages To Manifest 2: 'Loaded on AirCraft',
-   async addPackagesToManifests(packageIds,manifestId,userId){
+  // Add Packages To Manifest 2: 'Loaded on AirCraft',
+  async addPackagesToManifests(packageIds, manifestId, userId) {
     try {
       let error = []
-       let totalPkgWeight = 0
-      let upcomingWeight =  0
+      let totalPkgWeight = 0
+      let upcomingWeight = 0
       let packages = packageIds && packageIds.length && packageIds.split(',').filter(Boolean);
-      const cv = await Manifest.findById(manifestId).populate([{path:'packages',select:'weight'},{path:'planeId',select:'maximumCapacity'}]).
-      select('packages planeId')
-      cv.packages.map(w => totalPkgWeight+= w.weight)
-      const pkgs = await Promise.all(packages.map(async pkgId=>{
+      const cv = await Manifest.findById(manifestId).populate([{ path: 'packages', select: 'weight' }, { path: 'planeId', select: 'maximumCapacity' }]).
+        select('packages planeId')
+      cv.packages.map(w => totalPkgWeight += w.weight)
+      const pkgs = await Promise.all(packages.map(async pkgId => {
         const pk = await Package.findById(pkgId).select('weight')
-        return upcomingWeight+= pk.weight
+        return upcomingWeight += pk.weight
       }))
-      if(totalPkgWeight+pkgs[0] > cv.planeId.maximumCapacity){
-        return {success:false, message:`Total Packages Weight ${totalPkgWeight+pkgs[0]} Should be less than Plane Capacity ${cv.planeId.maximumCapacity}`}
+      if (totalPkgWeight + pkgs[0] > cv.planeId.maximumCapacity) {
+        return { success: false, message: `Total Packages Weight ${totalPkgWeight + pkgs[0]} Should be less than Plane Capacity ${cv.planeId.maximumCapacity}` }
       }
-      await Manifest.findOneAndUpdate({_id:manifestId},{$push:{packages:packages}})
-      await Promise.all(packages.map(async packageId=>{
+      await Manifest.findOneAndUpdate({ _id: manifestId }, { $push: { packages: packages } })
+      await Promise.all(packages.map(async packageId => {
         // check packageId Exists
-        if(await Package.findById(packageId)){
+        if (await Package.findById(packageId)) {
           await this.updatePackageStatus(packageId, 2, userId);
-        }else{
+        } else {
           error.push(`Package ${packageId} doesn't Exist`)
         }
       }))
-      if(error.length >0) return { success: false, message: error }
+      if (error.length > 0) return { success: false, message: error }
       return { success: true, message: strings.string_response_loaded, status: PKG_STATUS[2] }
     } catch (error) {
       return { success: false, message: strings.string_response_error }
@@ -188,39 +166,38 @@ class PackageService {
   }
 
   // 3: 'In Transit',
-  addPackagesToDelivery(deliveryId, packageIds,user) {
-    return new Promise(async(resolve, reject) => {
-      let packages = packageIds && packageIds.length && packageIds.split(',').filter(Boolean);
-      Delivery.findOneAndUpdate({_id:deliveryId},{$push:{packages:packages},updatedBy:user},(err,delivery)=>{
+  addPackagesToDelivery(deliveryId, packageIds, user) {
+    return new Promise(async (resolve, reject) => {
+      Delivery.findOneAndUpdate({ _id: deliveryId }, { $push: { packages: packageIds }, updatedBy: user }).then((err, delivery) => {
         if (err) {
-          resolve({ success: false, message: strings.string_response_error});
+          resolve({ success: false, message: strings.string_response_error });
         }
       })
       Promise.all(
-        packages.map((packageId) => {
-          this.updatePackage(packageId, {deliveryId: deliveryId});
-          return this.updatePackageStatus(packageId, 3, user);  
+        packageIds.map((packageId) => {
+          this.updatePackage(packageId, { deliveryId: deliveryId });
+          return this.updatePackageStatus(packageId, 3, user);
         }),
       ).then((result) => {
-        resolve({ success: true, message: strings.string_response_received,status: PKG_STATUS[3] });
+        resolve({ success: true, message: strings.string_response_received, status: PKG_STATUS[3] });
       });
     })
   }
 
   // 4: 'Recieved in NAS',
-  async receivePackageToFlight(packageIds,userId){
+  async receivePackageToFlight(packageIds, userId) {
     try {
       let error = []
       let packages = packageIds && packageIds.length && packageIds.split(',').filter(Boolean);
-      await Promise.all(packages.map(async packageId=>{
+      await Promise.all(packages.map(async packageId => {
         // check packageId Exists
-        if(await Package.findById(packageId)){
+        if (await Package.findById(packageId)) {
           await this.updatePackageStatus(packageId, 4, userId);
-        }else{
+        } else {
           error.push(`Package ${packageId} doesn't Exist`)
         }
       }))
-      if(error.length >0) return { success: false, message: error }
+      if (error.length > 0) return { success: false, message: error }
       return { success: true, message: strings.string_response_loaded, status: PKG_STATUS[4] }
     } catch (error) {
       return { success: false, message: strings.string_response_error }
@@ -239,91 +216,84 @@ class PackageService {
           return status
         }),
       ).then((result) => {
-        if(error.length >0) return resolve({ success: false, message: error })
-        resolve({ success: true, message: strings.string_response_received,status: PKG_STATUS[5] });
+        resolve({ success: true, message: strings.string_response_received, status: PKG_STATUS[5] });
       });
     });
   }
 
-// 7: 'No Invoice Present',
-async addAwbsPkgNoDocs(data){
-  try {
-    let packageIds = data.packageIds.split(',');
-    let error = []
-    await Promise.all(
-      packageIds.map(async packageId=>{
-        this.updatePackage(packageId, {
-          location: data.location,
-          zoneId:data.zoneId
-        });
-        const status = await this.updatePackageStatus(packageId, 7, data.userId);
-        if(!status.success) error.push(status.message)
-        return status
-      },
-      this.updateAwbPackages(data.awbId,packageIds),
-      this.updateZone(data.zoneId,packageIds)
+  // 7: 'No Invoice Present',
+  async addAwbsPkgNoDocs(data) {
+    try {
+      let packageIds = data.packageIds.split(',');
+      await Promise.all(
+        packageIds.map(packageId => {
+          this.updatePackage(packageId, {
+            location: data.location,
+            zoneId: data.zoneId
+          });
+          return this.updatePackageStatus(packageId, 7, data.userId);
+        },
+          this.updateAwbPackages(data.awbId, packageIds),
+          this.updateZone(data.zoneId, packageIds)
+        )
       )
-    )
-    if(error.length >0) return { success: false, message: error }
-    return { success: true, message: strings.string_response_received,status: PKG_STATUS[7] }
-  } catch (error) {
-    console.error('addAwbsPkgNoDocs',error)
+      return { success: true, message: strings.string_response_received, status: PKG_STATUS[7] }
+    } catch (error) {
+      console.error('addAwbsPkgNoDocs', error)
+    }
   }
-}
 
-// 9: 'Delivered to Store'
-checkInStore(data, username) {
-  let packageIds = data.packageIds.split(',');
-  let error = []
-  return new Promise((resolve, reject) => {
-    Promise.all(
-      packageIds.map(async (packageId) => {
-        this.updatePackage(packageId, {
-          location: data.location,
-          companyId: data.companyId,
-          zoneId:data.zoneId
-        });
-        const status = await this.updatePackageStatus(packageId, 9, username);
-        if(!status.success) error.push(status.message)
-        return status
-      },
-      this.updateZone(data.zoneId,packageIds)
-      ),
+  // 9: 'Delivered to Store'
+  checkInStore(data, username) {
+    let packageIds = data.packageIds.split(',');
+    return new Promise((resolve, reject) => {
+      Promise.all(
+        packageIds.map((packageId) => {
+          this.updatePackage(packageId, {
+            location: data.location,
+            companyId: data.companyId,
+            zoneId: data.zoneId
+          });
+          return this.updatePackageStatus(packageId, 9, username);
+        },
+          this.updateZone(data.zoneId, packageIds)
+        ),
       ).then((result) => {
-      if(error.length >0) return resolve({ success: false, message: error })
-      resolve({ success: true, message: strings.string_response_received,status: PKG_STATUS[9] });
+        resolve({ success: true, message: strings.string_response_received, status: PKG_STATUS[9] });
+      });
     });
-  });
-}
+  }
 
   //========== Dashboard Functions ==========//
   getPackageStatus() {
     return new Promise(async (resolve, reject) => {
       let packages = await Package.find({})
       let obj = {
+        created : 0,
         received_fill: 0,
         loaded_craft: 0,
         in_transit: 0,
         received_nas: 0,
         ready_pd: 0,
         delivered: 0,
+        no_invoice: 0,
+        assigned_to_cube: 0,
+        delivered_to_store: 0
       };
 
-      await Promise.all(
-        packages.map(async (item) => {
-          let packagesStatus = await PackageStatus.find({ packageId: item._id });
-          if(packagesStatus.length > 0){
-            packagesStatus = packagesStatus[packagesStatus.length - 1];
-            obj["received_fill"] = obj["received_fill"] + (packagesStatus.status == PKG_STATUS[1] ? 1 : 0)
-            obj["loaded_craft"] = obj["loaded_craft"] + (packagesStatus.status == PKG_STATUS[2] ? 1 : 0)
-            obj["in_transit"] = obj["in_transit"] + (packagesStatus.status == PKG_STATUS[3] ? 1 : 0)
-            obj["received_nas"] = obj["received_nas"] + (packagesStatus.status == PKG_STATUS[4] ? 1 : 0)
-            obj["ready_pd"] = obj["ready_pd"] + (packagesStatus.status == PKG_STATUS[5] ? 1 : 0)
-            obj["delivered"] = obj["delivered"] + (packagesStatus.status == PKG_STATUS[6] ? 1 : 0)
-            obj["total_packages"] = packages.length
-          }
-        })
-      )
+      packages.map((item) => {
+        if (!item.lastStatusText) obj.created += 1;
+        if (item.lastStatusText == PKG_STATUS[1]) obj.received_fill += 1;
+        if (item.lastStatusText == PKG_STATUS[2]) obj.loaded_craft += 1;
+        if (item.lastStatusText == PKG_STATUS[3]) obj.in_transit += 1;
+        if (item.lastStatusText == PKG_STATUS[4]) obj.received_nas += 1;
+        if (item.lastStatusText == PKG_STATUS[5]) obj.ready_pd += 1;
+        if (item.lastStatusText == PKG_STATUS[6]) obj.delivered += 1;
+        if (item.lastStatusText == PKG_STATUS[7]) obj.no_invoice += 1;
+        if (item.lastStatusText == PKG_STATUS[8]) obj.assigned_to_cube += 1;
+        if (item.lastStatusText == PKG_STATUS[9]) obj.delivered_to_store += 1;
+      })
+
       resolve(obj)
     })
   }
@@ -393,49 +363,36 @@ checkInStore(data, username) {
           resolve(result)
         }
       })
-      // client.keys(PREFIX + '*', (err, keys) => {
-      //   if (err) resolve([]);
-      //   else {
-      //     Promise.all(
-      //       keys.map((key) => {
-      //         return lredis.hgetall(key);
-      //       }),
-      //     ).then((results) => {
-      //       console.log(results);
-      //       resolve(results);
-      //     });
-      //   }
-      // });
     });
   }
 
   getPackageByTrackingId(trackingNo) {
     return new Promise((resolve, reject) => {
       Package.find({ trackingNo })
-      .populate(['customerId','shipperId','carrierId','awbId','hazmatId','createdBy','manifestId','compartmentId','deliveryId'])
-      .exec((err, result) => {
-        if (err) {
-          resolve({});
-        } else {
-          if (result[0] && result[0].id) {
-            let pkg = result[0] 
-            PackageStatus.find({ packageId:pkg._id })
-            .populate("updatedBy", "username")
-            .exec((error, stats) => {
-              resolve({
-                success: true,
-                package: pkg,
-                status: stats
-              });  
-            }) 
+        .populate(['customerId', 'shipperId', 'carrierId', 'awbId', 'hazmatId', 'createdBy', 'manifestId', 'compartmentId', 'deliveryId'])
+        .exec((err, result) => {
+          if (err) {
+            resolve({});
           } else {
-            resolve({
-              success : false,
-              message : strings.string_not_found_package
-            })
+            if (result[0] && result[0].id) {
+              let pkg = result[0]
+              PackageStatus.find({ packageId: pkg._id })
+                .populate("updatedBy", "username")
+                .exec((error, stats) => {
+                  resolve({
+                    success: true,
+                    package: pkg,
+                    status: stats
+                  });
+                })
+            } else {
+              resolve({
+                success: false,
+                message: strings.string_not_found_package
+              })
+            }
           }
-        }
-      })
+        })
     })
   }
 
@@ -456,8 +413,8 @@ checkInStore(data, username) {
               }
             });
             resolve({
-              success : true, 
-              packages : pkgs
+              success: true,
+              packages: pkgs
             });
           });
         })
@@ -468,14 +425,14 @@ checkInStore(data, username) {
   getAllPackages_updated() {
     return new Promise((resolve, reject) => {
       Package.find({})
-      .populate('awbId')
-      .exec((err, result) => {
-        if (err) {
-          resolve([]);
-        } else {
-          resolve(result);
-        }
-      });
+        .populate('awbId')
+        .exec((err, result) => {
+          if (err) {
+            resolve([]);
+          } else {
+            resolve(result);
+          }
+        });
     });
   }
 
@@ -487,24 +444,22 @@ checkInStore(data, username) {
 
         let result = await Promise.all(packages.map(async (pkg) => {
           let statuses = await PackageStatus.find({ packageId: pkg._id }) || [];
-          if(statuses.length > 0){
+          if (statuses.length > 0) {
             let packageStatus = statuses[statuses.length - 1];
-            // console.log(pkg.customerId.pmb, pkg);
+            
             if (pkg.awbId.invoices.length == 0) {
-              noDocs.push({ _id: pkg.id, last_status: packageStatus.status, awb: "AWB"+pkg.awbId.awbId, customer_email: pkg.customerId.email})
+              noDocs.push({ _id: pkg.id, last_status: packageStatus.status, awb: "AWB" + pkg.awbId.awbId, customer_email: pkg.customerId.email })
             }
-  
+
             if (pkg.customerId.pmb == "9000") {
-              nineToPackages.push({ _id: pkg.id, last_status: packageStatus.status, awb: "AWB"+pkg.awbId.awbId, customer_email: pkg.customerId.email})
+              nineToPackages.push({ _id: pkg.id, last_status: packageStatus.status, awb: "AWB" + pkg.awbId.awbId, customer_email: pkg.customerId.email })
             }
-  
+
             if (pkg.customerId.pmb != "9000") {
-              postBox.push({ _id: pkg.id, last_status: packageStatus.status, awb: "AWB"+pkg.awbId.awbId, customer_email: pkg.customerId.email})
+              postBox.push({ _id: pkg.id, last_status: packageStatus.status, awb: "AWB" + pkg.awbId.awbId, customer_email: pkg.customerId.email })
             }
           }
         }))
-        // console.log("PostBox", postBox);
-        // console.log("No Docs", noDocs);
         
         resolve({ nineToPackages, postBox, noDocs });
 
@@ -519,7 +474,7 @@ checkInStore(data, username) {
             }
           }
         }
-        
+
         if (query.users && query.users != "all") {
           dbQuery['createdBy'] = query.users;
         }
@@ -537,7 +492,7 @@ checkInStore(data, username) {
             nineToPackages.push({ _id: pkg.id, last_status: packageStatus.status, awb: pkg.awbId.awbId, customer_email: pkg.customerId.email })
           }
 
-          if (pkg.customerId.pmb != 9000  && query.filter_for === "postBox" && (query.package_status === packageStatus.status || query.package_status === "all")) {
+          if (pkg.customerId.pmb != 9000 && query.filter_for === "postBox" && (query.package_status === packageStatus.status || query.package_status === "all")) {
             postBox.push({ _id: pkg.id, last_status: packageStatus.status, awb: pkg.awbId.awbId, customer_email: pkg.customerId.email })
           }
         }))
@@ -587,15 +542,6 @@ checkInStore(data, username) {
           return resolve({ success: false, message: 'Barcode Already Added' });
         }
       });
-
-      // client.incr(ORIGIN_BARCODE_ID, (err, id) => {
-      //   if (err) resolve({ success: false, message: strings.string_response_error });
-      //   originBarcode.id = id;
-      //   client.hmset(PREFIX_ORIGIN_BARCODE + id, originBarcode, (err, result) => {
-      //     if (err) resolve({ success: false, message: strings.string_response_error });
-      //     resolve({ success: true, message: strings.string_response_added, originBarcode: originBarcode });
-      //   })
-      // })
     });
   }
 
@@ -609,10 +555,6 @@ checkInStore(data, username) {
           resolve({ success: true, message: strings.string_response_removed });
         }
       });
-      // client.del(PREFIX_ORIGIN_BARCODE + id, (err, result) => {
-      //   if (err) resolve({ success: false, message: strings.string_response_error });
-      //   resolve({ success: true, message: strings.string_response_removed });
-      // })
     });
   }
   getOriginBarcode(id) {
@@ -624,10 +566,6 @@ checkInStore(data, username) {
           resolve(result);
         }
       });
-      // client.hgetall(PREFIX_ORIGIN_BARCODE + id, (err, originBarcode) => {
-      //   if (err) resolve({});
-      //   resolve(originBarcode);
-      // })
     });
   }
 
@@ -652,14 +590,6 @@ checkInStore(data, username) {
           resolve(barCodes);
         }
       })
-      // client.keys(PREFIX_ORIGIN_BARCODE + '*', (err, keys) => {
-      //   if (err) resolve([]);
-      //   Promise.all(keys.map(key => {
-      //     return lredis.hgetall(key);
-      //   })).then(originBarcodes => {
-      //     resolve(originBarcodes);
-      //   })
-      // })
     })
   }
   removeAllOriginBarcode() {
@@ -668,15 +598,6 @@ checkInStore(data, username) {
         if (err || result == null) resolve([]);
         else resolve(result);
       })
-      // client.set(ORIGIN_BARCODE_ID, 0);
-      // client.keys(PREFIX_ORIGIN_BARCODE + '*', (err, keys) => {
-      //   if (err) resolve([]);
-      //   Promise.all(keys.map(key => {
-      //     return lredis.del(key);
-      //   })).then(result => {
-      //     resolve(result);
-      //   })
-      // })
     });
   }
 
@@ -687,18 +608,6 @@ checkInStore(data, username) {
         else resolve(pkg);
       });
     });
-  }
-
-  async getAWBPackagesWithLastStatus(awbId) {
-    const packages = await this.getPackages(awbId);
-    await Promise.all(
-      packages.map(async (pkg) => {
-        let status = await this.getPackageLastStatus(pkg.id);
-        pkg.lastStatusText = status && status.status;
-      }),
-    );
-
-    return packages;
   }
 
   async getAWBPackagesWithLastStatus_updated(awbId) {
@@ -732,16 +641,6 @@ checkInStore(data, username) {
         if (err || response == null) resolve([])
         else { resolve(response) }
       })
-      // client.smembers(PREFIX_PACKAGE_LIST + awbId, (err, ids) => {
-      //   if (err) resolve([]);
-      //   Promise.all(
-      //     ids.map((id) => {
-      //       return lredis.hgetall(PREFIX + id);
-      //     }),
-      //   ).then((packages) => {
-      //     resolve(packages);
-      //   });
-      // });
     });
   }
 
@@ -782,22 +681,6 @@ checkInStore(data, username) {
   }
 
   createPackage(newPackage, awbId) {
-    // var cPackage = {
-    //   skybox: body.skybox,
-    //   customer: body.customer.replace("-", "").trim(),
-    //   trackingNo: body.tracking,
-    //   description: body.description,
-    //   shipper: body.shipper,
-    //   carrier: body.carrier,
-    //   value: Number(body.value),
-    //   pieces: Number(body.pieces),
-    //   weight: Number(body.weight),
-    //   dimensions: body.dimensions,
-    //   status: 1,
-    //   location: "FLL",
-    //   mid: 0,
-    //   awb: 0,
-    // }
     return new Promise((resolve, reject) => {
       newPackage.awbId = awbId;
       newPackage.id = Date.now().toString();
@@ -805,10 +688,10 @@ checkInStore(data, username) {
       newPackage.trackingNo = uniqId();
       // Here as per the frontend logic, we're getting the 
       // values like 43322211,398749844904894
-      const obarCode = newPackage.originBarcode.split(',');      
-      if(obarCode.length>1){
+      const obarCode = newPackage.originBarcode.split(',');
+      if (obarCode.length > 1) {
         newPackage.originBarcode = newPackage.originBarcode.split(',')[1];
-       }      
+      }
       const newPackageData = new Package(newPackage);
       newPackageData.save((err, result) => {
         if (err) {
@@ -816,25 +699,25 @@ checkInStore(data, username) {
           resolve({ success: false, message: strings.string_response_error });
         } else {
           this.removeProcessPackage(newPackage.originBarcode, newPackage.createdBy)
-          // this.updatePackageStatus(result['_id'], 1, newPackage.createdBy)
+          this.updatePackageStatus(result['_id'], 0, newPackage.createdBy)
           resolve({ success: true });
         }
       });
     });
   }
 
-  async removeProcessPackage(barcode,userId){
-    return await ProcessPackage.deleteOne({barcode:barcode, userId});
+  async removeProcessPackage(barcode, userId) {
+    return await ProcessPackage.deleteOne({ barcode: barcode, userId });
   }
 
   updatePackage(id, pkg) {
     return new Promise((resolve, reject) => {
-      Package.updateOne({_id:id},pkg,(err,result)=> {
-        if(err) resolve({ success: false, message: strings.string_response_error });
+      Package.updateOne({ _id: id }, pkg, (err, result) => {
+        if (err) resolve({ success: false, message: strings.string_response_error });
         else resolve({ success: true });
 
       })
-    
+
     });
   }
 
@@ -885,28 +768,6 @@ checkInStore(data, username) {
       });
     });
   }
-
-  // removePackages(awbId) {
-  //   return new Promise((resolve, reject) => {
-  //     client.smembers(PREFIX_PACKAGE_LIST + awbId, (err, ids) => {
-  //       Promise.all(
-  //         ids.map((id) => {
-  //           return this.removePackage(awbId, id);
-  //         }),
-  //       ).then((results) => {
-  //         resolve(results);
-  //       });
-  //     });
-  //   });
-  // }
-
-  // removePackage(awbId, id) {
-  //   return new Promise((resolve, reject) => {
-  //     client.del(PREFIX + id);
-  //     client.srem(PREFIX_PACKAGE_LIST + awbId, id);
-  //     resolve({ success: true });
-  //   });
-  // }
 
   removePackagesStatusByPackageIds(packageIds) {
     return new Promise((resolve, reject) => {
@@ -963,31 +824,6 @@ checkInStore(data, username) {
     });
   }
 
-  // getPackagesInNas() {
-  //   return new Promise((resolve, reject) => {
-  //     client.keys(PREFIX + '*', (err, keys) => {
-  //       Promise.all(
-  //         keys.map((key) => {
-  //           return lredis.hgetall(key);
-  //         }),
-  //       ).then((packages) => {
-  //         Promise.all(
-  //           packages.map((pkg) => {
-  //             return this.getPackageLastStatus(pkg.id);
-  //           }),
-  //         ).then((stats) => {
-  //           let pkgs = [];
-  //           stats.forEach((stat, i) => {
-  //             packages[i].lastStatusText = stat.status;
-  //             if (stat.status == PKG_STATUS[4]) pkgs.push(packages[i]);
-  //           });
-  //           resolve(pkgs);
-  //         });
-  //       });
-  //     });
-  //   });
-  // }
-
   getPackagesInNas_updated() {
     return new Promise((resolve, reject) => {
       this.getAllPackages_updated().then((packages) => {
@@ -1013,16 +849,9 @@ checkInStore(data, username) {
   getShipmentId() {
     return new Promise((resolve, reject) => {
       resolve(SHIPMENT_ID)
-      // client.incr(SHIPMENT_ID, (err, reply) => {
-      //   if (err) {
-      //     console.error(err);
-      //     resolve(null);
-      //   }
-      //   resolve(reply);
-      // });
     });
   }
- 
+
 
   //========== Load Packages to AirCraft (Add to Manifest) ==========//
   addToFlight(packageIds, manifestId, compartmentId, userId) {
@@ -1048,11 +877,11 @@ checkInStore(data, username) {
       });
     });
   }
-  
+
   getPackageOnManifest(manifestId) {
     return new Promise((resolve, reject) => {
       Package.find({ manifestId: manifestId })
-        .populate(['awbId','compartmentId','shipperId','carrierId','customerId','hazmatId'])
+        .populate(['awbId', 'compartmentId', 'shipperId', 'carrierId', 'customerId', 'hazmatId'])
         .exec((err, packages) => {
           if (err) {
             resolve([]);
@@ -1114,69 +943,55 @@ checkInStore(data, username) {
           return this.updatePackageStatus(packageId, 4, username);
         }),
       ).then((result) => {
-        resolve({ success: true, message: strings.string_response_received,status: PKG_STATUS[4] });
+        resolve({ success: true, message: strings.string_response_received, status: PKG_STATUS[4] });
       });
     });
   }
 
 
   // ======== Process Package ==========//
-  async processPackage(barcode,userId){
+  async processPackage(barcode, userId) {
     try {
-      let bar = await Barcode.findOne({barcode:barcode});
-        if (bar === null || bar === undefined){
-           return { success: false, message: 'Barcode Does not Exist' }
-          }
-           else{
-             const process = await ProcessPackage.findOneAndUpdate({userId:userId},{userId:userId,barcode:bar.id},{upsert:true,new:true})
-             if(process == null)  return { success: false, message: strings.string_response_error }
-             return {
-              success: true,
-              message: strings.string_response_added,
-              originBarcode: process,
-            }
-             
-           }
+      let bar = await Barcode.findOne({ barcode: barcode });
+      if (bar === null || bar === undefined) {
+        return { success: false, message: 'Barcode Does not Exist' }
+      }
+      else {
+        const process = await ProcessPackage.findOneAndUpdate({ userId: userId }, { userId: userId, barcode: bar.id }, { upsert: true, new: true })
+        if (process == null) return { success: false, message: strings.string_response_error }
+        return {
+          success: true,
+          message: strings.string_response_added,
+          originBarcode: process,
+        }
+
+      }
     } catch (error) {
-      console.error('updateZone',error)
+      console.error('updateZone', error)
     }
   }
 
   //========= Update Zone On Package Delivered ======//
-  async updateZone(id,pkgs){
+  async updateZone(id, pkgs) {
     try {
-      return await Zone.findByIdAndUpdate({_id:id},{$push:{packages:pkgs}})
+      return await Zone.findByIdAndUpdate({ _id: id }, { $push: { packages: pkgs } })
     } catch (error) {
-      console.error('updateZone',error)
+      console.error('updateZone', error)
     }
   }
 
-  async updateAwbPackages(id,pkgs){
+  async updateAwbPackages(id, pkgs) {
     try {
-      return await Awb.findByIdAndUpdate({_id:id},{$push:{packages:pkgs}})
+      return await Awb.findByIdAndUpdate({ _id: id }, { $push: { packages: pkgs } })
     } catch (error) {
-      console.error('updateAwbPackages',error)
+      console.error('updateAwbPackages', error)
     }
   }
 
-  // getPackagesInLocation(locationId) {
-  //   return new Promise((resolve, reject) => {
-  //     client.smembers(LIST_LOCATION_PACKAGE + locationId, (err, ids) => {
-  //       Promise.all(
-  //         ids.map((id) => {
-  //           return this.getPackage(id);
-  //         }),
-  //       ).then((pkgs) => {
-  //         resolve(pkgs);
-  //       });
-  //     });
-  //   });
-  // }
-
-  getPackage_updated(packageId,pkgStatus) {
+  getPackage_updated(packageId, pkgStatus) {
     return new Promise(async (resolve, reject) => {
-      let pkg = await Package.findOneAndUpdate({_id:packageId},{lastStatusText:pkgStatus},{new:true})
-      if(!pkg) resolve({})
+      let pkg = await Package.findOneAndUpdate({ _id: packageId }, { lastStatusText: pkgStatus }, { new: true })
+      if (!pkg) resolve({})
       else resolve(pkg)
     })
   }
@@ -1193,61 +1008,30 @@ checkInStore(data, username) {
       if (!packageStatus.updatedBy) {
         delete packageStatus.updatedBy;
       }
-      Package.findById(packageId,(err,res)=>{
-        if(err || res === null) {
-          resolve({ success: false, message: `PackageId ${packageId} Doesn't Exist. Please scan one of the system generated labels.` })
-        }else{
-          PackageStatus.findOneAndUpdate({packageId:packageId,status:packageStatus.status},{$set:packageStatus},{upsert:true,new:true},(err, packageStatus) => {
-            if (err) {
-              resolve({ success: false, message: strings.string_response_error });
-            } else {
-              this.getPackage_updated(packageId,packageStatus['status']).then((pkg) => {
-                this.services.awbService.getAwb(pkg.awbId).then((awb) => {
-                  let fParam = {trackingNo:pkg.trackingNo,screenName:'PACKAGE_DETAIL'}
-                    firebase.sendNotification(
-                      awb.customerId,
-                      'Package Status Updated',
-                      'Package-' + pkg.trackingNo + ' Updated',
-                      fParam
-                    );
-                });
-              });
-              resolve({ success: true, message: strings.string_response_updated,status: packageStatus['status']});
-            }
+      const newPackageStatusData = new PackageStatus(packageStatus);
+      newPackageStatusData.save((err, packageStatus) => {
+        if (err) {
+          resolve({ success: false, message: strings.string_response_error });
+        } else {
+          this.getPackage_updated(packageId, packageStatus['status']).then((pkg) => {
+            this.services.awbService.getAwb(pkg.awbId).then((awb) => {
+              let fParam = { trackingNo: pkg.trackingNo, screenName: 'PACKAGE_DETAIL' }
+              firebase.sendNotification(
+                awb.customerId,
+                'Package Status Updated',
+                'Package-' + pkg.trackingNo + ' Updated',
+                fParam
+              );
+            });
           });
         }
-      })
-     
-
-      // client.incr(ID_PACKAGE_STATUS, (err, id) => {
-      //   client.hmset(PREFIX_PACKAGE_STATUS + id, {
-      //     id: id,
-      //     packageId: packageId,
-      //     statusId: status,
-      //     status: PKG_STATUS[status],
-      //     datetimestamp: moment()
-      //       .utc()
-      //       .unix(),
-      //     updatedBy: username,
-      //   });
-      //   client.sadd(LIST_PACKAGE_STATUS + packageId, id);
-      //   this.getPackage(packageId).then((pkg) => {
-      //     this.services.awbService.getAwb(pkg.awbId).then((awb) => {
-      //       firebase.sendNotification(
-      //         awb.customer,
-      //         'Package Status Updated',
-      //         'Package-' + pkg.trackingNo + ' Updated',
-      //       );
-      //     });
-      //   });
-      //   resolve({ success: true, message: strings.string_response_updated });
-      // });
+      });
     });
   }
 
-  async getPackageInfo(){
+  async getPackageInfo() {
     try {
-      return await PackageStatus.find().populate({path:"packageId",populate:{path:"awbId"}})
+      return await PackageStatus.find().populate({ path: "packageId", populate: { path: "awbId" } })
     } catch (error) {
       return []
     }
@@ -1282,45 +1066,15 @@ checkInStore(data, username) {
     });
   }
 
-  // getPackageStatuses(packageId) {
-  //   return new Promise((resolve, reject) => {
-  //     client.smembers(LIST_PACKAGE_STATUS + packageId, (err, ids) => {
-  //       if (err) resolve([]);
-  //       Promise.all(
-  //         ids.map((id) => {
-  //           return lredis.hgetall(PREFIX_PACKAGE_STATUS + id);
-  //         }),
-  //       ).then((status) => {
-  //         resolve(status);
-  //       });
-  //     });
-  //   });
-  // }
-
-  // getCustomerPackages(id) {
-  //   return new Promise((resolve, reject) => {
-  //     lredis.search(PREFIX, [{ field: 'customerId', value: id }]).then((packages) => {
-  //       Promise.all(
-  //         packages.map((pkg) => {
-  //           return this.getPackageStatuses(pkg.id);
-  //         }),
-  //       ).then((statuses) => {
-  //         packages.forEach((pkg, i) => (pkg.status = statuses[i]));
-  //       });
-  //       resolve(packages);
-  //     });
-  //   });
-  // }
-
   //========== Customer Package ==========//
   getCustomerPackages(customerId) {
     return new Promise((resolve, reject) => {
       Package.find({ customerId })
         .exec((error, packages) => {
           if (error || packages.length == 0) {
-            resolve({ 
+            resolve({
               success: false,
-              message : strings.string_package_not_found_customer
+              message: strings.string_package_not_found_customer
             })
           } else {
             Promise.all(
@@ -1332,8 +1086,8 @@ checkInStore(data, username) {
                 packages[i].lastStatusText = status.status;
               });
               resolve({
-                success : true, 
-                packages : packages
+                success: true,
+                packages: packages
               });
             });
           }
@@ -1379,83 +1133,95 @@ checkInStore(data, username) {
     })
   }
 
-  // createConsolated(packages, username, boxSize) {
-  //   return new Promise((resolve, reject) => {
-  //     var awbInfo = {
-  //       id: '',
-  //       isSed: 0,
-  //       hasDocs: '0',
-  //       invoiceNumber: '',
-  //       value: '0',
-  //       customerId: 24197,
-  //       shipper: '482', // we should get an id here
-  //       carrier: 'USPS',
-  //       hazmat: '',
-  //       username: username,
-  //     };
-  //     this.saveAwb(awbInfo).then((awbResult) => {
-  //       //add
-  //       var cPackage = {
-  //         id: 0,
-  //         trackingNo: uniqId(),
-  //         barcode: 0,
-  //         description: 'Consolidated Package',
-  //         weight: 0,
-  //         dimensions: `${boxSize}x${boxSize}x${boxSize}`,
-  //         awb: awbResult.id,
-  //         isConsolidated: '1',
-  //         created_by: username,
-  //       };
-  //       srv.savePackageToAwb(cPackage).then((pkgResult) => {
-  //         // get the id
-  //         //
-  //         var batch = client.batch();
-  //         var pkgBatch = client.batch();
+  getDeliveryPackageDetail() {
+    return new Promise((resolve, reject) => {
+      Package.find({ deliveryId: { $exists: true, $ne: null } }, (err, packages) => {
+        Promise.all(
+          packages.map(async (pkg) => {
+            let result = await deliveryService.getDeliveryAndDriverInfo(pkg.deliveryId);
+            
+            return {
+              packageId: pkg.id,
+              status: pkg.lastStatusText,
+              driverName: result.driverId.firstName + " " + (result.driverId.lastName ? result.driverId.lastName : ""),
+              date: moment(result.delivery_date).format("DD MMM, YYYY | hh:mm"),
+              location: result.locationId.address
+            }
+          })
+        ).then(result => resolve(result))
+      })
+    })
+  }
 
-  //         packages.forEach((pkg) => {
-  //           //these are barcodes
-  //           batch.sadd('consolidated:pkg:' + pkgResult.id, pkg);
-  //           pkgBatch.hmget(PACKAGE_ID + getPackageIdFromBarCode(pkg), 'weight');
-  //         });
-  //         batch.exec((err, results) => {
-  //           //
-  //           pkgBatch.exec((err1, results) => {
-  //             var totalWeight = 0;
-  //             results.forEach((weight) => {
-  //               if (isNaN(Number(weight)) == false) totalWeight += Number(weight);
-  //             });
-  //             //we need to update the total weight of the package now
-  //             srv.packageIndex.update(cPackage.id, { weight: totalWeight });
-  //           });
-  //           resolve({ saved: true, id: pkgResult.id });
-  //         });
-  //       });
-  //     });
-  //     //validate the package
-  //   });
-  // }
-  // getReceivedPackages(page, pageSize) {
-  //   return new Promise((resolve, reject) => {
-  //     this.mySearch.search(`@mid:[0 0]`, { offset: 0, numberOfResults: 5000 }, (err, data) => {
-  //       var packages = [];
-  //       data.results.forEach((element) => {
-  //         packages.push(element.doc);
-  //       });
-  //       resolve(packages);
-  //     });
-  //   });
-  // }
+  getPackageStatusWithUser(filter, query) {
+    return new Promise((resolve, reject) => {
+      let dbQuery = {};
+      if (filter === 'all') {
+        dbQuery = {}
+      } else {
+        if (query.filter_for === "all_package_table") {
+          if (query.filter_date != '') {
+            dbQuery['updatedAt'] = {
+              $lte: moment(query.filter_date, 'MM-DD-YYYY').endOf('day').toDate(),
+              $gte: moment(query.filter_date, 'MM-DD-YYYY').startOf('day').toDate()
+            }
+          }
+          if (query.users && query.users != 'all') {
+            dbQuery['updatedBy'] = mongoose.Types.ObjectId(query.users);
+          }
+          if (query.package_status && query.package_status != 'all') {
+            dbQuery['status'] = query.package_status;
+          }
+        }
+      }
+      
+      PackageStatus
+        .aggregate([
+          { $match: dbQuery },
+          {
+            $group: {
+              _id: "$packageId",
+              lastPackageCreatedAt: { $last: "$createdAt" },
+              status: { $last: "$status" },
+              updatedBy: { $last: "$updatedBy" },
+              packageLastId: { $last: "$packageId" }
+            }
+          }, {
+            $lookup: {
+              from: "users",
+              localField: "updatedBy",
+              foreignField: "_id",
+              as: "userId"
+            },
+          }, {
+            $unwind: '$userId'
+          }, {
+            $lookup: {
+              from: "packages",
+              localField: "packageLastId",
+              foreignField: "_id",
+              as: "package"
+            },
+          }, {
+            $unwind: '$package'
+          },
+          {
+            $project: {
+              _id: 0,
+              packageId: '$package.id',
+              user: {
+                firstName: '$userId.firstName',
+                lastName: '$userId.lastName'
+              },
+              updatedAt: '$lastPackageCreatedAt',
+              status: 1
+            }
+          }
+        ]).then((data) => resolve(data));
+    })
+  }
+
   getNoDocsPackackages(page, pageSize) {
-    // return new Promise((resolve, reject) => {
-    //   this.mySearch.search(`@hasDocs:[0 0]`, { offset: 0, numberOfResults: 5000 }, (err, data) => {
-    //     var packages = [];
-    //     data.results.forEach((element) => {
-    //       packages.push(element.doc);
-    //     });
-    //     resolve(packages);
-    //   });
-    // });
-    // Redis Integration
     return new Promise((resolve, reject) => {
       Awb.find({ invoices: { $eq: [] } })
         .populate('packages')
@@ -1473,97 +1239,7 @@ checkInStore(data, username) {
         })
     })
   }
-  // removePackageFromManifest(packageId, mid) {
-  //   var msearch = this.mySearch;
-  //   return new Promise((resolve, reject) => {
-  //     var manifest = mid;
-  //     var manifestKey = 'manifest:' + manifest + ':*';
-
-  //     lredis.del('packages:' + trackingNo).then(function (result) {
-  //       msearch.delDocument(PKG_IDX, `${mid}-${trackingNo}`);
-  //       //we need to remove from the index and dec the counter
-  //       lredis.client.decr('mcounter:' + mid);
-  //       //rServices.packageService.rmPackage(mid, trackingNo);
-  //       lredis.getKeys(manifestKey).then((kResult) => {
-  //         //the list of all the sets ...we need to remove the key from each one
-  //         var keysCount = 0;
-
-  //         kResult.forEach((element) => {
-  //           lredis.srem(element, trackingNo).then(function (rResult) {
-  //             if (keysCount == kResult.length - 1) keysCount++;
-  //           });
-  //         });
-  //         resolve({
-  //           deleted: true,
-  //         });
-  //       });
-
-  //       //we also need to remove from any sets
-  //     });
-  //   });
-  // }
-
-  // removePackageById(id) {
-  //   var msearch = this.mySearch;
-  //   return new Promise((resolve, reject) => {
-  //     packageIndex.delDocument(PKG_IDX, id, (err, response) => {
-  //       if (err) console.log(err);
-  //       resolve({ deleted: true });
-  //     });
-  //   });
-  // }
-  // storePackageForPickup(trackingNo, bin) {
-  //   var searcher = this.mySearch;
-  //   return new Promise((resolve, reject) => {
-  //     lredis.hmset(PACKAGE_ID + trackingNo, { status: 4, location: bin }).then((result) => {
-  //       lredis.getPackage(trackingNo).then((pkg) => {
-  //         addPackageToIndex(trackingNo, searcher);
-  //         resolve(pkg);
-  //       });
-  //     });
-  //   });
-  // }
-  // updatePackageIndex(tracking) {
-  //   return new Promise((resolve, reject) => {
-  //     var msearch = this.mySearch;
-  //     addPackageToIndex(tracking, msearch);
-  //     resolve({ updated: true });
-  //   });
-  // }
-
-  //#region Manifest Package Functions
-
-  //get the compartment weight
-  // getFlightCompartmentWeight(mid, compartment) {
-  //   return new Promise((resolve, reject) => {
-  //     this.mySearch.aggregate(
-  //       `@mid:[${mid} ${mid}] @compartment:${compartment}`,
-  //       {},
-  //       (err, reply) => {
-  //         if (err) console.log(err);
-
-  //         if (reply[1]) {
-  //           var result = reply[1];
-  //           var compartment = result[3];
-  //           var weight = result[5];
-  //         }
-  //         resolve({ compartment: compartment, weight: weight });
-  //       },
-  //     );
-  //   });
-  // }
-  //remove from flight
-  // removeFromFlight(action) {
-  //   return new Promise((resolve, reject) => {
-  //     var packageNo = getPackageIdFromBarCode(action.barcode);
-  //     this.mySearch.update(packageNo, { mid: action.mid }, (err, result) => {
-  //       if (err) resolve({ removed: false });
-
-  //       resolve({ removed: true });
-  //     });
-  //   });
-  // }
-
+  
   // This method is used when we're performing the global search 
   getGlobalSearchData(bodyData) {
     return new Promise((resolve, reject) => {
@@ -1605,15 +1281,15 @@ checkInStore(data, username) {
       }
     })
   }
-  getProcessOriginBarcode(user){
+  getProcessOriginBarcode(user) {
     let userId = user._id;
-    userId = user._id == undefined ? user: user._id
+    userId = user._id == undefined ? user : user._id
     return new Promise((resolve, reject) => {
-      ProcessPackage.findOne({userId:userId}).populate('barcode').exec((err,data)=>{
-        if(err){
+      ProcessPackage.findOne({ userId: userId }).populate('barcode').exec((err, data) => {
+        if (err) {
           console.log(err)
           resolve({});
-        }else{
+        } else {
           resolve(data)
         }
       })

@@ -7,32 +7,6 @@
     <div class="card full-height">
       <div class="card-header">
         <div class="row">
-          <div class="card-title pd-18 col-md-2">Users </div>
-        </div>
-      </div>
-      <div class="card-body">
-        <table id="user_table" class=" display table table-striped table-hover dataTable ">
-          <thead>
-            <tr>
-              <th>Username</th>
-              <th>Name</th>
-              <th>Total AWB Created</th>
-              <th>User Email</th>
-            </tr>
-          </thead>
-          <tbody>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="row">
-  <div class="col-md-12">
-    <div class="card full-height">
-      <div class="card-header">
-        <div class="row">
           <div class="card-title pd-18 col-md-2">All Awb Status</div>
         </div>
       </div>
@@ -43,7 +17,7 @@
               <th>AWB ID</th>
               <th>Employee Name</th>
               <th>Action</th>
-              <th>Time</th>
+              <th>Date</th>
             </tr>
           </thead>
           <tbody>
@@ -84,24 +58,66 @@
       <div class="card-header">
         <div class="row">
           <div class="card-title pd-18 col-md-2">Package Detail</div>
+          <div class="card-tools  pd-18 col-md-10">
+            <form method="post" onsubmit="filterData(event)">
+              <div class="row">
+                <div class="col-md-3">
+                  <div class="row">
+                    <span class="col-md-5 pt-10" style="margin-top: 8px;">By User</span>
+                    <div class="col-md-7">
+                      <select class="form-control" name="users">
+                        <option value='all'>All</option>
+                        <%users.forEach(function(user){ %>
+                        <option value="<%=user._id%>"><%=user.username%></option>
+                        <%})%>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="row">
+                    <span class="col-md-5 pt-10" style="margin-top: 8px;">Package Status</span>
+                    <div class="col-md-7">
+                      <select class="form-control" name="package_status">
+                        <option value='all'>All</option>
+                        <%Object.keys(package_status).map(function(st){ %>
+                        <option value="<%=package_status[st]%>"><%=package_status[st]%></option>
+                        <%})%>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <input type="hidden" name="filter_for" value="all_package_table" />
+                <div class="col-md-3""> 
+                <div class=" row">
+                  <label class="col-md-5 pt-10" style="margin-top: 8px;">Created At</label>
+                  <input type="text" class="filter-date form-control col-md-7" name="filter_date" />
+                </div>
+              </div>
+              <div class="col-md-2 pl-10">
+                <input type="submit" value="Filter" class="btn btn-primary" />
+              </div>
+          </div>
+          </form>
         </div>
       </div>
-      <div class="card-body">
-        <table id="all_package_table" class=" display table table-striped table-hover dataTable ">
-          <thead>
-            <tr>
-              <th>PackageId</th>
-              <th>Status</th>
-              <th>User</th>
-              <th>Time</th>
-            </tr>
-          </thead>
-          <tbody>
-          </tbody>
-        </table>
-      </div>
+    </div>
+    <div class="card-body">
+      <table id="all_package_table" class=" display table table-striped table-hover dataTable ">
+        <thead>
+          <tr>
+            <th>PackageId</th>
+            <th>Status</th>
+            <th>User</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
     </div>
   </div>
+</div>
 </div>
 
 <div class="row">
@@ -116,9 +132,10 @@
         <table id="delivery_table" class=" display table table-striped table-hover dataTable ">
           <thead>
             <tr>
+              <th>PackageId</th>
               <th>Driver Name</th>
               <th>Date</th>
-              <th>Time</th>
+              <th>Status</th>
               <th>Location</th>
             </tr>
           </thead>
@@ -131,6 +148,8 @@
 </div>
 
 <script type="text/javascript">
+
+
   function filterData(event) {
     event.preventDefault()
     const data = $(event.currentTarget).serializeArray();
@@ -142,12 +161,7 @@
       data: obj,
       type: "GET",
       success: function (data) {
-        let nineToPackages = data.nineToPackages;
-        let noDocs = data.noDocs;
-        let postBox = data.postBox;
-        data.nineToPackages ? data9to5(nineToPackages) : null;
-        data.noDocs ? dataNoDocs(noDocs) : null;
-        data.postBox ? dataPostBox(postBox) : null;
+        if(obj.filter_for === "all_package_table")  allPackages(data[3]);
       }
     })
   }
@@ -157,30 +171,11 @@
     type: "GET",
     success: function (data) {
       awbsStatus(data[0]);
-      usersData(data[1]);
+      packageStatus(data[1]);
+      allPackages(data[2])
+      deliveryData(data[3])
     }
   })
-
-  function usersData(data) {
-    let result = data.map((user) => {
-      if (user !== null) {
-        return `<tr><td>` + user.username + `</td>
-          <td>` + user.firstName + " " + user.lastName + `</td>
-          <td>` + user.awbCount + `</td>
-          <td>` + user.email +
-          `</td></tr>`;
-      }
-    })
-
-    if ($("#user_table > tbody > tr").length) {
-      $("#user_table > tbody > tr").empty();
-    }
-
-    $("#user_table tbody").append(result)
-    if (!($.fn.dataTable.isDataTable('#user_table'))) {
-      $("#user_table").DataTable({ searching: false, "bLengthChange": false });
-    }
-  }
 
   function awbsStatus(data) {
     let result = data.map((row) => {
@@ -188,7 +183,7 @@
         return `<tr><td>` + row.awbGeneratedId + `</td>
           <td>` + row.User['firstName'] + " " + row.User['lastName'] + `</td>
           <td>` + row.action + `</td>
-          <td>` + row.createdAt +
+          <td>` + moment(row.createdAt).format("hh:mm - MMM DD, YYYY") +
           `</td></tr>`;
       }
     })
@@ -200,7 +195,86 @@
     $("#awbStatus tbody").html("")
     $("#awbStatus tbody").append(result)
     if (!($.fn.dataTable.isDataTable('#awbStatus'))) {
-      $("#awbStatus").DataTable({ searching: false, "bLengthChange": false });
+      $("#awbStatus").DataTable({ searching: true, "bLengthChange": true });
+    }
+  }
+
+  function packageStatus(data) {
+    const PKG_STATUS = {
+      0: 'Package Created',
+      1: 'Received in FLL',
+      2: 'Loaded on AirCraft',
+      3: 'In Transit',
+      4: 'Recieved in NAS',
+      5: 'Ready for Pickup / Delivery',
+      6: 'Delivered',
+      7: 'No Invoice Present',
+      8: 'Assigned to cube',
+      9: 'Delivered to Store'
+    };
+    let obj = ['created', 'received_fill', 'loaded_craft', 'in_transit', 'received_nas',
+      'ready_pd', 'delivered', 'no_invoice', 'assigned_to_cube', 'delivered_to_store'];
+    let newObj = [];
+    for (let i = 0; i < 10; i++) {
+      newObj.push({ status: PKG_STATUS[i], count: data[obj[i]] })
+    }
+    let result = newObj.map((row) => {
+      if (row !== null) {
+        return `<tr><td>` + row.status + `</td>
+          <td>` + row.count + `</td></tr>`;
+      }
+    })
+
+    if ($("#package_status > tbody > tr").length) {
+      $("#package_status > tbody > tr").empty();
+    }
+
+    $("#package_status tbody").append(result)
+    if (!($.fn.dataTable.isDataTable('#package_status'))) {
+      $("#package_status").DataTable({ searching: true, "bLengthChange": true });
+    }
+  }
+
+  function allPackages(data) {
+    let result = data.map((row) => {
+      if (row !== null) {
+        return `<tr><td>` + row.packageId + `</td>
+          <td>` + row.status + `</td>
+          <td>` + row.user.firstName + " " + row.user.lastName + `</td>
+          <td>` + moment(row.updatedAt).format('MMM DD, YYYY') +
+          `</td></tr>`;
+      }
+    })
+
+    if ($("#all_package_table > tbody > tr").length) {
+      $("#all_package_table > tbody > tr").empty();
+    }
+
+    $("#all_package_table tbody").append(result)
+    if (!($.fn.dataTable.isDataTable('#all_package_table'))) {
+      $("#all_package_table").DataTable({ searching: false, "bLengthChange": false });
+    }
+  }
+
+  function deliveryData(data) {
+    let result = data.map((row) => {
+      if (row !== null) {
+        return `<tr><td>` + row.packageId + `</td>
+          <td>` + row.driverName + `</td>
+          <td>` + row.date + `</td>
+          <td>` + row.status + `</td>
+          <td>` + row.location +
+          `</td></tr>`;
+      }
+    })
+
+    if ($("#delivery_table > tbody > tr").length) {
+      $("#delivery_table > tbody > tr").empty();
+    }
+
+    $("#delivery_table tbody").append(result)
+    if (!($.fn.dataTable.isDataTable('#delivery_table'))) {
+      $("#delivery_table").DataTable({ searching: true, "bLengthChange": true });
     }
   }
 

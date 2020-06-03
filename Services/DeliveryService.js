@@ -119,6 +119,22 @@ class DeliveryService {
     });
   }
 
+  getDeliveryAndDriverInfo(deliveryId) {
+    return new Promise((resolve, reject) => {
+      Delivery.findOne({_id: deliveryId})
+      .populate('driverId')
+      .populate('locationId')
+      .exec((err, delivery) => {
+        if (err) {
+          return resolve({});
+        }
+        delivery.location = delivery.locationId;
+        delivery.driver = delivery.driverId;
+        resolve(delivery);
+      })
+    });
+  }
+
   getOpenDeliveries() {
     return new Promise((resolve, reject) => {
       Delivery.find({status: 0}, (err, deliveries) => {
@@ -128,29 +144,8 @@ class DeliveryService {
           resolve(deliveries);
         }
       })
-      // lredis.search(PREFIX, [{ field: 'status', value: '0' }]).then(deliveries => {
-      //   resolve(deliveries);
-      // })
     })
   }
-
-  // sendDelivery(deliveryId) {
-  //   return new Promise((resolve, reject) => {
-  //     client.hmset(PREFIX + deliveryId, { status: 1 });
-  //     resolve({ success: true, message: strings.string_response_updated });
-  //   })
-  // }
-
-  // getDeliveryPackages(deliveryId) {
-  //   return new Promise((resolve, reject) => {
-  //     client.smembers(DELIVERY_SET + deliveryId, (err, packageIds) => {
-  //       if (err) resolve([]);
-  //       Promise.all(packageIds.map(id => this.services.packageService.getPackage(id))).then(packages => {
-  //         resolve(packages)
-  //       })
-  //     })
-  //   })
-  // }
 }
 
 //========== DB Structure ==========//

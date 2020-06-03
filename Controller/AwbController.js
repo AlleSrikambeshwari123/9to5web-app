@@ -271,7 +271,7 @@ exports.update_awb = (req, res, next) => {
   awb.purchaseOrders = purchaseOrderIds;
   
   // Updating awb
-  services.awbService.updateAwb(awbId, awb)
+  services.awbService.updateAwb(awbId, awb, req['userId'])
   .then(async (result) => {
     // Updating or creating invoices, purchaseOrders and packages
     await Promise.all(promises.map((promise) => promise()));
@@ -316,7 +316,8 @@ exports.delete_awb = (req, res, next) => {
       services.awbService.deleteAwb_updated(awbId),
       services.packageService.removePackages_updated(awbId),
       services.awbService.removePurchaseOrdersByAwb(awbId),
-      services.packageService.removePackagesStatusByPackageIds(awbData.packages)
+      services.packageService.removePackagesStatusByPackageIds(awbData.packages),
+      services.awbService.updateAwbStatus(awbData, 3, req['userId']),
     ]).then(results => {
       res.send(results[0]);
     })

@@ -133,7 +133,9 @@ router.get("/get_packages_data/:filter", middleware().checkSession, (req, res, n
   // console.log('req.query', req.query);
   Promise.all([
     services.awbService.getAwbStatuses(),
-    services.userService.getAllUsers()
+    services.packageService.getPackageStatus(),
+    services.packageService.getPackageStatusWithUser(req.params.filter, req.query),
+    services.packageService.getDeliveryPackageDetail()
   ]).then(result => { 
     res.send(result)
   })
