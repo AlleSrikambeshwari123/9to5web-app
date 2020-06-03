@@ -116,7 +116,7 @@ router.get("/get_packages_7days_status", middleware().checkSession, (req, res, n
   })
 })
 
-
+// Dashboard Page
 router.get("/get_packages_filter/:filter", middleware().checkSession, (req, res, next) => {
   console.log('req.query', req.query);
   Promise.all([
@@ -125,6 +125,17 @@ router.get("/get_packages_filter/:filter", middleware().checkSession, (req, res,
   ]).then(result => {
     result[0]['users'] = result[1]; 
     res.send(result[0])
+  })
+})
+
+// Report Page
+router.get("/get_packages_data/:filter", middleware().checkSession, (req, res, next) => {
+  // console.log('req.query', req.query);
+  Promise.all([
+    services.awbService.getAwbStatuses(),
+    services.userService.getAllUsers()
+  ]).then(result => { 
+    res.send(result)
   })
 })
 

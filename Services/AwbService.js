@@ -3,6 +3,7 @@ var moment = require('moment');
 var strings = require('../Res/strings');
 
 const Awb = require('../models/awb');
+const AwbStatus = require('../models/awbStatus');
 const Barcode = require('../models/barcode');
 const PurchaseOrder = require('../models/purchaseOrder');
 
@@ -10,6 +11,12 @@ const DELIVERY_METHODS = {
   DELIVERY: 1,
   PICKUP: 2,
 };
+
+const ACTION = {
+  1: "Created",
+  2: "Updated",
+  3: "Deleted"
+}
 
 class AwbService {
   constructor() {
@@ -30,10 +37,43 @@ class AwbService {
         if (err) {
           resolve({ success: false, message: strings.string_response_error });
         } else {
+          this.updateAwbStatus(result, 1, awb['createdBy']);
           awb['id'] = result['_id'];
           resolve({ success: true, message: strings.string_response_created, awb: awb });
         }
       });
+    });
+  }
+
+  async updateAwbStatus(awb, action, userId) {
+    return new Promise((resolve, reject) => {
+      const awbstatus = {
+        awbId: awb['_id'],
+        awbGeneratedId: awb['awbId'],
+        action: ACTION[action],
+        User: userId
+      };
+      const newAwbStatus = new AwbStatus(awbstatus);
+      newAwbStatus.save((err, result) => {
+        if (err) {
+          console.log("UpdateAWBstatus", err);
+          resolve([]);
+        } else {
+          resolve(result);
+        }
+      })
+    });
+  }
+
+  async getAwbStatuses() {
+    return new Promise((resolve, reject) => {
+      AwbStatus.find({},(err, result) => {
+        if (err) {
+          resolve([]);
+        } else {
+          resolve(result);
+        }
+      }).populate('User');
     });
   }
 
@@ -49,7 +89,7 @@ class AwbService {
     });
   }
 
-  updateAwb(id, awb) {
+  updateAwb(id, awb, userId) {
     return new Promise((resolve, reject) => {
       if (awb.hasOwnProperty && awb.hasOwnProperty('hazmat') && !awb['hazmat']) {
         delete awb.hazmat;
@@ -58,6 +98,7 @@ class AwbService {
         if (err) {
           resolve({ success: false });
         } else {
+          this.updateAwbStatus(result, 2, userId);
           resolve({ success: true });
         }
       });

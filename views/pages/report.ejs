@@ -1,0 +1,207 @@
+<% layout('./shared/__template')%>
+<script src="/js/jquery.js"></script>
+<script src="/assets/js/plugin/datatables/datatables.min.js"></script>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card full-height">
+      <div class="card-header">
+        <div class="row">
+          <div class="card-title pd-18 col-md-2">Users </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <table id="user_table" class=" display table table-striped table-hover dataTable ">
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Name</th>
+              <th>Total AWB Created</th>
+              <th>User Email</th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card full-height">
+      <div class="card-header">
+        <div class="row">
+          <div class="card-title pd-18 col-md-2">All Awb Status</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <table id="awbStatus" class=" display table table-striped table-hover dataTable ">
+          <thead>
+            <tr>
+              <th>AWB ID</th>
+              <th>Employee Name</th>
+              <th>Action</th>
+              <th>Time</th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card full-height">
+      <div class="card-header">
+        <div class="row">
+          <div class="card-title pd-18 col-md-2">Package Status</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <table id="package_status" class=" display table table-striped table-hover dataTable ">
+          <thead>
+            <tr>
+              <th>Status </th>
+              <th>Number of Packages </th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card full-height">
+      <div class="card-header">
+        <div class="row">
+          <div class="card-title pd-18 col-md-2">Package Detail</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <table id="all_package_table" class=" display table table-striped table-hover dataTable ">
+          <thead>
+            <tr>
+              <th>PackageId</th>
+              <th>Status</th>
+              <th>User</th>
+              <th>Time</th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card full-height">
+      <div class="card-header">
+        <div class="row">
+          <div class="card-title pd-18 col-md-2">Delivery Detail</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <table id="delivery_table" class=" display table table-striped table-hover dataTable ">
+          <thead>
+            <tr>
+              <th>Driver Name</th>
+              <th>Date</th>
+              <th>Time</th>
+              <th>Location</th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+  function filterData(event) {
+    event.preventDefault()
+    const data = $(event.currentTarget).serializeArray();
+    const obj = {}
+    data.map((i) => { obj[i.name] = i.value })
+    $.ajax({
+      url: "/api/warehouse/get_packages_data/" + obj.filter_for,
+      dataType: "json",
+      data: obj,
+      type: "GET",
+      success: function (data) {
+        let nineToPackages = data.nineToPackages;
+        let noDocs = data.noDocs;
+        let postBox = data.postBox;
+        data.nineToPackages ? data9to5(nineToPackages) : null;
+        data.noDocs ? dataNoDocs(noDocs) : null;
+        data.postBox ? dataPostBox(postBox) : null;
+      }
+    })
+  }
+  $.ajax({
+    url: '/api/warehouse/get_packages_data/all',
+    dataType: "json",
+    type: "GET",
+    success: function (data) {
+      awbsStatus(data[0]);
+      usersData(data[1]);
+    }
+  })
+
+  function usersData(data) {
+    let result = data.map((user) => {
+      if (user !== null) {
+        return `<tr><td>` + user.username + `</td>
+          <td>` + user.firstName + " " + user.lastName + `</td>
+          <td>` + user.awbCount + `</td>
+          <td>` + user.email +
+          `</td></tr>`;
+      }
+    })
+
+    if ($("#user_table > tbody > tr").length) {
+      $("#user_table > tbody > tr").empty();
+    }
+
+    $("#user_table tbody").append(result)
+    if (!($.fn.dataTable.isDataTable('#user_table'))) {
+      $("#user_table").DataTable({ searching: false, "bLengthChange": false });
+    }
+  }
+
+  function awbsStatus(data) {
+    let result = data.map((row) => {
+      if (row !== null) {
+        return `<tr><td>` + row.awbGeneratedId + `</td>
+          <td>` + row.User['firstName'] + " " + row.User['lastName'] + `</td>
+          <td>` + row.action + `</td>
+          <td>` + row.createdAt +
+          `</td></tr>`;
+      }
+    })
+
+    if ($("#awbStatus > tbody > tr").length) {
+      $("#awbStatus > tbody > tr").empty();
+    }
+
+    $("#awbStatus tbody").html("")
+    $("#awbStatus tbody").append(result)
+    if (!($.fn.dataTable.isDataTable('#awbStatus'))) {
+      $("#awbStatus").DataTable({ searching: false, "bLengthChange": false });
+    }
+  }
+
+</script>
