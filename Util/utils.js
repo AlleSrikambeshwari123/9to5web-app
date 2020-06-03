@@ -66,3 +66,17 @@ exports.formatPhoneNumber = (phone) => {
 exports.formatDate = (unix, format) => {
   return moment(unix * 1000).format(format);
 }
+
+
+exports.checkEmpty = doc => {
+  let errors = {};
+  for (var key in doc) {
+    if (doc[key] === "" || doc[key] === undefined || doc[key] === null) {
+      errors[key] = `${key} Must Not Be Empty`;
+    }
+  }
+  return {
+    errors,
+    valid: Object.keys(errors).length === 0 ? true : false
+  };
+};

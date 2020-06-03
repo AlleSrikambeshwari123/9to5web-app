@@ -97,12 +97,17 @@ class PackageService {
   // 1: 'Received in FLL',
   async addPackageToShipment(packages, username) {
     try {
+      let error = []
+      if(packages.length == 0 && username.length == 0) return {success:false,message:"Please Provide Valid Input Keys"}
       let packageIds = packages.split(',');
       return Promise.all(
         packageIds.map(async (packageId) => {
-          return await this.updatePackageStatus(packageId, 1, username);
+          const status = await this.updatePackageStatus(packageId, 1, username);
+          if(!status.success) error.push(status.message)
+          return status
         })
       ).then((result) => {
+        if(error.length >0) return { success: false, message: error }
         return {
           success: true,
           message: strings.string_response_received,
@@ -144,6 +149,7 @@ class PackageService {
       if(error.length >0) return { success: false, message: error }
       return { success: true, message: strings.string_response_loaded, status: PKG_STATUS[2] }
     } catch (error) {
+      console.log(error);
       return { success: false, message: strings.string_response_error }
     }
   }
@@ -184,13 +190,14 @@ class PackageService {
   // 3: 'In Transit',
   addPackagesToDelivery(deliveryId, packageIds,user) {
     return new Promise(async(resolve, reject) => {
-      Delivery.findOneAndUpdate({_id:deliveryId},{$push:{packages:packageIds},updatedBy:user}).then((err,delivery)=>{
+      let packages = packageIds && packageIds.length && packageIds.split(',').filter(Boolean);
+      Delivery.findOneAndUpdate({_id:deliveryId},{$push:{packages:packages},updatedBy:user},(err,delivery)=>{
         if (err) {
           resolve({ success: false, message: strings.string_response_error});
         }
       })
       Promise.all(
-        packageIds.map((packageId) => {
+        packages.map((packageId) => {
           this.updatePackage(packageId, {deliveryId: deliveryId});
           return this.updatePackageStatus(packageId, 3, user);  
         }),
@@ -224,11 +231,15 @@ class PackageService {
   checkOutToCustomer(barcodes, username) {
     return new Promise((resolve, reject) => {
       let packageIds = barcodes.split(',');
+      let error = []
       Promise.all(
-        packageIds.map((packageId) => {
-          return this.updatePackageStatus(packageId, 5, username);
+        packageIds.map(async (packageId) => {
+          const status = await this.updatePackageStatus(packageId, 5, username);
+          if(!status.success) error.push(status.message)
+          return status
         }),
       ).then((result) => {
+        if(error.length >0) return resolve({ success: false, message: error })
         resolve({ success: true, message: strings.string_response_received,status: PKG_STATUS[5] });
       });
     });
@@ -238,18 +249,22 @@ class PackageService {
 async addAwbsPkgNoDocs(data){
   try {
     let packageIds = data.packageIds.split(',');
+    let error = []
     await Promise.all(
-      packageIds.map(packageId=>{
+      packageIds.map(async packageId=>{
         this.updatePackage(packageId, {
           location: data.location,
           zoneId:data.zoneId
         });
-        return this.updatePackageStatus(packageId, 7, data.userId);
+        const status = await this.updatePackageStatus(packageId, 7, data.userId);
+        if(!status.success) error.push(status.message)
+        return status
       },
       this.updateAwbPackages(data.awbId,packageIds),
       this.updateZone(data.zoneId,packageIds)
       )
     )
+    if(error.length >0) return { success: false, message: error }
     return { success: true, message: strings.string_response_received,status: PKG_STATUS[7] }
   } catch (error) {
     console.error('addAwbsPkgNoDocs',error)
@@ -259,19 +274,23 @@ async addAwbsPkgNoDocs(data){
 // 9: 'Delivered to Store'
 checkInStore(data, username) {
   let packageIds = data.packageIds.split(',');
+  let error = []
   return new Promise((resolve, reject) => {
     Promise.all(
-      packageIds.map((packageId) => {
+      packageIds.map(async (packageId) => {
         this.updatePackage(packageId, {
           location: data.location,
           companyId: data.companyId,
           zoneId:data.zoneId
         });
-        return this.updatePackageStatus(packageId, 9, username);
+        const status = await this.updatePackageStatus(packageId, 9, username);
+        if(!status.success) error.push(status.message)
+        return status
       },
       this.updateZone(data.zoneId,packageIds)
       ),
       ).then((result) => {
+      if(error.length >0) return resolve({ success: false, message: error })
       resolve({ success: true, message: strings.string_response_received,status: PKG_STATUS[9] });
     });
   });
@@ -1174,25 +1193,31 @@ checkInStore(data, username) {
       if (!packageStatus.updatedBy) {
         delete packageStatus.updatedBy;
       }
-      const newPackageStatusData = new PackageStatus(packageStatus);
-      newPackageStatusData.save((err, packageStatus) => {
-        if (err) {
-          resolve({ success: false, message: strings.string_response_error });
-        } else {
-          this.getPackage_updated(packageId,packageStatus['status']).then((pkg) => {
-            this.services.awbService.getAwb(pkg.awbId).then((awb) => {
-              let fParam = {trackingNo:pkg.trackingNo,screenName:'PACKAGE_DETAIL'}
-                firebase.sendNotification(
-                  awb.customerId,
-                  'Package Status Updated',
-                  'Package-' + pkg.trackingNo + ' Updated',
-                  fParam
-                );
-            });
+      Package.findById(packageId,(err,res)=>{
+        if(err || res === null) {
+          resolve({ success: false, message: `PackageId ${packageId} Doesn't Exist. Please scan one of the system generated labels.` })
+        }else{
+          PackageStatus.findOneAndUpdate({packageId:packageId,status:packageStatus.status},{$set:packageStatus},{upsert:true,new:true},(err, packageStatus) => {
+            if (err) {
+              resolve({ success: false, message: strings.string_response_error });
+            } else {
+              this.getPackage_updated(packageId,packageStatus['status']).then((pkg) => {
+                this.services.awbService.getAwb(pkg.awbId).then((awb) => {
+                  let fParam = {trackingNo:pkg.trackingNo,screenName:'PACKAGE_DETAIL'}
+                    firebase.sendNotification(
+                      awb.customerId,
+                      'Package Status Updated',
+                      'Package-' + pkg.trackingNo + ' Updated',
+                      fParam
+                    );
+                });
+              });
+              resolve({ success: true, message: strings.string_response_updated,status: packageStatus['status']});
+            }
           });
-          resolve({ success: true, message: strings.string_response_updated });
         }
-      });
+      })
+     
 
       // client.incr(ID_PACKAGE_STATUS, (err, id) => {
       //   client.hmset(PREFIX_PACKAGE_STATUS + id, {
