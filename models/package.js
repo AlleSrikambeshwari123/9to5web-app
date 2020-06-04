@@ -7,6 +7,11 @@ const packageSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  price: {
+    type: Number,
+    default: 0,
+    required: true
+  },
   trackingNo: {
     type: String
   },
