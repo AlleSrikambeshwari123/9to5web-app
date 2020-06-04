@@ -56,7 +56,7 @@ exports.get_manifest_detail = (req, res, next) => {
     res.render('pages/warehouse/manifest/preview', {
       page: req.originalUrl,
       user: res.user,
-      title: 'Preview Manifest ' + manifest.title,
+      title: 'Preview Manifest ' + manifest['planeId'].tailNumber+manifest.title,
       plane: manifest['planeId'],
       manifest: manifest,
       packages: packages,
@@ -78,7 +78,6 @@ exports.ship_manifest = (req, res, next) => {
   // var user = res.user.username;
   const userId = req['userId'];
   services.manifestService.shipManifest(mid, userId).then((sResult) => {
-    // services.packageService.updateManifestPackageToInTransit(mid, userId);
     res.send(sResult);
   });
 }

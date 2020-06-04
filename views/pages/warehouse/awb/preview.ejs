@@ -87,7 +87,7 @@
               <div class="col-md-12">
                 <div class="invoice-detail">
                   <div class="invoice-top">
-                    <h3 class="title"><strong>Package Summary <span class="pull-right">Total Pieces <% awb.packages.length %></span></strong></h3>
+                    <h3 class="title"><strong>Package Summary </strong></h3>
                   </div>
                   <div class="invoice-item">
                     <div class="table-responsive">
@@ -118,7 +118,8 @@
                           </tr>
                           <% }) %>
                           <tr>
-                            <td></td>
+                            <td class="text-left"><strong>Total Pieces</strong></td>
+                            <td class="text-center"><%= awb.packages.length%></td>
                             <td></td>
                             <td></td>
                             <td class="text-center"><strong>Total Weight</strong></td>

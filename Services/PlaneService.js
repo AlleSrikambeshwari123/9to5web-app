@@ -18,11 +18,12 @@ let ObjectId = require('mongodb').ObjectID;
 class PlaneService {
   addPlane(plane) {
     return new Promise((resolve, reject) => {
-      let date = new Date()
-      plane.tailNumber = plane.tailNumber + ("0" + date.getDate(2)).slice(-2) +   ("0" + (date.getMonth() + 1)).slice(-2)+ (date.getFullYear().toString().substr(-2))+ "/"+ plane.time
+      // let date = new Date()
+      // plane.tailNumber = plane.tailNumber + ("0" + date.getDate(2)).slice(-2) +   ("0" + (date.getMonth() + 1)).slice(-2)+ (date.getFullYear().toString().substr(-2))+ "/"+ plane.time
       let newPlane = new Plane(plane);
       newPlane.save((err, result) => {
         if (err) {
+          console.log("ERROR", err)
           resolve({ success: false, message: strings.string_response_error });
         } else {
           resolve({ success: true, message: strings.string_response_created });
@@ -177,10 +178,10 @@ class PlaneService {
   //     })
   //   });
   // }
-  async getFlieghtName(trailNumber){
-    let now = new Date();
+  async getFlieghtName(){
+    let now = manifest.shipDate;
     let year = "" + now.getFullYear();
-        year = year.toString().substr(-2);
+    year = year.toString().substr(-2);
     let month = "" + (now.getMonth() + 1); if (month.length == 1) { month = "0" + month; }
     let day = "" + now.getDate(); if (day.length == 1) { day = "0" + day; }
     let hour = "" + now.getHours(); if (hour.length == 1) { hour = "0" + hour; }
@@ -192,7 +193,7 @@ class PlaneService {
     if(parseInt(hour)==12 && parseInt(minute)>0){
       h ="2A";
     }    
-    return month + day +  year + "-" + h ;    
+    return day+ month + year + "-" + h ;    
   }
 }
 

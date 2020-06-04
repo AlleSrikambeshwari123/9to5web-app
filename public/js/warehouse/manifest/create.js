@@ -6,6 +6,11 @@ $('#planeId').select2({
   width: '100%',
 });
 
+$('#time').select2({
+  theme: 'bootstrap',
+  placeholder: 'Select a time',
+})
+
 $('#airportFromId, #airportToId').select2({
   theme: 'bootstrap',
   placeholder: 'Select an airport',

@@ -33,8 +33,8 @@ exports.create_plane = async (req, res, next) => {
 }
 
 exports.add_new_plane = async (req, res, next) => {
-  const flightName = await services.planeService.getFlieghtName(req.body.tailNumber);
-  req.body.flightName = req.body.tailNumber+flightName;
+  // const flightName = await services.planeService.getFlieghtName(req.body.tailNumber);
+  req.body.flightName = req.body.tailNumber;
   services.planeService.addPlane(req.body).then(result => {
     res.send(result);
   })

@@ -12,7 +12,7 @@
             <tr>
               <th>Manifest ID#</th>
               <th>Status</th>
-              <th>Date Created</th>
+              <th>Created At</th>
               <th>Plane</th>
               <th></th>
             </tr>
@@ -20,7 +20,7 @@
           <tbody>
             <% manifests.forEach(function(manifest){ %>
             <tr data-record="<%= manifest.id %>">
-              <td><strong><%= manifest.plane &&  manifest.plane.tailNumber%></strong></td>
+              <td><strong><%= manifest.plane &&  manifest.plane.tailNumber%><%= manifest.title%></strong></td>
               <td>
                 <% if (manifest.stageId == 1 ) { %>
                 <span class="badge badge-secondary"><%=manifest.stage %></span>

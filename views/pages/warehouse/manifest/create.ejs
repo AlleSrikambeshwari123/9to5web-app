@@ -15,13 +15,19 @@
               <div class="form-group form-show-validation row">
                 <label for="planeId" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Select Plane</label>
                 <div class="col-lg-8 col-md-8 col-sm-8">
- 
                   <select id="planeId" name="planeId" class='form-control' required>
                     <option></option>
                     <% var test = JSON.stringify(planes); %>
                     <% planes.forEach(plane => { %>
                     <option value="<%=plane._id%>"><%=plane.tailNumber%></option>
                     <%})%>
+                  </select>
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-4">
+                  <select class="form-group" id="time" name="time" required>
+                    <option></option>
+                    <option value="1A">1A</option>
+                    <option value="2A">2A</option>
                   </select>
                 </div>
               </div>
@@ -31,7 +37,8 @@
                   <select id="airportFromId" name="airportFromId" class='form-control' required>
                     <option></option>
                     <% airports.forEach(airport => { %>
-                    <option value="<%=airport.id%>"><%=airport.name%> <% if (airport.shortCode) { %> (<%=airport.shortCode%>) <% } %></option>
+                    <option value="<%=airport.id%>"><%=airport.name%> <% if (airport.shortCode) { %>
+                      (<%=airport.shortCode%>) <% } %></option>
                     <%})%>
                   </select>
                 </div>
@@ -42,7 +49,8 @@
                   <select id="airportToId" name="airportToId" class='form-control' required>
                     <option></option>
                     <% airports.forEach(airport => { %>
-                    <option value="<%=airport.id%>"><%=airport.name%> <% if (airport.shortCode) { %> (<%=airport.shortCode%>) <% } %></option>
+                    <option value="<%=airport.id%>"><%=airport.name%> <% if (airport.shortCode) { %>
+                      (<%=airport.shortCode%>) <% } %></option>
                     <%})%>
                   </select>
                 </div>
