@@ -1052,7 +1052,7 @@ checkInStore(data, username) {
  
   async getPackageInfo() {
     try {
-      return await PackageStatus.find().populate({ path: "packageId", populate: { path: "awbId" } })
+      return await PackageStatus.find().populate({ path: "packageId", populate: { path: "awbId" } }).sort({_id:-1})
     } catch (error) {
       return []
     }
