@@ -1050,9 +1050,9 @@ checkInStore(data, username) {
   }
     
  
-  async getPackageInfo() {
+  async getPackageInfo(userId) {
     try {
-      return await PackageStatus.find().populate({ path: "packageId", populate: { path: "awbId" } }).sort({_id:-1})
+      return await PackageStatus.find({updatedBy:userId}).populate({ path: "packageId", populate: { path: "awbId" } }).sort({updatedAt:-1})
     } catch (error) {
       return []
     }
@@ -1061,7 +1061,7 @@ checkInStore(data, username) {
     return new Promise((resolve, reject) => {
       this.getPackageStatuses_updated(packageId).then((stats) => {
         if (stats.length == 0) resolve(PKG_STATUS[1]);
-        else resolve(stats[stats.length - 1]);
+        else resolve(stats[stats.length - 1]);  
       });
     });
   }

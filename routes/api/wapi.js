@@ -11,7 +11,6 @@ var packageUtil = new PackageUtil();
 router.post('/authenticate', (req, res, next) => {
   var body = req.body;
   var username = req.headers.username || body.username;
-  console.log(body);
   services.userService.authenticate(username, body.password).then(result => {
     res.send(result);
   })
@@ -97,7 +96,8 @@ router.get('/get-package-detail-barcode/:barcode', passport.authenticate('jwt', 
   }
 })
 router.get("/get-package-info",passport.authenticate('jwt', { session: false }), (req, res, next) => {
-  services.packageService.getPackageInfo().then((result) => {
+  let userId = req.headers.username
+  services.packageService.getPackageInfo(userId).then((result) => {
     res.send(result)
   })
 })
