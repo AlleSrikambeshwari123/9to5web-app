@@ -190,14 +190,7 @@ router.get('/get-manifests', (req, res, next) => {
     .catch(next);
 });
 
-router.post('/add-packages-to-manifests', passport.authenticate('jwt', { session: false }), (req, res, next) => {
-  let packageIds = req.body.packageIds;
-  let manifestId = req.body.manifestId;
-  var userId =  req.body.userId;
-  services.packageService.addPackagesToManifests(packageIds,manifestId, userId).then((result) => {
-    res.send(result)
-  })
-})
+
 
 router.get('/get-deliverys', (req, res, next) => {
 
@@ -329,6 +322,19 @@ router.post('/add-packages-to-compartment', passport.authenticate('jwt', { sessi
     res.send(result)
   })
 })
+
+//Loaded on AirCraft - [2]
+router.post('/add-packages-to-manifests', passport.authenticate('jwt', { session: false }), (req, res, next) => {
+  let packageIds = req.body.packageIds;
+  let manifestId = req.body.manifestId;
+  var userId =  req.body.userId;
+  const {valid,errors} = checkEmpty({packageIds:packageIds,manifestId :manifestId,userId:userId})
+  if(!valid) return res.send({success:false,message:errors})
+  services.packageService.addPackagesToManifests(packageIds,manifestId, userId).then((result) => {
+    res.send(result)
+  })
+})
+
 //In Transit - [3]
 router.post('/add-packages-to-delivery', passport.authenticate('jwt', { session: false }), (req, res, next) => {
   var deliveryId = req.body.deliveryId;

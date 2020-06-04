@@ -16,7 +16,8 @@ if (MONGO_HOST === 'localhost') {
 const MONGOOSE_OPTIONS = {
   useNewUrlParser: true,
   useCreateIndex: true,
-  useUnifiedTopology: true
+  useUnifiedTopology: true,
+  useFindAndModify:false
 };
 
 const connectMongo = (cb) => {
