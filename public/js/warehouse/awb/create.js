@@ -129,6 +129,12 @@ $(function () {
     placeholder: "Select a Barcode"
   })
 
+  $('#driver').select2({
+    theme: 'bootstrap',
+    width: '100%',
+    placeholder: "Select a Driver"
+  })
+
   var packageTable = $('#packageTable').DataTable({
     pageLength: 5,
     order: [],

@@ -21,7 +21,6 @@ exports.preview_awb = (req, res, next) => {
         return invoice;
       });
     }
-
     res.render('pages/warehouse/awb/preview', {
       page: req.originalUrl,
       title: "AWB #" + awb.awbId,
@@ -50,6 +49,7 @@ exports.get_awb_detail = (req, res, next) => {
     services.awbService.getPurchaseOrder(id),
     services.packageService.getProcessOriginBarcode(res.user),
     services.packageService.getAllOriginBarcode(),
+    services.driverService.getDrivers()
   ]).then(([
     customers,
     hazmats,
@@ -64,9 +64,9 @@ exports.get_awb_detail = (req, res, next) => {
     purchaseOrder,
     processBarcode,
     barcodes,
+    drivers
   ]) => {
     awb['customer'] = awb['customerId'];
-
     res.render('pages/warehouse/awb/edit', {
       page: req.originalUrl,
       title: 'AWB Details',
@@ -85,6 +85,7 @@ exports.get_awb_detail = (req, res, next) => {
       purchaseOrder,
       processBarcode,
       barcodes,
+      drivers
     });
   })
 };
@@ -100,7 +101,8 @@ exports.create_awb = (req, res, next) => {
     services.paidTypeService.getAllPaidTypes(),
     services.packageService.getAllOriginBarcode(),
     services.packageService.getProcessOriginBarcode(res.user),
-    services.locationService.getCompanies()
+    services.locationService.getCompanies(),
+    services.driverService.getDrivers()
   ]).then(([
     customers,
     hazmats,
@@ -111,7 +113,8 @@ exports.create_awb = (req, res, next) => {
     paidTypes,
     barcodes,
     processBarcode,
-    companies
+    companies,
+    drivers
   ]) => {
     res.render('pages/warehouse/awb/create', {
       page: req.originalUrl,
@@ -127,7 +130,8 @@ exports.create_awb = (req, res, next) => {
       paidTypes,
       barcodes,
       processBarcode,
-      companies
+      companies,
+      drivers
     });
   })
 };

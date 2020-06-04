@@ -150,6 +150,7 @@ class AwbService {
         .populate('packages')
         .populate('purchaseOrders')
         .populate('invoices')
+        .populate('driver')
         .exec((err, result) => {
           resolve(result);
         });
@@ -166,6 +167,7 @@ class AwbService {
         .populate('packages')
         .populate('purchaseOrders')
         .populate('invoices')
+        .populate('driver')
         .exec((err, result) => {
           if (result.customerId) {
             result.customer = result.customerId;

@@ -20,6 +20,10 @@ const awbSchema = new mongoose.Schema({
     ref: 'Shipper',
     required: true
   },
+  driver:{
+    type:mongoose.Schema.Types.ObjectId,
+    ref:'Driver'
+  },
   carrier: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Carrier',

@@ -106,6 +106,12 @@ $(function () {
     width: '100%',
     placeholder: "Select a package calculation"
   })
+  
+  $('#driver').select2({
+    theme: 'bootstrap',
+    width: '100%',
+    placeholder: "Select a Driver"
+  })
 
   $('form[name="add-purchase-order-item-form"] select').select2({
     theme: 'bootstrap',

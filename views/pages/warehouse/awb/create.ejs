@@ -92,6 +92,17 @@
                 </div>
               </div>
               <div class="form-group form-show-validation row">
+                <label for="driver" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Driver</label>
+                <div class="col-lg-8 col-md-8 col-sm-8">
+                  <select id="driver" name="driver" class='form-control' style='width:90%;'>
+                    <option></option>
+                    <% drivers.forEach(driver => { %>
+                    <option value="<%=driver.id%>"><%=driver.firstName %> <%driver.lastName%></option>
+                    <%})%>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group form-show-validation row">
                 <label for="awbNotes" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Notes</label>
                 <div class="col-lg-8 col-md-8 col-sm-8">
                   <textarea type='text' class='form-control' id='note' name='note'></textarea>

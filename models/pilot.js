@@ -24,7 +24,6 @@ const pilotSchema = new mongoose.Schema({
   },
   warehouse: {
     type : String,
-    required: true
   },
 }, {
   timestamps: true

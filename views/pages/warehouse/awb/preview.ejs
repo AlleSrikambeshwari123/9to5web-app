@@ -87,30 +87,32 @@
               <div class="col-md-12">
                 <div class="invoice-detail">
                   <div class="invoice-top">
-                    <h3 class="title"><strong>Package Summary</strong></h3>
+                    <h3 class="title"><strong>Package Summary <span class="pull-right">Total Pieces <% awb.packages.length %></span></strong></h3>
                   </div>
                   <div class="invoice-item">
                     <div class="table-responsive">
                       <table class="table table-striped">
                         <thead>
                           <tr>
+                            <td><strong>S.No</strong></td>
                             <td><strong>Tracking No</strong></td>
                             <td class="text-center"><strong>Description</strong></td>
                             <td class="text-center"><strong>Type</strong></td>
-                            <td class="text-center"><strong>Dimension</strong></td>
+                            <td class="text-center"><strong>Price</strong></td>
                             <td class="text-right"><strong>Weight</strong></td>
                           </tr>
                         </thead>
                         <tbody>
                           <% var totalWeight = 0;
-                          awb.packages.forEach(package => {
+                          awb.packages.forEach((package,pick) => {
                             totalWeight += Number(package.weight);
                           %>
                           <tr>
+                            <td>Piece#<%= pick + 1%></td>
                             <td><%= package.trackingNo%></td>
                             <td class="text-center"><%= package.description%></td>
                             <td class="text-center"><%= package.packageType%></td>
-                            <td class="text-center"><%= package.dimensions%></td>
+                            <td class="text-center"><%= package.price%></td>
                             <td class="text-right"><%= Number(package.weight).toFixed(2)%>
                               <%= package.packageCalculation||'kg' %></td>
                           </tr>
