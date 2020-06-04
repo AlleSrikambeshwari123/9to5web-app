@@ -5,6 +5,7 @@ require('./authHelper')
 const strings = require('../../Res/strings');
 var services = require('../../Services/RedisDataServices');
 var moment = require('moment');
+var mongoose = require('mongoose');
 
 router.post('/create-cube', passport.authenticate('jwt', { session: false }), async(req, res, next) => {
     
@@ -43,20 +44,24 @@ router.post('/update-cube/:id', async(req, res, next) => {
   }
 });
 
-router.post('/assign-packages/:id',/*passport.authenticate('jwt', { session: false }),*/ async (req,res,next)=>{
+router.post('/assign-packages/:id',passport.authenticate('jwt', { session: false }), async (req,res,next)=>{
     try{
       const cubeData = await services.cubeService.getCubeDetail(req.params.id);
       if(!cubeData){
         return res.send({ success: false, message: strings.string_response_error });
       }
-      let package = [];      
-      const trackingNumber = req.body.trackingNumber;
-      const packageIds = await services.cubeService.getPackageIds(trackingNumber);
-            package = package.concat(packageIds); 
+            
+      //const trackingNumber = req.body.trackingNumber;
+      //const packageIds = await services.cubeService.getPackageIds(trackingNumber);
+      const packageIds = req.body.packageIds?req.body.packageIds:'';
+      const package = packageIds.split(',');
+      const pid = [];
       for(let i=0;i<package.length;i++){
-        await services.packageService.updatePackageStatus(package[0],8,req.body.userId)
+        pid.push(mongoose.Types.ObjectId(package[i]));
+        await services.packageService.updatePackageStatus(package[i],8,req.body.userId);        
       }
-      if(!package && package.length==0){
+
+      if(!package && package.length==0){        
         return res.send({ success: false, message: strings.string_response_error });
       }   
       const packageDetail = await services.cubeService.packageDetail(package[0]);
@@ -69,7 +74,7 @@ router.post('/assign-packages/:id',/*passport.authenticate('jwt', { session: fal
         updateDetail.cubepackageId = cubepackageId;
       }
       services.cubeService.assignPackage(req.params.id, updateDetail).then(async result => {
-        await services.cubeService.updatePackageCubeId(packageIds, req.params.id);
+        await services.cubeService.updatePackageCubeId(pid, req.params.id);
         return res.send(result);
       })
     }catch(err){
