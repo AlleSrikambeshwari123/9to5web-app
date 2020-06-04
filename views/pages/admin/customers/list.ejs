@@ -23,7 +23,7 @@
             <tbody>
               <% customers.forEach(function(customer){%>
               <tr data-record="<%= customer.id %>">
-                <td><%=customer.company.name%></td>
+                <td><%=customer.company%></td>
                 <td scope="row"><%=customer.pmb%></td>
                 <td><%=helpers.getFullName(customer)%></td>
                 <td><%=customer.email%></td>

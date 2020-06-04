@@ -12,12 +12,7 @@
               <div class="form-group form-show-validation row">
                 <label for="company" class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">Company </label>
                 <div class="col-lg-8 col-md-8 col-sm-8">
-                  <select id="company" name="company" class="form-control" required>
-                    <% companies.forEach(company => { %>
-                      <option value="<%= company._id%>"> <%= company.name %>
-                      </option>
-                      <% }) %>
-                  </select>
+                  <input type="text" class="form-control" id="company" name="company" placeholder="Company Name">
                 </div>
               </div>
               <div class="form-group form-show-validation row">

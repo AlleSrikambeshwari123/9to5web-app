@@ -5,9 +5,7 @@ const bcrypt = require('bcrypt');
 
 const customerSchema = new mongoose.Schema({
   company: { 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'Company', 
-    required: true 
+    type: String, 
   },
   pmb: {
     type: Number,
