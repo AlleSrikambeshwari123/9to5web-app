@@ -1,4 +1,4 @@
-$('.rm-shipper').click(function () {
+$("#shipperTable").on("click", ".rm-shipper", function() { 
   var id = $(this).data('id');
   swal({
     title: "Are you sure?",

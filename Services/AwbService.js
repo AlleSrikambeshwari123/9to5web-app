@@ -32,6 +32,11 @@ class AwbService {
       if (awb.hasOwnProperty && awb.hasOwnProperty('hazmat') && !awb['hazmat']) {
         delete awb.hazmat;
       }
+
+      if (awb.driver === '') {
+        delete awb.driver;
+      }
+
       const newAwb = new Awb(awb);
       newAwb.save((err, result) => {
         if (err) {
@@ -130,13 +135,14 @@ class AwbService {
 
   getAwb(id) {
     return new Promise((resolve, reject) => {
-      Awb.findOne({ _id: id }, (err, result) => {
+      Awb.findOne({ _id: id })
+      .exec((err, result) => {
         if (err) {
           resolve({});
         } else {
           resolve(result);
         }
-      }).populate(['customerId', 'invoices']);
+      });
     });
   }
 

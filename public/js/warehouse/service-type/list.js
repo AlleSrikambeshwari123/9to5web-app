@@ -1,4 +1,4 @@
-$('.rm-service-type').click(function () {
+$("#service-typeTable").on("click", ".rm-service-type", function() {    
   var id = $(this).data('id');
   swal({
     title: "Are you sure?",

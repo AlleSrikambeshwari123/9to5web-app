@@ -463,15 +463,15 @@ checkInStore(data, username) {
           if (statuses.length > 0) {
             let packageStatus = statuses[statuses.length - 1];
             
-            if (pkg.awbId.invoices.length == 0) {
+            if (pkg.awbId && pkg.awbId.invoices && pkg.awbId.invoices.length == 0) {
               noDocs.push({ _id: pkg.id, last_status: packageStatus.status, awb: "AWB" + pkg.awbId.awbId, customer_email: pkg.customerId.email })
             }
 
-            if (pkg.customerId.pmb == "9000") {
+            if (pkg.customerId && pkg.customerId.pmb == "9000") {
               nineToPackages.push({ _id: pkg.id, last_status: packageStatus.status, awb: "AWB" + pkg.awbId.awbId, customer_email: pkg.customerId.email })
             }
 
-            if (pkg.customerId.pmb != "9000") {
+            if (pkg.customerId && pkg.customerId.pmb != "9000") {
               postBox.push({ _id: pkg.id, last_status: packageStatus.status, awb: "AWB" + pkg.awbId.awbId, customer_email: pkg.customerId.email })
             }
           }
@@ -501,14 +501,14 @@ checkInStore(data, username) {
           let statuses = await PackageStatus.find({ packageId: pkg._id }) || [];
           let packageStatus = statuses[statuses.length - 1];
 
-          if (pkg.awbId.invoices.length == 0 && query.filter_for === "noDocs" && (query.package_status === packageStatus.status || query.package_status === "all")) {
+          if (pkg.awbId.invoices && pkg.awbId.invoices.length == 0 && query.filter_for === "noDocs" && (query.package_status === packageStatus.status || query.package_status === "all")) {
             noDocs.push({ _id: pkg.id, last_status: packageStatus.status, awb: pkg.awbId.awbId, customer_email: pkg.customerId.email })
           }
-          if (pkg.customerId.pmb == 9000 && query.filter_for === "9to5" && (query.package_status === packageStatus.status || query.package_status === "all")) {
+          if (pkg.customerId && pkg.customerId.pmb == 9000 && query.filter_for === "9to5" && (query.package_status === packageStatus.status || query.package_status === "all")) {
             nineToPackages.push({ _id: pkg.id, last_status: packageStatus.status, awb: pkg.awbId.awbId, customer_email: pkg.customerId.email })
           }
 
-          if (pkg.customerId.pmb != 9000 && query.filter_for === "postBox" && (query.package_status === packageStatus.status || query.package_status === "all")) {
+          if (pkg.customerId && pkg.customerId.pmb != 9000 && query.filter_for === "postBox" && (query.package_status === packageStatus.status || query.package_status === "all")) {
             postBox.push({ _id: pkg.id, last_status: packageStatus.status, awb: pkg.awbId.awbId, customer_email: pkg.customerId.email })
           }
         }))
@@ -1033,15 +1033,13 @@ checkInStore(data, username) {
               resolve({ success: false, message: strings.string_response_error });
             } else {
               this.getPackage_updated(packageId,packageStatus['status']).then((pkg) => {
-                this.services.awbService.getAwb(pkg.awbId).then((awb) => {
-                  let fParam = {trackingNo:pkg.trackingNo,screenName:'PACKAGE_DETAIL'}
-                    firebase.sendNotification(
-                      awb.customerId,
-                      'Package Status Updated',
-                      'Package-' + pkg.trackingNo + ' Updated',
-                      fParam
-                    );
-                });
+                let fParam = {trackingNo:pkg.trackingNo, screenName:'PACKAGE_DETAIL'}
+                firebase.sendNotification(
+                  pkg && pkg.customerId,
+                  'Package Status Updated',
+                  'Package-' + pkg.trackingNo + ' Updated',
+                  fParam
+                );
               });
               resolve({ success: true, message: strings.string_response_updated,status: packageStatus['status']});
             }

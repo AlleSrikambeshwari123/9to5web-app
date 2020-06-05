@@ -1,8 +1,13 @@
-$('.btn-rm-awb').click(function () {
+$("#no-docs-table").on("click", ".btn-rm-awb", function(){
   let id = $(this).data('id');
   $('#confirm-delete-awb').find('#rm-awb').attr('data-id', id);
-})
-
+});
+    
+$("#awb-table").on("click", ".btn-rm-awb", function(){
+  let id = $(this).data('id');
+  $('#confirm-delete-awb').find('#rm-awb').attr('data-id', id);
+});
+        
 $('#confirm-delete-awb').find('#rm-awb').click(function () {
   $('#confirm-delete-awb').find('.close').trigger('click');
   let id = $(this).data('id');

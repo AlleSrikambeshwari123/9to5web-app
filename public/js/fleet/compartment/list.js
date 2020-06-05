@@ -5,7 +5,7 @@ $(function () {
     clearForm()
   })
 
-  $(".rm-compartment").click(function () {
+  $(".compartment-table").on("click", ".rm-compartment", function() {  
     var id = $(this).data('id');
     //confirm 
     swal({

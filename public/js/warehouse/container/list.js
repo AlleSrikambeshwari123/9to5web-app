@@ -1,4 +1,4 @@
-$('.rm-container').click(function() {
+$("#containerTable").on("click", ".rm-container", function() {
   var id = $(this).data('id');
   swal({
     title: 'Are you sure?',

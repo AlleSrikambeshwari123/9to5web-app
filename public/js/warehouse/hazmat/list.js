@@ -55,7 +55,7 @@ $('#edit-hazmat-form').submit(function (event) {
   })
 })
 
-$('.rm-hazmat').click(function () {
+$("#hazmatTable").on("click", ".rm-hazmat", function() {
   var id = $(this).data('id');
   swal({
     title: "Are you sure?",
@@ -83,5 +83,5 @@ $('.rm-hazmat').click(function () {
 });
 
 $('#hazmatTable').DataTable({
-  pageLength: 10,
+  pageLength: 3,
 });

@@ -144,6 +144,10 @@ $(function () {
     ordering: false,
     bLengthChange: false,
     bFilter: false,
+    "columnDefs": [{
+      "defaultContent": "-",
+      "targets": "_all"
+    }]
   })
 
   var sedAnswered = 0;
@@ -518,12 +522,12 @@ $(function () {
         }
       })
     })
-
-    $('.btn-rm-pkg').click(function () {
+   
+    $("#packageTable").on("click", ".btn-rm-pkg", function(){
       var id = $(this).data('id');
-      console.log('id ccc', id);
       $("#rmPackage").attr('data-id', id);
-    })
+    });
+
     $("#rmPackage").click(function () {
       var id = $(this).attr('data-id');
       awbPackages = awbPackages.filter((package) => {

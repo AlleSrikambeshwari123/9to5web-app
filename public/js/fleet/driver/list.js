@@ -1,4 +1,4 @@
-$('.rm-user').click(function () {
+$(".driver-table").on("click", ".rm-user", function() {  
   var id = $(this).data('id');
   swal({
     title: "Are you sure?",

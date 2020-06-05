@@ -1,4 +1,4 @@
-$('.rm-airport').click(function() {
+$("#airportTable").on("click", ".rm-airport", function() { 
   var id = $(this).data('id');
   swal({
     title: 'Are you sure?',

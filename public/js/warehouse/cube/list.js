@@ -55,7 +55,7 @@ $('#add-cube-form').submit(function (event) {
     })
   })
   
-  $('.rm-cube').click(function () {
+  $("#cubeTable").on("click", ".rm-cube", function() {
     var id = $(this).data('id');
     swal({
       title: "Are you sure?",

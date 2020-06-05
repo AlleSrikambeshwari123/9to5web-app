@@ -143,7 +143,9 @@ $(function () {
     bFilter: false,
     columnDefs: [{
       orderable: false,
-      targets: [0, 1, 2, 3]
+      targets: [0, 1, 2, 3],
+      "defaultContent": "-",
+      "targets": "_all"
     }]
   })
 
@@ -685,10 +687,11 @@ $(function () {
       })
     })
 
-    $('.btn-rm-pkg').click(function () {
+    $("#packageTable").on("click", ".btn-rm-pkg", function(){
       var id = $(this).data('id');
       $("#rmPackage").attr('data-id', id);
-    })
+    });
+
     $("#rmPackage").click(function () {
       var id = $(this).data('id');
       awbPackages = awbPackages.filter(package => package.id != id);

@@ -1,4 +1,4 @@
-$('.rm-paid-type').click(function () {
+$("#paid-typeTable").on("click", ".rm-paid-type", function() { 
   var id = $(this).data('id');
   swal({
     title: "Are you sure?",

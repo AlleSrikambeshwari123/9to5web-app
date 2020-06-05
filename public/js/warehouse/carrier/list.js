@@ -1,4 +1,4 @@
-$('.rm-carrier').click(function () {
+$("#carrierTable").on("click", ".rm-carrier", function() {
   var id = $(this).data('id');
   swal({
     title: "Are you sure?",

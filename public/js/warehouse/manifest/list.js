@@ -1,5 +1,4 @@
-
-$('.btn-rm-manifest').click(function () {
+$(".manifest-table").on("click", ".btn-rm-manifest", function() {  
   let id = $(this).data('id');
   $('#confirm-delete-manifest').find('#btn-rm').attr('data-id', id);
 })
