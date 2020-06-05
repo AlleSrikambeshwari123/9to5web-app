@@ -1,15 +1,7 @@
+
 const strings = require('../Res/strings');
-
-// const PREFIX = strings.redis_prefix_airport;
-// const AIRPORT_ID_KEY = strings.redis_id_airport;
-
 const Airport = require('../models/airport');
 
-/**
- * name: String
- * shortCode: String
- * country: String
- */
 class AirportService {
   
   create(airport) {
@@ -23,6 +15,7 @@ class AirportService {
       let newAirport = new Airport(airport);
       newAirport.save((err, result) => {
         if (err) {
+          console.log("<==== Error While Adding new Airport ====> ", err);
           resolve({ success: false, message: strings.string_response_error});
         } else {
           resolve({ 
@@ -38,6 +31,7 @@ class AirportService {
     return new Promise(async(resolve, reject) => {
       Airport.findOneAndUpdate({_id: id}, body, (err, result) => {
         if (err) {
+          console.log("<==== Error While updating Airport ====> ", err);
           resolve({ success: false, message: strings.string_response_error});
         } else {
           resolve({ success: true, message:  strings.string_response_updated});
@@ -49,6 +43,7 @@ class AirportService {
     return new Promise((resolve, reject) => {
       Airport.deleteOne({_id: id}, (err, result) => {
         if (err) {
+          console.log("<==== Error While removing Airport ====> ", err);
           resolve({ success: false, message: strings.string_response_error });
         } else {
           resolve({ success: true, message: strings.string_response_removed });
@@ -77,6 +72,7 @@ class AirportService {
     return new Promise(async(resolve, reject) => {
       Airport.deleteMany({}, (err, result) => {
         if (err) {
+          console.log("<==== Error While removing all Airports ====> ", err);
           resolve([]);
         } else {
           resolve(result);
@@ -85,5 +81,10 @@ class AirportService {
     });
   }
 }
+
+//========== DB Structure ==========//
+// name: String
+// shortCode: String
+// country: String
 
 module.exports = AirportService;

@@ -50,8 +50,8 @@ exports.update_pilot = (req, res, next) => {
 }
 
 exports.get_warehouse_pilots = (req, res, next) => {
-  var warehouse = req.params.warehouse;
-  services.pilotService.getPilotsWarehouse(warehouse).then(pilots => {
+  //var warehouse = req.params.warehouse;
+  services.pilotService.getPilots().then(pilots => {
     res.send(pilots);
   })
 }

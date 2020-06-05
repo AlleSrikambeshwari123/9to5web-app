@@ -40,6 +40,7 @@ class AwbService {
       const newAwb = new Awb(awb);
       newAwb.save((err, result) => {
         if (err) {
+          console.log("<==== Error While Creating Awb ====> ", err);
           resolve({ success: false, message: strings.string_response_error });
         } else {
           this.updateAwbStatus(result, 1, awb['createdBy']);
@@ -61,7 +62,7 @@ class AwbService {
       const newAwbStatus = new AwbStatus(awbstatus);
       newAwbStatus.save((err, result) => {
         if (err) {
-          console.log("UpdateAWBstatus", err);
+          console.log("<==== Error While Updating status of Awb ====> ", err);
           resolve([]);
         } else {
           resolve(result);
