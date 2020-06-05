@@ -98,7 +98,7 @@
                             <td><strong>Tracking No</strong></td>
                             <td class="text-center"><strong>Description</strong></td>
                             <td class="text-center"><strong>Type</strong></td>
-                            <td class="text-center"><strong>Price</strong></td>
+                            <!-- <td class="text-center"><strong>Price</strong></td> -->
                             <td class="text-right"><strong>Weight</strong></td>
                           </tr>
                         </thead>
@@ -112,7 +112,7 @@
                             <td><%= package.trackingNo%></td>
                             <td class="text-center"><%= package.description%></td>
                             <td class="text-center"><%= package.packageType%></td>
-                            <td class="text-center"><%= package.price%></td>
+                            <!-- <td class="text-center"><%= package.price%></td> -->
                             <td class="text-right"><%= Number(package.weight).toFixed(2)%>
                               <%= package.packageCalculation||'kg' %></td>
                           </tr>
@@ -120,7 +120,6 @@
                           <tr>
                             <td class="text-left"><strong>Total Pieces</strong></td>
                             <td class="text-center"><%= awb.packages.length%></td>
-                            <td></td>
                             <td></td>
                             <td class="text-center"><strong>Total Weight</strong></td>
                             <td class="text-right"><%= totalWeight.toFixed(2)%> lbs</td>
