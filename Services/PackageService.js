@@ -153,6 +153,7 @@ async addPackageToShipment(packages, username) {
       await Promise.all(packages.map(async packageId=>{
         // check packageId Exists
         if(await Package.findById(packageId)){
+          this.updatePackage(packageId, {manifestId: manifestId});
           await this.updatePackageStatus(packageId, 2, userId);
         }else{
           error.push(`Package ${packageId} doesn't Exist`)
@@ -895,7 +896,7 @@ checkInStore(data, username) {
   getPackageOnManifest(manifestId) {
     return new Promise((resolve, reject) => {
       Package.find({ manifestId: manifestId })
-        .populate(['packages','awbId', 'compartmentId', 'shipperId', 'carrierId', 'customerId', 'hazmatId'])
+        .populate(['awbId', 'compartmentId', 'shipperId', 'carrierId', 'customerId', 'hazmatId'])
         .exec((err, packages) => {
           if (err) {
             resolve([]);
