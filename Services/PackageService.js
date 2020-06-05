@@ -895,7 +895,7 @@ checkInStore(data, username) {
   getPackageOnManifest(manifestId) {
     return new Promise((resolve, reject) => {
       Package.find({ manifestId: manifestId })
-        .populate(['awbId', 'compartmentId', 'shipperId', 'carrierId', 'customerId', 'hazmatId'])
+        .populate(['packages','awbId', 'compartmentId', 'shipperId', 'carrierId', 'customerId', 'hazmatId'])
         .exec((err, packages) => {
           if (err) {
             resolve([]);
