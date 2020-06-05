@@ -43,7 +43,8 @@
               </td>
               <td>
                 <a href='manage/<%=user.username%>/get'><i class="fas fa-user-edit"></i></a>
-                <a href='#' class='rm-user' data-id='<%=user.username%>'><i class="fas fa-trash"></i></a>
+                <!-- temporary commenting the code -->
+                <!-- <a href='#' class='rm-user' data-id='<%=user.username%>'><i class="fas fa-trash"></i></a> -->
                 <% if (!user.enabled){ %>
                 <a href='#' class='enableUser' data-id='<%=user.username%>' data-value='true'> <span
                     class='badge badge-info float-right'>Enable</span></a>
