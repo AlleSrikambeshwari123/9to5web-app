@@ -124,7 +124,7 @@ class CustomerService {
   getCustomers() {
     return new Promise((resolve, reject) => {
       Customer.find({})
-      .populate('location', 'name')
+      .populate('company','location', 'name')
       .exec((err, customers) => {
         if (err) {
           resolve([]);
@@ -137,7 +137,7 @@ class CustomerService {
   getCustomer(fieldData) {
     return new Promise((resolve, reject) => {
       Customer.findOne(fieldData)
-      .populate('location', 'name')
+      .populate('company','location', 'name')
       .exec((err, result) => {
         if (err || !result) {
           resolve({});
