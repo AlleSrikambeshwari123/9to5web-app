@@ -500,12 +500,8 @@ checkInStore(data, username) {
         let result = await Promise.all(packages.map(async (pkg) => {
           let statuses = await PackageStatus.find({ packageId: pkg._id }) || [];
           let packageStatus = statuses[statuses.length - 1];
-<<<<<<< 05b3badf2b00db89b2bc438dfd882f26814864ba
 
-          if (pkg.awbId.invoices && pkg.awbId.invoices.length == 0 && query.filter_for === "noDocs" && (query.package_status === packageStatus.status || query.package_status === "all")) {
-=======
           if (pkg.awbId.invoices.length == 0 && query.filter_for === "noDocs" && (query.package_status === packageStatus.status || query.package_status === "all")) {
->>>>>>> minor-issues fixed
             noDocs.push({ _id: pkg.id, last_status: packageStatus.status, awb: pkg.awbId.awbId, customer_email: pkg.customerId.email })
           }
           if (pkg.customerId && pkg.customerId.pmb == 9000 && query.filter_for === "9to5" && (query.package_status === packageStatus.status || query.package_status === "all")) {
