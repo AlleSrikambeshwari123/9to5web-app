@@ -119,6 +119,7 @@ async addPackageToShipment(packages, username) {
       await Promise.all(packages.map(async packageId=>{
         // check packageId Exists
         if(await Package.findById(packageId)){
+          this.updatePackage(packageId, {compartmentId: compartmentId});
           await this.updatePackageStatus(packageId, 2, userId);
         }else{
           error.push(`Package ${packageId} doesn't Exist`)
