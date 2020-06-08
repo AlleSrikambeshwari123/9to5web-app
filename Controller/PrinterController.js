@@ -137,8 +137,8 @@ exports.downloadAirCargoManifest = async (req, res, next) => {
 
     let airCargoManifest = new AirCargoManifest({
       owner: 'Nine To Five Import Export LLC',
-      marksOfNationalityAndRegistration: 'United States - N296TA',
-      flightNumber: manifest.planeId.tailNumber,
+      marksOfNationalityAndRegistration: 'United States - '+manifest.planeId.tailNumber,
+      flightNumber: manifest.planeId.tailNumber+manifest.title,
       date: manifest.shipDate,
       portOfLading: String(airportFrom && airportFrom.name),
       portOfOnlading: String(airportTo && airportTo.name),
