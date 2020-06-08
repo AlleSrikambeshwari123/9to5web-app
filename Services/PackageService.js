@@ -715,7 +715,7 @@ checkInStore(data, username) {
           resolve({ success: false, message: strings.string_response_error });
         } else {
           this.removeProcessPackage(newPackage.originBarcode, newPackage.createdBy)
-          this.updatePackageStatus(result['_id'], 0, newPackage.createdBy)
+          this.updatePackageStatus(result['_id'], 1, newPackage.createdBy)
           resolve({ success: true });
         }
       });
