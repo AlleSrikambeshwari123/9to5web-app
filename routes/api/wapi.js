@@ -289,16 +289,6 @@ router.get('/get-zones', passport.authenticate('jwt', { session: false }), (req,
 
 
 
-//========== Process Package =============//
-  router.post('/process-package', passport.authenticate('jwt', { session: false }),(req, res, next) => {
-    var barcode = req.body.barcode;
-    var userId = req.headers.userId || req.body.userId;
-    services.packageService.processPackage(barcode, userId).then(result => {
-      res.send(result)
-    })
-  })
-
-
 /* All Package Scans */
 //Received in FLL [1]
 router.post('/accept-package', passport.authenticate('jwt', { session: false }), (req, res, next) => {
@@ -374,6 +364,17 @@ router.post('/add-packages-to-nodoc',passport.authenticate('jwt', { session: fal
   const {valid,errors} = checkEmpty({packageIds:req.body.packageIds,awbId:req.body.awbId,zoneId:req.body.zoneId,userId:req.body.userId})
   if(!valid) return res.send({success:false,message:errors})
   services.packageService.addAwbsPkgNoDocs(req.body).then((result)=>{
+    res.send(result)
+  })
+})
+
+//========== Process Package =============//
+router.post('/process-package', passport.authenticate('jwt', { session: false }),(req, res, next) => {
+  var barcode = req.body.barcode;
+  var userId = req.headers.userId || req.body.userId;
+  const {valid,errors} = checkEmpty({barcode:barcode,userId:userId})
+  if(!valid) return res.send({success:false,message:errors})
+  services.packageService.processPackage(barcode, userId).then(result => {
     res.send(result)
   })
 })
