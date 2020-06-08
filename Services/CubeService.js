@@ -11,14 +11,23 @@ var uniqId = require('uniqid');
 
 const Cube = require('../models/cube');
 const Package = require('../models/package');
+const Awb = require('../models/awb');
 
 class CubeService {  
   getCubes() {
     return new Promise((resolve, reject) => {
-      Cube.find({}, (err, result) => {
+      Cube.find({}).populate('userId').populate('cubepackageId').exec(async (err, result) => {
         if (err) {
           resolve([]);
         } else {
+          for(let i=0;i<result.length;i++){
+            var cube = result[i];
+            const awbId = (cube.cubepackageId && cube.cubepackageId.awbId)?cube.cubepackageId.awbId:null;
+            const awbData = await Awb.findOne({_id:awbId});
+            
+            result[i]['awbId'] = awbData.awbId?awbData.awbId:'';
+          }
+          //console.log(result)
           resolve(result);
         }
       })
@@ -230,10 +239,22 @@ class CubeService {
     let month = "" + (now.getMonth() + 1); if (month.length == 1) { month = "0" + month; }
     let day = "" + now.getDate(); if (day.length == 1) { day = "0" + day; }
     let hour = "" + now.getHours(); if (hour.length == 1) { hour = "0" + hour; }
-    let minute = "" + now.getMinutes(); if (minute.length == 1) { minute = "0" + minute; }
-       
+    let minute = "" + now.getMinutes(); if (minute.length == 1) { minute = "0" + minute; }       
     return name+month + day +  year + "-" + type ;    
   }
+  //used by detail page of admin
+  async CubeDtail(id){
+    return new Promise((resolve, reject) => {   
+      Cube.findOne({_id:id}).populate('userId').populate('cubepackageId').exec(async (err, cube) => {        
+        const awbId = (cube.cubepackageId && cube.cubepackageId.awbId)?cube.cubepackageId.awbId:null;
+        const awbData = await Awb.findOne({_id:awbId});
+        cube = JSON.parse(JSON.stringify(cube));
+        cube.awbId = (awbData && awbData.awbId)?awbData.awbId:'';
+        resolve(cube); 
+      })  
+    })
+  }
+
 }
 
 module.exports = CubeService;

@@ -2,13 +2,27 @@ var services = require('../Services/RedisDataServices');
 var utils = require('../Util/utils');
 
 exports.get_cube_list = (req, res, next) => {
-  services.cubeService.getCubes().then(cubes => {
+  services.cubeService.getCubes().then(cubes => {    
     res.render('pages/warehouse/cube/list', {
       page: req.originalUrl,
       title: 'Cube',
       user: res.user,
-      cubes: cubes
+      cubes: cubes.map(utils.formattedRecord)
     })
+  })
+}
+
+exports.cube_detail = (req, res, next) => {
+  services.cubeService.CubeDtail(req.params.id).then(cube => {  
+    services.packageService.getPackageCube(cube.packages).then(pkgdetail => {  
+     cube.pkgdetail = pkgdetail;
+    res.render('pages/warehouse/cube/detail', {
+      page: req.originalUrl,
+      title: 'Cube Detail',
+      user: res.user,
+      cube: cube
+    })
+   })
   })
 }
 
