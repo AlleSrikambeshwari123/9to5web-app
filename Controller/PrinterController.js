@@ -131,7 +131,9 @@ exports.downloadAirCargoManifest = async (req, res, next) => {
         name: String(pkg.shipperId && pkg.shipperId.name),
         address: String(pkg.shipperId && pkg.shipperId.address),
       };
+
       item.hazmat = (pkg.hazmatId && pkg.hazmatId.description) || " ";
+      item.natureOfGoods = (pkg.description && pkg.description)
       return acc;
     }, {});
 
@@ -273,11 +275,12 @@ exports.downloadUSCustoms = async (req, res, next) => {
         if (awb.isSed) natureOfGoods.isSed += 1;
         if (awb.hazmat) natureOfGoods.hazmat += 1;
       }
-
+      console.log('awb',awb)
       let declaredValueForCustoms = 0;
       awb.invoices.forEach(invoice => {
         declaredValueForCustoms += parseInt(invoice.value);
       });
+
       return {
         declaredValueForCustoms,
         declaredValueForCharge: 'NVD',
