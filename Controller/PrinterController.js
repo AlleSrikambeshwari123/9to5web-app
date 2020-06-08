@@ -275,7 +275,6 @@ exports.downloadUSCustoms = async (req, res, next) => {
         if (awb.isSed) natureOfGoods.isSed += 1;
         if (awb.hazmat) natureOfGoods.hazmat += 1;
       }
-      console.log('awb',awb)
       let declaredValueForCustoms = 0;
       awb.invoices.forEach(invoice => {
         declaredValueForCustoms += parseInt(invoice.value);

@@ -234,9 +234,13 @@ class AwbService {
 
   getFullAwb(id) {
     return new Promise((resolve, reject) => {
-      Promise.all([this.getAwb(id), this.services.packageService.getPackages(id)]).then((results) => {
+      Promise.all([
+        this.getAwb(id), 
+        this.services.packageService.getPackages(id),
+        this.services.invoiceService.getInvoicesByAWB(id)]).then((results) => {
         let awb = results[0];
         let packages = results[1];
+        let invoices = results[2]
         Promise.all([
           this.services.customerService.getCustomer(awb.customerId),
           this.services.shipperService.getShipper(awb.shipper),
@@ -244,6 +248,7 @@ class AwbService {
           this.services.hazmatService.getHazmat(awb.hazmat),
         ]).then((otherInfos) => {
           awb.packages = packages;
+          awb.invoices = invoices;
           awb.customerId = otherInfos[0];
           delete awb.customerId.password;
           awb.shipper = otherInfos[1];
