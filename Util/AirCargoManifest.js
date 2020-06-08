@@ -171,7 +171,7 @@ class AirCargoManifest {
                 { text: convertLbsToKg(pkg.weight).toFixed(2), alignment: 'center' },
                 [pkg.shipper.name, pkg.shipper.address],
                 [pkg.consignee.name, pkg.consignee.address],
-                { text: pkg.hazmat },
+                { text: pkg.natureOfGoods },
               ]),
             ],
           },
