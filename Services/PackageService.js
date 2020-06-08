@@ -1304,6 +1304,21 @@ checkInStore(data, username) {
       })
     });
   }
+  
+  getPackageCube(pkgIds) {
+    return new Promise((resolve, reject) => {
+      Package.find({ _id: {$in:pkgIds} })
+        .populate(['awbId', 'compartmentId', 'shipperId', 'carrierId', 'customerId', 'hazmatId'])
+        .exec((err, packages) => {
+          if (err) {
+            resolve([]);
+          } else {
+            resolve(packages);
+          }
+        })
+    });
+  }
+
 }
 
 function getPackageIdFromBarCode(barCodeValue) {
