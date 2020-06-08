@@ -94,7 +94,7 @@ app.use(session({
     ephemeral: false, 
     httpOnly: true, 
     sameSite:'strict',
-    secure: (process.env.NODE_ENV === "development" ? false : true),
+    secureProxy: (process.env.NODE_ENV === "development" ? false : true),
   }
 }));
 
