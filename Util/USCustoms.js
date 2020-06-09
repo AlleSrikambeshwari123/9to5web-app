@@ -584,7 +584,20 @@ class USCustoms {
       content: [
         ..._.flatMap(this.data.items, (item, i, array) => {
           let natureOfGood = {text: String(item.natureOfAwb.toUpperCase()), margin:[0,10,0,5], fontSize: 11, alignment: "center" };
+          
           if (i==0) {
+            natureOfGood = { 
+              stack: [
+              {text: "",},
+              {text: "",},
+              {text: "",},
+              {text: "",},
+            ], margin: [10,20,0,0]}
+            item.consignee = {}
+            this.data.totalPieces = 0
+            this.data.totalWeight = 0
+          }
+          if (i==1) {
             natureOfGood = { 
               stack: [
               {text: "AS PER ATTACHED MANIFEST", margin: [0,0,0,20], fontSize: 10},
