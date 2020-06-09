@@ -225,7 +225,7 @@ class LBLGeneration {
                   ],
                   [
                     { text: '',  style: 'tableHeader', bold: true, alignment: 'center' },
-                    { text: ":", style: 'tableHeader', alignment: 'center' },
+                    { text: "", style: 'tableHeader', alignment: 'center' },
                     { text: '', style: 'tableHeader', alignment: 'center' },
                     { text: "", style: 'tableHeader', alignment: 'center' },
                     { text: 'Brokerage ', style: 'tableHeader', bold: true, alignment: 'center' },
