@@ -65,7 +65,7 @@
 					<span class="sidebar-mini-icon">
 						<i class="fa fa-ellipsis-h"></i>
 					</span>
-					<h4 class="text-section">Warehouse e  <% console.log('HEELEELELELEL') %> <% console.log(user.roles.join().includes('Admin')) %> </h4>
+					<h4 class="text-section">Warehouse</h4>
 
 				</li>
 				<%if (helpers.checkRole(user.roles, "Admin") || helpers.checkRole(user.roles, "Warehouse Fl")) {%>
@@ -231,7 +231,12 @@
 						</ul>
 					</div>
 				</li>
-				<li class="nav-item <% if (page.includes('/shipper/')) { %> active <% } %>">
+				<li class="nav-item <% if (page.includes('/price/')) { %> active <% } %>">
+					<a href="/warehouse/price/list">
+						<i class="fa fa-dollar-sign"></i>
+						<p>Price </p>
+					</a>
+				</li><li class="nav-item <% if (page.includes('/shipper/')) { %> active <% } %>">
 					<a href="/warehouse/shipper/list">
 						<i class="fa fa-shipping-fast"></i>
 						<p>Shippers </p>

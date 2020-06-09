@@ -73,6 +73,15 @@ exports.download_pkg_label = (req, res, next) => {
     })
   })
 }
+exports.download_pdf_pricelabel = (req, res, next) => {
+  services.PriceLabelService.getPriceLabel(req.params.id).then(price=>{
+    services.printService.getAWBDataForAllRelatedEntities(price.packageId.awbId.id).then((awb) => {
+    lblPdfGen.generateSinglePriceLabel(awb,price).then(result => {
+      res.download(result.path);
+    })
+   })
+  })
+}
 
 exports.download_pkg_labels = (req, res, next) => {
   let id = req.params.id;
@@ -100,6 +109,16 @@ exports.generate_pkg_label_pdf = (req, res, next) => {
         res.send(result);
       })
     })
+  })
+}
+exports.generate_price_label_pdf = (req, res, next) => {
+  console.log("DWLD PRICE LABEL")
+  services.PriceLabelService.getPriceLabel(req.params.id).then(price=>{
+    services.printService.getAWBDataForAllRelatedEntities(price.packageId.awbId.id).then((awb) => {
+    lblPdfGen.generateSinglePriceLabel(awb,price).then(result => {
+      res.send(result);
+    })
+   })
   })
 }
 
@@ -306,6 +325,23 @@ exports.downloadUSCustoms = async (req, res, next) => {
         natureOfAwb: awb.hazmat ? awb.hazmat.description : "",
       };
     });
+
+    items.unshift({
+      declaredValueForCustoms:"",
+      declaredValueForCharge: '',
+      executedOnDate: "",
+      executedAtPlace: '',
+      awb: "",
+      consignee: {},
+      shipper: { name: '', address: '' },
+      accountingInformation: '',
+      pieces: "",
+      weight: "",
+      chargeableWeight: '',
+      natureAndQuantityOfGoods: '???',
+      ultimateDestination: '',
+      natureOfAwb: ''
+      })
 
     let usCustoms = new USCustoms({
       departureDate: new Date(),
