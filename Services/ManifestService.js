@@ -158,6 +158,7 @@ class ManifestService {
         {stageId: manifestStages.verified.id}
       ]})
       .populate('planeId')
+      .populate('customerId')
       .exec((err, manifests) => {
         if (err) {
           resolve([]);
