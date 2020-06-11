@@ -118,7 +118,6 @@ router.get("/get_packages_7days_status", middleware().checkSession, (req, res, n
 
 // Dashboard Page
 router.get("/get_packages_filter/:filter", middleware().checkSession, (req, res, next) => {
-  console.log('req.query', req.query);
   Promise.all([
     services.packageService.getPackageWithFilter(req.params.filter, req.query),
     services.userService.getAllUsers()

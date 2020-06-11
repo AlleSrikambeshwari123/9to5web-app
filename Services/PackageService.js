@@ -456,7 +456,7 @@ checkInStore(data, username) {
     return new Promise(async (resolve, reject) => {
       let nineToPackages = [], postBox = [], noDocs = [];
       if (filter === 'all') {
-        let packages = await Package.find({}).populate("awbId").populate('customerId');
+        let packages = await Package.find({}).populate(["awbId","customerId","zoneId"])
 
         let result = await Promise.all(packages.map(async (pkg) => {
           let statuses = await PackageStatus.find({ packageId: pkg._id }) || [];
@@ -464,15 +464,15 @@ checkInStore(data, username) {
             let packageStatus = statuses[statuses.length - 1];
             
             if (pkg.awbId && pkg.awbId.invoices && pkg.awbId.invoices.length == 0) {
-              noDocs.push({ _id: pkg.id, last_status: packageStatus.status, awb: "AWB" + pkg.awbId.awbId, customer_email: pkg.customerId.email })
+              noDocs.push({ _id: pkg.id, last_status: packageStatus.status, awb: "AWB" + pkg.awbId.awbId, customer_email: pkg.customerId ? pkg.customerId.email:'',zone:pkg.zoneId ? pkg.zoneId.name:'' })
             }
 
             if (pkg.customerId && pkg.customerId.pmb == "9000") {
-              nineToPackages.push({ _id: pkg.id, last_status: packageStatus.status, awb: "AWB" + pkg.awbId.awbId, customer_email: pkg.customerId.email })
+              nineToPackages.push({ _id: pkg.id, last_status: packageStatus.status, awb: "AWB" + pkg.awbId.awbId, customer_email: pkg.customerId ? pkg.customerId.email:'',zone:pkg.zoneId ? pkg.zoneId.name:'' })
             }
 
             if (pkg.customerId && pkg.customerId.pmb != "9000") {
-              postBox.push({ _id: pkg.id, last_status: packageStatus.status, awb: "AWB" + pkg.awbId.awbId, customer_email: pkg.customerId.email })
+              postBox.push({ _id: pkg.id, last_status: packageStatus.status, awb: "AWB" + pkg.awbId.awbId, customer_email: pkg.customerId ? pkg.customerId.email:'',zone:pkg.zoneId ? pkg.zoneId.name:'' })
             }
           }
         }))

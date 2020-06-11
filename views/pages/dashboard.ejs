@@ -127,10 +127,11 @@
         <table id="post_packages" class="display table table-striped table-hover dataTable manifest-table">
           <thead>
             <tr>
-              <th>package ID#</th>
-              <th>package status</th>
+              <th>Package ID#</th>
+              <th>Package Status</th>
               <th>Awb Number</th>
               <th>Customer Email</th>
+              <th>Zone</th>
             </tr>
           </thead>
           <tbody>
@@ -198,6 +199,7 @@
             <th>Package Status</th>
             <th>Awb Number</th>
             <th>Customer Email</th>
+            <th>Zone</th>
           </tr>
         </thead>
         <tbody>
@@ -265,6 +267,7 @@
               <th>Package Status</th>
               <th>Awb Number</th>
               <th>Customer Email</th>
+              <th>Zone</th>
             </tr>
           </thead>
           <tbody>
@@ -412,6 +415,6 @@
   }
 
   function Tbody(row) {
-    return "<tr><td>" + row._id + "</td><td>" + row.last_status + "</td><td>" + row.awb + "</td><td>" + row.customer_email + "</td></tr>"
+    return "<tr><td>" + row._id + "</td><td>" + row.last_status + "</td><td>" + row.awb + "</td><td>" + row.customer_email + "</td><td>" + row.zone + "</td></tr>"
   }
 </script>
