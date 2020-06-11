@@ -9,6 +9,7 @@
         <table id='no-docs-table' class='display table table-striped table-hover dataTable'>
           <thead>
             <tr>
+              <th>Customer Name</th>
               <th>Date Received</th>
               <th>PMB</th>
               <th>AWB Number</th>
@@ -21,11 +22,13 @@
             </tr>
           </thead>
           <tbody>
+
             <% 
                   awbs.forEach(function(awb){
                     if(!awb.invoice) {
                   %>
             <tr data-record="<%= awb._id %>">
+              <td><%= awb.customer.name %></td>
               <td><%=awb.dateCreated%></td>
               <td><%=awb.customer.pmb %></td>
               <td><a href="manage/<%=awb._id%>/preview"><%=awb.awbId%></a></td>

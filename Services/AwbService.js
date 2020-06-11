@@ -211,6 +211,7 @@ class AwbService {
           } else {
             awbData.forEach((data) => {
               data['customer'] = data['customerId'];
+              data['customer']['name'] = (data['customerId'].lastName ? `${data['customerId'].firstName} ${data['customerId'].lastName}` : `${data['customerId'].lastName}`);
               if (data['packages'] && data['packages'].length) {
                 let weight = 0;
                 data.packages.forEach((pkg) => (weight += Number(pkg.weight)));

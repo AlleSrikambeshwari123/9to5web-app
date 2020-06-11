@@ -11,6 +11,7 @@
           <table id = "package-table" class="display table table-striped table-hover dataTable package-table">
             <thead>
               <tr>
+                <th>Customer Name</th>
                 <th>Tracking No</th>
                 <th>Description</th>
                 <th>Type</th>
@@ -30,6 +31,14 @@
             <tbody>
               <% packages.forEach(function(pkg){ %>
               <tr data-record="<%= pkg.id %>">
+                <% if (pkg['customerId']) { %>
+                  <td><%= (pkg['customerId'].lastName ? 
+                    `${pkg['customerId'].firstName} ${pkg['customerId'].lastName}` : 
+                    `${pkg['customerId'].firstName}`); %>
+                  </td>
+                <% } else { %>
+                  <td> - </td>
+                <% } %> 
                 <td><%= pkg.trackingNo%></td>
                 <td><%= pkg.description %></td>
                 <td><%= pkg.packageType %></td>
