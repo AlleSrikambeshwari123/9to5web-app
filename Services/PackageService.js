@@ -901,11 +901,16 @@ checkInStore(data, username) {
   getPackageOnManifestFlight(manifestId) {
     return new Promise((resolve, reject) => {
       Package.find({ manifestId: manifestId })
-        .populate(['compartmentId', 'shipperId', 'carrierId', 'customerId', 'hazmatId'])
+        .populate(['awbId','compartmentId', 'shipperId', 'carrierId', 'customerId', 'hazmatId'])
         .exec((err, packages) => {
           if (err) {
             resolve([]);
           } else {
+
+            packages.forEach(pkg=>{
+              pkg._doc.awbId = (pkg.awbId.awbId || "")
+              pkg._doc.customerId = (pkg.customerId.firstName || "") +' '+ (pkg.customerId.lastName || "")
+            })
             resolve(packages);
           }
         })
