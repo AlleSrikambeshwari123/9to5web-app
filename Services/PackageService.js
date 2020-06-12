@@ -898,6 +898,20 @@ checkInStore(data, username) {
     });
   }
 
+  getPackageOnManifestFlight(manifestId) {
+    return new Promise((resolve, reject) => {
+      Package.find({ manifestId: manifestId })
+        .populate(['compartmentId', 'shipperId', 'carrierId', 'customerId', 'hazmatId'])
+        .exec((err, packages) => {
+          if (err) {
+            resolve([]);
+          } else {
+            resolve(packages);
+          }
+        })
+    });
+  }
+
   //======== Packages for store ========//
   getPackagesForStores() {
     return new Promise((resolve, reject) => {
