@@ -336,6 +336,15 @@ router.post('/add-packages-to-delivery', passport.authenticate('jwt', { session:
   })
 })
 
+
+// Recieved in NAS -[4] Manifest Scan
+router.get('/packages-by-manifest/:manifestId', passport.authenticate('jwt', { session: false }), (req, res, next) => {
+  var manifestId = req.params.manifestId
+  services.packageService.getPackageOnManifest(manifestId).then(result => {
+    res.send(result)
+  })
+})
+
 // Recieved in NAS -[4]
 router.post('/receive-packages-to-flight', passport.authenticate('jwt', { session: false }),(req, res, next) => {
   let packageIds = req.body.packageIds;
