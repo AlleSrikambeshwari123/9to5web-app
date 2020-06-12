@@ -11,8 +11,10 @@
           <table id = "package-table" class="display table table-striped table-hover dataTable package-table">
             <thead>
               <tr>
+                <th>Customer Name</th>
                 <th>Tracking No</th>
                 <th>Description</th>
+                <th>Zone</th>
                 <th>Type</th>
                 <th>Weight</th>
                 <th>Status</th>
@@ -30,12 +32,26 @@
             <tbody>
               <% packages.forEach(function(pkg){ %>
               <tr data-record="<%= pkg.id %>">
+                <% if (pkg['customerId']) { %>
+                  <td><%= (pkg['customerId'].lastName ? 
+                    `${pkg['customerId'].firstName} ${pkg['customerId'].lastName}` : 
+                    `${pkg['customerId'].firstName}`); %>
+                  </td>
+                <% } else { %>
+                  <td> - </td>
+                <% } %> 
                 <td><%= pkg.trackingNo%></td>
                 <td><%= pkg.description %></td>
+                <% if (pkg['zoneId'] && pkg['zoneId'].name) { %>
+                  <td><%= pkg['zoneId'].name %>
+                  </td>
+                <% } else { %>
+                  <td> - </td>
+                <% } %> 
                 <td><%= pkg.packageType %></td>
                 <td><%= pkg.weight%></td>
                 <td><%= pkg.lastStatusText %></td>
-                <td><%= pkg.awbId.awbId %></td>
+                <td> <a href="../../nas/awb/manage/<%=pkg.awbId._id%>/preview"> <%= pkg.awbId.awbId %> </a></td>
                 <% if (typeof filterURL !== 'undefined' && filterURL === 'not-pmb9000') { %>
                   <td><%= pkg.location %></td>
                 <% } %>

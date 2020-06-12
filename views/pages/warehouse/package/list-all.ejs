@@ -48,8 +48,10 @@
           <thead>
             <tr>
               <th></th>
+              <th>Customer Name</th>
               <th>Tracking No</th>
               <th>Description</th>
+              <th>Zone</th>
               <th>Type</th>
               <th>Weight</th>
               <th>Status</th>
@@ -64,12 +66,26 @@
               <td>
                 <input type="checkbox" class="package-select" />
               </td>
+              <% if (pkg['customerId']) { %>
+                <td><%= (pkg['customerId'].lastName ? 
+                  `${pkg['customerId'].firstName} ${pkg['customerId'].lastName}` : 
+                  `${pkg['customerId'].firstName}`); %>
+                </td>
+              <% } else { %>
+                <td> - </td>
+              <% } %>
               <td><%= pkg.trackingNo%></td>
               <td><%= pkg.description %></td>
+              <% if (pkg['zoneId'] && pkg['zoneId'].name) { %>
+                <td><%= pkg['zoneId'].name %>
+                </td>
+              <% } else { %>
+                <td> - </td>
+              <% } %> 
               <td><%= pkg.packageType %></td>
               <td><%= pkg.weight%></td>
               <td class="lastStatusText_field"><%= pkg.lastStatusText %></td>
-              <td><%= pkg.awbId.awbId %></td>
+              <td><a href="../../nas/awb/manage/<%=pkg.awbId._id%>/preview"> <%= pkg.awbId.awbId %> </a></td>
               <td><a href="../pkg-label/download/<%=pkg._id%>"><i class="fa fa-download"></i></a></td>
               <td>
                 <a
