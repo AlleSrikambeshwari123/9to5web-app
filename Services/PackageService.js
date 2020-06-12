@@ -1055,7 +1055,7 @@ checkInStore(data, username) {
       });
     });
   }
-
+  
   getPackageLastStatus_updated(packageId) {
     return new Promise((resolve, reject) => {
       this.getPackageStatuses_updated(packageId).then((stats) => {
@@ -1064,7 +1064,7 @@ checkInStore(data, username) {
       });
     });
   }
-
+  
   getPackageStatuses_updated(packageId) {
     return new Promise((resolve, reject) => {
       PackageStatus.find({ packageId }, (err, result) => {
@@ -1073,7 +1073,7 @@ checkInStore(data, username) {
         } else {
           resolve(result);
         }
-      })
+      }).sort({updatedAt:1})
     });
   }
 
