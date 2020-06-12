@@ -442,6 +442,8 @@ checkInStore(data, username) {
     return new Promise((resolve, reject) => {
       Package.find({})
         .populate('awbId')
+        .populate('customerId')
+        .populate('zoneId')
         .exec((err, result) => {
           if (err) {
             resolve([]);
