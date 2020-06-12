@@ -45,6 +45,7 @@
             <tr data-record="<%= pkg._id %>">
               <td>
                 <input type="checkbox" class="package-select" />
+                <input class="checkPriceLabelExistPkg" value="<%=pkg._id %>" hidden/>
               </td>
               <% if (pkg['customerId']) { %>
                 <td><%= (pkg['customerId'].lastName ? 
@@ -69,10 +70,11 @@
               <td><a class="btn btn-link btn-primary btn-edit-pricelabel" data-toggle="modal" data-id="<%=pkg._id%>"
                   data-original-title="Add Price" data-target="#pricelabel-popup"><i class="fa fa-edit"></i></a>
               </td>
-              <td><a href="../price-label/download/<%=pkg._id%>"><i class="fa fa-download"></i></a></td>
+              <% let ifNotPriceLabel = 'ifNotPriceLabel'+ pkg._id %>
+              <td><a class="<%= ifNotPriceLabel %>" href="../price-label/download/<%=pkg._id%>"><i class="fa fa-download ifNotPriceLabel"></i></a></td>
               <td>
-                <a class="btn btn-link btn-primary btn-print-pkg" data-toggle="modal" data-id="<%=pkg._id%>"
-                  data-original-title="Print Label" data-target="#print-pricelabel-popup"><i class="fa fa-print"></i>
+                <a class="btn btn-link btn-primary btn-print-pkg <%= ifNotPriceLabel %>" data-toggle="modal" data-id="<%=pkg._id%>"
+                  data-original-title="Print Label" data-target="#print-pricelabel-popup"><i class="fa fa-print ifNotPriceLabel"></i>
                 </a>
               </td>
             </tr>
@@ -265,9 +267,10 @@
                     </div>
                 </div>
             </div>
+            <input type="text" id="setIdPriceLabel" hidden/>
           <div class="modal-footer">
-            <button type="submit" class="btn btn-primary">Update</button>
-            <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary" id="UpdatePriceLabelPackage">Update</button>
+            <button type="button" class="btn btn-danger close-del" data-dismiss="modal">Cancel</button>
           </div>
         </div>
     </form>
