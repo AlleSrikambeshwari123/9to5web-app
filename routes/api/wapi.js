@@ -369,7 +369,7 @@ router.post('/checkout-to-customer', passport.authenticate('jwt', { session: fal
 
 //No Invoice Present - [7]
 router.post('/add-packages-to-nodoc',passport.authenticate('jwt', { session: false }), (req,res)=>{
-  const {valid,errors} = checkEmpty({packageIds:req.body.packageIds,awbId:req.body.awbId,zoneId:req.body.zoneId,userId:req.body.userId})
+  const {valid,errors} = checkEmpty({packageIds:req.body.packageIds,zoneId:req.body.zoneId,userId:req.body.userId})
   if(!valid) return res.send({success:false,message:errors})
   services.packageService.addAwbsPkgNoDocs(req.body).then((result)=>{
     res.send(result)

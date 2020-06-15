@@ -244,7 +244,7 @@ async addAwbsPkgNoDocs(data){
         if(!status.success) error.push(status.message)
         return status
       },
-      this.updateAwbPackages(data.awbId,packageIds),
+      // this.updateAwbPackages(data.awbId,packageIds),
       this.updateZone(data.zoneId,packageIds)
       )
     )
