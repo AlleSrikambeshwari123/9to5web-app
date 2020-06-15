@@ -67,7 +67,8 @@ router.post('/assign-packages/:id',passport.authenticate('jwt', { session: false
       const packageDetail = await services.cubeService.packageDetail(package[0]);
       if(!packageDetail){
         return res.send({ success: false, message: strings.string_response_error });
-      }       
+      }  
+      packageDetail.packageType = "Cube";    
       const updateDetail = {packages:package};
       if(cubeData.cubepackageId==null){
         const cubepackageId = await services.cubeService.createPackage(cubeData, packageDetail);  
