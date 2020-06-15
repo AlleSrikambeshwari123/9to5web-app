@@ -1,0 +1,16 @@
+version: "3"
+services:
+
+  paylanes-api:
+    container_name: 9to5-web
+    image: "${APP_IMAGE}"
+    environment:
+      - NODE_ENV
+      - MONGO_HOST
+      - MONGO_DBNAME
+      - MONGO_USERNAME
+      - MONGO_PASSWORD
+      - NODEMAIL_BASEURL
+    ports:
+      - '3000:3100'
+
