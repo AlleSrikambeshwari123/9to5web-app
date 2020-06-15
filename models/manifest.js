@@ -7,7 +7,15 @@ const manifestSchema = new mongoose.Schema({
     ref : 'Plane',
     required: true
   },
+  originalManifestId: {
+    type : Schema.Types.ObjectId,
+    ref:'Manifest'
+  },
   packages:[{
+    type:Schema.Types.ObjectId,
+    ref:'Package'
+  }], 
+  clonePackages:[{
     type:Schema.Types.ObjectId,
     ref:'Package'
   }], 

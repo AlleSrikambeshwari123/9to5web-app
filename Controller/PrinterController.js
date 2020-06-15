@@ -125,7 +125,7 @@ exports.generate_price_label_pdf = (req, res, next) => {
 exports.downloadAirCargoManifest = async (req, res, next) => {
   try {
     let manifest = await services.manifestService.getManifest(req.params.id);
-    let packages = await services.packageService.getPackageOnManifest(req.params.id);
+    let packages = await services.packageService.cloneManifestAndOriginal(req.params.id);
     let [airportFrom, airportTo] = await Promise.all([
       manifest.airportFromId && services.airportService.get(manifest.airportFromId),
       manifest.airportToId && services.airportService.get(manifest.airportToId),
@@ -178,7 +178,7 @@ exports.downloadAirCargoManifest = async (req, res, next) => {
 exports.downloadFlightManifest = async (req, res, next) => {
   try {
     let manifest = await services.manifestService.getManifest(req.params.id);
-    let packages = await services.packageService.getPackageOnManifest(req.params.id);
+    let packages = await services.packageService.cloneManifestAndOriginal(req.params.id);
 
     let rows = packages.map((pkg) => {
       return {
@@ -217,7 +217,7 @@ exports.downloadFlightManifest = async (req, res, next) => {
 exports.downloadFlightLoadSheet = async (req, res, next) => {
   try {
     let manifest = await services.manifestService.getManifest(req.params.id);
-    let packages = await services.packageService.getPackageOnManifest(req.params.id);
+    let packages = await services.packageService.cloneManifestAndOriginal(req.params.id);
     let compartments = await Promise.all(
       _.uniqBy(packages, 'compartmentId').filter(i => i.compartmentId).map((pkg) =>
         services.planeService.getCompartment(pkg.compartmentId),
@@ -258,7 +258,7 @@ exports.downloadFlightLoadSheet = async (req, res, next) => {
 exports.downloadUSCustoms = async (req, res, next) => {
   try {
     let manifest = await services.manifestService.getManifest(req.params.id);
-    let packages = await services.packageService.getPackageOnManifest(req.params.id);
+    let packages = await services.packageService.cloneManifestAndOriginal(req.params.id);
     let airline = await services.airlineService.getAirline(manifest.planeId.airlineId);
 
     let [airportFrom, airportTo] = await Promise.all([
@@ -378,7 +378,7 @@ exports.downloadDeliveryReport = async (req, res, next) => {
     let rows = packages.map((pkg) => {
       return {
         id: pkg.id,
-        awb: pkg.awbId,
+        awb: pkg.awbId.id,
         weight: services.packageService.getPackageWeightInLBS(pkg),
         pmb: pkg.customerId && pkg.customerId.pmb,
         description: pkg.description
