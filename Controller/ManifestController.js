@@ -46,11 +46,11 @@ exports.get_manifest_detail = (req, res, next) => {
   const manifestId = req.params.id;
   Promise.all([
     services.manifestService.getManifest(manifestId),
-    services.packageService.getPackageOnManifest(manifestId)
+    services.packageService.cloneManifestAndOriginal(manifestId)
   ]).then((results) => {
     const manifest = results[0];
     const packages = results[1];
-
+    
     packages.forEach((pkg, i) => pkg.compartment = pkg.compartmentId);
     
     res.render('pages/warehouse/manifest/preview', {
@@ -62,6 +62,41 @@ exports.get_manifest_detail = (req, res, next) => {
       packages: packages,
       airportFrom: manifest['airportFromId'],
       airportTo: manifest['airportToId'],
+    })
+  });
+}
+
+
+exports.create_new_manifest_clone = (req, res, next) => {
+  services.manifestService.createManifestCloneFromOriginal(req.body).then(result => {
+    res.send(result);
+  })
+}
+
+exports.make_manifest_clone = (req, res, next) => {
+  const manifestId = req.params.id;
+  Promise.all([
+    services.manifestService.getManifest(manifestId),
+    services.packageService.cloneManifestAndOriginal(manifestId),
+    services.planeService.getPlanes(),
+    services.airportService.all(),
+  ]).then((results) => {
+    const manifest = results[0];
+    const packages = results[1];
+    
+    packages.forEach((pkg, i) => pkg.compartment = pkg.compartmentId);
+    res.render('pages/warehouse/manifest/clone', {
+      page: req.originalUrl,
+      user: res.user,
+      title: 'Manifest Clone ' + manifest['planeId'].tailNumber+manifest.title,
+      originalManifestId:manifestId,
+      plane: manifest['planeId'],
+      manifest: manifest,
+      packages: packages,
+      airportFrom: manifest['airportFromId'],
+      airportTo: manifest['airportToId'],
+      planes: results[2],
+      airports: results[3],
     })
   });
 }

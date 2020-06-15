@@ -3,7 +3,7 @@ var moment = require('moment');
 
 const strings = require('../Res/strings');
 const Manifest = require('../models/manifest');
-
+const Package = require('../models/package')
 const manifestStages = {
   open: {
     id: 1,
@@ -54,6 +54,49 @@ class ManifestService {
     })
   }
 
+  createManifestCloneFromOriginal(manifest) {
+    return new Promise(async (resolve, reject) => {
+      let pkgsClone =[]
+      manifest['title'] = moment(manifest.shipDate, "MMM DD,YYYY").format('MMDDYY')+"/"+manifest.time;
+      manifest['stageId'] = manifestStages.open.id;
+      manifest['stage'] = manifestStages.open.title;
+      const pkgs = await Package.find({manifestId:manifest.originalManifestId})
+      if (pkgs !==  null){
+        pkgs.map(pkg=>{
+          pkgsClone.push(pkg._id)
+        })
+        manifest['clonePackages'] = pkgsClone
+      }
+      let objManifest = new Manifest(manifest);
+      objManifest.save(async (err, result) => {
+        if (err) {
+          resolve({ success: false, message: err});
+        } else {
+          if (pkgs !==  null){
+            pkgs.map(pkg=>{
+              return this.updateCloneManifestIdOnPackages(pkg._id,result.id)
+            })
+          }
+          resolve({ 
+            success: true, 
+            message: strings.string_response_created, 
+            manifest: result
+          });
+        }
+      })
+    })
+  }
+  updateCloneManifestIdOnPackages(id,manifestId){
+    return new Promise((resolve,reject)=>{
+      Package.findOneAndUpdate({_id:id},{cloneManifestId:manifestId},(err,result)=>{
+        if (err) {
+          resolve({ success: false, message: err});
+        } else {
+          resolve({ success: true, message:  strings.string_response_updated});
+        }
+      })
+    })
+  }
   updateManifestDetails(id, details) {
     return new Promise((resolve, reject) => {
       Manifest.findOneAndUpdate({_id: id}, details, (err, result) => {
@@ -103,7 +146,6 @@ class ManifestService {
       });
     });
   }
-
   getManifest(manifestId) {
     return new Promise((resolve, reject) => {
       Manifest.findOne({_id: manifestId})

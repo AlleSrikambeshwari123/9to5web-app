@@ -1,0 +1,124 @@
+
+<% layout('./shared/__template')%>
+<form class="add-manifest-form" method="POST">
+<div class='gutters'>
+  <div class='col-xl-12 col-lg-6 col-md-12 col-sm-12'>
+    <div class='card'>
+      <div class="card-header">
+        <h4 class="card-title"><%=title%></h4>
+      </div>
+      <div class="card-body">
+        <h3 class="card-title text-muted">Plane</h3>
+        <div class='row'>
+          <div class='col-md-9'>
+            <input type='hidden' id="pgmode" value='flight' />
+            <div class="form-group form-show-validation row">
+              <label for="tailNumber" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Plane</label>
+              <div class="col-lg-8 col-md-8 col-sm-8">
+                <select id="planeId" name="planeId" class='form-control' required>
+                    <option></option>
+                    <% planes.forEach(p => { %>
+                    <option value="<%=p.id%>" <% if(plane.id == p.id) { %> selected <% } %>>
+                        <%=p.tailNumber%>
+                    </option>
+                    <% }) %>
+                  </select>
+              </div>
+              <div class="col-lg-1 col-md-3 col-sm-4">
+                <select class="form-group" id="time" name="time" required>
+                  <option></option>
+                  <option value="1A">1A</option>
+                  <option value="2A">2A</option>
+                </select>
+              </div>
+            </div>
+            <% if (airportFrom) { %>
+            <div class="form-group form-show-validation row">
+              <label for="airtPortFromId" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Airport From</label>
+              <div class="col-lg-8 col-md-8 col-sm-8">
+                <select id="airportFromId" name="airportFromId" class='form-control' required>
+                    <option></option>
+                    <% airports.forEach(airport => { %>
+                    <option value="<%=airport.id%>" <% if(airportFrom.id == airport.id) {%> selected<% } %>><%=airport.name%> <% if (airport.shortCode) { %>
+                      (<%=airport.shortCode%>) <% } %></option>
+                    <%})%>
+                  </select>
+              </div>
+            </div>
+            <% } %>
+            <% if (airportTo) { %>
+            <div class="form-group form-show-validation row">
+              <label for="airtPortToId" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Airport To</label>
+              <div class="col-lg-8 col-md-8 col-sm-8">
+                <select id="airportToId" name="airportToId" class='form-control' required>
+                    <option></option>
+                    <% airports.forEach(airport => { %>
+                    <option value="<%=airport.id%>" <% if(airportTo.id == airport.id) {%> selected<% } %>><%=airport.name%> <% if (airport.shortCode) { %>
+                      (<%=airport.shortCode%>) <% } %></option>
+                    <%})%>
+                  </select>
+              </div>
+            </div>
+            <% } %>
+            <div class="form-group form-show-validation row">
+              <label for="tailNumber" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">AirCraft Type</label>
+              <div class="col-lg-8 col-md-8 col-sm-8">
+                <input type='text' class='form-control' id='aircraft_type' placeholder="AirCraft Type"
+                  value="<%= plane.aircraft_type %>" />
+              </div>
+            </div>
+            <div class="form-group form-show-validation row">
+                <label for="shipDate" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Flight Date / Time </label>
+                <div class="col-lg-8 col-md-9 col-sm-8 d-flex">
+                  <input type="text" class="form-control" id="shipDate" name="shipDate" required>
+                  <div class="input-group-append">
+                    <span class="input-group-text">
+                      <i class="fa fa-calendar-check"></i>
+                    </span>
+                  </div>
+                </div>
+              </div>
+          </div>
+        </div>
+        <div class="separator-solid"></div>
+        <div class="d-flex">
+          <h3 class="card-title text-muted package-info">Data Entry ( Weight : 0 lbs / 0lbs )</h3>
+        </div>
+        <div class='row mt-3'>
+          <div class='col-md-12 table-responsive'>
+            <table id='packageTable' class='display table table-striped table-hover w-100'>
+              <thead>
+                <tr>
+                  <td><strong>Compartment</strong></td>
+                  <td><strong>Trackig No #</strong></td>
+                  <td><strong>Description</strong></td>
+                  <td><strong>Weight</strong></td>
+                  <td><strong>Dimension</strong></td>
+                </tr>
+              </thead>
+              <tbody>
+                <% packages.forEach(package => { %>
+                <tr data-record="<%= package.id %>">
+                  <td><%= package.compartment && package.compartment.name %></td>
+                  <td><%= package.trackingNo %></td>
+                  <td><%= package.description %></td>
+                  <td><%= package.weight %> lbs</td>
+                  <td><%= package.dimensions %></td>
+                </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="card-action">
+          <input type="text" class="originalManifestId" value="<%= originalManifestId %>" hidden/>
+        <input type="submit" class="btn btn-primary pull-right" value="Clone Manifest"></input>
+      </div>
+    </div>
+  </div>
+</div>
+</form>
+<% block('scripts').append('<script src="/js/utils.js"></script>')%>
+<% block('scripts').append('<script src="/js/warehouse/manifest/preview.js"></script>')%>
+<% block('scripts').append('<script src="/js/warehouse/manifest/edit.js"></script>')%>

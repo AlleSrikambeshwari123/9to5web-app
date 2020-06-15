@@ -83,6 +83,10 @@ const packageSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId, 
     ref: 'Manifest'
   },
+  cloneManifestId: {
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'Manifest'
+  },
   deliveryId: {
     type: mongoose.Schema.Types.ObjectId, 
     ref: 'Delivery'

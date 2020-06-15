@@ -884,6 +884,43 @@ checkInStore(data, username) {
     });
   }
 
+
+  cloneManifestAndOriginal(manifestId){
+    return new Promise((resolve,reject)=>{
+      let original = []
+      Manifest.findOne({_id:manifestId})
+      .populate(
+        {
+          path:'clonePackages',
+            populate:[
+              {path:'awbId'},
+              {path:'compartmentId'},
+              {path:'shipperId'},
+              {path:'carrierId'},
+              {path:'customerId'},
+              {path:'hazmatId'}
+             ]})
+      .exec(async (err, x)=> {
+         if(err){
+          resolve([])
+        }else{
+          if(x.originalManifestId){
+            if(x.clonePackages){
+              if(x.clonePackages.length >0 ){
+                original = x.clonePackages
+              }
+            }
+            // original = await this.getPackageOnManifest(x.originalManifestId)
+            let clone = await this.getPackageOnManifest(x.id)
+            if(clone !== null) clone.map(y=>original.push(y))
+            resolve(original)
+          }else{
+            resolve(await this.getPackageOnManifest(manifestId))
+          }
+        }
+      })
+    })
+  }
   getPackageOnManifest(manifestId) {
     return new Promise((resolve, reject) => {
       Package.find({ manifestId: manifestId })
