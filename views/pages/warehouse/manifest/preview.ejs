@@ -103,7 +103,9 @@
                 </tr>
               </thead>
               <tbody>
-                <% packages.forEach(package => { %>
+                <% var totalWeight = 0;
+                packages.forEach(package => { 
+                  totalWeight += Number(package.weight);%>
                 <tr data-record="<%= package.id %>">
                   <td><%= package.compartment && package.compartment.name %></td>
                   <td><%= package.trackingNo %></td>
@@ -112,6 +114,15 @@
                   <td><%= package.dimensions %></td>
                 </tr>
                 <% }) %>
+              </tbody>
+              <tbody>
+                <tr>
+                  <td></td>
+                  <td></td>
+                  <td><strong>Total Weight</strong></td>
+                  <td><strong><%= totalWeight.toFixed(2)%></strong> lbs</td>
+                  <td></td>
+                </tr>
               </tbody>
             </table>
           </div>

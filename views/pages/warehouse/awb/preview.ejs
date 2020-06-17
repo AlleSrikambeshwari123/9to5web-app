@@ -100,6 +100,7 @@
                             <td class="text-center"><strong>Type</strong></td>
                             <!-- <td class="text-center"><strong>Price</strong></td> -->
                             <td class="text-right"><strong>Weight</strong></td>
+                            <td></td>
                           </tr>
                         </thead>
                         <tbody>
@@ -115,6 +116,16 @@
                             <!-- <td class="text-center"><%= package.price%></td> -->
                             <td class="text-right"><%= Number(package.weight).toFixed(2)%>
                               <%= package.packageCalculation||'kg' %></td>
+                              <td class="text-center">
+                                <a
+                                    class="btn btn-link btn-primary btn-print-pkg"
+                                    data-toggle="modal"
+                                    data-id="<%=package._id%>"
+                                    data-original-title="Print Label"
+                                    data-target="#print-popup"
+                                  ><i class="fa fa-print"></i>
+                                </a>
+                              </td>
                           </tr>
                           <% }) %>
                           <tr>
@@ -191,7 +202,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-danger close-del" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary print-awb" id='print-awb'>Print</button>
+        <button type="button" class="btn btn-primary print-awb print-package" id='print-awb'>Print</button>
       </div>
     </div>
   </div>

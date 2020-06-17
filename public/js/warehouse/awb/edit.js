@@ -11,6 +11,10 @@ Number.prototype.formatMoney = function (c, d, t) {
 function closeAddPackage(){  
   $('.mfp-close').trigger("click");
 }
+$('select#originBarcode option').each(function(index,option){
+  let text = option.text
+ if(text === "No Tracking") option.selected = true; 
+})
 function refreshBarcode(){  
   $.ajax({
     url: '/warehouse/fll/awb/refresh-barcode',
@@ -33,6 +37,17 @@ if (Array.isArray(window.invoices) && window.invoices.length) {
 } else {
   AWBInvoices.addInvoceRow() 
 }
+
+
+var pickup = $('select.awb-deliveryMethod').children("option:selected").val();
+if(pickup == '1') $('.hideDriver').hide()
+
+// Check for Pickup Delivery
+$("select.awb-deliveryMethod").change(function(){
+  var pickup = $(this).children("option:selected").val();
+  if(pickup == '1') $('.hideDriver').hide()
+  if(pickup == '2') $('.hideDriver').show()
+});
 
 $(function () {
   const deletedPackages = [];
@@ -176,8 +191,8 @@ $(function () {
         $('#id').val(undefined);
         $('#description').val("");
         $('#weight').val("");
-        $('#packageType').val("");
-        $('#packageCalculation').val("kg");
+        $('#packageType').val("BOX");
+        $('#packageCalculation').val("lbs");
         $('#W').val("");
         $('#H').val("");
         $('#L').val("");
@@ -189,8 +204,8 @@ $(function () {
       var lastPackage = awbPackages[awbPackages.length - 1];
       $("#description").val(lastPackage.description);
       $("#weight").val(lastPackage.weight);
-      $('#packageCalculation').val(lastPackage.packageCalculation||'kg');
-      $('#packageType').val("");
+      $('#packageCalculation').val(lastPackage.packageCalculation||'lbs');
+      $('#packageType').val(lastPackage.packageType || 'BOX');
       var dims = lastPackage.dimensions.toLowerCase().split('x');
       $("#W").val(dims[0])
       $("#H").val(dims[1])
@@ -475,7 +490,7 @@ $(function () {
     awbPackages.forEach(pkg => {
       // A bit hacky way to detect newly added packages, pkg.id == Date.now() for new package for 
       // some reason
-      console.error('pkg', pkg);
+      // console.error('pkg', pkg);
 
       let isNew = pkg.id > 1e9
       let rowNode = packageTable.row
@@ -512,8 +527,8 @@ $(function () {
             $('#id').val(pkg.id);
             $('#description').val(pkg.description);
             $('#weight').val(pkg.weight);
-            $('#packageType').val(pkg.packageType);
-            $('#packageCalculation').val(pkg.packageCalculation||'kg');
+            $('#packageType').val(pkg.packageType || 'BOX');
+            $('#packageCalculation').val(pkg.packageCalculation||'lbs');
             var dims = pkg.dimensions.toLowerCase().split('x');
             $("#W").val(dims[0])
             $("#H").val(dims[1])

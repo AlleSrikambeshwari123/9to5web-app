@@ -67,6 +67,7 @@ $(function() {
     type: 'get',
     dataType: 'json',
     success(data) {
+      console.log('ddd',data)
       addToManifestForm
         .find('[name="manifestId"]')
         .select2({
@@ -76,7 +77,7 @@ $(function() {
           dropdownParent: addToManifestModal,
           data: data.map((manifest) => ({
             id: manifest.id,
-            text: manifest.title,
+            text: manifest.planeId.tailNumber+' '+moment(manifest.shipDate).subtract(4, 'hours').format('dddd, MMMM Do YYYY, h:mm A'),
             source: manifest,
           })),
         })
