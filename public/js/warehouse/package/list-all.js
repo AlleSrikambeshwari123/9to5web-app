@@ -9,8 +9,58 @@ let packageTable = $('.package-table').DataTable({
   select: {
     style: 'multi',
     selector: 'td:first-child input[type="checkbox"]',
-  },
+  }
 });
+
+$('#package-table').on('draw.dt', function() {
+  unSelectAll();
+});
+
+function unSelectAll() {
+  packageTable.rows().deselect();
+  $("tr").removeClass("selected");
+  $("input.package-select-all").removeClass("selected");
+  $("input.package-select").prop("checked", false);
+  $("input.package-select-all").prop("checked", false);
+}
+
+
+
+packageTable.on("click", "input.package-select-all", function() {
+  if($("input.package-select-all").hasClass("selected")) {
+    packageTable.rows().deselect();
+    return unSelectAll()
+  }
+  var tableRows = packageTable.rows({ page: 'current' }).nodes();
+  packageTable.rows({ page: 'current' }).select();
+  $("input.package-select-all").addClass("selected");
+  $("input.package-select-all").prop("checked", true);
+  tableRows.each(function () {
+    $(this).find("input.package-select").prop("checked", true); 
+  });
+})
+
+$('#package-table tbody').on('change', 'input[type="checkbox"]', function(){
+  if(!this.checked) {
+    $(this).closest("tr").removeClass('selected');
+    $(this).prop("checked", false);
+  } 
+  if(this.checked) $(this).closest("tr").addClass('selected')
+  let selectingRowCount = packageTable.rows({selected: true}).count();
+  if ((selectingRowCount) !== packageTable.rows({ page: 'current' }).count()) {
+    $("input.package-select-all").removeClass("selected");
+    $("input.package-select-all").prop("checked", false);
+  } else if((selectingRowCount ) === packageTable.rows({ page: 'current' }).count()) {
+    $("input.package-select-all").prop("checked", true);
+    $("input.package-select-all").addClass("selected");
+  }
+});
+
+$('#package-table tbody').on( 'click', 'tr', function () {
+  $(this).toggleClass('selected');
+} );
+
+
 
 var pdfPath;
 $("#package-table").on("click",'.btn-print-pkg',function() {
