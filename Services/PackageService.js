@@ -909,7 +909,7 @@ checkInStore(data, username) {
 
             packages.forEach(pkg=>{
               pkg._doc.awbId = (pkg.awbId.awbId || "")
-              pkg._doc.customerId = (pkg.customerId.firstName || "") +' '+ (pkg.customerId.lastName || "")
+              pkg._doc.customerId = (pkg.customerId ? pkg.customerId.firstName:"") +' '+ (pkg.customerId ? pkg.customerId.lastName : "")
             })
             resolve(packages);
           }
@@ -1129,6 +1129,7 @@ checkInStore(data, username) {
     return new Promise((resolve, reject) => {
       Package.find({ deliveryId })
         .populate('shipperId')
+        .populate('awbId')
         .populate('carrierId')
         .populate('customerId')
         .exec((error, packages) => {

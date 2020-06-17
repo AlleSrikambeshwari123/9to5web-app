@@ -64,9 +64,9 @@ class AirCargoManifest {
                 {
                   stack: [
                     { text: 'Nine To Five Import Export', bold: true },
-                    { text: '1181 NW 51st St.', margin: [0, 10, 0, 0] },
-                    'Hanger 42D',
-                    'Ft. Lauderdate, FL 33309',
+                    { text: '2801 NW 55th Court', margin: [0, 10, 0, 0] },
+                    'Building 6W',
+                    'Ft Lauderdale, FL 33309',
                     'UNITED STATES',
                     'Tel: 954-958-9970, Fax:954-958-9701',
                   ],

@@ -57,8 +57,8 @@ class DeliveryReport {
         {
           stack: [
             { text: 'NINE TO FIVE IMPORT EXPORT', lineHeight: 2.0, fontSize: 14 },
-            { text: '1811 N.W. 51st Street Hnager 42D', fontSize: 10 },
-            { text: 'Fort Lauderdate, Florida 33309', fontSize: 10 },
+            { text: '2801 NW 55th Court, Building 6W', fontSize: 10 },
+            { text: 'Ft Lauderdale, FL 33309', fontSize: 10 },
             { text: 'DELIVERY REPORT', lineHeight: 2.0, fontSize: 14, margin: [0, 10, 0, 0] },
           ],
           alignment: 'center',

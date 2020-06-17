@@ -98,9 +98,9 @@ class USCustoms {
                       {
                         stack: [
                           'Nine To Five Import Export',
-                          '1811 NW 51st ST',
-                          'Hanger 42D',
-                          'Fort Launderdale, FL 33309',
+                          '2801 NW 55th Court',
+                          'Building 6W',
+                          'Ft Lauderdale, FL 33309',
                         ],
                         fontSize: 10,
                       },
@@ -143,8 +143,9 @@ class USCustoms {
                       {
                         stack: [
                           'Nine To Five Import Export',
-                          '1811 NW 51st ST',
-                          'Hanger 42D, Fort Launderdale, FL 33309 UNITED STA',
+                          '2801 NW 55th Court',
+                          'Building 6W',
+                          'Ft Lauderdale, FL 33309'
                         ],
                         fontSize: 10,
                       },
@@ -583,27 +584,29 @@ class USCustoms {
       pageMargins: 30,
       content: [
         ..._.flatMap(this.data.items, (item, i, array) => {
+          
           let natureOfGood = {text: String(item.natureOfAwb.toUpperCase()), margin:[0,10,0,5], fontSize: 11, alignment: "center" };
           
           if (i==0) {
-            natureOfGood = { 
-              stack: [
-              {text: "",},
-              {text: "",},
-              {text: "",},
-              {text: "",},
-            ], margin: [10,20,0,0]}
-            item.consignee = {}
-            this.data.totalPieces = 0
-            this.data.totalWeight = 0
-          }
-          if (i==1) {
             natureOfGood = { 
               stack: [
               {text: "AS PER ATTACHED MANIFEST", margin: [0,0,0,20], fontSize: 10},
               {text: "No of AWBs:      " + String(this.data.natureOfGoods.awbCount), margin:[0,0,0,5], fontSize: 10 },
               {text: "No of SEDs:      " + String(this.data.natureOfGoods.isSed), margin:[0,0,0,5], fontSize: 10 },
               {text: "No of Hazmat:   " + String(this.data.natureOfGoods.hazmat), margin:[0,0,0,5], fontSize: 10 },
+              {text: "Total Weight:   " + String(this.data.totalWeight.toFixed(2)), margin:[0,0,0,5], fontSize: 10 },
+              {text: "Total Pieces:   " + String(this.data.totalPieces), margin:[0,0,0,5], fontSize: 10 }
+            ]
+            , margin: [10,20,0,0]}
+            item.consignee = {}
+          }
+          if (i==1) {
+            natureOfGood = { 
+              stack: [
+              {text: "",},
+              {text: "",},
+              {text: "",},
+              {text: "",},
             ], margin: [10,20,0,0]}
           }
           return this.generateItem({
