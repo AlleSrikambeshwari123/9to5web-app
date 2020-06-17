@@ -12,6 +12,11 @@ Number.prototype.formatMoney = function (c, d, t) {
 function closeAddPackage(){  
   $('.mfp-close').trigger("click");
 }
+$('select#originBarcode option').each(function(index,option){
+  let text = option.text
+ if(text === "No Tracking") option.selected = true; 
+})
+// $('select#originBarcode option[=No Tracking]').attr('selected','selected'); 
 function refreshBarcode(){  
   $.ajax({
     url: 'refresh-barcode',
@@ -28,6 +33,16 @@ function refreshBarcode(){
     }
   })
 }
+
+var pickup = $('select.awb-deliveryMethod').children("option:selected").val();
+if(pickup == '1') $('.hideDriver').hide()
+
+// Check for Pickup Delivery
+$("select.awb-deliveryMethod").change(function(){
+  var pickup = $(this).children("option:selected").val();
+  if(pickup == '1') $('.hideDriver').hide()
+  if(pickup == '2') $('.hideDriver').show()
+});
 
 AWBInvoices.addInvoceRow();
 $(function () { 
@@ -172,8 +187,8 @@ $(function () {
         $('#id').val(undefined);
         $('#description').val("");
         $('#weight').val("");
-        $('#packageCalculation').val('kg');
-        $('#packageType').val("");
+        $('#packageCalculation').val('lbs');
+        $('#packageType').val("BOX");
         $('#W').val("");
         $('#H').val("");
         $('#L').val("");
@@ -187,8 +202,8 @@ $(function () {
       $('#id').val(undefined);
       $("#description").val(lastPackage.description);
       $("#weight").val(lastPackage.weight);
-      $('#packageCalculation').val(lastPackage.packageCalculation||'kg');
-      $('#packageType').val("");
+      $('#packageCalculation').val(lastPackage.packageCalculation||'lbs');
+      $('#packageType').val(lastPackage.packageType || 'BOX');
       var dims = lastPackage.dimensions.toLowerCase().split('x');
       $("#W").val(dims[0])
       $("#H").val(dims[1])
@@ -231,7 +246,7 @@ $(function () {
     
     $(this).closest('.modal').modal('hide');
   });
-
+  
   $('#add-package-form').submit(function (event) {
     event.preventDefault();
     let pkg = extractFormData(this);
@@ -654,7 +669,7 @@ $(function () {
       let rowNode = packageTable.row.add([
         pkg.description,
         pkg.dimensions,
-        Number(pkg.weight).toFixed(2) + ` ${pkg.packageCalculation||'kg'}`,
+        Number(pkg.weight).toFixed(2) + ` ${pkg.packageCalculation||'lbs'}`,
         `<a class="btn btn-link btn-primary btn-edit-pkg p-1" title="Edit" data-id="${pkg.id}" href="#add-package-popup">
           <i class="fa fa-pen"></i> </a>
         <a class="btn btn-link btn-danger btn-rm-pkg p-1" title="Delete" data-id="${pkg.id}" data-toggle='modal' data-target='#confirmPkgDel'>
@@ -676,8 +691,8 @@ $(function () {
             $('#id').val(pkg.id);
             $('#description').val(pkg.description);
             $('#weight').val(pkg.weight);
-            $('#packageCalculation').val(pkg.packageCalculation||'kg');
-            $('#packageType').val(pkg.packageType);
+            $('#packageCalculation').val(pkg.packageCalculation||'lbs');
+            $('#packageType').val(pkg.packageType || 'BOX');
             var dims = pkg.dimensions.toLowerCase().split('x');
             $("#W").val(dims[0])
             $("#H").val(dims[1])
