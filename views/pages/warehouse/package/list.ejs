@@ -14,7 +14,7 @@
                 <th>Customer Name</th>
                 <th>Tracking No</th>
                 <th>Description</th>
-                <th>Zone</th>
+                <!-- <th>Zone</th> -->
                 <th>Type</th>
                 <th>Weight</th>
                 <th>Status</th>
@@ -26,7 +26,7 @@
                 <th>Pickup or Delivery</th>
                 <% } %>
                 <th></th>
-                <th></th>
+                <!-- <th></th> -->
               </tr>
             </thead>
             <tbody>
@@ -42,12 +42,12 @@
                 <% } %> 
                 <td><%= pkg.trackingNo%></td>
                 <td><%= pkg.description %></td>
-                <% if (pkg['zoneId'] && pkg['zoneId'].name) { %>
+                <!-- <% if (pkg['zoneId'] && pkg['zoneId'].name) { %>
                   <td><%= pkg['zoneId'].name %>
                   </td>
                 <% } else { %>
                   <td> - </td>
-                <% } %> 
+                <% } %>  -->
                 <td><%= pkg.packageType %></td>
                 <td><%= pkg.weight%></td>
                 <td><%= pkg.lastStatusText %></td>
@@ -58,8 +58,9 @@
                 <% if (typeof filterURL !== 'undefined' && filterURL === 'in-pmb9000') { %>
                 <td><%= pkg.awbdeliveryMethod %></td>
                 <% } %>
-                <td><a href="../../pkg-label/download/<%=pkg._id%>"><i class="fa fa-download"></i></a></td>
+                <!-- <td><a href="../../pkg-label/download/<%=pkg._id%>"><i class="fa fa-download"></i></a></td> -->
                 <td class="text-center">
+                  <a href="../../pkg-label/download/<%=pkg._id%>"><i class="fa fa-download"></i></a>
                   <a class="btn btn-link btn-primary btn-print-pkg" data-toggle="modal" data-id="<%=pkg._id%>"
                     data-original-title="Print Label" data-target="#print-popup"><i class="fa fa-print"></i> </a>
                 </td>

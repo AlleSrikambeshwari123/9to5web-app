@@ -1,5 +1,6 @@
 var services = require('../Services/RedisDataServices');
 var utils = require('../Util/utils');
+var moment = require('moment');
 
 exports.get_delivery_list = (req, res, next) => {
   services.deliveryService.getDeliveriesFullData().then((deliveries) => {
@@ -51,6 +52,7 @@ exports.get_delivery_detail = (req, res, next) => {
     services.packageService.getPackagesDataByDeliveryId(deliveryId)
   ]).then(([delivery, packages]) => {
     delivery.packages = packages;
+    delivery._doc.delivery_date = moment(delivery.delivery_date).subtract(4, 'hours').format("dddd, MMMM Do YYYY, h:mm A")+' EST'
     res.render('pages/warehouse/delivery/preview', {
       page: req.originalUrl,
       user: res.user,

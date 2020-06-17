@@ -84,7 +84,7 @@ class LBLGeneration {
       console.log(this.awb.packages.length, '- no of labels to generate.');
       console.log('company logo' + company.logo);
 
-      Promise.all(awb.packages.map((pkg) => this.GernerateAWBLabel(pkg, company)))
+      Promise.all(awb.packages.map((pkg,key) => this.GernerateAWBLabel((key+1), pkg, company)))
         .then((results) => {
           results.forEach((result, i) => {
             results[i]['name'] = results[i].filename;
@@ -115,7 +115,7 @@ class LBLGeneration {
         this.awb.customer.pmb = 9000;
         company = this.companies.nineTofive;
       } else company = this.companies.postBoxes;
-      this.GernerateAWBLabel(pkg, company)
+      this.GernerateAWBLabel(0,pkg, company)
         .then((result) => {
           console.log(result);
           resolve(result);
@@ -300,7 +300,7 @@ class LBLGeneration {
       }
     });
   }
-  GernerateAWBLabel(pkg, company) {
+  GernerateAWBLabel(key,pkg, company) {
     return new Promise((resolve, reject) => {
       var noDocs = '';
 
@@ -456,7 +456,7 @@ class LBLGeneration {
                           margin: [1, 1],
                           stack: [
                             { text: 'TOTAL PIECES', fontSize: 6, bold: true },
-                            { margin: [10, 5], text: this.awb.packages.length, fontSize: 12, bold: true },
+                            { margin: [10, 5], text: key !== 0 ? key+'/'+this.awb.packages.length: this.awb.packages.length, fontSize: 12, bold: true },
                           ],
                           border: [true, false, false, true],
                         },
@@ -551,7 +551,7 @@ class LBLGeneration {
             };
             var filestream;
             var pdfDoc = printer.createPdfKitDocument(docDefinition);
-            var filename = '/pkg.' + pkg.id + '.pdf';
+            var filename = '/pkg.' + pkg.id +'.'+ key + '.pdf';
             var filepath = global.uploadRoot + filename;
             pdfDoc.pipe((filestream = fs.createWriteStream(filepath)));
             pdfDoc.end();
