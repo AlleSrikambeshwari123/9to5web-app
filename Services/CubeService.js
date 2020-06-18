@@ -24,7 +24,6 @@ class CubeService {
             var cube = result[i];
             const awbId = (cube.cubepackageId && cube.cubepackageId.awbId)?cube.cubepackageId.awbId:null;
             const awbData = await Awb.findOne({_id:awbId});
-            
             result[i]['awbId'] = awbData.awbId?awbData.awbId:'';
           }
           //console.log(result)
@@ -192,10 +191,11 @@ class CubeService {
     return data;
   }
 
-  getCube(id){
+  async getCube(id){
     if(typeof id == "string"){
       id = mongoose.Types.ObjectId(id);
     }
+    
     return new Promise((resolve, reject) => { 
     Cube.aggregate([
       {
@@ -219,7 +219,7 @@ class CubeService {
       },
       {$unwind:"$cubeDetail"},
       {
-        $project:{_id:1, packages:1,name:1, "cubeDetail._id":1, "cubeDetail._id":1, "cubeDetail.trackingNo":1}
+        $project:{_id:1, packages:1,name:1,cubepackageId: 1, "cubeDetail._id":1, "cubeDetail._id":1, "cubeDetail.trackingNo":1}
       }
       ]).exec((err, result) => {
         if(result && result.length>0){

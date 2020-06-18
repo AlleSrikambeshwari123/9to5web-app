@@ -25,4 +25,7 @@ router.get('/download-pdf/manifest/:id/flight-manifest', printerController.downl
 router.get('/download-pdf/manifest/:id/us-customs', printerController.downloadUSCustoms);
 router.get('/download-pdf/delivery-report/:id', printerController.downloadDeliveryReport);
 
+router.get('/download-pdf/cube/:id', printerController.downloadCubePdf);
+router.get('/pdf/generate/cube/:id', printerController.generate_cube_pdf);
+
 module.exports = router;

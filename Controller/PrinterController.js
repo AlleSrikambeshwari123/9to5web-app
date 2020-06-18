@@ -6,12 +6,17 @@ const strings = require('../Res/strings');
 var AWBGeneration = require('../Util/AWBGeneration');
 var awbPdfGen = new AWBGeneration();
 var LBLGeneration = require('../Util/LBLGeneration');
+var CUBEGeneration = require('../Util/CUBEGeneration');
 var AirCargoManifest = require('../Util/AirCargoManifest');
 var FlightManifest = require('../Util/FlightManifest');
+var CUBE = require('../Util/cube'); 
 var FlightLoadSheet = require('../Util/FlightLoadSheet');
 var USCustoms = require('../Util/USCustoms');
 var DeliveryReport = require("../Util/DeliveryReport");
 var lblPdfGen = new LBLGeneration();
+var cubPdfGen = new CUBEGeneration();
+const Awb = require('../models/awb');
+//var cubeService = require("../Services/CubeService")
 
 
 exports.send_print_awb = (req, res, next) => {
@@ -111,6 +116,18 @@ exports.generate_pkg_label_pdf = (req, res, next) => {
     })
   })
 }
+
+exports.generate_cube_pdf = (req, res, next) => {
+  services.cubeService.getCube(req.params.id).then(cube => {
+    cube.trackingNo =  cube.cubeDetail.trackingNo;
+    services.printService.getAWBDataForAllRelatedEntities(cube.packages[0].awbId).then((awb) => {
+      cubPdfGen.generateSinglePackageLabel(awb, cube).then(result => {
+        res.send(result);
+      })
+    })
+  })
+}
+
 exports.generate_price_label_pdf = (req, res, next) => {
   console.log("DWLD PRICE LABEL")
   services.PriceLabelService.getPriceLabel(req.params.id).then(price=>{
@@ -207,6 +224,27 @@ exports.downloadFlightManifest = async (req, res, next) => {
     let stream = await flightManifest.generate();
     res.type('pdf');
     res.attachment(`${manifest.id}-FM.pdf`);
+    stream.pipe(res);
+    stream.end();
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.downloadCubePdf = async (req, res, next) => {
+  try {
+    let cubeDataObject = await services.cubeService.getCube(req.params.id);
+    const awbData = await Awb.findOne({_id: cubeDataObject.packages[0].awbId});
+    cubeDataObject['awbId'] = awbData.awbId?awbData.awbId:'';
+
+    let cube = new CUBE({
+      carrier: "Nine To Five Import Export",
+      cubeDataObject,
+    });
+
+    let stream = await cube.generate();
+    res.type('pdf');
+    res.attachment(`${cubeDataObject._id}-cube.pdf`);
     stream.pipe(res);
     stream.end();
   } catch (error) {
