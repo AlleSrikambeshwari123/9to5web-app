@@ -6,7 +6,6 @@ $('.btn-print-awb').click(function () {
     url: '/api/printer/pdf/generate/awb/' + id,
     type: 'get',
     success: function (response) {
-      console.log(response);
       pdfPath = '/util/pdf' + response.filename;
       pdfjsLib.getDocument({ url: pdfPath }).promise.then(pdfData => {
         pdfData.getPage(1).then(page => {
@@ -40,6 +39,28 @@ $('.btn-print-pkg').click(function () {
             page.render({ canvasContext, viewport });
           });
         });
+      } else {
+        $('.close-del').trigger('click');
+        swal({
+          title: 'Failed',
+          text: response.message,
+          type: 'error',
+        });
+      }
+    },
+  });
+});
+
+$('.btn-print-pkgs').click(function () {
+  let id = $(this).data('id');
+  $.ajax({
+    url: '/warehouse/print-pdf/pkg/' + id,
+    type: 'get',
+    success: function(response) {
+      console.log('reser',response)
+      if (response.success) {
+        pdfPath = '/util/pdf' + response.filename;
+        printJS(pdfPath)
       } else {
         $('.close-del').trigger('click');
         swal({

@@ -117,7 +117,6 @@ $(function() {
     type: 'get',
     dataType: 'json',
     success(data) {
-      console.log('ddd',data)
       addToManifestForm
         .find('[name="manifestId"]')
         .select2({
