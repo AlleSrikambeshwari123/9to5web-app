@@ -53,15 +53,18 @@ $('.btn-print-pkg').click(function () {
 
 $('.btn-print-pkgs').click(function () {
   let id = $(this).data('id');
+  $('.btn-print-pkgs').text('Loading...')
   $.ajax({
     url: '/warehouse/print-pdf/pkg/' + id,
     type: 'get',
     success: function(response) {
-      console.log('reser',response)
+      // console.log('reser',response)
       if (response.success) {
         pdfPath = '/util/pdf' + response.filename;
         printJS(pdfPath)
+        $('.btn-print-pkgs').text('Print Pkgs')
       } else {
+        $('.btn-print-pkgs').text('Print Pkgs')
         $('.close-del').trigger('click');
         swal({
           title: 'Failed',

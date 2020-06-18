@@ -293,15 +293,17 @@ class AllPackagesOnAwb {
             ], //end table body
           },
         },
+        {
+            text: '',
+            fontSize: 11,
+            alignment: 'right',
+            bold: true,
+            margin: [0, 15],
+            pageBreak: !item.isLast ? 'after' : null,
+        },
       ]
   }
-  calculateDimensionalWeight(dimensions) {
-    var dimensionparts = dimensions.split('x');
-    var numerator = 1;
-    dimensionparts.forEach((part) => (numerator *= Number(part.trim())));
-    var dimWeight = numerator / 139;
-    return Number(dimWeight).formatMoney(2, '.', ',');
-  }
+  
   async generate() {
     return new Promise(async (resolve, reject) => {
       this.awb = this.data
