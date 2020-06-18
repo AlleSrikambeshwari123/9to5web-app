@@ -43,7 +43,7 @@ window.AWBInvoices = (() => {
         };
       });
     
-    console.error('data ', data);  
+    // console.error('data ', data);  
 
     return data;  
   }

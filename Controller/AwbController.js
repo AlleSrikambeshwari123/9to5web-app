@@ -196,7 +196,7 @@ exports.add_new_awb = async (req, res, next) => {
 exports.update_awb = (req, res, next) => {
   let awbId = req.params.id;
   let {invoices, ...awb} = req.body;
-
+  console.log('bodydd',req.body)
   let packages = JSON.parse(awb.packages);
   let purchaseOrders = JSON.parse(awb.purchaseOrder);
 

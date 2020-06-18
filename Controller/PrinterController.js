@@ -17,6 +17,7 @@ var lblPdfGen = new LBLGeneration();
 var cubPdfGen = new CUBEGeneration();
 const Awb = require('../models/awb');
 //var cubeService = require("../Services/CubeService")
+var AllPackagesOnAwb = require('../Util/PrintAllPackages')
 
 
 exports.send_print_awb = (req, res, next) => {
@@ -95,6 +96,31 @@ exports.download_pkg_labels = (req, res, next) => {
     lblPdfGen.generateAllPackageLabels(awb).then(results => {
       res.zip(results);
     })
+  })
+}
+
+exports.print_all_pkg_labels = async (req, res, next) => {
+  let id = req.params.id;
+  console.log("Downloading Package Label PDF", id);
+  getFullAwb(id).then(async awb => {
+    // console.log('asd',awb)
+    if(awb.packages.length >0){
+      const pkgs = await Promise.all(awb.packages.map(async ab=>{
+        const image = await lblPdfGen.generateBarcode(ab.trackingNo);
+        ab._doc['png'] = image.toString('base64')
+        ab._doc['calculateDimensionalWeight'] = lblPdfGen.calculateDimensionalWeight(ab.dimensions)
+        return ab
+      }))
+      awb.packages = pkgs
+    }
+    // console.log(awb)
+    let pkgs = new AllPackagesOnAwb(awb)
+    let stream = await pkgs.generate();
+    // res.type('pdf');
+    // res.attachment(`${awb.id}-USC.pdf`);
+    // stream.pipe(res);
+    // stream.end();
+    res.send(stream)
   })
 }
 
