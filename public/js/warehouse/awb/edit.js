@@ -275,7 +275,8 @@ $(function () {
         return acc;
       }, {});
     awbInfo.isSed = sedAnswered || Number(awbInfo.isSed);
-    
+    var pickup = $('select.awb-deliveryMethod').children("option:selected").val();
+    if (pickup == 1) delete awbInfo.driver
     if (deletedPackages && deletedPackages.length) {
       awbPackages = [...awbPackages, ...deletedPackages];
     }
