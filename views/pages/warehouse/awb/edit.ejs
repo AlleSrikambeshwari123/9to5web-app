@@ -97,7 +97,7 @@
               <div class="form-group form-show-validation row hideDriver">
                 <label for="driver" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Driver</label>
                 <div class="col-lg-8 col-md-8 col-sm-8">
-                  <select id="driver" name="driver" class='form-control' style='width:90%;' required>
+                  <select id="driver" name="driver" class='form-control' style='width:90%;'>
                     <option></option>
                     <% drivers.forEach(driver => { %>
                       <option value="<%=driver.id%>" <% if(awb.driver == driver.id) { %> selected <% } %>>
