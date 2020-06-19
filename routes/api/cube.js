@@ -105,7 +105,7 @@ router.get('/get-cube/:id',async (req,res,next)=>{
 
 })
 
-router.get('/getcube2',async (req,res,next)=>{
+router.get('/getcube2',passport.authenticate('jwt', { session: false }), async (req,res,next)=>{
   try{
     const cubes = await services.cubeService.getCube2Type()
     if(cubes == null) res.send({success:false,message:'No Data Found'})
