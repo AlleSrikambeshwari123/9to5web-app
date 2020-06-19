@@ -28,7 +28,11 @@
               <tr data-record="<%= cube.id %>">
                 <td><%=cube.id%></td>
                 <td><strong><%=cube.name%></strong></td> 
-                <td><a class="btn btn-link" href="/warehouse/cube/awbDetail/<%=cube.cubeAwbId.id%>"><%=cube.awbId%></a></td> 
+                <% let cube2link = cube.cubeAwbId ? cube.cubeAwbId.id : ''
+                if(cube2link == '') cube2link = '#' 
+                else cube2link = '/warehouse/cube/awbDetail/'+cube2link
+                %>
+                <td><a class="btn btn-link" href="<%=cube2link %>"><%=cube.awbId%></a></td> 
                 <td><%=helpers.formatDate(cube.createdAt)%></td> 
                 <!--<td><a href="/warehouse/cube/detail/<%=cube.id%>" data-id='<%=cube.id%>' data-target="#package-cube" data-toggle='modal' class="package-detail" onclick="cubePackaceDetail('<%=cube._id%>')"><i class="fas fa-eye"></i></a></td>              
                 -->
