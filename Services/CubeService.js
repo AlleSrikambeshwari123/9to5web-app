@@ -27,7 +27,8 @@ class CubeService {
             const awbId = (cube.cubepackageId && cube.cubepackageId.awbId)?cube.cubepackageId.awbId:null;
             const awbData = await Awb.findOne({_id:awbId});
             // result[i]['awbId'] = awbData.awbId?awbData.awbId:'';
-            result[i]['awbId'] = 'C'+result[i].cubeAwbId.cubeAwbNo
+            let cubeAwbNo = result[i].cubeAwbId ? result[i].cubeAwbId.cubeAwbNo: ''
+            result[i]['awbId'] = 'C'+cubeAwbNo
           }
           //console.log(result)
           resolve(result);
