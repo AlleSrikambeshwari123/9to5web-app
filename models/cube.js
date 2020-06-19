@@ -1,15 +1,14 @@
 'use strict';
 
 const mongoose = require('mongoose');
-const  autoIncrement = require('mongoose-auto-increment');
-autoIncrement.initialize(mongoose.connection);
 const cubeTypeSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true
   },
-  cubeAwbNo:{
-    type:String
+  cubeAwbId:{
+    type:mongoose.Schema.Types.ObjectId,
+    ref:'CubeAwb'
   },
   userId:{
     type: mongoose.Schema.Types.ObjectId, 
@@ -28,12 +27,6 @@ const cubeTypeSchema = new mongoose.Schema({
   }
 }, {
   timestamps: true
-});
-
-cubeTypeSchema.plugin(autoIncrement.plugin, {
-  model: 'cubeTypeSchema', 
-  field: 'cubeAwbNo', 
-  startAt: 100000
 });
 
 module.exports = mongoose.model('Cube', cubeTypeSchema);

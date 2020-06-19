@@ -3,7 +3,12 @@
   <div class="col-xl-12 col-lg-6 col-md-12 col-sm-12">
     <div class="card">
       <div class="card-header d-flex align-items-left align-items-md-center flex-column flex-md-row">
-        <div class="card-title"><%=title%></div>        
+        <div class="card-title"><%=title%></div>
+        <button class="btn btn-primary btn-add-cube2 btn-round float-right ml-md-auto"
+          data-toggle="modal"
+          data-original-title="Add Cube2"
+          data-target="#addCube2-popup"
+        >Add Cube2</button>        
       </div>
       <div class="card-body">
         <div class="table-responsive">
@@ -23,7 +28,7 @@
               <tr data-record="<%= cube.id %>">
                 <td><%=cube.id%></td>
                 <td><strong><%=cube.name%></strong></td> 
-                <td><%=cube.awbId%></td> 
+                <td><a class="btn btn-link" href="/warehouse/cube/awbDetail/<%=cube.cubeAwbId.id%>"><%=cube.awbId%></a></td> 
                 <td><%=helpers.formatDate(cube.createdAt)%></td> 
                 <!--<td><a href="/warehouse/cube/detail/<%=cube.id%>" data-id='<%=cube.id%>' data-target="#package-cube" data-toggle='modal' class="package-detail" onclick="cubePackaceDetail('<%=cube._id%>')"><i class="fas fa-eye"></i></a></td>              
                 -->
@@ -155,6 +160,33 @@
           Print
         </button>
       </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="addCube2-popup" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <form method="POST" id="add-cube2-form">
+        <div class="modal-header">
+          <h2 class="modal-title">Add Cube2</h2>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <input type="text" class="hiddenCubeId" hidden/>
+          <div class='form-group'>
+            <label for="name">Cube2</label>
+            <input class='form-control Cube2' type='text' placeholder="Cube2" id='Cube2' name="type" required>
+          </div>
+            <div id="cube2TypeBody"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class='btn btn-primary cube2actionbtn'>Add</button>
+          <button type="button" class="btn btn-danger close-del" data-dismiss="modal">Close</button>
+        </div>
+      </form>
     </div>
   </div>
 </div>
