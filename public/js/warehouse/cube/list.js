@@ -64,6 +64,12 @@ $('#add-cube2-form').submit(function (event) {
     }
   })
   
+  $(".close-del").click(function(){
+    $('.Cube2').val('')
+    $('.hiddenCubeId').val('')
+    $('.cube2actionbtn').text('Add')
+  });
+
   $('.btn-add-cube2').click(function () {
     $.ajax({
       url: '/warehouse/cube/cube2type/',
@@ -85,7 +91,7 @@ $('#add-cube2-form').submit(function (event) {
 
   $(document).on('click', '.edit-cube2type', function(){
     var id = $(this).data('id');
-    var val = $(this).parent().parent().find('h3').text();
+    var val = $(this).parent().parent().find('strong').text();
     $('.Cube2').val(val)
     $('.hiddenCubeId').val(id)
     $('.cube2actionbtn').text('Update')
