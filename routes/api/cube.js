@@ -105,6 +105,18 @@ router.get('/get-cube/:id',async (req,res,next)=>{
 
 })
 
+router.get('/getcube2',async (req,res,next)=>{
+  try{
+    const cubes = await services.cubeService.getCube2Type()
+    if(cubes == null) res.send({success:false,message:'No Data Found'})
+    else res.send({success:true,data:cubes})
+  }catch(err){
+    console.log(err)
+    res.send({ success: false, message: strings.string_response_error });
+  }
+
+})
+
 router.delete('/delete-cube/:id',async (req,res,next)=>{
   try{
     const cubeData = await services.cubeService.removeCube(req.params.id);
