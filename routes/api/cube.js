@@ -4,6 +4,7 @@ var passport = require('passport');
 require('./authHelper')
 const strings = require('../../Res/strings');
 var services = require('../../Services/RedisDataServices');
+var middleware = require('../../middleware');
 var moment = require('moment');
 var mongoose = require('mongoose');
 
@@ -59,6 +60,47 @@ router.post('/assign-packages/:id',passport.authenticate('jwt', { session: false
       for(let i=0;i<package.length;i++){
         pid.push(mongoose.Types.ObjectId(package[i]));
         await services.packageService.updatePackageStatus(package[i],8,req.body.userId);        
+      }
+
+      if(!package && package.length==0){        
+        return res.send({ success: false, message: strings.string_response_error });
+      }   
+      const packageDetail = await services.cubeService.packageDetail(package[0]);
+      if(!packageDetail){
+        return res.send({ success: false, message: strings.string_response_error });
+      }  
+      packageDetail.packageType = "Cube";    
+      const updateDetail = {packages:package};
+      if(cubeData.cubepackageId==null){
+        const cubepackageId = await services.cubeService.createPackage(cubeData, packageDetail);  
+        updateDetail.cubepackageId = cubepackageId;
+      }
+      services.cubeService.assignPackage(req.params.id, updateDetail).then(async result => {
+        await services.cubeService.updatePackageCubeId(pid, req.params.id);
+        return res.send(result);
+      })
+    }catch(err){
+      console.log(err)
+      res.send({ success: false, message: strings.string_response_error });
+    }
+})
+
+router.post('/web/assign-packages/:id',middleware().checkSession, async (req,res,next)=>{
+  
+    try{
+      const cubeData = await services.cubeService.getCubeDetail(req.params.id);
+      if(!cubeData){
+        return res.send({ success: false, message: strings.string_response_error });
+      }
+            
+      //const trackingNumber = req.body.trackingNumber;
+      //const packageIds = await services.cubeService.getPackageIds(trackingNumber);
+      const packageIds = req.body.packageIds?req.body.packageIds:'';
+      const package = packageIds.split(',');
+      const pid = [];
+      for(let i=0;i<package.length;i++){
+        pid.push(mongoose.Types.ObjectId(package[i]));
+        await services.packageService.updatePackageStatus(package[i],8,req.userId);        
       }
 
       if(!package && package.length==0){        

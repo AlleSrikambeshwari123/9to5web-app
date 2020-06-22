@@ -21,6 +21,15 @@
         class="card-header d-flex align-items-left align-items-md-center flex-column flex-md-row"
       >
         <div class="card-title"><%= title %></div>
+        <div class="d-flex align-items-right float-right ml-md-auto">
+        <button
+        id="add-to-cube-button"
+        data-toggle="modal"
+        data-target="#add-to-cube-modal"
+        class="btn btn-primary btn-round float-right mr-2 ml-md-auto"
+        >
+        Add to Cube
+        </button>
         <% if (buttonName === 'Add to Delivery') { %>
           <button
             id="add-to-delivery-button"
@@ -41,7 +50,7 @@
             Add to Manifest
           </button>
         <% } %> 
-
+      </div>
       </div>
       <div class="card-body">
         <table id = "package-table" class="display table table-responsive table-striped table-hover dataTable package-table">
@@ -136,6 +145,42 @@
           <div class="form-group">
             <label for="compartmentId">Compartment</label>
             <select id="compartmentId" name="compartmentId" class="form-control" required disabled>
+              <option></option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Add</button>
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+<!-- Add Packages To Cube -->
+<div
+  class="modal fade"
+  id="add-to-cube-modal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="print-popup"
+  aria-hidden="true"
+  style="display: none;"
+>
+  <div class="modal-dialog" role="document">
+    <form id="add-to-cube-form" method="post">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title">Add packages to Cube</h2>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <input type="text" hidden name="packageIds" />
+          <div class="form-group">
+            <label for="CubeId">Cube</label>
+            <select id="CubeId" name="CubeId" class="form-control" required>
               <option></option>
             </select>
           </div>

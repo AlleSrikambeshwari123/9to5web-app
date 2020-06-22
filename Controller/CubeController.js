@@ -11,6 +11,15 @@ exports.get_cube_list = (req, res, next) => {
     })
   })
 }
+exports.getAllCubes = async (req,res,next) =>{
+  try{
+    const cubeData = await services.cubeService.allCubes();
+    res.send(cubeData);
+  }catch(err){
+    console.log(err)
+    res.send({ success: false, message: "Not Found" });
+  }
+}
 
 exports.cube_detail = (req, res, next) => {
   services.cubeService.CubeDtail(req.params.id).then(cube => {  
