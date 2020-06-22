@@ -36,6 +36,12 @@ exports.add_new_manifest = (req, res, next) => {
   })
 }
 
+exports.get_manifest_detail_byId = (req,res,next) =>{
+  if(req.params.id === undefined) res.send({success:false,message:'Please Provide ManifestId'})
+  services.manifestService.getManifest(req.params.id).then(result=>{
+    res.send({success:true,data:result})
+  })
+}
 exports.delete_manifest = (req, res, next) => {
   services.manifestService.deleteManifest(req.params.id).then(result => {
     res.send(result);

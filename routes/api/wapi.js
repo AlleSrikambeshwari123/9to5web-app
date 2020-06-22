@@ -409,4 +409,7 @@ router.get('/manifest/manage/:id/ship',passport.authenticate('jwt', { session: f
 
 //Receive Flight Manifest
 router.get('/manifest/manage/:id/receive', passport.authenticate('jwt', { session: false }), manifestCtrl.receive_manifest);
+
+// GetManifest data By Id
+router.get('/manifest/:id/get',  passport.authenticate('jwt', { session: false }), manifestCtrl.get_manifest_detail_byId);
 module.exports = router;
