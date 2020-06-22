@@ -1,6 +1,7 @@
 var emailService = require('../Util/EmailService');
 var mongoose = require('mongoose')
 var moment = require('moment');
+var momentz = require('moment-timezone')
 var fs = require('fs');
 var uniqId = require('uniqid');
 var strings = require('../Res/strings');
@@ -527,12 +528,46 @@ checkInStore(data, username) {
     })
   }
 
+
+  async getPackageStatusByPackgeId(id,status){
+    return new Promise((resolve,reject)=>{
+      PackageStatus.findOne({packageId:id,status:PKG_STATUS[status]},(err,result)=>{
+        if(err){
+          resolve({success:false,message: strings.string_response_error})
+        }else{
+          resolve(result)
+        }
+      })
+    })
+  }
+
   async getAllPackagesWithLastStatus() {
     let packages = await this.getAllPackages_updated();
     return await Promise.all(
       packages.map(async (pkg) => {
         let status = await this.services.packageService.getPackageLastStatus(pkg._id);
         pkg.lastStatusText = status && status.status;
+        if(pkg.originBarcode){
+          let barcode = await this.getOriginBarcode(pkg.originBarcode)
+          if(barcode !== null && barcode.createdAt){
+            pkg.OrignalBarcodeDate = momentz(barcode.createdAt).tz('America/New_York').format('dddd, MMMM Do YYYY, h:mm A z'); 
+          }
+        }
+        if(pkg.awbId){
+          let awb = await this.services.awbService.getAwb(pkg.awbId)
+          if(awb !== null && awb.createdAt){
+            pkg.awbCreatedAt = momentz(awb.createdAt).tz('America/New_York').format('dddd, MMMM Do YYYY, h:mm A z'); 
+          }
+        } 
+        if(pkg.manifestId){
+          let actualFlight = await Manifest.findById(pkg.manifestId).populate('planeId')
+          if(actualFlight !== null && actualFlight.planeId){
+            pkg.actualFlight = actualFlight.planeId ? actualFlight.planeId.tailNumber:''
+          }
+        }
+        pkg.OrignalBarcodeDate = pkg.OrignalBarcodeDate || ''
+        pkg.awbCreatedAt = pkg.awbCreatedAt || ''
+        pkg.actualFlight = pkg.actualFlight || ''
         return pkg;
       }),
     );

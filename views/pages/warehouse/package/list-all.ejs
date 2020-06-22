@@ -65,6 +65,9 @@
               <th>Type</th>
               <th>Weight</th>
               <th>Status</th>
+              <th>OrignalScanDate</th>
+              <th>AirwareBillDate</th>
+              <th>ActualFlight</th>
               <th></th>
               <!-- <th></th> -->
             </tr>
@@ -95,6 +98,9 @@
               <td><%= pkg.packageType %></td>
               <td><%= pkg.weight%></td>
               <td class="lastStatusText_field"><%= pkg.lastStatusText %></td>
+              <td><%= pkg.OrignalBarcodeDate %></td>
+              <td><%= pkg.awbCreatedAt %></td>
+              <td><%= pkg.actualFlight %></td>
               <!-- <td><a href="../pkg-label/download/<%=pkg._id%>"><i class="fa fa-download"></i></a></td> -->
               <td class="text-center">
                 <a href="../pkg-label/download/<%=pkg._id%>"><i class="fa fa-download"></i></a>
