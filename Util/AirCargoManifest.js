@@ -68,7 +68,7 @@ class AirCargoManifest {
                     'Building 6W',
                     'Ft Lauderdale, FL 33309',
                     'UNITED STATES',
-                    'Tel: 954-958-9970, Fax:954-958-9701',
+                    'Tel: 954-958-9970, Fax:954-958-9071',
                   ],
                 },
               ],

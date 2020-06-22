@@ -200,7 +200,7 @@ class AWBGeneration {
           { text: 'Building 6W\r\n', fontSize: 11, margin: [5, 1] },
           { text: 'Ft Lauderdale, FL 33309\r\n', fontSize: 11, margin: [5, 1] },
           { text: 'UNITED STATES \r\n', fontSize: 11, margin: [5, 1] },
-          { text: 'Tel: 954-958-9970, Fax:954-958-9701', fontSize: 11, margin: [5, 1] }
+          { text: 'Tel: 954-958-9970, Fax:954-958-9071', fontSize: 11, margin: [5, 1] }
         ]
       },
       {

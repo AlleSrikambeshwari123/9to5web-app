@@ -51,7 +51,7 @@ var fonts = {
                             {text:'Hanger 42D\r\n',fontSize:7,margin: [5,1]},
                             {text:'Ft. Lauderdate, FL 33309\r\n',fontSize:7,margin:[5,1]},
                             {text:'UNITED STATES \r\n',fontSize:7,margin: [5,1]},
-                            {text:'Tel: 954-958-9970, Fax:954-958-9701',fontSize:7,margin: [5,1]}
+                            {text:'Tel: 954-958-9970, Fax:954-958-9071',fontSize:7,margin: [5,1]}
                         ]
                 },
                 {
