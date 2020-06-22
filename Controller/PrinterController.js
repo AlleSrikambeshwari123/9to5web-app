@@ -238,18 +238,20 @@ exports.downloadFlightManifest = async (req, res, next) => {
           name: String(
             pkg.customerId &&
             [pkg.customerId.firstName, pkg.customerId.lastName].filter(Boolean).join(' '),
-          ),
-        },
-        shipper: {
-          name: String(pkg.shipperId && pkg.shipperId.name),
-          address: String(pkg.shipperId && pkg.shipperId.address),
-        },
-      };
-    });
-
+            ),
+          },
+          shipper: {
+            name: String(pkg.shipperId && pkg.shipperId.name),
+            address: String(pkg.shipperId && pkg.shipperId.address),
+          },
+        };
+      });
+      let image = await lblPdfGen.generateBarcode(manifest.id)
+      image = 'data:image/jpeg;base64,' + image.toString('base64')
     let flightManifest = new FlightManifest({
       carrier: "Nine To Five Import Export",
       departureDate: manifest.shipDate,
+      barcode:image,
       flightNumber: manifest.planeId.tailNumber,
       rows,
     });
