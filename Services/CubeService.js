@@ -242,7 +242,6 @@ class CubeService {
     if(typeof id == "string"){
       id = mongoose.Types.ObjectId(id);
     }
-    
     return new Promise((resolve, reject) => { 
     Cube.aggregate([
       {
