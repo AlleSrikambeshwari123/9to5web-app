@@ -550,13 +550,13 @@ checkInStore(data, username) {
         if(pkg.originBarcode){
           let barcode = await this.getOriginBarcode(pkg.originBarcode)
           if(barcode !== null && barcode.createdAt){
-            pkg.OrignalBarcodeDate = momentz(barcode.createdAt).tz('America/New_York').format('dddd, MMMM Do YYYY, h:mm A z'); 
+            pkg.OrignalBarcodeDate = momentz.utc(barcode.createdAt).tz("America/New_York").format('dddd, MMMM Do YYYY, h:mm A'); 
           }
         }
         if(pkg.awbId){
           let awb = await this.services.awbService.getAwb(pkg.awbId)
           if(awb !== null && awb.createdAt){
-            pkg.awbCreatedAt = momentz(awb.createdAt).tz('America/New_York').format('dddd, MMMM Do YYYY, h:mm A z'); 
+            pkg.awbCreatedAt = momentz(awb.createdAt).tz("America/New_York").format('dddd, MMMM Do YYYY, h:mm A'); 
           }
         } 
         if(pkg.manifestId){
