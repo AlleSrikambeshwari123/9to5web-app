@@ -111,7 +111,7 @@ exports.close_manifest = (req, res, next) => {
 exports.ship_manifest = (req, res, next) => {
   var mid = req.params.id;
   // var user = res.user.username;
-  const userId = req['userId'];
+  const userId = req['userId'] || req.user.id || req.headers.userid;
   services.manifestService.shipManifest(mid, userId).then((sResult) => {
     res.send(sResult);
   });
@@ -130,7 +130,7 @@ exports.get_incoming_manifest = (req, res, next) => {
 
 exports.receive_manifest = (req, res, next) => {
   var mid = req.params.id;
-  const userId = req['userId'];
+  const userId = req['userId'] || req.user.id || req.headers.userid;
   services.manifestService.receiveManifest(mid, userId).then(result => {
     // services.packageService.updateManifestPackageToReceived(mid, userId);
     res.send(result);

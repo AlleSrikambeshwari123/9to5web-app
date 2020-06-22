@@ -70,6 +70,20 @@ class FlightManifest {
           margin: [0, 0, 0, 20],
         },
         {
+          margin: [0, 0, 0, 20],
+          stack: [
+            {
+              margin: [0, 2],
+              image: this.data.barcode,
+              width: 180,
+              height: 30,
+              alignment: 'center',
+            },
+            // {margin:[0,5],text:"PK"+this.awb.id, fontSize:12,bold:true},
+          ],
+          // border: [false, false, false, true],
+        }, //barcode for lbl
+        {
           layout: 'noBorders',
           headerRows: 0,
           table: {

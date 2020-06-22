@@ -7,6 +7,7 @@ var PackageUtil = require('../../Util/packageutil').PackageUtility;
 var checkEmpty = require('../../Util/utils').checkEmpty
 var middleware = require('../../middleware');
 var packageUtil = new PackageUtil();
+var manifestCtrl = require('../../Controller/ManifestController');
 
 router.post('/authenticate', (req, res, next) => {
   var body = req.body;
@@ -402,5 +403,10 @@ router.post('/check-in-store', passport.authenticate('jwt', { session: false }),
   })
 })
 
+// Manifest APIs
+// Ship Flight Manifest
+router.get('/manifest/manage/:id/ship',passport.authenticate('jwt', { session: false }), manifestCtrl.ship_manifest);
 
+//Receive Flight Manifest
+router.get('/manifest/manage/:id/receive', passport.authenticate('jwt', { session: false }), manifestCtrl.receive_manifest);
 module.exports = router;
