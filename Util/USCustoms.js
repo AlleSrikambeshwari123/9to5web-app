@@ -175,7 +175,7 @@ class USCustoms {
               {
                 stack: [
                   { text: 'Accounting Information', margin: [0, 0, 0, 5] },
-                  { text: "MAWB: "+item.accountingInformation, fontSize: 10 },
+                  { text: "AWB# : "+item.accountingInformation, fontSize: 10 },
                 ],
                 margin: 4,
               },
@@ -585,8 +585,24 @@ class USCustoms {
         ..._.flatMap(this.data.items, (item, i, array) => {
           
           let natureOfGood = {text: String(item.natureOfAwb.toUpperCase()), margin:[0,10,0,5], fontSize: 11, alignment: "center" };
-          let addressblock1 = {};
-          let addressblock2 = {};
+          let addressblock1 = {
+            stack: [
+              'Nine To Five Import Export',
+              '2801 NW 55th Court',
+              'Building 6W',
+              'Ft Lauderdale, FL 33309'
+            ],
+            fontSize: 10,
+          };
+          let addressblock2 = {
+            stack: [
+              'Nine To Five Import Export',
+              '2801 NW 55th Court',
+              'Building 6W',
+              'Ft Lauderdale, FL 33309'
+            ],
+            fontSize: 10,
+          };
 
           if (i==0) {
             natureOfGood = { 
@@ -600,24 +616,6 @@ class USCustoms {
             ]
             , margin: [10,20,0,0]}
             item.consignee = {}
-            addressblock1 = {
-              stack: [
-                'Nine To Five Import Export',
-                '2801 NW 55th Court',
-                'Building 6W',
-                'Ft Lauderdale, FL 33309'
-              ],
-              fontSize: 10,
-            };
-            addressblock2 = {
-              stack: [
-                'Nine To Five Import Export',
-                '2801 NW 55th Court',
-                'Building 6W',
-                'Ft Lauderdale, FL 33309'
-              ],
-              fontSize: 10,
-            };
           }
           if (i==1) {
             natureOfGood = { 
