@@ -173,10 +173,15 @@ exports.downloadAirCargoManifest = async (req, res, next) => {
       manifest.airportFromId && services.airportService.get(manifest.airportFromId),
       manifest.airportToId && services.airportService.get(manifest.airportToId),
     ]);
-
+    
+    
     let packagesByAWB = packages.reduce((acc, pkg) => {
       acc[pkg.awbId] = acc[pkg.awbId] || {};
       let item = acc[pkg.awbId];
+      if(pkg.awbId != null && pkg.awbId.invoices && pkg.awbId.invoices.length > 0) {
+        item['isInvoice'] = true;
+        pkg.awbId['isInvoice'] = true;
+      }
 
       item.awb = String(pkg.awbId.awbId);
       item.pieces = (item.pieces || 0) + 1;
@@ -198,6 +203,7 @@ exports.downloadAirCargoManifest = async (req, res, next) => {
       item.natureOfGoods = (pkg.description && pkg.description)
       return acc;
     }, {});
+
 
     let airCargoManifest = new AirCargoManifest({
       owner: 'Nine To Five Import Export LLC',

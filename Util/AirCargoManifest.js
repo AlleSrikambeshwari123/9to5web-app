@@ -92,7 +92,7 @@ class AirCargoManifest {
           margin: [0, 20],
           table: {
             headerRows: 3,
-            widths: ['auto', 'auto', 'auto', 'auto', '*', '*', '*'],
+            widths: ['auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
             body: [
               [
                 {
@@ -165,13 +165,13 @@ class AirCargoManifest {
                 { stack: ['17. Nature of Goods'], fontSize: 9, alignment: 'left' },
               ],
               ...this.data.rows.map((pkg) => [
-                { text: "AWB#"+pkg.awb, alignment: 'center' },
-                { text: pkg.pieces, alignment: 'center' },
-                { text: pkg.weight.toFixed(2), alignment: 'center' },
-                { text: convertLbsToKg(pkg.weight).toFixed(2), alignment: 'center' },
-                [pkg.shipper.name, pkg.shipper.address],
-                [pkg.consignee.name, pkg.consignee.address],
-                { text: pkg.natureOfGoods },
+                { text: "AWB#"+pkg.awb, alignment: 'center', bold: pkg.isInvoice ? true : false},
+                { text: pkg.pieces, alignment: 'center', bold: pkg.isInvoice ? true : false},
+                { text: pkg.weight.toFixed(2), alignment: 'center', bold: pkg.isInvoice ? true : false},
+                { text: convertLbsToKg(pkg.weight).toFixed(2), alignment: 'center', bold: pkg.isInvoice ? true : false},
+                { text : [pkg.shipper.name, pkg.shipper.address], bold: pkg.isInvoice ? true : false},
+                {text : [pkg.consignee.name, pkg.consignee.address], bold: pkg.isInvoice ? true : false},
+                { text: pkg.natureOfGoods + (pkg.isInvoice ? '*' : ''), bold: pkg.isInvoice ? true : false },
               ]),
             ],
           },
