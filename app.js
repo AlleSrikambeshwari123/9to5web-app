@@ -7,6 +7,8 @@ var bodyParser = require('body-parser');
 var ejsmate = require('ejs-mate');
 var helmet = require('helmet')
 var session = require('client-sessions');
+const createConnection = require('./Util/mongo');
+const mongoose = require('mongoose');
 
 // Account
 var accountPasswordRouter = require('./routes/account/password');
@@ -119,6 +121,23 @@ app.use('/api/printer', apiPrinterRouter);
 app.use('/api/warehouse', apiWarehouseRouter);
 app.use('/api/customer', apiCustomerRouter);
 app.use('/api/cube', apiCubeRouter)
+
+// Version API
+/**
+ * 0: disconnected
+  1: connected
+  2: connecting
+  3: disconnecting
+ */
+app.get('/status', (req, res, next) => {
+  let readyStateObj = {
+    0: "disconnected",
+    1: "connected",
+    2: "connecting",
+    3: "disconnecting"
+  } 
+  return res.send({connectivity : readyStateObj[mongoose.connection.readyState], version : process.env.APP_VERSION});  
+})
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
