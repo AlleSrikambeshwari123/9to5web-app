@@ -19,7 +19,7 @@ const manifestStages = {
   },
   received: {
     id: 4,
-    title: 'received'
+    title: 'Received'
   },
   verified: {
     id: 5,
