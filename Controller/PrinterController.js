@@ -224,6 +224,73 @@ exports.downloadAirCargoManifest = async (req, res, next) => {
   }
 };
 
+exports.downloadCubePdf = async (req, res, next) => {
+  try {
+    let cubeDataObject = await services.cubeService.getCubeCompleteData(req.params.id);
+
+    let packages = await services.packageService.cloneManifestAndOriginal(cubeDataObject.maniFestObject._id);
+
+    let manifest = await services.manifestService.getManifest(cubeDataObject.maniFestObject._id);
+    
+    let [airportFrom, airportTo] = await Promise.all([
+      manifest.airportFromId && services.airportService.get(manifest.airportFromId),
+      manifest.airportToId && services.airportService.get(manifest.airportToId),
+    ]);
+    
+    let packagesByAWB = packages.reduce((acc, pkg) => {
+      acc[pkg.awbId] = acc[pkg.awbId] || {};
+      let item = acc[pkg.awbId];
+
+      if(pkg.awbId != null && pkg.awbId.invoices && pkg.awbId.invoices.length > 0) {
+        item['isInvoice'] = true;
+        pkg.awbId['isInvoice'] = true;
+      }
+
+      item.awb = String(pkg.awbId.awbId);
+      item.pieces = (item.pieces || 0) + 1;
+      // in lbs
+      let weight = services.packageService.getPackageWeightInLBS(pkg);
+      item.weight = (item.weight || 0) + weight;
+
+      item.consignee = {
+        name : '',
+        address : ''
+      };
+
+      if(pkg.customerId) {
+        item.consignee.name = pkg.customerId.lastName ? (pkg.customerId.firstName + ' ' + pkg.customerId.lastName) : pkg.customerId.firstName
+        item.consignee.address = (pkg.customerId && pkg.customerId.address) ? pkg.customerId.address : ''
+      }
+
+      item.shipper = {
+        name: String(pkg.shipperId && pkg.shipperId.name),
+        address: String(pkg.shipperId && pkg.shipperId.address),
+      };
+
+      item.hazmat = (pkg.hazmatId && pkg.hazmatId.description) || " ";
+      item.natureOfGoods = (pkg.description && pkg.description)
+      return acc;
+    }, {});
+
+    let cubeManifest = new CUBE({
+      owner: 'Nine To Five Import Export LLC',
+      marksOfNationalityAndRegistration: 'United States - '+manifest.planeId.tailNumber,
+      flightNumber: manifest.planeId.tailNumber+manifest.title,
+      date: manifest.shipDate,
+      portOfLading: String(airportFrom && airportFrom.name),
+      portOfOnlading: String(airportTo && airportTo.name),
+      rows: Object.values(packagesByAWB),
+    });
+    let stream = await cubeManifest.generate();
+    res.type('pdf');
+    res.attachment(`${cubeDataObject._id}-Cube.pdf`);
+    stream.pipe(res);
+    stream.end();
+  } catch (error) {
+    next(error);
+  }
+};
+
 exports.downloadFlightManifest = async (req, res, next) => {
   try {
     let manifest = await services.manifestService.getManifest(req.params.id);
@@ -265,26 +332,7 @@ exports.downloadFlightManifest = async (req, res, next) => {
   }
 };
 
-exports.downloadCubePdf = async (req, res, next) => {
-  try {
-    let cubeDataObject = await services.cubeService.getCube(req.params.id);
-    const awbData = await Awb.findOne({_id: cubeDataObject.packages[0].awbId});
-    cubeDataObject['awbId'] = awbData.awbId?awbData.awbId:'';
 
-    let cube = new CUBE({
-      carrier: "Nine To Five Import Export",
-      cubeDataObject,
-    });
-
-    let stream = await cube.generate();
-    res.type('pdf');
-    res.attachment(`${cubeDataObject._id}-cube.pdf`);
-    stream.pipe(res);
-    stream.end();
-  } catch (error) {
-    next(error);
-  }
-};
 
 exports.downloadFlightLoadSheet = async (req, res, next) => {
   try {

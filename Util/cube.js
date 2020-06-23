@@ -4,11 +4,10 @@ const moment = require('moment');
 const TABLE_LAYOUT = {
   hLineColor: (i, node) => 'black',
   vLineColor: (i, node) => 'black',
-  fillColor: (rowIndex, node, columnIndex) => {
-    if (rowIndex === 0) {
-      return '#ccc';
-    }
-  },
+  paddingLeft: () => 4,
+  paddingRight: () => 4,
+  paddingTop: () => 4,
+  paddingBottom: () => 4,
 };
 
 const printer = new PDFPrinter({
@@ -38,6 +37,8 @@ const printer = new PDFPrinter({
   },
 });
 
+const convertLbsToKg = (value) => value / 2.20462262185
+
 class CUBE {
   constructor(data) {
     this.data = data;
@@ -46,62 +47,131 @@ class CUBE {
   async generate() {
     let definition = {
       pageSize: 'A4',
-      pageMargins: 40,
+      pageMargins: 20,
+      pageOrientation: 'landscape',
       footer: (currentPage, pageCount) => ({
-        text: `Page No: ${currentPage}/${pageCount}`,
+        text: `${currentPage}/${pageCount}`,
         alignment: 'right',
         margin: [0, 0, 20, 0],
       }),
 
       content: [
         {
-          stack: [
-            { text: 'NINE TO FIVE IMPORT EXPORT', lineHeight: 2.0, fontSize: 14 },
-            { text: '2801 NW 55th Court, Building 6W', fontSize: 10 },
-            { text: 'Ft Lauderdale, FL 33309', fontSize: 10 },
-            { text: 'Cube Details', lineHeight: 2.0, fontSize: 14, margin: [0, 10, 0, 0] },
-          ],
-          alignment: 'center',
-          bold: true,
-        },
-        {
-          text: [],
-          alignment: 'center',
-          margin: [0, 0, 0, 20],
-        },
-        {
-            layout: 'noBorders',
-            headerRows: 0,
-            table: {
-            widths: ['15%', '30%', '15%', '40%'],
-              body: [
-                [
-                  { text: 'Cube Name:', bold: true, margin: [0, 0, 0, 0] },
-                  { text: this.data.cubeDataObject.name, bold: true, margin: [0, 0, 0, 0] },
-                  { text: 'Cube Id:', bold: true, margin: [20, 0, 0, 0] },
-                  { text:  `Cub-${this.data.cubeDataObject._id}` },
-                ]
+          columns: [
+            {
+              width: '30%',
+              stack: [
+                {
+                  stack: [
+                    { text: 'Nine To Five Import Export', bold: true },
+                    { text: '2801 NW 55th Court', margin: [0, 10, 0, 0] },
+                    'Building 6W',
+                    'Ft Lauderdale, FL 33309',
+                    'UNITED STATES',
+                    'Tel: 954-958-9970, Fax:954-958-9071',
+                  ],
+                },
               ],
             },
+            {
+              width: '40%',
+              text: 'Cube Manifest'.toUpperCase(),
+              fontSize: 16,
+              bold: true,
+              alignment: 'center',
+              margin: [0, 40, 0, 0],
+            },
+            {
+              width: '30%',
+              text: '',
+            },
+          ],
         },
         {
           layout: TABLE_LAYOUT,
           margin: [0, 20],
           table: {
-            headerRows: 1,
-            widths: ['*', '20%', '*', '30%'],
+            headerRows: 3,
+            widths: ['auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
             body: [
               [
-                { text: 'AWB Id', alignment: 'center' },
-                { text: 'Weight', alignment: 'center' },
-                { text: 'Tracking Number', alignment: 'center' },
-                { text: 'Description', alignment: 'center' },
+                {
+                  stack: [
+                    { text: '2. Owner/Operator', fontSize: 9 },
+                    { text: String(this.data.owner), fontSize: 12, bold: true },
+                  ],
+                  colSpan: 4,
+                },
+                {},
+                {},
+                {},
+                {
+                  stack: [
+                    { text: '3. Marks Of Nationality and Registration', fontSize: 9 },
+                    {
+                      text: String(this.data.marksOfNationalityAndRegistration),
+                      fontSize: 12,
+                      bold: true,
+                    },
+                  ],
+                  colSpan: 2,
+                },
+                {},
+                {
+                  stack: [
+                    { text: '4. Flight No', fontSize: 9 },
+                    { text: String(this.data.flightNumber), fontSize: 12, bold: true },
+                  ],
+                },
               ],
-              ...this.data.cubeDataObject.packages.map((item) => [
-                {text: `AWB-${this.data.cubeDataObject.awbId}`, alignment: 'center'},
-                { text: `${Number(item.weight).toFixed(2)}(${item.packageCalculation})`, alignment: 'center'},
-                `PK-${item.trackingNo}`,
-                { text: item.description, alignment: 'center' },
+              [
+                {
+                  stack: [
+                    { text: '5. Port Of Lading', fontSize: 9 },
+                    { text: String(this.data.portOfLading), fontSize: 12, bold: true },
+                  ],
+                  colSpan: 4,
+                },
+                {},
+                {},
+                {},
+                {
+                  stack: [
+                    { text: '6. Port Of Onlading', fontSize: 9 },
+                    { text: String(this.data.portOfOnlading), fontSize: 12, bold: true },
+                  ],
+                  colSpan: 2,
+                },
+                {},
+                {
+                  stack: [
+                    { text: '7. Date', fontSize: 9 },
+                    {
+                      text: this.data.date ? moment(this.data.date).format('MMM/DD/YYYY') : '',
+                      fontSize: 12,
+                      bold: true,
+                    },
+                  ],
+                  colSpan: 1,
+                },
+              ],
+              [
+                { stack: ['10. Air Waybill Type', '11. Air Waybill No'], fontSize: 9 },
+                { stack: ['12.', 'NO. of', 'Pieces'], fontSize: 9, alignment: 'center' },
+                { stack: ['13.', 'Weight', '(Lb.)'], fontSize: 9, alignment: 'center' },
+                { stack: ['14.', 'Weight', '(Kg.)'], fontSize: 9, alignment: 'center' },
+                { stack: ['14. Shipper Name and Address'], fontSize: 9, alignment: 'left' },
+                { stack: ['16. Consignee Name and Address'], fontSize: 9, alignment: 'left' },
+                { stack: ['17. Nature of Goods'], fontSize: 9, alignment: 'left' },
+              ],
+              ...this.data.rows.map((pkg) => [
+                { text: "AWB#"+pkg.awb, alignment: 'center', bold: pkg.isInvoice ? true : false},
+                { text: pkg.pieces, alignment: 'center', bold: pkg.isInvoice ? true : false},
+                { text: pkg.weight.toFixed(2), alignment: 'center', bold: pkg.isInvoice ? true : false},
+                { text: convertLbsToKg(pkg.weight).toFixed(2), alignment: 'center', bold: pkg.isInvoice ? true : false},
+                { text : [pkg.shipper.name, pkg.shipper.address], bold: pkg.isInvoice ? true : false},
+                {text : [pkg.consignee.name , pkg.consignee.address], bold: pkg.isInvoice ? true : false},
+                { text: pkg.natureOfGoods + (pkg.isInvoice ? '*' : ''), bold: pkg.isInvoice ? true : false },
               ]),
             ],
           },
@@ -112,8 +182,16 @@ class CUBE {
               width: '50%',
               alignment: 'center',
               bold: true,
-              text: `Total Package Count: ${this.data.cubeDataObject.packages.length}`,
-            }
+              text: `Total Weight: ${this.data.rows
+                .reduce((acc, i) => acc + i.weight, 0)
+                .toFixed(2)} lbs`,
+            },
+            {
+              width: '50%',
+              alignment: 'center',
+              bold: true,
+              text: `Piece Count: ${this.data.rows.reduce((acc, i) => acc + i.pieces, 0)}`,
+            },
           ],
         },
       ],
@@ -121,6 +199,7 @@ class CUBE {
       defaultStyle: {
         font: 'Helvetica',
         fontSize: 11,
+        lineHeight: 1.2,
       },
     };
 

@@ -17,9 +17,9 @@ const manifestStages = {
     id: 3,
     title: 'Shipping'
   },
-  shipped: {
+  received: {
     id: 4,
-    title: 'Shipped'
+    title: 'received'
   },
   verified: {
     id: 5,
@@ -130,7 +130,7 @@ class ManifestService {
   
   receiveManifest(mid, userId) {
     return new Promise((resolve, reject) => {
-      const stage = this.getStageById(manifestStages.shipped.id);
+      const stage = this.getStageById(manifestStages.received.id);
 
       Manifest.findByIdAndUpdate({_id: mid}, {
         receiveDate: new Date(),
@@ -196,7 +196,7 @@ class ManifestService {
   getManifestProcessing() {
     return new Promise((resolve, reject) => {
       Manifest.find({$or: [
-        {stageId: manifestStages.shipped.id},
+        {stageId: manifestStages.received.id},
         {stageId: manifestStages.verified.id}
       ]})
       .populate('planeId')
@@ -236,8 +236,8 @@ class ManifestService {
     if (id == manifestStages.shipping.id) {
       return manifestStages.shipping;
     }
-    if (id == manifestStages.shipped.id) {
-      return manifestStages.shipped;
+    if (id == manifestStages.received.id) {
+      return manifestStages.received;
     }
     if (id == manifestStages.verified.id) {
       return manifestStages.verified;

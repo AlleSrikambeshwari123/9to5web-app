@@ -360,6 +360,55 @@ class CubeService {
     })
   }
 
+  async getCubeCompleteData(id){
+    if(typeof id == "string"){
+      id = mongoose.Types.ObjectId(id);
+    }
+    return new Promise((resolve, reject) => { 
+    Cube.aggregate([
+      {
+        $match:{_id:id}
+      },  
+      {
+        $lookup:{
+          from:"packages",
+          localField:"packages",
+          foreignField:"_id",
+          as:"packageList"
+        }
+      },
+      {
+        $lookup:{
+            from:"packages",
+            localField:"cubepackageId",
+            foreignField:"_id",
+            as:"cubeDetail"
+          }
+      },
+      {$unwind:"$cubeDetail"},
+      { 
+        $lookup: {
+          from: "manifests",
+          localField: "cubeDetail.manifestId",
+          foreignField: "_id",
+          as: "maniFestObject" 
+        }
+      },  
+      {$unwind:"$maniFestObject"},
+      {
+        $project:{_id:1, packageList:1, maniFestObject: 1,name:1,cubepackageId: 1, cubeDetail : 1}
+      }
+      ]).exec((err, result) => {
+        if(result && result.length>0){
+          resolve(result[0]);
+        }else{
+          resolve({})
+        }
+        
+      })    
+    })
+  }
+
 }
 
 module.exports = CubeService;
