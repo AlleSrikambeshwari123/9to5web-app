@@ -1431,17 +1431,67 @@ checkInStore(data, username) {
     });
   }
   
-  getPackageCube(pkgIds) {
+  // getPackageCube(pkgIds) {
+  //   return new Promise((resolve, reject) => {
+  //     Package.find({ _id: {$in:pkgIds} })
+  //       .populate(['awbId', 'compartmentId', 'shipperId', 'carrierId', 'customerId', 'hazmatId'])
+  //       .exec((err, packages) => {
+  //         if (err) {
+  //           resolve([]);
+  //         } else {
+  //           resolve(packages);
+  //         }
+  //       })
+  //   });
+  // }
+
+  async getPackageCube(pkgIds) {
+    let packages = await this.getAllPackagesOfCube({ _id: {$in:pkgIds} })
+    return await Promise.all(
+      packages.map(async (pkg) => {
+        let status = await this.services.packageService.getPackageLastStatus(pkg._id);
+        pkg.lastStatusText = status && status.status;
+        if(pkg.originBarcode){
+          let barcode = await this.getOriginBarcode(pkg.originBarcode)
+          if(barcode !== null && barcode.createdAt){
+            pkg.OrignalBarcodeDate = momentz.utc(barcode.createdAt).tz("America/New_York").format('dddd, MMMM Do YYYY, h:mm A'); 
+          }
+        }
+        if(pkg.awbId){
+          let awb = await this.services.awbService.getAwb(pkg.awbId)
+          if(awb !== null && awb.createdAt){
+            pkg.awbCreatedAt = momentz(awb.createdAt).tz("America/New_York").format('dddd, MMMM Do YYYY, h:mm A'); 
+          }
+        } 
+        if(pkg.manifestId){
+          let actualFlight = await Manifest.findById(pkg.manifestId).populate('planeId')
+          if(actualFlight !== null && actualFlight.planeId){
+            pkg.actualFlight = actualFlight.planeId ? actualFlight.planeId.tailNumber:''
+          }
+        }
+        pkg.OrignalBarcodeDate = pkg.OrignalBarcodeDate || ''
+        pkg.awbCreatedAt = pkg.awbCreatedAt || ''
+        pkg.actualFlight = pkg.actualFlight || ''
+        return pkg;
+      }),
+    );
+  }
+
+  getAllPackagesOfCube(cond) {
     return new Promise((resolve, reject) => {
-      Package.find({ _id: {$in:pkgIds} })
-        .populate(['awbId', 'compartmentId', 'shipperId', 'carrierId', 'customerId', 'hazmatId'])
-        .exec((err, packages) => {
+      Package.find(cond)
+        .populate('awbId')
+        .populate('originBarcode')
+        .populate('customerId')
+        .populate('zoneId')
+        .populate('shipperId')
+        .exec((err, result) => {
           if (err) {
             resolve([]);
           } else {
-            resolve(packages);
+            resolve(result);
           }
-        })
+        });
     });
   }
 

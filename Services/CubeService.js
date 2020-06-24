@@ -30,7 +30,6 @@ class CubeService {
             let cubeAwbNo = result[i].cubeAwbId ? result[i].cubeAwbId.cubeAwbNo: ''
             result[i]['awbId'] = 'C'+cubeAwbNo
           }
-          //console.log(result)
           resolve(result);
         }
       })

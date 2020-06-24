@@ -371,7 +371,7 @@ var fonts = {
                               { text: 'CONSIGNEE', fontSize: 4, bold: true },
                               {
                                 margin: [2, 5],
-                                text: '',
+                                text: 'Nine To Five Import Export',
                                 fontSize: 11,
                                 bold: true,
                               },
@@ -423,7 +423,7 @@ var fonts = {
                             margin: [1, 1],
                             stack: [
                               { text: 'SHIPPER', fontSize: 7, bold: true },
-                              { margin: [0, 5], text: '', fontSize: 10, bold: true },
+                              { margin: [0, 5], text: 'Nine To Five Import Export', fontSize: 10, bold: true },
                             ],
                             border: [false, false, false, true],
                           }, //logo for lbl

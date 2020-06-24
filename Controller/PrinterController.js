@@ -145,7 +145,7 @@ exports.generate_pkg_label_pdf = (req, res, next) => {
 
 exports.generate_cube_pdf = (req, res, next) => {
   services.cubeService.getCube(req.params.id).then(cube => {
-    cube.trackingNo =  cube.cubeDetail.trackingNo;
+    cube.trackingNo =  cube.cubeDetail ? cube.cubeDetail.trackingNo : null;
     services.printService.getAWBDataForAllRelatedEntities(cube.packages[0].awbId).then((awb) => {
       cubPdfGen.generateSinglePackageLabel(awb, cube).then(result => {
         res.send(result);
