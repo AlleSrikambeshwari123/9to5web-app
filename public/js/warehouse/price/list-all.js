@@ -113,10 +113,38 @@ function packagePriceLabel(response){
     pkg.awbId.invoices.map((inv) => (totalinvoiceVal += inv.value));
   }
   let Freight = (1.55 * pkg.weight).toFixed(2);
-  $('#Freight').val(Freight);
+  if(pkg.company == "Post Boxes"){
+    let fw = pkg.weight * 3;
+    if(fw <=35) $('#Freight').val(35)
+    else $('#Freight').val(fw);
+  }else{
+    $('#Freight').val(Freight);
+  } 
+  if(pkg.express) ExpressVal = 35,$('#Express').prop('checked',true),$('#ExpressVal').text('35');
+  tval(0,0,0,0,ExpressVal);
   pricelabelcommon(ServiceVat,NoDocsVal,InsuranceVal,SedVal,ExpressVal,totalinvoiceVal)
 }
-
+function tval(ServiceVat,NoDocsVal,InsuranceVal,SedVal,ExpressVal) {
+  let total =  (
+    Number($('#Brokerage').val()) +
+    Number($('#CustomsProc').val()) +
+    Number($('#CustomsVAT').val()) +
+    Number($('#Delivery').val()) +
+    Number($('#Duty').val()) +
+    Number($('#EnvLevy').val()) +
+    Number($('#Freight').val()) +
+    Number($('#Hazmat').val()) +
+    Number($('#Pickup').val()) +
+    Number(NoDocsVal) +
+    Number(InsuranceVal) +
+    Number(SedVal) +
+    Number(ExpressVal) +
+    Number(ServiceVat) +
+    Number($('#Storage').val())
+  );
+  $('#ServiceVat').val(((total * 7.5) / 100).toFixed(2));
+  $('#TotalWet').val((total + Number($('#ServiceVat').val())).toFixed(2));
+}
 function pricelabelcommon(ServiceVat,NoDocsVal,InsuranceVal,SedVal,ExpressVal,totalinvoiceVal){
   let Insurance = totalinvoiceVal * 0.01;
   $('#NoDocs').click(function () {
@@ -156,29 +184,8 @@ function pricelabelcommon(ServiceVat,NoDocsVal,InsuranceVal,SedVal,ExpressVal,to
     }
   });
 
-  function tval() {
-    return (
-      Number($('#Brokerage').val()) +
-      Number($('#CustomsProc').val()) +
-      Number($('#CustomsVAT').val()) +
-      Number($('#Delivery').val()) +
-      Number($('#Duty').val()) +
-      Number($('#EnvLevy').val()) +
-      Number($('#Freight').val()) +
-      Number($('#Hazmat').val()) +
-      Number($('#Pickup').val()) +
-      Number(NoDocsVal) +
-      Number(InsuranceVal) +
-      Number(SedVal) +
-      Number(ExpressVal) +
-      Number(ServiceVat) +
-      Number($('#Storage').val())
-    );
-  }
   $('#add-to-pricelabel-form').on('keyup change', function () {
-    tval();
-    $('#ServiceVat').val(((tval() * 7.5) / 100).toFixed(2));
-    $('#TotalWet').val((tval() + Number($('#ServiceVat').val())).toFixed(2));
+    tval(ServiceVat,NoDocsVal,InsuranceVal,SedVal,ExpressVal)
   });
 }
 

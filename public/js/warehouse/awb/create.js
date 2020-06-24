@@ -187,6 +187,7 @@ $(function () {
         $('#id').val(undefined);
         $('#description').val("");
         $('#weight').val("");
+        $("#express"). prop("checked", false);
         $('#packageCalculation').val('lbs');
         $('#packageType').val("BOX");
         $('#W').val("");
@@ -202,6 +203,7 @@ $(function () {
       $('#id').val(undefined);
       $("#description").val(lastPackage.description);
       $("#weight").val(lastPackage.weight);
+      $("#express").prop("checked",lastPackage.express);
       $('#packageCalculation').val(lastPackage.packageCalculation||'lbs');
       $('#packageType').val(lastPackage.packageType || 'BOX');
       var dims = lastPackage.dimensions.toLowerCase().split('x');
@@ -250,6 +252,9 @@ $(function () {
   $('#add-package-form').submit(function (event) {
     event.preventDefault();
     let pkg = extractFormData(this);
+    if(pkg.express == "on") pkg.express = true;
+    else pkg.express = false
+    console.log('pkgs',pkg)
     let isNew=false;
     if(!pkg.id){
       pkg.id = Date.now().toString();
