@@ -175,7 +175,7 @@ class USCustoms {
               {
                 stack: [
                   { text: 'Accounting Information', margin: [0, 0, 0, 5] },
-                  { text: "AWB# : "+item.accountingInformation, fontSize: 10 },
+                  { text: "AWB# : "+(item.packageAWBNumber ? item.packageAWBNumber : ''), fontSize: 10 },
                 ],
                 margin: 4,
               },
@@ -583,7 +583,6 @@ class USCustoms {
       pageMargins: 30,
       content: [
         ..._.flatMap(this.data.items, (item, i, array) => {
-          
           let natureOfGood = {text: String(item.natureOfAwb.toUpperCase()), margin:[0,10,0,5], fontSize: 11, alignment: "center" };
           let addressblock1 = {
             stack: [

@@ -443,6 +443,7 @@ exports.downloadUSCustoms = async (req, res, next) => {
         natureAndQuantityOfGoods: '???',
         ultimateDestination: 'BAHAMAS',
         natureOfAwb: awb.hazmat ? awb.hazmat.description : "",
+        packageAWBNumber : packages[0].awbId ? packages[0].awbId.awbId : ""
       };
     });
 
