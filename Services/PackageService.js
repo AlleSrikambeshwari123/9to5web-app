@@ -1005,6 +1005,22 @@ checkInStore(data, username) {
     });
   }
 
+  //========== load Packages in cargo =============//
+
+  updateManifestPackageToLoadOnAirCraft(manifestId, userId) {
+    return new Promise((resolve, reject) => {
+      this.getPackageOnManifest(manifestId).then((packages) => {
+        Promise.all(
+          packages.map((pkg) => {
+            return this.updatePackageStatus(pkg._id, 2, userId);
+          }),
+        ).then((results) => {
+          resolve({ success: true, message: strings.string_response_updated });
+        });
+      });
+    });
+  }
+
   //========== Ship Packages in Manifest ==========//
   updateManifestPackageToInTransit(manifestId, userId) {
     return new Promise((resolve, reject) => {
