@@ -169,7 +169,7 @@ async addPackageToShipment(packages, username) {
   }
 
   // 3: 'In Transit',
-  addPackagesToDelivery(deliveryId, packageIds,user) {
+  async addPackagesToDelivery(deliveryId, packageIds,user) {
     return new Promise(async(resolve, reject) => {
       let error = []
       let packages = packageIds && packageIds.length && packageIds.split(',').filter(Boolean);
@@ -181,7 +181,7 @@ async addPackageToShipment(packages, username) {
       Promise.all(
         packages.map(async (packageId) => {
           this.updatePackage(packageId, {deliveryId: deliveryId});
-          const status = this.updatePackageStatus(packageId, 3, user);
+          const status = await this.updatePackageStatus(packageId, 3, user);
           if(!status.success) error.push(status.message)
           return status  
         }),
