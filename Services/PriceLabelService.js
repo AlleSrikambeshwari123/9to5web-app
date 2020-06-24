@@ -44,8 +44,8 @@ class PriceLabelService {
         }
     })
       .exec((err, result) => {
-        if (err) {
-          resolve({});
+        if (err || result === null) {
+          resolve({success:false,message:'Price Label Does not Exist For this Package.'});
         } else {
           resolve(result);
         }

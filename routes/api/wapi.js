@@ -8,6 +8,7 @@ var checkEmpty = require('../../Util/utils').checkEmpty
 var middleware = require('../../middleware');
 var packageUtil = new PackageUtil();
 var manifestCtrl = require('../../Controller/ManifestController');
+var priceCtrl = require('../../Controller/PriceLabelController');
 
 router.post('/authenticate', (req, res, next) => {
   var body = req.body;
@@ -412,4 +413,11 @@ router.get('/manifest/manage/:id/receive', passport.authenticate('jwt', { sessio
 
 // GetManifest data By Id
 router.get('/manifest/:id/get',  passport.authenticate('jwt', { session: false }), manifestCtrl.get_manifest_detail_byId);
+
+// Add Or Update Price Label
+router.post('/pricelabels/:id', passport.authenticate('jwt', { session: false }), priceCtrl.add_pricelabel_package);
+
+// Get Price Labels
+router.get('/pricelabels/:id', passport.authenticate('jwt', { session: false }), priceCtrl.get_pricelabel_package);
+
 module.exports = router;
