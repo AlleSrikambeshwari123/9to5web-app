@@ -957,9 +957,24 @@ checkInStore(data, username) {
       })
     })
   }
+  
   getPackageOnManifest(manifestId) {
     return new Promise((resolve, reject) => {
       Package.find({ manifestId: manifestId })
+        .populate(['awbId', 'compartmentId', 'shipperId', 'carrierId', 'customerId', 'hazmatId'])
+        .exec((err, packages) => {
+          if (err) {
+            resolve([]);
+          } else {
+            resolve(packages);
+          }
+        })
+    });
+  }
+
+  getPackagesById(ids) {
+    return new Promise((resolve, reject) => {
+      Package.find({ _id: {$in : ids} })
         .populate(['awbId', 'compartmentId', 'shipperId', 'carrierId', 'customerId', 'hazmatId'])
         .exec((err, packages) => {
           if (err) {

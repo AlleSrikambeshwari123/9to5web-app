@@ -17,7 +17,7 @@ var lblPdfGen = new LBLGeneration();
 var cubPdfGen = new CUBEGeneration();
 const Awb = require('../models/awb');
 //var cubeService = require("../Services/CubeService")
-var AllPackagesOnAwb = require('../Util/PrintAllPackages')
+var AllPackagesOnAwb = require('../Util/PrintAllPackages');
 
 
 exports.send_print_awb = (req, res, next) => {
@@ -227,10 +227,20 @@ exports.downloadAirCargoManifest = async (req, res, next) => {
 exports.downloadCubePdf = async (req, res, next) => {
   try {
     let cubeDataObject = await services.cubeService.getCubeCompleteData(req.params.id);
+    
+    let packages = [];
+    let manifest = {};
 
-    let packages = await services.packageService.cloneManifestAndOriginal(cubeDataObject.maniFestObject._id);
+    if(cubeDataObject.cubeDetail && cubeDataObject.cubeDetail.manifestId) { 
+      manifest = await services.manifestService.getManifest(cubeDataObject.cubeDetail.manifestId);
+      packages = await services.packageService.cloneManifestAndOriginal(cubeDataObject.cubeDetail.manifestId);
+    } else if(cubeDataObject && cubeDataObject.packageList && cubeDataObject.packageList.length){
+      packages = await services.packageService.getPackagesById(cubeDataObject.packageList.map(a => a._id))
+    } else {
+      return res.send({ success: true, message: strings.string_noData })
+    }
 
-    let manifest = await services.manifestService.getManifest(cubeDataObject.maniFestObject._id);
+
     
     let [airportFrom, airportTo] = await Promise.all([
       manifest.airportFromId && services.airportService.get(manifest.airportFromId),
@@ -274,11 +284,11 @@ exports.downloadCubePdf = async (req, res, next) => {
 
     let cubeManifest = new CUBE({
       owner: 'Nine To Five Import Export LLC',
-      marksOfNationalityAndRegistration: 'United States - '+manifest.planeId.tailNumber,
-      flightNumber: manifest.planeId.tailNumber+manifest.title,
+      marksOfNationalityAndRegistration: 'United States - '+(manifest.planeId ? manifest.planeId.tailNumber : ''),
+      flightNumber: ((manifest && manifest.planeId) ? manifest.planeId.tailNumber : '') + (manifest ? manifest.title : ''),
       date: manifest.shipDate,
-      portOfLading: String(airportFrom && airportFrom.name),
-      portOfOnlading: String(airportTo && airportTo.name),
+      portOfLading: (airportFrom && airportFrom.name) ? String(airportFrom && airportFrom.name) : '',
+      portOfOnlading: (airportTo && airportTo.name) ? String(airportTo && airportTo.name) : '',
       rows: Object.values(packagesByAWB),
     });
     let stream = await cubeManifest.generate();

@@ -386,17 +386,17 @@ class CubeService {
           }
       },
       {$unwind:"$cubeDetail"},
-      { 
-        $lookup: {
-          from: "manifests",
-          localField: "cubeDetail.manifestId",
-          foreignField: "_id",
-          as: "maniFestObject" 
-        }
-      },  
-      {$unwind:"$maniFestObject"},
+      // { 
+      //   $lookup: {
+      //     from: "manifests",
+      //     localField: "cubeDetail.manifestId",
+      //     foreignField: "_id",
+      //     as: "maniFestObject" 
+      //   }
+      // },  
+      //{$unwind:"$maniFestObject"},
       {
-        $project:{_id:1, packageList:1, maniFestObject: 1,name:1,cubepackageId: 1, cubeDetail : 1}
+        $project:{_id:1, packageList:1,name:1,cubepackageId: 1, cubeDetail : 1}
       }
       ]).exec((err, result) => {
         if(result && result.length>0){
