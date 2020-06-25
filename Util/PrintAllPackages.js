@@ -202,9 +202,9 @@ class AllPackagesOnAwb {
                   stack: [
                     { text: 'TOTAL PIECES', fontSize: 6, bold: true },
                     {
-                      margin: [10, 5],
+                      margin: [5, 5],
                       text: i + '/' + this.awb.packages.length,
-                      fontSize: 12,
+                      fontSize: 10,
                       bold: true,
                     },
                   ],
