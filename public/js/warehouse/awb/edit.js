@@ -285,6 +285,11 @@ $(function () {
     awbInfo.invoices = [];
     let purchaseOrder = AWBPO.getItems();
     
+    if(awbInfo.fll_pickup == "on") awbInfo.fll_pickup = true;
+    else awbInfo.fll_pickup = false
+    if(awbInfo.invoicecheck == "on") awbInfo.invoicecheck = true;
+    else awbInfo.invoicecheck = false
+
     let deletedPurchaseOrders = AWBPO.getDeletedItems();
     if (deletedPurchaseOrders && deletedPurchaseOrders.length) {
       purchaseOrder = [...purchaseOrder, ...deletedPurchaseOrders];

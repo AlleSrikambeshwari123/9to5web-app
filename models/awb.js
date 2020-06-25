@@ -55,6 +55,14 @@ const awbSchema = new mongoose.Schema({
   note: {
     type: String
   },
+  invoicecheck:{
+    type:Boolean,
+    default:false
+  },
+  fll_pickup:{
+    type:Boolean,
+    default:false
+  },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
