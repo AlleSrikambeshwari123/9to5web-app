@@ -60,7 +60,13 @@ exports.get_filtered_package_list = (req, res, next) => {
       }
 
       return Promise.all(
-        packages.map(async (pkg) => {
+        packages.map(async (pkg, i) => {
+
+          // Adding package number and pieces in response
+          let awb = await services.printService.getAWBDataForPackagesRelatedEntitie(pkg.awbId);
+          packages[i].pieces = awb.packages ? awb.packages.length : 0
+          packages[i].packageNumber = "PK00" + packages[i].id;
+
           if (req.params.filter === 'in-manifest-no-docs') {
             return pkg;
           }

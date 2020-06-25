@@ -60,10 +60,12 @@
               <th>Customer Name</th>
               <th>AWB</th>
               <th>Original Tracking No</th>
+              <th>Package No</th>
               <th>Description</th>
               <th>Zone</th>
               <th>Type</th>
               <th>Weight</th>
+              <th>Number of Pieces</th>
               <th>Status</th>
               <th>OrignalScanDate</th>
               <th>AirwareBillDate</th>
@@ -88,6 +90,7 @@
                   <% } %>
               <td><a href="../../nas/awb/manage/<%=pkg.awbId._id%>/preview"> <%= pkg.awbId.awbId %> </a></td>
               <td><%= pkg.originBarcode ? pkg.originBarcode.barcode: ''%></td>
+              <td><%= pkg.packageNumber ? pkg.packageNumber : ''%></td>
               <td><%= pkg.description %></td>
               <% if (pkg['zoneId'] && pkg['zoneId'].name) { %>
                 <td><%= pkg['zoneId'].name %>
@@ -97,6 +100,7 @@
               <% } %> 
               <td><%= pkg.packageType %></td>
               <td><%= pkg.weight%></td>
+              <td><%= (pkg.pieces || pkg.pieces > -1) ? pkg.pieces : ''%></td>
               <td class="lastStatusText_field"><%= pkg.lastStatusText %></td>
               <td><%= pkg.OrignalBarcodeDate %></td>
               <td><%= pkg.awbCreatedAt %></td>
