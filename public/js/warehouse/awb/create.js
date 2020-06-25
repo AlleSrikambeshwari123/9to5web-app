@@ -254,7 +254,6 @@ $(function () {
     let pkg = extractFormData(this);
     if(pkg.express == "on") pkg.express = true;
     else pkg.express = false
-    console.log('pkgs',pkg)
     let isNew=false;
     if(!pkg.id){
       pkg.id = Date.now().toString();
@@ -308,7 +307,10 @@ $(function () {
     awbInfo.invoices = [];
     awbInfo.purchaseOrder = AWBPO.getItems();
     awbInfo.purchaseOrder = JSON.stringify(awbInfo.purchaseOrder);
-
+    if(awbInfo.fll_pickup == "on") awbInfo.fll_pickup = true;
+    else awbInfo.fll_pickup = false
+    if(awbInfo.invoicecheck == "on") awbInfo.invoicecheck = true;
+    else awbInfo.invoicecheck = false
     let promises = AWBInvoices.getInvoices().map(({ file, ...invoice }) => {
       if (!invoice.number && !invoice.value && !invoice.id) {
         return;
@@ -321,7 +323,6 @@ $(function () {
         awbInfo.invoices.push(invoice);
       });
     });
-
     Promise.all(promises)
       .then(() => {
         $.ajax({

@@ -86,7 +86,7 @@
                 <% } else { %>
                   <td> - </td>
                   <% } %>
-              <td><a href="../../nas/awb/manage/<%=pkg.awbId._id%>/preview"> <%= pkg.awbId.awbId %> </a></td>
+              <td><a class="text-decoration-none" href="../../nas/awb/manage/<%=pkg.awbId._id%>/preview"><b><%= pkg.express ? '*': '' %></b><%= pkg.awbId.awbId %> </a></td>
               <td><%= pkg.originBarcode ? pkg.originBarcode.barcode: ''%></td>
               <td><%= pkg.description %></td>
               <% if (pkg['zoneId'] && pkg['zoneId'].name) { %>
