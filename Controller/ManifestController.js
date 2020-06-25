@@ -48,28 +48,29 @@ exports.delete_manifest = (req, res, next) => {
   })
 }
 
-exports.get_manifest_detail = (req, res, next) => {
+exports.get_manifest_detail = async (req, res, next) => {
   const manifestId = req.params.id;
-  Promise.all([
-    services.manifestService.getManifest(manifestId),
-    services.packageService.cloneManifestAndOriginal(manifestId)
-  ]).then((results) => {
-    const manifest = results[0];
-    const packages = results[1];
-    
-    packages.forEach((pkg, i) => pkg.compartment = pkg.compartmentId);
-    
+
+  let packages = await services.packageService.cloneManifestAndOriginal(manifestId);
+  let manifest = await services.manifestService.getManifest(manifestId);
+
+  await Promise.all(packages.map(async (pkg, i) => {
+    let awb = await services.printService.getAWBDataForPackagesRelatedEntitie(pkg.awbId);
+    packages[i].pieces = awb.packages ? awb.packages.length : 0
+    packages[i].compartment = packages[i].compartmentId;
+    packages[i].packageNumber = "PK00" + packages[i].id;
+  }));
+
     res.render('pages/warehouse/manifest/preview', {
-      page: req.originalUrl,
-      user: res.user,
-      title: 'Preview Manifest ' + manifest['planeId'].tailNumber+manifest.title,
-      plane: manifest['planeId'],
-      manifest: manifest,
-      packages: packages,
-      airportFrom: manifest['airportFromId'],
-      airportTo: manifest['airportToId'],
-    })
-  });
+    page: req.originalUrl,
+    user: res.user,
+    title: 'Preview Manifest ' + manifest['planeId'].tailNumber+manifest.title,
+    plane: manifest['planeId'],
+    manifest: manifest,
+    packages: packages,
+    airportFrom: manifest['airportFromId'],
+    airportTo: manifest['airportToId'],
+  })
 }
 
 
