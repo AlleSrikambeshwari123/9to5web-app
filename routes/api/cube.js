@@ -136,6 +136,16 @@ router.get('/all-cubes', passport.authenticate('jwt', { session: false }), async
   }
 })
 
+router.get('/cubes', passport.authenticate('jwt', { session: false }), async (req,res,next)=>{
+  try{
+    const cubeData = await services.cubeService.allCubesForApp();
+    res.send(cubeData);
+  }catch(err){
+    console.log(err)
+    res.send({ success: false, message: strings.string_response_error });
+  }
+})
+
 router.get('/get-cube/:id',async (req,res,next)=>{
   try{
     const cubeData = await services.cubeService.getCube(req.params.id);

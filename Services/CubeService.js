@@ -232,6 +232,23 @@ class CubeService {
     })
   }
 
+  async allCubesForApp(){
+    try {
+      let cube = await Cube.find({}).select('name createdAt')
+      // cube = await Promise.all(cube.map(cb=>{
+      //   cb._doc['cubeDetail'] = cb.cubepackageId
+      //   delete cb._doc.cubepackageId
+      //   console.log(cb)
+      //   return cb
+      // }))
+      if(cube === null) return ({success:false,message:strings.string_noData})
+      return ({success:true,data:cube})
+    } catch (error) {
+      console.error({allCubesForApp:error})
+      return ({success:false,message:strings.string_response_error})
+    }
+  }
+
   async getCubeDetail(id){
     const data = await Cube.findOne({_id:id});
     return data;
