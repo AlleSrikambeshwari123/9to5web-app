@@ -79,5 +79,6 @@ var services = {
 packageService.setServiceInstances(services);
 awbService.setServiceInstances(services);
 deliveryService.setServiceInstances(services);
+PriceLabelService.setServiceInstances(services);
 
 module.exports = services;

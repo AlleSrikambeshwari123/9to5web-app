@@ -15,6 +15,7 @@
               <th>Created At</th>
               <th>Plane</th>
               <th></th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -44,6 +45,10 @@
                 <a class="btn btn-link btn-danger btn-rm-manifest px-3" data-toggle="modal" data-id="<%=manifest.id%>"
                   data-original-title="Delete" data-target="#confirm-delete-manifest"> <i class="fa fa-trash"></i> </a>
                 <% } %> -->
+              </td>
+              <td class="text-center">
+                <a href='clone/<%=manifest.id%>/get' class="btn btn-link btn-primary px-3" data-toggle="tooltip"
+                  data-original-title="Create Manifest Clone"> <i class="fa fa-clone"></i> </a>
               </td>
             </tr>
             <%})%>

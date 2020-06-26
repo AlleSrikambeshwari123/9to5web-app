@@ -57,8 +57,8 @@ class FlightManifest {
         {
           stack: [
             { text: 'NINE TO FIVE IMPORT EXPORT', lineHeight: 2.0, fontSize: 14 },
-            { text: '1811 N.W. 51st Street Hnager 42D', fontSize: 10 },
-            { text: 'Fort Lauderdate, Florida 33309', fontSize: 10 },
+            { text: '2801 NW 55th Court, Building 6W', fontSize: 10 },
+            { text: 'Ft Lauderdale, FL 33309', fontSize: 10 },
             { text: 'FLIGHT MANIFEST', lineHeight: 2.0, fontSize: 14, margin: [0, 10, 0, 0] },
           ],
           alignment: 'center',
@@ -69,6 +69,20 @@ class FlightManifest {
           alignment: 'center',
           margin: [0, 0, 0, 20],
         },
+        {
+          margin: [0, 0, 0, 20],
+          stack: [
+            {
+              margin: [0, 2],
+              image: this.data.barcode,
+              width: 180,
+              height: 30,
+              alignment: 'center',
+            },
+            // {margin:[0,5],text:"PK"+this.awb.id, fontSize:12,bold:true},
+          ],
+          // border: [false, false, false, true],
+        }, //barcode for lbl
         {
           layout: 'noBorders',
           headerRows: 0,

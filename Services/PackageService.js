@@ -1,6 +1,7 @@
 var emailService = require('../Util/EmailService');
 var mongoose = require('mongoose')
 var moment = require('moment');
+var momentz = require('moment-timezone')
 var fs = require('fs');
 var uniqId = require('uniqid');
 var strings = require('../Res/strings');
@@ -168,7 +169,7 @@ async addPackageToShipment(packages, username) {
   }
 
   // 3: 'In Transit',
-  addPackagesToDelivery(deliveryId, packageIds,user) {
+  async addPackagesToDelivery(deliveryId, packageIds,user) {
     return new Promise(async(resolve, reject) => {
       let error = []
       let packages = packageIds && packageIds.length && packageIds.split(',').filter(Boolean);
@@ -180,7 +181,7 @@ async addPackageToShipment(packages, username) {
       Promise.all(
         packages.map(async (packageId) => {
           this.updatePackage(packageId, {deliveryId: deliveryId});
-          const status = this.updatePackageStatus(packageId, 3, user);
+          const status = await this.updatePackageStatus(packageId, 3, user);
           if(!status.success) error.push(status.message)
           return status  
         }),
@@ -442,6 +443,7 @@ checkInStore(data, username) {
     return new Promise((resolve, reject) => {
       Package.find({})
         .populate('awbId')
+        .populate('originBarcode')
         .populate('customerId')
         .populate('zoneId')
         .exec((err, result) => {
@@ -526,12 +528,46 @@ checkInStore(data, username) {
     })
   }
 
+
+  async getPackageStatusByPackgeId(id,status){
+    return new Promise((resolve,reject)=>{
+      PackageStatus.findOne({packageId:id,status:PKG_STATUS[status]},(err,result)=>{
+        if(err){
+          resolve({success:false,message: strings.string_response_error})
+        }else{
+          resolve(result)
+        }
+      })
+    })
+  }
+
   async getAllPackagesWithLastStatus() {
     let packages = await this.getAllPackages_updated();
     return await Promise.all(
       packages.map(async (pkg) => {
         let status = await this.services.packageService.getPackageLastStatus(pkg._id);
         pkg.lastStatusText = status && status.status;
+        if(pkg.originBarcode){
+          let barcode = await this.getOriginBarcode(pkg.originBarcode)
+          if(barcode !== null && barcode.createdAt){
+            pkg.OrignalBarcodeDate = momentz.utc(barcode.createdAt).tz("America/New_York").format('dddd, MMMM Do YYYY, h:mm A'); 
+          }
+        }
+        if(pkg.awbId){
+          let awb = await this.services.awbService.getAwb(pkg.awbId)
+          if(awb !== null && awb.createdAt){
+            pkg.awbCreatedAt = momentz(awb.createdAt).tz("America/New_York").format('dddd, MMMM Do YYYY, h:mm A'); 
+          }
+        } 
+        if(pkg.manifestId){
+          let actualFlight = await Manifest.findById(pkg.manifestId).populate('planeId')
+          if(actualFlight !== null && actualFlight.planeId){
+            pkg.actualFlight = actualFlight.planeId ? actualFlight.planeId.tailNumber:''
+          }
+        }
+        pkg.OrignalBarcodeDate = pkg.OrignalBarcodeDate || ''
+        pkg.awbCreatedAt = pkg.awbCreatedAt || ''
+        pkg.actualFlight = pkg.actualFlight || ''
         return pkg;
       }),
     );
@@ -884,9 +920,61 @@ checkInStore(data, username) {
     });
   }
 
+
+  cloneManifestAndOriginal(manifestId){
+    return new Promise((resolve,reject)=>{
+      let original = []
+      Manifest.findOne({_id:manifestId})
+      .populate(
+        {
+          path:'clonePackages',
+            populate:[
+              {path:'awbId'},
+              {path:'compartmentId'},
+              {path:'shipperId'},
+              {path:'carrierId'},
+              {path:'customerId'},
+              {path:'hazmatId'}
+             ]})
+      .exec(async (err, x)=> {
+         if(err){
+          resolve([])
+        }else{
+          if(x.originalManifestId){
+            if(x.clonePackages){
+              if(x.clonePackages.length >0 ){
+                original = x.clonePackages
+              }
+            }
+            // original = await this.getPackageOnManifest(x.originalManifestId)
+            let clone = await this.getPackageOnManifest(x.id)
+            if(clone !== null) clone.map(y=>original.push(y))
+            resolve(original)
+          }else{
+            resolve(await this.getPackageOnManifest(manifestId))
+          }
+        }
+      })
+    })
+  }
+  
   getPackageOnManifest(manifestId) {
     return new Promise((resolve, reject) => {
       Package.find({ manifestId: manifestId })
+        .populate(['awbId', 'compartmentId', 'shipperId', 'carrierId', 'customerId', 'hazmatId'])
+        .exec((err, packages) => {
+          if (err) {
+            resolve([]);
+          } else {
+            resolve(packages);
+          }
+        })
+    });
+  }
+
+  getPackagesById(ids) {
+    return new Promise((resolve, reject) => {
+      Package.find({ _id: {$in : ids} })
         .populate(['awbId', 'compartmentId', 'shipperId', 'carrierId', 'customerId', 'hazmatId'])
         .exec((err, packages) => {
           if (err) {
@@ -909,7 +997,7 @@ checkInStore(data, username) {
 
             packages.forEach(pkg=>{
               pkg._doc.awbId = (pkg.awbId.awbId || "")
-              pkg._doc.customerId = (pkg.customerId.firstName || "") +' '+ (pkg.customerId.lastName || "")
+              pkg._doc.customerId = (pkg.customerId ? pkg.customerId.firstName:"") +' '+ (pkg.customerId ? pkg.customerId.lastName : "")
             })
             resolve(packages);
           }
@@ -929,6 +1017,22 @@ checkInStore(data, username) {
             resolve(packages);
           }
         })
+    });
+  }
+
+  //========== load Packages in cargo =============//
+
+  updateManifestPackageToLoadOnAirCraft(manifestId, userId) {
+    return new Promise((resolve, reject) => {
+      this.getPackageOnManifest(manifestId).then((packages) => {
+        Promise.all(
+          packages.map((pkg) => {
+            return this.updatePackageStatus(pkg._id, 2, userId);
+          }),
+        ).then((results) => {
+          resolve({ success: true, message: strings.string_response_updated });
+        });
+      });
     });
   }
 
@@ -1129,6 +1233,7 @@ checkInStore(data, username) {
     return new Promise((resolve, reject) => {
       Package.find({ deliveryId })
         .populate('shipperId')
+        .populate('awbId')
         .populate('carrierId')
         .populate('customerId')
         .exec((error, packages) => {
@@ -1326,17 +1431,67 @@ checkInStore(data, username) {
     });
   }
   
-  getPackageCube(pkgIds) {
+  // getPackageCube(pkgIds) {
+  //   return new Promise((resolve, reject) => {
+  //     Package.find({ _id: {$in:pkgIds} })
+  //       .populate(['awbId', 'compartmentId', 'shipperId', 'carrierId', 'customerId', 'hazmatId'])
+  //       .exec((err, packages) => {
+  //         if (err) {
+  //           resolve([]);
+  //         } else {
+  //           resolve(packages);
+  //         }
+  //       })
+  //   });
+  // }
+
+  async getPackageCube(pkgIds) {
+    let packages = await this.getAllPackagesOfCube({ _id: {$in:pkgIds} })
+    return await Promise.all(
+      packages.map(async (pkg) => {
+        let status = await this.services.packageService.getPackageLastStatus(pkg._id);
+        pkg.lastStatusText = status && status.status;
+        if(pkg.originBarcode){
+          let barcode = await this.getOriginBarcode(pkg.originBarcode)
+          if(barcode !== null && barcode.createdAt){
+            pkg.OrignalBarcodeDate = momentz.utc(barcode.createdAt).tz("America/New_York").format('dddd, MMMM Do YYYY, h:mm A'); 
+          }
+        }
+        if(pkg.awbId){
+          let awb = await this.services.awbService.getAwb(pkg.awbId)
+          if(awb !== null && awb.createdAt){
+            pkg.awbCreatedAt = momentz(awb.createdAt).tz("America/New_York").format('dddd, MMMM Do YYYY, h:mm A'); 
+          }
+        } 
+        if(pkg.manifestId){
+          let actualFlight = await Manifest.findById(pkg.manifestId).populate('planeId')
+          if(actualFlight !== null && actualFlight.planeId){
+            pkg.actualFlight = actualFlight.planeId ? actualFlight.planeId.tailNumber:''
+          }
+        }
+        pkg.OrignalBarcodeDate = pkg.OrignalBarcodeDate || ''
+        pkg.awbCreatedAt = pkg.awbCreatedAt || ''
+        pkg.actualFlight = pkg.actualFlight || ''
+        return pkg;
+      }),
+    );
+  }
+
+  getAllPackagesOfCube(cond) {
     return new Promise((resolve, reject) => {
-      Package.find({ _id: {$in:pkgIds} })
-        .populate(['awbId', 'compartmentId', 'shipperId', 'carrierId', 'customerId', 'hazmatId'])
-        .exec((err, packages) => {
+      Package.find(cond)
+        .populate('awbId')
+        .populate('originBarcode')
+        .populate('customerId')
+        .populate('zoneId')
+        .populate('shipperId')
+        .exec((err, result) => {
           if (err) {
             resolve([]);
           } else {
-            resolve(packages);
+            resolve(result);
           }
-        })
+        });
     });
   }
 

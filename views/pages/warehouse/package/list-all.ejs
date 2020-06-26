@@ -21,6 +21,15 @@
         class="card-header d-flex align-items-left align-items-md-center flex-column flex-md-row"
       >
         <div class="card-title"><%= title %></div>
+        <div class="d-flex align-items-right float-right ml-md-auto">
+        <button
+        id="add-to-cube-button"
+        data-toggle="modal"
+        data-target="#add-to-cube-modal"
+        class="btn btn-primary btn-round float-right mr-2 ml-md-auto"
+        >
+        Add to Cube
+        </button>
         <% if (buttonName === 'Add to Delivery') { %>
           <button
             id="add-to-delivery-button"
@@ -41,40 +50,47 @@
             Add to Manifest
           </button>
         <% } %> 
-
+      </div>
       </div>
       <div class="card-body">
         <table id = "package-table" class="display table table-responsive table-striped table-hover dataTable package-table">
           <thead>
             <tr>
-              <th></th>
+              <th><input id="checkall" type="checkbox" class="package-select-all" /></th>
               <th>Customer Name</th>
-              <th>Tracking No</th>
+              <th>AWB</th>
+              <th>Original Tracking No</th>
+              <th>Package No</th>
               <th>Description</th>
               <th>Zone</th>
               <th>Type</th>
               <th>Weight</th>
+              <th>Number of Pieces</th>
               <th>Status</th>
-              <th>AWB</th>
+              <th>OrignalScanDate</th>
+              <th>AirwareBillDate</th>
+              <th>ActualFlight</th>
               <th></th>
-              <th></th>
+              <!-- <th></th> -->
             </tr>
           </thead>  
           <tbody>
             <% packages.forEach(function(pkg){ %>
             <tr data-record="<%= pkg._id %>">
               <td>
-                <input type="checkbox" class="package-select" />
+                <input type="checkbox" name="package-select" class="package-select" />
               </td>
               <% if (pkg['customerId']) { %>
                 <td><%= (pkg['customerId'].lastName ? 
                   `${pkg['customerId'].firstName} ${pkg['customerId'].lastName}` : 
                   `${pkg['customerId'].firstName}`); %>
                 </td>
-              <% } else { %>
-                <td> - </td>
-              <% } %>
-              <td><%= pkg.trackingNo%></td>
+                <% } else { %>
+                  <td> - </td>
+                  <% } %>
+              <td><a class="text-decoration-none" href="../../nas/awb/manage/<%=pkg.awbId._id%>/preview"><b><%= pkg.express ? '*': '' %></b><%= pkg.awbId.awbId %> </a></td>
+              <td><%= pkg.originBarcode ? pkg.originBarcode.barcode: ''%></td>
+              <td><%= pkg.packageNumber ? pkg.packageNumber : ''%></td>
               <td><%= pkg.description %></td>
               <% if (pkg['zoneId'] && pkg['zoneId'].name) { %>
                 <td><%= pkg['zoneId'].name %>
@@ -84,10 +100,14 @@
               <% } %> 
               <td><%= pkg.packageType %></td>
               <td><%= pkg.weight%></td>
+              <td><%= (pkg.pieces || pkg.pieces > -1) ? pkg.pieces : ''%></td>
               <td class="lastStatusText_field"><%= pkg.lastStatusText %></td>
-              <td><a href="../../nas/awb/manage/<%=pkg.awbId._id%>/preview"> <%= pkg.awbId.awbId %> </a></td>
-              <td><a href="../pkg-label/download/<%=pkg._id%>"><i class="fa fa-download"></i></a></td>
-              <td>
+              <td><%= pkg.OrignalBarcodeDate %></td>
+              <td><%= pkg.awbCreatedAt %></td>
+              <td><%= pkg.actualFlight %></td>
+              <!-- <td><a href="../pkg-label/download/<%=pkg._id%>"><i class="fa fa-download"></i></a></td> -->
+              <td class="text-center">
+                <a href="../pkg-label/download/<%=pkg._id%>"><i class="fa fa-download"></i></a>
                 <a
                   class="btn btn-link btn-primary btn-print-pkg"
                   data-toggle="modal"
@@ -135,6 +155,42 @@
           <div class="form-group">
             <label for="compartmentId">Compartment</label>
             <select id="compartmentId" name="compartmentId" class="form-control" required disabled>
+              <option></option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Add</button>
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+<!-- Add Packages To Cube -->
+<div
+  class="modal fade"
+  id="add-to-cube-modal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="print-popup"
+  aria-hidden="true"
+  style="display: none;"
+>
+  <div class="modal-dialog" role="document">
+    <form id="add-to-cube-form" method="post">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title">Add packages to Cube</h2>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <input type="text" hidden name="packageIds" />
+          <div class="form-group">
+            <label for="CubeId">Cube</label>
+            <select id="CubeId" name="CubeId" class="form-control" required>
               <option></option>
             </select>
           </div>

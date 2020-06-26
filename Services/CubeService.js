@@ -12,11 +12,13 @@ var uniqId = require('uniqid');
 const Cube = require('../models/cube');
 const Package = require('../models/package');
 const Awb = require('../models/awb');
+const CubeAwb = require('../models/cubeawb');
+const Cube2Type = require('../models/cube2Type');
 
 class CubeService {  
   getCubes() {
     return new Promise((resolve, reject) => {
-      Cube.find({}).populate('userId').populate('cubepackageId').exec(async (err, result) => {
+      Cube.find({}).populate(['userId','cubeAwbId','cubepackageId']).exec(async (err, result) => {
         if (err) {
           resolve([]);
         } else {
@@ -24,10 +26,10 @@ class CubeService {
             var cube = result[i];
             const awbId = (cube.cubepackageId && cube.cubepackageId.awbId)?cube.cubepackageId.awbId:null;
             const awbData = await Awb.findOne({_id:awbId});
-            
-            result[i]['awbId'] = awbData.awbId?awbData.awbId:'';
+            // result[i]['awbId'] = awbData.awbId?awbData.awbId:'';
+            let cubeAwbNo = result[i].cubeAwbId ? result[i].cubeAwbId.cubeAwbNo: ''
+            result[i]['awbId'] = 'C'+cubeAwbNo
           }
-          //console.log(result)
           resolve(result);
         }
       })
@@ -35,16 +37,42 @@ class CubeService {
   }
   createCube(cube) {
     return new Promise((resolve, reject) => {
+      console.log('cuborigfnal',cube)
       const newCube = new Cube(cube)
       newCube.save(async (err, result) => {
         if (err) {
           console.log(err);
           resolve({ success: false, message: strings.string_response_error, data:null });
-        } else {                  
-          resolve({ success: true, message: strings.string_response_added, data:result });
+        } else {
+          console.log('result',result);     
+          const awb = await this.createAwbCube(result)
+          console.log('awbbb',awb)   
+          if(awb.success) return resolve(awb)          
+          resolve({ success: true, message: strings.string_response_added, data:result,awb:awb });
         }
       });
     });
+  }
+
+  createAwbCube(cbresult){
+    return new Promise((resolve,reject)=>{
+      console.log('cbbb',cbresult)
+      let newAwbCube ={
+        cubeId:cbresult.userId,
+        cubeTrackingNo:cbresult.name,
+        createdBy:cbresult.createdBy
+      }
+      const awb = new CubeAwb(newAwbCube)
+      awb.save(async (err,result)=>{
+        if(err){
+          console.log(err)
+          resolve({ success: false, message: strings.string_response_error, data:null });
+        }else{
+          const cube = await Cube.findOneAndUpdate({_id:cbresult.id},{cubeAwbId:result.id})
+          resolve({ success: true, message: strings.string_response_added, awb:result,data:cube });
+        }
+      })
+    })
   }
   updateCube(id, cube) {
     return new Promise((resolve, reject) => {
@@ -56,6 +84,23 @@ class CubeService {
         if (err) {
           resolve({ success: false, message: strings.string_response_error });
         } else {
+          resolve({ success: true, message: strings.string_response_updated });
+        }
+      });
+    })
+  }
+
+  updateAwbCube(cube) {
+    return new Promise((resolve, reject) => {
+      const updatedCubeData = {
+        dimensions: cube.dimensions, 
+        description: cube.description
+      };
+      CubeAwb.findOneAndUpdate({_id: cube.id}, updatedCubeData, (err, result) => {
+        if (err) {
+          resolve({ success: false, message: strings.string_response_error });
+        } else {
+          console.log('rs',result)
           resolve({ success: true, message: strings.string_response_updated });
         }
       });
@@ -187,12 +232,29 @@ class CubeService {
     })
   }
 
+  async allCubesForApp(){
+    try {
+      let cube = await Cube.find({}).select('name createdAt')
+      // cube = await Promise.all(cube.map(cb=>{
+      //   cb._doc['cubeDetail'] = cb.cubepackageId
+      //   delete cb._doc.cubepackageId
+      //   console.log(cb)
+      //   return cb
+      // }))
+      if(cube === null) return ({success:false,message:strings.string_noData})
+      return ({success:true,data:cube})
+    } catch (error) {
+      console.error({allCubesForApp:error})
+      return ({success:false,message:strings.string_response_error})
+    }
+  }
+
   async getCubeDetail(id){
     const data = await Cube.findOne({_id:id});
     return data;
   }
 
-  getCube(id){
+  async getCube(id){
     if(typeof id == "string"){
       id = mongoose.Types.ObjectId(id);
     }
@@ -219,7 +281,7 @@ class CubeService {
       },
       {$unwind:"$cubeDetail"},
       {
-        $project:{_id:1, packages:1,name:1, "cubeDetail._id":1, "cubeDetail._id":1, "cubeDetail.trackingNo":1}
+        $project:{_id:1, packages:1,name:1,cubepackageId: 1, "cubeDetail._id":1, "cubeDetail._id":1, "cubeDetail.trackingNo":1}
       }
       ]).exec((err, result) => {
         if(result && result.length>0){
@@ -252,6 +314,114 @@ class CubeService {
         cube.awbId = (awbData && awbData.awbId)?awbData.awbId:'';
         resolve(cube); 
       })  
+    })
+  }
+
+  async CubeAwbDtail(id){
+    return new Promise((resolve, reject) => {   
+      CubeAwb.findOne({_id:id}).populate('createdBy').exec(async (err, cube) => {        
+        resolve(cube); 
+      })  
+    })
+  }
+
+  async getCube2Type(){
+    return new Promise((resolve, reject) => {   
+      Cube2Type.find({}).exec(async (err, cube) => {      
+        if(err) resolve([])  
+        else resolve(cube); 
+      })  
+    })
+  }
+
+  async deleteCube2Type(id){
+    return new Promise((resolve, reject) => {   
+      Cube2Type.deleteOne({_id:id}).exec(async (err, cube) => {      
+        if (err) {
+          resolve({ success: false, message: strings.string_response_error });
+        } else {
+          resolve({ success: true, message: strings.string_response_removed });
+        }
+      })  
+    })
+  }
+  async addcube2type(data){
+    return new Promise((resolve,reject)=>{
+      let type = {
+        type:data.type,
+        createdBy:data.createdBy
+      }
+      let cube = new Cube2Type(type)
+      cube.save(async (err,result)=>{
+        if(err){
+          resolve({ success: false, message: strings.string_response_error });
+        }else{
+          resolve({ success: true, message: strings.string_response_added, data:result})
+        }
+      })
+    })
+  }
+  async updatecube2type(data){
+    return new Promise((resolve,reject)=>{
+      let type = {
+        type:data.type,
+      }
+      Cube2Type.findOneAndUpdate({_id:data.id},type,async (err,result)=>{
+        if(err){
+          resolve({ success: false, message: strings.string_response_error });
+        }else{
+          resolve({ success: true, message: strings.string_response_updated})
+        }
+      })
+    })
+  }
+
+  async getCubeCompleteData(id){
+    if(typeof id == "string"){
+      id = mongoose.Types.ObjectId(id);
+    }
+    return new Promise((resolve, reject) => { 
+    Cube.aggregate([
+      {
+        $match:{_id:id}
+      },  
+      {
+        $lookup:{
+          from:"packages",
+          localField:"packages",
+          foreignField:"_id",
+          as:"packageList"
+        }
+      },
+      {
+        $lookup:{
+            from:"packages",
+            localField:"cubepackageId",
+            foreignField:"_id",
+            as:"cubeDetail"
+          }
+      },
+      {$unwind:"$cubeDetail"},
+      // { 
+      //   $lookup: {
+      //     from: "manifests",
+      //     localField: "cubeDetail.manifestId",
+      //     foreignField: "_id",
+      //     as: "maniFestObject" 
+      //   }
+      // },  
+      //{$unwind:"$maniFestObject"},
+      {
+        $project:{_id:1, packageList:1,name:1,cubepackageId: 1, cubeDetail : 1}
+      }
+      ]).exec((err, result) => {
+        if(result && result.length>0){
+          resolve(result[0]);
+        }else{
+          resolve({})
+        }
+        
+      })    
     })
   }
 

@@ -17,7 +17,6 @@
                 <div class="col-lg-8 col-md-8 col-sm-8">
                   <select id="planeId" name="planeId" class='form-control' required>
                     <option></option>
-                    <% var test = JSON.stringify(planes); %>
                     <% planes.forEach(plane => { %>
                     <option value="<%=plane._id%>"><%=plane.tailNumber%></option>
                     <%})%>

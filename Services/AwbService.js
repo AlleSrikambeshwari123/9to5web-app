@@ -36,7 +36,6 @@ class AwbService {
       if (awb.driver === '') {
         delete awb.driver;
       }
-
       const newAwb = new Awb(awb);
       newAwb.save((err, result) => {
         if (err) {

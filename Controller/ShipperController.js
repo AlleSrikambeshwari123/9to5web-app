@@ -1,5 +1,6 @@
 var services = require('../Services/RedisDataServices');
 var utils = require('../Util/utils');
+var countries = require('../public/js/countries');
 
 exports.get_shipper_list = (req, res, next) => {
   services.shipperService.getAllShippers().then(shippers => {
@@ -17,6 +18,7 @@ exports.create_shipper = (req, res, next) => {
     page: req.originalUrl,
     title: 'Add New Shipper',
     user: res.user,
+    countries : countries.default
   })
 }
 
@@ -33,7 +35,8 @@ exports.get_shipper_detail = (req, res, next) => {
       page: req.originalUrl,
       title: "Shipper Details",
       user: res.user,
-      shipper: shipper
+      shipper: shipper,
+      countries : countries.default
     })
   })
 }

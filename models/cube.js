@@ -1,12 +1,15 @@
 'use strict';
 
 const mongoose = require('mongoose');
-
 const cubeTypeSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true
-  }, 
+  },
+  cubeAwbId:{
+    type:mongoose.Schema.Types.ObjectId,
+    ref:'CubeAwb'
+  },
   userId:{
     type: mongoose.Schema.Types.ObjectId, 
     ref: 'Customer', 

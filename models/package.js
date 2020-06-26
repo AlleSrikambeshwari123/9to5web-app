@@ -21,6 +21,10 @@ const packageSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  express:{
+    type:Boolean,
+    default:false
+  },
   originBarcode: {
     type: mongoose.Schema.Types.ObjectId, 
     ref: 'Barcode', 
@@ -80,6 +84,10 @@ const packageSchema = new mongoose.Schema({
     type: String
   },
   manifestId: {
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'Manifest'
+  },
+  cloneManifestId: {
     type: mongoose.Schema.Types.ObjectId, 
     ref: 'Manifest'
   },

@@ -9,8 +9,58 @@ let packageTable = $('.package-table').DataTable({
   select: {
     style: 'multi',
     selector: 'td:first-child input[type="checkbox"]',
-  },
+  }
 });
+
+$('#package-table').on('draw.dt', function() {
+  unSelectAll();
+});
+
+function unSelectAll() {
+  packageTable.rows().deselect();
+  $("tr").removeClass("selected");
+  $("input.package-select-all").removeClass("selected");
+  $("input.package-select").prop("checked", false);
+  $("input.package-select-all").prop("checked", false);
+}
+
+
+
+packageTable.on("click", "input.package-select-all", function() {
+  if($("input.package-select-all").hasClass("selected")) {
+    packageTable.rows().deselect();
+    return unSelectAll()
+  }
+  var tableRows = packageTable.rows({ page: 'current' }).nodes();
+  packageTable.rows({ page: 'current' }).select();
+  $("input.package-select-all").addClass("selected");
+  $("input.package-select-all").prop("checked", true);
+  tableRows.each(function () {
+    $(this).find("input.package-select").prop("checked", true); 
+  });
+})
+
+$('#package-table tbody').on('change', 'input[type="checkbox"]', function(){
+  if(!this.checked) {
+    $(this).closest("tr").removeClass('selected');
+    $(this).prop("checked", false);
+  } 
+  if(this.checked) $(this).closest("tr").addClass('selected')
+  let selectingRowCount = packageTable.rows({selected: true}).count();
+  if ((selectingRowCount) !== packageTable.rows({ page: 'current' }).count()) {
+    $("input.package-select-all").removeClass("selected");
+    $("input.package-select-all").prop("checked", false);
+  } else if((selectingRowCount ) === packageTable.rows({ page: 'current' }).count()) {
+    $("input.package-select-all").prop("checked", true);
+    $("input.package-select-all").addClass("selected");
+  }
+});
+
+$('#package-table tbody').on( 'click', 'tr', function () {
+  $(this).toggleClass('selected');
+} );
+
+
 
 var pdfPath;
 $("#package-table").on("click",'.btn-print-pkg',function() {
@@ -55,12 +105,22 @@ $(function() {
   let addToDeliveryModal = $('#add-to-delivery-modal');
   let addToDeliveryForm = $('#add-to-delivery-form');
 
+  let addToCubeModal = $('#add-to-cube-modal');
+  let addToCubeForm = $('#add-to-cube-form');
+  let cubeSelectOption = addToCubeForm.find('[name="compartmentId"]');
+
   compartmentIdSelect.select2({
     theme: 'bootstrap',
     width: '100%',
     placeholder: 'Select compartment',
     dropdownParent: addToManifestModal,
   });
+  // cubeSelectOption.select2({
+  //   theme: 'bootstrap',
+  //   width: '100%',
+  //   placeholder: 'Select Cube',
+  //   dropdownParent: addToCubeModal,
+  // });
 
   $.ajax({
     url: '/api/warehouse/get-manifests',
@@ -76,7 +136,7 @@ $(function() {
           dropdownParent: addToManifestModal,
           data: data.map((manifest) => ({
             id: manifest.id,
-            text: manifest.title,
+            text: manifest.planeId.tailNumber+' '+moment(manifest.shipDate).subtract(4, 'hours').format('dddd, MMMM Do YYYY, h:mm A'),
             source: manifest,
           })),
         })
@@ -109,6 +169,27 @@ $(function() {
           data: data.map((delivery) => ({
             id: delivery._id,
             text: formatDate(delivery.delivery_date)
+          })),
+        })
+    },
+  });
+
+  // Get Cubes in DropDown
+  $.ajax({
+    url: '/warehouse/cube/getall',
+    type: 'get',
+    dataType: 'json',
+    success(data) {    
+      addToCubeForm
+        .find('[name="CubeId"]')
+        .select2({
+          theme: 'bootstrap',
+          width: '100%',
+          placeholder: 'Select Cube',
+ 
+          data: data.map((cube) => ({
+            id: cube._id,
+            text: cube.name
           })),
         })
     },
@@ -190,6 +271,39 @@ $(function() {
     var data = extractFormData(this);
     $.ajax({
       url: '/api/warehouse/add-packages-to-delivery',
+      type: 'post',
+      data: data,
+      success: function(response) {
+        swal({
+          title: response.success ? 'Success' : 'Error',
+          type: response.success ? 'success' : 'error',
+          text: response.message,
+        });
+      },
+      error: function ()  {
+        swal({
+          title: 'Error',
+          type: 'error',
+          text: 'Unknown error',
+        });
+      }
+    });
+  });
+
+  // Add To Cube Form
+  addToCubeForm.submit(function(event) {
+    addToCubeModal.modal('hide');
+    event.preventDefault();
+    var packageIds = packageTable
+      .rows({ selected: true })
+      .nodes()
+      .map((i) => $(i).data('record'))
+      .toArray()
+      .join(',');
+      addToCubeForm.find('[name="packageIds"]').val(packageIds);
+    var data = extractFormData(this);
+    $.ajax({
+      url: '/api/cube/web/assign-packages/'+data.CubeId,
       type: 'post',
       data: data,
       success: function(response) {

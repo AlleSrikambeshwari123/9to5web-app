@@ -165,6 +165,11 @@
 									<span class="sub-item">Deliveries</span>
 								</a>
 							</li>
+							<li <% if (page.includes('/fll/manifest/list')) { %> class="active" <% } %>>
+								<a href="/warehouse/fll/manifest/list">
+									<span class="sub-item">Manifests</span>
+								</a>
+							</li>
 						</ul>
 					</div>
 				</li>
@@ -274,7 +279,7 @@
 				</li>
 				<li class="nav-item <% if (page.includes('/cube/')) { %> active <% } %>">
 					<a href="/warehouse/cube/list">
-						<i class="fa fa-exclamation-triangle"></i>
+						<i class="fa fa-sitemap"></i>
 						<p>Cube </p>
 					</a>
 				</li>

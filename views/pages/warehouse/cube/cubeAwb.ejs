@@ -1,0 +1,92 @@
+<% layout('./shared/__template')%>
+
+<form method='post' id='update-cube-awb-form'>
+<div class='gutters'>
+  <div class='col-xl-12 col-lg-6 col-md-12 col-sm-12'>
+    <div class='card'>
+      <div class="card-header">
+        <div class="pull-right">
+       
+        </div>
+        <h4 class="card-title"><%=title%></h4>
+      </div>
+      <div class="card-body">
+        
+        <div class='row'>
+          <div class='col-md-9'>
+            <input type='hidden' id="cubeAwbId" value='<%= cube.id%>' />
+            <div class="form-group form-show-validation row">
+              <label for="cubeAwbNo" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Cube AwbNo</label>
+              <div class="col-lg-8 col-md-8 col-sm-8">
+                <input type='text' class='form-control' id='cubeAwbNo' placeholder="Cube AwbNo"
+                  value="<%= 'C'+cube.cubeAwbNo%>" readonly/>
+              </div>
+            </div>
+            <div class="form-group form-show-validation row">
+              <label for="consignee" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Consignee Name</label>
+              <div class="col-lg-8 col-md-8 col-sm-8">
+                <input type='text' class='form-control' id='consignee' placeholder="Consignee"
+                  value="<%= cube.consignee%>" readonly/>
+              </div>
+            </div>
+            <div class="form-group form-show-validation row">
+              <label for="shipper" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Shipper Name</label>
+              <div class="col-lg-8 col-md-8 col-sm-8">
+                <input type='text' class='form-control' id='shipper' placeholder="Shipper"
+                  value="<%= cube.shipper%>" readonly/>
+              </div>
+            </div>
+            <div class="form-group form-show-validation row">
+              <label for="cubeTrackingNo" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Cube TrackingNo</label>
+              <div class="col-lg-8 col-md-8 col-sm-8">
+                <input type='text' class='form-control' id='cubeTrackingNo' placeholder="Cube TrackingNo"
+                  value="<%= cube.cubeTrackingNo%>" readonly/>
+              </div>
+            </div>
+            <div class="form-group form-show-validation row">
+              <label for="Description" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Cube Description</label>
+              <div class="col-lg-8 col-md-8 col-sm-8">
+                <input type='text' class='form-control' id='Description' name="description" placeholder="Description"
+                  value="<%= cube.description%>"/>
+              </div>
+            </div>
+            <div class="form-group form-show-validation row">
+              <label for="Dimensions" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Cube Dimensions</label>
+              <div class="col-lg-8 col-md-8 col-sm-8">
+                <div class='row'>
+                  <% let dim = cube.dimensions ? cube.dimensions.split('x'):[]
+                      let W = dim.length > 0 ? dim[0] : '';
+                      let H = dim.length > 0 ? dim[1] : '';
+                      let L = dim.length > 0 ? dim[2] : '';
+                  %>
+                  <div class='col-md-4'><input type='number' class='form-control dimensions' id='W' name='W' placeholder='W' value="<%= W %>"/>
+                  </div>
+                  <div class='col-md-4'><input type='number' class='form-control dimensions' id='H' name='H' placeholder='H' value="<%= H %>"/>
+                  </div>
+                  <div class='col-md-4'><input type='number' class='form-control dimensions' id='L' name='L' placeholder='L' value="<%= L %>"/>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group form-show-validation row">
+              <label for="CreatedBy" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Created By</label>
+              <div class="col-lg-8 col-md-8 col-sm-8">
+                <%  let name = cube.createdBy ? (cube.createdBy.firstName || '')+(cube.createdBy.lastName || ''):cube.createdBy.username  %>
+                <input type='text' class='form-control' id='CreatedBy' placeholder="CreatedBy"
+                  value="<%= name %>" disabled/>
+              </div>
+            </div>
+
+            <div class="card-action text-center">
+              <button class="btn btn-primary pull-left" type="submit" id='btn-add-package'>Update Cube Awb</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</div>
+</form>
+<% block('scripts').append('<script src="/js/utils.js"></script>')%>
+<% block('scripts').append('<script src="/js/warehouse/cube/cubeAwb.js"></script>')%></div>

@@ -96,22 +96,40 @@
               <thead>
                 <tr>
                   <td><strong>Compartment</strong></td>
+                  <td><strong>AwbNo</strong></td>
                   <td><strong>Trackig No #</strong></td>
+                  <td><strong>Package Number #</strong></td>
                   <td><strong>Description</strong></td>
                   <td><strong>Weight</strong></td>
                   <td><strong>Dimension</strong></td>
+                  <td><strong>Number Of Pieces #</strong></td>
                 </tr>
               </thead>
               <tbody>
-                <% packages.forEach(package => { %>
-                <tr data-record="<%= package.id %>">
+                <% var totalWeight = 0;
+                packages.forEach(package => { 
+                  let isExpress = package.express ? 'bolder':'normal';
+                  totalWeight += Number(package.weight);%>
+                <tr data-record="<%= package.id %>" style="font-weight:<%=isExpress%>;">
                   <td><%= package.compartment && package.compartment.name %></td>
+                  <td><b><%= package.express ? '*':''%></b><%= package.awbId ? package.awbId.awbId:'' %></td>
                   <td><%= package.trackingNo %></td>
+                  <td><%= package.packageNumber %></td>
                   <td><%= package.description %></td>
                   <td><%= package.weight %> lbs</td>
                   <td><%= package.dimensions %></td>
+                  <td><%= package.pieces %></td>
                 </tr>
                 <% }) %>
+              </tbody>
+              <tbody>
+                <tr>
+                  <td></td>
+                  <td></td>
+                  <td><strong>Total Weight</strong></td>
+                  <td><strong><%= totalWeight.toFixed(2)%></strong> lbs</td>
+                  <td></td>
+                </tr>
               </tbody>
             </table>
           </div>

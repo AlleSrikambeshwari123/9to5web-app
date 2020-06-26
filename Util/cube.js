@@ -39,7 +39,7 @@ const printer = new PDFPrinter({
 
 const convertLbsToKg = (value) => value / 2.20462262185
 
-class AirCargoManifest {
+class CUBE {
   constructor(data) {
     this.data = data;
   }
@@ -75,7 +75,7 @@ class AirCargoManifest {
             },
             {
               width: '40%',
-              text: 'Air Cargo Manifest'.toUpperCase(),
+              text: 'Cube Manifest'.toUpperCase(),
               fontSize: 16,
               bold: true,
               alignment: 'center',
@@ -170,7 +170,7 @@ class AirCargoManifest {
                 { text: pkg.weight.toFixed(2), alignment: 'center', bold: pkg.isInvoice ? true : false},
                 { text: convertLbsToKg(pkg.weight).toFixed(2), alignment: 'center', bold: pkg.isInvoice ? true : false},
                 { text : [pkg.shipper.name, pkg.shipper.address], bold: pkg.isInvoice ? true : false},
-                {text : [pkg.consignee.name, pkg.consignee.address], bold: pkg.isInvoice ? true : false},
+                {text : [pkg.consignee.name , pkg.consignee.address], bold: pkg.isInvoice ? true : false},
                 { text: pkg.natureOfGoods + (pkg.isInvoice ? '*' : ''), bold: pkg.isInvoice ? true : false },
               ]),
             ],
@@ -207,4 +207,4 @@ class AirCargoManifest {
   }
 }
 
-module.exports = AirCargoManifest;
+module.exports = CUBE;

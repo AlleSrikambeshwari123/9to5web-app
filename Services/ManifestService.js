@@ -3,7 +3,7 @@ var moment = require('moment');
 
 const strings = require('../Res/strings');
 const Manifest = require('../models/manifest');
-
+const Package = require('../models/package')
 const manifestStages = {
   open: {
     id: 1,
@@ -17,9 +17,9 @@ const manifestStages = {
     id: 3,
     title: 'Shipping'
   },
-  shipped: {
+  received: {
     id: 4,
-    title: 'Shipped'
+    title: 'Received'
   },
   verified: {
     id: 5,
@@ -54,6 +54,49 @@ class ManifestService {
     })
   }
 
+  createManifestCloneFromOriginal(manifest) {
+    return new Promise(async (resolve, reject) => {
+      let pkgsClone =[]
+      manifest['title'] = moment(manifest.shipDate, "MMM DD,YYYY").format('MMDDYY')+"/"+manifest.time;
+      manifest['stageId'] = manifestStages.open.id;
+      manifest['stage'] = manifestStages.open.title;
+      const pkgs = await Package.find({manifestId:manifest.originalManifestId})
+      if (pkgs !==  null){
+        pkgs.map(pkg=>{
+          pkgsClone.push(pkg._id)
+        })
+        manifest['clonePackages'] = pkgsClone
+      }
+      let objManifest = new Manifest(manifest);
+      objManifest.save(async (err, result) => {
+        if (err) {
+          resolve({ success: false, message: err});
+        } else {
+          if (pkgs !==  null){
+            pkgs.map(pkg=>{
+              return this.updateCloneManifestIdOnPackages(pkg._id,result.id)
+            })
+          }
+          resolve({ 
+            success: true, 
+            message: strings.string_response_created, 
+            manifest: result
+          });
+        }
+      })
+    })
+  }
+  updateCloneManifestIdOnPackages(id,manifestId){
+    return new Promise((resolve,reject)=>{
+      Package.findOneAndUpdate({_id:id},{cloneManifestId:manifestId},(err,result)=>{
+        if (err) {
+          resolve({ success: false, message: err});
+        } else {
+          resolve({ success: true, message:  strings.string_response_updated});
+        }
+      })
+    })
+  }
   updateManifestDetails(id, details) {
     return new Promise((resolve, reject) => {
       Manifest.findOneAndUpdate({_id: id}, details, (err, result) => {
@@ -87,7 +130,7 @@ class ManifestService {
   
   receiveManifest(mid, userId) {
     return new Promise((resolve, reject) => {
-      const stage = this.getStageById(manifestStages.shipped.id);
+      const stage = this.getStageById(manifestStages.received.id);
 
       Manifest.findByIdAndUpdate({_id: mid}, {
         receiveDate: new Date(),
@@ -103,7 +146,6 @@ class ManifestService {
       });
     });
   }
-
   getManifest(manifestId) {
     return new Promise((resolve, reject) => {
       Manifest.findOne({_id: manifestId})
@@ -154,7 +196,7 @@ class ManifestService {
   getManifestProcessing() {
     return new Promise((resolve, reject) => {
       Manifest.find({$or: [
-        {stageId: manifestStages.shipped.id},
+        {stageId: manifestStages.received.id},
         {stageId: manifestStages.verified.id}
       ]})
       .populate('planeId')
@@ -194,8 +236,8 @@ class ManifestService {
     if (id == manifestStages.shipping.id) {
       return manifestStages.shipping;
     }
-    if (id == manifestStages.shipped.id) {
-      return manifestStages.shipped;
+    if (id == manifestStages.received.id) {
+      return manifestStages.received;
     }
     if (id == manifestStages.verified.id) {
       return manifestStages.verified;

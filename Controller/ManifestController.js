@@ -36,32 +36,74 @@ exports.add_new_manifest = (req, res, next) => {
   })
 }
 
+exports.get_manifest_detail_byId = (req,res,next) =>{
+  if(req.params.id === undefined) res.send({success:false,message:'Please Provide ManifestId'})
+  services.manifestService.getManifest(req.params.id).then(result=>{
+    res.send({success:true,data:result})
+  })
+}
 exports.delete_manifest = (req, res, next) => {
   services.manifestService.deleteManifest(req.params.id).then(result => {
     res.send(result);
   })
 }
 
-exports.get_manifest_detail = (req, res, next) => {
+exports.get_manifest_detail = async (req, res, next) => {
+  const manifestId = req.params.id;
+
+  let packages = await services.packageService.cloneManifestAndOriginal(manifestId);
+  let manifest = await services.manifestService.getManifest(manifestId);
+
+  await Promise.all(packages.map(async (pkg, i) => {
+    let awb = await services.printService.getAWBDataForPackagesRelatedEntitie(pkg.awbId);
+    packages[i].pieces = awb.packages ? awb.packages.length : 0
+    packages[i].compartment = packages[i].compartmentId;
+    packages[i].packageNumber = "PK00" + packages[i].id;
+  }));
+
+    res.render('pages/warehouse/manifest/preview', {
+    page: req.originalUrl,
+    user: res.user,
+    title: 'Preview Manifest ' + manifest['planeId'].tailNumber+manifest.title,
+    plane: manifest['planeId'],
+    manifest: manifest,
+    packages: packages,
+    airportFrom: manifest['airportFromId'],
+    airportTo: manifest['airportToId'],
+  })
+}
+
+
+exports.create_new_manifest_clone = (req, res, next) => {
+  services.manifestService.createManifestCloneFromOriginal(req.body).then(result => {
+    res.send(result);
+  })
+}
+
+exports.make_manifest_clone = (req, res, next) => {
   const manifestId = req.params.id;
   Promise.all([
     services.manifestService.getManifest(manifestId),
-    services.packageService.getPackageOnManifest(manifestId)
+    services.packageService.cloneManifestAndOriginal(manifestId),
+    services.planeService.getPlanes(),
+    services.airportService.all(),
   ]).then((results) => {
     const manifest = results[0];
     const packages = results[1];
-
-    packages.forEach((pkg, i) => pkg.compartment = pkg.compartmentId);
     
-    res.render('pages/warehouse/manifest/preview', {
+    packages.forEach((pkg, i) => pkg.compartment = pkg.compartmentId);
+    res.render('pages/warehouse/manifest/clone', {
       page: req.originalUrl,
       user: res.user,
-      title: 'Preview Manifest ' + manifest['planeId'].tailNumber+manifest.title,
+      title: 'Manifest Clone ' + manifest['planeId'].tailNumber+manifest.title,
+      originalManifestId:manifestId,
       plane: manifest['planeId'],
       manifest: manifest,
       packages: packages,
       airportFrom: manifest['airportFromId'],
       airportTo: manifest['airportToId'],
+      planes: results[2],
+      airports: results[3],
     })
   });
 }
@@ -76,8 +118,9 @@ exports.close_manifest = (req, res, next) => {
 exports.ship_manifest = (req, res, next) => {
   var mid = req.params.id;
   // var user = res.user.username;
-  const userId = req['userId'];
+  const userId = req['userId'] || req.user.id || req.headers.userid;
   services.manifestService.shipManifest(mid, userId).then((sResult) => {
+    services.packageService.updateManifestPackageToLoadOnAirCraft(mid, userId);
     res.send(sResult);
   });
 }
@@ -95,9 +138,9 @@ exports.get_incoming_manifest = (req, res, next) => {
 
 exports.receive_manifest = (req, res, next) => {
   var mid = req.params.id;
-  const userId = req['userId'];
+  const userId = req['userId'] || req.user.id || req.headers.userid;
   services.manifestService.receiveManifest(mid, userId).then(result => {
-    // services.packageService.updateManifestPackageToReceived(mid, userId);
+    services.packageService.updateManifestPackageToReceived(mid, userId);
     res.send(result);
   })
 }

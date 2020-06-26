@@ -1,8 +1,15 @@
 const strings = require('../Res/strings');
 const PriceLabel = require('../models/pricelabel');
 const Package = require('../models/package');
-
+const services = require('../Services/RedisDataServices')
 class PriceLabelService {
+  constructor() {
+    this.services = {};
+  }
+
+  setServiceInstances(services) {
+    this.services = services;
+  }
   getPriceLabels() {
     return new Promise((resolve, reject) => {
       PriceLabel.find()
@@ -44,8 +51,8 @@ class PriceLabelService {
         }
     })
       .exec((err, result) => {
-        if (err) {
-          resolve({});
+        if (err || result === null) {
+          resolve({success:false,message:'Price Label Does not Exist For this Package.'});
         } else {
           resolve(result);
         }
@@ -62,10 +69,12 @@ class PriceLabelService {
                 path:'invoices'
             }
     })
-      .exec((err, result) => {
+      .exec(async (err, result) => {
         if (err) {
           resolve({});
         } else {
+          let customer = await this.services.customerService.getCustomer({_id:result.customerId})
+          result._doc.company = customer.company ? customer.company.name:''
           resolve(result);
         }
       });

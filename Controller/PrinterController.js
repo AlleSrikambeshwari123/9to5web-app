@@ -6,12 +6,18 @@ const strings = require('../Res/strings');
 var AWBGeneration = require('../Util/AWBGeneration');
 var awbPdfGen = new AWBGeneration();
 var LBLGeneration = require('../Util/LBLGeneration');
+var CUBEGeneration = require('../Util/CUBEGeneration');
 var AirCargoManifest = require('../Util/AirCargoManifest');
 var FlightManifest = require('../Util/FlightManifest');
+var CUBE = require('../Util/cube'); 
 var FlightLoadSheet = require('../Util/FlightLoadSheet');
 var USCustoms = require('../Util/USCustoms');
 var DeliveryReport = require("../Util/DeliveryReport");
 var lblPdfGen = new LBLGeneration();
+var cubPdfGen = new CUBEGeneration();
+const Awb = require('../models/awb');
+//var cubeService = require("../Services/CubeService")
+var AllPackagesOnAwb = require('../Util/PrintAllPackages');
 
 
 exports.send_print_awb = (req, res, next) => {
@@ -93,6 +99,31 @@ exports.download_pkg_labels = (req, res, next) => {
   })
 }
 
+exports.print_all_pkg_labels = async (req, res, next) => {
+  let id = req.params.id;
+  console.log("Downloading Package Label PDF", id);
+  getFullAwb(id).then(async awb => {
+    // console.log('asd',awb)
+    if(awb.packages.length >0){
+      const pkgs = await Promise.all(awb.packages.map(async ab=>{
+        const image = await lblPdfGen.generateBarcode(ab.trackingNo);
+        ab._doc['png'] = image.toString('base64')
+        ab._doc['calculateDimensionalWeight'] = lblPdfGen.calculateDimensionalWeight(ab.dimensions)
+        return ab
+      }))
+      awb.packages = pkgs
+    }
+    // console.log(awb)
+    let pkgs = new AllPackagesOnAwb(awb)
+    let stream = await pkgs.generate();
+    // res.type('pdf');
+    // res.attachment(`${awb.id}-USC.pdf`);
+    // stream.pipe(res);
+    // stream.end();
+    res.send(stream)
+  })
+}
+
 exports.generate_awb_pdf = (req, res, next) => {
   services.printService.getAWBDataForAllRelatedEntities(req.params.id).then(awb => {
     awbPdfGen.generateAWb(awb).then(result => {
@@ -111,6 +142,19 @@ exports.generate_pkg_label_pdf = (req, res, next) => {
     })
   })
 }
+
+exports.generate_cube_pdf = (req, res, next) => {
+  services.cubeService.getCube(req.params.id).then(cube => {
+    cube.trackingNo =  cube.cubeDetail ? cube.cubeDetail.trackingNo : null;
+    services.printService.getAWBDataForAllRelatedEntities(cube.packages[0].awbId).then((awb) => {
+      awb['cubePkg'] = true;
+      cubPdfGen.generateSinglePackageLabel(awb, cube).then(result => {
+        res.send(result);
+      })
+    })
+  })
+}
+
 exports.generate_price_label_pdf = (req, res, next) => {
   console.log("DWLD PRICE LABEL")
   services.PriceLabelService.getPriceLabel(req.params.id).then(price=>{
@@ -125,15 +169,20 @@ exports.generate_price_label_pdf = (req, res, next) => {
 exports.downloadAirCargoManifest = async (req, res, next) => {
   try {
     let manifest = await services.manifestService.getManifest(req.params.id);
-    let packages = await services.packageService.getPackageOnManifest(req.params.id);
+    let packages = await services.packageService.cloneManifestAndOriginal(req.params.id);
     let [airportFrom, airportTo] = await Promise.all([
       manifest.airportFromId && services.airportService.get(manifest.airportFromId),
       manifest.airportToId && services.airportService.get(manifest.airportToId),
     ]);
-
+    
+    
     let packagesByAWB = packages.reduce((acc, pkg) => {
       acc[pkg.awbId] = acc[pkg.awbId] || {};
       let item = acc[pkg.awbId];
+      if(pkg.awbId != null && pkg.awbId.invoices && pkg.awbId.invoices.length > 0) {
+        item['isInvoice'] = true;
+        pkg.awbId['isInvoice'] = true;
+      }
 
       item.awb = String(pkg.awbId.awbId);
       item.pieces = (item.pieces || 0) + 1;
@@ -156,6 +205,7 @@ exports.downloadAirCargoManifest = async (req, res, next) => {
       return acc;
     }, {});
 
+
     let airCargoManifest = new AirCargoManifest({
       owner: 'Nine To Five Import Export LLC',
       marksOfNationalityAndRegistration: 'United States - '+manifest.planeId.tailNumber,
@@ -175,10 +225,87 @@ exports.downloadAirCargoManifest = async (req, res, next) => {
   }
 };
 
+exports.downloadCubePdf = async (req, res, next) => {
+  try {
+    let cubeDataObject = await services.cubeService.getCubeCompleteData(req.params.id);
+    
+    let packages = [];
+    let manifest = {};
+
+    if(cubeDataObject.cubeDetail && cubeDataObject.cubeDetail.manifestId) { 
+      manifest = await services.manifestService.getManifest(cubeDataObject.cubeDetail.manifestId);
+      packages = await services.packageService.cloneManifestAndOriginal(cubeDataObject.cubeDetail.manifestId);
+    } else if(cubeDataObject && cubeDataObject.packageList && cubeDataObject.packageList.length){
+      packages = await services.packageService.getPackagesById(cubeDataObject.packageList.map(a => a._id))
+    } else {
+      return res.send({ success: true, message: strings.string_noData })
+    }
+
+
+    
+    let [airportFrom, airportTo] = await Promise.all([
+      manifest.airportFromId && services.airportService.get(manifest.airportFromId),
+      manifest.airportToId && services.airportService.get(manifest.airportToId),
+    ]);
+    
+    let packagesByAWB = packages.reduce((acc, pkg) => {
+      acc[pkg.awbId] = acc[pkg.awbId] || {};
+      let item = acc[pkg.awbId];
+
+      if(pkg.awbId != null && pkg.awbId.invoices && pkg.awbId.invoices.length > 0) {
+        item['isInvoice'] = true;
+        pkg.awbId['isInvoice'] = true;
+      }
+
+      item.awb = String(pkg.awbId.awbId);
+      item.pieces = (item.pieces || 0) + 1;
+      // in lbs
+      let weight = services.packageService.getPackageWeightInLBS(pkg);
+      item.weight = (item.weight || 0) + weight;
+
+      item.consignee = {
+        name : '',
+        address : ''
+      };
+
+      if(pkg.customerId) {
+        item.consignee.name = pkg.customerId.lastName ? (pkg.customerId.firstName + ' ' + pkg.customerId.lastName) : pkg.customerId.firstName
+        item.consignee.address = (pkg.customerId && pkg.customerId.address) ? pkg.customerId.address : ''
+      }
+
+      item.shipper = {
+        name: String(pkg.shipperId && pkg.shipperId.name),
+        address: String(pkg.shipperId && pkg.shipperId.address),
+      };
+
+      item.hazmat = (pkg.hazmatId && pkg.hazmatId.description) || " ";
+      item.natureOfGoods = (pkg.description && pkg.description)
+      return acc;
+    }, {});
+
+    let cubeManifest = new CUBE({
+      owner: 'Nine To Five Import Export LLC',
+      marksOfNationalityAndRegistration: 'United States - '+(manifest.planeId ? manifest.planeId.tailNumber : ''),
+      flightNumber: ((manifest && manifest.planeId) ? manifest.planeId.tailNumber : '') + (manifest ? manifest.title : ''),
+      date: manifest.shipDate,
+      portOfLading: (airportFrom && airportFrom.name) ? String(airportFrom && airportFrom.name) : '',
+      portOfOnlading: (airportTo && airportTo.name) ? String(airportTo && airportTo.name) : '',
+      rows: Object.values(packagesByAWB),
+    });
+    let stream = await cubeManifest.generate();
+    res.type('pdf');
+    res.attachment(`${cubeDataObject._id}-Cube.pdf`);
+    stream.pipe(res);
+    stream.end();
+  } catch (error) {
+    next(error);
+  }
+};
+
 exports.downloadFlightManifest = async (req, res, next) => {
   try {
     let manifest = await services.manifestService.getManifest(req.params.id);
-    let packages = await services.packageService.getPackageOnManifest(req.params.id);
+    let packages = await services.packageService.cloneManifestAndOriginal(req.params.id);
 
     let rows = packages.map((pkg) => {
       return {
@@ -189,18 +316,20 @@ exports.downloadFlightManifest = async (req, res, next) => {
           name: String(
             pkg.customerId &&
             [pkg.customerId.firstName, pkg.customerId.lastName].filter(Boolean).join(' '),
-          ),
-        },
-        shipper: {
-          name: String(pkg.shipperId && pkg.shipperId.name),
-          address: String(pkg.shipperId && pkg.shipperId.address),
-        },
-      };
-    });
-
+            ),
+          },
+          shipper: {
+            name: String(pkg.shipperId && pkg.shipperId.name),
+            address: String(pkg.shipperId && pkg.shipperId.address),
+          },
+        };
+      });
+      let image = await lblPdfGen.generateBarcode(manifest.id)
+      image = 'data:image/jpeg;base64,' + image.toString('base64')
     let flightManifest = new FlightManifest({
       carrier: "Nine To Five Import Export",
       departureDate: manifest.shipDate,
+      barcode:image,
       flightNumber: manifest.planeId.tailNumber,
       rows,
     });
@@ -214,10 +343,12 @@ exports.downloadFlightManifest = async (req, res, next) => {
   }
 };
 
+
+
 exports.downloadFlightLoadSheet = async (req, res, next) => {
   try {
     let manifest = await services.manifestService.getManifest(req.params.id);
-    let packages = await services.packageService.getPackageOnManifest(req.params.id);
+    let packages = await services.packageService.cloneManifestAndOriginal(req.params.id);
     let compartments = await Promise.all(
       _.uniqBy(packages, 'compartmentId').filter(i => i.compartmentId).map((pkg) =>
         services.planeService.getCompartment(pkg.compartmentId),
@@ -258,7 +389,7 @@ exports.downloadFlightLoadSheet = async (req, res, next) => {
 exports.downloadUSCustoms = async (req, res, next) => {
   try {
     let manifest = await services.manifestService.getManifest(req.params.id);
-    let packages = await services.packageService.getPackageOnManifest(req.params.id);
+    let packages = await services.packageService.cloneManifestAndOriginal(req.params.id);
     let airline = await services.airlineService.getAirline(manifest.planeId.airlineId);
 
     let [airportFrom, airportTo] = await Promise.all([
@@ -323,6 +454,7 @@ exports.downloadUSCustoms = async (req, res, next) => {
         natureAndQuantityOfGoods: '???',
         ultimateDestination: 'BAHAMAS',
         natureOfAwb: awb.hazmat ? awb.hazmat.description : "",
+        packageAWBNumber : packages[0].awbId ? packages[0].awbId.awbId : ""
       };
     });
 
@@ -378,7 +510,7 @@ exports.downloadDeliveryReport = async (req, res, next) => {
     let rows = packages.map((pkg) => {
       return {
         id: pkg.id,
-        awb: pkg.awbId,
+        awb: pkg.awbId.id,
         weight: services.packageService.getPackageWeightInLBS(pkg),
         pmb: pkg.customerId && pkg.customerId.pmb,
         description: pkg.description
