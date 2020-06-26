@@ -456,7 +456,7 @@ var fonts = {
                             margin: [1, 1],
                             stack: [
                               { text: 'TOTAL PIECES', fontSize: 6, bold: true },
-                              { margin: [10, 5], text: key !== 0 ? key+'/'+this.awb.packages.length: this.awb.packages.length, fontSize: 12, bold: true },
+                              { margin: [10, 5], text: key !== 0 ? key+'/'+this.awb.packages.length: this.awb.cubePkg ? '1': this.awb.packages.length, fontSize: 12, bold: true },
                             ],
                             border: [true, false, false, true],
                           },

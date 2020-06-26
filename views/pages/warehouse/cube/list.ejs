@@ -36,7 +36,6 @@
                 <td><%=helpers.formatDate(cube.createdAt)%></td> 
                 <!--<td><a href="/warehouse/cube/detail/<%=cube.id%>" data-id='<%=cube.id%>' data-target="#package-cube" data-toggle='modal' class="package-detail" onclick="cubePackaceDetail('<%=cube._id%>')"><i class="fas fa-eye"></i></a></td>              
                 -->
-                <% console.log("EE",cube) %>
                 <% let downloadpdfLink = (cube.packages.length ? cube.id : '')
                   if(downloadpdfLink == '') downloadpdfLink = '#' 
                   else downloadpdfLink = '/warehouse/cube/detail/'+ downloadpdfLink
