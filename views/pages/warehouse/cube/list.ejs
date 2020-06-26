@@ -36,14 +36,22 @@
                 <td><%=helpers.formatDate(cube.createdAt)%></td> 
                 <!--<td><a href="/warehouse/cube/detail/<%=cube.id%>" data-id='<%=cube.id%>' data-target="#package-cube" data-toggle='modal' class="package-detail" onclick="cubePackaceDetail('<%=cube._id%>')"><i class="fas fa-eye"></i></a></td>              
                 -->
-                <% let downloadpdfLink = (cube.packages.length ? cube.id : '')
-                  if(downloadpdfLink == '') downloadpdfLink = '#' 
-                  else downloadpdfLink = '/warehouse/cube/detail/'+ downloadpdfLink
+                <% 
+                let viewCubeLink = (cube.packages.length ? cube.id : '')
+                let downloadpdfLink = (cube.packages.length ? cube.id : '')
+                  if(downloadpdfLink == '') {
+                    viewCubeLink = '#';
+                    downloadpdfLink = '#'
+                  } 
+                  else {
+                    viewCubeLink = '/warehouse/cube/detail/'+ downloadpdfLink
+                    downloadpdfLink = '/api/printer/download-pdf/cube/'+ downloadpdfLink
+                  }
                 %>
-                <td><a href="/warehouse/cube/detail/<%=cube.id%>" ><i class="fas fa-eye"></i></a></td>
+                <td><a href="<%= viewCubeLink %>" ><i class="fas fa-eye"></i></a></td>
                 
                 <td class="text-center">
-                  <a href="<%=downloadpdfLink%>"><i class="fa fa-download"></i></a>
+                  <a href="<%= downloadpdfLink %>"><i class="fa fa-download"></i></a>
                   <a
                     class="btn btn-link btn-primary btn-print-pkg"
                     data-toggle="modal"
