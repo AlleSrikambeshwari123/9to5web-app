@@ -17,7 +17,6 @@ class ZoneService {
         if (err) {
           resolve([]);
         } else {
-            console.log(result)
           resolve(result);
         }
       })
@@ -87,7 +86,6 @@ class ZoneService {
           if (err) {
             resolve([]);
           } else {
-              console.log(result)
             resolve(result);
           }
         })

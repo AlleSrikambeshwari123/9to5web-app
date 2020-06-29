@@ -4,22 +4,41 @@ var utils = require('../Util/utils');
 
 exports.get_package_list = (req, res, next) => {
   services.packageService.getAllPackagesWithLastStatus().then((packages) => {
-    res.render('pages/warehouse/package/list-all', {
-      page: req.originalUrl,
-      user: res.user,
-      title: 'All Packages',
-      filterURL: '',
-      buttonName : 'Add to Manifest',
-      packages: packages,
-    });
+    return Promise.all(
+      packages.map(async (pkg, i) => {
+        let awb = await services.printService.getAWBDataForPackagesRelatedEntitie(pkg.awbId._id);
+        packages[i].pieces = awb.packages ? awb.packages.length : 0
+        packages[i].packageNumber = "PK00" + packages[i].id;
+        return pkg
+      })
+      ).then(pkgs=>{
+        res.render('pages/warehouse/package/list-all', {
+          page: req.originalUrl,
+          user: res.user,
+          title: 'All Packages',
+          filterURL: '',
+          buttonName : 'Add to Manifest',
+          packages: pkgs,
+        });
+      })
+    
   });
+};
+exports.get_package_locations = (req, res, next) => {
+  services.locationService.getLocations().then((locations) => {
+    res.send(locations);
+  });
+};
+exports.get_package_zones = (req, res, next) => {
+  services.zoneService.getZones().then(zones => {
+    res.send(zones);
+  })
 };
 
 exports.get_filtered_package_list = (req, res, next) => {
   let title = 'All Packages';
   let filterURL = '';
   let buttonName = '';
-
   services.packageService
     .getAllPackagesWithLastStatus({ filter: req.params.filter })
     .then(async (packages) => {

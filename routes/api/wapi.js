@@ -174,7 +174,6 @@ router.get('/open-manifest', (req, res, next) => {
       return services.planeService.getFullPlane(manifest.planeId);
     })).then(planes => {
       manifests.forEach((manifest, i) => manifest.plane = planes[i]);
-      console.log(manifests);
       res.send({ manifests: manifests });
     })
   })
@@ -420,4 +419,13 @@ router.post('/pricelabels/:id', passport.authenticate('jwt', { session: false })
 // Get Price Labels
 router.get('/pricelabels/:id', passport.authenticate('jwt', { session: false }), priceCtrl.get_pricelabel_package);
 
+//Add Packages to NoDoc WEB- [7]
+router.post('/web/packages/add-packages-to-nodoc',middleware().checkSession, (req,res)=>{
+  const {valid,errors} = checkEmpty({packageIds:req.body.packageIds,zoneId:req.body.zoneId,userId: req['userId']})
+  if(!valid) return res.send({success:false,message:errors})
+  req.body.userId = req['userId']
+  services.packageService.addAwbsPkgNoDocs(req.body).then((result)=>{
+    res.send(result)
+  })
+})
 module.exports = router;
