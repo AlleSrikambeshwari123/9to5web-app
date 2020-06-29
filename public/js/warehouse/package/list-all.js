@@ -106,6 +106,8 @@ $(function() {
   let addToDeliveryForm = $('#add-to-delivery-form');
 
   let addToCubeModal = $('#add-to-cube-modal');
+  let addToNoDocModal = $('#add-to-nodoc-modal');
+  let addtoNoDocForm = $('#add-to-nodoc-form')
   let addToCubeForm = $('#add-to-cube-form');
   let cubeSelectOption = addToCubeForm.find('[name="compartmentId"]');
 
@@ -195,6 +197,48 @@ $(function() {
     },
   });
 
+  /*  Get Location and ZOne IN Nodoc Dropdown */
+  // Location
+  $.ajax({
+    url: '/warehouse/package/locations',
+    type: 'get',
+    dataType: 'json',
+    success(data) {    
+      addtoNoDocForm
+        .find('[name="location"]')
+        .select2({
+          theme: 'bootstrap',
+          width: '100%',
+          placeholder: 'Select Location',
+ 
+          data: data.map((locate) => ({
+            id: locate.name,
+            text: locate.name
+          })),
+        })
+    },
+  });
+  // Zone
+  $.ajax({
+    url: '/warehouse/package/zones',
+    type: 'get',
+    dataType: 'json',
+    success(data) {    
+      addtoNoDocForm
+        .find('[name="zoneId"]')
+        .select2({
+          theme: 'bootstrap',
+          width: '100%',
+          placeholder: 'Select Zone',
+ 
+          data: data.map((zone) => ({
+            id: zone._id,
+            text: zone.name
+          })),
+        })
+    },
+  });
+/* End Location And Zone */
   function loadCompartments(planeId) {
     compartmentIdSelect.prop('disabled', true);
     $.ajax({
@@ -312,6 +356,47 @@ $(function() {
           type: response.success ? 'success' : 'error',
           text: response.message,
         });
+      },
+      error: function ()  {
+        swal({
+          title: 'Error',
+          type: 'error',
+          text: 'Unknown error',
+        });
+      }
+    });
+  });
+
+  // Add To NoDOc Form
+  addtoNoDocForm.submit(function(event) {
+    addToNoDocModal.modal('hide');
+    event.preventDefault();
+    var packageIds = packageTable
+      .rows({ selected: true })
+      .nodes()
+      .map((i) => $(i).data('record'))
+      .toArray()
+      .join(',');
+      addtoNoDocForm.find('[name="packageIds"]').val(packageIds);
+    var data = extractFormData(this);
+    if(data.packageIds == ''){
+      swal({
+            title:'Empty Packages',
+            type: 'warning',
+            text: 'Please Select Packages',
+          });
+    }
+    $.ajax({
+      url: '/api/warehouse/web/packages/add-packages-to-nodoc',
+      type: 'post',
+      data: data,
+      success: function(response) {
+        swal({
+          title: response.success ? 'Success' : 'Error',
+          type: response.success ? 'success' : 'error',
+          text: response.message,
+        });
+        location.reload()
       },
       error: function ()  {
         swal({

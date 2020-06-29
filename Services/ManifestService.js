@@ -201,14 +201,19 @@ class ManifestService {
       ]})
       .populate('planeId')
       .populate('customerId')
-      .exec((err, manifests) => {
+      .exec( (err, manifests) => {
         if (err) {
           resolve([]);
         } else {
-          manifests.forEach((manifest) => {
+
+          return Promise.all(manifests.map(async (manifest) => {
             manifest['plane'] = manifest['planeId'];
+            let pkg = await Package.find({manifestId:manifest.id})
+            if(pkg.length > 0) return manifest
           })
-          resolve(manifests);
+          ).then(mfest=>{
+            resolve(mfest);
+          })
         }
       });
     });
