@@ -17,6 +17,7 @@
                 <!-- <th>Zone</th> -->
                 <th>Type</th>
                 <th>Weight</th>
+                <th>Number of Pieces</th>
                 <th>Status</th>
                 <th>AWB</th>
                 <% if (typeof filterURL !== 'undefined' && filterURL === 'not-pmb9000') { %>
@@ -50,6 +51,7 @@
                 <% } %>  -->
                 <td><%= pkg.packageType %></td>
                 <td><%= pkg.weight%></td>
+                <td><%= (pkg.pieces || pkg.pieces > -1) ? pkg.pieces : ''%></td>
                 <td><%= pkg.lastStatusText %></td>
                 <td> <a href="../awb/manage/<%=pkg.awbId._id%>/preview"> <%= pkg.awbId.awbId %> </a></td>
                 <% if (typeof filterURL !== 'undefined' && filterURL === 'not-pmb9000') { %>
