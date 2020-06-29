@@ -6,6 +6,8 @@ var packageCtrl = require('../../Controller/PackageController');
 var printerCtrl = require('../../Controller/PrinterController');
 
 router.get('/package/list', middleware().checkSession, packageCtrl.get_package_list);
+router.get('/package/locations', middleware().checkSession, packageCtrl.get_package_locations);
+router.get('/package/zones', middleware().checkSession, packageCtrl.get_package_zones);
 router.get('/package/list/:filter', middleware().checkSession, packageCtrl.get_filtered_package_list);
 router.get('/package/pkg-label/download/:id', middleware().checkSession, printerCtrl.download_pkg_label);
 router.get('/fll/package/list', middleware().checkSession, packageCtrl.get_fll_package_list);
