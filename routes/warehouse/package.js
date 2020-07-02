@@ -14,4 +14,6 @@ router.get('/fll/package/list', middleware().checkSession, packageCtrl.get_fll_p
 router.get('/fll/package/get/:awbId', middleware().checkSession, packageCtrl.get_awb_packages);
 router.get('/nas/package/list', middleware().checkSession, packageCtrl.get_nas_package_list);
 
+router.get('/fll/package/no-docs', middleware().checkSession, packageCtrl.get_package_no_docs);
+
 module.exports = router;

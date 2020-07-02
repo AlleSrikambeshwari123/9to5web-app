@@ -456,6 +456,25 @@ class PackageService {
         });
     }
 
+    getAllPackagesNoDoc() {
+        return new Promise((resolve, reject) => {
+            Package.find({})
+                .populate('awbId')
+                .populate('originBarcode')
+                .populate('customerId')
+                .populate('zoneId')
+                .populate('shipperId')
+                .populate('carrierId')
+                .exec((err, result) => {
+                    if (err) {
+                        resolve([]);
+                    } else {
+                        resolve(result);
+                    }
+                });
+        });
+    }
+
     getPackageWithFilter(filter, query) {
         return new Promise(async(resolve, reject) => {
             let nineToPackages = [],
@@ -852,6 +871,11 @@ class PackageService {
             this.getAllPackages_updated().then((packages) => {
                 Promise.all(
                     packages.map((pkg) => {
+                        if(pkg.customerId) {
+                            pkg['customer'] = {
+                                'name' : pkg.customerId.firstName + ' ' + (pkg.customerId.lastName || '')
+                            }
+                        }
                         if (pkg.originBarcode) {
                             pkg.originBarcode = this.getOriginBarcode(pkg.originBarcode)
                         }
@@ -866,6 +890,28 @@ class PackageService {
                     });
                     resolve(pkgs);
                 });
+            });
+        });
+    }
+
+    getPackagesNoDocs() {
+        return new Promise((resolve, reject) => {
+            this.getAllPackagesNoDoc().then((packages) => {
+                Promise.all(
+                    packages.map( async(pkg)=>{
+                        let awb =  await this.services.awbService.awbByCondition({_id : pkg.awbId._id, invoices: { $eq: [] }})
+                        if(awb && awb._id) {
+                            pkg['dateCreated'] = moment(pkg['createdAt']).format('MMM DD, YYYY');
+                            return pkg;
+                        } 
+                    })
+                ).then((data)=>{
+                    data = data.filter(function( element ) {
+                       return element !== undefined;
+                    });
+                    console.log(data)
+                    resolve(data);
+                })
             });
         });
     }

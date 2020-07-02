@@ -335,6 +335,18 @@ class AwbService {
       });
     });
   }
+
+  awbByCondition(condition) {
+    return new Promise((resolve, reject) => {
+      Awb.findOne(condition, '_id').exec((err, awbData) => {
+        if (err) {
+          resolve([]);
+        } else {
+          resolve(awbData);
+        }
+      });
+    });
+  }
 }
 
 //========== DB Structure ==========//
