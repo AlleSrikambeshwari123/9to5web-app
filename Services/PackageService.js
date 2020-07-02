@@ -20,7 +20,7 @@ const PKG_STATUS = {
     2: 'Loaded on AirCraft',
     3: 'In Transit',
     4: 'Recieved in NAS',
-    5: 'Ready for Pickup / Delivery',
+    5: 'Received By Customer',
     6: 'Delivered',
     7: 'No Invoice Present',
     8: 'Assigned to cube',
@@ -212,7 +212,7 @@ class PackageService {
         }
     }
 
-    // 5: 'Ready for Pickup / Delivery',
+    // 5: 'Received By Customer',
     checkOutToCustomer(barcodes, username) {
         return new Promise((resolve, reject) => {
             let packageIds = barcodes.split(',');
