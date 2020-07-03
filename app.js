@@ -14,6 +14,8 @@ const mongoose = require('mongoose');
 var accountPasswordRouter = require('./routes/account/password');
 var accountPrintRouter = require('./routes/account/print');
 
+// Cron 
+var {cronSchedule} = require('./cron')
 // Admin
 var authRouter = require('./routes/auth');
 var adminIndexRouter = require('./routes/index');
@@ -67,6 +69,9 @@ app.use(helmet())
 
 // Xss Filter
 app.use(helmet.xssFilter())
+
+// CronSchedule
+cronSchedule();
 
 // view engine setup
 global.appRoot = __dirname;

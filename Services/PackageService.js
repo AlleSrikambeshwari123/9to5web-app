@@ -1060,10 +1060,12 @@ class PackageService {
         return new Promise((resolve, reject) => {
             Package.find({})
                 .populate('customerId')
+                .populate('awbId')
                 .exec((err, packages) => {
                     if (err) {
                         resolve([]);
                     } else {
+                        
                         resolve(packages);
                     }
                 })
@@ -1426,7 +1428,7 @@ class PackageService {
 
     // This method is used when we're performing the global search 
     getGlobalSearchData(bodyData) {
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             let { selectedOption, inputField } = bodyData;
             if (!selectedOption || selectedOption === 'default' || !(inputField && inputField.trim())) {
                 return resolve({ success: false, message: strings.string_global_search_error });
@@ -1440,6 +1442,15 @@ class PackageService {
                         resolve(packages);
                     }
                 })
+            }else if (selectedOption === "Original") {
+                let barcode = await this.getOriginalBarcodeByCode(inputField)
+                Package.find({ originBarcode: barcode._id}, (err, packages) => {
+                    if (err) {
+                        resolve([]);
+                    } else {
+                        resolve(packages);
+                    }
+                }).select('id')
             } else if (selectedOption === "Awb") {
                 inputField = inputField.trim().toLowerCase();
                 Awb.findOne({ awbId: inputField }, 'awbId', (err, awb) => {
@@ -1540,6 +1551,36 @@ class PackageService {
         });
     }
 
+    checkAgingofStoreInPackages(){
+        return new Promise(async (resolve,reject)=>{
+            try {
+                let pkg = await PackageStatus.find({status:PKG_STATUS[7]});
+                let diff;
+                Promise.all(pkg.map(pk=>{
+                    let noDocDate = moment(pk.createdAt)
+                    let now = moment()
+                    diff = now.diff(noDocDate, 'days')
+                    if(diff > 14){
+                        Package.findOne({_id:pk.packageId}, async (err,res)=>{
+                            if(err) resolve({success:false,message:err})
+                            else{
+                                Package.updateOne({_id:res._id},{aging:res.aging ? (res.aging + 1) : 1},(err,result)=>{
+                                    if(err) resolve({success:false,message:err})
+                                    else resolve({success:true,message:'Aging Updated'})
+                                });
+                                  
+                            }
+                        })
+                    }else{
+                        resolve({success:false,message:'Greater than 14'})
+                    }    
+                })).then((result)=> resolve(result))
+            } catch (error) {
+                console.error({checkAgingofStoreInPackages:error})
+                reject(error)
+            }
+        })
+    }
 }
 
 function getPackageIdFromBarCode(barCodeValue) {

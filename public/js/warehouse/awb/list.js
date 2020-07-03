@@ -34,7 +34,6 @@ $('.btn-print-awb').click(function () {
     url: '/api/printer/pdf/generate/awb/' + id,
     type: 'get',
     success: function (response) {
-      console.log(response);
       pdfPath = '/util/pdf' + response.filename;
       pdfjsLib.getDocument({ url: pdfPath }).promise.then(pdfData => {
         pdfData.getPage(1).then(page => {
