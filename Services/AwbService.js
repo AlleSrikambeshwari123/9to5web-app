@@ -174,6 +174,7 @@ class AwbService {
         .populate('purchaseOrders')
         .populate('invoices')
         .populate('driver')
+        .populate('createdBy')
         .exec((err, result) => {
           if (result.customerId) {
             result.customer = result.customerId;

@@ -64,6 +64,8 @@ $(function () {
       document.location.href = '/warehouse/package/list';
     } else if (selectedOption === 'Customer') {
       document.location.href = `/admin/customers/manage/${id}/get`;
+    } else if (selectedOption === 'Original') {
+      document.location.href = '/warehouse/package/list';
     } else {
       document.location.href = `/warehouse/fll/awb/manage/${id}/get`;
     }
@@ -79,6 +81,8 @@ $(function () {
       targetElement.attr("placeholder", "Search Packages by description...");
     } else if (selectedVal === 'Customer') {
       targetElement.attr("placeholder", "Search Customer by email...");
+    } else if (selectedVal === 'Original') {
+      targetElement.attr("placeholder", "Search Packages by Original Tracking No.");
     } else if (selectedVal === 'Awb') {
       targetElement.attr("placeholder", "Search AWB by AWB number...");
     } else {

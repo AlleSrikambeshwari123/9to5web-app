@@ -5,14 +5,15 @@ const aws = require('../Util/aws');
 
 const mongoose = require('mongoose');
 const moment = require('moment');
+var momentz = require('moment-timezone')
 const id = mongoose.Types.ObjectId();
 
 exports.preview_awb = (req, res, next) => {
   let id = req.params.id;
   
   services.awbService.getAwbPreviewDetails(id).then((awb) => {
-    awb.dateCreated = moment(awb.createdAt).format("MMM DD,YYYY");
-    
+    awb._doc.dateCreated = momentz(awb.createdAt).tz("America/New_York").format('dddd, MMMM Do YYYY, h:mm A');
+    awb._doc.createdBy = awb.createdBy ? (awb.createdBy.firstName || '')  + (awb.createdBy.lastName || ''): ''
     if (awb.invoices && awb.invoices.length) {
       awb.invoices = awb.invoices.map(invoice => {
         if (invoice.filename) {
@@ -313,6 +314,29 @@ exports.get_awb_no_docs = (req, res, next) => {
   })
 };
 
+exports.get_awb_no_docs_package_list = (req, res, next) => {
+  services.packageService.getAllPackagesWithLastStatus().then((packages) => {
+      return Promise.all(
+          packages.map(async(pkg, i) => {
+              let awb = await services.printService.getAWBDataForPackagesRelatedEntitie(pkg.awbId._id);
+              packages[i].pieces = awb.packages ? awb.packages.length : 0
+              packages[i].packageNumber = "PK00" + packages[i].id;
+              packages[i].invoice = awb.invoices.length === 0 ? true : false
+              return pkg
+          })
+      ).then(pkgs => {
+          res.render('pages/warehouse/awb/no-docs-packages', {
+              page: req.originalUrl,
+              user: res.user,
+              title: 'NoDocs Packages',
+              filterURL: '',
+              buttonName: 'Add to Manifest',
+              packages: pkgs,
+          });
+      })
+
+  });
+};
 exports.delete_awb = (req, res, next) => {
   let awbId = req.params.id;
   services.awbService.getAwb(awbId).then((awbData) => {

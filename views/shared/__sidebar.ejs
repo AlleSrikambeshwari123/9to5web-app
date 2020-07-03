@@ -92,9 +92,9 @@
 									<span class="sub-item">No Docs</span>
 								</a>
 							</li>
-							<li <% if (page.includes('/fll/package/no-docs')) { %> class="active" <% } %>>
-								<a href="/warehouse/fll/package/no-docs">
-									<span class="sub-item">No Docs - Pkgs</span>
+							<li <% if (page.includes('/fll/awb/no-docs-packages')) { %> class="active" <% } %>>
+								<a href="/warehouse/fll/awb/no-docs-packages">
+									<span class="sub-item">No Docs Packages</span>
 								</a>
 							</li>
 							<li <% if (page.includes('/fll/awb/list')) { %> class="active" <% } %>>
@@ -138,6 +138,11 @@
 							<li <% if (page.includes('/nas/package/list')) { %> class="active" <% } %>>
 								<a href="/warehouse/nas/package/list">
 									<span class="sub-item">Packages on Hand</span>
+								</a>
+							</li>
+							<li <% if (page.includes('/nas/package/aging')) { %> class="active" <% } %>>
+								<a href="/warehouse/nas/package/aging">
+									<span class="sub-item">Aging</span>
 								</a>
 							</li>
 							<li <% if (page && page.endsWith && page.endsWith('/package/list/in-manifest')) { %> class="active" <% } %>>
