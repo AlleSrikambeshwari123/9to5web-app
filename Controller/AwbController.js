@@ -328,7 +328,7 @@ exports.get_awb_no_docs_package_list = (req, res, next) => {
           res.render('pages/warehouse/awb/no-docs-packages', {
               page: req.originalUrl,
               user: res.user,
-              title: 'NoDocs Packages',
+              title: 'NoDocs - Pkgs',
               filterURL: '',
               buttonName: 'Add to Manifest',
               packages: pkgs,
