@@ -24,7 +24,7 @@ $(function () {
           pkg.location,
           pkg.trackingNo,
           pkg.customerId.pmb + ' - ' + getFullName(pkg.customerId),
-          pkg.awbId,
+          pkg.awbId ? pkg.awbId.awbId:'' ,
           pkg.description,
           pkg.weight + ' lbs'
         ]).draw(false);
