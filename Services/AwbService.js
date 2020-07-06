@@ -348,7 +348,54 @@ class AwbService {
       });
     });
   }
+
+  getAwbsFullCustomer(id) {
+    return new Promise((resolve, reject) => {
+      Awb.find({customerId:id})
+        .populate('customerId')
+        .populate('shipper')
+        .populate('carrier')
+        .populate('hazmat')
+        .populate('packages')
+        .populate('purchaseOrders')
+        .populate('invoices')
+        .populate('driver')
+        .exec((err, result) => {
+          resolve(result);
+        });
+    });
+  }
+
+  async getAwbsNoDocsCustomer(id) {
+    return new Promise((resolve, reject) => {
+      Awb.find({ invoices: { $eq: [], customerId:id } })
+        .populate('customerId')
+        .populate('shipper')
+        .populate('carrier')
+        .populate('packages')
+        .populate('purchaseOrders')
+        .exec((err, awbData) => {
+          if (err) {
+            resolve([]);
+          } else {
+            awbData.forEach((data) => {
+              data['customer'] = data['customerId'];
+              data['customer']['name'] = (data['customerId'].lastName ? `${data['customerId'].firstName} ${data['customerId'].lastName}` : `${data['customerId'].lastName}`);
+              if (data['packages'] && data['packages'].length) {
+                let weight = 0;
+                data.packages.forEach((pkg) => (weight += Number(pkg.weight)));
+                data['weight'] = weight;
+              }
+              data['dateCreated'] = moment(data['createdAt']).format('MMM DD, YYYY');
+            });
+            resolve(awbData);
+          }
+        });
+    });
+  }
 }
+
+
 
 //========== DB Structure ==========//
 // customerId: '2',
