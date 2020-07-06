@@ -2,6 +2,8 @@
 
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const autoIncrement = require('mongoose-auto-increment');
+autoIncrement.initialize(mongoose.connection);
 
 const deliverySchema = new mongoose.Schema({
     locationId: {
@@ -45,6 +47,12 @@ const deliverySchema = new mongoose.Schema({
     }]
 }, {
     timestamps: true
+});
+
+deliverySchema.plugin(autoIncrement.plugin, {
+    model: 'deliverySchema',
+    field: 'deliveryNum',
+    startAt: 1000
 });
 
 module.exports = mongoose.model('Delivery', deliverySchema);

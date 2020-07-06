@@ -10,7 +10,6 @@ const strings = require('../Res/strings');
 
 const Delivery = require('../models/delivery');
 const Package = require('../models/package');
-const Counter = require('../models/counter')
 
 class DeliveryService {
     constructor() {
@@ -25,12 +24,8 @@ class DeliveryService {
         delivery["status"] = 0;
         delivery["createdBy"] = userId;
 
-        let counter = await Counter.findOneAndUpdate({ _id: 'deliveryNumber' }, { $inc: { seq: 1 } }, { new: true });
-        delivery['deliveryNum'] = Number(counter.seq);
-
         return new Promise((resolve, reject) => {
             let objDelivery = new Delivery(delivery);
-            console.log("#############", objDelivery);
             objDelivery.save((err, result) => {
                 if (err) {
                     resolve({ success: false, message: strings.string_response_error });
