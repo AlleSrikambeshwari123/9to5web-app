@@ -3,6 +3,7 @@ var moment = require('moment');
 var strings = require('../Res/strings');
 
 const Awb = require('../models/awb');
+const StoreInvoice = require('../models/storeInvoice');
 const AwbStatus = require('../models/awbStatus');
 const Barcode = require('../models/barcode');
 const PurchaseOrder = require('../models/purchaseOrder');
@@ -368,7 +369,7 @@ class AwbService {
 
   async getAwbsNoDocsCustomer(id) {
     return new Promise((resolve, reject) => {
-      Awb.find({ invoices: { $eq: [], customerId:id } })
+      Awb.find({ invoices: { $eq: [] }, customerId:id })
         .populate('customerId')
         .populate('shipper')
         .populate('carrier')
@@ -392,6 +393,24 @@ class AwbService {
           }
         });
     });
+  }
+
+  async storeInvoceFile(data){
+    return new Promise((resolve, reject) => { 
+      const invoiceData = {
+        awbId:data.awbId,
+        fileName:data.filePath
+      }
+      const newInvoice = new StoreInvoice(invoiceData);
+      newInvoice.save((err, result) => {
+        if(err){
+          console.log(err)
+          resolve({ success: false, message: strings.string_response_error });
+        }else{
+          resolve({ success: true, message: strings.string_response_created, storeInvoice: result });
+        }
+      })
+    })
   }
 }
 
