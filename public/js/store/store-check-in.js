@@ -21,7 +21,7 @@ $(function () {
       if (pkg.customerId.location === locationId || locationId == 'All') {
         packageTable.row.add([
           formatDate(pkg.createdAt),
-          pkg.location !==null ? pkg.location:'',
+          pkg.location !== null ? pkg.location:'',
           pkg.trackingNo,
           pkg.customerId.pmb + ' - ' + getFullName(pkg.customerId),
           pkg.awbId ? pkg.awbId.awbId:'' ,
