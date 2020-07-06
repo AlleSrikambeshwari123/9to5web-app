@@ -7,6 +7,10 @@ const AwbStatus = require('../models/awbStatus');
 const Barcode = require('../models/barcode');
 const PurchaseOrder = require('../models/purchaseOrder');
 
+const Manifest = require('../models/manifest');
+const Plane = require('../models/plane');
+const User = require('../models/user');
+
 const DELIVERY_METHODS = {
   DELIVERY: 1,
   PICKUP: 2,
@@ -175,11 +179,35 @@ class AwbService {
         .populate('invoices')
         .populate('driver')
         .populate('createdBy')
-        .exec((err, result) => {
+        .exec( async  (err, result) => {
           if (result.customerId) {
             result.customer = result.customerId;
           }
-          resolve(result);
+         // console.log(result);
+          let manifestIds = result.packages.map(function(value) {
+            return value.manifestId;
+          });
+
+          if(manifestIds && manifestIds.length) {
+            result['createdBy'] = await User.findOne({_id : result.createdBy});
+            await Manifest.findOne({_id: { $in : manifestIds }})
+              .populate('airportFromId')
+              .populate('airportToId')
+              .populate('planeId')
+              .exec((err, rest) => {
+                if(err){
+                  console.log("Error get Awb", err);
+                }else{
+                  result['planeId'] = rest.planeId;
+                  result['airportFromId'] = rest.airportFromId;
+                  result['airportToId'] = rest.airportToId;
+                  result['shipDate'] = rest.shipDate;
+                  resolve(result)
+                }
+              });
+          } else {
+            resolve(result);
+          }
         });
     });
   }
