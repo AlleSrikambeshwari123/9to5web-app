@@ -10,142 +10,147 @@ const strings = require('../Res/strings');
 
 const Delivery = require('../models/delivery');
 const Package = require('../models/package');
+const Counter = require('../models/counter')
 
 class DeliveryService {
-  constructor() {
-    this.services = {};
-  }
+    constructor() {
+        this.services = {};
+    }
 
-  setServiceInstances(services) {
-    this.services = services;
-  }
+    setServiceInstances(services) {
+        this.services = services;
+    }
 
-  createDelivery(delivery, userId) {
-    delivery["status"] = 0;
-    delivery["createdBy"] = userId;
-    
-    return new Promise((resolve, reject) => {
-      let objDelivery = new Delivery(delivery);
-      objDelivery.save((err, result) => {
-        if (err) {
-          resolve({ success: false, message: strings.string_response_error});
-        } else {
-          resolve({ 
-            success: true, 
-            message: strings.string_response_added, 
-            delivery: result
-          });
-        }
-      })
-    })
-  }
+    async createDelivery(delivery, userId) {
+        delivery["status"] = 0;
+        delivery["createdBy"] = userId;
 
-  closeDelivery(deliveryId) {
-    return new Promise((resolve, reject) => {
-      Delivery.findOneAndUpdate({_id: deliveryId}, {status: 1}, (err, result) => {
-        if (err) {
-          resolve({ success: false, message: strings.string_response_error});
-        } else {
-          resolve({ success: true });
-        }
-      })
-    });
-  }
-  getDelivery(deliveryId) {
-    return new Promise((resolve, reject) => {
-      Delivery.findOne({_id: deliveryId}, (err, result) => {
-        if (err) {
-          resolve({});
-        } else {
-          resolve(result)
-        }
-      });
-    });
-  }
+        let counter = await Counter.findOneAndUpdate({ _id: 'deliveryNumber' }, { $inc: { seq: 1 } }, { new: true });
+        delivery['deliveryNum'] = Number(counter.seq);
 
-  getDeliveries() {
-    return new Promise(async(resolve, reject) => {
-      let deliveries = await Delivery.find({})
-      resolve(deliveries)
-    })
-  }
+        return new Promise((resolve, reject) => {
+            let objDelivery = new Delivery(delivery);
+            console.log("#############", objDelivery);
+            objDelivery.save((err, result) => {
+                if (err) {
+                    resolve({ success: false, message: strings.string_response_error });
+                } else {
+                    resolve({
+                        success: true,
+                        message: strings.string_response_added,
+                        delivery: result
+                    });
+                }
+            })
+        })
+    }
 
-  getDeliveriesFullData() {
-    return new Promise(async(resolve, reject) => {
-      Delivery.find({status: {$ne: 1}})
-      .populate('locationId')
-      .populate('deliveryId')
-      .populate('vehicleId')
-      .populate('driverId')
-      .populate('packages')
-      .populate('createdBy', 'username')
-      .exec((err, deliveries) => {
-        if (err) {
-          return resolve([]);
-        }
-
-        deliveries = deliveries.map((delivery) => {
-          delivery.location = delivery.locationId;
-          delivery.driver = delivery.driverId;
-          delivery.vehicle = delivery.vehicleId;
-          delivery['delivery_date'] = moment(delivery['delivery_date']).format("MMM DD, YYYY");
-          return delivery;
+    closeDelivery(deliveryId) {
+        return new Promise((resolve, reject) => {
+            Delivery.findOneAndUpdate({ _id: deliveryId }, { status: 1 }, (err, result) => {
+                if (err) {
+                    resolve({ success: false, message: strings.string_response_error });
+                } else {
+                    resolve({ success: true });
+                }
+            })
         });
+    }
+    getDelivery(deliveryId) {
+        return new Promise((resolve, reject) => {
+            Delivery.findOne({ _id: deliveryId }, (err, result) => {
+                if (err) {
+                    resolve({});
+                } else {
+                    resolve(result)
+                }
+            });
+        });
+    }
 
-        resolve(deliveries);
-      })
-    })
-  }  
+    getDeliveries() {
+        return new Promise(async(resolve, reject) => {
+            let deliveries = await Delivery.find({})
+            resolve(deliveries)
+        })
+    }
 
-  getFullDelivery(deliveryId) {
-    return new Promise((resolve, reject) => {
-      Delivery.findOne({_id: deliveryId})
-      .populate('locationId')
-      .populate('packages')
-      .populate('deliveryId')
-      .populate('vehicleId')
-      .populate('driverId')
-      .populate('createdBy', 'username')
-      .exec((err, delivery) => {
-        if (err) {
-          return resolve({});
-        }
-        delivery.location = delivery.locationId;
-        delivery.driver = delivery.driverId;
-        delivery.vehicle = delivery.vehicleId;
-        delivery.createdBy = delivery.createdBy && delivery.createdBy.username;
-        resolve(delivery);
-      })
-    });
-  }
+    getDeliveriesFullData() {
+        return new Promise(async(resolve, reject) => {
+            Delivery.find({ status: { $ne: 1 } })
+                .populate('locationId')
+                .populate('deliveryId')
+                .populate('vehicleId')
+                .populate('driverId')
+                .populate('packages')
+                .populate('createdBy', 'username')
+                .exec((err, deliveries) => {
+                    if (err) {
+                        return resolve([]);
+                    }
 
-  getDeliveryAndDriverInfo(deliveryId) {
-    return new Promise((resolve, reject) => {
-      Delivery.findOne({_id: deliveryId})
-      .populate('driverId')
-      .populate('locationId')
-      .exec((err, delivery) => {
-        if (err) {
-          return resolve({});
-        }
-        delivery.location = delivery.locationId;
-        delivery.driver = delivery.driverId;
-        resolve(delivery);
-      })
-    });
-  }
+                    deliveries = deliveries.map((delivery) => {
+                        delivery.location = delivery.locationId;
+                        delivery.driver = delivery.driverId;
+                        delivery.vehicle = delivery.vehicleId;
+                        delivery['delivery_date'] = moment(delivery['delivery_date']).format("MMM DD, YYYY");
+                        return delivery;
+                    });
 
-  getOpenDeliveries() {
-    return new Promise((resolve, reject) => {
-      Delivery.find({status: 0}, (err, deliveries) => {
-        if (err) {
-          resolve([]);
-        } else {
-          resolve(deliveries);
-        }
-      })
-    })
-  }
+                    resolve(deliveries);
+                })
+        })
+    }
+
+    getFullDelivery(deliveryId) {
+        return new Promise((resolve, reject) => {
+            Delivery.findOne({ _id: deliveryId })
+                .populate('locationId')
+                .populate('packages')
+                .populate('deliveryId')
+                .populate('vehicleId')
+                .populate('driverId')
+                .populate('createdBy', 'username')
+                .exec((err, delivery) => {
+                    if (err) {
+                        return resolve({});
+                    }
+                    delivery.location = delivery.locationId;
+                    delivery.driver = delivery.driverId;
+                    delivery.vehicle = delivery.vehicleId;
+                    delivery.createdBy = delivery.createdBy && delivery.createdBy.username;
+                    resolve(delivery);
+                })
+        });
+    }
+
+    getDeliveryAndDriverInfo(deliveryId) {
+        return new Promise((resolve, reject) => {
+            Delivery.findOne({ _id: deliveryId })
+                .populate('driverId')
+                .populate('locationId')
+                .exec((err, delivery) => {
+                    if (err) {
+                        return resolve({});
+                    }
+                    delivery.location = delivery.locationId;
+                    delivery.driver = delivery.driverId;
+                    resolve(delivery);
+                })
+        });
+    }
+
+    getOpenDeliveries() {
+        return new Promise((resolve, reject) => {
+            Delivery.find({ status: 0 }, (err, deliveries) => {
+                if (err) {
+                    resolve([]);
+                } else {
+                    resolve(deliveries);
+                }
+            })
+        })
+    }
 }
 
 //========== DB Structure ==========//
