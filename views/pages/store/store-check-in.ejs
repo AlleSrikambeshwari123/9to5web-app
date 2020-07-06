@@ -22,7 +22,7 @@
 					<select id="locationId-cableBeach" class="changeLocation">
 						<option value="All" selected>All</option>
 						<% locations.forEach(location => { %>
-						<option value="<%= location.id %>"><%= location.name %></option>
+						<option value="<%= location %>"><%= location %></option>
 						<% }) %>
 					</select>
 				</div>
@@ -71,7 +71,7 @@
 				<select id="locationId-albony" class="changeLocation">
 					<option value="All" selected>All</option>
 					<% locations.forEach(location => { %>
-					<option value="<%= location.id %>"><%= location.name %></option>
+					<option value="<%= location %>"><%= location %></option>
 					<% }) %>
 				</select>
 			</div>

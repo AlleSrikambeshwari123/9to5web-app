@@ -7,6 +7,7 @@ const strings = require('../Res/strings');
 
 const Company = require('../models/company');
 const Location = require('../models/location');
+const Package = require('../models/package');
 
 class LocationService {
   getLocations() {
@@ -14,6 +15,17 @@ class LocationService {
       Location.find({})
       .populate('company', 'name')
       .exec((err, result) => {
+        if (err) {
+          resolve([]);
+        } else {
+          resolve(result);
+        }
+      })
+    })
+  }
+  getPackageLocations(){
+    return new Promise((resolve,reject)=>{
+      Package.find({}).distinct('location',(err,result)=>{
         if (err) {
           resolve([]);
         } else {
