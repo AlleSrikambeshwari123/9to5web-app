@@ -29,7 +29,7 @@ router.get('/awb/:id',async(req, res, next) => {
     }
 });
 
-//list awb without invoice
+//list awb without invoices
 router.get('/awb-without-invoice/:id',async(req, res, next) => {
     try{   
         const customerId = req.params.id;     
