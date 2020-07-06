@@ -198,10 +198,10 @@ class AwbService {
                 if(err){
                   console.log("Error get Awb", err);
                 }else{
-                  result['planeId'] = rest.planeId;
-                  result['airportFromId'] = rest.airportFromId;
-                  result['airportToId'] = rest.airportToId;
-                  result['shipDate'] = rest.shipDate;
+                  result['planeId'] = rest ? rest.planeId: '';
+                  result['airportFromId'] = rest ? rest.airportFromId:'';
+                  result['airportToId'] = rest ? rest.airportToId :'';
+                  result['shipDate'] = rest ? rest.shipDate:'';
                   resolve(result)
                 }
               });

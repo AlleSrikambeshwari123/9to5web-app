@@ -1,59 +1,123 @@
 <% layout('./shared/__template')%>
 <div class='gutters'>
-	<div class="col-xl-12 col-lg-6 col-md-12 col-sm-12">
-		<div class="card">
-			<div class="card-header">
-				<div class="card-title"><%=title%></div>
+  <div class='col-xl-12 col-lg-6 col-md-12 col-sm-12'>
+    <div class='card card-with-nav'>
+      <div class="card-header">
+        <div class="row row-nav-line">
+          <ul class="nav nav-tabs nav-line nav-color-primary" id="awb-list-tab" role="tablist">
+            <li class="nav-item"> <a class="nav-link active show" data-toggle="tab" href="#cableBeachList" role="tab"
+                aria-selected="true">Cable Beach</a> </li>
+            <li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#albonyList" role="tab"
+                aria-selected="false">Albany</a> </li>
+          </ul>
+        </div>
+      </div>
+      <div class="card-body">
+		<div class="separator-solid"></div>
+        <div class="tab-content m-4" id="awb-list-tabContent">
+          <div class="tab-pane fade show active" id="cableBeachList" role="tabpanel" aria-labelledby="awb-list-tab">
+			<div class="form-group row">
+				<label for="locationId-cableBeach" class="ml-4 my-auto text-right">Select Location </label>
+				<div class="col-lg-3 pl-0 ml-3">
+					<select id="locationId-cableBeach" class="changeLocation">
+						<option value="All" selected>All</option>
+						<% locations.forEach(location => { %>
+						<option value="<%= location %>"><%= location %></option>
+						<% }) %>
+					</select>
+				</div>
 			</div>
-			<div class="card-body">
-				<div class="form-group row">
-					<label for="locationId" class="ml-4 my-auto text-right">Select Location </label>
-					<div class="col-lg-3 pl-0 ml-3">
-						<select id="locationId">
-							<option value="All" selected>All</option>
-							<% locations.forEach(location => { %>
-							<option value="<%= location.id %>"><%= location.name %></option>
-							<% }) %>
-						</select>
-					</div>
-				</div>
-				<div class="separator-solid"></div>
-				<div class="table-responsive">
-					<table class="display table table-striped table-hover dataTable package-table">
-						<thead>
-							<tr>
-								<th>Date Received</th>
-								<th>Location</th>
-								<th>Tracking No</th>
-								<th>PMB - Consignee</th>
-								<th>AWBID</th>
-								<th>Description</th>
-								<th>Weight</th>
-							</tr>
-						</thead>
-						<tbody>
-							<% packages.forEach(function(pkg){ %>
-							<tr data-record="<%= pkg.id %>">
-								<td><%= helpers.formatDate(pkg.createdAt)%></td>
-								<td><%= pkg.location%></td>
-								<td><%= pkg.trackingNo %></td>
-								<td><%= pkg.customerId ? pkg.customerId.pmb + '-' + helpers.getFullName(pkg.customerId) : "" %></td>
-								<td><a class="text-decoration-none" href="/warehouse/nas/awb/manage/<%=pkg.awbId._id%>/preview"><b><%= pkg.express ? '*': '' %></b><%= pkg.awbId.awbId %> </a></td>
-								<td><%= pkg.description %></td>
-								<td><%= pkg.weight + ' lbs'%></td>
-							</tr>
-							<%})%>
-						  </tbody>
-					</table>
-				</div>
+            <div class="table-responsive">
+              <table id='cableBeachList-table' class='display table storeCheckInTable table-striped table-hover dataTable'>
+				<thead>
+					<tr>
+						<th>Date Received</th>
+						<th>Location</th>
+						<th>Tracking No</th>
+						<th>PMB - Consignee</th>
+						<th>AWBID</th>
+						<th>Description</th>
+						<th>Weight</th>
+					</tr>
+				</thead>
+				<tbody>
+					<input class="packages" value="<%=JSON.stringify(packages)%>" hidden/>
+					<% packages.forEach(function(pkg,i){ 
+						let pmb = pkg.customerId ? pkg.customerId.pmb: 0
+						if((pmb > 0 && pmb <= 1999) || (pmb >= 4000 && pmb <= 4999)) {
+							%>
+					<tr data-record="<%= pkg.id %>">
+						<td><%= helpers.formatDate(pkg.createdAt)%></td>
+						<td><%= pkg.location ? pkg.location:''%></td>
+						<td><%= pkg.trackingNo %></td>
+						<td><%= pkg.customerId ? pkg.customerId.pmb + '-' + helpers.getFullName(pkg.customerId) : "" %>
+						</td>
+						<td><a class="text-decoration-none"
+								href="/warehouse/nas/awb/manage/<%=pkg.awbId._id%>/preview"><b><%= pkg.express ? '*': '' %></b><%= pkg.awbId.awbId %>
+							</a></td>
+						<td><%= pkg.description %></td>
+						<td><%= pkg.weight + ' lbs'%></td>
+					</tr>
+					<%}})%>
+				</tbody>
+              </table>
+            </div>
+          </div>
+          <!-- Nodocs -->
+          <div class="tab-pane fade" id="albonyList" role="tabpanel" aria-labelledby="albonyList-tab">
+			<div class="form-group row">
+			<label for="locationId-albony" class="ml-4 my-auto text-right">Select Location </label>
+			<div class="col-lg-3 pl-0 ml-3">
+				<select id="locationId-albony" class="changeLocation">
+					<option value="All" selected>All</option>
+					<% locations.forEach(location => { %>
+					<option value="<%= location %>"><%= location %></option>
+					<% }) %>
+				</select>
 			</div>
 		</div>
-	</div>
+            <div class="table-responsive">
+              <table id='albonyList-table' class='display table table-striped  storeCheckInTable table-hover dataTable'>
+				<thead>
+					<tr>
+						<th>Date Received</th>
+						<th>Location</th>
+						<th>Tracking No</th>
+						<th>PMB - Consignee</th>
+						<th>AWBID</th>
+						<th>Description</th>
+						<th>Weight</th>
+					</tr>
+				</thead>
+				<tbody>
+					<input class="packages" value="<%=JSON.stringify(packages)%>" hidden/>
+					<% packages.forEach(function(pkg){ 
+						let pmb = pkg.customerId ? pkg.customerId.pmb: 0
+						if((pmb >= 3000 && pmb <= 3999)){%>
+					<tr data-record="<%= pkg.id %>">
+						<td><%= helpers.formatDate(pkg.createdAt)%></td>
+						<td><%= pkg.location ? pkg.location:''%></td>
+						<td><%= pkg.trackingNo %></td>
+						<td><%= pkg.customerId ? pkg.customerId.pmb + '-' + helpers.getFullName(pkg.customerId) : "" %>
+						</td>
+						<td><a class="text-decoration-none"
+								href="/warehouse/nas/awb/manage/<%=pkg.awbId._id%>/preview"><b><%= pkg.express ? '*': '' %></b><%= pkg.awbId.awbId %>
+							</a></td>
+						<td><%= pkg.description %></td>
+						<td><%= pkg.weight + ' lbs'%></td>
+					</tr>
+					<%}})%>
+				</tbody>
+              </table>
+            </div>
+          </div>
+          <!-- End Nodocs -->
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
-<script>
-	window.packages = <%- JSON.stringify(packages) %>;
-</script>
 
 <% block('scripts').append('<script src="/js/utils.js"></script>')%>
 <% block('scripts').append('<script src="/js/store/store-check-in.js"></script>')%>
