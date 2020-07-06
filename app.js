@@ -57,6 +57,7 @@ var apiPrinterRouter = require('./routes/api/printer');
 var apiWarehouseRouter = require('./routes/api/wapi');
 var apiCustomerRouter = require('./routes/api/customer');
 var apiCubeRouter = require('./routes/api/cube');
+var apiAwbRouter = require('./routes/api/awb');
 
 var warehouse = require('./routes/warehouse');
 var util = require('./routes/util');
@@ -125,7 +126,9 @@ app.use('/util', util);
 app.use('/api/printer', apiPrinterRouter);
 app.use('/api/warehouse', apiWarehouseRouter);
 app.use('/api/customer', apiCustomerRouter);
-app.use('/api/cube', apiCubeRouter)
+app.use('/api/cube', apiCubeRouter);
+app.use('/api/awb', apiAwbRouter)
+
 
 // Version API
 /**
