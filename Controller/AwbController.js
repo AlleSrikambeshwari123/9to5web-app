@@ -12,7 +12,7 @@ exports.preview_awb = (req, res, next) => {
   let id = req.params.id;
   
   services.awbService.getAwbPreviewDetails(id).then((awb) => {
-    awb._doc.dateCreated = momentz(awb.createdAt).tz("America/New_York").format('dddd, MMMM Do YYYY, h:mm A');
+    awb['dateCreated'] = momentz(awb.createdAt).tz("America/New_York").format('dddd, MMMM Do YYYY, h:mm A');
     awb._doc.createdBy = awb.createdBy ? (awb.createdBy.firstName || '')  + (awb.createdBy.lastName || ''): ''
     if (awb.invoices && awb.invoices.length) {
       awb.invoices = awb.invoices.map(invoice => {
