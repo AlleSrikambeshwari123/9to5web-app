@@ -26,7 +26,7 @@
 								<th>Location</th>
 								<th>Tracking No</th>
 								<th>PMB - Consignee</th>
-								<th>AWB</th>
+								<th>AWBID</th>
 								<th>Description</th>
 								<th>Weight</th>
 							</tr>
@@ -38,7 +38,7 @@
 								<td><%= pkg.location%></td>
 								<td><%= pkg.trackingNo %></td>
 								<td><%= pkg.customerId ? pkg.customerId.pmb + '-' + helpers.getFullName(pkg.customerId) : "" %></td>
-								<td><%= pkg.awbId %></td> 
+								<td><a class="text-decoration-none" href="/warehouse/nas/awb/manage/<%=pkg.awbId._id%>/preview"><b><%= pkg.express ? '*': '' %></b><%= pkg.awbId.awbId %> </a></td>
 								<td><%= pkg.description %></td>
 								<td><%= pkg.weight + ' lbs'%></td>
 							</tr>

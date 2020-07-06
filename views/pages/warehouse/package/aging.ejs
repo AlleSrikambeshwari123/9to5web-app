@@ -34,7 +34,8 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <% packages.forEach(function(pkg){ %>
+                                <% packages.forEach(function(pkg){ 
+                                     if(pkg.aging > 0) {%>
                                     <tr data-record="<%= pkg.id %>">
                                         <% if (pkg['customerId']) { %>
                                             <td>
@@ -59,7 +60,7 @@
                                                         <%= pkg.packageType %>
                                                     </td>
                                                     <td>
-                                                        <%= pkg.aging ? pkg.aging:'' %>
+                                                        <%= pkg.aging %>
                                                     </td>
                                                     <td>
                                                         <%= pkg.weight%>
@@ -91,7 +92,7 @@
                                                                         <a class="btn btn-link btn-primary btn-print-pkg" data-toggle="modal" data-id="<%=pkg._id%>" data-original-title="Print Label" data-target="#print-popup"><i class="fa fa-print"></i> </a>
                                                                     </td>
                                     </tr>
-                                    <%})%>
+                                    <%}})%>
                             </tbody>
                         </table>
                     </div>
