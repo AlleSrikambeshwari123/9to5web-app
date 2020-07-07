@@ -11,6 +11,7 @@ const PurchaseOrder = require('../models/purchaseOrder');
 const Manifest = require('../models/manifest');
 const Plane = require('../models/plane');
 const User = require('../models/user');
+const PriceLabel = require('../models/pricelabel');
 
 const DELIVERY_METHODS = {
     DELIVERY: 1,
@@ -306,146 +307,62 @@ class AwbService {
                 resolve({ success: true });
             });
         });
+    
     }
 
-    createPurchaseOrder(newPackageOrder, awbId) {
-        return new Promise((resolve, reject) => {
-            newPackageOrder.awbId = awbId;
-            const newPackageOrderData = new PurchaseOrder(newPackageOrder);
-            newPackageOrderData.save((err, result) => {
-                if (err) {
-                    resolve({ success: false, message: strings.string_response_error });
-                } else {
-                    resolve({ success: true });
-                }
-            });
-        });
-    }
+  async storeInvoceFile(data){
+    return new Promise((resolve, reject) => { 
+      const invoiceData = {
+        awbId:data.awbId,
+        fileName:data.filePath
+      }
+      const newInvoice = new StoreInvoice(invoiceData);
+      newInvoice.save((err, result) => {
+        if(err){
+          console.log(err)
+          resolve({ success: false, message: strings.string_response_error });
+        }else{
+          resolve({ success: true, message: strings.string_response_created, storeInvoice: result });
+        }
+      })
+    })
+  }
 
-    updatePurchaseOrder(purchaseOrderId, purchaseOrderData) {
-        return new Promise((resolve, reject) => {
-            PurchaseOrder.findOneAndUpdate({ _id: purchaseOrderId }, {...purchaseOrderData }, (err, result) => {
-                if (err) {
-                    resolve({ success: false });
-                } else {
-                    resolve({ success: true });
-                }
-            });
-        });
-    }
-
-    removePurchaseOrder(id) {
-        return new Promise((resolve, reject) => {
-            PurchaseOrder.deleteOne({ _id: id }, (err, result) => {
-                if (err) {
-                    resolve({ success: false, message: strings.string_response_error });
-                } else {
-                    resolve(result);
-                }
-            });
-        });
-    }
-
-    removePurchaseOrdersByAwb(awbId) {
-        return new Promise((resolve, reject) => {
-            PurchaseOrder.deleteMany({ awbId: awbId }, (err, result) => {
-                if (err) {
-                    resolve({ success: false, message: strings.string_response_error });
-                } else {
-                    resolve(result);
-                }
-            });
-        });
-    }
-
-    addBarcode(detail) {
-        console.log(detail);
-        return new Promise((resolve, reject) => {
-            const newBarcode = new Barcode({ barcode: detail.barcode });
-            newBarcode.save((err, result) => {
-                if (err) {
-                    resolve({ success: false, message: strings.string_response_error });
-                } else {
-                    resolve({ success: true, data: result });
-                }
-            });
-        });
-    }
-
-    awbByCondition(condition) {
-        return new Promise((resolve, reject) => {
-            Awb.findOne(condition, '_id').exec((err, awbData) => {
-                if (err) {
-                    resolve([]);
-                } else {
-                    resolve(awbData);
-                }
-            });
-        });
-    }
-
-    getAwbsFullCustomer(id) {
-        return new Promise((resolve, reject) => {
-            Awb.find({ customerId: id })
-                .populate('customerId')
-                .populate('shipper')
-                .populate('carrier')
-                .populate('hazmat')
-                .populate('packages')
-                .populate('purchaseOrders')
-                .populate('invoices')
-                .populate('driver')
-                .exec((err, result) => {
-                    resolve(result);
-                });
-        });
-    }
-
-    async getAwbsNoDocsCustomer(id) {
-        return new Promise((resolve, reject) => {
-            Awb.find({ invoices: { $eq: [] }, customerId: id })
-                .populate('customerId')
-                .populate('shipper')
-                .populate('carrier')
-                .populate('packages')
-                .populate('purchaseOrders')
-                .exec((err, awbData) => {
-                    if (err) {
-                        resolve([]);
-                    } else {
-                        awbData.forEach((data) => {
-                            data['customer'] = data['customerId'];
-                            data['customer']['name'] = (data['customerId'].lastName ? `${data['customerId'].firstName} ${data['customerId'].lastName}` : `${data['customerId'].lastName}`);
-                            if (data['packages'] && data['packages'].length) {
-                                let weight = 0;
-                                data.packages.forEach((pkg) => (weight += Number(pkg.weight)));
-                                data['weight'] = weight;
-                            }
-                            data['dateCreated'] = moment(data['createdAt']).format('MMM DD, YYYY');
-                        });
-                        resolve(awbData);
-                    }
-                });
-        });
-    }
-
-    async storeInvoceFile(data) {
-        return new Promise((resolve, reject) => {
-            const invoiceData = {
-                awbId: data.awbId,
-                fileName: data.filePath
-            }
-            const newInvoice = new StoreInvoice(invoiceData);
-            newInvoice.save((err, result) => {
-                if (err) {
-                    console.log(err)
-                    resolve({ success: false, message: strings.string_response_error });
-                } else {
-                    resolve({ success: true, message: strings.string_response_created, storeInvoice: result });
-                }
-            })
+  async getAwbPriceLabel(awbId) {
+    console.log(awbId)
+    return new Promise((resolve, reject) => { 
+      PriceLabel.findOne({awbId:awbId}).exec((err, result) => {
+        Awb.findOne({_id:awbId})
+        .populate('customerId')
+        .populate('shipper')
+        .populate('carrier')
+        .populate('hazmat')
+        .populate('packages')
+        .populate('purchaseOrders')
+        .populate('invoices')
+        .populate('driver')
+        .exec((err, awbData) => {
+          result.awbId = awbData;
+            resolve(result)
         })
-    }
+      })
+    })    
+    // return new Promise((resolve, reject) => {     
+    //   PriceLabel.find({awbId:awbId}).populate({
+    //     path:'awbId',            
+    //     populate:{
+    //          path:['invoices','customerId','shipper','carrier']
+    //      }        
+    //    }).exec((err, result) => {
+    //     if(err){
+    //       console.log(err)
+    //       resolve({ success: false, message: strings.string_response_error });
+    //     }else{
+    //       resolve({ success: true, message: strings.string_response_created, storeInvoice: result });
+    //     }
+    //   })
+    // })
+  }
 }
 
 

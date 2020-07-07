@@ -4,9 +4,13 @@ const mongoose = require('mongoose');
 
 const PriceLabelSchema = new mongoose.Schema(
   {
-    packageId: {
+    // packageId: {
+    //   type: mongoose.Schema.Types.ObjectId,
+    //   ref: 'Package',
+    // },
+    awbId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Package',
+      ref: 'Awb',
     },
     Brokerage: { type: Number,default:0 },
     CustomsProc: { type: Number,default:0 },
