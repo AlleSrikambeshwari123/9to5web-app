@@ -6,6 +6,7 @@ var fs = require('fs');
 var uniqId = require('uniqid');
 var strings = require('../Res/strings');
 var firebase = require('../Util/firebase');
+
 var _ = require("lodash")
 
 const Barcode = require('../models/barcode');
@@ -242,6 +243,12 @@ class PackageService {
                             zoneId: data.zoneId
                         });
                         const status = await this.updatePackageStatus(packageId, 7, data.userId);
+                        //email
+                        const pkgDetail = await Package.findOne({_id:packageId}).populate('customerId');
+                        if(pkgDetail && pkgDetail.customerId){
+                            await emailService.sendNoDocsPackageEmail(pkgDetail);
+                        }
+
                         if (!status.success) error.push(status.message)
                         return status
                     },
@@ -269,6 +276,11 @@ class PackageService {
                             zoneId: data.zoneId
                         });
                         const status = await this.updatePackageStatus(packageId, 9, username);
+                        //email
+                        const pkgDetail = await Package.findOne({_id:packageId}).populate('customerId');
+                        if(pkgDetail && pkgDetail.customerId){
+                            await emailService.sendStorePackageEmail(pkgDetail);
+                        }
                         if (!status.success) error.push(status.message)
                         return status
                     },
