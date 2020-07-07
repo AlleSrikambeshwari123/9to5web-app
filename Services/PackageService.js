@@ -240,7 +240,8 @@ class PackageService {
                 packageIds.map(async packageId => {
                         this.updatePackage(packageId, {
                             location: data.location,
-                            zoneId: data.zoneId
+                            zoneId: data.zoneId,
+                            aging:1
                         });
                         const status = await this.updatePackageStatus(packageId, 7, data.userId);
                         //email
@@ -1572,13 +1573,43 @@ class PackageService {
                     let noDocDate = moment(pk.createdAt)
                     let now = moment()
                     diff = now.diff(noDocDate, 'days')
-                    if(diff > 14){
+                    if(diff > 0){
                         Package.findOne({_id:pk.packageId}, async (err,res)=>{
                             if(err) resolve({success:false,message:err})
                             else{
                                 Package.updateOne({_id:res._id},{aging:res.aging ? (res.aging + 1) : 1},(err,result)=>{
                                     if(err) resolve({success:false,message:err})
                                     else resolve({success:true,message:'Aging Updated'})
+                                });
+                                  
+                            }
+                        })
+                    }else{
+                        resolve({success:false,message:'Greater than 14'})
+                    }    
+                })).then((result)=> resolve(result))
+            } catch (error) {
+                console.error({checkAgingofStoreInPackages:error})
+                reject(error)
+            }
+        })
+    }
+    checkAgingDollarofStoreInPackages(){
+        return new Promise(async (resolve,reject)=>{
+            try {
+                let pkg = await PackageStatus.find({status:PKG_STATUS[7]});
+                let diff;
+                Promise.all(pkg.map(pk=>{
+                    let noDocDate = moment(pk.createdAt)
+                    let now = moment()
+                    diff = now.diff(noDocDate, 'days')
+                    if(diff > 14){
+                        Package.findOne({_id:pk.packageId}, async (err,res)=>{
+                            if(err) resolve({success:false,message:err})
+                            else{
+                                Package.updateOne({_id:res._id},{agingdollar:res.aging ? (res.aging + 1) : 1},(err,result)=>{
+                                    if(err) resolve({success:false,message:err})
+                                    else resolve({success:true,message:'Aging Dollar Updated'})
                                 });
                                   
                             }
