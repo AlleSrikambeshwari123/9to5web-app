@@ -17,9 +17,13 @@ class AwbPriceLabelService {
       PriceLabel.findOne({awbId: id})
       .populate({
         path:'awbId',            
-        populate:{
+        populate:[{
              path:'invoices'
-         }        
+         },
+         {
+            path:'packages'  
+         }
+        ]        
     })
       .exec((err, result) => {
         if (err || result === null) {
@@ -36,7 +40,7 @@ class AwbPriceLabelService {
       Awb.findOne({_id: id})
       .populate({
         path:'invoices'        
-    })
+     })
       .exec(async (err, result) => {
         if (err) {
           resolve({});

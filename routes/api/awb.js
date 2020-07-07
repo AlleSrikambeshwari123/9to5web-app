@@ -45,8 +45,7 @@ router.get('/awb-without-invoice/:id',async(req, res, next) => {
 });
 
 //store invoice
-router.post('/store-invoice',upload.single('invoice'),async(req, res, next) => {
-    
+router.post('/store-invoice',upload.single('invoice'),async(req, res, next) => {    
     try{ 
         const files = req.file;
         const filePath = files.path?files.path:'';        
@@ -71,7 +70,17 @@ router.post('/store-invoice',upload.single('invoice'),async(req, res, next) => {
     }
 });
 
+router.get('/awb-price/:id',async(req, res, next) => {
+    try{ 
+        const awbId = mongoose.Types.ObjectId(req.params.id);
+        const priceLabelData = await services.awbService.getAwbPriceLabel(awbId);
+        res.json(priceLabelData);
+    }catch(err){
+        console.log(err)
+        res.send({ success: false, message: strings.string_response_error });
+    }
 
+})
 
 
 module.exports = router;

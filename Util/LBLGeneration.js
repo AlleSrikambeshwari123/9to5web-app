@@ -155,8 +155,12 @@ class LBLGeneration {
   }
 
   GerneratePriceLabel(price, company) {
+    
     return new Promise((resolve, reject) => {
       try {
+        var invoices = (price.awbId && price.awbId.invoices)?price.awbId.invoices:[];
+        let totalinvoiceVal = 0;
+        invoices.map((inv) => (totalinvoiceVal += inv.value));
         var docDefinition = {
           pageSize: {
             width:4*72,
@@ -204,6 +208,15 @@ class LBLGeneration {
                     { text: 'NoDocs ', style: 'tableHeader', bold: true, alignment: 'center' },
                     { text: ":", style: 'tableHeader', alignment: 'center' },
                     { text: '$'+price.NoDocs == null ? '0':price.NoDocs  , style: 'tableHeader', alignment: 'center' },
+                  ],
+                  [
+                    { text: 'No of Invoice ', style: 'tableHeader', bold: true, alignment: 'center' },
+                    { text: ":", style: 'tableHeader', alignment: 'center' },
+                    { text: '$'+price.awbId.invoices.length == null ? '0':price.awbId.invoices.length  , style: 'tableHeader', alignment: 'center' },
+                    { text: "", style: 'tableHeader', alignment: 'center' },
+                    { text: 'Total Price ', style: 'tableHeader', bold: true, alignment: 'center' },
+                    { text: ":", style: 'tableHeader', alignment: 'center' },
+                    { text: '$'+totalinvoiceVal == null ? '0':totalinvoiceVal  , style: 'tableHeader', alignment: 'center' },
                   ],
                   [
                     { text: 'Env.Levy ', style: 'tableHeader', bold: true, alignment: 'center' },

@@ -73,9 +73,27 @@ function pricelLabelCheck(response){
   let ExpressVal = 0;
   // if (pkg.packageCalculation == 'Kg') pkg.weight = 2.20462 * pkg.weight;
    let totalinvoiceVal = 0;
+
    if (pkg.invoices) {
      pkg.invoices.map((inv) => (totalinvoiceVal += inv.value));
    }
+   var totalweightVal = 0;
+   
+   if (pkg.packages) {
+     const pa = pkg.packages;
+     for(var i=0;i<pa.length;i++){
+       
+       var weight = pa[i].weight;
+      if (pa[i].packageCalculation == 'kg'){ 
+         weight = 2.20462 * pa[i].weight;
+         
+      }
+      totalweightVal = totalweightVal+weight;
+     }
+    
+    //pkg.packages.map((pkge) => (totalweightVal += pkge.weight));
+  }
+  
   let Freight = 0//(1.55 * pkg.weight).toFixed(2);
   $('#Brokerage').val(response.Brokerage);
   $('#CustomsProc').val(response.CustomsProc);
@@ -93,8 +111,9 @@ function pricelLabelCheck(response){
   $('#SedVal').text(response.Sed);
   $('#ExpressVal').text(response.Express);
   $('#TotalWet').val(TotalVat);
-  $("#total_invoice_value").val((pkg.invoices).length)
-  $("#total_invoice_value").val(totalinvoiceVal)
+  $("#no_of_invoice").val((pkg.invoices).length)
+  $("#total-value-invoice").html(totalinvoiceVal)
+  $("#total_weight_value").val(totalweightVal)
   if(response.NoDocs >0) $('#NoDocs').prop('checked',true)
   if(response.Insurance >0) $('#Insurance').prop('checked',true)
   if(response.Sed >0) $('#Sed').prop('checked',true)
@@ -114,8 +133,24 @@ function packagePriceLabel(response){
   if (pkg.invoices) {
     pkg.invoices.map((inv) => (totalinvoiceVal += inv.value));
   }
+  let totalweightVal = 0;
+  if (pkg.packages) {
+    const pa = pkg.packages;
+    for(var i=0;i<pa.length;i++){
+      
+      var weight = pa[i].weight;
+     if (pa[i].packageCalculation == 'kg'){ 
+        weight = 2.20462 * pa[i].weight;
+        
+     }
+     totalweightVal = totalweightVal+weight;
+    }
+   
+   //pkg.packages.map((pkge) => (totalweightVal += pkge.weight));
+ }
   $("#no_of_invoice").val((pkg.invoices).length)
-  $("#total_invoice_value").val(totalinvoiceVal)
+  $("#total-value-invoice").html(totalinvoiceVal)
+  $("#total_weight_value").val(totalweightVal)
   let Freight = (1.55 * pkg.weight).toFixed(2);
   if(pkg.company == "Post Boxes"){
     let fw = pkg.weight * 3;
@@ -212,6 +247,7 @@ $('#pricelabel-table').on('click', '.btn-edit-pricelabel', function () {
   $('#SedVal').text(''),
   $('#ExpressVal').text(''),
   $('#TotalWet').val(''),
+  $('#total-value-invoice').html(''),
   $.ajax({
     url: '/warehouse/pricelabels/' + id,
     type: 'get',

@@ -11,6 +11,7 @@ const PurchaseOrder = require('../models/purchaseOrder');
 const Manifest = require('../models/manifest');
 const Plane = require('../models/plane');
 const User = require('../models/user');
+const PriceLabel = require('../models/pricelabel');
 
 const DELIVERY_METHODS = {
   DELIVERY: 1,
@@ -439,6 +440,42 @@ class AwbService {
         }
       })
     })
+  }
+
+  async getAwbPriceLabel(awbId) {
+    console.log(awbId)
+    return new Promise((resolve, reject) => { 
+      PriceLabel.findOne({awbId:awbId}).exec((err, result) => {
+        Awb.findOne({_id:awbId})
+        .populate('customerId')
+        .populate('shipper')
+        .populate('carrier')
+        .populate('hazmat')
+        .populate('packages')
+        .populate('purchaseOrders')
+        .populate('invoices')
+        .populate('driver')
+        .exec((err, awbData) => {
+          result.awbId = awbData;
+            resolve(result)
+        })
+      })
+    })    
+    // return new Promise((resolve, reject) => {     
+    //   PriceLabel.find({awbId:awbId}).populate({
+    //     path:'awbId',            
+    //     populate:{
+    //          path:['invoices','customerId','shipper','carrier']
+    //      }        
+    //    }).exec((err, result) => {
+    //     if(err){
+    //       console.log(err)
+    //       resolve({ success: false, message: strings.string_response_error });
+    //     }else{
+    //       resolve({ success: true, message: strings.string_response_created, storeInvoice: result });
+    //     }
+    //   })
+    // })
   }
 }
 
