@@ -12,8 +12,12 @@ var moment = require('moment');
         else if (emailType == "noDocsFl")
             epath = "public/emails/no_docs/fl.html"
         else if (emailType == "store")
-            epath = "public/emails/no_docs/store.html"
-            console.log('using email:',epath)
+            epath = "public/emails/no_docs/store.html"            
+        else if (emailType == "nodocspackage")
+            epath = "public/emails/no_docs_package/index.html"
+        else if (emailType == "storepackage")
+            epath = "public/emails/store_package/index.html"        
+        console.log('using email:',epath)
         fs.readFile(path.join(__dirname.replace("Util",""),epath), "UTF8", function(err, data) {
             if (err)
                 console.log("couldn't read the file"); 
@@ -153,9 +157,43 @@ async function sendAtStoreEmail(store,pkg){
 
     return result; 
 }
+
+async function sendNoDocsPackageEmail(pkg){
+    console.log(pkg,"sending at no docx package.")
+    console.log("ABOUT TO SEND EMAIL",pkg)
+    var emailBody = await readEmailTemplate("nodocspackage"); 
+    
+    message = { 
+        to : (pkg && pkg.customerId && pkg.customerId.email)?pkg.customerId.email:'', 
+        from : 'info@postboxesetc.com ',
+        subject: `No docs in package`,
+        html:emailBody
+    }; 
+    var result = await sendGrid.send(message);
+
+    return result; 
+}
+
+async function sendStorePackageEmail(pkg){
+    console.log(pkg,"sending at no docx package.")
+    console.log("ABOUT TO SEND EMAIL",pkg)
+    var emailBody = await readEmailTemplate("storepackage"); 
+    
+    message = { 
+        to : (pkg && pkg.customerId && pkg.customerId.email)?pkg.customerId.email:'', 
+        from : 'info@postboxesetc.com ',
+        subject: `Package scanned at store`,
+        html:emailBody
+    }; 
+    var result = await sendGrid.send(message);
+
+    return result; 
+}
 module.exports = { 
     sendNoDocsEmail : sendNoDocsEmail,
     sendAtStoreEmail: sendAtStoreEmail,
-    sendNoDocsFL : sendNoDocsFl
+    sendNoDocsFL : sendNoDocsFl,
+    sendNoDocsPackageEmail:sendNoDocsPackageEmail,
+    sendStorePackageEmail:sendStorePackageEmail
     
 }

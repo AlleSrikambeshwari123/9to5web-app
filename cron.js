@@ -6,5 +6,8 @@ exports.cronSchedule = () =>{
         services.packageService.checkAgingofStoreInPackages().then((result)=>{
             console.log('Working.....',result)
         })
+        services.packageService.checkAgingDollarofStoreInPackages().then((result)=>{
+            console.log('Working Dollar.....',result)
+        })
     });
 }
