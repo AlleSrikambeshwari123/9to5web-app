@@ -24,6 +24,7 @@ var adminUserRouter = require('./routes/admin/users');
 var adminCustRouter = require('./routes/admin/customers');
 var adminLocaRouter = require('./routes/admin/locations');
 var adminZonesRouter = require('./routes/admin/zones');
+var adminInvoicessRouter = require('./routes/admin/invoice');
 
 // Fleet
 var fleetVehicleRouter = require('./routes/fleet/vehicles');
@@ -118,7 +119,7 @@ app.use(function (req, res, next) {
 
 app.use('/', adminIndexRouter, authRouter);
 app.use('/account', accountPasswordRouter, accountPrintRouter);
-app.use('/admin', adminUserRouter, adminCustRouter, adminLocaRouter, adminZonesRouter);
+app.use('/admin', adminUserRouter, adminCustRouter, adminLocaRouter, adminZonesRouter, adminInvoicessRouter);
 app.use('/warehouse', warehouse, warehouseAwbRouter, warehouseManifestRouter, warehouseServiceTypeRouter, warehouseShipperRouter, warehousePaidTypeRouter, warehouseAirlineRouter, warehouseContainerRouter, warehouseCarrierRouter, warehousePackageRouter, warehousePrinterRouter, warehouseDeliveryRouter, warehouseHazmatRouter,warehouseCubeRouter,warehousePriceLabelRouter);
 app.use('/fleet', fleetVehicleRouter, fleetDriverRouter, fleetPilotRouter, fleetPlaneRouter, fleetCompartmentRouter, fleetAirportsRouter);
 app.use('/store', storeRouter);
