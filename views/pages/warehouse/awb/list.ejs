@@ -41,7 +41,7 @@
                     if(awb.packages.length > 0){ %>
                   <tr data-record="<%= awb._id %>">
                     <td><%=awb.dateCreated%></td>
-                    <td><%=awb.customer.pmb %></td>
+                    <td><%=(awb.customer && awb.customer.pmb)?awb.customer.pmb:'' %></td>
                     <td><a href="manage/<%=awb._id%>/preview"><%=awb.awbId%></a></td>
                     <td><%=helpers.getFullName(awb.customer)%></td>
                     <td><%=awb.shipper.name %></td>

@@ -1,5 +1,6 @@
 var services = require('../Services/RedisDataServices');
 var utils = require('../Util/utils');
+var aws = require('../Util/aws');
 
 exports.getInvoiceList = (req, res, next) => {
     services.invoiceService.getAllStoreInvoice().then(function (invoices) {
@@ -11,3 +12,9 @@ exports.getInvoiceList = (req, res, next) => {
       });
     });
   }
+
+exports.getInvoiceUrl = async (req,res,next)=>{
+    const fileName = req.body.fileName;
+    const file = aws.getSignedUrl(fileName);
+    res.send(file);
+}

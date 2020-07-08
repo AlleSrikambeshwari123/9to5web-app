@@ -162,7 +162,7 @@ async function sendNoDocsPackageEmail(pkg){
     console.log(pkg,"sending at no docx package.")
     console.log("ABOUT TO SEND EMAIL",pkg)
     var emailBody = await readEmailTemplate("nodocspackage"); 
-    
+    emailBody = emailBody.replace("{{HOST}}","https://9to5-qa.sprocket.solutions/");
     message = { 
         to : (pkg && pkg.customerId && pkg.customerId.email)?pkg.customerId.email:'', 
         from : 'info@postboxesetc.com ',
@@ -178,7 +178,7 @@ async function sendStorePackageEmail(pkg){
     console.log(pkg,"sending at no docx package.")
     console.log("ABOUT TO SEND EMAIL",pkg)
     var emailBody = await readEmailTemplate("storepackage"); 
-    
+    emailBody = emailBody.replace("{{HOST}}","https://9to5-qa.sprocket.solutions/");
     message = { 
         to : (pkg && pkg.customerId && pkg.customerId.email)?pkg.customerId.email:'', 
         from : 'info@postboxesetc.com ',

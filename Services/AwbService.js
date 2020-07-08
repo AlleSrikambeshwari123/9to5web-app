@@ -418,8 +418,10 @@ class AwbService {
     return new Promise((resolve, reject) => { 
       const invoiceData = {
         awbId:data.awbId,
-        fileName:data.filePath
+        filePath:data.filePath,
+        fileName:data.fileName
       }
+     
       const newInvoice = new StoreInvoice(invoiceData);
       newInvoice.save((err, result) => {
         if(err){
@@ -432,8 +434,7 @@ class AwbService {
     })
   }
 
-  async getAwbPriceLabel(awbId) {
-    console.log(awbId)
+  async getAwbPriceLabel(awbId) {    
     return new Promise((resolve, reject) => { 
       PriceLabel.findOne({awbId:awbId}).exec((err, result) => {
         Awb.findOne({_id:awbId})
@@ -446,7 +447,9 @@ class AwbService {
         .populate('invoices')
         .populate('driver')
         .exec((err, awbData) => {
-          result.awbId = awbData;
+          if(result && result.awbId){
+            result.awbId = awbData;
+          }
             resolve(result)
         })
       })

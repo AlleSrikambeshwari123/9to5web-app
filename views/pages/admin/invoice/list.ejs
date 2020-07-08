@@ -7,7 +7,7 @@
        
       </div>
       <div class="card-body">
-        <table class="display table table-striped table-hover dataTable zone-table ">
+        <table class="display table table-striped table-hover dataTable invoice-table ">
           <thead>
             <tr>
               <th>Date</th>
@@ -20,7 +20,7 @@
             <tr data-record="<%=invoice._id%>">
               <td><%= helpers.formatDate(invoice.createdAt)%></td>
               <td><%=invoice.awbId.awbId%></td>
-              <td><a href="<%=invoice.fileName%>" target="_blank">Invoice</td>                            
+              <td><a href="JavaScript:Void(0);"  onclick="downloadInvoice('<%=invoice.fileName%>')">Invoice</td>                          
               
             </tr>
             <% }) %>
@@ -30,3 +30,4 @@
     </div>
   </div>
 </div>
+<% block('scripts').append('<script src="/js/admin/invoice/list.js"></script>')%>

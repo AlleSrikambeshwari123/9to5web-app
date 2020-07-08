@@ -50,9 +50,9 @@ router.post('/store-invoice',upload.single('invoice'),async(req, res, next) => {
         const files = req.file;
         const filePath = files.path?files.path:'';        
         var fileName = files.filename;
-
+        
         aws.uploadFile(filePath, fileName).then(async data => {
-            console.log(`File Uploaded successfully. ${data.Location}`);
+            console.log(`File Uploaded successfully. ${data.Location}`);            
             const awbData = await services.awbService.storeInvoceFile({
                 fileName: fileName,
                 filePath: data.Location,
@@ -63,7 +63,8 @@ router.post('/store-invoice',upload.single('invoice'),async(req, res, next) => {
           }).catch(err => {
             console.error(err);
             res.send({});
-          }) 
+          })
+       
     }catch(err){
         console.log(err)
         res.send({ success: false, message: strings.string_response_error });
