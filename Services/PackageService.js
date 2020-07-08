@@ -584,7 +584,7 @@ class PackageService {
                 if (pkg.originBarcode) {
                     let barcode = await this.getOriginBarcode(pkg.originBarcode)
                     if (barcode !== null && barcode.createdAt) {
-                        pkg.OrignalBarcodeDate = momentz.utc(barcode.createdAt).tz("America/New_York").format('dddd, MMMM Do YYYY, h:mm A');
+                        pkg.OrignalBarcodeDate = momentz(barcode.createdAt).tz("America/New_York").format('YYYY/MM/DD');
                     }
                 }
                 if (pkg.awbId) {
