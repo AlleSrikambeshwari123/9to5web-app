@@ -437,6 +437,7 @@ class AwbService {
   async getAwbPriceLabel(awbId) {    
     return new Promise((resolve, reject) => { 
       PriceLabel.findOne({awbId:awbId}).exec((err, result) => {
+        result = JSON.parse(JSON.stringify(result))
         Awb.findOne({_id:awbId})
         .populate('customerId')
         .populate('shipper')
@@ -448,6 +449,12 @@ class AwbService {
         .populate('driver')
         .exec((err, awbData) => {
           if(result && result.awbId){
+            const invoices =awbData.invoices?awbData.invoices:[];
+            var totalPrice = 0;
+            for(let i=0;i<invoices.length;i++){
+              totalPrice=totalPrice+invoices[i].value;
+            }
+            result.totalPrice = totalPrice;
             result.awbId = awbData;
           }
             resolve(result)
