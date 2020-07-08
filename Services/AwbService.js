@@ -163,8 +163,17 @@ class AwbService {
                 .populate('purchaseOrders')
                 .populate('invoices')
                 .populate('driver')
-                .exec((err, result) => {
-                    resolve(result);
+                .exec(async (err, result) => {
+                  Promise.all(result.map(async res =>{
+                    let awbPriceLabel = await PriceLabel.findOne({awbId:res._id});
+                    if(awbPriceLabel !== null){
+                      res['awbPriceLabel'] = awbPriceLabel.TotalWet;
+                      return res;
+                    }
+                  })).then((res)=> {
+                    console.log(res)
+                    resolve(result)})
+                   
                 });
         });
     }
