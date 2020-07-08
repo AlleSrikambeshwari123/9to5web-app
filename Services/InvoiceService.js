@@ -3,6 +3,7 @@ let assert = require('assert');
 
 // let client = require('./dataContext').redisClient;
 const Invoice = require('../models/invoice');
+const StoreInvoice = require('../models/storeInvoice');
 
 const Keys = {
   item: (id) => `invoice:${id}`,
@@ -74,6 +75,18 @@ class InvoiceService {
   async getInvoicesByAWB(awbId) {
     return new Promise((resolve, reject) => {
       Invoice.find({awbId: awbId}, (err, result) => {
+        if (err) {
+          resolve([]);
+        } else {
+          resolve(result);
+        }
+      });
+    })
+  }
+
+  async getAllStoreInvoice(){
+    return new Promise((resolve, reject) => {
+      StoreInvoice.find().populate('awbId').exec((err, result) => {
         if (err) {
           resolve([]);
         } else {
