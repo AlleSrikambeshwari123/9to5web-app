@@ -13,14 +13,16 @@
               <th>Date</th>
               <th>Awb Number</th>              
               <th>Invoice</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
             <% invoices.forEach(invoice => { %>
             <tr data-record="<%=invoice._id%>">
               <td><%= helpers.formatDate(invoice.createdAt)%></td>
-              <td><%=invoice.awbId.awbId%></td>
+              <td><a class="text-decoration-none" href="/warehouse/nas/awb/manage/<%=invoice.awbId ? invoice.awbId._id: '#'%>/preview"><%= invoice.awbId.awbId %> </a></td>
               <td><a href="JavaScript:Void(0);"  onclick="downloadInvoice('<%=invoice.fileName%>')">Invoice</td>                          
+              <td><a href="JavaScript:Void(0);"  onclick="deleteInvoice('<%=invoice.fileName%>','<%=invoice._id%>')"><i class="fa fa-trash"></i></td>                          
               
             </tr>
             <% }) %>
@@ -30,4 +32,5 @@
     </div>
   </div>
 </div>
+<% block('scripts').append('<script src="/js/utils.js"></script>')%>
 <% block('scripts').append('<script src="/js/admin/invoice/list.js"></script>')%>

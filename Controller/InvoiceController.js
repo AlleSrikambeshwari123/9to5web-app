@@ -18,3 +18,15 @@ exports.getInvoiceUrl = async (req,res,next)=>{
     const file = aws.getSignedUrl(fileName);
     res.send(file);
 }
+exports.deleteInvoiceUrl = async (req,res,next)=>{
+    const id = req.params.id;
+    const fileName = req.params.fileName
+    services.invoiceService.deleteStoreInvoice(id).then(async function (result) {
+      if(result.success){
+        await aws.deleteFile(fileName);
+        res.send(result);
+      }else{
+        res.send(result)
+      }
+    })
+}
