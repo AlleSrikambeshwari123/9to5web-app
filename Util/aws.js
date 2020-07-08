@@ -22,6 +22,7 @@ exports.uploadFile = (filePath, fileName) => {
       resolve({});
     } else {
       var fileContent = fs.readFileSync(filePath);
+      console.log(fileContent);
       var params = {
         Bucket: bucket,
         Key: fileName,
