@@ -3,6 +3,9 @@ const moment = require('moment');
 var bwipjs = require('bwip-js')
 var currencyFormatter = require('currency-formatter');
 var fs = require('fs');
+const merge = require('easy-pdf-merge');
+var path = require('path');
+
 
 
 const TABLE_LAYOUT = {
@@ -50,10 +53,11 @@ class AirCargoManifest {
 
     async generate() {
 
+        let currentDate = new Date();
+
         let definition = {
             pageSize: 'A4',
             pageMargins: 20,
-            pageOrientation: 'landscape',
             footer: (currentPage, pageCount) => ({
                 text: `${currentPage}/${pageCount}`,
                 alignment: 'right',
@@ -359,33 +363,82 @@ class AirCargoManifest {
                     ],
                 },
             ],
-            pageBreakBefore: true,
+            //pageBreakBefore: true,
             defaultStyle: {
                 font: 'Helvetica',
                 fontSize: 11
             },
         }
+
+        var doc = printer.createPdfKitDocument(definition);
+        var mainFilePath = path.resolve(process.cwd(), `airCaroDownload/${this.data._id}_main.pdf`)
+        doc.pipe(await fs.createWriteStream(mainFilePath));
+        doc.end();
+
+        var dynamicAWBFilesPath = [];
         await Promise.all(
             this.data.awbsArray.map(async(awb, ind) => {
-                //console.log(awb)
+                dynamicAWBFilesPath.push(path.resolve(process.cwd(), `airCaroDownload/${this.data._id}_${ind}_main.pdf`));
                 let png = await this.generateBarcode(awb._id)
+                let shipplerCosignee = await this.generateShiperCosigneeTable(awb);
+                let generateCarrierandShipper = await this.generateCarrierandShipper(awb)
+                let generatePackagesTable = await this.generatePackagesTable(awb);
+                otherDefinition.content = [];
                 otherDefinition.content.push({
-                        columns: this.generateHeader(png, awb)
+                        columns: await this.generateHeader(png, awb)
                     },
-                    this.generateShiperCosigneeTable(awb),
-                    this.generateCarrierandShipper(awb), {
+                    shipplerCosignee,
+                    generateCarrierandShipper, {
                         layout: 'lightHorizontallines',
                         margin: [0, 10],
                         table: {
                             headerRows: 2,
                             widths: ["*", "*", "*", "*", "*", "*"],
-                            body: await this.generatePackagesTable(awb)
+                            body: generatePackagesTable
                         },
-                        pageBreak: 'after'
+                        //pageBreak: 'after'
                     }
                 )
+                var doc = await printer.createPdfKitDocument(otherDefinition);
+                doc.pipe(await fs.createWriteStream(path.resolve(process.cwd(), `airCaroDownload/${this.data._id}_${ind}_main.pdf`)));
+                doc.end();
             }));
-        return printer.createPdfKitDocument(otherDefinition);
+        return new Promise((resolve, reject) => {
+            this.processCombinePdf(dynamicAWBFilesPath[0], dynamicAWBFilesPath, 0, this.data._id, resolve, reject, mainFilePath);
+        })
+    }
+
+    processCombinePdf(singleFilePath, dynamicAWBFilesPath, i, id, resolve, reject, mainFilePath) {
+        i++;
+        if (i > dynamicAWBFilesPath.length) {
+            return resolve(path.resolve(process.cwd(), `airCaroDownload/${id}-ACM.pdf`));
+        } else {
+            if (mainFilePath) {
+                merge([mainFilePath, singleFilePath], path.resolve(process.cwd(), `airCaroDownload/${id}-ACM.pdf`), async(err) => {
+                    if (err) {
+                        return console.log(err)
+                    }
+                    merge([path.resolve(process.cwd(), `airCaroDownload/${id}-ACM.pdf`), path.resolve(process.cwd(), `airCaroDownload/sample.pdf`)], path.resolve(process.cwd(), `airCaroDownload/${id}-ACM.pdf`), (err) => {
+                        if (err) {
+                            return console.log(err)
+                        }
+                        this.processCombinePdf(dynamicAWBFilesPath[i], dynamicAWBFilesPath, i, id, resolve, reject)
+                    });
+                });
+            } else {
+                merge([path.resolve(process.cwd(), `airCaroDownload/${id}-ACM.pdf`), singleFilePath], path.resolve(process.cwd(), `airCaroDownload/${id}-ACM.pdf`), async(err) => {
+                    if (err) {
+                        return console.log(err)
+                    }
+                    merge([path.resolve(process.cwd(), `airCaroDownload/${id}-ACM.pdf`), path.resolve(process.cwd(), `airCaroDownload/sample.pdf`)], path.resolve(process.cwd(), `airCaroDownload/${id}-ACM.pdf`), (err) => {
+                        if (err) {
+                            return console.log(err)
+                        }
+                        this.processCombinePdf(dynamicAWBFilesPath[i], dynamicAWBFilesPath, i, id, resolve, reject)
+                    });
+                });
+            }
+        }
     }
 
 
@@ -553,13 +606,13 @@ class AirCargoManifest {
         }
 
         var dimw = currencyFormatter.format(totaldimWeight, {
-            symbol: '',
-            decimal: '.',
-            thousand: ',',
-            precision: 2,
-            format: '%v %s' // %s is the symbol and %v is the value
-        })
-        console.log(totaldimWeight)
+                symbol: '',
+                decimal: '.',
+                thousand: ',',
+                precision: 2,
+                format: '%v %s' // %s is the symbol and %v is the value
+            })
+            // console.log(totaldimWeight)
         body.push([
             { margin: [0, 5], text: "Received by Signature:_________________________", fillColor: "", colSpan: 3, rowSpan: 2 }, "",
             { text: "" },

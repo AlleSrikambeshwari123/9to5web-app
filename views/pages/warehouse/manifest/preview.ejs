@@ -14,209 +14,237 @@
 <% layout('./shared/__template')%>
 
 <div class='gutters'>
-  <div class='col-xl-12 col-lg-6 col-md-12 col-sm-12'>
-    <div class='card'>
-      <div class="card-header">
-        <div class="pull-right">
-          <div class="btn-group custom-btn-group float-right" role="group">
-            <a href="/api/printer/download-pdf/manifest/<%=manifest.id%>/air-cargo-manifest" class="btn btn-primary btn-sm">
-              Air Cargo Manifest &nbsp;&nbsp;<i class="fa fa-download"></i>
-            </a>
-            <a href="/api/printer/download-pdf/manifest/<%=manifest.id%>/flight-manifest" class="btn btn-primary btn-sm">
-              Flight Manifest &nbsp;&nbsp;<i class="fa fa-download"></i>
-            </a>
-            <a href="/api/printer/download-pdf/manifest/<%=manifest.id%>/flight-load-sheet" class="btn btn-primary btn-sm">
-              Flight Load Sheet &nbsp;&nbsp;<i class="fa fa-download"></i>
-            </a>
-            </a>
-            <a href="/api/printer/download-pdf/manifest/<%=manifest.id%>/us-customs" class="btn btn-primary btn-sm">
-              US Customs &nbsp;&nbsp;<i class="fa fa-download"></i>
-            </a>
-          </div>
-        </div>
-        <h4 class="card-title"><%=title%></h4>
-      </div>
-      <div class="card-body">
-        <h3 class="card-title text-muted">Plane</h3>
-        <div class='row'>
-          <div class='col-md-9'>
-            <input type='hidden' id="pgmode" value='flight' />
-            <div class="form-group form-show-validation row">
-              <label for="tailNumber" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Plane</label>
-              <div class="col-lg-8 col-md-8 col-sm-8">
-                <input type='text' class='form-control' id='tailNumber' placeholder="Plane"
-                  value="<%= plane.tailNumber %>" readonly />
-              </div>
-            </div>
-            <% if (airportFrom) { %>
-            <div class="form-group form-show-validation row">
-              <label for="airtPortFromId" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Airport From</label>
-              <div class="col-lg-8 col-md-8 col-sm-8">
-                <input type='text' class='form-control' id='airtPortFromId' placeholder="Airport From"
-                  value="<%=airportFrom.name%> <% if (airportFrom.shortCode) { %> (<%=airportFrom.shortCode%>) <% } %>" readonly />
-              </div>
-            </div>
-            <% } %>
-            <% if (airportTo) { %>
-            <div class="form-group form-show-validation row">
-              <label for="airtPortToId" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Airport To</label>
-              <div class="col-lg-8 col-md-8 col-sm-8">
-                <input type='text' class='form-control' id='airtPortToId' placeholder="Airport From"
-                  value="<%=airportTo.name%> <% if (airportTo.shortCode) { %> (<%=airportTo.shortCode%>) <% } %>" readonly />
-              </div>
-            </div>
-            <% } %>
-            <div class="form-group form-show-validation row">
-              <label for="tailNumber" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">AirCraft Type</label>
-              <div class="col-lg-8 col-md-8 col-sm-8">
-                <input type='text' class='form-control' id='aircraft_type' placeholder="AirCraft Type"
-                  value="<%= plane.aircraft_type %>" readonly />
-              </div>
-            </div>
-            <div class="form-group form-show-validation row">
-              <label for="shipDate" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Flight Date / Time </label>
-              <div class="col-lg-8 col-md-9 col-sm-8 d-flex">
-                <input type="text" class="form-control" id="shipDate" value="<%= helpers.formatDate(manifest.shipDate) %>" readonly>
-                <div class="input-group-append">
-                  <span class="input-group-text">
-                    <i class="fa fa-calendar-check"></i>
-                  </span>
+    <div class='col-xl-12 col-lg-6 col-md-12 col-sm-12'>
+        <div class='card'>
+            <div class="card-header">
+                <div class="pull-right">
+                    <div class="btn-group custom-btn-group float-right" role="group">
+                        <a href="/api/printer/download-pdf/manifest/<%=manifest.id%>/air-cargo-manifest"
+                            class="btn btn-primary btn-sm" target="_blank">
+                            Air Cargo Manifest &nbsp;&nbsp;<i class="fa fa-download"></i>
+                        </a>
+                        <a href="/api/printer/download-pdf/manifest/<%=manifest.id%>/flight-manifest"
+                            class="btn btn-primary btn-sm">
+                            Flight Manifest &nbsp;&nbsp;<i class="fa fa-download"></i>
+                        </a>
+                        <a href="/api/printer/download-pdf/manifest/<%=manifest.id%>/flight-load-sheet"
+                            class="btn btn-primary btn-sm">
+                            Flight Load Sheet &nbsp;&nbsp;<i class="fa fa-download"></i>
+                        </a>
+                        </a>
+                        <a href="/api/printer/download-pdf/manifest/<%=manifest.id%>/us-customs"
+                            class="btn btn-primary btn-sm">
+                            US Customs &nbsp;&nbsp;<i class="fa fa-download"></i>
+                        </a>
+                    </div>
                 </div>
-              </div>
+                <h4 class="card-title">
+                    <%=title%>
+                </h4>
             </div>
-          </div>
-        </div>
-        <div class="separator-solid"></div>
-        <div class="d-flex">
-          <h3 class="card-title text-muted package-info">Data Entry ( Weight : 0 lbs / 0lbs )</h3>
-        </div>
-        <div class='row mt-3'>
-          <div class='col-md-12 table-responsive'>
-            <table id='packageTable' class='display table table-striped table-hover w-100'>
-              <thead>
-                <tr>
-                  <td><strong>Compartment</strong></td>
-                  <td><strong>AwbNo</strong></td>
-                  <td><strong>Trackig No #</strong></td>
-                  <td><strong>Package Number #</strong></td>
-                  <td><strong>Description</strong></td>
-                  <td><strong>Weight</strong></td>
-                  <td><strong>Dimension</strong></td>
-                  <td><strong>Number Of Pieces #</strong></td>
-                </tr>
-              </thead>
-              <tbody>
-                <% var totalWeight = 0;
+            <div class="card-body">
+                <h3 class="card-title text-muted">Plane</h3>
+                <div class='row'>
+                    <div class='col-md-9'>
+                        <input type='hidden' id="pgmode" value='flight' />
+                        <div class="form-group form-show-validation row">
+                            <label for="tailNumber" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Plane</label>
+                            <div class="col-lg-8 col-md-8 col-sm-8">
+                                <input type='text' class='form-control' id='tailNumber' placeholder="Plane"
+                                    value="<%= plane.tailNumber %>" readonly />
+                            </div>
+                        </div>
+                        <% if (airportFrom) { %>
+                        <div class="form-group form-show-validation row">
+                            <label for="airtPortFromId" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Airport
+                                From</label>
+                            <div class="col-lg-8 col-md-8 col-sm-8">
+                                <input type='text' class='form-control' id='airtPortFromId' placeholder="Airport From"
+                                    value="<%=airportFrom.name%> <% if (airportFrom.shortCode) { %> (<%=airportFrom.shortCode%>) <% } %>"
+                                    readonly />
+                            </div>
+                        </div>
+                        <% } %>
+                        <% if (airportTo) { %>
+                        <div class="form-group form-show-validation row">
+                            <label for="airtPortToId" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Airport
+                                To</label>
+                            <div class="col-lg-8 col-md-8 col-sm-8">
+                                <input type='text' class='form-control' id='airtPortToId' placeholder="Airport From"
+                                    value="<%=airportTo.name%> <% if (airportTo.shortCode) { %> (<%=airportTo.shortCode%>) <% } %>"
+                                    readonly />
+                            </div>
+                        </div>
+                        <% } %>
+                        <div class="form-group form-show-validation row">
+                            <label for="tailNumber" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">AirCraft
+                                Type</label>
+                            <div class="col-lg-8 col-md-8 col-sm-8">
+                                <input type='text' class='form-control' id='aircraft_type' placeholder="AirCraft Type"
+                                    value="<%= plane.aircraft_type %>" readonly />
+                            </div>
+                        </div>
+                        <div class="form-group form-show-validation row">
+                            <label for="shipDate" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Flight Date /
+                                Time </label>
+                            <div class="col-lg-8 col-md-9 col-sm-8 d-flex">
+                                <input type="text" class="form-control" id="shipDate"
+                                    value="<%= helpers.formatDate(manifest.shipDate) %>" readonly>
+                                <div class="input-group-append">
+                                    <span class="input-group-text">
+                                        <i class="fa fa-calendar-check"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="separator-solid"></div>
+                <div class="d-flex">
+                    <h3 class="card-title text-muted package-info">Data Entry ( Weight : 0 lbs / 0lbs )</h3>
+                </div>
+                <div class='row mt-3'>
+                    <div class='col-md-12 table-responsive'>
+                        <table id='packageTable' class='display table table-striped table-hover w-100'>
+                            <thead>
+                                <tr>
+                                    <td><strong>Compartment</strong></td>
+                                    <td><strong>AwbNo</strong></td>
+                                    <td><strong>Trackig No #</strong></td>
+                                    <td><strong>Package Number #</strong></td>
+                                    <td><strong>Description</strong></td>
+                                    <td><strong>Weight</strong></td>
+                                    <td><strong>Dimension</strong></td>
+                                    <td><strong>Number Of Pieces #</strong></td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% var totalWeight = 0;
                 packages.forEach(package => { 
                   let isExpress = package.express ? 'bolder':'normal';
                   totalWeight += Number(package.weight);%>
-                <tr data-record="<%= package.id %>" style="font-weight:<%=isExpress%>;">
-                  <td><%= package.compartment && package.compartment.name %></td>
-                  <td><b><%= package.express ? '*':''%></b><%= package.awbId ? package.awbId.awbId:'' %></td>
-                  <td><%= package.trackingNo %></td>
-                  <td><%= package.packageNumber %></td>
-                  <td><%= package.description %></td>
-                  <td><%= package.weight %> lbs</td>
-                  <td><%= package.dimensions %></td>
-                  <td><%= package.pieces %></td>
-                </tr>
-                <% }) %>
-              </tbody>
-              <tbody>
-                <tr>
-                  <td></td>
-                  <td></td>
-                  <td><strong>Total Weight</strong></td>
-                  <td><strong><%= totalWeight.toFixed(2)%></strong> lbs</td>
-                  <td></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+                                <tr data-record="<%= package.id %>" style="font-weight:<%=isExpress%>;">
+                                    <td>
+                                        <%= package.compartment && package.compartment.name %>
+                                    </td>
+                                    <td><b><%= package.express ? '*':''%></b>
+                                        <%= package.awbId ? package.awbId.awbId:'' %>
+                                    </td>
+                                    <td>
+                                        <%= package.trackingNo %>
+                                    </td>
+                                    <td>
+                                        <%= package.packageNumber %>
+                                    </td>
+                                    <td>
+                                        <%= package.description %>
+                                    </td>
+                                    <td>
+                                        <%= package.weight %> lbs</td>
+                                    <td>
+                                        <%= package.dimensions %>
+                                    </td>
+                                    <td>
+                                        <%= package.pieces %>
+                                    </td>
+                                </tr>
+                                <% }) %>
+                            </tbody>
+                            <tbody>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td><strong>Total Weight</strong></td>
+                                    <td><strong><%= totalWeight.toFixed(2)%></strong> lbs</td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="card-action">
+                <% if (Number(manifest.stageId) == 1) { %>
+                <a data-target="#shipManifest" data-toggle='modal' data-id="<%= manifest.id %>"
+                    class='btn btn-round btn-primary ml-md-auto float-right text-white btn-send'>Send Flight</a>
+                <% } else if (Number(manifest.stageId) == 3) { %>
+                <a data-target="#receiveManifest" data-toggle='modal' data-id="<%= manifest.id %>"
+                    class='btn btn-round btn-primary ml-md-auto float-right text-white btn-receive'>Receive Flight</a>
+                <% } %>
+            </div>
         </div>
-      </div>
-      <div class="card-action">
-        <% if (Number(manifest.stageId) == 1) { %>
-        <a data-target="#shipManifest" data-toggle='modal' data-id="<%= manifest.id %>"
-          class='btn btn-round btn-primary ml-md-auto float-right text-white btn-send'>Send Flight</a>
-        <% } else if (Number(manifest.stageId) == 3) { %>
-        <a data-target="#receiveManifest" data-toggle='modal' data-id="<%= manifest.id %>"
-          class='btn btn-round btn-primary ml-md-auto float-right text-white btn-receive'>Receive Flight</a>
-        <% } %>
-      </div>
     </div>
-  </div>
 </div>
 
 <div class="modal fade" id="shipManifest" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2"
-  aria-hidden="true" style="display: none;">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2 class="modal-title" id="exampleModalLabel2">Send Flight</h2>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">×</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <h3>Are you sure?</h3>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary close-del" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-success ship-manifest">Send Flight</button>
-      </div>
+    aria-hidden="true" style="display: none;">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="exampleModalLabel2">Send Flight</h2>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <h3>Are you sure?</h3>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary close-del" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success ship-manifest">Send Flight</button>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 
 <div class="modal fade" id="receiveManifest" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2"
-  aria-hidden="true" style="display: none;">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2 class="modal-title" id="exampleModalLabel2">Receive Flight</h2>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">×</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <h3>Are you sure?</h3>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary close-del" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-success receive-manifest">Receive Flight</button>
-      </div>
+    aria-hidden="true" style="display: none;">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="exampleModalLabel2">Receive Flight</h2>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <h3>Are you sure?</h3>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary close-del" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success receive-manifest">Receive Flight</button>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 
 <div class="modal fade" id="broker" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2" aria-hidden="true"
-  style="display: none;">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2 class="modal-title" id="exampleModalLabel2">Send to Broker (Manifest )</h2>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">×</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <label for="broker-name">Broker Name</label>
-        <input type='text' id='broker-name' class='form-control broker-email' value=''>
+    style="display: none;">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="exampleModalLabel2">Send to Broker (Manifest )</h2>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <label for="broker-name">Broker Name</label>
+                <input type='text' id='broker-name' class='form-control broker-email' value=''>
 
-        <label for="broker-email">Broker Email</label>
-        <input type='text' id='broker-email' class='form-control broker-email' value=''>
-      </div>
-      <div class="modal-footer">
+                <label for="broker-email">Broker Email</label>
+                <input type='text' id='broker-email' class='form-control broker-email' value=''>
+            </div>
+            <div class="modal-footer">
 
-        <span class='text-left' id='eb-message'></span>
-        <button type="button" class="btn btn-primary close-del" data-dismiss="modal">Close</button>
+                <span class='text-left' id='eb-message'></span>
+                <button type="button" class="btn btn-primary close-del" data-dismiss="modal">Close</button>
 
-        <button type="button" class="btn btn-success email-broker" id='email-broker'>Send <i id='eb-icon'
-            class='icon-plane'></i></button>
-      </div>
+                <button type="button" class="btn btn-success email-broker" id='email-broker'>Send <i id='eb-icon'
+                        class='icon-plane'></i></button>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 
 <% block('scripts').append('<script src="/js/utils.js"></script>')%>

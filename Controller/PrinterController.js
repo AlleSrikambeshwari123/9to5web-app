@@ -18,6 +18,7 @@ var cubPdfGen = new CUBEGeneration();
 const Awb = require('../models/awb');
 //var cubeService = require("../Services/CubeService")
 var AllPackagesOnAwb = require('../Util/PrintAllPackages');
+var fs = require('fs');
 
 
 exports.send_print_awb = (req, res, next) => {
@@ -80,13 +81,13 @@ exports.download_pkg_label = (req, res, next) => {
     })
 }
 exports.download_pdf_pricelabel = (req, res, next) => {
-  services.AwbPriceLabelService.getPriceLabel(req.params.id).then(price=>{
-    services.printService.getAWBDataForAllRelatedEntities(price.awbId).then((awb) => {
-    lblPdfGen.generateSinglePriceLabel(awb,price).then(result => {
-      res.download(result.path);
+    services.AwbPriceLabelService.getPriceLabel(req.params.id).then(price => {
+        services.printService.getAWBDataForAllRelatedEntities(price.awbId).then((awb) => {
+            lblPdfGen.generateSinglePriceLabel(awb, price).then(result => {
+                res.download(result.path);
+            })
+        })
     })
-  })
-})
 
 }
 
@@ -157,14 +158,14 @@ exports.generate_cube_pdf = (req, res, next) => {
 }
 
 exports.generate_price_label_pdf = (req, res, next) => {
-  console.log("DWLD PRICE LABEL")
-  services.AwbPriceLabelService.getPriceLabel(req.params.id).then(price=>{
-    services.printService.getAWBDataForAllRelatedEntities(price.awbId).then((awb) => {
-    lblPdfGen.generateSinglePriceLabel(awb,price).then(result => {
-      res.send(result);
+    console.log("DWLD PRICE LABEL")
+    services.AwbPriceLabelService.getPriceLabel(req.params.id).then(price => {
+        services.printService.getAWBDataForAllRelatedEntities(price.awbId).then((awb) => {
+            lblPdfGen.generateSinglePriceLabel(awb, price).then(result => {
+                res.send(result);
+            })
+        })
     })
-  })
-})
 }
 
 exports.downloadAirCargoManifest = async(req, res, next) => {
@@ -185,9 +186,12 @@ exports.downloadAirCargoManifest = async(req, res, next) => {
                 item['isInvoice'] = true;
                 pkg.awbId['isInvoice'] = true;
             }
-
-            awbIds.push(pkg.awbId._id);
+            
             item.awb = String(pkg.awbId.awbId);
+            let awbId = String(pkg.awbId._id);
+            if(awbIds.indexOf(awbId) === -1) {
+                awbIds.push(awbId);
+            }
             item.pieces = (item.pieces || 0) + 1;
             // in lbs
             let weight = services.packageService.getPackageWeightInLBS(pkg);
@@ -208,12 +212,10 @@ exports.downloadAirCargoManifest = async(req, res, next) => {
             return acc;
         }, {});
 
-        let uniqueAwbIds = [...new Set(awbIds)]
-
-
-        let awbsArray = await Promise.all(uniqueAwbIds.map((id) => services.printService.getAWBDataForAllRelatedEntities(id)));
+        let awbsArray = await Promise.all(awbIds.map((id) => services.printService.getAWBDataForAllRelatedEntities(id)));
 
         let airCargoManifest = new AirCargoManifest({
+            _id: req.params.id,
             owner: 'Nine To Five Import Export LLC',
             marksOfNationalityAndRegistration: 'United States - ' + manifest.planeId.tailNumber,
             flightNumber: manifest.planeId.tailNumber + manifest.title,
@@ -223,11 +225,8 @@ exports.downloadAirCargoManifest = async(req, res, next) => {
             rows: Object.values(packagesByAWB),
             awbsArray: awbsArray
         });
-        let stream = await airCargoManifest.generate();
-        res.type('pdf');
-        res.attachment(`${manifest.id}-ACM.pdf`);
-        stream.pipe(res);
-        stream.end();
+        let filePath = await airCargoManifest.generate();
+        res.download(filePath);
     } catch (error) {
         next(error);
     }
