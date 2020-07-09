@@ -2,7 +2,6 @@ var services = require('../Services/RedisDataServices');
 var printerCtrl = require('./PrinterController');
 var utils = require('../Util/utils');
 exports.get_awb_list = (req, res, next) => {
-  console.log('hello');
   services.awbService.getAwbsFull().then((awbs) => {
     res.render('pages/warehouse/awbprice/list-all', {
       page: req.originalUrl,

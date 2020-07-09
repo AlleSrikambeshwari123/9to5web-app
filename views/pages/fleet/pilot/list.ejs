@@ -7,10 +7,12 @@
         <a href='create' class='btn btn-primary btn-round ml-md-auto float-right'>Add Pilot</a>
       </div>
       <div class="card-body">
+        <div class="table-responsive">
         <table class="display table table-striped table-hover dataTable pilot-table">
           <thead>
             <tr>
               <th>Name</th>
+              <th>Date Created</th>
               <th>Company</th>
               <th>Mobile</th>
               <th>Email</th>
@@ -22,6 +24,7 @@
             <% pilots.forEach(pilot => { %>
             <tr data-record="<%=pilot.id%>">
               <td><%= pilot.firstName + ' ' + pilot.lastName%></td>
+              <td><%= helpers.formatDate(pilot.createdAt)%></td>
               <td><%= pilot.company%></td>
               <td><%= pilot.mobile%></td>
               <td><%= pilot.email%></td>
@@ -36,6 +39,7 @@
             <% }) %>
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   </div>

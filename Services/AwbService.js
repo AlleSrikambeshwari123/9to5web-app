@@ -168,11 +168,11 @@ class AwbService {
                     let awbPriceLabel = await PriceLabel.findOne({awbId:res._id});
                     if(awbPriceLabel !== null){
                       res['awbPriceLabel'] = awbPriceLabel.TotalWet;
-                      return res;
                     }
-                  })).then((res)=> {
-                    console.log(res)
-                    resolve(result)})
+                    res['customer'] = res['customerId'];
+                    return res;
+                  })).then(()=> resolve(result))
+                 
                    
                 });
         });

@@ -289,11 +289,6 @@ exports.update_awb = (req, res, next) => {
 
 exports.get_awb_list = (req, res, next) => {
   services.awbService.getAwbsFull().then(awbs => {
-    awbs.forEach((awb) => {
-      awb['customer'] = awb['customerId'];
-      awb['dateCreated'] = moment(awb['createdAt']).format('MMM DD,YYYY');
-    });
-    
     res.render('pages/warehouse/awb/list', {
       page: req.originalUrl,
       title: "AirWay Bills",

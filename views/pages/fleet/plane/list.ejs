@@ -7,10 +7,12 @@
         <a href='create' class='btn btn-primary btn-round ml-md-auto float-right'>Add Plane</a>
       </div>
       <div class="card-body">
+        <div class="table-responsive">
         <table class="display table table-striped table-hover dataTable plane-table">
           <thead>
             <tr>
               <th>Tail Number</th>
+              <th>Date Created</th>
               <th>Flight Name</th>
               <th>Pilot </th>
               <th>Airline </th>
@@ -23,6 +25,7 @@
             <% planes.forEach(plane => { %>
             <tr data-record="<%= plane.id%>">
               <td><%=plane.tailNumber%></td>
+              <td><%=helpers.formatDate(plane.createdAt)%></td>
               <td><%=plane.flightName%></td>
               <td><%=plane.pilot.firstName + ' ' + plane.pilot.lastName %></td>
               <td><%=plane.airline ? plane.airline.name : '' %></td>
@@ -40,6 +43,7 @@
             <% }) %>
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   </div>

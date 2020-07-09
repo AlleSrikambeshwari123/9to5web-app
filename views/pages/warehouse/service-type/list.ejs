@@ -8,11 +8,12 @@
       </div>
       <div class="card-body">
         <div class="table-responsive">
-          <table id="service-typeTable" class="display table table-striped table-hover">
+          <table id="service-typeTable" class="display dataTable table table-striped table-hover">
             <thead>
               <tr>
                 <!-- <th>ID</th> -->
                 <th>Name</th>
+                <th>Date Created</th>
                 <th>Amount</th>
                 <th>Action</th>
               </tr>
@@ -21,6 +22,7 @@
               <% serviceTypes.forEach(function(serviceType){%>
               <tr data-record="<%= serviceType.id %>">
                 <td><strong><%=serviceType.name%></strong></td>
+                <td><%=helpers.formatDate(serviceType.createdAt)%></td>
                 <td><%=serviceType.amount%></td>
                 <td>
                   <a href='manage/<%=serviceType.id%>/get'><i class="fas fa-pen"></i></a>

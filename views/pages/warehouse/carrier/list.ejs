@@ -13,6 +13,7 @@
               <tr>
                 <!-- <th>ID</th> -->
                 <th>Name</th>
+                <th>Date Created</th>
                 <th>Contact Name</th>
                 <th>Email</th>
                 <th>Mobile</th>
@@ -29,6 +30,7 @@
               <tr data-record="<%= carrier.id %>">
                 <!-- <td><%=carrier.id%></td> -->
                 <td><strong><%=carrier.name%></strong></td>
+                <td><%=helpers.formatDate(carrier.createdAt)%></td>
                 <td><%=helpers.getFullName(carrier)%></td>
                 <td><%=carrier.email%></td>
                 <td><%=carrier.telephone %></td>

@@ -7,12 +7,13 @@
         <a href='create' class='btn btn-primary btn-round float-right ml-md-auto'>Create Manifest</a>
       </div>
       <div class="card-body">
+        <div class="table-responsive">
         <table class="display table table-striped table-hover dataTable manifest-table">
           <thead>
             <tr>
               <th>Manifest ID#</th>
-              <th>Status</th>
               <th>Date Created</th>
+              <th>Status</th>
               <th>Plane</th>
               <th></th>
             </tr>
@@ -21,6 +22,7 @@
             <% manifests.forEach(function(manifest){ %>
             <tr data-record="<%= manifest.id %>">
               <td><strong><%= manifest.title%></strong></td>
+              <td><%= helpers.formatDate(manifest.createdAt) %></td>
               <td>
                 <% if (manifest.stageId == 1 ) { %>
                 <span class="badge badge-secondary"><%=manifest.stage %></span>
@@ -34,7 +36,6 @@
                 <span class="badge badge-success"><%=manifest.stage %></span>
                 <% } %>
               </td>
-              <td><%= helpers.formatDate(manifest.createdAt) %></td>
               <td><%= manifest.plane && manifest.plane.tailNumber%></td>
               <td class="text-center">
                 <a href='manage/<%=manifest.id%>/get' class="btn btn-link btn-primary px-3" data-toggle="tooltip"
@@ -48,6 +49,7 @@
             <%})%>
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   </div>

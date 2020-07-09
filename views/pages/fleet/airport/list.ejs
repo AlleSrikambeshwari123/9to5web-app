@@ -10,10 +10,11 @@
       </div>
       <div class="card-body">
         <div class="table-responsive">
-          <table id="airportTable" class="display table table-striped table-hover">
+          <table id="airportTable" class="display table table-striped dataTable table-hover">
             <thead>
               <tr>
                 <th>Name</th>
+                <th>Date Created</th>
                 <th>Short code</th>
                 <th>Country</th>
               </tr>
@@ -22,6 +23,7 @@
               <% airports.forEach(function(airport){%>
               <tr data-record="<%= airport.id %>">
                 <td><strong><%=airport.name%></strong></td>
+                <td><%=helpers.formatDate(airport.createdAt)%></td>
                 <td><%=airport.shortCode%></td>
                 <td><%=airport.country%></td>
                 <td>
