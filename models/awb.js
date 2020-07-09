@@ -63,6 +63,14 @@ const awbSchema = new mongoose.Schema({
     type:Boolean,
     default:false
   },
+  eamil_incoice:{
+    type:Boolean,
+    default:false
+  },
+  eamil_delivered_store:{
+    type:Boolean,
+    default:false
+  },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
