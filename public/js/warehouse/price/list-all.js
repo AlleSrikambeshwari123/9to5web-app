@@ -320,3 +320,4 @@ $('.print-package').click(function () {
   $('.close-del').trigger('click');
   printJS(pdfPath);
 });
+

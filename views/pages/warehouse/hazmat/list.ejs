@@ -13,6 +13,7 @@
             <thead>
               <tr>
                 <th>ID</th>
+                <th>Date Created</th>
                 <th>Name</th>
                 <th>Description</th>
                 <th>Action</th>
@@ -22,6 +23,7 @@
               <% hazmats.forEach(function(hazmat){ %>
               <tr data-record="<%= hazmat.id %>">
                 <td><%=hazmat.id%></td>
+                <td><%=helpers.formatDate(hazmat.createdAt)%></td>
                 <td><strong><%=hazmat.name%></strong></td>
                 <td><%=hazmat.description%></td>
                 <td>

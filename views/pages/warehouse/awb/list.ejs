@@ -23,8 +23,8 @@
               <table id='awb-table' class='display table table-striped table-hover dataTable'>
                 <thead>
                   <tr>
-                    <th>Date Received</th>
                     <th>PMB</th>
+                    <th>Date Received</th>
                     <th>AWB Number</th>
                     <th>Consignee</th>
                     <th>Shipper</th>
@@ -40,8 +40,8 @@
                   <% awbs.forEach(function(awb){
                     if(awb.packages.length > 0){ %>
                   <tr data-record="<%= awb._id %>">
-                    <td><%=awb.dateCreated%></td>
                     <td><%=(awb.customer && awb.customer.pmb)?awb.customer.pmb:'' %></td>
+                    <td><%=helpers.formatDate(awb.createdAt)%></td>
                     <td><a href="manage/<%=awb._id%>/preview"><%=awb.awbId%></a></td>
                     <td><%=helpers.getFullName(awb.customer)%></td>
                     <td><%=awb.shipper.name %></td>
@@ -75,8 +75,8 @@
               <table id='no-docs-table' class='display table table-striped table-hover dataTable'>
                 <thead>
                   <tr>
-                    <th>Date Received</th>
                     <th>PMB</th>
+                    <th>Date Received</th>
                     <th>AWB Number</th>
                     <th>Consignee</th>
                     <th>Shipper</th>
@@ -92,8 +92,8 @@
                     if(!awb.invoice) {
                   %>
                   <tr data-record="<%= awb._id %>">
-                    <td><%=awb.dateCreated%></td>
                     <td><%= awb.customer && awb.customer.pmb %></td>
+                    <td><%=helpers.formatDate(awb.createdAt)%></td>
                     <td><a href="manage/<%=awb._id%>/preview"><%=awb.awbId%></a></td>
                     <td><%= helpers.getFullName(awb.customer)%></td>
                     <td><%=awb.shipper.name %></td>
@@ -118,11 +118,11 @@
           <!-- Pending Awbs -->
           <div class="tab-pane fade" id="awb-no-packages" role="tabpanel" aria-labelledby="awb-no-packages-tab">
             <div class="table-responsive">
-                <table id='awb-table' class='display table table-striped table-hover dataTable'>
+                <table id='pending-awb-table' class='display table table-striped table-hover dataTable'>
                 <thead>
                   <tr>
-                    <th>Date Received</th>
                     <th>PMB</th>
+                    <th>Date Received</th>
                     <th>AWB Number</th>
                     <th>Consignee</th>
                     <th>Shipper</th>
@@ -139,8 +139,8 @@
                     if(awb.packages.length === 0) {
                       %>
                   <tr data-record="<%= awb._id %>">
-                    <td><%=awb.dateCreated%></td>
                     <td><%=awb.customer.pmb %></td>
+                    <td><%=helpers.formatDate(awb.createdAt)%></td>
                     <td><a href="manage/<%=awb._id%>/preview"><%=awb.awbId%></a></td>
                     <td><%=helpers.getFullName(awb.customer)%></td>
                     <td><%=awb.shipper.name %></td>
@@ -172,11 +172,11 @@
           <!-- Pickups Awbs -->
           <div class="tab-pane fade" id="awb-pickups" role="tabpanel" aria-labelledby="awb-pickups-tab">
             <div class="table-responsive">
-                <table id='awb-table' class='display table table-striped table-hover dataTable'>
+                <table id='pickup-awb-table' class='display table table-striped table-hover dataTable'>
                 <thead>
                   <tr>
-                    <th>Date Received</th>
                     <th>PMB</th>
+                    <th>Date Received</th>
                     <th>AWB Number</th>
                     <th>Consignee</th>
                     <th>Shipper</th>
@@ -193,8 +193,8 @@
                     if(awb.fll_pickup) {
                       %>
                   <tr data-record="<%= awb._id %>">
-                    <td><%=awb.dateCreated%></td>
                     <td><%=awb.customer.pmb %></td>
+                    <td><%=helpers.formatDate(awb.createdAt)%></td>
                     <td><a href="manage/<%=awb._id%>/preview"><%=awb.awbId%></a></td>
                     <td><%=helpers.getFullName(awb.customer)%></td>
                     <td><%=awb.shipper.name %></td>

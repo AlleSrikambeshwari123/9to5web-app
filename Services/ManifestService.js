@@ -205,14 +205,15 @@ class ManifestService {
         if (err) {
           resolve([]);
         } else {
-
-          return Promise.all(manifests.map(async (manifest) => {
+          Promise.all(manifests.map(async (manifest,i) => {
             manifest['plane'] = manifest['planeId'];
             let pkg = await Package.find({manifestId:manifest.id})
-            if(pkg.length > 0) return manifest
+            console.log({manifest,pkg})
+            if(pkg.length == 0) delete manifests[i]
           })
-          ).then(mfest=>{
-            resolve(mfest);
+          ).then(()=>{
+            console.log({manifests})
+             resolve(manifests);
           })
         }
       });

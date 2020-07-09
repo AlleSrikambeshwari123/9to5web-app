@@ -8,11 +8,12 @@
       </div>
       <div class="card-body">
         <div class="table-responsive">
-          <table id="paid-typeTable" class="display table table-striped table-hover">
+          <table id="paid-typeTable" class="display table dataTable table-striped table-hover">
             <thead>
               <tr>
                 <!-- <th>ID</th> -->
                 <th>Name</th>
+                <th>Date Created</th>
                 <th>Action</th>
               </tr>
             </thead>
@@ -21,6 +22,7 @@
               <tr data-record="<%= paidType.id %>">
                 <!-- <td><%=paidType.id%></td> -->
                 <td><strong><%=paidType.name%></strong></td>
+                <td><strong><%=helpers.formatDate(paidType.createdAt)%></strong></td>
                 <td>
                   <a href='manage/<%=paidType.id%>/get'><i class="fas fa-pen"></i></a>
                   <!-- temporary commenting the code -->

@@ -31,8 +31,8 @@
               <table id='cableBeachList-table' class='display table storeCheckInTable table-striped table-hover dataTable'>
 				<thead>
 					<tr>
-						<th>Date Received</th>
 						<th>Location</th>
+						<th>Date Received</th>
 						<th>Tracking No</th>
 						<th>PMB - Consignee</th>
 						<th>AWBID</th>
@@ -47,8 +47,8 @@
 						if((pmb > 0 && pmb <= 1999) || (pmb >= 4000 && pmb <= 4999)) {
 							%>
 					<tr data-record="<%= pkg.id %>">
-						<td><%= helpers.formatDate(pkg.createdAt)%></td>
 						<td><%= pkg.location ? pkg.location:''%></td>
+						<td><%= helpers.formatDate(pkg.createdAt)%></td>
 						<td><%= pkg.trackingNo %></td>
 						<td><%= pkg.customerId ? pkg.customerId.pmb + '-' + helpers.getFullName(pkg.customerId) : "" %>
 						</td>
@@ -80,8 +80,8 @@
               <table id='albonyList-table' class='display table table-striped  storeCheckInTable table-hover dataTable'>
 				<thead>
 					<tr>
-						<th>Date Received</th>
 						<th>Location</th>
+						<th>Date Received</th>
 						<th>Tracking No</th>
 						<th>PMB - Consignee</th>
 						<th>AWBID</th>
@@ -95,8 +95,8 @@
 						let pmb = pkg.customerId ? pkg.customerId.pmb: 0
 						if((pmb >= 3000 && pmb <= 3999)){%>
 					<tr data-record="<%= pkg.id %>">
-						<td><%= helpers.formatDate(pkg.createdAt)%></td>
 						<td><%= pkg.location ? pkg.location:''%></td>
+						<td><%= helpers.formatDate(pkg.createdAt)%></td>
 						<td><%= pkg.trackingNo %></td>
 						<td><%= pkg.customerId ? pkg.customerId.pmb + '-' + helpers.getFullName(pkg.customerId) : "" %>
 						</td>

@@ -10,12 +10,13 @@
                     <a href='create' class='btn btn-primary btn-round float-right ml-md-auto text-white' data-toggle='modal' data-target='#addDelivery'>Create Delivery</a>
                 </div>
                 <div class="card-body">
+                    <div class="table-responsive">
                     <table class="display table table-striped table-hover dataTable delivery-table">
                         <thead>
                             <tr>
                                 <th>Delivery #</th>
-                                <th>Created By</th>
                                 <th>Delivery Date</th>
+                                <th>Created By</th>
                                 <th>Destination</th>
                                 <th>Package Count</th>
                                 <th>Driver</th>
@@ -30,10 +31,10 @@
                                         <%=delivery.deliveryNum %>
                                     </td>
                                     <td>
-                                        <%= delivery.createdBy && delivery.createdBy.username %>
+                                        <%= helpers.formatDate(delivery.delivery_date) %>
                                     </td>
                                     <td>
-                                        <%= helpers.formatDate(delivery.delivery_date) %>
+                                        <%= delivery.createdBy && delivery.createdBy.username %>
                                     </td>
                                     <td>
                                         <%= delivery.location.name %>
@@ -56,6 +57,7 @@
                                 <% }) %>
                         </tbody>
                     </table>
+                    </div>
                 </div>
             </div>
         </div>
