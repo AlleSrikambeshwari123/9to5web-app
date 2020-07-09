@@ -1,4 +1,7 @@
 $(function () {
+  $('#global-search-table-data').DataTable({
+    "pageLength": 10,
+  })
   $("#global-search-button").click(function() {
     const selectedOption = $('#group-search-select-input').val();
     const inputField = $('#group-search-input-field').val();
@@ -26,10 +29,6 @@ $(function () {
   });
 
   function showDataInModal(response, inputField) {
-    $('#global-search-table-data').DataTable({
-      "pageLength": 10,
-    })
-
     // Clearing the previous data
     $('#global-search-table-data').dataTable().fnClearTable();
 
