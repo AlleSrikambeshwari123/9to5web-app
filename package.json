@@ -45,6 +45,7 @@
     "gulp": "^3.9.1",
     "helmet": "^3.22.0",
     "imagemin": "^7.0.1",
+    "images-to-pdf": "^1.0.3",
     "js-autocomplete": "^1.0.4",
     "jsbarcode": "^3.11.0",
     "jsonwebtoken": "^8.5.1",
