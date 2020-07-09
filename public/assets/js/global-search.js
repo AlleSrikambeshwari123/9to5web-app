@@ -35,7 +35,11 @@ $(function () {
 
     if (response && response.length) {
       response.forEach((data) => {
-        const id = inputField === 'Package' ? data.id : data._id;
+        if(inputField === 'Package' || inputField === 'Original'){
+          id = data.id;
+        }else{
+          id = data._id;
+        }
         $('#global-search-table-data').dataTable().fnAddData([id, `<a id="global-search-collection-details" href="javascript: void(0)" data-id=${data._id}>Show Details</a>`]);
       })
     }

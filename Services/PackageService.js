@@ -668,6 +668,17 @@ class PackageService {
             });
         })
     }
+    getOriginalBarcodeByCodeWildCard(barcode) {
+        return new Promise((resolve, reject) => {
+            Barcode.findOne({ barcode: { $regex: '.*' + barcode + '.*' } }, (err, result) => {
+                if (err || result === null) {
+                    resolve([]);
+                } else {
+                    resolve(result);
+                }
+            });
+        })
+    }
 
     getAllOriginBarcode() {
         return new Promise((resolve, reject) => {
@@ -1456,7 +1467,7 @@ class PackageService {
                     }
                 })
             }else if (selectedOption === "Original") {
-                let barcode = await this.getOriginalBarcodeByCode(inputField)
+                let barcode = await this.getOriginalBarcodeByCodeWildCard(inputField)
                 Package.find({ originBarcode: barcode._id}, (err, packages) => {
                     if (err) {
                         resolve([]);
