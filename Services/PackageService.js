@@ -1459,7 +1459,7 @@ class PackageService {
             }
 
             if (selectedOption === "Package") {
-                Package.find({ description: { $regex: inputField, $options: 'i' } }, 'id', (err, packages) => {
+                Package.find({ description: { $regex: inputField, $options: 'i' } }, 'id trackingNo awbId', (err, packages) => {
                     if (err) {
                         resolve([]);
                     } else {
@@ -1472,22 +1472,24 @@ class PackageService {
                     if (err) {
                         resolve([]);
                     } else {
-                        resolve(packages);
+                       resolve(packages)
                     }
-                }).select('id')
+                }).select('id trackingNo awbId')
             } else if (selectedOption === "Awb") {
-                inputField = inputField.trim().toLowerCase();
-                Awb.findOne({ awbId: inputField }, 'awbId', (err, awb) => {
+                inputField = inputField.trim().toLowerCase().toString();
+                Awb.find({ awbId: inputField  }, 'awbId', (err, awb) => {
                     if (err) {
+                        console.log({err})
                         resolve([]);
                     } else {
-                        resolve([awb]);
+                        resolve(awb);
                     }
                 });
             } else {
                 inputField = inputField.trim();
-                Customer.find({ email: { $regex: '^' + inputField + '$', $options: 'i' } }, '_id', (err, customers) => {
+                Customer.find({ email: { $regex: inputField, $options: 'i' } }, '_id firstName', (err, customers) => {
                     if (err) {
+                        console.log({err})
                         resolve([]);
                     } else {
                         resolve(customers);

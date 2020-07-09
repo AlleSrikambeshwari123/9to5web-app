@@ -6,7 +6,6 @@ exports.get_package_list = (req, res, next) => {
     services.packageService.getAllPackagesWithLastStatus().then((packages) => {
         return Promise.all(
             packages.map(async(pkg, i) => {
-                console.log({pkg})
                 let awb = await services.printService.getAWBDataForPackagesRelatedEntitie(pkg.awbId._id);
                 packages[i].pieces = awb.packages ? awb.packages.length : 0
                 packages[i].packageNumber = "PK00" + packages[i].id;

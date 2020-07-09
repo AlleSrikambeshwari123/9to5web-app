@@ -35,9 +35,15 @@ $(function () {
     if (response && response.length) {
       response.forEach((data) => {
         if(inputField === 'Package' || inputField === 'Original'){
-          id = data.id;
-        }else{
-          id = data._id;
+          id = data.trackingNo;
+          awbId = data.awbId
+        }else if (inputField === 'Customer'){
+          id = data.firstName;
+          customerId = data._id
+        }
+        else{
+          id = data.awbId;
+          awbId = data._id
         }
         $('#global-search-table-data').dataTable().fnAddData([id, `<a id="global-search-collection-details" href="javascript: void(0)" data-id=${data._id}>Show Details</a>`]);
       })
@@ -63,14 +69,12 @@ $(function () {
     // Resetting the selected values
     reset();
 
-    if (selectedOption === 'Package') {
-      document.location.href = '/warehouse/package/list';
-    } else if (selectedOption === 'Customer') {
-      document.location.href = `/admin/customers/manage/${id}/get`;
-    } else if (selectedOption === 'Original') {
-      document.location.href = '/warehouse/package/list';
-    } else {
-      document.location.href = `/warehouse/fll/awb/manage/${id}/get`;
+    
+    if (selectedOption === 'Customer') {
+      document.location.href = `/admin/customers/manage/${customerId}/get`;
+    } 
+    else {
+      document.location.href = `/warehouse/fll/awb/manage/${awbId}/get`;
     }
 
     $('#global-search-data-modal').modal('hide');
