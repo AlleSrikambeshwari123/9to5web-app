@@ -96,6 +96,7 @@
                                 <tr>
                                   <!-- <th><input id="checkall" type="checkbox" class="package-select-all" /></th> -->
                                   <th>Customer Name</th>
+                                  <th>OrignalScanDate</th>
                         <th>AWB</th>
                         <th>Original Tracking No</th>
                         <th>Package No</th>
@@ -105,7 +106,6 @@
                         <th>Weight</th>
                         <th>Number of Pieces</th>
                         <th>Status</th>
-                        <th>OrignalScanDate</th>
                         <th>AirwareBillDate</th>
                         <th>ActualFlight</th>
                         <th></th>
@@ -113,7 +113,7 @@
                       </tr>
                     </thead>
                     <tbody>
-                    <% packages.forEach(function(pkg){ 
+                      <% packages.forEach(function(pkg){ 
                       if(pkg.lastStatusText == 'No Invoice Present' && pkg.invoice){
                         %>
                         <tr data-record="<%= pkg._id %>">
@@ -123,11 +123,12 @@
                           <% if (pkg['customerId']) { %>
                             <td><%= (pkg['customerId'].lastName ? 
                               `${pkg['customerId'].firstName} ${pkg['customerId'].lastName}` : 
-                        `${pkg['customerId'].firstName}`); %>
-                      </td>
-                      <% } else { %>
-                        <td> - </td>
-                        <% } %>
+                              `${pkg['customerId'].firstName}`); %>
+                            </td>
+                            <% } else { %>
+                              <td> - </td>
+                              <% } %>
+                              <td><%= pkg.OrignalBarcodeDate %></td>
                         <td><a class="text-decoration-none" href="../../nas/awb/manage/<%=pkg.awbId._id%>/preview"><b><%= pkg.express ? '*': '' %></b><%= pkg.awbId.awbId %> </a></td>
                         <td><%= pkg.originBarcode ? pkg.originBarcode.barcode: ''%></td>
                         <td><%= pkg.packageNumber ? pkg.packageNumber : ''%></td>
@@ -142,7 +143,6 @@
                         <td><%= pkg.weight%></td>
                         <td><%= (pkg.pieces || pkg.pieces > -1) ? pkg.pieces : ''%></td>
                         <td class="lastStatusText_field"><%= pkg.lastStatusText %></td>
-                        <td><%= pkg.OrignalBarcodeDate %></td>
                         <td><%= pkg.awbCreatedAt %></td>
                         <td><%= pkg.actualFlight %></td>
                         <!-- <td><a href="../pkg-label/download/<%=pkg._id%>"><i class="fa fa-download"></i></a></td> -->
