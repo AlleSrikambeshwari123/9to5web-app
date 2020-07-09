@@ -298,12 +298,13 @@ $('#UpdatePriceLabelPackage').on('click' , function (event) {
     data: data,
     success: function (response) {
       $('.close-del').trigger('click');
+      $(`.ifNotPriceLabel${id}`).show();
       swal({
         title: response.success ? 'Success' : 'Error',
         type: response.success ? 'success' : 'error',
         text: response.message,
-      });
-      $(`.ifNotPriceLabel${id}`).show();
+      }).then(()=> window.location.reload());
+     
     },
     error: function () {
       swal({

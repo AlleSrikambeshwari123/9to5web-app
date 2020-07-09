@@ -1,5 +1,6 @@
 let Promise = require('bluebird');
 let assert = require('assert');
+
 let awsLib = require('../Util/aws');
 var path = require('path');
 var fs = require('fs');
@@ -8,6 +9,7 @@ const imagesToPdf = require("images-to-pdf")
 
 // let client = require('./dataContext').redisClient;
 const Invoice = require('../models/invoice');
+const StoreInvoice = require('../models/storeInvoice');
 
 const Keys = {
   item: (id) => `invoice:${id}`,
@@ -115,6 +117,31 @@ class InvoiceService {
             if(result.length === resultArrayFiles.length)
               resolve(resultArrayFiles);
           }));
+       }
+      });
+    })
+  }
+
+  async getAllStoreInvoice(){
+    return new Promise((resolve, reject) => {
+      StoreInvoice.find().populate('awbId').exec((err, result) => {
+        if (err) {
+          resolve([]);
+        } else {
+          resolve(result);
+        }
+      });
+    })
+  }
+
+  async deleteStoreInvoice(id){
+    return new Promise((resolve, reject) => {
+      StoreInvoice.findOneAndRemove({_id:id}).exec((err, result) => {
+        if (err) {
+          resolve({success:false,message:err});
+        } else {
+
+          resolve({success:true,message:"Successfully Deleted"});
         }
       });
     })

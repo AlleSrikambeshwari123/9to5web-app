@@ -244,12 +244,8 @@ class PackageService {
                             aging:1
                         });
                         const status = await this.updatePackageStatus(packageId, 7, data.userId);
-                        //email
-                        const pkgDetail = await Package.findOne({_id:packageId}).populate('customerId');
-                        if(pkgDetail && pkgDetail.customerId){
-                            await emailService.sendNoDocsPackageEmail(pkgDetail);
-                        }
-
+                        //email                        
+                        this.sendNoDocsPackageData(packageId);
                         if (!status.success) error.push(status.message)
                         return status
                     },
@@ -258,6 +254,7 @@ class PackageService {
                 )
             )
             if (error.length > 0) return { success: false, message: error }
+            
             return { success: true, message: strings.string_response_received, status: PKG_STATUS[7] }
         } catch (error) {
             console.error('addAwbsPkgNoDocs', error)
@@ -278,10 +275,12 @@ class PackageService {
                         });
                         const status = await this.updatePackageStatus(packageId, 9, username);
                         //email
-                        const pkgDetail = await Package.findOne({_id:packageId}).populate('customerId');
-                        if(pkgDetail && pkgDetail.customerId){
-                            await emailService.sendStorePackageEmail(pkgDetail);
-                        }
+                        // const pkgDetail = await Package.findOne({_id:packageId}).populate('customerId');
+                        // if(pkgDetail && pkgDetail.customerId){
+                        //     await emailService.sendStorePackageEmail(pkgDetail);
+                        // }
+                        //email                        
+                        this.sendStorePackageData(packageId);
                         if (!status.success) error.push(status.message)
                         return status
                     },
@@ -584,7 +583,7 @@ class PackageService {
                 if (pkg.originBarcode) {
                     let barcode = await this.getOriginBarcode(pkg.originBarcode)
                     if (barcode !== null && barcode.createdAt) {
-                        pkg.OrignalBarcodeDate = momentz.utc(barcode.createdAt).tz("America/New_York").format('dddd, MMMM Do YYYY, h:mm A');
+                        pkg.OrignalBarcodeDate = barcode.createdAt;
                     }
                 }
                 if (pkg.awbId) {
@@ -660,6 +659,17 @@ class PackageService {
     getOriginalBarcodeByCode(barcode) {
         return new Promise((resolve, reject) => {
             Barcode.findOne({ barcode: barcode }, (err, result) => {
+                if (err || result === null) {
+                    resolve([]);
+                } else {
+                    resolve(result);
+                }
+            });
+        })
+    }
+    getOriginalBarcodeByCodeWildCard(barcode) {
+        return new Promise((resolve, reject) => {
+            Barcode.findOne({ barcode: { $regex: '.*' + barcode + '.*' } }, (err, result) => {
                 if (err || result === null) {
                     resolve([]);
                 } else {
@@ -1448,7 +1458,7 @@ class PackageService {
             }
 
             if (selectedOption === "Package") {
-                Package.find({ description: { $regex: inputField, $options: 'i' } }, 'id', (err, packages) => {
+                Package.find({ description: { $regex: inputField, $options: 'i' } }, 'id trackingNo awbId', (err, packages) => {
                     if (err) {
                         resolve([]);
                     } else {
@@ -1456,27 +1466,29 @@ class PackageService {
                     }
                 })
             }else if (selectedOption === "Original") {
-                let barcode = await this.getOriginalBarcodeByCode(inputField)
+                let barcode = await this.getOriginalBarcodeByCodeWildCard(inputField)
                 Package.find({ originBarcode: barcode._id}, (err, packages) => {
                     if (err) {
                         resolve([]);
                     } else {
-                        resolve(packages);
+                       resolve(packages)
                     }
-                }).select('id')
+                }).select('id trackingNo awbId')
             } else if (selectedOption === "Awb") {
-                inputField = inputField.trim().toLowerCase();
-                Awb.findOne({ awbId: inputField }, 'awbId', (err, awb) => {
+                inputField = inputField.trim().toLowerCase().toString();
+                Awb.find({ awbId: inputField  }, 'awbId', (err, awb) => {
                     if (err) {
+                        console.log({err})
                         resolve([]);
                     } else {
-                        resolve([awb]);
+                        resolve(awb);
                     }
                 });
             } else {
                 inputField = inputField.trim();
-                Customer.find({ email: { $regex: '^' + inputField + '$', $options: 'i' } }, '_id', (err, customers) => {
+                Customer.find({ email: { $regex: inputField, $options: 'i' } }, '_id firstName', (err, customers) => {
                     if (err) {
+                        console.log({err})
                         resolve([]);
                     } else {
                         resolve(customers);
@@ -1624,6 +1636,45 @@ class PackageService {
             }
         })
     }
+
+    async sendNoDocsPackageData(pkgId){       
+        const pkgData = await Package.findOne({_id:pkgId})
+        .populate('customerId')
+        .populate('shipperId')
+        .populate('awbId');
+        if(pkgData && pkgData.awbId &&  !pkgData.awbId.eamil_incoice){
+            await emailService.sendNoDocsPackageEmail(pkgData);
+            await Awb.updateOne({_id:(pkgData.awbId._id).toString()},{eamil_incoice:true});
+            return true;
+        }else{
+            return false
+        }        
+    }
+
+    async sendStorePackageData(pkgId){
+        let pkgData = await Package.findOne({_id:pkgId})
+        .populate('customerId')
+        .populate('shipperId')
+        .populate('awbId');
+        pkgData = JSON.parse(JSON.stringify(pkgData));
+        if(pkgData && pkgData.awbId &&  !pkgData.awbId.eamil_delivered_store){
+            const awbId = pkgData.awbId._id;
+            const awbData = await Awb.findOne({_id:awbId}).populate('invoices');
+            const invoices = awbData.invoices?awbData.invoices:[];
+            var totalPrice = 0;
+            for(let i=0;i<invoices.length;i++){
+                totalPrice = totalPrice+invoices[i].value;
+            }
+            pkgData.totalPrice = totalPrice;
+            console.log(totalPrice,'>>>>>>>>>>>>>>>>');
+            await emailService.sendStorePackageEmail(pkgData);
+            await Awb.updateOne({_id:(pkgData.awbId._id).toString()},{eamil_delivered_store:true});
+            return true;
+        }else{
+            return false
+        } 
+    }
+   
 }
 
 function getPackageIdFromBarCode(barCodeValue) {

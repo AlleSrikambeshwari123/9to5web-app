@@ -163,8 +163,17 @@ class AwbService {
                 .populate('purchaseOrders')
                 .populate('invoices')
                 .populate('driver')
-                .exec((err, result) => {
-                    resolve(result);
+                .exec(async (err, result) => {
+                  Promise.all(result.map(async res =>{
+                    let awbPriceLabel = await PriceLabel.findOne({awbId:res._id});
+                    if(awbPriceLabel !== null){
+                      res['awbPriceLabel'] = awbPriceLabel.TotalWet;
+                      return res;
+                    }
+                  })).then((res)=> {
+                    console.log(res)
+                    resolve(result)})
+                   
                 });
         });
     }
@@ -418,8 +427,10 @@ class AwbService {
     return new Promise((resolve, reject) => { 
       const invoiceData = {
         awbId:data.awbId,
-        fileName:data.filePath
+        filePath:data.filePath,
+        fileName:data.fileName
       }
+     
       const newInvoice = new StoreInvoice(invoiceData);
       newInvoice.save((err, result) => {
         if(err){
@@ -432,10 +443,10 @@ class AwbService {
     })
   }
 
-  async getAwbPriceLabel(awbId) {
-    console.log(awbId)
+  async getAwbPriceLabel(awbId) {    
     return new Promise((resolve, reject) => { 
       PriceLabel.findOne({awbId:awbId}).exec((err, result) => {
+        result = JSON.parse(JSON.stringify(result))
         Awb.findOne({_id:awbId})
         .populate('customerId')
         .populate('shipper')
@@ -446,7 +457,15 @@ class AwbService {
         .populate('invoices')
         .populate('driver')
         .exec((err, awbData) => {
-          result.awbId = awbData;
+          if(result && result.awbId){
+            const invoices =awbData.invoices?awbData.invoices:[];
+            var totalPrice = 0;
+            for(let i=0;i<invoices.length;i++){
+              totalPrice=totalPrice+invoices[i].value;
+            }
+            result.totalPrice = totalPrice;
+            result.awbId = awbData;
+          }
             resolve(result)
         })
       })

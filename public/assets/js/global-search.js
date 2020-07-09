@@ -1,4 +1,7 @@
 $(function () {
+  $('#global-search-table-data').DataTable({
+    "pageLength": 10,
+  })
   $("#global-search-button").click(function() {
     const selectedOption = $('#group-search-select-input').val();
     const inputField = $('#group-search-input-field').val();
@@ -26,16 +29,22 @@ $(function () {
   });
 
   function showDataInModal(response, inputField) {
-    $('#global-search-table-data').DataTable({
-      "pageLength": 10,
-    })
-
     // Clearing the previous data
     $('#global-search-table-data').dataTable().fnClearTable();
 
     if (response && response.length) {
       response.forEach((data) => {
-        const id = inputField === 'Package' ? data.id : data._id;
+        if(inputField === 'Package' || inputField === 'Original'){
+          id = data.trackingNo;
+          awbId = data.awbId
+        }else if (inputField === 'Customer'){
+          id = data.firstName;
+          customerId = data._id
+        }
+        else{
+          id = data.awbId;
+          awbId = data._id
+        }
         $('#global-search-table-data').dataTable().fnAddData([id, `<a id="global-search-collection-details" href="javascript: void(0)" data-id=${data._id}>Show Details</a>`]);
       })
     }
@@ -60,14 +69,12 @@ $(function () {
     // Resetting the selected values
     reset();
 
-    if (selectedOption === 'Package') {
-      document.location.href = '/warehouse/package/list';
-    } else if (selectedOption === 'Customer') {
-      document.location.href = `/admin/customers/manage/${id}/get`;
-    } else if (selectedOption === 'Original') {
-      document.location.href = '/warehouse/package/list';
-    } else {
-      document.location.href = `/warehouse/fll/awb/manage/${id}/get`;
+    
+    if (selectedOption === 'Customer') {
+      document.location.href = `/admin/customers/manage/${customerId}/get`;
+    } 
+    else {
+      document.location.href = `/warehouse/fll/awb/manage/${awbId}/get`;
     }
 
     $('#global-search-data-modal').modal('hide');
