@@ -244,12 +244,8 @@ class PackageService {
                             aging:1
                         });
                         const status = await this.updatePackageStatus(packageId, 7, data.userId);
-                        //email
-                        const pkgDetail = await Package.findOne({_id:packageId}).populate('customerId');
-                        if(pkgDetail && pkgDetail.customerId){
-                            await emailService.sendNoDocsPackageEmail(pkgDetail);
-                        }
-
+                        //email                        
+                        this.sendNoDocsPackageData(packageId);
                         if (!status.success) error.push(status.message)
                         return status
                     },
@@ -258,6 +254,7 @@ class PackageService {
                 )
             )
             if (error.length > 0) return { success: false, message: error }
+            
             return { success: true, message: strings.string_response_received, status: PKG_STATUS[7] }
         } catch (error) {
             console.error('addAwbsPkgNoDocs', error)
@@ -278,10 +275,12 @@ class PackageService {
                         });
                         const status = await this.updatePackageStatus(packageId, 9, username);
                         //email
-                        const pkgDetail = await Package.findOne({_id:packageId}).populate('customerId');
-                        if(pkgDetail && pkgDetail.customerId){
-                            await emailService.sendStorePackageEmail(pkgDetail);
-                        }
+                        // const pkgDetail = await Package.findOne({_id:packageId}).populate('customerId');
+                        // if(pkgDetail && pkgDetail.customerId){
+                        //     await emailService.sendStorePackageEmail(pkgDetail);
+                        // }
+                        //email                        
+                        this.sendStorePackageData(packageId);
                         if (!status.success) error.push(status.message)
                         return status
                     },
@@ -1624,6 +1623,45 @@ class PackageService {
             }
         })
     }
+
+    async sendNoDocsPackageData(pkgId){       
+        const pkgData = await Package.findOne({_id:pkgId})
+        .populate('customerId')
+        .populate('shipperId')
+        .populate('awbId');
+        if(pkgData && pkgData.awbId &&  !pkgData.awbId.eamil_incoice){
+            await emailService.sendNoDocsPackageEmail(pkgData);
+            await Awb.updateOne({_id:(pkgData.awbId._id).toString()},{eamil_incoice:true});
+            return true;
+        }else{
+            return false
+        }        
+    }
+
+    async sendStorePackageData(pkgId){
+        let pkgData = await Package.findOne({_id:pkgId})
+        .populate('customerId')
+        .populate('shipperId')
+        .populate('awbId');
+        pkgData = JSON.parse(JSON.stringify(pkgData));
+        if(pkgData && pkgData.awbId &&  !pkgData.awbId.eamil_delivered_store){
+            const awbId = pkgData.awbId._id;
+            const awbData = await Awb.findOne({_id:awbId}).populate('invoices');
+            const invoices = awbData.invoices?awbData.invoices:[];
+            var totalPrice = 0;
+            for(let i=0;i<invoices.length;i++){
+                totalPrice = totalPrice+invoices[i].value;
+            }
+            pkgData.totalPrice = totalPrice;
+            console.log(totalPrice,'>>>>>>>>>>>>>>>>');
+            await emailService.sendStorePackageEmail(pkgData);
+            await Awb.updateOne({_id:(pkgData.awbId._id).toString()},{eamil_delivered_store:true});
+            return true;
+        }else{
+            return false
+        } 
+    }
+   
 }
 
 function getPackageIdFromBarCode(barCodeValue) {

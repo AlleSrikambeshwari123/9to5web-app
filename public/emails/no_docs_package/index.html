@@ -198,7 +198,7 @@ table{
 	margin: 0;
 }
 .logo h1 a{
-	color: #17bebb;
+	color: blue;
 	font-size: 24px;
 	font-weight: 700;
 	font-family: 'Poppins', sans-serif;
@@ -297,7 +297,7 @@ ul.social li{
           	<table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
           		<tr>
           			<td class="logo" style="text-align: center;">
-			            <h1><a href="#">e-Verify</a></h1>
+			            <h1><a href="#">Package Update</a></h1>
 			          </td>
           		</tr>
           	</table>
@@ -305,22 +305,21 @@ ul.social li{
 	      </tr><!-- end tr -->
 				<tr>
           <td valign="middle" class="hero bg_white" style="padding: 2em 0 4em 0;">
-            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
-            	<tr>
-            		<td style="padding: 0 2.5em; text-align: center; padding-bottom: 3em;">
-            			<div class="text">
-            				<h2>Ronald would like to be your friend on e-Verify</h2>
-            			</div>
-            		</td>
-            	</tr>
+            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">            	
             	<tr>
 			          <td style="text-align: center;">
 			          	<div class="text-author">
-				          	<img src="{{HOST}}/emails/no_docs_package/images/person_2.jpg" alt="" style="width: 100px; max-width: 600px; height: auto; margin: auto; display: block;">
-				          	<h3 class="name">Ronald Tuff</h3>
-				          	<span class="position">CEO, Founder at e-Verify</span>
-				           	<p><a href="#" class="btn btn-primary">Accept Request</a></p>
-				           	<p><a href="#" class="btn-custom">Ignore Request</a></p>
+				          	<img src="{{HOST}}/img/pbe-logo.png" alt="" style="width: 100px; max-width: 600px; height: auto; margin: auto; display: block;">
+				          	<h3 class="name">Dear {{CUSTOMERNAME}},</h3><br/>
+				          	<span class="position">The following Airway Bill is in Fort Lauderdale and cannot be shipped to Nassau. Kindly send the related invoice(s).</span><br/><br/>	
+				          	<span class="position">AWB  #{{AWBID}}</span><br/>
+							<span class="position">Shipper    {{SHIPPERNAME}}</span>	<br/>
+							<span class="position">Description    {{AWBDESCRIPTION}}</span>	<br/>
+							<span class="position">Tracking  #{{TRACKINGNUMBER}}	</span><br/><br/>
+							<span class="position">Please forward your invoices to <a href="mailto:nodocsfll@postboxesetc.com">nodocsfll@postboxesetc.com</a> to avoid a delay in receiving your package. You MUST include the</span><br/>	
+							<span class="position">AWB NO ({{AWBNUMBER}}) in the Subject.	</span><br/><br/>
+							<span class="position">Visit Us <a href="www.postboxesetc.com">www.postboxesetc.com</a></span><br/>
+							           	
 			           	</div>
 			          </td>
 			        </tr>
@@ -339,7 +338,7 @@ ul.social li{
                     <tr>
                       <td style="text-align: left; padding-right: 10px;">
                       	<h3 class="heading">About</h3>
-                      	<p>A small river named Duden flows by their place and supplies it with the necessary regelialia.</p>
+                      	<p>The Bahamas only same day service.  Deliveries to Ft Lauderdale by 10AM and available in Nassau by 5PM.</p>
                       </td>
                     </tr>
                   </table>
@@ -350,8 +349,10 @@ ul.social li{
                       <td style="text-align: left; padding-left: 5px; padding-right: 5px;">
                       	<h3 class="heading">Contact Info</h3>
                       	<ul>
-					                <li><span class="text">203 Fake St. Mountain View, San Francisco, California, USA</span></li>
-					                <li><span class="text">+2 392 3929 210</span></a></li>
+					                <li><span class="text">Airport Industrial Park, P.O. Box AP 59239</span></li>
+					                <li><span class="text">Nassau, The Bahamas</span></li>
+					                <li><span class="text">(242) 377-0925/9250</span></a></li>
+					                <li><span class="text">Info@9-5import.com</span></a></li>
 					              </ul>
                       </td>
                     </tr>
@@ -363,10 +364,9 @@ ul.social li{
                       <td style="text-align: left; padding-left: 10px;">
                       	<h3 class="heading">Useful Links</h3>
                       	<ul>
-					                <li><a href="#">Home</a></li>
-					                <li><a href="#">About</a></li>
-					                <li><a href="#">Services</a></li>
-					                <li><a href="#">Work</a></li>
+					                <li><a href="https://9-5import.com/">Home</a></li>
+					                <li><a href="https://9-5import.com/about-us.php">About</a></li>
+					                <li><a href="https://9-5import.com/our-services.php">Services</a></li>					                
 					              </ul>
                       </td>
                     </tr>
@@ -376,11 +376,7 @@ ul.social li{
             </table>
           </td>
         </tr><!-- end: tr -->
-        <tr>
-          <td class="bg_light" style="text-align: center;">
-          	<p>No longer want to receive these email? You can <a href="#" style="color: rgba(0,0,0,.8);">Unsubscribe here</a></p>
-          </td>
-        </tr>
+        
       </table>
 
     </div>

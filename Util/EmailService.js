@@ -163,10 +163,28 @@ async function sendNoDocsPackageEmail(pkg){
     console.log("ABOUT TO SEND EMAIL",pkg)
     var emailBody = await readEmailTemplate("nodocspackage"); 
     emailBody = emailBody.replace("{{HOST}}","https://9to5-qa.sprocket.solutions/");
+    let customerName = '';
+    if(pkg && pkg.customerId && pkg.customerId.firstName){
+        customerName = pkg.customerId.firstName;
+        customerName = customerName +' '+(pkg.customerId.lastName?pkg.customerId.lastName:'')
+    }
+    const awbId = (pkg.awbId && pkg.awbId.awbId)?pkg.awbId.awbId:'';    
+    const shipperName = (pkg && pkg.shipperId &&  pkg.shipperId.name)? pkg.shipperId.name:'';
+    const description = (pkg.awbId && pkg.awbId.note)?pkg.awbId.note:'';
+    const trackingNo = pkg.trackingNo?pkg.trackingNo:'';
+
+    emailBody = emailBody.replace("{{CUSTOMERNAME}}",customerName);
+    emailBody = emailBody.replace("{{AWBID}}",awbId);
+    emailBody = emailBody.replace("{{SHIPPERNAME}}",shipperName);
+    emailBody = emailBody.replace("{{AWBDESCRIPTION}}",description);
+    emailBody = emailBody.replace("{{TRACKINGNUMBER}}",trackingNo);
+    emailBody = emailBody.replace("{{AWBNUMBER}}",awbId);
+    
+    
     message = { 
         to : (pkg && pkg.customerId && pkg.customerId.email)?pkg.customerId.email:'', 
         from : 'info@postboxesetc.com ',
-        subject: `No docs in package`,
+        subject: `Package Update`,
         html:emailBody
     }; 
     var result = await sendGrid.send(message);
@@ -175,14 +193,32 @@ async function sendNoDocsPackageEmail(pkg){
 }
 
 async function sendStorePackageEmail(pkg){
-    console.log(pkg,"sending at no docx package.")
-    console.log("ABOUT TO SEND EMAIL",pkg)
+    // console.log(pkg,"sending at no docx package.")
+    // console.log("ABOUT TO SEND EMAIL",pkg)
     var emailBody = await readEmailTemplate("storepackage"); 
     emailBody = emailBody.replace("{{HOST}}","https://9to5-qa.sprocket.solutions/");
+    let customerName = '';
+    if(pkg && pkg.customerId && pkg.customerId.firstName){
+        customerName = pkg.customerId.firstName;
+        customerName = customerName +' '+(pkg.customerId.lastName?pkg.customerId.lastName:'')
+    }
+    const awbId = (pkg.awbId && pkg.awbId.awbId)?pkg.awbId.awbId:'';    
+    const shipperName = (pkg && pkg.shipperId &&  pkg.shipperId.name)? pkg.shipperId.name:'';
+    const description = (pkg.awbId && pkg.awbId.note)?pkg.awbId.note:'';
+    const trackingNo = pkg.trackingNo?pkg.trackingNo:'';
+    const totalPrice = pkg.totalPrice?pkg.totalPrice:0;
+
+    emailBody = emailBody.replace("{{TOTALPRICE}}",totalPrice);
+    emailBody = emailBody.replace("{{CUSTOMERNAME}}",customerName);
+    emailBody = emailBody.replace("{{AWBID}}",awbId);
+    emailBody = emailBody.replace("{{SHIPPERNAME}}",shipperName);
+    emailBody = emailBody.replace("{{AWBDESCRIPTION}}",description);
+    emailBody = emailBody.replace("{{TRACKINGNUMBER}}",trackingNo);
+    emailBody = emailBody.replace("{{AWBNUMBER}}",awbId);
     message = { 
         to : (pkg && pkg.customerId && pkg.customerId.email)?pkg.customerId.email:'', 
         from : 'info@postboxesetc.com ',
-        subject: `Package scanned at store`,
+        subject: `Package Update`,
         html:emailBody
     }; 
     var result = await sendGrid.send(message);
