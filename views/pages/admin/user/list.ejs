@@ -6,11 +6,13 @@
         <div class="card-title">System Users</div>
         <a href='create' class='btn btn-primary btn-round float-right ml-md-auto'>Add User</a>
       </div>
-      <div class="card-body">
+      <div class="card-body daterangepickerbody">
+        <div class="table-responsive">
         <table class="display table table-striped table-hover dataTable user-table">
           <thead>
             <tr>
               <th>Role</th>
+              <th>Date Created</th>
               <th>Username</th>
               <th>Name</th>
               <th>Email</th>
@@ -30,6 +32,7 @@
                   <% }%>
                 <%})}%>
               </td>
+              <td><%=helpers.formatDate(user.createdAt)%></td>
               <td><%=user.username%></td>
               <td><%=helpers.getFullName(user)%></td>
               <td><%=user.email%></td>
@@ -57,6 +60,7 @@
             <%})%>
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   </div>

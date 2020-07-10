@@ -121,7 +121,7 @@ $(function(){
   <label class="w-10-rem align-text-bottom">Select Dates : </label>
   <input type="text" class="form-control form-control-sm daterange" name="daterange" value=""  placeholder="Select dates"/>
 </div>`
-  $('.card-body').prepend(dtPicker)
+  $('.daterangepickerbody').prepend(dtPicker)
   $.fn.dataTable.ext.search.push(
     function (settings, data, dataIndex) {
       var startDate = moment(jQuery(dtTable.table().node()).data('startDate')).format("YYYY/MM/DD");
