@@ -42,6 +42,7 @@
                     <%=title%>
                 </h4>
             </div>
+<<<<<<< Updated upstream
             <div class="card-body">
                 <h3 class="card-title text-muted">Plane</h3>
                 <div class='row'>
@@ -103,7 +104,7 @@
                 <div class="d-flex">
                     <h3 class="card-title text-muted package-info">Data Entry ( Weight : 0 lbs / 0lbs )</h3>
                 </div>
-                <div class='row mt-3'>
+                <div class='row mt-3 daterangepickerbody'>
                     <div class='col-md-12 table-responsive'>
                         <table id='packageTable' class='display table table-striped table-hover w-100'>
                             <thead>
@@ -120,9 +121,9 @@
                             </thead>
                             <tbody>
                                 <% var totalWeight = 0;
-                packages.forEach(package => { 
-                  let isExpress = package.express ? 'bolder':'normal';
-                  totalWeight += Number(package.weight);%>
+                              packages.forEach(package => { 
+                                let isExpress = package.express ? 'bolder':'normal';
+                                totalWeight += Number(package.weight);%>
                                 <tr data-record="<%= package.id %>" style="font-weight:<%=isExpress%>;">
                                     <td>
                                         <%= package.compartment && package.compartment.name %>

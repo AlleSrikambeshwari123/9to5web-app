@@ -46,8 +46,4 @@ $(function () {
       }
     })
   });
-
-  $('.user-table').DataTable({
-    "pageLength": 10,
-  });
 }); 

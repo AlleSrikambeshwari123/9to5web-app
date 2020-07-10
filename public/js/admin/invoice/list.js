@@ -1,8 +1,4 @@
-$(function () {
-  $('.invoice-table').DataTable({
-    "pageLength": 10,
-  });
-})
+
 function downloadInvoice(fileName){
   $.ajax({
       url: '/admin/invoices/invoice-url',
