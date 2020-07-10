@@ -1,4 +1,6 @@
 var express = require('express');
+var toPdf = require("office-to-pdf")
+var fs = require("fs")
 var router = express.Router();
 
 var _ = require('lodash');
@@ -20,8 +22,17 @@ router.post('/upload', function (req, res) {
   form.parse(req, (err, fields, files) => {
     if (err) res.send({});
     if (!_.isEmpty(files['upload'])) {
+
       let filePath = files['upload'].path;
       var fileName = uniqid() + '_' + moment().utc().unix() + ".png";
+      var wordBuffer = fs.readFileSync(filePath)
+      toPdf(wordBuffer).then(
+        (pdfBuffer) => {
+          fs.writeFileSync("Templates/"+uniqid() + '_' + moment().utc().unix()+".pdf", pdfBuffer)
+        }, (err) => {
+          console.log(err)
+        }
+      )
       // Upload to Cloud && Write to server's upload folder
       aws.uploadFile(filePath, fileName).then(data => {
         console.log(`File Uploaded successfully. ${data.Location}`);
