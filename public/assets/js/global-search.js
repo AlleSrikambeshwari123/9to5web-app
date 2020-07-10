@@ -116,7 +116,7 @@ $(function () {
 
 });  
 $(function(){
-  var dtTable = $('.dataTable').DataTable()
+  var dtTable = $('.dateRangeFilterTable').DataTable()
   var dtPicker = ` <div class="d-flex w-100 d-inline-block py-4 col-xs-10 col-sm-4 float-left ">
   <label class="w-10-rem align-text-bottom">Select Dates : </label>
   <input type="text" class="form-control form-control-sm daterange" name="daterange" value=""  placeholder="Select dates"/>
