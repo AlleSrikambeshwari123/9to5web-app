@@ -6,11 +6,13 @@
         <div class="card-title"><%= title %></div>
         <a href='create' class='btn btn-primary btn-round ml-md-auto float-right'>Add Location</a>
       </div>
-      <div class="card-body">
-        <table class="display table table-striped table-hover dataTable location-table ">
+      <div class="card-body daterangepickerbody">
+        <div class="table-responsive">
+        <table class="display table table-striped table-hover dateRangeFilterTable dataTable location-table ">
           <thead>
             <tr>
               <th>Company</th>
+              <th>Date Created</th>
               <th>Location Name</th>
               <th>Address</th>
               <th>Phone</th>
@@ -21,6 +23,7 @@
             <% locations.forEach(location => { %>
             <tr data-record="<%=location.id%>">
               <td><%=(location.company && location.company.name) || '' %></td>
+              <td><%=helpers.formatDate(location.createdAt)%></td>
               <td><%=location.name%></td>
               <td><%=location.address%></td>
               <td><%=location.phone%></td>
@@ -33,6 +36,7 @@
             <% }) %>
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   </div>

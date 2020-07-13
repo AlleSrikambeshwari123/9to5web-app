@@ -1,0 +1,136 @@
+<% layout('./shared/__template')%>
+    <div class='gutters'>
+        <div class="col-xl-12 col-lg-6 col-md-12 col-sm-12">
+            <div class="card">
+                <div class="card-header d-flex align-items-left align-items-md-center flex-column flex-md-row">
+                    <div class="card-title">
+                        <%= title %>
+                    </div>
+                    <!-- <a href='create' class='btn btn-primary btn-round float-right ml-md-auto'>Add User</a> -->
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table id="package-table" class="display table table-striped table-hover dataTable package-table">
+                            <thead>
+                                <tr>
+                                    <th>Customer Name</th>
+                                    <th>Date Created</th>
+                                    <th>Original Tracking No</th>
+                                    <th>Description</th>
+                                    <th>PMB#</th>
+                                    <th>Type</th>
+                                    <th>Aging</th>
+                                    <th>Aging $</th>
+                                    <th>Weight</th>
+                                    <th>Number of Pieces</th>
+                                    <th>Status</th>
+                                    <th>AWB</th>
+                                    <% if (typeof filterURL !== 'undefined' && filterURL === 'not-pmb9000') { %>
+                                        <th>Location</th>
+                                        <% } %>
+                                            <% if (typeof filterURL !== 'undefined' && filterURL === 'in-pmb9000') { %>
+                                                <th>Pickup or Delivery</th>
+                                                <% } %>
+                                                    <th></th>
+                                                    <!-- <th></th> -->
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% packages.forEach(function(pkg){ 
+                                     if(pkg.aging > 0) {%>
+                                    <tr data-record="<%= pkg.id %>">
+                                        <% if (pkg['customerId']) { %>
+                                            <td>
+                                                <%= (pkg['customerId'].lastName ? 
+                    `${pkg['customerId'].firstName} ${pkg['customerId'].lastName}` : 
+                    `${pkg['customerId'].firstName}`); %>
+                                            </td>
+                                            <% } else { %>
+                                                <td> - </td>
+                                                <% } %>
+                                                    <td>
+                                                        <%=helpers.formatDate(pkg.createdAt)%>
+                                                    </td>
+                                                    <td>
+                                                        <%= (pkg.originBarcode && pkg.originBarcode.barcode) ? pkg.originBarcode.barcode : ''%>
+                                                    </td>
+                                                    <td>
+                                                        <%= pkg.description %>
+                                                    </td>
+                                                    <td>
+                                                        <%= pkg.customerId ? pkg.customerId.pmb:'' %>
+                                                    </td>
+                                                    
+                                                    <td>
+                                                        <%= pkg.packageType %>
+                                                    </td>
+                                                    <td>
+                                                        <%= pkg.aging ? pkg.aging:'' %>
+                                                    </td>
+                                                    <td>
+                                                        $<%= pkg.agingdollar ? pkg.agingdollar:0 %>
+                                                    </td>
+                                                    <td>
+                                                        <%= pkg.weight%>
+                                                    </td>
+                                                    <td>
+                                                        <%= (pkg.pieces || pkg.pieces > -1) ? pkg.pieces : ''%>
+                                                    </td>
+                                                    <td>
+                                                        <%= pkg.lastStatusText %>
+                                                    </td>
+                                                    <td>
+                                                        <a href="../awb/manage/<%=pkg.awbId._id%>/preview">
+                                                            <%= pkg.awbId.awbId %>
+                                                        </a>
+                                                    </td>
+                                                    <% if (typeof filterURL !== 'undefined' && filterURL === 'not-pmb9000') { %>
+                                                        <td>
+                                                            <%= pkg.location %>
+                                                        </td>
+                                                        <% } %>
+                                                            <% if (typeof filterURL !== 'undefined' && filterURL === 'in-pmb9000') { %>
+                                                                <td>
+                                                                    <%= pkg.awbdeliveryMethod %>
+                                                                </td>
+                                                                <% } %>
+                                                                    <!-- <td><a href="../../pkg-label/download/<%=pkg._id%>"><i class="fa fa-download"></i></a></td> -->
+                                                                    <td class="text-center">
+                                                                        <a href="../../pkg-label/download/<%=pkg._id%>"><i class="fa fa-download"></i></a>
+                                                                        <a class="btn btn-link btn-primary btn-print-pkg" data-toggle="modal" data-id="<%=pkg._id%>" data-original-title="Print Label" data-target="#print-popup"><i class="fa fa-print"></i> </a>
+                                                                    </td>
+                                    </tr>
+                                    <%}})%>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="print-popup" tabindex="-1" role="dialog" aria-labelledby="print-popup" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="exampleModalLabel2">Print Package Label</h2>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group text-center">
+                        <canvas id="pdf-preview" class="border border-dark"></canvas>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger close-del" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary print-package" id='print-package'>Print</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.2.0/sweetalert2.all.min.js"></script> -->
+    <% block('scripts').append('<script src="/js/utils.js"></script>')%>
+        <% block('scripts').append('<script src="/js/warehouse/package/list.js"></script>')%>

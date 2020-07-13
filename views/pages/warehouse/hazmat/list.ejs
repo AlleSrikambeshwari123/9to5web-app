@@ -7,12 +7,13 @@
         <a href='#' data-target="#add-hazmat" data-toggle='modal'
           class='btn btn-primary btn-round ml-md-auto float-right'>Add New HAZMAT Class</a>
       </div>
-      <div class="card-body">
+      <div class="card-body daterangepickerbody">
         <div class="table-responsive">
-          <table id="hazmatTable" class="display table table-striped table-hover">
+          <table id="hazmatTable" class="display table dateRangeFilterTable table-striped table-hover">
             <thead>
               <tr>
                 <th>ID</th>
+                <th>Date Created</th>
                 <th>Name</th>
                 <th>Description</th>
                 <th>Action</th>
@@ -22,6 +23,7 @@
               <% hazmats.forEach(function(hazmat){ %>
               <tr data-record="<%= hazmat.id %>">
                 <td><%=hazmat.id%></td>
+                <td><%=helpers.formatDate(hazmat.createdAt)%></td>
                 <td><strong><%=hazmat.name%></strong></td>
                 <td><%=hazmat.description%></td>
                 <td>

@@ -25,8 +25,4 @@ $(function () {
       }
     })
   });
-
-  $('#customerTable').DataTable({
-    "pageLength": 10,
-  });
 }); 

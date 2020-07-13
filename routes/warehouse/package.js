@@ -13,5 +13,8 @@ router.get('/package/pkg-label/download/:id', middleware().checkSession, printer
 router.get('/fll/package/list', middleware().checkSession, packageCtrl.get_fll_package_list);
 router.get('/fll/package/get/:awbId', middleware().checkSession, packageCtrl.get_awb_packages);
 router.get('/nas/package/list', middleware().checkSession, packageCtrl.get_nas_package_list);
+router.get('/nas/package/aging', middleware().checkSession, packageCtrl.get_nas_package_aging);
+
+router.get('/fll/package/no-docs', middleware().checkSession, packageCtrl.get_package_no_docs);
 
 module.exports = router;

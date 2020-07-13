@@ -4,8 +4,9 @@ var utils = require('../Util/utils');
 exports.render_store_check_in = (req, res, next) => {
   Promise.all([
     services.packageService.getPackagesForStores(),
-    services.locationService.getLocations()
+    services.locationService.getPackageLocations()
   ]).then(([packages, locations]) => {
+    console.log({locations});
     res.render('pages/store/store-check-in', {
       page: req.originalUrl,
       title: 'Store Packages',

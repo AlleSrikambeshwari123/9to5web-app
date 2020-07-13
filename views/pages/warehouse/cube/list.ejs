@@ -10,15 +10,15 @@
           data-target="#addCube2-popup"
         >Add Cube2</button>        
       </div>
-      <div class="card-body">
+      <div class="card-body daterangepickerbody">
         <div class="table-responsive">
-          <table id="cubeTable" class="display table table-striped table-hover">
+          <table id="cubeTable" class="display table dataTable table-striped dateRangeFilterTable table-hover">
             <thead>
               <tr>
                 <th>ID</th>
+                <th>Created At</th>
                 <th>Name</th>
                 <th>AWB No</th>
-                <th>Created At</th>
                 <th>Detail</th>                
                 <th></th>
               </tr>
@@ -27,13 +27,13 @@
               <% cubes.forEach(function(cube){ %>
               <tr data-record="<%= cube.id %>">
                 <td><%= cube.id %></td>
+                <td><%=helpers.formatDate(cube.createdAt)%></td> 
                 <td><strong><%=cube.name%></strong></td> 
                 <% let cube2link = cube.cubeAwbId ? cube.cubeAwbId.id : ''
                 if(cube2link == '') cube2link = '#' 
                 else cube2link = '/warehouse/cube/awbDetail/'+cube2link
                 %>
                 <td><a class="btn btn-link" href="<%=cube2link %>"><%=cube.awbId%></a></td> 
-                <td><%=helpers.formatDate(cube.createdAt)%></td> 
                 <!--<td><a href="/warehouse/cube/detail/<%=cube.id%>" data-id='<%=cube.id%>' data-target="#package-cube" data-toggle='modal' class="package-detail" onclick="cubePackaceDetail('<%=cube._id%>')"><i class="fas fa-eye"></i></a></td>              
                 -->
                 <% 

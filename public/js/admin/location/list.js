@@ -25,8 +25,4 @@ $(function () {
       }
     })
   });
-
-  $('.location-table').DataTable({
-    "pageLength": 10,
-  });
 })

@@ -1,3 +1,4 @@
+
 let packageTable = $('.package-table').DataTable({
   pageLength: 10,
   columnDefs: [
@@ -408,3 +409,4 @@ $(function() {
     });
   });
 });
+

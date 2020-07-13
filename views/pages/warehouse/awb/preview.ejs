@@ -30,15 +30,19 @@
           <div class="card-body">
             <div class="separator-solid"></div>
             <div class="row">
-              <div class="col-md-4 info-invoice">
+              <div class="col-md-3 info-invoice">
                 <h5 class="sub">Created At</h5>
                 <p><%= awb.dateCreated%></p>
               </div>
-              <div class="col-md-4 info-invoice">
-                <h5 class="sub">Bill ID</h5>
-                <p><%= "AWB #"+awb.awbId %></p>
+              <div class="col-md-3 info-invoice">
+                <h5 class="sub">Created By</h5>
+                <p><%= awb.dateCreated%></p>
               </div>
-              <div class="col-md-4 info-invoice">
+              <div class="col-md-3 info-invoice">
+                <h5 class="sub">Bill ID</h5>
+                <p><%= "AWB #"+awb.createdBy %></p>
+              </div>
+              <div class="col-md-3 info-invoice">
                 <h5 class="sub">Customer</h5>
                 <p><%=helpers.getFullName(awb.customer)%></p>
               </div>
@@ -48,14 +52,14 @@
               <div class="col-sm-7 col-md-5 mb-3 mb-md-0 transfer-to">
                 <h5 class="sub">Shipper</h5>
                 <div class="account-transfer">
-                  <div><span>Shipper Name:</span><span><%= helpers.getFullName(shipper)%></span></div>
+                  <div><span>Shipper Name:</span><span><%= shipper.name%></span></div>
                   <div><span>Shipper Phone:</span><span><%= shipper.telephone%></span></div>
                 </div>
               </div>
               <div class="col-sm-7 col-md-5 mb-3 mb-md-0 transfer-to ml-auto">
                 <h5 class="sub">Carrier</h5>
                 <div class="account-transfer">
-                  <div><span>Carrier Name:</span><span><%= helpers.getFullName(carrier)%></span></div>
+                  <div><span>Carrier Name:</span><span><%= carrier.name %></span></div>
                   <div><span>Carrier Phone:</span><span><%= carrier.telephone%></span></div>
                 </div>
               </div>
@@ -99,7 +103,7 @@
                             <td><strong>Tracking No</strong></td>
                             <td class="text-center"><strong>Description</strong></td>
                             <td class="text-center"><strong>Type</strong></td>
-                            <!-- <td class="text-center"><strong>Price</strong></td> -->
+                            <td class="text-center"><strong>Dimensions</strong></td>
                             <td class="text-right"><strong>Weight</strong></td>
                             <td></td>
                           </tr>
@@ -114,7 +118,7 @@
                             <td><%= package.trackingNo%></td>
                             <td class="text-center"><%= package.description%></td>
                             <td class="text-center"><%= package.packageType%></td>
-                            <!-- <td class="text-center"><%= package.price%></td> -->
+                            <td class="text-center"><%= package.dimensions%></td>
                             <td class="text-right"><%= Number(package.weight).toFixed(2)%>
                               <%= package.packageCalculation||'kg' %></td>
                               <td class="text-center">
@@ -171,13 +175,27 @@
               </div>
             </div>
             <div class="separator-solid"></div>
-            <h6 class="text-uppercase mt-4 mb-3 fw-bold">
-              Notes
-            </h6>
-            <p class="text-muted mb-0">
-              We really appreciate your business and if there's anything else we can do, please let us know! Also,
-              should you need us to add VAT or anything else to this order, it's super easy since this is a template, so
-              just ask!
+            <div class="row">
+              <div class="col-sm-7 col-md-5 mb-3 mb-md-0 transfer-to">
+                <h5 class="sub">Plane</h5>
+                <div class="account-transfer">
+                  <div><span>Plane :</span><span><%= awb.planeId.tailNumber %></span></div>
+                  <div><span>Plane Type:</span><span><%= awb.planeId.aircraftType %></span></div>
+                </div>
+              </div>
+              <div class="col-sm-7 col-md-5 mb-3 mb-md-0 transfer-to ml-auto">
+                <h5 class="sub"></h5>
+                <div class="account-transfer">
+                  <div><span>Airport From:</span><span><%= awb.airportFromId.name %></span></div>
+                  <div><span>Airport To:</span><span><%= awb.airportToId.name %></span></div>
+                  <div><span>Flight Date / Time:</span><span><%= helpers.formatDate(awb.shipDate) %></span></div>
+                </div>
+              </div>
+            </div>
+            <div class="separator-solid"></div>
+            <p>
+              <strong>Creator of AWB</strong>: <%= awb.createdBy %> </br>
+              <strong>Date/Time of Creation</strong>: <%= awb.dateCreated %>
             </p>
           </div>
         </div>

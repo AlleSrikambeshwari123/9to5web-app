@@ -48,6 +48,8 @@ var ZoneService = require('./ZoneService');
 var zoneService = new ZoneService();
 var PriceLabelService = require('./PriceLabelService')
 var PriceLabelService = new PriceLabelService();
+var AwbPriceLabelService = require('./AwbPriceLabelService')
+var AwbPriceLabelService = new AwbPriceLabelService();
 
 var services = {
   customerService,
@@ -73,12 +75,14 @@ var services = {
   invoiceService,
   cubeService,
   zoneService,
-  PriceLabelService
+  PriceLabelService,
+  AwbPriceLabelService
 };
 
 packageService.setServiceInstances(services);
 awbService.setServiceInstances(services);
 deliveryService.setServiceInstances(services);
 PriceLabelService.setServiceInstances(services);
+AwbPriceLabelService.setServiceInstances(services);
 
 module.exports = services;

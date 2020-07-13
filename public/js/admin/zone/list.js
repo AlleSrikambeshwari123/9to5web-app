@@ -26,8 +26,4 @@ $(function () {
       }
     })
   });
-
-  $('.zone-table').DataTable({
-    "pageLength": 10,
-  });
 })

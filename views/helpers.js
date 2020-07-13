@@ -1,4 +1,4 @@
-const moment = require('moment');
+const moment = require('moment-timezone');
 
 exports.calculatePackageVolumetricWeight = (pkg) => {
   let dimensions = pkg.dimensions.split('x').map(Number);
@@ -13,7 +13,7 @@ exports.checkRole = (userRoles, role) => {
 
 exports.formatDate = (date) => {
   if (!date) return '';
-  return moment(date).format('MMM DD,YYYY HH:mm');
+  return moment(date).tz("America/New_York").format('MMM DD,YYYY HH:mm');
 }
 
 // This method is used for displaying the fullName by concatinating the firstName

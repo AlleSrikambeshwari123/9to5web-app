@@ -6,11 +6,13 @@
         <div class="card-title"><%= title %></div>
         <a href='create' class='btn btn-primary btn-round ml-md-auto float-right'>Add Zone</a>
       </div>
-      <div class="card-body">
-        <table class="display table table-striped table-hover dataTable zone-table ">
+      <div class="card-body daterangepickerbody">
+        <div class="table-responsive">
+        <table class="display table table-striped table-hover dateRangeFilterTable dataTable zone-table ">
           <thead>
             <tr>
               <th>Name</th>
+              <th>Date CreatedAt</th>
               <th>Location Name</th>              
               <th></th>
             </tr>
@@ -19,6 +21,7 @@
             <% zones.forEach(zone => { %>
             <tr data-record="<%=zone.id%>">
               <td><%=zone.name%></td>
+              <td><%=helpers.formatDate(zone.createdAt)%></td>
               <td><%=(zone.location && zone.location.name) || '' %></td>                            
               <td>
                 <a href="manage/<%=zone.id%>/get"><i class='fas fa-pencil-alt'></i></a>
@@ -29,6 +32,7 @@
             <% }) %>
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   </div>

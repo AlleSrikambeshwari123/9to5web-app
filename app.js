@@ -10,10 +10,13 @@ var session = require('client-sessions');
 const createConnection = require('./Util/mongo');
 const mongoose = require('mongoose');
 
+
 // Account
 var accountPasswordRouter = require('./routes/account/password');
 var accountPrintRouter = require('./routes/account/print');
 
+// Cron 
+var {cronSchedule} = require('./cron')
 // Admin
 var authRouter = require('./routes/auth');
 var adminIndexRouter = require('./routes/index');
@@ -21,6 +24,7 @@ var adminUserRouter = require('./routes/admin/users');
 var adminCustRouter = require('./routes/admin/customers');
 var adminLocaRouter = require('./routes/admin/locations');
 var adminZonesRouter = require('./routes/admin/zones');
+var adminInvoicessRouter = require('./routes/admin/invoice');
 
 // Fleet
 var fleetVehicleRouter = require('./routes/fleet/vehicles');
@@ -55,6 +59,7 @@ var apiPrinterRouter = require('./routes/api/printer');
 var apiWarehouseRouter = require('./routes/api/wapi');
 var apiCustomerRouter = require('./routes/api/customer');
 var apiCubeRouter = require('./routes/api/cube');
+var apiAwbRouter = require('./routes/api/awb');
 
 var warehouse = require('./routes/warehouse');
 var util = require('./routes/util');
@@ -67,6 +72,9 @@ app.use(helmet())
 
 // Xss Filter
 app.use(helmet.xssFilter())
+
+// CronSchedule
+cronSchedule();
 
 // view engine setup
 global.appRoot = __dirname;
@@ -111,7 +119,7 @@ app.use(function (req, res, next) {
 
 app.use('/', adminIndexRouter, authRouter);
 app.use('/account', accountPasswordRouter, accountPrintRouter);
-app.use('/admin', adminUserRouter, adminCustRouter, adminLocaRouter, adminZonesRouter);
+app.use('/admin', adminUserRouter, adminCustRouter, adminLocaRouter, adminZonesRouter, adminInvoicessRouter);
 app.use('/warehouse', warehouse, warehouseAwbRouter, warehouseManifestRouter, warehouseServiceTypeRouter, warehouseShipperRouter, warehousePaidTypeRouter, warehouseAirlineRouter, warehouseContainerRouter, warehouseCarrierRouter, warehousePackageRouter, warehousePrinterRouter, warehouseDeliveryRouter, warehouseHazmatRouter,warehouseCubeRouter,warehousePriceLabelRouter);
 app.use('/fleet', fleetVehicleRouter, fleetDriverRouter, fleetPilotRouter, fleetPlaneRouter, fleetCompartmentRouter, fleetAirportsRouter);
 app.use('/store', storeRouter);
@@ -120,7 +128,9 @@ app.use('/util', util);
 app.use('/api/printer', apiPrinterRouter);
 app.use('/api/warehouse', apiWarehouseRouter);
 app.use('/api/customer', apiCustomerRouter);
-app.use('/api/cube', apiCubeRouter)
+app.use('/api/cube', apiCubeRouter);
+app.use('/api/awb', apiAwbRouter)
+
 
 // Version API
 /**

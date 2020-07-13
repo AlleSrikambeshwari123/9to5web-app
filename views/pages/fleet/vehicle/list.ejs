@@ -8,11 +8,13 @@
           <a href='create' class='btn btn-primary btn-round float-right'>Add Vehicle</a>
         </div>
       </div>
-      <div class="card-body">
-        <table class="display table table-striped table-hover dataTable vehicle-table">
+      <div class="card-body daterangepickerbody">
+        <div class="table-responsive">
+        <table class="display table table-striped table-hover dateRangeFilterTable dataTable vehicle-table">
           <thead>
             <tr>
               <th>Make</th>
+              <th>Date Created</th>
               <th>Model</th>
               <th>License Plate</th>
               <th>Driver</th>
@@ -24,6 +26,7 @@
             <% vehicles.forEach(function(vehicle){%>
             <tr data-record="<%= vehicle.id %>">
               <th scope="row"><%=vehicle.vehicleMake%></th>
+              <td><%=helpers.formatDate(vehicle.createdAt)%></td>
               <td><%=vehicle.model%></td>
               <td><%=vehicle.registration%></td>
               <td><%=vehicle.driver.firstName + ' ' + vehicle.driver.lastName%></td>
@@ -35,6 +38,7 @@
             <%})%>
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   </div>

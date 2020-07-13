@@ -8,11 +8,13 @@
         <a href='#' id='show-add' data-target="#add-compartment" data-toggle='modal'
           class='btn btn-primary btn-round ml-md-auto float-right'>Add Compartment</a>
       </div>
-      <div class="card-body">
-        <table class="display table table-striped table-hover dataTable compartment-table">
+      <div class="card-body daterangepickerbody">
+        <div class="table-responsive">
+        <table class="display table table-striped table-hover dateRangeFilterTable dataTable compartment-table">
           <thead>
             <tr>
               <th>Name</th>
+              <th>Date Created</th>
               <th>Capcity ( Lbs ) </th>
               <th>Capcity ( Vol ) </th>
               <th></th>
@@ -22,6 +24,7 @@
             <% comparts.forEach(compart => { %>
             <tr data-record="<%= compart.id%>">
               <td><%=compart.name%></td>
+              <td><%=helpers.formatDate(compart.createdAt)%></td>
               <td><%=compart.weight%></td>
               <td><%=compart.volume %></td>
               <td>
@@ -32,6 +35,7 @@
             <% }) %>
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   </div>

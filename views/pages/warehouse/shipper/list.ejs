@@ -6,13 +6,14 @@
         <div class="card-title"><%=title%></div>
         <a href='create' class='btn btn-primary btn-round float-right ml-md-auto'>Add Shipper</a>
       </div>
-      <div class="card-body">
+      <div class="card-body daterangepickerbody">
         <div class="table-responsive">
-          <table id="shipperTable" class="display table table-striped table-hover">
+          <table id="shipperTable" class="display dataTable dateRangeFilterTable table table-striped table-hover">
             <thead>
               <tr>
                 <!-- <th>ID</th> -->
                 <th>Name</th>
+                <th>Date Created</th>
                 <th>Contact Name</th>
                 <th>Email</th>
                 <th>Mobile</th>
@@ -28,6 +29,7 @@
               <% shippers.forEach(function(shipper){%>
               <tr data-record="<%= shipper.id %>">
                 <td><strong><%=shipper.name%></strong></td>
+                <td><%=helpers.formatDate(shipper.createdAt)%></td>
                 <td><%=helpers.getFullName(shipper)%></td>
                 <td><%=shipper.email%></td>
                 <td><%=shipper.telephone %></td>

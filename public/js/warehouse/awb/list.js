@@ -34,7 +34,6 @@ $('.btn-print-awb').click(function () {
     url: '/api/printer/pdf/generate/awb/' + id,
     type: 'get',
     success: function (response) {
-      console.log(response);
       pdfPath = '/util/pdf' + response.filename;
       pdfjsLib.getDocument({ url: pdfPath }).promise.then(pdfData => {
         pdfData.getPage(1).then(page => {
@@ -54,9 +53,15 @@ $('.print-awb').click(function () {
   printJS(pdfPath);
 })
 
-$('#awb-table').DataTable({
+var awbTable = $('#awb-table').DataTable({
   pageLength: 10,
 })
-$('#no-docs-table').DataTable({
+var nodocsTable = $('#no-docs-table').DataTable({
+  pageLength: 10,
+})
+var pendingtable = $('#pending-awb-table').DataTable({
+  pageLength: 10,
+})
+var pickuptable = $('#pickup-awb-table').DataTable({
   pageLength: 10,
 })

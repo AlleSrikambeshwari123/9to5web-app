@@ -20,7 +20,7 @@ function checkPriceLabelExist(id){
     url: '/warehouse/pricelabels/' + id,
     type: 'get',
     success: function (response) {
-      if(response.packageId){
+      if(response.awbId){
         return true
       }else{
         // $(`.ifNotPriceLabel${id}`).css({cursor:"not-allowed"});
@@ -64,19 +64,37 @@ $('#pricelabel-table').on('click', '.btn-print-pkg', function () {
 });
 
 function pricelLabelCheck(response){
-  const pkg = response.packageId;
+  const pkg = response.awbId;
   let ServiceVat = (response.ServiceVat || 0).toFixed(2);
   let TotalVat = (response.TotalWet || 0).toFixed(2);
   let NoDocsVal = 0;
   let InsuranceVal = 0;
   let SedVal = 0;
   let ExpressVal = 0;
-  if (pkg.packageCalculation == 'Kg') pkg.weight = 2.20462 * pkg.weight;
-  let totalinvoiceVal = 0;
-  if (pkg.awbId.invoices) {
-    pkg.awbId.invoices.map((inv) => (totalinvoiceVal += inv.value));
+  // if (pkg.packageCalculation == 'Kg') pkg.weight = 2.20462 * pkg.weight;
+   let totalinvoiceVal = 0;
+
+   if (pkg.invoices) {
+     pkg.invoices.map((inv) => (totalinvoiceVal += inv.value));
+   }
+   var totalweightVal = 0;
+   
+   if (pkg.packages) {
+     const pa = pkg.packages;
+     for(var i=0;i<pa.length;i++){
+       
+       var weight = pa[i].weight;
+      if (pa[i].packageCalculation == 'kg'){ 
+         weight = 2.20462 * pa[i].weight;
+         
+      }
+      totalweightVal = totalweightVal+weight;
+     }
+    
+    //pkg.packages.map((pkge) => (totalweightVal += pkge.weight));
   }
-  let Freight = (1.55 * pkg.weight).toFixed(2);
+  
+  let Freight = 0//(1.55 * pkg.weight).toFixed(2);
   $('#Brokerage').val(response.Brokerage);
   $('#CustomsProc').val(response.CustomsProc);
   $('#CustomsVAT').val(response.CustomsVAT);
@@ -93,6 +111,9 @@ function pricelLabelCheck(response){
   $('#SedVal').text(response.Sed);
   $('#ExpressVal').text(response.Express);
   $('#TotalWet').val(TotalVat);
+  $("#no_of_invoice").val((pkg.invoices).length)
+  $("#total-value-invoice").html(totalinvoiceVal)
+  $("#total_weight_value").val(totalweightVal)
   if(response.NoDocs >0) $('#NoDocs').prop('checked',true)
   if(response.Insurance >0) $('#Insurance').prop('checked',true)
   if(response.Sed >0) $('#Sed').prop('checked',true)
@@ -107,11 +128,29 @@ function packagePriceLabel(response){
   let InsuranceVal = 0;
   let SedVal = 0;
   let ExpressVal = 0;
-  if (pkg.packageCalculation == 'Kg') pkg.weight = 2.20462 * pkg.weight;
+  //if (pkg.packageCalculation == 'Kg') pkg.weight = 2.20462 * pkg.weight;
   let totalinvoiceVal = 0;
-  if (pkg.awbId.invoices) {
-    pkg.awbId.invoices.map((inv) => (totalinvoiceVal += inv.value));
+  if (pkg.invoices) {
+    pkg.invoices.map((inv) => (totalinvoiceVal += inv.value));
   }
+  let totalweightVal = 0;
+  if (pkg.packages) {
+    const pa = pkg.packages;
+    for(var i=0;i<pa.length;i++){
+      
+      var weight = pa[i].weight;
+     if (pa[i].packageCalculation == 'kg'){ 
+        weight = 2.20462 * pa[i].weight;
+        
+     }
+     totalweightVal = totalweightVal+weight;
+    }
+   
+   //pkg.packages.map((pkge) => (totalweightVal += pkge.weight));
+ }
+  $("#no_of_invoice").val((pkg.invoices).length)
+  $("#total-value-invoice").html(totalinvoiceVal)
+  $("#total_weight_value").val(totalweightVal)
   let Freight = (1.55 * pkg.weight).toFixed(2);
   if(pkg.company == "Post Boxes"){
     let fw = pkg.weight * 3;
@@ -208,11 +247,13 @@ $('#pricelabel-table').on('click', '.btn-edit-pricelabel', function () {
   $('#SedVal').text(''),
   $('#ExpressVal').text(''),
   $('#TotalWet').val(''),
+  $('#total-value-invoice').html(''),
   $.ajax({
     url: '/warehouse/pricelabels/' + id,
     type: 'get',
     success: function (response) {
-      if(response.packageId){
+      console.log(response);
+      if(response.awbId){
         pricelLabelCheck(response)
       }else{
         $.ajax({
@@ -257,12 +298,13 @@ $('#UpdatePriceLabelPackage').on('click' , function (event) {
     data: data,
     success: function (response) {
       $('.close-del').trigger('click');
+      $(`.ifNotPriceLabel${id}`).show();
       swal({
         title: response.success ? 'Success' : 'Error',
         type: response.success ? 'success' : 'error',
         text: response.message,
-      });
-      $(`.ifNotPriceLabel${id}`).show();
+      }).then(()=> window.location.reload());
+     
     },
     error: function () {
       swal({
@@ -278,3 +320,4 @@ $('.print-package').click(function () {
   $('.close-del').trigger('click');
   printJS(pdfPath);
 });
+

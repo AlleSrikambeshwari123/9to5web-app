@@ -8,16 +8,16 @@
         <div class="card-title"><%=title%></div>
         <a href="create" class="btn btn-primary btn-round float-right ml-md-auto">Add Container</a>
       </div>
-      <div class="card-body">
+      <div class="card-body daterangepickerbody">
         <div class="table-responsive">
-          <table id="containerTable" class="display table table-striped table-hover">
+          <table id="containerTable" class="display table dataTable table-striped  dateRangeFilterTable table-hover">
             <thead>
               <tr>
                 <th>Name</th>
+                <th>Date</th>
                 <th>Number</th>
                 <th>Size</th>
                 <th>Weight</th>
-                <th>Date</th>
                 <th>Seal</th>
                 <th>Action</th>
               </tr>
@@ -26,10 +26,10 @@
               <% containers.forEach(function(container){%>
               <tr data-record="<%= container.id %>">
                 <td><strong><%=container.name%></strong></td>
+                <td><%=helpers.formatDate(container.date)%></td>
                 <td><%=container.number%></td>
                 <td><%=container.size%></td>
                 <td><%=container.weight%></td>
-                <td><%=helpers.formatDate(container.date)%></td>
                 <td><%=container.seal%></td>
                 <td>
                   <a href="manage/<%=container.id%>/get"><i class="fas fa-pen"></i></a>

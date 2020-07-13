@@ -1,0 +1,295 @@
+<% layout('./shared/__template')%>
+<style>
+  table.dataTable tbody>tr.selected,
+  table.dataTable tbody>tr>.selected {
+    background-color: #0275d8;
+  }
+
+  table.dataTable tbody tr.selected,
+  table.dataTable tbody th.selected,
+  table.dataTable tbody td.selected {
+    color: white;
+  }
+
+  table.dataTable .dataTables_info .select-info {
+    display: block;
+  }
+</style>
+<div class="gutters">
+  <div class="col-xl-12 col-lg-6 col-md-12 col-sm-12">
+    <div class="card">
+      <div class="card-header d-flex align-items-left align-items-md-center flex-column flex-md-row">
+        <div class="card-title"><%= title %></div>
+      </div>
+      <div class="card-body daterangepickerbody">
+        <div class="d-flex w-100 d-inline-block col-xs-10 col-sm-3 float-left ">
+          <label class="w-10-rem align-text-bottom">Select Dates : </label>
+          <input type="text" class="form-control form-control-sm" name="daterange" id="daterange" value=""  placeholder="Select dates"/>
+        </div>
+        <div class="table-responsive">
+        <table id="pricelabel-table"
+          class="display table table-striped table-hover dataTable dateRangeFilterTable pricelabel-table">
+          <thead>
+            <tr>
+              <th></th>
+              <th>Date Created</th>
+              <th>Consignee</th>
+              <th>Pmb</th>
+              <th>AWB NUMBER</th>
+              <th>Shipper</th>
+              <th>Carrier</th>              
+              <th>Final Price</th>
+              <th>Price Add</th>
+              <th></th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% awbs.forEach(function(awb){ %>
+            <tr data-record="<%= awb._id %>">
+              <td>
+                <input type="checkbox" class="package-select" />
+                <input class="checkPriceLabelExistPkg" value="<%=awb._id %>" hidden/>
+              </td>
+              <td><%= awb.createdAt%></td>
+              <% if (awb['customerId']) { %>
+                <td><%= (awb['customerId'].lastName ? 
+                  `${awb['customerId'].firstName} ${awb['customerId'].lastName}` : 
+                  `${awb['customerId'].firstName}`); %>
+                </td>
+              <% } else { %>
+                <td> - </td>
+              <% } %> 
+              <td><%= awb['customerId']?awb['customerId'].pmb:''%></td>
+              <td><a class="text-decoration-none" href="../../warehouse/nas/awb/manage/<%=awb._id%>/preview"><%= awb.awbId %></a></td>
+              <% if (awb['shipper'] && awb['shipper'].name) { %>
+                <td><%= awb['shipper'].name %>
+                </td>
+              <% } else { %>
+                <td> - </td>
+              <% } %> 
+              <td><%= (awb.carrier && awb.carrier.name)?awb.carrier.name:'' %></td>
+              <td><%= awb.awbPriceLabel || ''%></td>
+              
+              <td><a class="btn btn-link btn-primary btn-edit-pricelabel" data-toggle="modal" data-id="<%=awb._id%>"
+                  data-original-title="Add Price" data-target="#pricelabel-popup"><i class="fa fa-edit"></i></a>
+              </td>
+              <% let ifNotPriceLabel = 'ifNotPriceLabel'+ awb._id %>
+              <td><a class="<%= ifNotPriceLabel %>" href="../price-label/download/<%=awb._id%>"><i class="fa fa-download ifNotPriceLabel"></i></a></td>
+              <td>
+                <a class="btn btn-link btn-primary btn-print-pkg <%= ifNotPriceLabel %>" data-toggle="modal" data-id="<%=awb._id%>"
+                  data-original-title="Print Label" data-target="#print-pricelabel-popup"><i class="fa fa-print ifNotPriceLabel"></i>
+                </a>
+              </td>
+            </tr>
+            <%})%>
+          </tbody>
+        </table>
+      </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="print-pricelabel-popup" tabindex="-1" role="dialog" aria-labelledby="print-pricelabel-popup" aria-hidden="true"
+  style="display: none;">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="exampleModalLabel2">Print Price Label</h2>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group text-center">
+          <canvas id="pdf-preview" class="border border-dark"></canvas>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger close-del" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary print-package" id="print-package">
+          Print
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="pricelabel-popup" tabindex="-1" role="dialog" aria-labelledby="pricelabel-popup"
+  aria-hidden="true" style="display: none;">
+  <div class="modal-dialog modal-lg">
+    <form id="add-to-pricelabel-form" method="post">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title">Add Price Labels</h2>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="col-sm-1 text-left h3">Charges</div>
+            <div class="row gutters">
+              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group form-show-validation row">
+                          <label for="Duty" class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">Duty </label>
+                          <div class="col-lg-8 col-md-8 col-sm-8">
+                            <input type="number" class="form-control" id="Duty" name="Duty" placeholder="Duty">
+                          </div>
+                        </div>
+                        <div class="form-group form-show-validation row">
+                          <label for="Customs Proc" class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">Customs Proc </label>
+                          <div class="col-lg-8 col-md-8 col-sm-8">
+                            <input type="number" class="form-control" id="CustomsProc" name="CustomsProc" placeholder="Customs Proc">
+                          </div>
+                        </div>
+                        <div class="form-group form-show-validation row">
+                          <label for="Env. Levy" class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">Env. Levy </label>
+                          <div class="col-lg-8 col-md-8 col-sm-8">
+                            <input type="number" class="form-control" id="EnvLevy" name="EnvLevy" placeholder="Env. Levy">
+                          </div>
+                        </div>
+                        <div class="form-group form-show-validation row">
+                          <label for="Customs VAT" class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">Customs VAT </label>
+                          <div class="col-lg-8 col-md-8 col-sm-8">
+                            <input type="number" class="form-control" id="CustomsVAT" name="CustomsVAT" placeholder="Customs VAT">
+                          </div>
+                        </div>
+                        <div class="form-group form-show-validation row">
+                          <label class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right"></label>
+                          <div class="col-lg-8 col-md-8 col-sm-8">
+                            <input type="number" class="form-control"hidden>
+                          </div>
+                        </div>
+                        <div class="form-group form-show-validation row">
+                          <label class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right"></label>
+                          <div class="col-lg-8 col-md-8 col-sm-8">
+                            <input type="number" class="form-control"hidden>
+                          </div>
+                        </div>
+                        <div class="form-group form-show-validation row">
+                          <label class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right"></label>
+                          <div class="col-lg-8 col-md-8 col-sm-8">
+                            <input type="number" class="form-control"hidden>
+                          </div>
+                        </div>
+                        <div class="form-group form-show-validation row">
+                          <label class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right"></label>
+                          <div class="col-lg-8 col-md-8 col-sm-8">
+                            <input type="number" class="form-control"hidden>
+                          </div>
+                        </div>
+                        <div class="form-group form-show-validation row">
+                          <label for="ServiceVat" class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">ServiceVat</label>
+                          <div class="col-lg-8 col-md-8 col-sm-8">
+                            <input type="number" class="form-control-plaintext" id="ServiceVat" name="ServiceVat" placeholder="ServiceVat" readonly>
+                          </div>
+                        </div>
+                        <div class="form-group form-show-validation row">
+                          <label for="TotalWet" class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">Total Price</label>
+                          <div class="col-lg-8 col-md-8 col-sm-8">
+                            <input type="number" class="form-control-plaintext" id="TotalWet" name="TotalWet" placeholder="TotalWet" readonly>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group form-show-validation row">
+                          <label for="Freight" class="col-lg-3 col-md-4 col-sm-4 mt-sm-2 text-right">Freight </label>
+                          <div class="col-lg-7 col-md-8 col-sm-8">
+                            <input type="number" class="form-control-plaintext" id="Freight" name="Freight" placeholder="Freight" readonly>
+                          </div>
+                        </div>
+                        <div class="form-group form-show-validation row">
+                          <div class="col-lg-7 col-md-8 col-sm-8">
+                            <div class="custom-control custom-checkbox">
+                              <input type="checkbox" class="custom-control-input" id="NoDocs">
+                              <label class="custom-control-label" for="NoDocs">No Docs<span id="NoDocsVal" class="ml-3 text-right"></span></label>
+                            </div>
+                          </div>
+                         
+                        </div>
+                        <div class="form-group form-show-validation row">
+                          <div class="col-lg-7 col-md-8 col-sm-8">
+                            <div class="custom-control custom-checkbox">
+                              <input type="checkbox" class="custom-control-input" id="Insurance">
+                              <label class="custom-control-label" for="Insurance">Insurance <span id="InsuranceVal" class="ml-3 text-right"></span></label>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="form-group form-show-validation row">
+                          <label for="Freight" class="col-lg-3 col-md-4 col-sm-4 mt-sm-2 text-right">No of Invoices </label>
+                          <div class="col-lg-7 col-md-8 col-sm-8">
+                            <input type="number" class="form-control-plaintext" id="no_of_invoice"  placeholder="No of invoices" readonly>
+                          </div>
+                        </div>
+                        <div class="form-group form-show-validation row">
+                          <label for="Freight" class="col-lg-3 col-md-4 col-sm-4 mt-sm-2 text-right">Total Weight </label>
+                          <div class="col-lg-7 col-md-8 col-sm-8">
+                            <input type="number" class="form-control-plaintext" id="total_weight_value"  placeholder="Total value" readonly>
+                          </div>
+                        </div>
+                        <div class="form-group form-show-validation row">
+                          <label for="Storage" class="col-lg-3 col-md-4 col-sm-4 mt-sm-2 text-right">Storage </label>
+                          <div class="col-lg-7 col-md-8 col-sm-8">
+                            <input type="number" class="form-control" id="Storage" name="Storage" placeholder="Storage">
+                          </div>
+                        </div>
+                        <div class="form-group form-show-validation row">
+                          <label for="Brokerage" class="col-lg-3 col-md-4 col-sm-4 mt-sm-2 text-right">Brokerage </label>
+                          <div class="col-lg-7 col-md-8 col-sm-8">
+                            <input type="number" class="form-control" id="Brokerage" name="Brokerage" placeholder="Brokerage">
+                          </div>
+                        </div>
+                        <div class="form-group form-show-validation row">
+                          <div class="col-lg-7 col-md-8 col-sm-8">
+                            <div class="custom-control custom-checkbox">
+                              <input type="checkbox" class="custom-control-input" id="Sed">
+                              <label class="custom-control-label" for="Sed">Sed <span id="SedVal" class="ml-3 text-right"></span></label>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="form-group form-show-validation row">
+                          <div class="col-lg-7 col-md-8 col-sm-8">
+                            <div class="custom-control custom-checkbox">
+                              <input type="checkbox" class="custom-control-input" id="Express">
+                              <label class="custom-control-label" for="Express">Express <span id="ExpressVal" class="ml-3 text-right"></span></label>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="form-group form-show-validation row">
+                          <label for="Delivery" class="col-lg-3 col-md-4 col-sm-4 mt-sm-2 text-right">Delivery </label>
+                          <div class="col-lg-7 col-md-8 col-sm-8">
+                            <input type="number" class="form-control" id="Delivery" name="Delivery" placeholder="Delivery">
+                          </div>
+                        </div>
+                        <div class="form-group form-show-validation row">
+                          <label for="Pickup" class="col-lg-3 col-md-4 col-sm-4 mt-sm-2 text-right">Pickup </label>
+                          <div class="col-lg-7 col-md-8 col-sm-8">
+                            <input type="number" class="form-control" id="Pickup" name="Pickup" placeholder="Pickup">
+                          </div>
+                        </div>
+                        <div class="form-group form-show-validation row">
+                          <label for="Hazmat" class="col-lg-3 col-md-4 col-sm-4 mt-sm-2 text-right">Hazmat </label>
+                          <div class="col-lg-7 col-md-8 col-sm-8">
+                            <input type="number" class="form-control" id="Hazmat" name="Hazmat" placeholder="Hazmat">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <input type="text" id="setIdPriceLabel" hidden/>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary" id="UpdatePriceLabelPackage">Update</button>
+            <button type="button" class="btn btn-danger close-del" data-dismiss="modal">Cancel</button>
+          </div>
+        </div>
+    </form>
+  </div>
+</div>
+
+<!-- <% block('scripts').append('<script src="/js/utils.js"></script>')%> -->
+<% block('scripts').append('<script src="/js/warehouse/price/list-all.js"></script>')%>

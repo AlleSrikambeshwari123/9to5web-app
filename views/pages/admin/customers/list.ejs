@@ -6,12 +6,13 @@
         <div class="card-title"><%=title%></div>
         <a href='create' class='btn btn-primary btn-round float-right ml-md-auto'>Add Consignee</a>
       </div>
-      <div class="card-body">
+      <div class="card-body daterangepickerbody">
         <div class="table-responsive">
-          <table id="customerTable" class="display table table-striped table-hover">
+          <table id="customerTable" class="display table dataTable dateRangeFilterTable table-striped table-hover">
             <thead>
               <tr>
                 <th>Company</th>
+                <th>Date Created</th>
                 <th>PMB</th>
                 <th>Name</th>
                 <th>Email</th>
@@ -24,6 +25,7 @@
               <% customers.forEach(function(customer){%>
               <tr data-record="<%= customer.id %>">
                 <td><%=customer.company.name%></td>
+                <td><%=helpers.formatDate(customer.createdAt)%></td>
                 <td scope="row"><%=customer.pmb%></td>
                 <td><%=helpers.getFullName(customer)%></td>
                 <td><%=customer.email%></td>

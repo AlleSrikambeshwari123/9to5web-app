@@ -59,6 +59,12 @@
 						<p>Zones </p>
 					</a>
 				</li>
+				<li class="nav-item <% if (page.includes('/invoices/')) { %> active <% } %>">
+					<a href="/admin/invoices/list">
+						<i class="fa fa-shield-alt"></i>
+						<p>Invoices </p>
+					</a>
+				</li>
 				<% } %>
 
 				<li class="nav-section">
@@ -125,6 +131,11 @@
 									<span class="sub-item">No Docs</span>
 								</a>
 							</li>
+							<li <% if (page.includes('/fll/awb/no-docs-packages')) { %> class="active" <% } %>>
+								<a href="/warehouse/fll/awb/no-docs-packages">
+									<span class="sub-item">No Docs - Pkgs</span>
+								</a>
+							</li>
 							<li <% if (page.includes('/nas/manifest/incoming')) { %> class="active" <% } %>>
 								<a href="/warehouse/nas/manifest/incoming">
 									<span class="sub-item">Incoming Flights</span>
@@ -133,6 +144,11 @@
 							<li <% if (page.includes('/nas/package/list')) { %> class="active" <% } %>>
 								<a href="/warehouse/nas/package/list">
 									<span class="sub-item">Packages on Hand</span>
+								</a>
+							</li>
+							<li <% if (page.includes('/nas/package/aging')) { %> class="active" <% } %>>
+								<a href="/warehouse/nas/package/aging">
+									<span class="sub-item">Aging</span>
 								</a>
 							</li>
 							<li <% if (page && page.endsWith && page.endsWith('/package/list/in-manifest')) { %> class="active" <% } %>>
