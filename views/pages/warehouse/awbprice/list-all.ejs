@@ -47,7 +47,7 @@
                 <input type="checkbox" class="package-select" />
                 <input class="checkPriceLabelExistPkg" value="<%=awb._id %>" hidden/>
               </td>
-              <td><%= awb.createdAt%></td>
+              <td><%= helpers.formatDate(awb.createdAt)%></td>
               <% if (awb['customerId']) { %>
                 <td><%= (awb['customerId'].lastName ? 
                   `${awb['customerId'].firstName} ${awb['customerId'].lastName}` : 
