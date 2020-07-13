@@ -44,6 +44,7 @@
               <thead>
                 <tr>
                   <td><strong>AWB No</strong></td>
+                  <td><strong>Origin Barcode Date</strong></td>
                   <td><strong>Customer Name</strong></td>
                   <td><strong>Shipper Name</strong></td>
                   <td><strong>Original Bar Code</strong></td>
@@ -56,6 +57,7 @@
                 <% const pkgdetail = cube.pkgdetail; pkgdetail.forEach(package => { %>
                 <tr data-record="<%= package.id %>">
                   <td><%= package.awbId && package.awbId.awbId %></td>
+                  <td><%= package.OrignalBarcodeDate ? helpers.formatDate(package.OrignalBarcodeDate) : '' %></td>
                   <td><%= package.customerId && (package.customerId.firstName +" "+ package.customerId.lastName)%></td>
                   <td><%= package.shipperId && package.shipperId.name %></td>
                   <td><%= package.originBarcode ? package.originBarcode.barcode : '' %></td>
