@@ -30,7 +30,7 @@
                   %>
             <tr data-record="<%= awb._id %>">
               <td><%= awb.customer.name %></td>
-              <td><%=awb.dateCreated%></td>
+              <td><%=helpers.formatDate(awb.createdAt)%></td>
               <td><%=awb.customer.pmb %></td>
               <td><a href="manage/<%=awb._id%>/preview"><%=awb.awbId%></a></td>
               <td><%=helpers.getFullName(awb.customer)%></td>

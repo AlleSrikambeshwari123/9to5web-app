@@ -583,7 +583,7 @@ class PackageService {
                 if (pkg.originBarcode) {
                     let barcode = await this.getOriginBarcode(pkg.originBarcode)
                     if (barcode !== null && barcode.createdAt) {
-                        pkg.OrignalBarcodeDate = moment(barcode.createdAt).format('MMM DD, YYYY');
+                        pkg.OrignalBarcodeDate = barcode.createdAt;
                     }
                 }
                 if (pkg.awbId) {
