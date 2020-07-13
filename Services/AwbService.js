@@ -448,22 +448,23 @@ class AwbService {
       PriceLabel.findOne({awbId:awbId}).exec((err, result) => {
         result = JSON.parse(JSON.stringify(result))
         Awb.findOne({_id:awbId})
-        .populate('customerId')
-        .populate('shipper')
-        .populate('carrier')
-        .populate('hazmat')
-        .populate('packages')
-        .populate('purchaseOrders')
+        //.populate('customerId')
+        //.populate('shipper')
+        //.populate('carrier')
+        //.populate('hazmat')
+        //.populate('packages')
+        //.populate('purchaseOrders')
         .populate('invoices')
-        .populate('driver')
+        //.populate('driver')
         .exec((err, awbData) => {
           if(result && result.awbId){
             const invoices =awbData.invoices?awbData.invoices:[];
-            var totalPrice = 0;
+            var totalInvoice = 0;
             for(let i=0;i<invoices.length;i++){
-              totalPrice=totalPrice+invoices[i].value;
+              totalInvoice=totalInvoice+invoices[i].value;
             }
-            result.totalPrice = totalPrice;
+            result.totalPrice = totalInvoice;
+            result.noOfInvoices = invoices.length
             result.awbId = awbData;
           }
             resolve(result)
