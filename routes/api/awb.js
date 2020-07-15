@@ -23,7 +23,7 @@ var storage = multer.diskStorage({
   var upload = multer({ storage: storage});
 
 
-router.get('/list-awb/:id',async(req, res, next) => {
+router.get('/list-awb/:id',passport.authenticate('jwt', { session: false }), async(req, res, next) => {
     try{
         const customerId = mongoose.Types.ObjectId(req.params.id);
         const awbData = await services.awbService.getAwbsFullCustomer(customerId);
@@ -34,7 +34,7 @@ router.get('/list-awb/:id',async(req, res, next) => {
 })
 
 //list awb without invoice
-router.get('/awb-without-invoice/:id',async(req, res, next) => {
+router.get('/awb-without-invoice/:id',passport.authenticate('jwt', { session: false }),async(req, res, next) => {
     try{   
         const customerId = mongoose.Types.ObjectId(req.params.id);     
         const awbData = await services.awbService.getAwbsNoDocsCustomer(customerId);
@@ -45,7 +45,7 @@ router.get('/awb-without-invoice/:id',async(req, res, next) => {
 });
 
 //store invoice
-router.post('/store-invoice',upload.single('invoice'),async(req, res, next) => {    
+router.post('/store-invoice',passport.authenticate('jwt', { session: false }), upload.single('invoice'),async(req, res, next) => {    
     try{ 
         const files = req.file;
         const filePath = files.path?files.path:'';        
@@ -71,7 +71,7 @@ router.post('/store-invoice',upload.single('invoice'),async(req, res, next) => {
     }
 });
 
-router.get('/awb-price/:id',async(req, res, next) => {
+router.get('/awb-price/:id',passport.authenticate('jwt', { session: false }), async(req, res, next) => {
     try{ 
         const awbId = mongoose.Types.ObjectId(req.params.id);
         const priceLabelData = await services.awbService.getAwbPriceLabel(awbId);
