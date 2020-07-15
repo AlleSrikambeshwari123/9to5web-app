@@ -89,7 +89,7 @@
               <td>
                 <input type="checkbox" name="package-select" class="package-select" />
               </td>
-              <td class="table-date-created"><%= pkg.OrignalBarcodeDate %></td>
+              <td><%= helpers.formatDate(pkg.OrignalBarcodeDate) %></td>
               <% if (pkg['customerId']) { %>
                 <td><%= (pkg['customerId'].lastName ? 
                   `${pkg['customerId'].firstName} ${pkg['customerId'].lastName}` : 

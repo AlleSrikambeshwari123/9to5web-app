@@ -53,7 +53,7 @@
                               <% } else { %>
                                 <td> - </td>
                                 <% } %>
-                                <td><%= pkg.OrignalBarcodeDate %></td>
+                                <td><%= helpers.formatDate(pkg.OrignalBarcodeDate) %></td>
                                 <td><a class="text-decoration-none" href="../../nas/awb/manage/<%=pkg.awbId._id%>/preview"><b><%= pkg.express ? '*': '' %></b><%= pkg.awbId.awbId %> </a></td>
                                 <td><%= pkg.originBarcode ? pkg.originBarcode.barcode: ''%></td>
                                 <td><%= pkg.packageNumber ? pkg.packageNumber : ''%></td>
@@ -128,7 +128,7 @@
                             <% } else { %>
                               <td> - </td>
                               <% } %>
-                              <td><%= pkg.OrignalBarcodeDate %></td>
+                              <td><%= helpers.formatDate(pkg.OrignalBarcodeDate) %></td>
                         <td><a class="text-decoration-none" href="../../nas/awb/manage/<%=pkg.awbId._id%>/preview"><b><%= pkg.express ? '*': '' %></b><%= pkg.awbId.awbId %> </a></td>
                         <td><%= pkg.originBarcode ? pkg.originBarcode.barcode: ''%></td>
                         <td><%= pkg.packageNumber ? pkg.packageNumber : ''%></td>

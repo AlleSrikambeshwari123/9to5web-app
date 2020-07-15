@@ -22,10 +22,6 @@
         <div class="card-title"><%= title %></div>
       </div>
       <div class="card-body daterangepickerbody">
-        <div class="d-flex w-100 d-inline-block col-xs-10 col-sm-3 float-left ">
-          <label class="w-10-rem align-text-bottom">Select Dates : </label>
-          <input type="text" class="form-control form-control-sm" name="daterange" id="daterange" value=""  placeholder="Select dates"/>
-        </div>
         <div class="table-responsive">
         <table id="pricelabel-table"
           class="display table table-striped table-hover dataTable dateRangeFilterTable pricelabel-table">
@@ -51,7 +47,7 @@
                 <input type="checkbox" class="package-select" />
                 <input class="checkPriceLabelExistPkg" value="<%=awb._id %>" hidden/>
               </td>
-              <td><%= awb.createdAt%></td>
+              <td><%= helpers.formatDate(awb.createdAt)%></td>
               <% if (awb['customerId']) { %>
                 <td><%= (awb['customerId'].lastName ? 
                   `${awb['customerId'].firstName} ${awb['customerId'].lastName}` : 
@@ -189,7 +185,7 @@
                           </div>
                         </div>
                         <div class="form-group form-show-validation row">
-                          <label for="TotalWet" class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">Total Price</label>
+                          <label for="TotalWet" class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">Total Wet</label>
                           <div class="col-lg-8 col-md-8 col-sm-8">
                             <input type="number" class="form-control-plaintext" id="TotalWet" name="TotalWet" placeholder="TotalWet" readonly>
                           </div>
