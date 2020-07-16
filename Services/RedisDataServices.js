@@ -2,6 +2,8 @@
 
 var CustomerService = require('./CustomerService');
 var customerService = new CustomerService();
+var CustomerChildService = require('./CustomerChildService');
+var customerChildService = new CustomerChildService();
 var AwbService = require('./AwbService');
 var awbService = new AwbService();
 var ManifestService = require('./ManifestService');
@@ -53,6 +55,7 @@ var AwbPriceLabelService = new AwbPriceLabelService();
 
 var services = {
   customerService,
+  customerChildService,
   awbService,
   manifestService,
   packageService,

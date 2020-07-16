@@ -7,7 +7,13 @@ require('./authHelper')
 
 router.post('/login', (req, res, next) => {
   services.customerService.login(req.body.email, req.body.password).then(loginResult => {
-    res.send(loginResult);
+    if(loginResult.success || loginResult.authenticated){
+      return res.send(loginResult);
+    }else{
+      services.customerChildService.login(req.body.email, req.body.password).then(loginResultchild => {
+        return res.send(loginResultchild)
+      })
+    }
   })
 });
 router.post('/sign-up', function (req, res, next) {
@@ -66,7 +72,19 @@ router.post('/req-pwd-reset', function (req, res, next) {
 
 router.get('/get-packages/:id', passport.authenticate('jwt', { session: false }),(req, res, next) => {
   services.packageService.getCustomerPackages(req.params.id).then(packages => {
-    res.send(packages);
+    if(packages.success){
+      return res.send(packages);
+    }else{
+      services.customerChildService.getCustomer({_id: req.params.id}).then(result => {
+        if(result.id){
+          services.packageService.getCustomerPackages(result.parentCustomer.id).then(packages => {
+            return res.send(packages);
+          })
+        }else{
+          return res.send(result)
+        }
+      })
+    }
   })
 });
 
