@@ -1,0 +1,43 @@
+<% layout('./shared/__template')%>
+<div class='gutters'>
+  <div class="col-xl-12 col-lg-6 col-md-12 col-sm-12">
+    <div class="card">
+      <div class="card-header d-flex align-items-left align-items-md-center flex-column flex-md-row">
+        <div class="card-title"><%=title%></div>
+        <a href='create' class='btn btn-primary btn-round float-right ml-md-auto'>Add Sub Consignee</a>
+      </div>
+      <div class="card-body daterangepickerbody">
+        <div class="table-responsive">
+          <table id="customerTable" class="display table dataTable dateRangeFilterTable table-striped table-hover">
+            <thead>
+              <tr>
+                <th>Parent Customer</th>
+                <th>Date Created</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% customers.forEach(function(customer){%>
+              <tr data-record="<%= customer.id %>">
+                <td><%=helpers.getFullName(customer.parentCustomer)%></td>
+                <td><%=helpers.formatDate(customer.createdAt)%></td>
+                <td><%=helpers.getFullName(customer)%></td>
+                <td><%=customer.email%></td>
+                <td>
+                  <a href='manage/<%=customer.id%>/get'><i class="fas fa-user-edit"></i></a>
+                  <!-- temporary commenting the code -->
+                  <button class='btn btn-link btn-danger rm-customer ml-3' data-id='<%=customer.id%>'><i class="fas fa-trash"></i></a>
+                </td>
+              </tr>
+              <%})%>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<% block('scripts').append('<script src="/js/admin/customer/list.js"></script>')%>
