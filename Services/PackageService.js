@@ -669,7 +669,7 @@ class PackageService {
     }
     getOriginalBarcodeByCodeWildCard(barcode) {
         return new Promise((resolve, reject) => {
-            Barcode.findOne({ barcode: { $regex: '.*' + barcode + '.*' } }, (err, result) => {
+            Barcode.find({ barcode: { $regex: barcode, $options: 'i'} }, (err, result) => {
                 if (err || result === null) {
                     resolve([]);
                 } else {
@@ -1467,13 +1467,18 @@ class PackageService {
                 })
             }else if (selectedOption === "Original") {
                 let barcode = await this.getOriginalBarcodeByCodeWildCard(inputField)
-                Package.find({ originBarcode: barcode._id}, (err, packages) => {
+                let barcodes = []
+                barcode.forEach(async br =>{
+                    barcodes.push(br._id)
+                })
+                Package.find({ originBarcode: { $in:barcodes}}, (err, packages) => {
                     if (err) {
                         resolve([]);
                     } else {
-                       resolve(packages)
+                        resolve(packages)
                     }
-                }).select('id trackingNo awbId')
+                }).populate({path:"originBarcode",select:'barcode'}).select('id trackingNo awbId originBarcode')
+                
             } else if (selectedOption === "Awb") {
                 inputField = inputField.trim().toLowerCase().toString();
                 Awb.find({ awbId: inputField  }, 'awbId', (err, awb) => {
@@ -1619,9 +1624,18 @@ class PackageService {
                         Package.findOne({_id:pk.packageId}, async (err,res)=>{
                             if(err) resolve({success:false,message:err})
                             else{
-                                Package.updateOne({_id:res._id},{agingdollar:res.aging ? (res.aging + 1) : 1},(err,result)=>{
+                                Package.updateOne({_id:res._id},{agingdollar:res.agingdollar ? (res.agingdollar + 1) : 1},{new:true},async (err,result)=>{
                                     if(err) resolve({success:false,message:err})
-                                    else resolve({success:true,message:'Aging Dollar Updated'})
+                                    else {
+                                        const pkgData = await Package.findOne({_id:res._id})
+                                        .populate('customerId')
+                                        .populate('shipperId')
+                                        .populate('awbId');
+                                        if(pkgData && pkgData.awbId){
+                                            await emailService.sendAgingEmail(pkgData);
+                                        }
+                                        resolve({success:true,message:'Aging Dollar Updated'})
+                                    }
                                 });
                                   
                             }
