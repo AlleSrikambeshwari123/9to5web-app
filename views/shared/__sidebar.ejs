@@ -348,7 +348,7 @@
 					</div>
 				</li>
 				<li class="nav-item">
-					<a href="/logout">
+					<a id="logout" href="/logout">
 						<i class="fa fa-sign-out-alt"></i>
 						<p>Logout </p>
 					</a>
@@ -357,3 +357,8 @@
 		</div>
 	</div>
 </div>
+<script> 
+document.getElementById("logout").addEventListener('click',function(){
+	localStorage.clear()
+})
+</script>
