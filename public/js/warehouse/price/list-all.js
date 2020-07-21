@@ -181,8 +181,19 @@ function tval(ServiceVat,NoDocsVal,InsuranceVal,SedVal,ExpressVal) {
     Number(ServiceVat) +
     Number($('#Storage').val())
   );
-  $('#ServiceVat').val(((total * 7.5) / 100).toFixed(2));
-  $('#TotalWet').val((total + Number($('#ServiceVat').val())).toFixed(2));
+  // $('#ServiceVat').val(((total * 7.5) / 100).toFixed(2));
+  if(Number($('#ServiceVat').val()) > 0){
+    $('#serviceVatSpan').text($('#ServiceVat').val());
+  }else{
+    $('#serviceVatSpan').text(((total * 7.5) / 100).toFixed(2));
+  }
+  if(Number($('#TotalWet').val()) > 0){
+    $('#totalWetSpan').text($('#TotalWet').val());
+  }else{
+    $('#totalWetSpan').text((total + Number($('#ServiceVat').val())).toFixed(2));
+  }
+  
+  // $('#TotalWet').val((total + Number($('#ServiceVat').val())).toFixed(2));
 }
 function pricelabelcommon(ServiceVat,NoDocsVal,InsuranceVal,SedVal,ExpressVal,totalinvoiceVal){
   let Insurance = totalinvoiceVal * 0.01;
@@ -274,6 +285,16 @@ $('#pricelabel-table').on('click', '.btn-edit-pricelabel', function () {
 $('#UpdatePriceLabelPackage').on('click' , function (event) {
   event.preventDefault();
   var id = $('#setIdPriceLabel').val()
+  if(Number($('#ServiceVat').val()) > 0){
+    ServiceVat = $('#ServiceVat').val() == "" ? 0 : $('#ServiceVat').val();
+  }else{
+    ServiceVat =  $('#serviceVatSpan').text() == "" ? 0 : $('#serviceVatSpan').text();
+  }
+  if(Number($('#TotalWet').val()) > 0){
+    TotalWet = $('#TotalWet').val() == "" ? 0 : $('#TotalWet').val();
+  }else{
+    TotalWet = $('#totalWetSpan').text() == "" ? 0 : $('#totalWetSpan').text();
+  }
   data = {
     Brokerage: $('#Brokerage').val() == "" ? 0 : $('#Brokerage').val(),
     CustomsProc: $('#CustomsProc').val() == "" ? 0 : $('#CustomsProc').val(),
@@ -284,13 +305,13 @@ $('#UpdatePriceLabelPackage').on('click' , function (event) {
     Freight: $('#Freight').val() == "" ? 0 : $('#Freight').val(),
     Hazmat: $('#Hazmat').val() == "" ? 0 : $('#Hazmat').val(),
     Pickup: $('#Pickup').val() == "" ? 0 : $('#Pickup').val(),
-    ServiceVat: $('#ServiceVat').val() == "" ? 0 : $('#ServiceVat').val(),
+    ServiceVat: ServiceVat,
     Storage: $('#Storage').val() == "" ? 0 : $('#Storage').val(),
     NoDocs: $('#NoDocsVal').text() == "" ? 0 : $('#NoDocsVal').text(),
     Insurance: $('#InsuranceVal').text() == "" ? 0 : $('#InsuranceVal').text(),
     Sed: $('#SedVal').text() == "" ? 0 : $('#SedVal').text(),
     Express: $('#ExpressVal').text() == "" ? 0 : $('#ExpressVal').text(),
-    TotalWet: $('#TotalWet').val() == "" ? 0 : $('#TotalWet').val(),
+    TotalWet: TotalWet,
   };
   $.ajax({
     url: '/warehouse/pricelabels/' + id,
