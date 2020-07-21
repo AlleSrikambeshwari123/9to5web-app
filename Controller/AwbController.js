@@ -371,7 +371,7 @@ exports.refresh_barcode = async (req, res)=>{
 }
 
 exports.add_bar_code = async (req, res, next)=>{
-  const result = await services.awbService.addBarcode(req.body);
+  const result = await services.packageService.addOriginBarcode(req.body);
   res.send(result);
 }
 
