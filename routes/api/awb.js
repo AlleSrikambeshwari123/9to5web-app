@@ -88,10 +88,10 @@ router.get('/awb-price/:id',passport.authenticate('jwt', { session: false }), as
     }
 
 })
-router.get('/awb-price-add/:id',passport.authenticate('jwt', { session: false }), async(req, res, next) => {
+router.post('/awb-price-add/:id',passport.authenticate('jwt', { session: false }), async(req, res, next) => {
     try{ 
         const awbId = mongoose.Types.ObjectId(req.params.id);
-        const priceLabelData = await services.AwbPriceLabelService.updatePriceLabel(priceLabel,awbId);
+        const priceLabelData = await services.AwbPriceLabelService.updatePriceLabel(req.body,awbId);
         res.json(priceLabelData);
     }catch(err){
         console.log(err)
