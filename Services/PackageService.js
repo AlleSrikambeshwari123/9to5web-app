@@ -298,7 +298,6 @@ class PackageService {
                 ),
             ).then((result) => {
                 if (error.length > 0) return resolve({ success: false, message: error })
-                console.log(result)
                 resolve({ success: true, message: strings.string_response_received, status: PKG_STATUS[9] });
             });
         });
