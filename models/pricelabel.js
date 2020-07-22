@@ -28,6 +28,7 @@ const PriceLabelSchema = new mongoose.Schema(
     ServiceVat: { type: Number,default:0 },
     Storage: { type: Number,default:0 },
     TotalWet: { type: Number,default:0 },
+    TotalInvoiceValue: { type: Number,default:0 },
   },
   {
     timestamps: true,
