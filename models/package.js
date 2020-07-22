@@ -31,6 +31,12 @@ const packageSchema = new mongoose.Schema({
   agingdollar:{
     type:Number
   },
+  agingStore:{
+    type:Number
+  },
+  agingStoredollar:{
+    type:Number
+  },
   originBarcode: {
     type: mongoose.Schema.Types.ObjectId, 
     ref: 'Barcode', 

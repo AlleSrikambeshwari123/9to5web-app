@@ -6,13 +6,16 @@
         <h4 class="card-title"><%=title%></h4>
       </div>
       <div class="card-body daterangepickerbody">
-        <table id='package-table' class='display table-responsive table table-striped table-hover dateRangeFilterTable dataTable package-table'>
+        <table id='package-table'
+          class='display table-responsive table table-striped table-hover dateRangeFilterTable dataTable package-table'>
           <thead>
             <tr>
               <th>Customer Name</th>
               <th>Date Received</th>
               <th>PMB</th>
               <th>AWB Number</th>
+              <th>Aging</th>
+              <th>Aging $</th>
               <th>Consignee</th>
               <th>Shipper</th>
               <th>Carrier</th>
@@ -29,16 +32,22 @@
                   %>
             <tr data-record="<%= pkg._id %>">
               <% if (pkg['customerId']) { %>
-                <td><%= (pkg['customerId'].lastName ? 
+              <td><%= (pkg['customerId'].lastName ? 
             `${pkg['customerId'].firstName} ${pkg['customerId'].lastName}` : 
             `${pkg['customerId'].firstName}`); %>
-                  </td>
+              </td>
               <% } else { %>
-                <td> - </td>
-            <% } %>
+              <td> - </td>
+              <% } %>
               <td><%=pkg.dateCreated%></td>
               <td><%=(pkg.customerId ? pkg.customerId.pmb : '') %></td>
               <td><a href="manage/<%=pkg.awbId._id%>/preview"><%=pkg.awbId.awbId%></a></td>
+              <td>
+                <%= pkg.aging ? pkg.aging:'' %>
+              </td>
+              <td>
+                $<%= pkg.agingdollar ? pkg.agingdollar:0 %>
+              </td>
               <td><%=helpers.getFullName(pkg.customerId || null)%></td>
               <td><%=pkg.shipperId.name %></td>
               <td><%=pkg.carrierId.name %></td>
@@ -50,11 +59,8 @@
                 <!-- temporary commenting the code -->
                 <!-- <a class="btn btn-link btn-danger btn-rm-awb p-1" data-toggle="modal" data-id="<%=pkg._id%>"
                   data-target="#confirm-delete-awb"> <i class="fa fa-trash"></i> </a> -->
-                <a 
-                class="btn btn-link btn-primary btn-print-pkg" 
-                data-toggle="modal" 
-                data-id="<%=pkg._id%>"
-                data-target="#print-popup"><i class="fa fa-print"></i> </a>
+                <a class="btn btn-link btn-primary btn-print-pkg" data-toggle="modal" data-id="<%=pkg._id%>"
+                  data-target="#print-popup"><i class="fa fa-print"></i> </a>
               </td>
             </tr>
             <% }}) %>

@@ -100,6 +100,8 @@
                         <th>AWB</th>
                         <th>Original Tracking No</th>
                         <th>Package No</th>
+                        <th>Aging</th>
+                        <th>Aging $</th>
                         <th>Description</th>
                         <th>Zone</th>
                         <th>Type</th>
@@ -132,6 +134,12 @@
                         <td><a class="text-decoration-none" href="../../nas/awb/manage/<%=pkg.awbId._id%>/preview"><b><%= pkg.express ? '*': '' %></b><%= pkg.awbId.awbId %> </a></td>
                         <td><%= pkg.originBarcode ? pkg.originBarcode.barcode: ''%></td>
                         <td><%= pkg.packageNumber ? pkg.packageNumber : ''%></td>
+                        <td>
+                          <%= pkg.aging ? pkg.aging:'' %>
+                        </td>
+                        <td>
+                          $<%= pkg.agingdollar ? pkg.agingdollar:0 %>
+                        </td>
                         <td><%= pkg.description %></td>
                     <% if (pkg['zoneId'] && pkg['zoneId'].name) { %>
                       <td><%= pkg['zoneId'].name %>

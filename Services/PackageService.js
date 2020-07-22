@@ -247,10 +247,18 @@ class PackageService {
                         //email                        
                         this.sendNoDocsPackageData(packageId);
                         if (!status.success) error.push(status.message)
+                        const pkgData = await Package.findOne({_id:packageId})
+                        .populate('customerId')
+                        .populate('shipperId')
+                        .populate('awbId');
+                        if(pkgData && pkgData.awbId){
+                            await emailService.sendAgingEmail(pkgData);
+                        }
                         return status
                     },
                     // this.updateAwbPackages(data.awbId,packageIds),
                     this.updateZone(data.zoneId, packageIds)
+
                 )
             )
             if (error.length > 0) return { success: false, message: error }
@@ -262,32 +270,37 @@ class PackageService {
     }
 
     // 9: 'Delivered to Store'
-    checkInStore(data, username) {
+    checkInStore(data, username,query) {
         let packageIds = data.packageIds.split(',');
         let error = []
+        console.log('aaa',query, query.override)
         return new Promise((resolve, reject) => {
             Promise.all(
                 packageIds.map(async(packageId) => {
                         this.updatePackage(packageId, {
                             location: data.location,
                             companyId: data.companyId,
-                            zoneId: data.zoneId
+                            zoneId: data.zoneId,
+                            agingStore:1
                         });
-                        const status = await this.updatePackageStatus(packageId, 9, username);
-                        //email
-                        // const pkgDetail = await Package.findOne({_id:packageId}).populate('customerId');
-                        // if(pkgDetail && pkgDetail.customerId){
-                        //     await emailService.sendStorePackageEmail(pkgDetail);
-                        // }
-                        //email                        
-                        this.sendStorePackageData(packageId);
-                        if (!status.success) error.push(status.message)
-                        return status
+                        const validateStore = await this.validateStorePackage(packageId)
+                        if(query.override == undefined){
+                            if(!validateStore.success) error.push(validateStore.message)
+                            return validateStore
+                        }
+                        if(validateStore.success || query.override !== undefined){
+                            const status = await this.updatePackageStatus(packageId, 9, username);                       
+                            this.sendStorePackageData(packageId);
+                            console.log('overrided')
+                            if (!status.success) error.push(status.message)
+                            return status
+                        }
                     },
                     this.updateZone(data.zoneId, packageIds)
                 ),
             ).then((result) => {
                 if (error.length > 0) return resolve({ success: false, message: error })
+                console.log(result)
                 resolve({ success: true, message: strings.string_response_received, status: PKG_STATUS[9] });
             });
         });
@@ -1687,6 +1700,24 @@ class PackageService {
         }else{
             return false
         } 
+    }
+    async validateStorePackage(pkgId){
+       return new Promise(async (resolve,reject)=>{
+           let pkgData = await Package.findOne({_id:pkgId})
+           .populate('customerId')
+           .populate('shipperId')
+           .populate('awbId');
+           pkgData = JSON.parse(JSON.stringify(pkgData));
+           if(pkgData.customerId && pkgData.customerId.pmb){
+               let pmb = pkgData.customerId.pmb
+               if((pmb >0 && pmb <=1999) || (pmb >= 4000 && pmb <=5999) || (pmb >= 3000 && pmb <=3999) || (pmb >= 9000 && pmb <=10000) ){
+                resolve({ success: true, message: `Package is OK` })
+               }else{
+                resolve({ success: false, message: `Following PackageId ${pkgId} with Tracking No.${pkgData.trackingNo} Doesn't belong to Right Store` })
+               }
+           } 
+       }) 
+
     }
    
 }
