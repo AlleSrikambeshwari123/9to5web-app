@@ -273,7 +273,6 @@ class PackageService {
     checkInStore(data, username,query) {
         let packageIds = data.packageIds.split(',');
         let error = []
-        console.log('aaa',query, query.override)
         return new Promise((resolve, reject) => {
             Promise.all(
                 packageIds.map(async(packageId) => {
@@ -291,7 +290,6 @@ class PackageService {
                         if(validateStore.success || query.override !== undefined){
                             const status = await this.updatePackageStatus(packageId, 9, username);                       
                             this.sendStorePackageData(packageId);
-                            console.log('overrided')
                             if (!status.success) error.push(status.message)
                             return status
                         }
