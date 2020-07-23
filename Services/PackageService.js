@@ -1628,7 +1628,6 @@ class PackageService {
                     let noDocDate = moment(pk.createdAt)
                     let now = moment()
                     let diff = now.diff(noDocDate, 'days')
-                    console.log('Store DIFF',diff)
                     let pkgaging = await Package.findOne({_id:pk.packageId})
                     if(!pkgaging) return ({success:false,message:"pkgaging NOt found"})
                     if(diff > 0){
