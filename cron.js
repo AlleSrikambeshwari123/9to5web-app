@@ -3,11 +3,13 @@ const services = require('./Services/RedisDataServices')
 exports.cronSchedule = () =>{
     cron.schedule("20 0 * * *", function () {
         console.log(`Running Cron Job`);
-        services.packageService.checkAgingofStoreInPackages().then((result)=>{
-            console.log('Working.....',result)
+        //Check Agign for NODOCS 
+        services.packageService.checkAgingofNoDocsPackages().then((result)=>{
+            console.log('checkAgingofNoDocsPackages.....',result)
         })
-        services.packageService.checkAgingDollarofStoreInPackages().then((result)=>{
-            console.log('Working Dollar.....',result)
+        //Check Aging for Delivered to Store
+        services.packageService.checkAgingofStoreInPackages().then((result)=>{
+            console.log('checkAgingofStoreInPackages.....',result)
         })
     });
 }

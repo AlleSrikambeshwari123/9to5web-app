@@ -317,6 +317,8 @@ $('#UpdatePriceLabelPackage').on('click', function (event) {
     Sed: $('#SedVal').val() == "" ? 0 : $('#SedVal').val(),
     Express: $('#ExpressVal').val() == "" ? 0 : $('#ExpressVal').val(),
     TotalInvoiceValue: $("#total-value-invoice").val() == "" ? 0 : $("#total-value-invoice").val(),
+    NoOfInvoice: $("#no_of_invoice").val() == "" ? 0 : $("#no_of_invoice").val(),
+    TotalWeightValue: $("#total_weight_value").val() == "" ? 0 : $("#total_weight_value").val(),
     TotalWet: TotalWet,
   };
   $.ajax({

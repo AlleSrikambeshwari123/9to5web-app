@@ -31,11 +31,19 @@ const packageSchema = new mongoose.Schema({
   agingdollar:{
     type:Number
   },
+  emailAging:{
+    type:Boolean,
+    default:false
+  },
   agingStore:{
     type:Number
   },
   agingStoredollar:{
     type:Number
+  },
+  emailAgingStore:{
+    type:Boolean,
+    default:false
   },
   originBarcode: {
     type: mongoose.Schema.Types.ObjectId, 

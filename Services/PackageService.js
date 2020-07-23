@@ -246,14 +246,6 @@ class PackageService {
                         const status = await this.updatePackageStatus(packageId, 7, data.userId);
                         //email                        
                         this.sendNoDocsPackageData(packageId);
-                        if (!status.success) error.push(status.message)
-                        const pkgData = await Package.findOne({_id:packageId})
-                        .populate('customerId')
-                        .populate('shipperId')
-                        .populate('awbId');
-                        if(pkgData && pkgData.awbId){
-                            await emailService.sendAgingEmail(pkgData);
-                        }
                         return status
                     },
                     // this.updateAwbPackages(data.awbId,packageIds),
@@ -1591,68 +1583,70 @@ class PackageService {
         });
     }
 
+    /* Cron For NOdocs  */
+    checkAgingofNoDocsPackages(){
+        return new Promise(async (resolve,reject)=>{
+            try {
+                let pkg = await PackageStatus.find({status:PKG_STATUS[7]});
+                await Promise.all(pkg.map( async pk=>{
+                    let noDocDate = moment(pk.createdAt)
+                    let now = moment()
+                    let diff = now.diff(noDocDate, 'days')
+                    let pkgaging = await Package.findOne({_id:pk.packageId})
+                    if(!pkgaging) return ({success:false,message:"pkgaging NOt found"})
+                    if(diff > 0){
+                        let pkgagingUpdate = await Package.findOneAndUpdate({_id:pkgaging._id},{aging:pkgaging.aging ? (pkgaging.aging + 1) : 1})
+                        if(!pkgagingUpdate) return ({success:false,message:"pkgagingUpdate Failed"})
+                        else return ({success:true,message:'Aging Updated'})         
+                    }
+                    if(diff > 14){
+                    let updPkg = await Package.findOneAndUpdate({_id:pkgaging._id},{agingdollar:pkgaging.agingdollar ? (pkgaging.agingdollar + 1) : 1},{new:true})
+                    // console.log('upp',updPkg)
+                    if(!updPkg) return ({success:false,message:"updPkg Failed"})
+                    else {
+                      this.sendNoDocsPackageDataForAging(updPkg._id)
+                        return ({success:true,message:'Aging Dollar Updated'})
+                    }  
+                           
+                    }else{
+                        return ({success:false,message:'Greater than 14'})
+                    }     
+                })).then((result)=> resolve(result))
+            } catch (error) {
+                console.error({checkAgingofNoDocsPackages:error})
+                reject(error)
+            }
+        })
+    }
+    /* Cron For Delivered to store */
     checkAgingofStoreInPackages(){
         return new Promise(async (resolve,reject)=>{
             try {
-                let pkg = await PackageStatus.find({status:PKG_STATUS[7]});
-                let diff;
-                Promise.all(pkg.map(pk=>{
+                let pkg = await PackageStatus.find({status:PKG_STATUS[9]});
+               
+                await Promise.all(pkg.map( async pk=>{
                     let noDocDate = moment(pk.createdAt)
                     let now = moment()
-                    diff = now.diff(noDocDate, 'days')
+                    let diff = now.diff(noDocDate, 'days')
+                    console.log('Store DIFF',diff)
+                    let pkgaging = await Package.findOne({_id:pk.packageId})
+                    if(!pkgaging) return ({success:false,message:"pkgaging NOt found"})
                     if(diff > 0){
-                        Package.findOne({_id:pk.packageId}, async (err,res)=>{
-                            if(err) resolve({success:false,message:err})
-                            else{
-                                Package.updateOne({_id:res._id},{aging:res.aging ? (res.aging + 1) : 1},(err,result)=>{
-                                    if(err) resolve({success:false,message:err})
-                                    else resolve({success:true,message:'Aging Updated'})
-                                });
-                                  
-                            }
-                        })
-                    }else{
-                        resolve({success:false,message:'Greater than 14'})
-                    }    
-                })).then((result)=> resolve(result))
-            } catch (error) {
-                console.error({checkAgingofStoreInPackages:error})
-                reject(error)
-            }
-        })
-    }
-    checkAgingDollarofStoreInPackages(){
-        return new Promise(async (resolve,reject)=>{
-            try {
-                let pkg = await PackageStatus.find({status:PKG_STATUS[7]});
-                let diff;
-                Promise.all(pkg.map(pk=>{
-                    let noDocDate = moment(pk.createdAt)
-                    let now = moment()
-                    diff = now.diff(noDocDate, 'days')
+                        let pkgagingUpdate = await Package.findOneAndUpdate({_id:pkgaging._id},{agingStore:pkgaging.agingStore ? (pkgaging.agingStore + 1) : 1})
+                        if(!pkgagingUpdate) return ({success:false,message:"pkgagingUpdate Failed"})
+                        else return ({success:true,message:'Aging Updated'})         
+                    }
                     if(diff > 14){
-                        Package.findOne({_id:pk.packageId}, async (err,res)=>{
-                            if(err) resolve({success:false,message:err})
-                            else{
-                                Package.updateOne({_id:res._id},{agingdollar:res.agingdollar ? (res.agingdollar + 1) : 1},{new:true},async (err,result)=>{
-                                    if(err) resolve({success:false,message:err})
-                                    else {
-                                        const pkgData = await Package.findOne({_id:res._id})
-                                        .populate('customerId')
-                                        .populate('shipperId')
-                                        .populate('awbId');
-                                        if(pkgData && pkgData.awbId){
-                                            await emailService.sendAgingEmail(pkgData);
-                                        }
-                                        resolve({success:true,message:'Aging Dollar Updated'})
-                                    }
-                                });
-                                  
-                            }
-                        })
+                    let updPkg = await Package.findOneAndUpdate({_id:pkgaging._id},{agingStoredollar:pkgaging.agingStoredollar ? (pkgaging.agingStoredollar + 1) : 1},{new:true})
+                    if(!updPkg) return ({success:false,message:"updPkg Failed"})
+                    else {
+                        this.sendStorePackageDataForAging(updPkg._id)
+                        return ({success:true,message:'Aging Dollar Updated'})
+                    }  
+                           
                     }else{
-                        resolve({success:false,message:'Greater than 14'})
-                    }    
+                        return ({success:false,message:'Greater than 14'})
+                    }     
                 })).then((result)=> resolve(result))
             } catch (error) {
                 console.error({checkAgingofStoreInPackages:error})
@@ -1660,7 +1654,9 @@ class PackageService {
             }
         })
     }
+   
 
+    /* Email for NODOCS and Store Delivered */
     async sendNoDocsPackageData(pkgId){       
         const pkgData = await Package.findOne({_id:pkgId})
         .populate('customerId')
@@ -1674,7 +1670,21 @@ class PackageService {
             return false
         }        
     }
-
+    //Send Email for Nodocs Packages 
+    async sendNoDocsPackageDataForAging(pkgId){       
+        const pkgData = await Package.findOne({_id:pkgId})
+        .populate('customerId')
+        .populate('shipperId')
+        .populate('awbId');
+        if(pkgData && pkgData.awbId &&  !pkgData.emailAging){
+            await emailService.sendNoDocsPackageEmail(pkgData);
+            await Package.updateOne({_id:pkgId},{emailAging:true});
+            return true;
+        }else{
+            return false
+        }        
+    }
+    //Send Email when Package ENter to No DOc
     async sendStorePackageData(pkgId){
         let pkgData = await Package.findOne({_id:pkgId})
         .populate('customerId')
@@ -1698,6 +1708,31 @@ class PackageService {
             return false
         } 
     }
+    //SEnd email when package starts aging
+    async sendStorePackageDataForAging(pkgId){
+        let pkgData = await Package.findOne({_id:pkgId})
+        .populate('customerId')
+        .populate('shipperId')
+        .populate('awbId');
+        pkgData = JSON.parse(JSON.stringify(pkgData));
+        if(pkgData && pkgData.awbId &&  !pkgData.emailAgingStore){
+            const awbId = pkgData.awbId._id;
+            const awbData = await Awb.findOne({_id:awbId}).populate('invoices');
+            const invoices = awbData.invoices?awbData.invoices:[];
+            var totalPrice = 0;
+            for(let i=0;i<invoices.length;i++){
+                totalPrice = totalPrice+invoices[i].value;
+            }
+            pkgData.totalPrice = totalPrice;
+            console.log(totalPrice,'>>>>>>>>>>>>>>>>');
+            await emailService.sendStorePackageEmail(pkgData);
+            await Package.updateOne({_id:pkgId},{emailAgingStore:true});
+            return true;
+        }else{
+            return false
+        } 
+    }
+
     async validateStorePackage(pkgId){
        return new Promise(async (resolve,reject)=>{
            let pkgData = await Package.findOne({_id:pkgId})
@@ -1716,7 +1751,7 @@ class PackageService {
        }) 
 
     }
-   
+   /* End Sending EMail for Nodocs and Delivered */
 }
 
 function getPackageIdFromBarCode(barCodeValue) {

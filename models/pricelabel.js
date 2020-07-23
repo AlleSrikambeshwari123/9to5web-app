@@ -29,6 +29,8 @@ const PriceLabelSchema = new mongoose.Schema(
     Storage: { type: Number,default:0 },
     TotalWet: { type: Number,default:0 },
     TotalInvoiceValue: { type: Number,default:0 },
+    TotalWeightValue: { type: Number,default:0 },
+    NoOfInvoice: { type: Number,default:0 },
   },
   {
     timestamps: true,
