@@ -1755,7 +1755,7 @@ class PackageService {
                         resolve({ success: false, message: `Following PackageId ${pkgId} with Tracking No.${pkgData.trackingNo} belong to ${zone.name}` })
                     }
                 }else if (pmb >= 9000 && pmb <=10000){
-                    if(zone.name === '9 TO 5'){
+                    if(zone.name === '9TO5' || zone.name ==='9to5'){
                         resolve({ success: true, message: `Package is OK` })
                     }else{
                         resolve({ success: false, message: `Following PackageId ${pkgId} with Tracking No.${pkgData.trackingNo} belong to ${zone.name}` })
