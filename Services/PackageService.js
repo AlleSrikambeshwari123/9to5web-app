@@ -122,7 +122,8 @@ class PackageService {
                 // check packageId Exists
                 if (await Package.findById(packageId)) {
                     this.updatePackage(packageId, { compartmentId: compartmentId });
-                    await this.updatePackageStatus(packageId, 2, userId);
+                    const status = await this.updatePackageStatus(packageId, 2, userId);
+                    if (!status.success) error.push(status.message)
                 } else {
                     error.push(`Package ${packageId} doesn't Exist`)
                 }
@@ -157,7 +158,8 @@ class PackageService {
                 // check packageId Exists
                 if (await Package.findById(packageId)) {
                     this.updatePackage(packageId, { manifestId: manifestId });
-                    await this.updatePackageStatus(packageId, 2, userId);
+                    const status = await this.updatePackageStatus(packageId, 2, userId);
+                    if (!status.success) error.push(status.message)
                 } else {
                     error.push(`Package ${packageId} doesn't Exist`)
                 }
@@ -201,7 +203,8 @@ class PackageService {
             await Promise.all(packages.map(async packageId => {
                 // check packageId Exists
                 if (await Package.findById(packageId)) {
-                    await this.updatePackageStatus(packageId, 4, userId);
+                    const status = await this.updatePackageStatus(packageId, 4, userId);
+                    if (!status.success) error.push(status.message)
                 } else {
                     error.push(`Package ${packageId} doesn't Exist`)
                 }
@@ -236,7 +239,7 @@ class PackageService {
         try {
             let packageIds = data.packageIds.split(',');
             let error = []
-            await Promise.all(
+             await Promise.all(
                 packageIds.map(async packageId => {
                         this.updatePackage(packageId, {
                             location: data.location,
@@ -244,6 +247,7 @@ class PackageService {
                             aging:1
                         });
                         const status = await this.updatePackageStatus(packageId, 7, data.userId);
+                        if (!status.success) error.push(status.message)
                         //email                        
                         this.sendNoDocsPackageData(packageId);
                         return status
@@ -254,8 +258,9 @@ class PackageService {
                 )
             )
             if (error.length > 0) return { success: false, message: error }
-            
             return { success: true, message: strings.string_response_received, status: PKG_STATUS[7] }
+            
+            
         } catch (error) {
             console.error('addAwbsPkgNoDocs', error)
         }
