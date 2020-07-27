@@ -226,8 +226,8 @@ async function sendNoDocsPackageEmail(pkg){
 }
 
 async function sendStorePackageEmail(pkg){
-    // console.log(pkg,"sending at no docx package.")
-    // console.log("ABOUT TO SEND EMAIL",pkg)
+    console.log("sending at Store package.")
+    console.log("ABOUT TO SEND EMAIL")
     var emailBody = await readEmailTemplate("storepackage"); 
     emailBody = emailBody.replace("{{HOST}}","https://9to5-qa.sprocket.solutions/");
     let customerName = '';

@@ -277,7 +277,6 @@ class PackageService {
                         const validateStore = await this.validateStorePackage(data.zoneId,packageId)
                         if(query.override == undefined){
                             if(!validateStore.success) error.push(validateStore.message)
-                            return validateStore
                         }
                         if(validateStore.success || query.override !== undefined){
                             const status = await this.updatePackageStatus(packageId, 9, username);                       
@@ -1747,19 +1746,19 @@ class PackageService {
                     if(zone.name === 'CABLE BEACH'){
                         resolve({ success: true, message: `Package is OK` })
                     }else{
-                        resolve({ success: false, message: `Following PackageId ${pkgId} with Tracking No.${pkgData.trackingNo} belong to ${pmb} ${zone.name}` })
+                        resolve({ success: false, message: `Following PackageId ${pkgId} with Tracking No.${pkgData.trackingNo} belong to ${zone.name}` })
                     }
                 }else if (pmb >= 3000 && pmb <=3999){
                     if(zone.name === 'ALBANY'){
                         resolve({ success: true, message: `Package is OK` })
                     }else{
-                        resolve({ success: false, message: `Following PackageId ${pkgId} with Tracking No.${pkgData.trackingNo} belong to ${pmb} ${zone.name}` })
+                        resolve({ success: false, message: `Following PackageId ${pkgId} with Tracking No.${pkgData.trackingNo} belong to ${zone.name}` })
                     }
                 }else if (pmb >= 9000 && pmb <=10000){
                     if(zone.name === '9 TO 5'){
                         resolve({ success: true, message: `Package is OK` })
                     }else{
-                        resolve({ success: false, message: `Following PackageId ${pkgId} with Tracking No.${pkgData.trackingNo} belong to ${pmb} ${zone.name}` })
+                        resolve({ success: false, message: `Following PackageId ${pkgId} with Tracking No.${pkgData.trackingNo} belong to ${zone.name}` })
                     }
                 }else{
                  resolve({ success: false, message: `Following PackageId ${pkgId} with Tracking No.${pkgData.trackingNo} Doesn't belong to Right Store` })
