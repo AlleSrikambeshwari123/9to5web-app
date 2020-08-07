@@ -64,12 +64,20 @@ class AwbPriceLabelService {
         { awbId: id }, 
         priceLabel,
         {upsert:true,new:true},
-        (err, result) => {
+        async (err, result) => {
           if (err) {
               console.log(err)
             resolve({ success: false, message: strings.string_response_error });
           } else {
-            resolve({ success: true, message: strings.string_response_updated });
+            let awb = await Awb.findById(id)
+            let total_weight = 0
+            awb.packages.forEach(async (data,index)=>{
+              let pack = await Package.findById(data)
+              total_weight = total_weight + pack.weight 
+              if(index == awb.packages.length-1){
+                resolve({ success: true, message: strings.string_response_updated ,totalWeight : total_weight.toFixed(2)});
+              }
+            })
           }
         }
       )
