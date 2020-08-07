@@ -94,27 +94,28 @@ function pricelLabelCheck(response) {
 
     //pkg.packages.map((pkge) => (totalweightVal += pkge.weight));
   }
+  
+  let Freight =  0 //(1.55 * pkg.weight).toFixed(2);
+  $('#Brokerage').val(response.Brokerage.toFixed(2));
+  $('#CustomsProc').val(response.CustomsProc.toFixed(2));
+  $('#CustomsVAT').val(response.CustomsVAT.toFixed(2));
+  $('#Delivery').val(response.Delivery.toFixed(2));
+  $('#Duty').val(response.Duty.toFixed(2));
+  $('#EnvLevy').val(response.EnvLevy.toFixed(2));
+  $('#Freight').val(Freight.toFixed(2));
 
-  let Freight = 0//(1.55 * pkg.weight).toFixed(2);
-  $('#Brokerage').val(response.Brokerage);
-  $('#CustomsProc').val(response.CustomsProc);
-  $('#CustomsVAT').val(response.CustomsVAT);
-  $('#Delivery').val(response.Delivery);
-  $('#Duty').val(response.Duty);
-  $('#EnvLevy').val(response.EnvLevy);
-  $('#Freight').val(Freight);
-  $('#Hazmat').val(response.Hazmat);
-  $('#Pickup').val(response.Pickup);
+  $('#Hazmat').val(response.Hazmat.toFixed(2));
+  $('#Pickup').val(response.Pickup.toFixed(2));
   $('#ServiceVat').val(ServiceVat);
-  $('#Storage').val(response.Storage);
-  $('#NoDocsVal').val(response.NoDocs);
-  $('#InsuranceVal').val(response.Insurance);
-  $('#SedVal').val(response.Sed);
-  $('#ExpressVal').val(response.Express);
+  $('#Storage').val(response.Storage.toFixed(2));
+  $('#NoDocsVal').val(response.NoDocs.toFixed(2));
+  $('#InsuranceVal').val(response.Insurance.toFixed(2));
+  $('#SedVal').val(response.Sed.toFixed(2));
+  $('#ExpressVal').val(response.Express.toFixed(2));
   $('#TotalWet').val(TotalVat);
-  $("#no_of_invoice").val((pkg.invoices).length)
-  $("#total-value-invoice").val(totalinvoiceVal)
-  $("#total_weight_value").val(totalweightVal)
+  $("#no_of_invoice").val((pkg.invoices).length.toFixed(2))
+  $("#total-value-invoice").val(totalinvoiceVal.toFixed(2))
+  $("#total_weight_value").val(totalweightVal.toFixed(2))
   if (response.NoDocs > 0) $('#NoDocs').prop('checked', true)
   if (response.Insurance > 0) $('#Insurance').prop('checked', true)
   if (response.Sed > 0) $('#Sed').prop('checked', true)
