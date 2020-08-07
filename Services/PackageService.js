@@ -707,9 +707,16 @@ class PackageService {
 
     getPackage(packageId) {
         return new Promise((resolve, reject) => {
-            Package.find({ id: packageId }, (err, pkg) => {
-                if (err || pkg == null) resolve({});
-                else resolve(pkg);
+            Package.find({ id: packageId },async (err, pkg) => {
+                if (err || pkg == null) {
+                    resolve({}) 
+                }
+                else{
+                    pkg[0] = pkg[0].toJSON()
+                    let zoned = await Zone.findById(pkg[0].zoneId)
+                    pkg[0].zoneValue = zoned.name
+                    resolve(pkg);
+                } 
             });
         });
     }
