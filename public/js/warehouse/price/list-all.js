@@ -291,27 +291,46 @@ $('#pricelabel-table').on('click', '.btn-edit-pricelabel', function () {
 $('#UpdatePriceLabelPackage').on('click', function (event) {
   event.preventDefault();
   var id = $('#setIdPriceLabel').val()
-  if (Number($('#ServiceVat').val()) > 0) {
-    ServiceVat = $('#ServiceVat').val() == "" ? 0 : $('#ServiceVat').val();
-  } else {
-    ServiceVat = $('#serviceVatSpan').text() == "" ? 0 : $('#serviceVatSpan').text();
-  }
   if (Number($('#TotalWet').val()) > 0) {
     TotalWet = $('#TotalWet').val() == "" ? 0 : $('#TotalWet').val();
   } else {
     TotalWet = $('#totalWetSpan').text() == "" ? 0 : $('#totalWetSpan').text();
   }
+
+  let Freight = $('#Freight').val() == "" ? 0 : $('#Freight').val(),
+  TotalInvoiceValue = $("#total-value-invoice").val() == "" ? 0 : $("#total-value-invoice").val(),
+  CustomsProc=  $('#CustomsProc').val() == "" ? 0 : $('#CustomsProc').val(),
+  EnvLevy= $('#EnvLevy').val() == "" ? 0 : $('#EnvLevy').val(),
+   Duty =  $('#Duty').val() == "" ? 0 : $('#Duty').val();
+
+  let CustomsVat = (Number(TotalInvoiceValue) + Number(Freight) + Number(Duty)+ Number(CustomsProc)+Number(EnvLevy)) * 0.12
+
+  let Storage = $('#Storage').val() == "" ? 0 : $('#Storage').val(),
+  NoDocs = $('#NoDocsVal').val() == "" ? 0 : $('#NoDocsVal').val(),
+  Insurance = $('#InsuranceVal').val() == "" ? 0 : $('#InsuranceVal').val(),
+  Express = $('#ExpressVal').val() == "" ? 0 : $('#ExpressVal').val(),
+  Delivery =$('#Delivery').val() == "" ? 0 : $('#Delivery').val(),
+  Brokerage= $('#Brokerage').val() == "" ? 0 : $('#Brokerage').val();
+
+  ServiceVat = (Number(NoDocs) + Number(Insurance) + Number(Storage) + Number(Brokerage) +Number(Express) + Number(Delivery) ) * 0.12
+
+  if (ServiceVat > 0) {
+    ServiceVat = ServiceVat == "" ? 0 : ServiceVat;
+  } else {
+    ServiceVat = $('#serviceVatSpan').text() == "" ? 0 : $('#serviceVatSpan').text();
+  }
+
   data = {
     Brokerage: $('#Brokerage').val() == "" ? 0 : $('#Brokerage').val(),
     CustomsProc: $('#CustomsProc').val() == "" ? 0 : $('#CustomsProc').val(),
-    CustomsVAT: $('#CustomsVAT').val() == "" ? 0 : $('#CustomsVAT').val(),
+    CustomsVAT: CustomsVat == "" ? 0 :CustomsVat,
     Delivery: $('#Delivery').val() == "" ? 0 : $('#Delivery').val(),
     Duty: $('#Duty').val() == "" ? 0 : $('#Duty').val(),
     EnvLevy: $('#EnvLevy').val() == "" ? 0 : $('#EnvLevy').val(),
     Freight: $('#Freight').val() == "" ? 0 : $('#Freight').val(),
     Hazmat: $('#Hazmat').val() == "" ? 0 : $('#Hazmat').val(),
     Pickup: $('#Pickup').val() == "" ? 0 : $('#Pickup').val(),
-    ServiceVat: ServiceVat,
+    ServiceVat: ServiceVat == "" ? 0 :ServiceVat,
     Storage: $('#Storage').val() == "" ? 0 : $('#Storage').val(),
     NoDocs: $('#NoDocsVal').val() == "" ? 0 : $('#NoDocsVal').val(),
     Insurance: $('#InsuranceVal').val() == "" ? 0 : $('#InsuranceVal').val(),
