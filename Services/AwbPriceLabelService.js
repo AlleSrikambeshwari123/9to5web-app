@@ -59,6 +59,8 @@ class AwbPriceLabelService {
     //   if (!(PriceLabelData && PriceLabelData._id)) {
     //     return resolve({success: false, message: strings.string_not_found_location});
     //   }
+      priceLabel.CustomsVAT = (Number(priceLabel.TotalInvoiceValue) + Number(priceLabel.Freight) + Number(priceLabel.Duty)+ Number(priceLabel.CustomsProc)+Number(priceLabel.EnvLevy)) * Number(priceLabel.VatMultiplier)
+      priceLabel.ServiceVat = (Number(priceLabel.NoDocs) + Number(priceLabel.Insurance) + Number(priceLabel.Storage) + Number(priceLabel.Brokerage) +Number(priceLabel.Express) + Number(priceLabel.Delivery) ) * Number(priceLabel.VatMultiplier)
 
       PriceLabel.findOneAndUpdate(
         { awbId: id }, 

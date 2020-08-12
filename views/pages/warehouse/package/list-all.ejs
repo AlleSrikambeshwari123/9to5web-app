@@ -98,7 +98,7 @@
                 <% } else { %>
                   <td> - </td>
                   <% } %>
-              <td><a class="text-decoration-none" href="../../nas/awb/manage/<%=pkg.awbId ? pkg.awbId._id: '#'%>/preview"><b><%= pkg.express ? '*': '' %></b><%= pkg.awbId.awbId %> </a></td>
+              <td><a class="text-decoration-none" href="/warehouse/nas/awb/manage/<%=pkg.awbId ? pkg.awbId._id: '#'%>/preview"><b><%= pkg.express ? '*': '' %></b><%= pkg.awbId.awbId %> </a></td>
               <td><%= pkg.originBarcode ? pkg.originBarcode.barcode: ''%></td>
               <td><%= pkg.packageNumber ? pkg.packageNumber : ''%></td>
               <td><%= pkg.description %></td>

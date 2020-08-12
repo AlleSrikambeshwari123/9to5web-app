@@ -95,7 +95,9 @@ function pricelLabelCheck(response) {
     //pkg.packages.map((pkge) => (totalweightVal += pkge.weight));
   }
   
-  let Freight =  0 //(1.55 * pkg.weight).toFixed(2);
+  let Freight =  response.Freight //(1.55 * pkg.weight).toFixed(2);
+  let VatMultiplier = (response.CustomsVAT)/(Number(totalinvoiceVal) + Number(Freight) + Number(response.Duty)+ Number(response.CustomsProc)+Number(response.EnvLevy));
+  $('#VatMultiplier').val(VatMultiplier.toFixed(2));
   $('#Brokerage').val(response.Brokerage.toFixed(2));
   $('#CustomsProc').val(response.CustomsProc.toFixed(2));
   $('#CustomsVAT').val(response.CustomsVAT.toFixed(2));
@@ -130,6 +132,7 @@ function packagePriceLabel(response) {
   let InsuranceVal = 0;
   let SedVal = 0;
   let ExpressVal = 0;
+  let VatMultiplier = 0.12;
   //if (pkg.packageCalculation == 'Kg') pkg.weight = 2.20462 * pkg.weight;
   let totalinvoiceVal = 0;
   if (pkg.invoices) {
@@ -150,6 +153,7 @@ function packagePriceLabel(response) {
 
     //pkg.packages.map((pkge) => (totalweightVal += pkge.weight));
   }
+  $("#VatMultiplier").val(VatMultiplier)
   $("#no_of_invoice").val((pkg.invoices).length)
   $("#total-value-invoice").val(totalinvoiceVal)
   $("#total_weight_value").val(totalweightVal)
@@ -296,24 +300,7 @@ $('#UpdatePriceLabelPackage').on('click', function (event) {
   } else {
     TotalWet = $('#totalWetSpan').text() == "" ? 0 : $('#totalWetSpan').text();
   }
-
-  let Freight = $('#Freight').val() == "" ? 0 : $('#Freight').val(),
-  TotalInvoiceValue = $("#total-value-invoice").val() == "" ? 0 : $("#total-value-invoice").val(),
-  CustomsProc=  $('#CustomsProc').val() == "" ? 0 : $('#CustomsProc').val(),
-  EnvLevy= $('#EnvLevy').val() == "" ? 0 : $('#EnvLevy').val(),
-   Duty =  $('#Duty').val() == "" ? 0 : $('#Duty').val();
-
-  let CustomsVat = (Number(TotalInvoiceValue) + Number(Freight) + Number(Duty)+ Number(CustomsProc)+Number(EnvLevy)) * 0.12
-
-  let Storage = $('#Storage').val() == "" ? 0 : $('#Storage').val(),
-  NoDocs = $('#NoDocsVal').val() == "" ? 0 : $('#NoDocsVal').val(),
-  Insurance = $('#InsuranceVal').val() == "" ? 0 : $('#InsuranceVal').val(),
-  Express = $('#ExpressVal').val() == "" ? 0 : $('#ExpressVal').val(),
-  Delivery =$('#Delivery').val() == "" ? 0 : $('#Delivery').val(),
-  Brokerage= $('#Brokerage').val() == "" ? 0 : $('#Brokerage').val();
-
-  ServiceVat = (Number(NoDocs) + Number(Insurance) + Number(Storage) + Number(Brokerage) +Number(Express) + Number(Delivery) ) * 0.12
-
+  
   if (ServiceVat > 0) {
     ServiceVat = ServiceVat == "" ? 0 : ServiceVat;
   } else {
@@ -323,7 +310,8 @@ $('#UpdatePriceLabelPackage').on('click', function (event) {
   data = {
     Brokerage: $('#Brokerage').val() == "" ? 0 : $('#Brokerage').val(),
     CustomsProc: $('#CustomsProc').val() == "" ? 0 : $('#CustomsProc').val(),
-    CustomsVAT: CustomsVat == "" ? 0 :CustomsVat,
+    CustomsVAT: $('#CustomsVAT').val() == "" ? 0 :$('#CustomsVAT').val(),
+    VatMultiplier : $('#VatMultiplier').val() == "" ? 0 : $('#VatMultiplier').val(),
     Delivery: $('#Delivery').val() == "" ? 0 : $('#Delivery').val(),
     Duty: $('#Duty').val() == "" ? 0 : $('#Duty').val(),
     EnvLevy: $('#EnvLevy').val() == "" ? 0 : $('#EnvLevy').val(),
