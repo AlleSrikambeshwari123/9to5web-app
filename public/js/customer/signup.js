@@ -38,7 +38,7 @@ $(function () {
           data: data,
           success: function (response) {
             if (response.success) {
-              window.location.href = '/customer';
+              window.location.href = '/customer/login';
             } else {
               showNotify('Failed', response.message, 'fa fa-info', 'danger');
             }

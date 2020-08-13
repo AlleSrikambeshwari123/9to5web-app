@@ -11,7 +11,6 @@ exports.preview_awb_invoice = (req, res, next) => {
   let id =res.user._id
 
   services.awbService.getAwbsCustomer(id).then((awb)=>{
-    if(awb){
       awb['dateCreated'] = momentz(awb.createdAt).tz("America/New_York").format('dddd, MMMM Do YYYY, h:mm A');
       awb._doc.createdBy = awb.createdBy ? (awb.createdBy.firstName || '')  + (awb.createdBy.lastName || ''): ''
       if (awb.invoices && awb.invoices.length) {
@@ -23,8 +22,6 @@ exports.preview_awb_invoice = (req, res, next) => {
       return invoice;
       });
       }
-    }
-    if(awb){
       res.render('pages/warehouse/awb/invoice', {
         page: req.originalUrl,
         title: "AWB #" + awb.awbId,
@@ -34,18 +31,6 @@ exports.preview_awb_invoice = (req, res, next) => {
         carrier: awb.carrier,
         hazmat: awb.hazmat
       });
-    }else{
-      awb = {}
-      res.render('pages/emptyDashboard', {
-        page: req.originalUrl,
-        title: "Home",
-        awb: awb,
-        user: res.user,
-        shipper: awb.shipper,
-        carrier: awb.carrier,
-        hazmat: awb.hazmat
-      });
-    }
   });
 };
 
@@ -63,7 +48,6 @@ exports.preview_awb = (req, res, next) => {
         return invoice;
       });
     }
-    console.log("awb",awb)
     res.render('pages/warehouse/awb/preview', {
       page: req.originalUrl,
       title: "AWB #" + awb.awbId,

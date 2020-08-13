@@ -476,7 +476,7 @@ class PackageService {
     get_Packages_update(object) {
         return new Promise((resolve, reject) => {
             Package.find(object)
-                // .populate('awbId')
+                .populate('awbId')
                 .populate('originBarcode')
                 .populate('customerId')
                 .populate('zoneId')
@@ -1333,7 +1333,7 @@ class PackageService {
     }
 
     async getPopulatedCustomerPackages(customerId) {
-        let packages = await this.get_Packages_update({customerId : customerId});
+        let packages = await this.getAllPackages_updated({customerId : customerId});
         return await Promise.all(
             packages.map(async(pkg) => {
                 let status = await this.services.packageService.getPackageLastStatus(pkg._id);
@@ -1345,10 +1345,7 @@ class PackageService {
                     }
                 }
                 if (pkg.awbId) {
-                    let awb = await this.services.awbService.getAwbPriceLabel(pkg.awbId)
-                    pkg = pkg.toJSON()
-                    pkg.price = awb.TotalWet ? awb.TotalWet : ''
-                    pkg.awb = awb.awbId
+                    let awb = await this.services.awbService.getAwb(pkg.awbId)
                     if (awb !== null && awb.createdAt) {
                         pkg.awbCreatedAt = momentz(awb.createdAt).tz("America/New_York").format('dddd, MMMM Do YYYY, h:mm A');
                     }
@@ -1362,7 +1359,6 @@ class PackageService {
                 pkg.OrignalBarcodeDate = pkg.OrignalBarcodeDate || ''
                 pkg.awbCreatedAt = pkg.awbCreatedAt || ''
                 pkg.actualFlight = pkg.actualFlight || ''
-                pkg.price = pkg.price || ''
                 return pkg;
             }),
         );

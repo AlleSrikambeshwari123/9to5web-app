@@ -413,6 +413,24 @@ class AwbService {
             });
         });
       }
+      getAwbCustomer(id) {
+        return new Promise((resolve, reject) => {
+          Awb.find({customerId:id})
+          // .populate('invoices')
+          // .populate('customerId')
+          // .populate('shipper')
+          // .populate('carrier')
+          // .populate('hazmat')
+          // .populate('packages')
+          // .populate('purchaseOrders')
+          // .populate('invoices')
+          // .populate('driver')
+          // .populate('createdBy')
+            .exec((err, result) => {
+              resolve(result);
+            });
+        });
+      }
     
       async getAwbsNoDocsCustomer(id) {
         return new Promise((resolve, reject) => {
@@ -465,8 +483,9 @@ class AwbService {
   async getAwbPriceLabel(awbId) {    
     return new Promise((resolve, reject) => { 
       PriceLabel.findOne({awbId:awbId}).exec((err, result) => {
-        result = JSON.parse(JSON.stringify(result))
-        Awb.findOne({_id:awbId})
+        if(result){
+          result = JSON.parse(JSON.stringify(result))
+          Awb.findOne({_id:awbId})
         //.populate('customerId')
         //.populate('shipper')
         //.populate('carrier')
@@ -486,8 +505,9 @@ class AwbService {
             result.noOfInvoices = invoices.length
             result.awbId = awbData;
           }
-            resolve(result)
+          resolve(result)
         })
+      }
       })
     })    
     // return new Promise((resolve, reject) => {     

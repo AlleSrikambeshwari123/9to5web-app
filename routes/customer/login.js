@@ -5,19 +5,20 @@ var middleware = require('../../middleware');
 var services = require('../../Services/RedisDataServices');
 var customerCtrl = require('../../Controller/CustomerController');
 
-router.get('/', function (req, res, next) {
+router.get('/login', function (req, res, next) {
   if (req.session.token)
     res.redirect('/dashboard');
-  else
+  else  
     res.render('login')
-});
+});    
 
 router.post('/login', (req, res, next) => {
   services.customerService.login(req.body.email, req.body.password).then(loginResult => {
     if(loginResult.success || loginResult.authenticated){
       req.session.token = loginResult.token;
       req.session.customerId = loginResult.user._id
-      res.send({success : true ,role : loginResult,url : "/dashboard"});
+  const webUrl = req.protocol + '://' + req.get('host'); 
+  res.send({success : true ,role : loginResult,url : webUrl + "/dashboard"});
     }else{
       services.customerChildService.login(req.body.email, req.body.password).then(loginResultchild => {
         return res.send(loginResultchild)
@@ -26,7 +27,7 @@ router.post('/login', (req, res, next) => {
   })
 });
 
-router.get('/dashboard', middleware().checkSession,customerCtrl.preview_customer_awb);
+router.get('/dashboard', middleware().checkSession,customerCtrl.get_customer_awb_list);
 
 router.get('/change-pass', middleware().checkSession, function (req, res, next) {
 	res.render('pages/customer/account/change-pass', {
@@ -41,5 +42,16 @@ router.post('/change-pass', middleware().checkSession, function (req, res, next)
 		res.send(result)
   })
 });
+
+router.get('/forgot-password', function (req, res, next) {  
+  res.render('customer_forgot_password');
+});
+
+router.post('/request-pwd-reset',async function(req,res,next){
+  const webUrl = req.protocol + '://' + req.get('host');
+  const result = await services.customerService.requestResetPassword(req.body.email, webUrl);
+  res.send(result);
+});
+
 
 module.exports = router;

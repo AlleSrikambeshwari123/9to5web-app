@@ -3,8 +3,9 @@ $(function () {
     event.preventDefault();
     var password = document.getElementById('password');
     var email = document.getElementById('email');
+
     $.ajax({
-      url: 'customer/login',
+      url: "/customer/login",
       type: 'post',
       data: {
         email: email.value,
@@ -12,7 +13,7 @@ $(function () {
       },
       success: function(res) {
        if (res.success) {
-          window.location.href = window.location.href + res.url;
+          window.location.href = res.url;
         } else if (!res.authenticated) {
           // displaying error message when credentials is wrong.
           showNotify('Failed', "Invalid username or password!", 'fa fa-info', 'danger');
@@ -25,7 +26,8 @@ $(function () {
   });
 
   $('.forgot-password').click(function() {
-    window.location.replace('./forgot-password');
+    console.log("customer forgot")
+    window.location.replace('/customer/forgot-password');
   });
 
   function showNotify(title, message, icon, type) {

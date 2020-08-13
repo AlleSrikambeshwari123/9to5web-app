@@ -35,7 +35,6 @@ exports.get_customer_package_list = (req, res, next) => {
                 return pkg
             })
         ).then(pkgs => {
-            console.log("pkgs",pkgs)
             res.render('pages/customer/package/list-all', {
                 page: req.originalUrl,
                 user: res.user,

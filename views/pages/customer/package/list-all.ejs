@@ -1,10 +1,9 @@
 <% layout('./shared/__template')%>
 <style>
-  table.dataTable tbody>tr.selected,
-  table.dataTable tbody>tr>.selected {
+  table.dataTable tbody > tr.selected,
+  table.dataTable tbody > tr > .selected {
     background-color: #0275d8;
   }
-
   table.dataTable tbody tr.selected,
   table.dataTable tbody th.selected,
   table.dataTable tbody td.selected {
@@ -18,99 +17,134 @@
 <div class="gutters">
   <div class="col-xl-12 col-lg-6 col-md-12 col-sm-12">
     <div class="card">
-      <div class="card-header d-flex align-items-left align-items-md-center flex-column flex-md-row">
+      <div
+        class="card-header d-flex align-items-left align-items-md-center flex-column flex-md-row"
+      >
         <div class="card-title"><%= title %></div>
         <div class="d-flex align-items-right float-right ml-md-auto">
-          <button id="add-to-cube-button" data-toggle="modal" data-target="#add-to-cube-modal"
-            class="btn btn-primary btn-round float-right mr-2 ml-md-auto">
-            Add to Cube
-          </button>
-          <button id="add-to-nodoc-button" data-toggle="modal" data-target="#add-to-nodoc-modal"
-            class="btn btn-primary btn-round float-right mr-2 ml-md-auto">
-            Add to NoDoc
-          </button>
-          <% if (buttonName === 'Add to Delivery') { %>
-          <button id="add-to-delivery-button" data-toggle="modal" data-target="#add-to-delivery-modal"
-            class="btn btn-primary btn-round float-right ml-md-auto">
+        <button
+        id="add-to-cube-button"
+        data-toggle="modal"
+        data-target="#add-to-cube-modal"
+        class="btn btn-primary btn-round float-right mr-2 ml-md-auto"
+        >
+        Add to Cube
+        </button>
+        <button
+        id="add-to-nodoc-button"
+        data-toggle="modal"
+        data-target="#add-to-nodoc-modal"
+        class="btn btn-primary btn-round float-right mr-2 ml-md-auto"
+        >
+        Add to NoDoc
+        </button>
+        <% if (buttonName === 'Add to Delivery') { %>
+          <button
+            id="add-to-delivery-button"
+            data-toggle="modal"
+            data-target="#add-to-delivery-modal"
+            class="btn btn-primary btn-round float-right ml-md-auto"
+          >
             Add to Delivery
           </button>
-          <% } %>
-          <% if (buttonName === 'Add to Manifest') { %>
-          <button id="add-to-manifest-button" data-toggle="modal" data-target="#add-to-manifest-modal"
-            class="btn btn-primary btn-round float-right ml-md-auto">
+        <% } %>   
+        <% if (buttonName === 'Add to Manifest') { %>
+          <button
+            id="add-to-manifest-button"
+            data-toggle="modal"
+            data-target="#add-to-manifest-modal"
+            class="btn btn-primary btn-round float-right ml-md-auto"
+          >
             Add to Manifest
           </button>
-          <% } %>
-        </div>
+        <% } %> 
+      </div>
       </div>
       <div class="card-body daterangepickerbody">
         <div class="table-responsive p-4">
-          <table id="package-table"
-            class="display dateRangeFilterTable table table-striped table-hover dataTable package-table">
-            <thead>
-              <tr>
-                <th><input id="checkall" type="checkbox" class="package-select-all" /></th>
-                <th>Package Created Date</th>
-                <!-- <th>Customer Name</th> -->
-                <th>AWB</th>
-                <!-- <th>Original Tracking No</th> -->
-                <!-- <th>Package No</th> -->
-                <!-- <th>Description</th> -->
-                <!-- <th>Zone</th> -->
-                <!-- <th>Type</th> -->
-                <th>Price</th>
-                <th>Number of Pieces</th>
-                <th>Status</th>
-                <!-- <th>AirwareBillDate</th> -->
-                <!-- <th>ActualFlight</th> -->
-                <th>View Details</th>
-                <th>View Invoice</th>
-                <!-- <th></th> -->
-              </tr>
-            </thead>
-            <tbody>
-              <% packages.forEach(function(pkg){ %>
-              <tr data-record="<%= pkg._id %>">
-                <td>
-                  <input type="checkbox" name="package-select" class="package-select" />
-                </td>
-                <td><%= helpers.formatDate(pkg.createdAt) %></td>
-                <!-- <% if (pkg['customerId']) { %>
+        <table id = "package-table" class="display dateRangeFilterTable table table-striped table-hover dataTable package-table">
+          <thead>
+            <tr>
+              <th><input id="checkall" type="checkbox" class="package-select-all" /></th>
+              <th>OrignalScanDate</th>
+              <th>Customer Name</th>
+              <th>AWB</th>
+              <th>Original Tracking No</th>
+              <th>Package No</th>
+              <th>Description</th>
+              <th>Zone</th>
+              <th>Type</th>
+              <th>Weight</th>
+              <th>Number of Pieces</th>
+              <th>Status</th>
+              <th>AirwareBillDate</th>
+              <th>ActualFlight</th>
+              <th></th>
+              <!-- <th></th> -->
+            </tr>
+          </thead>  
+          <tbody>
+            <% packages.forEach(function(pkg){ %>
+            <tr data-record="<%= pkg._id %>">
+              <td>
+                <input type="checkbox" name="package-select" class="package-select" />
+              </td>
+              <td><%= helpers.formatDate(pkg.OrignalBarcodeDate) %></td>
+              <% if (pkg['customerId']) { %>
                 <td><%= (pkg['customerId'].lastName ? 
                   `${pkg['customerId'].firstName} ${pkg['customerId'].lastName}` : 
                   `${pkg['customerId'].firstName}`); %>
                 </td>
                 <% } else { %>
                   <td> - </td>
-                  <% } %> -->
-                <td>
-                  <%= pkg.awb.awbId %>
+                  <% } %>
+              <td><a class="text-decoration-none" href="/warehouse/nas/awb/manage/<%=pkg.awbId ? pkg.awbId._id: '#'%>/preview"><b><%= pkg.express ? '*': '' %></b><%= pkg.awbId.awbId %> </a></td>
+              <td><%= pkg.originBarcode ? pkg.originBarcode.barcode: ''%></td>
+              <td><%= pkg.packageNumber ? pkg.packageNumber : ''%></td>
+              <td><%= pkg.description %></td>
+              <% if (pkg['zoneId'] && pkg['zoneId'].name) { %>
+                <td><%= pkg['zoneId'].name %>
                 </td>
-
-                <td><%= pkg.price%></td>
-                <td><%= (pkg.pieces || pkg.pieces > -1) ? pkg.pieces : ''%></td>
-                <td class="lastStatusText_field"><%= pkg.lastStatusText %></td>
-                <td>
-                    <a href="/warehouse/nas/awb/manage/<%=pkg.awb ? pkg.awb._id: '#'%>/preview" class="btn btn-link btn-primary px-3" data-toggle="tooltip"
-                      data-original-title="View Details"> <i class="fa fa-eye"></i> </a>
-                </td>
-                <td>
-                  <a href="/warehouse/nas/awb/manage/<%=pkg.awb ? pkg.awb._id: '#'%>/invoice" class="btn btn-link btn-primary px-3" data-toggle="tooltip"
-                    data-original-title="View Invoice"> <i class="fa fa-info"></i> </a>
+              <% } else { %>
+                <td> - </td>
+              <% } %> 
+              <td><%= pkg.packageType %></td>
+              <td><%= pkg.weight%></td>
+              <td><%= (pkg.pieces || pkg.pieces > -1) ? pkg.pieces : ''%></td>
+              <td class="lastStatusText_field"><%= pkg.lastStatusText %></td>
+              <td><%= pkg.awbCreatedAt %></td>
+              <td><%= pkg.actualFlight %></td>
+              <!-- <td><a href="../pkg-label/download/<%=pkg._id%>"><i class="fa fa-download"></i></a></td> -->
+              <td class="text-center">
+                <a href="/warehouse/package/pkg-label/download/<%=pkg._id%>"><i class="fa fa-download"></i></a>
+                <a
+                  class="btn btn-link btn-primary btn-print-pkg"
+                  data-toggle="modal"
+                  data-id="<%=pkg._id%>"
+                  data-original-title="Print Label"
+                  data-target="#print-popup"
+                ><i class="fa fa-print"></i>
+              </a>
               </td>
-
-              </tr>
-              <%})%>
-            </tbody>
-          </table>
+            </tr>
+            <%})%>
+          </tbody>
+        </table>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<div class="modal fade" id="add-to-manifest-modal" tabindex="-1" role="dialog" aria-labelledby="print-popup"
-  aria-hidden="true" style="display: none;">
+<div
+  class="modal fade"
+  id="add-to-manifest-modal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="print-popup"
+  aria-hidden="true"
+  style="display: none;"
+>
   <div class="modal-dialog" role="document">
     <form id="add-to-manifest-form" method="post">
       <div class="modal-content">
@@ -144,8 +178,15 @@
   </div>
 </div>
 <!-- Add Packages To nodoc -->
-<div class="modal fade" id="add-to-nodoc-modal" tabindex="-1" role="dialog" aria-labelledby="print-popup"
-  aria-hidden="true" style="display: none;">
+<div
+  class="modal fade"
+  id="add-to-nodoc-modal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="print-popup"
+  aria-hidden="true"
+  style="display: none;"
+>
   <div class="modal-dialog" role="document">
     <form id="add-to-nodoc-form" method="post">
       <div class="modal-content">
@@ -179,8 +220,15 @@
   </div>
 </div>
 <!-- Add Packages To Cube -->
-<div class="modal fade" id="add-to-cube-modal" tabindex="-1" role="dialog" aria-labelledby="print-popup"
-  aria-hidden="true" style="display: none;">
+<div
+  class="modal fade"
+  id="add-to-cube-modal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="print-popup"
+  aria-hidden="true"
+  style="display: none;"
+>
   <div class="modal-dialog" role="document">
     <form id="add-to-cube-form" method="post">
       <div class="modal-content">
@@ -208,8 +256,15 @@
   </div>
 </div>
 
-<div class="modal fade" id="add-to-delivery-modal" tabindex="-1" role="dialog" aria-labelledby="print-popup"
-  aria-hidden="true" style="display: none;">
+<div
+  class="modal fade"
+  id="add-to-delivery-modal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="print-popup"
+  aria-hidden="true"
+  style="display: none;"
+>
   <div class="modal-dialog" role="document">
     <form id="add-to-delivery-form" method="post">
       <div class="modal-content">
@@ -237,8 +292,15 @@
   </div>
 </div>
 
-<div class="modal fade" id="print-popup" tabindex="-1" role="dialog" aria-labelledby="print-popup" aria-hidden="true"
-  style="display: none;">
+<div
+  class="modal fade"
+  id="print-popup"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="print-popup"
+  aria-hidden="true"
+  style="display: none;"
+>
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">

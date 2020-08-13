@@ -35,45 +35,25 @@ router.get('/report', middleware(services.userService).checkSession, function (r
 
 router.get('/dashboard', middleware(services.userService).checkSession, function (req, res, next) {
   if(res.user.roles[0].type == 'Customers'){
-    
-    let id =res.user._id
-    services.awbService.getAwbsCustomer(id).then((awb)=>{
-      if(awb){
-        awb['dateCreated'] = momentz(awb.createdAt).tz("America/New_York").format('dddd, MMMM Do YYYY, h:mm A');
-        awb._doc.createdBy = awb.createdBy ? (awb.createdBy.firstName || '')  + (awb.createdBy.lastName || ''): ''
-        if (awb.invoices && awb.invoices.length) {
-          awb.invoices = awb.invoices.map(invoice => {
-            if (invoice.filename) {
-            invoice.link = aws.getSignedUrl(invoice.filename);
-          }
-        invoice['dateCreated'] = momentz(invoice.createdAt).tz("America/New_York").format('dddd, MMMM Do YYYY, h:mm A');
-        return invoice;
-        });
+    services.awbService.getAwbCustomer(res.user._id).then(async (awbs) => {
+      return Promise.all(
+      awbs.map(async (data,i) =>{
+        let awb = await services.awbService.getAwbPriceLabel(data._id)
+        if(awb){
+          data = data.toJSON()
+          data.price = awb.TotalWet ? awb.TotalWet : '' 
         }
-      }
-      if(awb){
-        res.render('pages/warehouse/awb/invoice', {
-          page: req.originalUrl,
-          title: "AWB #" + awb.awbId,
-          user: res.user,
-          awb: awb,
-          shipper: awb.shipper,
-          carrier: awb.carrier,
-          hazmat: awb.hazmat
-        });
-      }else{
-        awb = {}
-        res.render('pages/emptyDashboard', {
-          page: req.originalUrl,
-          title: "Home",
-          awb: awb,
-          user: res.user,
-          shipper: awb.shipper,
-          carrier: awb.carrier,
-          hazmat: awb.hazmat
-        });
-      }
-    });
+        return data
+      })
+      ).then(awbs => {
+      res.render('pages/customerDashboard', {
+        page: req.originalUrl,
+        title: "AirWay Bills",
+        user: res.user,
+        awbs: awbs,
+      })
+    })
+  })
 
   }else{
     services.userService.getAllUsers().then( users =>

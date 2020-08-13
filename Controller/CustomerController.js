@@ -3,52 +3,47 @@ var utils = require('../Util/utils');
 var momentz = require('moment-timezone')
 
 
-exports.preview_customer_awb = (req, res, next) => {
-  let id =res.user._id
-  console.log("res",res.user)
-
-  services.awbService.getAwbsCustomer(id).then((awb)=>{
-    console.log("awb",awb)
-    if(awb){
-      awb['dateCreated'] = momentz(awb.createdAt).tz("America/New_York").format('dddd, MMMM Do YYYY, h:mm A');
-      awb._doc.createdBy = awb.createdBy ? (awb.createdBy.firstName || '')  + (awb.createdBy.lastName || ''): ''
-      // console.log("awb",awb)
-      if (awb.invoices && awb.invoices.length) {
-        awb.invoices = awb.invoices.map(invoice => {
-          if (invoice.filename) {
-          invoice.link = aws.getSignedUrl(invoice.filename);
+exports.get_customer_awb_list = (req, res, next) => {
+    services.awbService.getAwbCustomer(res.user._id).then(async (awbs) => {
+      return Promise.all(
+      awbs.map(async (data,i) =>{
+        let awb = await services.awbService.getAwbPriceLabel(data._id)
+        if(awb){
+          data = data.toJSON()
+          data.price = awb.TotalWet ? awb.TotalWet : '' 
         }
-      invoice['dateCreated'] = momentz(invoice.createdAt).tz("America/New_York").format('dddd, MMMM Do YYYY, h:mm A');
-
-        // console.log("invoice",invoice)
-        return invoice;
-      });
-      }
-    }
-    console.log("check",awb)
-    if(awb){
-
+        return data
+      })
+      ).then(awbs => {
       res.render('pages/customerDashboard', {
         page: req.originalUrl,
-        title: "AWB #" + awb.awbId,
+        title: "AirWay Bills",
         user: res.user,
-        awb: awb,
-        shipper: awb.shipper,
-        carrier: awb.carrier,
-        hazmat: awb.hazmat
-      });
-    }else{
-      awb = {}
-      res.render('pages/emptyDashboard', {
-        page: req.originalUrl,
-        title: "Home",
-        awb: awb,
-        user: res.user,
-        shipper: awb.shipper,
-        carrier: awb.carrier,
-        hazmat: awb.hazmat
-      });
-    }
+        awbs: awbs,
+      })
+    })
+  })
+}
+
+exports.get_customer_package_list = (req, res, next) => {
+  services.packageService.getPopulatedCustomerPackages(res.user._id).then((packages) => {
+      return Promise.all(
+          packages.map(async(pkg, i) => {
+              let awb = await services.printService.getAWBDataForPackagesRelatedEntitie(pkg.awbId._id);
+              packages[i].pieces = awb.packages ? awb.packages.length : 0
+              packages[i].packageNumber = "PK00" + packages[i].id;
+              return pkg
+          })
+      ).then(pkgs => {
+          res.render('pages/customerDashboard', {
+              page: req.originalUrl,
+              user: res.user,
+              title: 'All Packages',
+              filterURL: '',
+              buttonName: 'Add to Manifest',
+              packages: pkgs,
+          });
+      })
   });
 };
 
