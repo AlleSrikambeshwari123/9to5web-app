@@ -394,6 +394,25 @@ class AwbService {
             });
         });
       }
+
+      getAwbsCustomer(id) {
+        return new Promise((resolve, reject) => {
+          Awb.findOne({customerId:id})
+          .populate('invoices')
+          .populate('customerId')
+          .populate('shipper')
+          .populate('carrier')
+          .populate('hazmat')
+          .populate('packages')
+          .populate('purchaseOrders')
+          .populate('invoices')
+          .populate('driver')
+          .populate('createdBy')
+            .exec((err, result) => {
+              resolve(result);
+            });
+        });
+      }
     
       async getAwbsNoDocsCustomer(id) {
         return new Promise((resolve, reject) => {

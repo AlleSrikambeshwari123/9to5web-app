@@ -6,7 +6,48 @@ const aws = require('../Util/aws');
 const mongoose = require('mongoose');
 const moment = require('moment');
 var momentz = require('moment-timezone')
-const id = mongoose.Types.ObjectId();
+
+exports.preview_awb_invoice = (req, res, next) => {
+  let id =res.user._id
+
+  services.awbService.getAwbsCustomer(id).then((awb)=>{
+    if(awb){
+      awb['dateCreated'] = momentz(awb.createdAt).tz("America/New_York").format('dddd, MMMM Do YYYY, h:mm A');
+      awb._doc.createdBy = awb.createdBy ? (awb.createdBy.firstName || '')  + (awb.createdBy.lastName || ''): ''
+      if (awb.invoices && awb.invoices.length) {
+        awb.invoices = awb.invoices.map(invoice => {
+          if (invoice.filename) {
+          invoice.link = aws.getSignedUrl(invoice.filename);
+        }
+      invoice['dateCreated'] = momentz(invoice.createdAt).tz("America/New_York").format('dddd, MMMM Do YYYY, h:mm A');
+      return invoice;
+      });
+      }
+    }
+    if(awb){
+      res.render('pages/warehouse/awb/invoice', {
+        page: req.originalUrl,
+        title: "AWB #" + awb.awbId,
+        user: res.user,
+        awb: awb,
+        shipper: awb.shipper,
+        carrier: awb.carrier,
+        hazmat: awb.hazmat
+      });
+    }else{
+      awb = {}
+      res.render('pages/emptyDashboard', {
+        page: req.originalUrl,
+        title: "Home",
+        awb: awb,
+        user: res.user,
+        shipper: awb.shipper,
+        carrier: awb.carrier,
+        hazmat: awb.hazmat
+      });
+    }
+  });
+};
 
 exports.preview_awb = (req, res, next) => {
   let id = req.params.id;
@@ -22,6 +63,7 @@ exports.preview_awb = (req, res, next) => {
         return invoice;
       });
     }
+    console.log("awb",awb)
     res.render('pages/warehouse/awb/preview', {
       page: req.originalUrl,
       title: "AWB #" + awb.awbId,

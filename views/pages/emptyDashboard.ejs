@@ -1,0 +1,17 @@
+<% layout('./shared/__template')%>
+
+
+<div class="row justify-content-center mt--5">
+    <input type="hidden" data-id="<%= awb._id%>" id="awbId">
+
+        <div class="card ">
+            <div class="card-body">
+                <div >No packages found</div>
+            </div>
+        </div>
+
+
+</div>
+
+<% block('scripts').append('<script src="/js/utils.js"></script>')%>
+<% block('scripts').append('<script src="/js/warehouse/awb/preview.js"></script>')%>

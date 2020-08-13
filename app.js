@@ -55,6 +55,11 @@ var warehouseCubeRouter = require('./routes/warehouse/cube');
 // Store
 var storeRouter = require('./routes/store/store');
 
+//Customer
+var customerLoginRouter = require('./routes/customer/login')
+var customerSignupRouter = require('./routes/customer/signup')
+var customerchildRouter = require('./routes/customer/customerchild');
+
 // API
 var apiPrinterRouter = require('./routes/api/printer');
 var apiWarehouseRouter = require('./routes/api/wapi');
@@ -125,6 +130,7 @@ app.use('/warehouse', warehouse, warehouseAwbRouter, warehouseManifestRouter, wa
 app.use('/fleet', fleetVehicleRouter, fleetDriverRouter, fleetPilotRouter, fleetPlaneRouter, fleetCompartmentRouter, fleetAirportsRouter);
 app.use('/store', storeRouter);
 app.use('/util', util);
+app.use('/customer', customerLoginRouter,customerSignupRouter,customerchildRouter);
 
 app.use('/api/printer', apiPrinterRouter);
 app.use('/api/warehouse', apiWarehouseRouter);

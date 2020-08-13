@@ -122,9 +122,9 @@ class CustomerChildService {
       }
     })
   }
-  getCustomers() {
+  getCustomers(object) {
     return new Promise((resolve, reject) => {
-      CustomerChild.find({})
+      CustomerChild.find(object)
       .populate('parentCustomer')
       .exec((err, customers) => {
         if (err) {
