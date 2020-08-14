@@ -176,6 +176,11 @@ class CustomerChildService {
   }
   updateCustomer(id, body) {
     return new Promise(async (resolve, reject) => {
+      const email = body.email;
+      const customerData = await CustomerChild.find({_id:{$ne:id},email:email});
+      if(customerData && customerData.length){
+        return resolve({ success: false, message: strings.string_emailExist });
+      }
       const customer = await this.getCustomer({_id: id});
       if (!(customer && customer['_id'])) {
         return resolve({ success: false, message: strings.string_not_found_customer });
