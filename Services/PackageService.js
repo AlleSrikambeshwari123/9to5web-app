@@ -1333,7 +1333,7 @@ class PackageService {
     }
 
     async getPopulatedCustomerPackages(customerId) {
-        let packages = await this.getAllPackages_updated({customerId : customerId});
+        let packages = await this.get_Packages_update({customerId : customerId});
         return await Promise.all(
             packages.map(async(pkg) => {
                 let status = await this.services.packageService.getPackageLastStatus(pkg._id);
