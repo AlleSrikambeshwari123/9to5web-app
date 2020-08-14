@@ -728,9 +728,13 @@ class PackageService {
                     resolve({}) 
                 }
                 else{
-                    pkg[0] = pkg[0].toJSON()
-                    let zoned = await Zone.findById(pkg[0].zoneId)
-                    pkg[0].zoneValue = zoned.name
+                    if(pkg[0]){
+                        pkg[0] = pkg[0].toJSON()
+                        let zoned = await Zone.findById(pkg[0].zoneId)
+                        if(zoned && zoned.name){
+                            pkg[0].zoneValue = zoned.name
+                        }
+                    }
                     resolve(pkg);
                 } 
             });

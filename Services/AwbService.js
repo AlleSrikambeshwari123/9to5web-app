@@ -504,6 +504,29 @@ class AwbService {
             result.totalPrice = totalInvoice;
             result.noOfInvoices = invoices.length
             result.awbId = awbData;
+            result.Brokerage = result.Brokerage.toFixed(2)
+            result.CustomsProc = result.CustomsProc.toFixed(2) 
+            result.CustomsVAT = result.CustomsVAT.toFixed(2) 
+            result.VatMultiplier = result.VatMultiplier.toFixed(2) 
+            result.Delivery = result.Delivery.toFixed(2) 
+            result.Duty = result.Duty.toFixed(2) 
+            result.EnvLevy = result.EnvLevy.toFixed(2) 
+            result.Express = result.Express.toFixed(2) 
+            result.Freight = result.Freight.toFixed(2) 
+            result.Hazmat = result.Hazmat.toFixed(2) 
+            result.Insurance = result.Insurance.toFixed(2) 
+            result.NoDocs = result.NoDocs.toFixed(2) 
+            result.Pickup = result.Pickup.toFixed(2) 
+            result.Sed = result.Sed.toFixed(2) 
+            result.ServiceVat = result.ServiceVat.toFixed(2) 
+            result.TotalWet = result.TotalWet.toFixed(2) 
+            result.TotalInvoiceValue = result.TotalInvoiceValue.toFixed(2) 
+            result.TotalWeightValue = result.TotalWeightValue.toFixed(2) 
+            result.NoOfInvoice = result.NoOfInvoice.toFixed(2) 
+            result.totalPrice = result.totalPrice.toFixed(2) 
+            result.noOfInvoices = result.noOfInvoices.toFixed(2) 
+
+
           }
           resolve(result)
         })
