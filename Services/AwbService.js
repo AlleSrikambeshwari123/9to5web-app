@@ -530,6 +530,8 @@ class AwbService {
           }
           resolve(result)
         })
+      }else{
+          resolve({ success: false, message: "Price Label Does not Exist For this AWB."});
       }
       })
     })    
