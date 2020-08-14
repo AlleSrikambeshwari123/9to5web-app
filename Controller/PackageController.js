@@ -26,12 +26,13 @@ exports.get_package_list = (req, res, next) => {
 };
 
 exports.get_customer_package_list = (req, res, next) => {
-    services.packageService.getPopulatedCustomerPackages(req.params.id).then((packages) => {
+    services.packageService.getPopulatedCustomerPackages(req.params.id).then((packages) => {        
         return Promise.all(
-            packages.map(async(pkg, i) => {
-                let awb = await services.printService.getAWBDataForPackagesRelatedEntitie(pkg.awbId._id);
-                packages[i].pieces = awb.packages ? awb.packages.length : 0
-                packages[i].packageNumber = "PK00" + packages[i].id;
+            packages.map(async(pkg, i) => {                
+                const awbId =(pkg.awbId && pkg.awbId.id )?pkg.awbId.id:'';
+                let awb = await services.printService.getAWBDataForPackagesRelatedEntitie(awbId);
+                packages[i].pieces = (awb && awb.packages) ? awb.packages.length : 0
+                packages[i].packageNumber = "PK00" + (packages[i] && packages[i].id)?packages[i].id:'';
                 return pkg
             })
         ).then(pkgs => {
