@@ -15,11 +15,39 @@ exports.get_customer_list = (req, res, next) => {
   })
 }
 
+exports.get_sub_customer_list = (req, res, next) => {
+  Promise.all([
+    services.customerChildService.getCustomers({createdBy : req.params.customerId })
+  ]).then(results => {
+    const  customers = results[0]
+    res.render('pages/customer/customerchild/list', {
+      page: req.originalUrl,
+      title: "Consignee",
+      user: res.user,
+      customers: customers.map(utils.formattedRecord),
+      createdBy : req.params.customerId
+    })
+  })
+}
+
 exports.create_customer = (req, res, next) => {
   Promise.all([
     services.customerService.getCustomers()
   ]).then((results) => {
     res.render('pages/admin/customerchild/create', {
+      page: req.originalUrl,
+      title: "Create New Sub Consignee",
+      user: res.user,
+      customers: results[0]
+    })
+  });
+}
+
+exports.create_sub_customer = (req, res, next) => {
+  Promise.all([
+    services.customerService.getCustomers()
+  ]).then((results) => {
+    res.render('pages/customer/customerchild/create', {
       page: req.originalUrl,
       title: "Create New Sub Consignee",
       user: res.user,
@@ -42,6 +70,19 @@ exports.get_customer_detail = (req, res, next) => {
     services.customerChildService.getCustomer({_id: req.params.id})
   ]).then(results => {
     res.render('pages/admin/customerchild/edit', {
+      page: req.originalUrl,
+      title: "Consignee Details",
+      user: res.user,
+      customer: results[0],
+    })
+  })
+}
+
+exports.get_sub_customer_detail = (req, res, next) => {
+  Promise.all([
+    services.customerChildService.getCustomer({_id: req.params.id})
+  ]).then(results => {
+    res.render('pages/customer/customerchild/edit', {
       page: req.originalUrl,
       title: "Consignee Details",
       user: res.user,

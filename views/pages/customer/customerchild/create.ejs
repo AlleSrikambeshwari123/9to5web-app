@@ -1,0 +1,75 @@
+<% layout('./shared/__template')%>
+<form id="add-customer-form" method='POST' action='create'>
+  <div class="row gutters">
+    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+      <div class="card">
+        <div class="card-header">
+          <h4 class="card-title"><%=title%></h4>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group form-show-validation row">
+                <label for="company" class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">Parent Customer </label>
+                <div class="col-lg-8 col-md-8 col-sm-8">
+                  <select id="customerId" name="parentCustomer" class='form-control' required>
+                    <% customers.forEach(customer => { %>
+                    <option value="<%=customer.id%>">
+                      <%= customer.pmb + ' / ' + customer.firstName + ' ' + customer.lastName%>
+                    </option>
+                    <% }) %>
+                  </select>
+                </div>
+              </div>
+
+
+              <div class="form-group form-show-validation row">
+                <label for="firstName" class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">First Name </label>
+                <div class="col-lg-8 col-md-8 col-sm-8">
+                  <input type="text" class="form-control" id="firstName" name="firstName" placeholder="First Name"
+                    required>
+                </div>
+              </div>
+              <div class="form-group form-show-validation row">
+                <label for="lastName" class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">Last Name </label>
+                <div class="col-lg-8 col-md-8 col-sm-8">
+                  <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Last Name">
+                </div>
+              </div>
+
+              <div class="form-group form-show-validation row">
+                <label for="email" class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">Email address </label>
+                <div class="col-lg-8 col-md-8 col-sm-8">
+                  <input type="email" class="form-control" id="email" name="email" placeholder="name@example.com">
+                </div>
+              </div>
+              <div class="form-group form-show-validation row">
+                <label for="password" class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">Password </label>
+                <div class="col-lg-8 col-md-8 col-sm-8">
+                  <input type="password" class="form-control" id="password" name="password" placeholder="New Password">
+                </div>
+              </div>
+              <div class="form-group form-show-validation row">
+                <label for="confirmPassword" class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">Confirm Password
+                </label>
+                <div class="col-lg-8 col-md-8 col-sm-8">
+                  <input type="password" class="form-control" id='confirmPassword' name="confirmPassword"
+                    placeholder="Confirm New Password">
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+        <div class="card-action">
+          <button type="submit" class="btn btn-primary">Create</button>
+          <button type="button" id="cancelForm" class="btn btn-danger">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+
+<% block('scripts').append('<script src="/js/utils.js"></script>')%>
+<% block('scripts').append('<script src="/js/customer/customerchild/create.js"></script>')%>

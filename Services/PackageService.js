@@ -473,6 +473,22 @@ class PackageService {
                 });
         });
     }
+    get_Packages_update(object) {
+        return new Promise((resolve, reject) => {
+            Package.find(object)
+                .populate('awbId')
+                .populate('originBarcode')
+                .populate('customerId')
+                .populate('zoneId')
+                .exec((err, result) => {
+                    if (err) {
+                        resolve([]);
+                    } else {
+                        resolve(result);
+                    }
+                });
+        });
+    }
 
     getAllPackagesNoDoc() {
         return new Promise((resolve, reject) => {
@@ -1314,6 +1330,38 @@ class PackageService {
                     }
                 })
         });
+    }
+
+    async getPopulatedCustomerPackages(customerId) {
+        let packages = await this.get_Packages_update({customerId : customerId});
+        return await Promise.all(
+            packages.map(async(pkg) => {
+                let status = await this.services.packageService.getPackageLastStatus(pkg._id);
+                pkg.lastStatusText = status && status.status;
+                if (pkg.originBarcode) {
+                    let barcode = await this.getOriginBarcode(pkg.originBarcode)
+                    if (barcode !== null && barcode.createdAt) {
+                        pkg.OrignalBarcodeDate = barcode.createdAt;
+                    }
+                }
+                if (pkg.awbId) {
+                    let awb = await this.services.awbService.getAwb(pkg.awbId)
+                    if (awb !== null && awb.createdAt) {
+                        pkg.awbCreatedAt = momentz(awb.createdAt).tz("America/New_York").format('dddd, MMMM Do YYYY, h:mm A');
+                    }
+                }
+                if (pkg.manifestId) {
+                    let actualFlight = await Manifest.findById(pkg.manifestId).populate('planeId')
+                    if (actualFlight !== null && actualFlight.planeId) {
+                        pkg.actualFlight = actualFlight.planeId ? actualFlight.planeId.tailNumber : ''
+                    }
+                }
+                pkg.OrignalBarcodeDate = pkg.OrignalBarcodeDate || ''
+                pkg.awbCreatedAt = pkg.awbCreatedAt || ''
+                pkg.actualFlight = pkg.actualFlight || ''
+                return pkg;
+            }),
+        );
     }
 
     getPackagesDataByDeliveryId(deliveryId) {
