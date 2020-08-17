@@ -458,7 +458,7 @@ class AwbService {
         //.populate('driver')
         .exec((err, awbData) => {
           if(result && result.awbId){
-            const invoices =awbData.invoices?awbData.invoices:[];
+            const invoices =(awbData && awbData.invoices)?awbData.invoices:[];
             var totalInvoice = 0;
             for(let i=0;i<invoices.length;i++){
               totalInvoice=totalInvoice+invoices[i].value;
@@ -466,6 +466,13 @@ class AwbService {
             result.totalPrice = totalInvoice;
             result.noOfInvoices = invoices.length
             result.awbId = awbData;
+
+            if(result.OverrideInvoiceValue){
+              if(result.OverrideInvoiceValue > 0)
+                result.TotalInvoiceValue = result.OverrideInvoiceValue 
+              else
+                result.TotalInvoiceValue = totalInvoice 
+            }
           }
             resolve(result)
         })

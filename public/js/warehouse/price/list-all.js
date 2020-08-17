@@ -73,30 +73,30 @@ function pricelLabelCheck(response) {
   let SedVal = 0;
   let ExpressVal = 0;
   // if (pkg.packageCalculation == 'Kg') pkg.weight = 2.20462 * pkg.weight;
-  let totalinvoiceVal = 0;
+  // let totalinvoiceVal = 0;
 
-  if (pkg.invoices) {
-    pkg.invoices.map((inv) => (totalinvoiceVal += inv.value));
-  }
-  var totalweightVal = 0;
+  // if (pkg.invoices) {
+  //   pkg.invoices.map((inv) => (totalinvoiceVal += inv.value));
+  // }
+  // var totalweightVal = 0;
 
-  if (pkg.packages) {
-    const pa = pkg.packages;
-    for (var i = 0; i < pa.length; i++) {
+  // if (pkg.packages) {
+  //   const pa = pkg.packages;
+  //   for (var i = 0; i < pa.length; i++) {
 
-      var weight = pa[i].weight;
-      if (pa[i].packageCalculation == 'kg') {
-        weight = 2.20462 * pa[i].weight;
+  //     var weight = pa[i].weight;
+  //     if (pa[i].packageCalculation == 'kg') {
+  //       weight = 2.20462 * pa[i].weight;
 
-      }
-      totalweightVal = totalweightVal + weight;
-    }
+  //     }
+  //     totalweightVal = totalweightVal + weight;
+  //   }
 
     //pkg.packages.map((pkge) => (totalweightVal += pkge.weight));
-  }
+  // }
   
   let Freight =  response.Freight //(1.55 * pkg.weight).toFixed(2);
-  let VatMultiplier = (response.CustomsVAT)/(Number(totalinvoiceVal) + Number(Freight) + Number(response.Duty)+ Number(response.CustomsProc)+Number(response.EnvLevy));
+  let VatMultiplier = (response.CustomsVAT)/(Number(response.TotalInvoiceValue) + Number(Freight) + Number(response.Duty)+ Number(response.CustomsProc)+Number(response.EnvLevy));
   $('#VatMultiplier').val(VatMultiplier.toFixed(2));
   $('#Brokerage').val(response.Brokerage.toFixed(2));
   $('#CustomsProc').val(response.CustomsProc.toFixed(2));
@@ -116,13 +116,14 @@ function pricelLabelCheck(response) {
   $('#ExpressVal').val(response.Express.toFixed(2));
   $('#TotalWet').val(TotalVat);
   $("#no_of_invoice").val((pkg.invoices).length.toFixed(2))
-  $("#total-value-invoice").val(totalinvoiceVal.toFixed(2))
-  $("#total_weight_value").val(totalweightVal.toFixed(2))
+  $("#total-value-invoice").val(response.TotalInvoiceValue.toFixed(2))
+  $("#override-value-invoice").val(response.OverrideInvoiceValue.toFixed(2))
+  $("#total_weight_value").val(response.TotalWeightValue.toFixed(2))
   if (response.NoDocs > 0) $('#NoDocs').prop('checked', true)
   if (response.Insurance > 0) $('#Insurance').prop('checked', true)
   if (response.Sed > 0) $('#Sed').prop('checked', true)
   if (response.Express > 0) $('#Express').prop('checked', true)
-  pricelabelcommon(ServiceVat, NoDocsVal, InsuranceVal, SedVal, ExpressVal, totalinvoiceVal)
+  pricelabelcommon(ServiceVat, NoDocsVal, InsuranceVal, SedVal, ExpressVal, response.TotalInvoiceValue)
 }
 
 function packagePriceLabel(response) {
@@ -134,29 +135,30 @@ function packagePriceLabel(response) {
   let ExpressVal = 0;
   let VatMultiplier = 0.12;
   //if (pkg.packageCalculation == 'Kg') pkg.weight = 2.20462 * pkg.weight;
-  let totalinvoiceVal = 0;
-  if (pkg.invoices) {
-    pkg.invoices.map((inv) => (totalinvoiceVal += inv.value));
-  }
-  let totalweightVal = 0;
-  if (pkg.packages) {
-    const pa = pkg.packages;
-    for (var i = 0; i < pa.length; i++) {
+  // let totalinvoiceVal = 0;
+  // if (pkg.invoices) {
+  //   pkg.invoices.map((inv) => (totalinvoiceVal += inv.value));
+  // }
+  // let totalweightVal = 0;
+  // if (pkg.packages) {
+  //   const pa = pkg.packages;
+  //   for (var i = 0; i < pa.length; i++) {
 
-      var weight = pa[i].weight;
-      if (pa[i].packageCalculation == 'kg') {
-        weight = 2.20462 * pa[i].weight;
+  //     var weight = pa[i].weight;
+  //     if (pa[i].packageCalculation == 'kg') {
+  //       weight = 2.20462 * pa[i].weight;
 
-      }
-      totalweightVal = totalweightVal + weight;
-    }
+  //     }
+  //     totalweightVal = totalweightVal + weight;
+  //   }
 
     //pkg.packages.map((pkge) => (totalweightVal += pkge.weight));
-  }
+  // }
   $("#VatMultiplier").val(VatMultiplier)
   $("#no_of_invoice").val((pkg.invoices).length)
-  $("#total-value-invoice").val(totalinvoiceVal)
-  $("#total_weight_value").val(totalweightVal)
+  $("#total-value-invoice").val(response.TotalInvoiceValue ? response.TotalInvoiceValue.toFixed(2) : 0)
+  $("#override-value-invoice").val(response.OverrideInvoiceValue ? response.OverrideInvoiceValue.toFixed(2) : 0)
+  $("#total_weight_value").val(response.TotalWeightValue ? response.TotalWeightValue.toFixed(2) : 0)
   let Freight = (1.55 * pkg.weight).toFixed(2);
   if (pkg.company == "Post Boxes") {
     let fw = pkg.weight * 3;
@@ -167,7 +169,7 @@ function packagePriceLabel(response) {
   }
   if (pkg.express) ExpressVal = 35, $('#Express').prop('checked', true), $('#ExpressVal').val('35');
   tval(0, 0, 0, 0, ExpressVal);
-  pricelabelcommon(ServiceVat, NoDocsVal, InsuranceVal, SedVal, ExpressVal, totalinvoiceVal)
+  pricelabelcommon(ServiceVat, NoDocsVal, InsuranceVal, SedVal, ExpressVal, response.TotalInvoiceValue)
 }
 function tval(ServiceVat, NoDocsVal, InsuranceVal, SedVal, ExpressVal) {
   let total = (
@@ -269,6 +271,8 @@ $('#pricelabel-table').on('click', '.btn-edit-pricelabel', function () {
     $('#ExpressVal').val(''),
     $('#TotalWet').val(''),
     $('#total-value-invoice').html(''),
+    $("#override-value-invoice").val('')
+
     $.ajax({
       url: '/warehouse/pricelabels/' + id,
       type: 'get',
@@ -324,6 +328,7 @@ $('#UpdatePriceLabelPackage').on('click', function (event) {
     Insurance: $('#InsuranceVal').val() == "" ? 0 : $('#InsuranceVal').val(),
     Sed: $('#SedVal').val() == "" ? 0 : $('#SedVal').val(),
     Express: $('#ExpressVal').val() == "" ? 0 : $('#ExpressVal').val(),
+    OverrideInvoiceValue:  $('#override-value-invoice').val() == "" ? 0 : $('#override-value-invoice').val(),
     TotalInvoiceValue: $("#total-value-invoice").val() == "" ? 0 : $("#total-value-invoice").val(),
     NoOfInvoice: $("#no_of_invoice").val() == "" ? 0 : $("#no_of_invoice").val(),
     TotalWeightValue: $("#total_weight_value").val() == "" ? 0 : $("#total_weight_value").val(),

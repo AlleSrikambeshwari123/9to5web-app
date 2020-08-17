@@ -29,10 +29,42 @@ class AwbPriceLabelService {
         if (err || result === null) {
           resolve({success:false,message:'Price Label Does not Exist For this AWB.'});
         } else {
+          let pkg = result.awbId
+          result = this.calculations(result,pkg)
           resolve(result);
         }
       });
     })
+  }
+  calculations(result,pkg){
+
+    var totalweightVal = 0;
+    if (pkg.packages) {
+      const pa = pkg.packages;
+      for (var i = 0; i < pa.length; i++) {
+        var weight = pa[i].weight;
+        if (pa[i].packageCalculation == 'kg') {
+          weight = 2.20462 * pa[i].weight;
+        }
+        totalweightVal = totalweightVal + weight;
+      }
+    }
+    result.TotalWeightValue = totalweightVal
+
+    let totalinvoiceVal = 0;
+    if (pkg.invoices) {
+      pkg.invoices.map((inv) => (totalinvoiceVal += inv.value));
+    }
+    result.TotalInvoiceValue = totalinvoiceVal
+    if(result.OverrideInvoiceValue){
+      if(result.OverrideInvoiceValue > 0)
+        result.OverrideInvoiceValue = result.OverrideInvoiceValue 
+      else
+        result.OverrideInvoiceValue = result.TotalInvoiceValue 
+    }else{
+      result.OverrideInvoiceValue = result.TotalInvoiceValue 
+    }
+    return result
   }
 
   getAwbPriceLabel(id) {
@@ -47,6 +79,9 @@ class AwbPriceLabelService {
         } else {
           let customer = await this.services.customerService.getCustomer({_id:result.customerId})
           result._doc.company = customer.company ? customer.company.name:''
+          result = result.toJSON()
+          let pkg = result
+          result = this.calculations(result,pkg)
           resolve(result);
         }
       });
@@ -59,7 +94,7 @@ class AwbPriceLabelService {
     //   if (!(PriceLabelData && PriceLabelData._id)) {
     //     return resolve({success: false, message: strings.string_not_found_location});
     //   }
-      priceLabel.CustomsVAT = (Number(priceLabel.TotalInvoiceValue) + Number(priceLabel.Freight) + Number(priceLabel.Duty)+ Number(priceLabel.CustomsProc)+Number(priceLabel.EnvLevy)) * Number(priceLabel.VatMultiplier)
+      priceLabel.CustomsVAT = (Number(priceLabel.OverrideInvoiceValue) + Number(priceLabel.Freight) + Number(priceLabel.Duty)+ Number(priceLabel.CustomsProc)+Number(priceLabel.EnvLevy)) * Number(priceLabel.VatMultiplier)
       priceLabel.ServiceVat = (Number(priceLabel.NoDocs) + Number(priceLabel.Insurance) + Number(priceLabel.Storage) + Number(priceLabel.Brokerage) +Number(priceLabel.Express) + Number(priceLabel.Delivery) ) * Number(priceLabel.VatMultiplier)
 
       PriceLabel.findOneAndUpdate(
@@ -73,13 +108,17 @@ class AwbPriceLabelService {
           } else {
             let awb = await Awb.findById(id)
             let total_weight = 0
-            awb.packages.forEach(async (data,index)=>{
-              let pack = await Package.findById(data)
-              total_weight = total_weight + pack.weight 
-              if(index == awb.packages.length-1){
-                resolve({ success: true, message: strings.string_response_updated ,totalWeight : total_weight.toFixed(2)});
-              }
-            })
+            if(awb.packages.length == 0){
+              resolve({ success: true, message: strings.string_response_updated ,totalWeight : 0.00});
+            }else{
+              awb.packages.forEach(async (data,index)=>{
+                let pack = await Package.findById(data)
+                total_weight = total_weight + pack.weight 
+                if(index == awb.packages.length-1){
+                  resolve({ success: true, message: strings.string_response_updated ,totalWeight : total_weight.toFixed(2)});
+                }
+              })
+            }
           }
         }
       )
