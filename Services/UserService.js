@@ -64,7 +64,12 @@ class UserService {
   }
   getUserByEmail(email) {
     return new Promise(function (resolve, reject) {
-      User.findOne({ email: email })
+      User.findOne({
+        $or : [
+          { email: email },
+          { username: email }
+        ]
+      })
         .populate('roles', 'type')
         .exec((err, result) => {
           if (err) {

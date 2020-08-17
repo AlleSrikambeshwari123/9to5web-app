@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var middleware = require('../middleware');
 var services = require('../Services/RedisDataServices');
+var momentz = require('moment-timezone')
 
 router.get('/', function (req, res, next) {
   if (req.session.token)
@@ -33,9 +34,31 @@ router.get('/report', middleware(services.userService).checkSession, function (r
 });
 
 router.get('/dashboard', middleware(services.userService).checkSession, function (req, res, next) {
-  services.userService.getAllUsers().then( users =>
-    res.render('pages/dashboard', {
-      page: req.originalUrl,
+  if(res.user.roles[0].type == 'Customers'){
+    services.awbService.getAwbCustomer(res.user._id).then(async (awbs) => {
+      return Promise.all(
+      awbs.map(async (data,i) =>{
+        let awb = await services.awbService.getAwbPriceLabel(data._id)
+        if(awb){
+          data = data.toJSON()
+          data.price = awb.TotalWet ? awb.TotalWet : '' 
+        }
+        return data
+      })
+      ).then(awbs => {
+      res.render('pages/customerDashboard', {
+        page: req.originalUrl,
+        title: "AirWay Bills",
+        user: res.user,
+        awbs: awbs,
+      })
+    })
+  })
+
+  }else{
+    services.userService.getAllUsers().then( users =>
+      res.render('pages/dashboard', {
+        page: req.originalUrl,
       title: "Dashboard",
       user: res.user,
       package_status: {
@@ -48,7 +71,8 @@ router.get('/dashboard', middleware(services.userService).checkSession, function
       },
       users: users
     })
-  )
+    )
+  }
 });
 
 router.post("/global-search", middleware().checkSession, (req,res,next) => {

@@ -394,6 +394,43 @@ class AwbService {
             });
         });
       }
+
+      getAwbsCustomer(id) {
+        return new Promise((resolve, reject) => {
+          Awb.findOne({customerId:id})
+          .populate('invoices')
+          .populate('customerId')
+          .populate('shipper')
+          .populate('carrier')
+          .populate('hazmat')
+          .populate('packages')
+          .populate('purchaseOrders')
+          .populate('invoices')
+          .populate('driver')
+          .populate('createdBy')
+            .exec((err, result) => {
+              resolve(result);
+            });
+        });
+      }
+      getAwbCustomer(id) {
+        return new Promise((resolve, reject) => {
+          Awb.find({customerId:id})
+          // .populate('invoices')
+          // .populate('customerId')
+          // .populate('shipper')
+          // .populate('carrier')
+          // .populate('hazmat')
+          // .populate('packages')
+          // .populate('purchaseOrders')
+          // .populate('invoices')
+          // .populate('driver')
+          // .populate('createdBy')
+            .exec((err, result) => {
+              resolve(result);
+            });
+        });
+      }
     
       async getAwbsNoDocsCustomer(id) {
         return new Promise((resolve, reject) => {
@@ -446,8 +483,9 @@ class AwbService {
   async getAwbPriceLabel(awbId) {    
     return new Promise((resolve, reject) => { 
       PriceLabel.findOne({awbId:awbId}).exec((err, result) => {
-        result = JSON.parse(JSON.stringify(result))
-        Awb.findOne({_id:awbId})
+        if(result){
+          result = JSON.parse(JSON.stringify(result))
+          Awb.findOne({_id:awbId})
         //.populate('customerId')
         //.populate('shipper')
         //.populate('carrier')
@@ -458,14 +496,39 @@ class AwbService {
         //.populate('driver')
         .exec((err, awbData) => {
           if(result && result.awbId){
+            
             const invoices =(awbData && awbData.invoices)?awbData.invoices:[];
             var totalInvoice = 0;
             for(let i=0;i<invoices.length;i++){
               totalInvoice=totalInvoice+invoices[i].value;
             }
+
             result.totalPrice = totalInvoice;
             result.noOfInvoices = invoices.length
             result.awbId = awbData;
+
+          
+            result.Brokerage = result.Brokerage ? result.Brokerage.toFixed(2) : 0
+            result.CustomsProc = result.CustomsProc ? result.CustomsProc.toFixed(2) : 0 
+            result.CustomsVAT = result.CustomsVAT ? result.CustomsVAT.toFixed(2) : 0 
+            result.VatMultiplier = result.VatMultiplier ? result.VatMultiplier.toFixed(2) : 0
+            result.Delivery =  result.Delivery ? result.Delivery.toFixed(2): 0 
+            result.Duty =  result.Duty ? result.Duty.toFixed(2) : 0
+            result.EnvLevy = result.EnvLevy ? result.EnvLevy.toFixed(2) : 0
+            result.Express = result.Express ? result.Express.toFixed(2) : 0
+            result.Freight = result.Freight ? result.Freight.toFixed(2) : 0
+            result.Hazmat = result.Hazmat ? result.Hazmat.toFixed(2) : 0
+            result.Insurance = result.Insurance ? result.Insurance.toFixed(2) : 0 
+            result.NoDocs = result.NoDocs ? result.NoDocs.toFixed(2) : 0
+            result.Pickup = result.Pickup ? result.Pickup.toFixed(2)  : 0
+            result.Sed = result.Sed ? result.Sed.toFixed(2) : 0
+            result.ServiceVat = result.ServiceVat ? result.ServiceVat.toFixed(2) : 0 
+            result.TotalWet = result.TotalWet ?result.TotalWet.toFixed(2) : 0
+            result.TotalInvoiceValue = result.TotalInvoiceValue ? result.TotalInvoiceValue.toFixed(2) : 0
+            result.TotalWeightValue = result.TotalWeightValue ? result.TotalWeightValue.toFixed(2) : 0
+            result.NoOfInvoice = result.NoOfInvoice ?result.NoOfInvoice.toFixed(2) : 0
+            result.totalPrice = result.totalPrice ? result.totalPrice.toFixed(2) : 0
+            result.noOfInvoices = result.noOfInvoices ? result.noOfInvoices : 0 
 
             if(result.OverrideInvoiceValue){
               if(result.OverrideInvoiceValue > 0)
@@ -474,8 +537,11 @@ class AwbService {
                 result.TotalInvoiceValue = totalInvoice 
             }
           }
-            resolve(result)
+          resolve(result)
         })
+      }else{
+          resolve({ success: false, message: "Price Label Does not Exist For this AWB."});
+      }
       })
     })    
     // return new Promise((resolve, reject) => {     

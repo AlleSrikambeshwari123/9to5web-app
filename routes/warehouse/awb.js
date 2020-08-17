@@ -25,5 +25,6 @@ router.get('/fll/awb/refresh-barcode', awbCtrl.refresh_barcode);
 //========== NAS AirWay Bills ==========//
 router.get('/nas/awb/no-docs', middleware().checkSession, awbCtrl.nas_no_docs);
 router.get('/nas/awb/manage/:id/preview', middleware().checkSession, awbCtrl.preview_awb);
+router.get('/nas/awb/manage/:id/invoice', middleware().checkSession, awbCtrl.preview_awb_invoice);
 
 module.exports = router;
