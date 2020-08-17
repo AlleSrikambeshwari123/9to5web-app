@@ -15,7 +15,7 @@ const PriceLabelSchema = new mongoose.Schema(
     Brokerage: { type: Number,default:0 },
     CustomsProc: { type: Number,default:0 },
     CustomsVAT: { type: Number,default:0 },
-    VatMultiplier: { type: Number,default:0 },
+    VatMultiplier: { type: Number,default:0.12 }, 
 
     Delivery: { type: Number,default:0 },
     Duty: { type: Number,default:0 },
@@ -31,6 +31,7 @@ const PriceLabelSchema = new mongoose.Schema(
     Storage: { type: Number,default:0 },
     TotalWet: { type: Number,default:0 },
     TotalInvoiceValue: { type: Number,default:0 },
+    OverrideInvoiceValue: { type: Number,default:0 },
     TotalWeightValue: { type: Number,default:0 },
     NoOfInvoice: { type: Number,default:0 },
   },

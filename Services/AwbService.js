@@ -496,17 +496,18 @@ class AwbService {
         //.populate('driver')
         .exec((err, awbData) => {
           if(result && result.awbId){
-            var totalInvoice = 0, invoices = [];
-            if(awbData){
-              invoices =awbData.invoices?awbData.invoices:[];
-              
-              for(let i=0;i<invoices.length;i++){
-                totalInvoice=totalInvoice+invoices[i].value;
-              }
+            
+            const invoices =(awbData && awbData.invoices)?awbData.invoices:[];
+            var totalInvoice = 0;
+            for(let i=0;i<invoices.length;i++){
+              totalInvoice=totalInvoice+invoices[i].value;
             }
+
             result.totalPrice = totalInvoice;
             result.noOfInvoices = invoices.length
             result.awbId = awbData;
+
+          
             result.Brokerage = result.Brokerage ? result.Brokerage.toFixed(2) : 0
             result.CustomsProc = result.CustomsProc ? result.CustomsProc.toFixed(2) : 0 
             result.CustomsVAT = result.CustomsVAT ? result.CustomsVAT.toFixed(2) : 0 
@@ -529,7 +530,12 @@ class AwbService {
             result.totalPrice = result.totalPrice ? result.totalPrice.toFixed(2) : 0
             result.noOfInvoices = result.noOfInvoices ? result.noOfInvoices : 0 
 
-
+            if(result.OverrideInvoiceValue){
+              if(result.OverrideInvoiceValue > 0)
+                result.TotalInvoiceValue = result.OverrideInvoiceValue 
+              else
+                result.TotalInvoiceValue = totalInvoice 
+            }
           }
           resolve(result)
         })

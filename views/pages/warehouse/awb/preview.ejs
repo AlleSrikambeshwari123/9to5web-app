@@ -179,15 +179,15 @@
               <div class="col-sm-7 col-md-5 mb-3 mb-md-0 transfer-to">
                 <h5 class="sub">Plane</h5>
                 <div class="account-transfer">
-                  <div><span>Plane :</span><span><%= awb.planeId.tailNumber %></span></div>
-                  <div><span>Plane Type:</span><span><%= awb.planeId.aircraftType %></span></div>
+                  <div><span>Plane :</span><span><%= (awb.planeId) ? awb.planeId.tailNumber : "" %></span></div>
+                  <div><span>Plane Type:</span><span><%=(awb.planeId) ? awb.planeId.aircraftType : "" %></span></div>
                 </div>
               </div>
               <div class="col-sm-7 col-md-5 mb-3 mb-md-0 transfer-to ml-auto">
                 <h5 class="sub"></h5>
                 <div class="account-transfer">
-                  <div><span>Airport From:</span><span><%= awb.airportFromId.name %></span></div>
-                  <div><span>Airport To:</span><span><%= awb.airportToId.name %></span></div>
+                  <div><span>Airport From:</span><span><%= awb.airportFromId ? awb.airportFromId.name : "" %></span></div>
+                  <div><span>Airport To:</span><span><%= awb.airportFromId ? awb.airportToId.name :"" %></span></div>
                   <div><span>Flight Date / Time:</span><span><%= helpers.formatDate(awb.shipDate) %></span></div>
                 </div>
               </div>
