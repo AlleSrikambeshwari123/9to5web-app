@@ -96,7 +96,7 @@ function pricelLabelCheck(response) {
   // }
   
   let Freight =  response.Freight //(1.55 * pkg.weight).toFixed(2);
-  let VatMultiplier = (response.CustomsVAT)/(Number(response.TotalInvoiceValue) + Number(Freight) + Number(response.Duty)+ Number(response.CustomsProc)+Number(response.EnvLevy));
+  let VatMultiplier = response.VatMultiplier
   $('#VatMultiplier').val(VatMultiplier.toFixed(2));
   $('#Brokerage').val(response.Brokerage.toFixed(2));
   $('#CustomsProc').val(response.CustomsProc.toFixed(2));
