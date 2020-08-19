@@ -529,7 +529,12 @@ class AwbService {
             result.TotalWeightValue = result.TotalWeightValue ? result.TotalWeightValue.toFixed(2) : 0
             result.NoOfInvoice = result.NoOfInvoice ?result.NoOfInvoice.toFixed(2) : 0
             result.totalPrice = result.totalPrice ? result.totalPrice.toFixed(2) : 0
-            result.noOfInvoices = result.noOfInvoices ? result.noOfInvoices : 0 
+            result.Storage = result.Storage ? result.Storage.toFixed(2) : 0 
+            
+            result.SumOfAllCharges = Number(result.CustomsVAT) + Number(result.ServiceVat) + Number(result.Freight) + Number(result.Duty)+ Number(result.CustomsProc)+Number(result.EnvLevy) +Number(result.NoDocs) +
+            Number(result.Insurance) + Number(result.Storage) + Number(result.Brokerage) +Number(result.Express) + Number(result.Delivery) + Number(result.Hazmat) + Number(result.Pickup)  + Number(result.Sed)
+        
+            result.SumOfAllCharges = result.SumOfAllCharges ? result.SumOfAllCharges.toFixed(2) : 0
 
             if(result.OverrideInvoiceValue){
               if(result.OverrideInvoiceValue > 0)
