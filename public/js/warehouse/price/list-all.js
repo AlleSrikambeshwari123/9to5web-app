@@ -100,6 +100,7 @@ function pricelLabelCheck(response) {
   $('#VatMultiplier').val(VatMultiplier.toFixed(2));
   $('#Brokerage').val(response.Brokerage.toFixed(2));
   $('#CustomsProc').val(response.CustomsProc.toFixed(2));
+  $('#sum-of-charges').val(response.SumOfAllCharges.toFixed(2));
   $('#CustomsVAT').val(response.CustomsVAT.toFixed(2));
   $('#Delivery').val(response.Delivery.toFixed(2));
   $('#Duty').val(response.Duty.toFixed(2));
@@ -154,6 +155,7 @@ function packagePriceLabel(response) {
 
     //pkg.packages.map((pkge) => (totalweightVal += pkge.weight));
   // }
+  $('#sum-of-charges').val(response.SumOfAllCharges ? response.SumOfAllCharges.toFixed(2) : 0)
   $("#VatMultiplier").val(VatMultiplier)
   $("#no_of_invoice").val((pkg.invoices).length)
   $("#total-value-invoice").val(response.TotalInvoiceValue ? response.TotalInvoiceValue.toFixed(2) : 0)
@@ -175,6 +177,7 @@ function tval(ServiceVat, NoDocsVal, InsuranceVal, SedVal, ExpressVal) {
   let total = (
     Number($('#Brokerage').val()) +
     Number($('#CustomsProc').val()) +
+    Number($('#sum-of-charges').val()) +
     Number($('#CustomsVAT').val()) +
     Number($('#Delivery').val()) +
     Number($('#Duty').val()) +
@@ -256,6 +259,7 @@ $('#pricelabel-table').on('click', '.btn-edit-pricelabel', function () {
   $('#setIdPriceLabel').val(id);
   $('#Brokerage').val(''),
     $('#CustomsProc').val(''),
+    $('#sum-of-charges').val(''),
     $('#CustomsVAT').val(''),
     $('#Delivery').val(''),
     $('#Duty').val(''),
@@ -314,6 +318,7 @@ $('#UpdatePriceLabelPackage').on('click', function (event) {
   data = {
     Brokerage: $('#Brokerage').val() == "" ? 0 : $('#Brokerage').val(),
     CustomsProc: $('#CustomsProc').val() == "" ? 0 : $('#CustomsProc').val(),
+    SumOfAllCharges: $('#sum-of-charges').val() == "" ? 0 : $('#sum-of-charges').val(),
     CustomsVAT: $('#CustomsVAT').val() == "" ? 0 :$('#CustomsVAT').val(),
     VatMultiplier : $('#VatMultiplier').val() == "" ? 0 : $('#VatMultiplier').val(),
     Delivery: $('#Delivery').val() == "" ? 0 : $('#Delivery').val(),

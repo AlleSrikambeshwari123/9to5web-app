@@ -16,7 +16,7 @@ const PriceLabelSchema = new mongoose.Schema(
     CustomsProc: { type: Number,default:0 },
     CustomsVAT: { type: Number,default:0 },
     VatMultiplier: { type: Number,default:0.12 }, 
-
+    SumOfAllCharges: { type: Number,default:0 },
     Delivery: { type: Number,default:0 },
     Duty: { type: Number,default:0 },
     EnvLevy: { type: Number,default:0 },
