@@ -1,16 +1,19 @@
 <% layout('./shared/__template')%>
+
+
 <div class="row justify-content-center mt--5">
   <input type="hidden" data-id="<%= awb._id%>" id="awbId">
   <div class="col-12 col-lg-10 col-xl-9">
     <div class="row align-items-center">
       <div class="ml-auto mr-3 mb-3 mt--4">
-        <a class="btn btn-danger btn-round text-white" href="/warehouse/download-pdf/pkg/<%=awb._id%>"> Download Pkgs</a>
-        <a class="btn btn-danger btn-round text-white ml-2 btn-print-pkgs" data-id="<%=awb._id%>"> Print Pkgs </a>
+        <!-- <a class="btn btn-danger btn-round text-white" href="/warehouse/download-pdf/pkg/<%=awb._id%>"> Download Pkgs</a> -->
+        <!-- <a class="btn btn-danger btn-round text-white ml-2 btn-print-pkgs" data-id="<%=awb._id%>"> Print Pkgs </a> -->
         <a class="btn btn-danger btn-round text-white" href="/warehouse/download-pdf/awb/<%=awb._id%>"> Download PDF</a>
-        <a class="btn btn-danger btn-round text-white ml-2 btn-print-awb" data-toggle="modal" data-id="<%=awb._id%>"
-          data-target="#print-popup"> Print AWB </a>
+        <!-- <a class="btn btn-danger btn-round text-white ml-2 btn-print-awb" data-toggle="modal" data-id="<%=awb._id%>" -->
+          <!-- data-target="#print-popup"> Print AWB </a> -->
       </div>
     </div>
+    
     <div class="row">
       <div class="col-md-12">
         <div class="card card-invoice">
@@ -29,26 +32,50 @@
           </div>
           <div class="card-body">
             <div class="separator-solid"></div>
-            <div class="row">
-              <div class="col-md-3 info-invoice">
-                <h5 class="sub">Created At</h5>
+            <!-- <div class="row">
+              <div class="col-md-4 info-invoice">
+                <h5 class="sub">Date</h5>
                 <p><%= awb.dateCreated%></p>
               </div>
-              <div class="col-md-3 info-invoice">
+              <!-- <div class="col-md-3 info-invoice">
                 <h5 class="sub">Created By</h5>
                 <p><%= awb.dateCreated%></p>
-              </div>
-              <div class="col-md-3 info-invoice">
+              </div> --
+              <div class="col-md-4 info-invoice">
                 <h5 class="sub">Bill ID</h5>
                 <p><%= "AWB #"+awb.createdBy %></p>
               </div>
-              <div class="col-md-3 info-invoice">
+              <div class="col-md-4 info-invoice">
                 <h5 class="sub">Customer</h5>
-                <p><%=helpers.getFullName(awb.customer)%></p>
+                <p><%=helpers.getFullName(awb.customerId)%></p>
+                <p><%=helpers.getFullAddress(awb.customerId)%></p>
+
               </div>
-            </div>
-            <div class="separator-solid"></div>
-            <div class="row">
+            </div> -->
+
+            <% awb.invoices.forEach(invoice => { %>
+              <div class="row">
+                  <div class="col-md-4 info-invoice">
+                      <h5 class="sub">Date</h5>
+                      <p><%= invoice.dateCreated%></p>
+                    </div>
+                    <div class="col-md-4 info-invoice">
+                        <h5 class="sub">Invoice Id</h5>
+                        <p><%= invoice.number%></p>
+                      </div>
+                      <div class="col-md-4 info-invoice">
+                          <h5 class="sub">Customer</h5>
+                          <p><%=helpers.getFullName(awb.customerId)%></p>
+                          <p><%=helpers.getFullAddress(awb.customerId)%></p>
+          
+                        </div>
+           
+              </div>
+              <div class="separator-solid"></div>
+              <% }) %>
+
+
+            <!-- <div class="row">
               <div class="col-sm-7 col-md-5 mb-3 mb-md-0 transfer-to">
                 <h5 class="sub">Shipper</h5>
                 <div class="account-transfer">
@@ -63,31 +90,8 @@
                   <div><span>Carrier Phone:</span><span><%= carrier.telephone%></span></div>
                 </div>
               </div>
-            </div>
-            <div class="separator-solid"></div>
-            <% awb.invoices.forEach(invoice => { %>
-            <div class="row">
-              <div class="offset-md-7 col-md-5 mb-3 mb-md-0 transfer-to">
-                <h5 class="sub">Invoice</h5>
-                <div class="account-transfer">
-                  <div><span>Invoice ID:</span><span>#<%= invoice.number %></span></div>
-                  <div>
-                    <span>Value:</span>
-                    <span>
-                      <% if (!isNaN(invoice.value)) { %>
-                        $ <%= Number(invoice.value).toFixed(2) %>
-                      <% } %>
-                    </span>
-                </div>
-                  <% if (invoice.link) { %>
-                  <div><span></span><span><a href="<%= invoice.link %>" target="_blank">Download</a></span></div>
-                  <% } %>
-
-                </div>
-              </div>
-            </div>
-            <div class="separator-solid"></div>
-            <% }) %>
+            </div> -->
+            <!-- <div class="separator-solid"></div> -->
             <div class="row">
               <div class="col-md-12">
                 <div class="invoice-detail">
@@ -103,9 +107,7 @@
                             <td><strong>Tracking No</strong></td>
                             <td class="text-center"><strong>Description</strong></td>
                             <td class="text-center"><strong>Type</strong></td>
-                            <td class="text-center"><strong>Dimensions</strong></td>
                             <td class="text-right"><strong>Weight</strong></td>
-                            <td></td>
                           </tr>
                         </thead>
                         <tbody>
@@ -118,19 +120,8 @@
                             <td><%= package.trackingNo%></td>
                             <td class="text-center"><%= package.description%></td>
                             <td class="text-center"><%= package.packageType%></td>
-                            <td class="text-center"><%= package.dimensions%></td>
                             <td class="text-right"><%= Number(package.weight).toFixed(2)%>
                               <%= package.packageCalculation||'kg' %></td>
-                              <td class="text-center">
-                                <a
-                                    class="btn btn-link btn-primary btn-print-pkg"
-                                    data-toggle="modal"
-                                    data-id="<%=package._id%>"
-                                    data-original-title="Print Label"
-                                    data-target="#print-popup"
-                                  ><i class="fa fa-print"></i>
-                                </a>
-                              </td>
                           </tr>
                           <% }) %>
                           <tr>
@@ -174,21 +165,16 @@
                 <% } %>
               </div>
             </div>
-            <div class="separator-solid"></div>
+            <!-- <div class="separator-solid"></div> -->
             <div class="row">
-              <div class="col-sm-7 col-md-5 mb-3 mb-md-0 transfer-to">
+              <!-- <div class="col-sm-7 col-md-5 mb-3 mb-md-0 transfer-to">
                 <h5 class="sub">Plane</h5>
                 <div class="account-transfer">
-                  <div><span>Plane :</span><span><%= (awb.planeId) ? awb.planeId.tailNumber : "" %></span></div>
-                  <div><span>Plane Type:</span><span><%=(awb.planeId) ? awb.planeId.aircraftType : "" %></span></div>
                 </div>
-              </div>
+              </div> -->
               <div class="col-sm-7 col-md-5 mb-3 mb-md-0 transfer-to ml-auto">
                 <h5 class="sub"></h5>
                 <div class="account-transfer">
-                  <div><span>Airport From:</span><span><%= awb.airportFromId ? awb.airportFromId.name : "" %></span></div>
-                  <div><span>Airport To:</span><span><%= awb.airportFromId ? awb.airportToId.name :"" %></span></div>
-                  <div><span>Flight Date / Time:</span><span><%= helpers.formatDate(awb.shipDate) %></span></div>
                 </div>
               </div>
             </div>
@@ -203,7 +189,6 @@
     </div>
   </div>
 </div>
-
 <div class="modal fade" id="print-popup" tabindex="-1" role="dialog" aria-labelledby="print-popup" aria-hidden="true"
   style="display: none;">
   <div class="modal-dialog" role="document">
@@ -229,3 +214,6 @@
 
 <% block('scripts').append('<script src="/js/utils.js"></script>')%>
 <% block('scripts').append('<script src="/js/warehouse/awb/preview.js"></script>')%>
+
+
+

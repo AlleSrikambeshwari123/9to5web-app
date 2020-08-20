@@ -2,20 +2,29 @@
 	<div class="sidebar-wrapper scrollbar scrollbar-inner">
 		<div class="sidebar-content">
 			<div class="user">
-				<div class="avatar-sm float-left mr-2">					
+				<div class="avatar-sm float-left mr-2">
 				</div>
 				<div class="info">
 					<a data-toggle="collapse" href="#userCollapse" aria-expanded="true">
 						<span>
 							<span class="user-level"><%=user.firstName + ' ' + user.lastName%></span>
-							<span class="user-level">Administrator</span>							
+							<span class="user-level">
+								<% if (user.roles[0].type != "Customers") { %>
+								Administrator
+								<% } %>
+								<% if (user.roles[0].type == "Customers") { %>
+								Customer
+								<% } %>
+							</span>
 						</span>
 					</a>
 					<div class="clearfix"></div>
-					
+
 				</div>
 			</div>
 			<ul class="nav nav-primary">
+				<% if (user.roles[0].type != "Customers") { %>
+
 				<li class="nav-item <% if (page.includes('/dashboard')) { %> active <% } %>">
 					<a href="/dashboard">
 						<i class="fa fa-home"></i>
@@ -28,6 +37,16 @@
 						<p>Reports </p>
 					</a>
 				</li>
+				<% } %>
+				<% if (user.roles[0].type == "Customers") { %>
+				<li class="nav-item <% if (page.includes('/dashboard')) { %> active <% } %>">
+					<a href="/customer/dashboard">
+						<i class="fa fa-home"></i>
+						<p>Home </p>
+					</a>
+				</li>
+				<% } %>
+
 				<% if (helpers.checkRole(user.roles, "Admin")) { %>
 				<li class="nav-section">
 					<span class="sidebar-mini-icon">
@@ -318,6 +337,23 @@
 					</a>
 				</li>
 				<% } %>
+
+				<!-- Customer -->
+				<% if (user.roles[0].type == "Customers") { %>
+				<li class="nav-item <% if (page.includes('/customerchild/')) { %> active <% } %>">
+					<a href="/customer/customerchild/list/<%= user._id %>">
+						<i class="fa fa-user-tie"></i>
+						<p>Sub Customers</p>
+					</a>
+				</li>
+				<li class="nav-item <% if (page.includes('/packages/')) { %> active <% } %>">
+					<a href="/warehouse/customer/package/list/<%= user._id %>">
+						<i class="fa fa-cubes"></i>
+						<p>Packages </p>
+					</a>
+				</li>
+				<% } %>
+
 				<!-- Account Options -->
 				<li class="nav-section">
 					<span class="sidebar-mini-icon">
@@ -334,9 +370,16 @@
 					<div class="collapse <% if (page.includes('/account/')) { %> show <% } %>" id="myaccount">
 						<ul class="nav nav-collapse">
 							<li <% if (page.includes('/account/change-pass')) { %> class="active" <% } %>>
+								<% if (user.roles[0].type != "Customers") { %>
 								<a href="/account/change-pass">
 									<span class="sub-item">Change Password</span>
 								</a>
+								<% } %>
+								<% if (user.roles[0].type == "Customers") { %>
+								<a href="/customer/change-pass">
+									<span class="sub-item">Change Password</span>
+								</a>
+								<% } %>
 							</li>
 							<!-- Temporary hide the print section -->
 							<!-- <li <% if (page.includes('/account/change-printer')) { %> class="active" <% } %>>
@@ -348,7 +391,7 @@
 					</div>
 				</li>
 				<li class="nav-item">
-					<a href="/logout">
+					<a id="logout" href="/logout<% if (user.roles[0].type == "Customers") { %>?type=customer<%}%>">
 						<i class="fa fa-sign-out-alt"></i>
 						<p>Logout </p>
 					</a>
@@ -357,3 +400,8 @@
 		</div>
 	</div>
 </div>
+<script>
+	document.getElementById("logout").addEventListener('click', function () {
+		localStorage.clear()
+	})
+</script>

@@ -2,7 +2,7 @@ $(function () {
   $('#global-search-table-data').DataTable({
     "pageLength": 10,
   })
-  $("#global-search-button").click(function() {
+  $("#global-search-button").click(function () {
     const selectedOption = $('#group-search-select-input').val();
     const inputField = $('#group-search-input-field').val();
 
@@ -18,7 +18,7 @@ $(function () {
     $.ajax({
       url: '/global-search',
       type: 'post',
-      data: {selectedOption, inputField},
+      data: { selectedOption, inputField },
       success: function (response) {
         showDataInModal(response, selectedOption);
       },
@@ -34,25 +34,33 @@ $(function () {
 
     if (response && response.length) {
       response.forEach((data) => {
-        if(inputField === 'Package' || inputField === 'Original'){
+        if (inputField === 'Package') {
           id = data.trackingNo;
           awbId = data.awbId
-        }else if (inputField === 'Customer'){
+        } else if (inputField === 'Original') {
+          id = data.trackingNo;
+          barcode = data.originBarcode ? data.originBarcode.barcode : ''
+          awbId = data.awbId
+        } else if (inputField === 'Customer') {
           id = data.firstName;
           customerId = data._id
         }
-        else{
+        else {
           id = data.awbId;
           awbId = data._id
         }
-        $('#global-search-table-data').dataTable().fnAddData([id, `<a id="global-search-collection-details" href="javascript: void(0)" data-id=${data._id}>Show Details</a>`]);
+        if (inputField === 'Original') {
+          $('#global-search-table-data').dataTable().fnAddData([id + '<span class="font-weight-bold text-right text-primary ml-3">' + barcode + '</span>', `<a id="global-search-collection-details" href="javascript: void(0)" data-id=${data._id}>Show Details</a>`]);
+        } else {
+          $('#global-search-table-data').dataTable().fnAddData([id, `<a id="global-search-collection-details" href="javascript: void(0)" data-id=${data._id}>Show Details</a>`]);
+        }
       })
     }
-    
-    $('#global-search-data-modal').modal('show'); 
+
+    $('#global-search-data-modal').modal('show');
   }
 
-  $("#global-search-close-button").click(function() {
+  $("#global-search-close-button").click(function () {
     reset();
   });
 
@@ -62,17 +70,17 @@ $(function () {
     $('#group-search-input-field').attr('placeholder', "Search...");
   }
 
-  $('#global-search-table-data').on('click', '#global-search-collection-details', function() { 
+  $('#global-search-table-data').on('click', '#global-search-collection-details', function () {
     const id = $(this).attr('data-id');
-    const selectedOption = $('#group-search-select-input').val(); 
-    
+    const selectedOption = $('#group-search-select-input').val();
+
     // Resetting the selected values
     reset();
 
-    
+
     if (selectedOption === 'Customer') {
       document.location.href = `/admin/customers/manage/${customerId}/get`;
-    } 
+    }
     else {
       document.location.href = `/warehouse/fll/awb/manage/${awbId}/get`;
     }
@@ -81,7 +89,7 @@ $(function () {
   });
 
   // Changing the placeholder
-  $("#group-search-select-input").change(function() {
+  $("#group-search-select-input").change(function () {
     const selectedVal = $(this).val();
     const targetElement = $('#group-search-input-field');
     if (selectedVal === 'Package') {
@@ -114,8 +122,8 @@ $(function () {
     });
   }
 
-});  
-$(function(){
+});
+$(function () {
   var dtTable = $('.dateRangeFilterTable').DataTable()
   var dtPicker = ` <div class="d-flex w-100 d-inline-block py-4 col-xs-10 col-sm-4 float-left ">
   <label class="w-10-rem align-text-bottom">Select Dates : </label>
@@ -130,9 +138,9 @@ $(function(){
         return true;
       }
       var dateTime = new Date(data[1]).getTime();
-      if(new Date(startDate).getTime() <= dateTime && new Date(endDate).getTime() >= dateTime){
+      if (new Date(startDate).getTime() <= dateTime && new Date(endDate).getTime() >= dateTime) {
         return true
-      }else{
+      } else {
         return false
       }
     }
@@ -140,13 +148,18 @@ $(function(){
   // $('.table-date-created').map(function (i, dateElement) {
   //   dateElement.innerHTML = moment(dateElement.innerHTML).format("YYYY/MM/DD, h:mm:ss a");
   // });
+  if ($('div').hasClass('daterangepickerbody')) {
+    if (location.pathname !== localStorage.filterPath) {
+      localStorage.clear()
+    }
+  }
   $(document).ready(function () {
     $('input[name="daterange"]').daterangepicker({
       //autoUpdateInput: false,
       locale: { cancelLabel: 'Clear' },
       opens: 'center',
-      startDate: moment().startOf('hour').subtract(21, 'days'),
-      endDate: moment(),
+      startDate: localStorage.dateRangePickerStartDate ? moment(localStorage.dateRangePickerStartDate) : moment().startOf('hour').subtract(21, 'days'),
+      endDate: localStorage.dateRangePickerEndDate ? moment(localStorage.dateRangePickerEndDate) : moment(),
     }, function (start, end, label) {
       $(dtTable.table().node()).data('startDate', start);
       $(dtTable.table().node()).data('endDate', end);
@@ -155,17 +168,31 @@ $(function(){
 
     $('input[name="daterange"]').on('apply.daterangepicker', function (ev, picker) {
       $(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
+      localStorage.setItem('dateRangePickerStartDate', picker.startDate.format('MM/DD/YYYY'))
+      localStorage.setItem('dateRangePickerEndDate', picker.endDate.format('MM/DD/YYYY'))
+      localStorage.setItem('filterPath', location.pathname)
     });
 
     $('.daterange').on('cancel.daterangepicker', function (ev, picker) {
       //do something, like clearing an input
       $('.daterange').val('');
+      localStorage.clear()
       $(dtTable.table().node()).data('startDate', null);
       $(dtTable.table().node()).data('endDate', null);
+      localStorage.setItem('dateRangePickerStartDate', "")
+      localStorage.setItem('dateRangePickerEndDate', "")
+      localStorage.setItem('filterPath', location.pathname)
       dtTable.draw();
     });
-    $(dtTable.table().node()).data('startDate', moment().startOf('hour').subtract(21, 'days'));
-    $(dtTable.table().node()).data('endDate', moment());
+
+    $(dtTable.table().node()).data('startDate', localStorage.dateRangePickerStartDate ? moment(localStorage.dateRangePickerStartDate) : moment().startOf('hour').subtract(21, 'days'));
+    $(dtTable.table().node()).data('endDate', localStorage.dateRangePickerEndDate ? moment(localStorage.dateRangePickerEndDate) : moment());
+
+    if(localStorage.dateRangePickerStartDate == ""){
+      $(dtTable.table().node()).data('startDate', null);
+      $(dtTable.table().node()).data('endDate', null);
+      $('.daterange').val('');
+    }
     dtTable.draw();
   });
 })

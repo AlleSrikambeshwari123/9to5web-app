@@ -98,7 +98,7 @@
                 <% } else { %>
                   <td> - </td>
                   <% } %>
-              <td><a class="text-decoration-none" href="/warehouse/nas/awb/manage/<%=pkg.awbId ? pkg.awbId._id: '#'%>/preview"><b><%= pkg.express ? '*': '' %></b><%= pkg.awbId.awbId %> </a></td>
+              <td><a class="text-decoration-none" href="/warehouse/nas/awb/manage/<%=pkg.awbId ? pkg.awbId._id: '#'%>/preview"><b><%= pkg.express ? '*': '' %></b><%= (pkg.awbId && pkg.awbId.awbId)?pkg.awbId.awbId:'' %> </a></td>
               <td><%= pkg.originBarcode ? pkg.originBarcode.barcode: ''%></td>
               <td><%= pkg.packageNumber ? pkg.packageNumber : ''%></td>
               <td><%= pkg.description %></td>
@@ -116,7 +116,7 @@
               <td><%= pkg.actualFlight %></td>
               <!-- <td><a href="../pkg-label/download/<%=pkg._id%>"><i class="fa fa-download"></i></a></td> -->
               <td class="text-center">
-                <a href="../pkg-label/download/<%=pkg._id%>"><i class="fa fa-download"></i></a>
+                <a href="/warehouse/package/pkg-label/download/<%=pkg._id%>"><i class="fa fa-download"></i></a>
                 <a
                   class="btn btn-link btn-primary btn-print-pkg"
                   data-toggle="modal"

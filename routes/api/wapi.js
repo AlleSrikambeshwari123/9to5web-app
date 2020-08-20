@@ -396,9 +396,10 @@ router.post('/check-in-store', passport.authenticate('jwt', { session: false }),
     location: req.body.location,
     companyId: req.body.companyId,
     zoneId:req.body.zoneId,
-    userId:userId})
+    userId:userId
+    })
     if(!valid) return res.send({success:false,message:errors})
-  services.packageService.checkInStore(req.body, userId).then(result => {
+  services.packageService.checkInStore(req.body, userId,req.query).then(result => {
     res.send(result)
   })
 })

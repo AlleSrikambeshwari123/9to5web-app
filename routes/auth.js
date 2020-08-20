@@ -81,7 +81,11 @@ router.post('/reset-password/customer/:id', function (req, res, next) {
 router.get('/logout', function (req, res, next) {
   // req.session.destroy();
   req.session.token = null;
-  res.redirect('/');
+  if(req.query.type){
+    res.redirect('/customer/login');
+  }else{
+   res.redirect('/');
+  }
 });
 
 router.post('/users/request-pwd-reset',async function(req,res,next){

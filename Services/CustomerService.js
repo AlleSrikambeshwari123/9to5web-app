@@ -81,9 +81,11 @@ class CustomerService {
             resolve({ authenticated: false, message: strings.string_password_incorrect });
           } else {
             delete customer.password;
-            utils.generateToken(customer)
+            let customer2  = JSON.parse(JSON.stringify(customer))
+            customer2.roles =  [{  type: 'Customers' } ]
+            utils.generateToken(customer2)
             .then((token) => {
-              return resolve({ authenticated: true, token: token, user: customer });
+              return resolve({ authenticated: true, token: token, user: customer2 });
             })
             .catch(() => {
               return resolve({ success: false, message: strings.string_response_error });

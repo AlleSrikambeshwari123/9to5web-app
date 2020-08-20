@@ -29,10 +29,72 @@ class AwbPriceLabelService {
         if (err || result === null) {
           resolve({success:false,message:'Price Label Does not Exist For this AWB.'});
         } else {
+          let pkg = result.awbId
+          result = this.calculations(result,pkg)
           resolve(result);
         }
       });
     })
+  }
+  calculations(result,pkg){
+
+    var totalweightVal = 0;
+    if (pkg.packages) {
+      const pa = pkg.packages;
+      for (var i = 0; i < pa.length; i++) {
+        var weight = pa[i].weight;
+        if (pa[i].packageCalculation == 'kg') {
+          weight = 2.20462 * pa[i].weight;
+        }
+        totalweightVal = totalweightVal + weight;
+      }
+    }
+    result.TotalWeightValue = totalweightVal
+
+    result.Brokerage = result.Brokerage ? result.Brokerage.toFixed(2) : 0
+    result.CustomsProc = result.CustomsProc ? result.CustomsProc.toFixed(2) : 0 
+    result.CustomsVAT = result.CustomsVAT ? result.CustomsVAT.toFixed(2) : 0 
+    result.VatMultiplier = result.VatMultiplier ? result.VatMultiplier.toFixed(2) : 0
+    result.Delivery =  result.Delivery ? result.Delivery.toFixed(2): 0 
+    result.Duty =  result.Duty ? result.Duty.toFixed(2) : 0
+    result.EnvLevy = result.EnvLevy ? result.EnvLevy.toFixed(2) : 0
+    result.Express = result.Express ? result.Express.toFixed(2) : 0
+    result.Freight = result.Freight ? result.Freight.toFixed(2) : 0
+    result.Hazmat = result.Hazmat ? result.Hazmat.toFixed(2) : 0
+    result.Insurance = result.Insurance ? result.Insurance.toFixed(2) : 0 
+    result.NoDocs = result.NoDocs ? result.NoDocs.toFixed(2) : 0
+    result.Pickup = result.Pickup ? result.Pickup.toFixed(2)  : 0
+    result.Sed = result.Sed ? result.Sed.toFixed(2) : 0
+    result.ServiceVat = result.ServiceVat ? result.ServiceVat.toFixed(2) : 0 
+    result.TotalWet = result.TotalWet ?result.TotalWet.toFixed(2) : 0
+    result.TotalWeightValue = result.TotalWeightValue ? result.TotalWeightValue.toFixed(2) : 0
+    result.totalPrice = result.totalPrice ? result.totalPrice.toFixed(2) : 0
+    result.Storage = result.Storage ? result.Storage.toFixed(2) : 0 
+    
+    let sum = Number(result.CustomsVAT) + Number(result.ServiceVat) + Number(result.Freight) + Number(result.Duty)+ Number(result.CustomsProc)+Number(result.EnvLevy) +Number(result.NoDocs) +
+    Number(result.Insurance) + Number(result.Storage) + Number(result.Brokerage) +Number(result.Express) + Number(result.Delivery) + Number(result.Hazmat) + Number(result.Pickup) + Number(result.Sed)
+    result.SumOfAllCharges = sum
+
+    result.SumOfAllCharges = result.SumOfAllCharges ? result.SumOfAllCharges.toFixed(2) : 0
+    
+    let totalinvoiceVal = 0;
+    if (pkg.invoices) {
+      pkg.invoices.map((inv) => (totalinvoiceVal += inv.value));
+      result.NoOfInvoice = pkg.invoices.length
+    }
+    result.TotalInvoiceValue = totalinvoiceVal
+    result.NoOfInvoice = result.NoOfInvoice ?result.NoOfInvoice.toFixed(2) : 0
+    result.TotalInvoiceValue = result.TotalInvoiceValue ? result.TotalInvoiceValue.toFixed(2) : 0
+    
+    if(result.OverrideInvoiceValue){
+      if(result.OverrideInvoiceValue > 0)
+        result.OverrideInvoiceValue = result.OverrideInvoiceValue 
+      else
+        result.OverrideInvoiceValue = result.TotalInvoiceValue 
+    }else{
+      result.OverrideInvoiceValue = result.TotalInvoiceValue 
+    }
+    return result
   }
 
   getAwbPriceLabel(id) {
@@ -47,6 +109,9 @@ class AwbPriceLabelService {
         } else {
           let customer = await this.services.customerService.getCustomer({_id:result.customerId})
           result._doc.company = customer.company ? customer.company.name:''
+          result = result.toJSON()
+          let pkg = result
+          result = this.calculations(result,pkg)
           resolve(result);
         }
       });
@@ -59,17 +124,34 @@ class AwbPriceLabelService {
     //   if (!(PriceLabelData && PriceLabelData._id)) {
     //     return resolve({success: false, message: strings.string_not_found_location});
     //   }
-
+      priceLabel.CustomsVAT = (Number(priceLabel.OverrideInvoiceValue) + Number(priceLabel.Freight) + Number(priceLabel.Duty)+ Number(priceLabel.CustomsProc)+Number(priceLabel.EnvLevy)) * Number(priceLabel.VatMultiplier)
+      priceLabel.ServiceVat = (Number(priceLabel.NoDocs) + Number(priceLabel.Insurance) + Number(priceLabel.Storage) + Number(priceLabel.Brokerage) +Number(priceLabel.Express) + Number(priceLabel.Delivery) ) * Number(priceLabel.VatMultiplier)
+     
+      priceLabel.SumOfAllCharges = Number(priceLabel.CustomsVAT) + Number(priceLabel.ServiceVat) + Number(priceLabel.Freight) + Number(priceLabel.Duty)+ Number(priceLabel.CustomsProc)+Number(priceLabel.EnvLevy) +Number(priceLabel.NoDocs) +
+       Number(priceLabel.Insurance) + Number(priceLabel.Storage) + Number(priceLabel.Brokerage) +Number(priceLabel.Express) + Number(priceLabel.Delivery) + Number(priceLabel.Hazmat) + Number(priceLabel.Pickup)  + Number(priceLabel.Sed)
+     
       PriceLabel.findOneAndUpdate(
         { awbId: id }, 
         priceLabel,
         {upsert:true,new:true},
-        (err, result) => {
+        async (err, result) => {
           if (err) {
               console.log(err)
             resolve({ success: false, message: strings.string_response_error });
           } else {
-            resolve({ success: true, message: strings.string_response_updated });
+            let awb = await Awb.findById(id)
+            let total_weight = 0
+            if(awb.packages.length == 0){
+              resolve({ success: true, message: strings.string_response_updated ,totalWeight : 0.00});
+            }else{
+              awb.packages.forEach(async (data,index)=>{
+                let pack = await Package.findById(data)
+                total_weight = total_weight + pack.weight 
+                if(index == awb.packages.length-1){
+                  resolve({ success: true, message: strings.string_response_updated ,totalWeight : total_weight.toFixed(2)});
+                }
+              })
+            }
           }
         }
       )

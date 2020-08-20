@@ -25,3 +25,11 @@ exports.getFullName = (objData) => {
     return objData.firstName + ' ' + objData.lastName;
   }
 };
+
+exports.getFullAddress = (data) => {
+  if (!data || (!data.city && !data.state && !data.country)) {
+    return '';
+  } else {
+    return data.city + ' ' + data.state + ' ' + data.country;
+  }
+};

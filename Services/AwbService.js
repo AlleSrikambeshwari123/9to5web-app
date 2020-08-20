@@ -165,9 +165,30 @@ class AwbService {
                 .populate('driver')
                 .exec(async (err, result) => {
                   Promise.all(result.map(async res =>{
-                    let awbPriceLabel = await PriceLabel.findOne({awbId:res._id});
-                    if(awbPriceLabel !== null){
-                      res['awbPriceLabel'] = awbPriceLabel.TotalWet;
+                    let awbPriceLabel = await PriceLabel.findOne({awbId:res._id}) ;
+
+                    if(awbPriceLabel != null){
+  
+                      awbPriceLabel.Brokerage = awbPriceLabel.Brokerage ? awbPriceLabel.Brokerage.toFixed(2) : 0
+                      awbPriceLabel.CustomsProc = awbPriceLabel.CustomsProc ? awbPriceLabel.CustomsProc.toFixed(2) : 0 
+                      awbPriceLabel.CustomsVAT = awbPriceLabel.CustomsVAT ? awbPriceLabel.CustomsVAT.toFixed(2) : 0 
+                      awbPriceLabel.Delivery =  awbPriceLabel.Delivery ? awbPriceLabel.Delivery.toFixed(2): 0 
+                      awbPriceLabel.Duty =  awbPriceLabel.Duty ? awbPriceLabel.Duty.toFixed(2) : 0
+                      awbPriceLabel.EnvLevy = awbPriceLabel.EnvLevy ? awbPriceLabel.EnvLevy.toFixed(2) : 0
+                      awbPriceLabel.Express = awbPriceLabel.Express ? awbPriceLabel.Express.toFixed(2) : 0
+                      awbPriceLabel.Freight = awbPriceLabel.Freight ? awbPriceLabel.Freight.toFixed(2) : 0
+                      awbPriceLabel.Hazmat = awbPriceLabel.Hazmat ? awbPriceLabel.Hazmat.toFixed(2) : 0
+                      awbPriceLabel.Insurance = awbPriceLabel.Insurance ? awbPriceLabel.Insurance.toFixed(2) : 0 
+                      awbPriceLabel.NoDocs = awbPriceLabel.NoDocs ? awbPriceLabel.NoDocs.toFixed(2) : 0
+                      awbPriceLabel.Pickup = awbPriceLabel.Pickup ? awbPriceLabel.Pickup.toFixed(2)  : 0
+                      awbPriceLabel.Sed = awbPriceLabel.Sed ? awbPriceLabel.Sed.toFixed(2) : 0
+                      awbPriceLabel.ServiceVat = awbPriceLabel.ServiceVat ? awbPriceLabel.ServiceVat.toFixed(2) : 0 
+                      awbPriceLabel.Storage = awbPriceLabel.Storage ? awbPriceLabel.Storage.toFixed(2) : 0 
+                      
+                      awbPriceLabel.SumOfAllCharges = Number(awbPriceLabel.CustomsVAT) + Number(awbPriceLabel.ServiceVat) + Number(awbPriceLabel.Freight) + Number(awbPriceLabel.Duty)+ Number(awbPriceLabel.CustomsProc)+Number(awbPriceLabel.EnvLevy) +Number(awbPriceLabel.NoDocs) +
+                      Number(awbPriceLabel.Insurance) + Number(awbPriceLabel.Storage) + Number(awbPriceLabel.Brokerage) +Number(awbPriceLabel.Express) + Number(awbPriceLabel.Delivery) + Number(awbPriceLabel.Hazmat) + Number(awbPriceLabel.Pickup)  + Number(awbPriceLabel.Sed)
+           
+                      res['awbPriceLabel'] = awbPriceLabel.SumOfAllCharges ? awbPriceLabel.SumOfAllCharges.toFixed(2) : 0;
                     }
                     res['customer'] = res['customerId'];
                     return res;
@@ -394,6 +415,43 @@ class AwbService {
             });
         });
       }
+
+      getAwbsCustomer(id) {
+        return new Promise((resolve, reject) => {
+          Awb.findOne({customerId:id})
+          .populate('invoices')
+          .populate('customerId')
+          .populate('shipper')
+          .populate('carrier')
+          .populate('hazmat')
+          .populate('packages')
+          .populate('purchaseOrders')
+          .populate('invoices')
+          .populate('driver')
+          .populate('createdBy')
+            .exec((err, result) => {
+              resolve(result);
+            });
+        });
+      }
+      getAwbCustomer(id) {
+        return new Promise((resolve, reject) => {
+          Awb.find({customerId:id})
+          // .populate('invoices')
+          // .populate('customerId')
+          // .populate('shipper')
+          // .populate('carrier')
+          // .populate('hazmat')
+          // .populate('packages')
+          // .populate('purchaseOrders')
+          // .populate('invoices')
+          // .populate('driver')
+          // .populate('createdBy')
+            .exec((err, result) => {
+              resolve(result);
+            });
+        });
+      }
     
       async getAwbsNoDocsCustomer(id) {
         return new Promise((resolve, reject) => {
@@ -446,8 +504,9 @@ class AwbService {
   async getAwbPriceLabel(awbId) {    
     return new Promise((resolve, reject) => { 
       PriceLabel.findOne({awbId:awbId}).exec((err, result) => {
-        result = JSON.parse(JSON.stringify(result))
-        Awb.findOne({_id:awbId})
+        if(result){
+          result = JSON.parse(JSON.stringify(result))
+          Awb.findOne({_id:awbId})
         //.populate('customerId')
         //.populate('shipper')
         //.populate('carrier')
@@ -458,17 +517,57 @@ class AwbService {
         //.populate('driver')
         .exec((err, awbData) => {
           if(result && result.awbId){
-            const invoices =awbData.invoices?awbData.invoices:[];
+            
+            const invoices =(awbData && awbData.invoices)?awbData.invoices:[];
             var totalInvoice = 0;
             for(let i=0;i<invoices.length;i++){
               totalInvoice=totalInvoice+invoices[i].value;
             }
+
             result.totalPrice = totalInvoice;
             result.noOfInvoices = invoices.length
             result.awbId = awbData;
+
+          
+            result.Brokerage = result.Brokerage ? result.Brokerage.toFixed(2) : 0
+            result.CustomsProc = result.CustomsProc ? result.CustomsProc.toFixed(2) : 0 
+            result.CustomsVAT = result.CustomsVAT ? result.CustomsVAT.toFixed(2) : 0 
+            result.VatMultiplier = result.VatMultiplier ? result.VatMultiplier.toFixed(2) : 0
+            result.Delivery =  result.Delivery ? result.Delivery.toFixed(2): 0 
+            result.Duty =  result.Duty ? result.Duty.toFixed(2) : 0
+            result.EnvLevy = result.EnvLevy ? result.EnvLevy.toFixed(2) : 0
+            result.Express = result.Express ? result.Express.toFixed(2) : 0
+            result.Freight = result.Freight ? result.Freight.toFixed(2) : 0
+            result.Hazmat = result.Hazmat ? result.Hazmat.toFixed(2) : 0
+            result.Insurance = result.Insurance ? result.Insurance.toFixed(2) : 0 
+            result.NoDocs = result.NoDocs ? result.NoDocs.toFixed(2) : 0
+            result.Pickup = result.Pickup ? result.Pickup.toFixed(2)  : 0
+            result.Sed = result.Sed ? result.Sed.toFixed(2) : 0
+            result.ServiceVat = result.ServiceVat ? result.ServiceVat.toFixed(2) : 0 
+            result.TotalWet = result.TotalWet ?result.TotalWet.toFixed(2) : 0
+            result.TotalInvoiceValue = result.TotalInvoiceValue ? result.TotalInvoiceValue.toFixed(2) : 0
+            result.TotalWeightValue = result.TotalWeightValue ? result.TotalWeightValue.toFixed(2) : 0
+            result.NoOfInvoice = result.NoOfInvoice ?result.NoOfInvoice.toFixed(2) : 0
+            result.totalPrice = result.totalPrice ? result.totalPrice.toFixed(2) : 0
+            result.Storage = result.Storage ? result.Storage.toFixed(2) : 0 
+            
+            result.SumOfAllCharges = Number(result.CustomsVAT) + Number(result.ServiceVat) + Number(result.Freight) + Number(result.Duty)+ Number(result.CustomsProc)+Number(result.EnvLevy) +Number(result.NoDocs) +
+            Number(result.Insurance) + Number(result.Storage) + Number(result.Brokerage) +Number(result.Express) + Number(result.Delivery) + Number(result.Hazmat) + Number(result.Pickup)  + Number(result.Sed)
+        
+            result.SumOfAllCharges = result.SumOfAllCharges ? result.SumOfAllCharges.toFixed(2) : 0
+
+            if(result.OverrideInvoiceValue){
+              if(result.OverrideInvoiceValue > 0)
+                result.TotalInvoiceValue = result.OverrideInvoiceValue 
+              else
+                result.TotalInvoiceValue = totalInvoice 
+            }
           }
-            resolve(result)
+          resolve(result)
         })
+      }else{
+          resolve({ success: false, message: "Price Label Does not Exist For this AWB."});
+      }
       })
     })    
     // return new Promise((resolve, reject) => {     

@@ -122,7 +122,8 @@ class PackageService {
                 // check packageId Exists
                 if (await Package.findById(packageId)) {
                     this.updatePackage(packageId, { compartmentId: compartmentId });
-                    await this.updatePackageStatus(packageId, 2, userId);
+                    const status = await this.updatePackageStatus(packageId, 2, userId);
+                    if (!status.success) error.push(status.message)
                 } else {
                     error.push(`Package ${packageId} doesn't Exist`)
                 }
@@ -157,7 +158,8 @@ class PackageService {
                 // check packageId Exists
                 if (await Package.findById(packageId)) {
                     this.updatePackage(packageId, { manifestId: manifestId });
-                    await this.updatePackageStatus(packageId, 2, userId);
+                    const status = await this.updatePackageStatus(packageId, 2, userId);
+                    if (!status.success) error.push(status.message)
                 } else {
                     error.push(`Package ${packageId} doesn't Exist`)
                 }
@@ -201,7 +203,8 @@ class PackageService {
             await Promise.all(packages.map(async packageId => {
                 // check packageId Exists
                 if (await Package.findById(packageId)) {
-                    await this.updatePackageStatus(packageId, 4, userId);
+                    const status = await this.updatePackageStatus(packageId, 4, userId);
+                    if (!status.success) error.push(status.message)
                 } else {
                     error.push(`Package ${packageId} doesn't Exist`)
                 }
@@ -236,7 +239,7 @@ class PackageService {
         try {
             let packageIds = data.packageIds.split(',');
             let error = []
-            await Promise.all(
+             await Promise.all(
                 packageIds.map(async packageId => {
                         this.updatePackage(packageId, {
                             location: data.location,
@@ -244,25 +247,27 @@ class PackageService {
                             aging:1
                         });
                         const status = await this.updatePackageStatus(packageId, 7, data.userId);
+                        if (!status.success) error.push(status.message)
                         //email                        
                         this.sendNoDocsPackageData(packageId);
-                        if (!status.success) error.push(status.message)
                         return status
                     },
                     // this.updateAwbPackages(data.awbId,packageIds),
                     this.updateZone(data.zoneId, packageIds)
+
                 )
             )
             if (error.length > 0) return { success: false, message: error }
-            
             return { success: true, message: strings.string_response_received, status: PKG_STATUS[7] }
+            
+            
         } catch (error) {
             console.error('addAwbsPkgNoDocs', error)
         }
     }
 
     // 9: 'Delivered to Store'
-    checkInStore(data, username) {
+    checkInStore(data, username,query) {
         let packageIds = data.packageIds.split(',');
         let error = []
         return new Promise((resolve, reject) => {
@@ -271,23 +276,24 @@ class PackageService {
                         this.updatePackage(packageId, {
                             location: data.location,
                             companyId: data.companyId,
-                            zoneId: data.zoneId
+                            zoneId: data.zoneId,
+                            agingStore:1
                         });
-                        const status = await this.updatePackageStatus(packageId, 9, username);
-                        //email
-                        // const pkgDetail = await Package.findOne({_id:packageId}).populate('customerId');
-                        // if(pkgDetail && pkgDetail.customerId){
-                        //     await emailService.sendStorePackageEmail(pkgDetail);
-                        // }
-                        //email                        
-                        this.sendStorePackageData(packageId);
-                        if (!status.success) error.push(status.message)
-                        return status
+                        const validateStore = await this.validateStorePackage(data.zoneId,packageId)
+                        if(query.override == undefined){
+                            if(!validateStore.success) error.push(validateStore.message)
+                        }
+                        if(validateStore.success || query.override !== undefined){
+                            const status = await this.updatePackageStatus(packageId, 9, username);                       
+                            this.sendStorePackageData(packageId);
+                            if (!status.success) error.push(status.message)
+                            return status
+                        }
                     },
                     this.updateZone(data.zoneId, packageIds)
                 ),
             ).then((result) => {
-                if (error.length > 0) return resolve({ success: false, message: error })
+                if (error.length > 0) return resolve({ success: false, error_message: error })
                 resolve({ success: true, message: strings.string_response_received, status: PKG_STATUS[9] });
             });
         });
@@ -454,6 +460,22 @@ class PackageService {
     getAllPackages_updated() {
         return new Promise((resolve, reject) => {
             Package.find({})
+                .populate('awbId')
+                .populate('originBarcode')
+                .populate('customerId')
+                .populate('zoneId')
+                .exec((err, result) => {
+                    if (err) {
+                        resolve([]);
+                    } else {
+                        resolve(result);
+                    }
+                });
+        });
+    }
+    get_Packages_update(object) {
+        return new Promise((resolve, reject) => {
+            Package.find(object)
                 .populate('awbId')
                 .populate('originBarcode')
                 .populate('customerId')
@@ -669,7 +691,7 @@ class PackageService {
     }
     getOriginalBarcodeByCodeWildCard(barcode) {
         return new Promise((resolve, reject) => {
-            Barcode.findOne({ barcode: { $regex: '.*' + barcode + '.*' } }, (err, result) => {
+            Barcode.find({ barcode: { $regex: barcode, $options: 'i'} }, (err, result) => {
                 if (err || result === null) {
                     resolve([]);
                 } else {
@@ -701,9 +723,20 @@ class PackageService {
 
     getPackage(packageId) {
         return new Promise((resolve, reject) => {
-            Package.find({ id: packageId }, (err, pkg) => {
-                if (err || pkg == null) resolve({});
-                else resolve(pkg);
+            Package.find({ id: packageId },async (err, pkg) => {
+                if (err || pkg == null) {
+                    resolve({}) 
+                }
+                else{
+                    if(pkg[0]){
+                        pkg[0] = pkg[0].toJSON()
+                        let zoned = await Zone.findById(pkg[0].zoneId)
+                        if(zoned && zoned.name){
+                            pkg[0].zoneValue = zoned.name
+                        }
+                    }
+                    resolve(pkg);
+                } 
             });
         });
     }
@@ -1303,6 +1336,38 @@ class PackageService {
         });
     }
 
+    async getPopulatedCustomerPackages(customerId) {
+        let packages = await this.get_Packages_update({customerId : customerId});
+        return await Promise.all(
+            packages.map(async(pkg) => {
+                let status = await this.services.packageService.getPackageLastStatus(pkg._id);
+                pkg.lastStatusText = status && status.status;
+                if (pkg.originBarcode) {
+                    let barcode = await this.getOriginBarcode(pkg.originBarcode)
+                    if (barcode !== null && barcode.createdAt) {
+                        pkg.OrignalBarcodeDate = barcode.createdAt;
+                    }
+                }
+                if (pkg.awbId) {
+                    let awb = await this.services.awbService.getAwb(pkg.awbId)
+                    if (awb !== null && awb.createdAt) {
+                        pkg.awbCreatedAt = momentz(awb.createdAt).tz("America/New_York").format('dddd, MMMM Do YYYY, h:mm A');
+                    }
+                }
+                if (pkg.manifestId) {
+                    let actualFlight = await Manifest.findById(pkg.manifestId).populate('planeId')
+                    if (actualFlight !== null && actualFlight.planeId) {
+                        pkg.actualFlight = actualFlight.planeId ? actualFlight.planeId.tailNumber : ''
+                    }
+                }
+                pkg.OrignalBarcodeDate = pkg.OrignalBarcodeDate || ''
+                pkg.awbCreatedAt = pkg.awbCreatedAt || ''
+                pkg.actualFlight = pkg.actualFlight || ''
+                return pkg;
+            }),
+        );
+    }
+
     getPackagesDataByDeliveryId(deliveryId) {
         return new Promise((resolve, reject) => {
             Package.find({ deliveryId })
@@ -1467,13 +1532,18 @@ class PackageService {
                 })
             }else if (selectedOption === "Original") {
                 let barcode = await this.getOriginalBarcodeByCodeWildCard(inputField)
-                Package.find({ originBarcode: barcode._id}, (err, packages) => {
+                let barcodes = []
+                barcode.forEach(async br =>{
+                    barcodes.push(br._id)
+                })
+                Package.find({ originBarcode: { $in:barcodes}}, (err, packages) => {
                     if (err) {
                         resolve([]);
                     } else {
-                       resolve(packages)
+                        resolve(packages)
                     }
-                }).select('id trackingNo awbId')
+                }).populate({path:"originBarcode",select:'barcode'}).select('id trackingNo awbId originBarcode')
+                
             } else if (selectedOption === "Awb") {
                 inputField = inputField.trim().toLowerCase().toString();
                 Awb.find({ awbId: inputField  }, 'awbId', (err, awb) => {
@@ -1576,59 +1646,69 @@ class PackageService {
         });
     }
 
+    /* Cron For NOdocs  */
+    checkAgingofNoDocsPackages(){
+        return new Promise(async (resolve,reject)=>{
+            try {
+                let pkg = await PackageStatus.find({status:PKG_STATUS[7]});
+                await Promise.all(pkg.map( async pk=>{
+                    let noDocDate = moment(pk.createdAt)
+                    let now = moment()
+                    let diff = now.diff(noDocDate, 'days')
+                    let pkgaging = await Package.findOne({_id:pk.packageId})
+                    if(!pkgaging) return ({success:false,message:"pkgaging NOt found"})
+                    if(diff > 0){
+                        let pkgagingUpdate = await Package.findOneAndUpdate({_id:pkgaging._id},{aging:pkgaging.aging ? (pkgaging.aging + 1) : 1})
+                        if(!pkgagingUpdate) return ({success:false,message:"pkgagingUpdate Failed"})
+                        else return ({success:true,message:'Aging Updated'})         
+                    }
+                    if(diff > 14){
+                    let updPkg = await Package.findOneAndUpdate({_id:pkgaging._id},{agingdollar:pkgaging.agingdollar ? (pkgaging.agingdollar + 1) : 1},{new:true})
+                    // console.log('upp',updPkg)
+                    if(!updPkg) return ({success:false,message:"updPkg Failed"})
+                    else {
+                      this.sendNoDocsPackageDataForAging(updPkg._id)
+                        return ({success:true,message:'Aging Dollar Updated'})
+                    }  
+                           
+                    }else{
+                        return ({success:false,message:'Greater than 14'})
+                    }     
+                })).then((result)=> resolve(result))
+            } catch (error) {
+                console.error({checkAgingofNoDocsPackages:error})
+                reject(error)
+            }
+        })
+    }
+    /* Cron For Delivered to store */
     checkAgingofStoreInPackages(){
         return new Promise(async (resolve,reject)=>{
             try {
-                let pkg = await PackageStatus.find({status:PKG_STATUS[7]});
-                let diff;
-                Promise.all(pkg.map(pk=>{
+                let pkg = await PackageStatus.find({status:PKG_STATUS[9]});
+               
+                await Promise.all(pkg.map( async pk=>{
                     let noDocDate = moment(pk.createdAt)
                     let now = moment()
-                    diff = now.diff(noDocDate, 'days')
+                    let diff = now.diff(noDocDate, 'days')
+                    let pkgaging = await Package.findOne({_id:pk.packageId})
+                    if(!pkgaging) return ({success:false,message:"pkgaging NOt found"})
                     if(diff > 0){
-                        Package.findOne({_id:pk.packageId}, async (err,res)=>{
-                            if(err) resolve({success:false,message:err})
-                            else{
-                                Package.updateOne({_id:res._id},{aging:res.aging ? (res.aging + 1) : 1},(err,result)=>{
-                                    if(err) resolve({success:false,message:err})
-                                    else resolve({success:true,message:'Aging Updated'})
-                                });
-                                  
-                            }
-                        })
-                    }else{
-                        resolve({success:false,message:'Greater than 14'})
-                    }    
-                })).then((result)=> resolve(result))
-            } catch (error) {
-                console.error({checkAgingofStoreInPackages:error})
-                reject(error)
-            }
-        })
-    }
-    checkAgingDollarofStoreInPackages(){
-        return new Promise(async (resolve,reject)=>{
-            try {
-                let pkg = await PackageStatus.find({status:PKG_STATUS[7]});
-                let diff;
-                Promise.all(pkg.map(pk=>{
-                    let noDocDate = moment(pk.createdAt)
-                    let now = moment()
-                    diff = now.diff(noDocDate, 'days')
+                        let pkgagingUpdate = await Package.findOneAndUpdate({_id:pkgaging._id},{agingStore:pkgaging.agingStore ? (pkgaging.agingStore + 1) : 1})
+                        if(!pkgagingUpdate) return ({success:false,message:"pkgagingUpdate Failed"})
+                        else return ({success:true,message:'Aging Updated'})         
+                    }
                     if(diff > 14){
-                        Package.findOne({_id:pk.packageId}, async (err,res)=>{
-                            if(err) resolve({success:false,message:err})
-                            else{
-                                Package.updateOne({_id:res._id},{agingdollar:res.aging ? (res.aging + 1) : 1},(err,result)=>{
-                                    if(err) resolve({success:false,message:err})
-                                    else resolve({success:true,message:'Aging Dollar Updated'})
-                                });
-                                  
-                            }
-                        })
+                    let updPkg = await Package.findOneAndUpdate({_id:pkgaging._id},{agingStoredollar:pkgaging.agingStoredollar ? (pkgaging.agingStoredollar + 1) : 1},{new:true})
+                    if(!updPkg) return ({success:false,message:"updPkg Failed"})
+                    else {
+                        this.sendStorePackageDataForAging(updPkg._id)
+                        return ({success:true,message:'Aging Dollar Updated'})
+                    }  
+                           
                     }else{
-                        resolve({success:false,message:'Greater than 14'})
-                    }    
+                        return ({success:false,message:'Greater than 14'})
+                    }     
                 })).then((result)=> resolve(result))
             } catch (error) {
                 console.error({checkAgingofStoreInPackages:error})
@@ -1636,7 +1716,9 @@ class PackageService {
             }
         })
     }
+   
 
+    /* Email for NODOCS and Store Delivered */
     async sendNoDocsPackageData(pkgId){       
         const pkgData = await Package.findOne({_id:pkgId})
         .populate('customerId')
@@ -1650,7 +1732,21 @@ class PackageService {
             return false
         }        
     }
-
+    //Send Email for Nodocs Packages 
+    async sendNoDocsPackageDataForAging(pkgId){       
+        const pkgData = await Package.findOne({_id:pkgId})
+        .populate('customerId')
+        .populate('shipperId')
+        .populate('awbId');
+        if(pkgData && pkgData.awbId &&  !pkgData.emailAging){
+            await emailService.sendNoDocsPackageEmail(pkgData);
+            await Package.updateOne({_id:pkgId},{emailAging:true});
+            return true;
+        }else{
+            return false
+        }        
+    }
+    //Send Email when Package ENter to No DOc
     async sendStorePackageData(pkgId){
         let pkgData = await Package.findOne({_id:pkgId})
         .populate('customerId')
@@ -1674,7 +1770,72 @@ class PackageService {
             return false
         } 
     }
-   
+    //SEnd email when package starts aging
+    async sendStorePackageDataForAging(pkgId){
+        let pkgData = await Package.findOne({_id:pkgId})
+        .populate('customerId')
+        .populate('shipperId')
+        .populate('awbId');
+        pkgData = JSON.parse(JSON.stringify(pkgData));
+        if(pkgData && pkgData.awbId &&  !pkgData.emailAgingStore){
+            const awbId = pkgData.awbId._id;
+            const awbData = await Awb.findOne({_id:awbId}).populate('invoices');
+            const invoices = awbData.invoices?awbData.invoices:[];
+            var totalPrice = 0;
+            for(let i=0;i<invoices.length;i++){
+                totalPrice = totalPrice+invoices[i].value;
+            }
+            pkgData.totalPrice = totalPrice;
+            console.log(totalPrice,'>>>>>>>>>>>>>>>>');
+            await emailService.sendStorePackageEmail(pkgData);
+            await Package.updateOne({_id:pkgId},{emailAgingStore:true});
+            return true;
+        }else{
+            return false
+        } 
+    }
+
+    async validateStorePackage(zoneId,pkgId){
+       return new Promise(async (resolve,reject)=>{
+           let zone = await Zone.findOne({_id:zoneId})
+           if(zone){  
+            let pkgData = await Package.findOne({_id:pkgId})
+            .populate('customerId')
+            .populate('shipperId')
+            .populate('awbId');
+            pkgData = JSON.parse(JSON.stringify(pkgData));
+            if(pkgData.customerId && pkgData.customerId.pmb){
+                let pmb = pkgData.customerId.pmb
+                if(pmb >0 && pmb <=1999  || pmb >= 4000 && pmb <=5999){
+                    if(zone.name === 'CABLE BEACH'){
+                        resolve({ success: true, message: `Package is OK` })
+                    }else{
+                        resolve({ success: false, message: `Following PackageId ${pkgId} with Tracking No.${pkgData.trackingNo} belong to ${zone.name}` })
+                    }
+                }else if (pmb >= 3000 && pmb <=3999){
+                    if(zone.name === 'ALBANY'){
+                        resolve({ success: true, message: `Package is OK` })
+                    }else{
+                        resolve({ success: false, message: `Following PackageId ${pkgId} with Tracking No.${pkgData.trackingNo} belong to ${zone.name}` })
+                    }
+                }else if (pmb >= 9000 && pmb <=10000){
+                    if(zone.name === '9TO5' || zone.name ==='9to5'){
+                        resolve({ success: true, message: `Package is OK` })
+                    }else{
+                        resolve({ success: false, message: `Following PackageId ${pkgId} with Tracking No.${pkgData.trackingNo} belong to ${zone.name}` })
+                    }
+                }else{
+                 resolve({ success: false, message: `Following PackageId ${pkgId} with Tracking No.${pkgData.trackingNo} Doesn't belong to Right Store` })
+                }
+            } 
+           }else{
+            resolve({ success: true, message: `Zone Id Not Found` })
+           }
+           
+       }) 
+
+    }
+   /* End Sending EMail for Nodocs and Delivered */
 }
 
 function getPackageIdFromBarCode(barCodeValue) {

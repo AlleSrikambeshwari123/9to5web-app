@@ -137,8 +137,8 @@ async function sendNoDocsFl(awb){
     return result; 
 }
 async function sendAtStoreEmail(store,pkg){
-    console.log(pkg,"sending at store package.")
-    console.log("ABOUT TO SEND EMAIL",pkg)
+    console.log("sending at store package.")
+    console.log("ABOUT TO SEND EMAIL")
     var emailBody = await readEmailTemplate("store"); 
     emailBody = emailBody.replace("{{NAME}}",pkg.awb.customer.name)
     emailBody = emailBody.replace("{{LOCATION}}",store)
@@ -158,9 +158,42 @@ async function sendAtStoreEmail(store,pkg){
     return result; 
 }
 
+async function sendAgingEmail(pkg){
+    console.log("sending at store package.")
+    console.log("ABOUT TO SEND EMAIL")
+    var emailBody = await readEmailTemplate("store");
+    let customerName = '';
+    let emailTo = '';
+    if(pkg && pkg.customerId && pkg.customerId.firstName){
+        customerName = pkg.customerId.firstName;
+        customerName = customerName +' '+(pkg.customerId.lastName?pkg.customerId.lastName:'')
+        emailTo = pkg.customerId.email ? pkg.customerId.email : 'kim@postboxesetc.com'
+    }
+    const awbId = (pkg.awbId && pkg.awbId.awbId)?pkg.awbId.awbId:'';    
+    // const shipperName = (pkg && pkg.shipperId &&  pkg.shipperId.name)? pkg.shipperId.name:'';
+    // const description = (pkg.awbId && pkg.awbId.note)?pkg.awbId.note:'';
+    // const trackingNo = pkg.trackingNo?pkg.trackingNo:''; 
+    emailBody = emailBody.replace("{{NAME}}",customerName)
+    // emailBody = emailBody.replace("{{LOCATION}}",store)
+    // emailBody = emailBody.replace("{{LOCNAME}}",store)
+    
+    emailBody = emailBody.replace("{{AWB}}",awbId)
+    
+    // emailBody = emailBody.replace("{{PACKAGES}}",generatePackage(pkg))
+    message = { 
+        to : "kim@postboxesetc.com", 
+        from : 'info@postboxesetc.com ',
+        subject: `Aging Started`,
+        html:emailBody
+    }; 
+    var result = await sendGrid.send(message);
+
+    return result; 
+}
+
 async function sendNoDocsPackageEmail(pkg){
-    console.log(pkg,"sending at no docx package.")
-    console.log("ABOUT TO SEND EMAIL",pkg)
+    console.log("sending at no docx package.")
+    console.log("ABOUT TO SEND EMAIL")
     var emailBody = await readEmailTemplate("nodocspackage"); 
     emailBody = emailBody.replace("{{HOST}}","https://9to5-qa.sprocket.solutions/");
     let customerName = '';
@@ -187,14 +220,14 @@ async function sendNoDocsPackageEmail(pkg){
         subject: `Package Update`,
         html:emailBody
     }; 
-    var result = await sendGrid.send(message);
+    var result = pkg && pkg.customerId && pkg.customerId.email ? await sendGrid.send(message):'Email Not Found';
 
     return result; 
 }
 
 async function sendStorePackageEmail(pkg){
-    // console.log(pkg,"sending at no docx package.")
-    // console.log("ABOUT TO SEND EMAIL",pkg)
+    console.log("sending at Store package.")
+    console.log("ABOUT TO SEND EMAIL")
     var emailBody = await readEmailTemplate("storepackage"); 
     emailBody = emailBody.replace("{{HOST}}","https://9to5-qa.sprocket.solutions/");
     let customerName = '';
@@ -221,13 +254,14 @@ async function sendStorePackageEmail(pkg){
         subject: `Package Update`,
         html:emailBody
     }; 
-    var result = await sendGrid.send(message);
+    var result = pkg && pkg.customerId && pkg.customerId.email ? await sendGrid.send(message): 'Email Not Found';
 
     return result; 
 }
 module.exports = { 
     sendNoDocsEmail : sendNoDocsEmail,
     sendAtStoreEmail: sendAtStoreEmail,
+    sendAgingEmail: sendAgingEmail,
     sendNoDocsFL : sendNoDocsFl,
     sendNoDocsPackageEmail:sendNoDocsPackageEmail,
     sendStorePackageEmail:sendStorePackageEmail

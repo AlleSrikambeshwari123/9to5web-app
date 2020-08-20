@@ -1,0 +1,50 @@
+<% layout('./shared/__template')%>
+<form id="edit-customer-form" method='POST' action='update'>
+  <div class="row gutters">
+    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+      <div class="card">
+        <div class="card-header">
+          <h4 class="card-title"><%=title%></h4>
+        </div>
+        <div class="card-body">
+          <input type="hidden" id="id" name="id" value="<%=customer.id%>">
+          <div class="form-group form-show-validation row">
+            <label for="pmb" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Parent Customer</label>
+            <div class="col-lg-4 col-md-9 col-sm-8">
+              <input type="text" class="form-control" placeholder="Parent Customer"
+                value="<%=helpers.getFullName(customer.parentCustomer)%>" readonly>
+            </div>
+          </div>
+          <div class="form-group form-show-validation row">
+            <label for="firstName" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">First Name</label>
+            <div class="col-lg-4 col-md-9 col-sm-8">
+              <input type="text" class="form-control" id="firstName" name="firstName" placeholder="First Name" required
+                value="<%=customer.firstName%>">
+            </div>
+          </div>
+          <div class="form-group form-show-validation row">
+            <label for="lastName" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Last Name</label>
+            <div class="col-lg-4 col-md-9 col-sm-8">
+              <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Last Name"
+                value="<%=customer.lastName%>">
+            </div>
+          </div>
+          <div class="form-group form-show-validation row">
+            <label for="email" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Email address</label>
+            <div class="col-lg-4 col-md-9 col-sm-8">
+              <input type="email" class="form-control" id="email" name="email" placeholder="name@example.com"
+                value="<%=customer.email%>">
+            </div>
+          </div>
+        </div>
+        <div class="card-action">
+          <button type="submit" class="btn btn-primary">Update</button>
+          <button type="button" id="cancelForm" class="btn btn-danger">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+
+<% block('scripts').append('<script src="/js/utils.js"></script>')%>
+<% block('scripts').append('<script src="/js/customer/customerchild/edit.js"></script>')%>
