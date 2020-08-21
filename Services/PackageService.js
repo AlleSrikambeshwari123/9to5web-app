@@ -29,6 +29,7 @@ const PKG_STATUS = {
 };
 
 const Package = require('../models/package');
+const Location = require('../models/location');
 const Compartment = require('../models/compartment');
 const Manifest = require('../models/manifest');
 const Delivery = require('../models/delivery');
@@ -172,7 +173,7 @@ class PackageService {
     }
 
     // 3: 'In Transit',
-    async addPackagesToDelivery(deliveryId, packageIds, user,zoneId,query) {
+    async addPackagesToDelivery(deliveryId, packageIds, user,locationId,query) {
         return new Promise(async(resolve, reject) => {
             let error = []
             let packages = packageIds && packageIds.length && packageIds.split(',').filter(Boolean);
@@ -184,7 +185,7 @@ class PackageService {
             Promise.all(
                 packages.map(async(packageId) => {
                     this.updatePackage(packageId, { deliveryId: deliveryId });
-                    const validateStore = await this.validateStorePackage(zoneId,packageId)
+                    const validateStore = await this.validateDeliveryStorePackage(locationId,packageId)
                     if(query.override == undefined){
                         if(!validateStore.success) error.push(validateStore.message)
                     }
@@ -1801,6 +1802,49 @@ class PackageService {
         } 
     }
 
+
+    async validateDeliveryStorePackage(locationId,pkgId){
+        return new Promise(async (resolve,reject)=>{
+            let location = await Location.findOne({_id:locationId})
+            if(location){  
+             let pkgData = await Package.findOne({_id:pkgId})
+             .populate('customerId')
+             .populate('shipperId')
+             .populate('awbId');
+             pkgData = JSON.parse(JSON.stringify(pkgData));
+             if(pkgData.customerId && pkgData.customerId.pmb){
+                 let pmb = pkgData.customerId.pmb
+                 let locationName = location.name.toUpperCase()
+                 if(pmb >0 && pmb <=1999  || pmb >= 4000 && pmb <=5999){
+                     if(locationName === 'CABLE BEACH'){
+                         resolve({ success: true, message: `Package is OK` })
+                     }else{
+                         resolve({ success: false, message: `Following PackageId ${pkgId} with Tracking No.${pkgData.trackingNo} belong to ${location.name}` })
+                     }
+                 }else if (pmb >= 3000 && pmb <=3999){
+                     if(locationName === 'ALBANY'){
+                         resolve({ success: true, message: `Package is OK` })
+                     }else{
+                         resolve({ success: false, message: `Following PackageId ${pkgId} with Tracking No.${pkgData.trackingNo} belong to ${location.name}` })
+                     }
+                 }else if (pmb >= 9000 && pmb <=10000){
+                     if(locationName === '9TO5' || locationName ==='9to5'){
+                         resolve({ success: true, message: `Package is OK` })
+                     }else{
+                         resolve({ success: false, message: `Following PackageId ${pkgId} with Tracking No.${pkgData.trackingNo} belong to ${location.name}` })
+                     }
+                 }else{
+                  resolve({ success: false, message: `Following PackageId ${pkgId} with Tracking No.${pkgData.trackingNo} Doesn't belong to Right Store` })
+                 }
+             }else{
+                resolve({ success: false, message: `Customer Id Not Found` })
+               }
+            }else{
+             resolve({ success: false, message: `Location Id Not Found` })
+            }
+        }) 
+     }
+
     async validateStorePackage(zoneId,pkgId){
        return new Promise(async (resolve,reject)=>{
            let zone = await Zone.findOne({_id:zoneId})
@@ -1833,9 +1877,11 @@ class PackageService {
                 }else{
                  resolve({ success: false, message: `Following PackageId ${pkgId} with Tracking No.${pkgData.trackingNo} Doesn't belong to Right Store` })
                 }
+            }else{
+                resolve({ success: false, message: `Customer Id Not Found` })
             } 
            }else{
-            resolve({ success: true, message: `Zone Id Not Found` })
+            resolve({ success: false, message: `Zone Id Not Found` })
            }
            
        }) 
