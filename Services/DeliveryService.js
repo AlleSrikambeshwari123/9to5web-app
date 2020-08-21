@@ -88,7 +88,7 @@ class DeliveryService {
                         delivery.location = delivery.locationId;
                         delivery.driver = delivery.driverId;
                         delivery.vehicle = delivery.vehicleId;
-                        delivery['delivery_date'] = moment(delivery['delivery_date']).format("MMM DD, YYYY");
+                        // delivery['delivery_date'] = moment(delivery['delivery_date']).format("MMM DD, YYYY");
                         return delivery;
                     });
 
