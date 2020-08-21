@@ -1819,19 +1819,19 @@ class PackageService {
                      if(locationName === 'CABLE BEACH'){
                          resolve({ success: true, message: `Package is OK` })
                      }else{
-                         resolve({ success: false, message: `Following PackageId ${pkgId} with Tracking No.${pkgData.trackingNo} belong to ${location.name}` })
+                         resolve({ success: false, message: `The following packageId ${pkgId} with tracking number ${pkgData.trackingNo} belongs to ${location.name} .Would you like to change it?` })
                      }
                  }else if (pmb >= 3000 && pmb <=3999){
                      if(locationName === 'ALBANY'){
                          resolve({ success: true, message: `Package is OK` })
                      }else{
-                         resolve({ success: false, message: `Following PackageId ${pkgId} with Tracking No.${pkgData.trackingNo} belong to ${location.name}` })
+                         resolve({ success: false, message: `The following packageId ${pkgId} with tracking number ${pkgData.trackingNo} belongs to ${location.name} .Would you like to change it?` })
                      }
                  }else if (pmb >= 9000 && pmb <=10000){
                      if(locationName === '9TO5' || locationName ==='9to5'){
                          resolve({ success: true, message: `Package is OK` })
                      }else{
-                         resolve({ success: false, message: `Following PackageId ${pkgId} with Tracking No.${pkgData.trackingNo} belong to ${location.name}` })
+                         resolve({ success: false, message: `The following packageId ${pkgId} with tracking number ${pkgData.trackingNo} belongs to ${location.name} .Would you like to change it?` })
                      }
                  }else{
                   resolve({ success: false, message: `Following PackageId ${pkgId} with Tracking No.${pkgData.trackingNo} Doesn't belong to Right Store` })
@@ -1860,19 +1860,19 @@ class PackageService {
                     if(zone.name === 'CABLE BEACH'){
                         resolve({ success: true, message: `Package is OK` })
                     }else{
-                        resolve({ success: false, message: `Following PackageId ${pkgId} with Tracking No.${pkgData.trackingNo} belong to ${zone.name}` })
+                        resolve({ success: false, message: `The following packageId ${pkgId} with tracking number ${pkgData.trackingNo} belongs to ${zone.name} .Would you like to change it?` })
                     }
                 }else if (pmb >= 3000 && pmb <=3999){
                     if(zone.name === 'ALBANY'){
                         resolve({ success: true, message: `Package is OK` })
                     }else{
-                        resolve({ success: false, message: `Following PackageId ${pkgId} with Tracking No.${pkgData.trackingNo} belong to ${zone.name}` })
+                        resolve({ success: false, message: `The following packageId ${pkgId} with tracking number ${pkgData.trackingNo} belongs to ${zone.name} .Would you like to change it?` })
                     }
                 }else if (pmb >= 9000 && pmb <=10000){
                     if(zone.name === '9TO5' || zone.name ==='9to5'){
                         resolve({ success: true, message: `Package is OK` })
                     }else{
-                        resolve({ success: false, message: `Following PackageId ${pkgId} with Tracking No.${pkgData.trackingNo} belong to ${zone.name}` })
+                        resolve({ success: false, message: `The following packageId ${pkgId} with tracking number ${pkgData.trackingNo} belongs to ${zone.name} .Would you like to change it?` })
                     }
                 }else{
                  resolve({ success: false, message: `Following PackageId ${pkgId} with Tracking No.${pkgData.trackingNo} Doesn't belong to Right Store` })
