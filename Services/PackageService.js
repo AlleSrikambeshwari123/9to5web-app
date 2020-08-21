@@ -172,7 +172,7 @@ class PackageService {
     }
 
     // 3: 'In Transit',
-    async addPackagesToDelivery(deliveryId, packageIds, user) {
+    async addPackagesToDelivery(deliveryId, packageIds, user,zoneId,query) {
         return new Promise(async(resolve, reject) => {
             let error = []
             let packages = packageIds && packageIds.length && packageIds.split(',').filter(Boolean);
@@ -184,9 +184,15 @@ class PackageService {
             Promise.all(
                 packages.map(async(packageId) => {
                     this.updatePackage(packageId, { deliveryId: deliveryId });
-                    const status = await this.updatePackageStatus(packageId, 3, user);
-                    if (!status.success) error.push(status.message)
-                    return status
+                    const validateStore = await this.validateStorePackage(zoneId,packageId)
+                    if(query.override == undefined){
+                        if(!validateStore.success) error.push(validateStore.message)
+                    }
+                    if(validateStore.success || query.override !== undefined){
+                        const status = await this.updatePackageStatus(packageId, 3, user);
+                        if (!status.success) error.push(status.message)
+                        return status
+                    }
                 }),
             ).then((result) => {
                 if (error.length > 0) return resolve({ success: false, message: error })
