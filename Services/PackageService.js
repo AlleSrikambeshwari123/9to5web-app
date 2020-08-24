@@ -1813,25 +1813,26 @@ class PackageService {
              .populate('awbId');
              pkgData = JSON.parse(JSON.stringify(pkgData));
              if(pkgData.customerId && pkgData.customerId.pmb){
+                 let awb = await this.services.awbService.getAwb(pkgData.awbId)
                  let pmb = pkgData.customerId.pmb
                  let locationName = location.name.toUpperCase()
                  if(pmb >0 && pmb <=1999  || pmb >= 4000 && pmb <=5999){
                      if(locationName === 'CABLE BEACH'){
                          resolve({ success: true, message: `Package is OK` })
                      }else{
-                         resolve({ success: false, message: `The following packageId ${pkgId} with tracking number ${pkgData.trackingNo} belongs to ${location.name} .Would you like to change it?` })
+                         resolve({ success: false, message: `The following package ${pkgId} belongs to Post Boxes Cable Beach with AWB:${awb.awbId}.Would you like to change it?` })
                      }
                  }else if (pmb >= 3000 && pmb <=3999){
                      if(locationName === 'ALBANY'){
                          resolve({ success: true, message: `Package is OK` })
                      }else{
-                         resolve({ success: false, message: `The following packageId ${pkgId} with tracking number ${pkgData.trackingNo} belongs to ${location.name} .Would you like to change it?` })
+                         resolve({ success: false, message: `The following package ${pkgId} belongs to Post Boxes Albany with AWB:${awb.awbId}.Would you like to change it?` })
                      }
                  }else if (pmb >= 9000 && pmb <=10000){
                      if(locationName === '9TO5' || locationName ==='9to5'){
                          resolve({ success: true, message: `Package is OK` })
                      }else{
-                         resolve({ success: false, message: `The following packageId ${pkgId} with tracking number ${pkgData.trackingNo} belongs to ${location.name} .Would you like to change it?` })
+                         resolve({ success: false, message: `The following package ${pkgId} belongs to 9 to 5 with AWB:${awb.awbId}.Would you like to change it?` })
                      }
                  }else{
                   resolve({ success: false, message: `Following PackageId ${pkgId} with Tracking No.${pkgData.trackingNo} Doesn't belong to Right Store` })
@@ -1855,24 +1856,25 @@ class PackageService {
             .populate('awbId');
             pkgData = JSON.parse(JSON.stringify(pkgData));
             if(pkgData.customerId && pkgData.customerId.pmb){
+                let awb = await this.services.awbService.getAwb(pkgData.awbId)
                 let pmb = pkgData.customerId.pmb
                 if(pmb >0 && pmb <=1999  || pmb >= 4000 && pmb <=5999){
                     if(zone.name === 'CABLE BEACH'){
                         resolve({ success: true, message: `Package is OK` })
                     }else{
-                        resolve({ success: false, message: `The following packageId ${pkgId} with tracking number ${pkgData.trackingNo} belongs to ${zone.name} .Would you like to change it?` })
+                        resolve({ success: false, message: `The following package ${pkgId} belongs to Post Boxes Cable Beach with AWB:${awb.awbId} .Would you like to change it?` })
                     }
                 }else if (pmb >= 3000 && pmb <=3999){
                     if(zone.name === 'ALBANY'){
                         resolve({ success: true, message: `Package is OK` })
                     }else{
-                        resolve({ success: false, message: `The following packageId ${pkgId} with tracking number ${pkgData.trackingNo} belongs to ${zone.name} .Would you like to change it?` })
+                        resolve({ success: false, message: `The following package ${pkgId} belongs to Post Boxes Albany with AWB:${awb.awbId} .Would you like to change it?` })
                     }
                 }else if (pmb >= 9000 && pmb <=10000){
                     if(zone.name === '9TO5' || zone.name ==='9to5'){
                         resolve({ success: true, message: `Package is OK` })
                     }else{
-                        resolve({ success: false, message: `The following packageId ${pkgId} with tracking number ${pkgData.trackingNo} belongs to ${zone.name} .Would you like to change it?` })
+                        resolve({ success: false, message: `The following package ${pkgId} belongs to 9 to 5 with AWB:${awb.awbId} .Would you like to change it?` })
                     }
                 }else{
                  resolve({ success: false, message: `Following PackageId ${pkgId} with Tracking No.${pkgData.trackingNo} Doesn't belong to Right Store` })
