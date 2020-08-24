@@ -29,6 +29,7 @@ const PKG_STATUS = {
 };
 
 const Package = require('../models/package');
+const Location = require('../models/location');
 const Compartment = require('../models/compartment');
 const Manifest = require('../models/manifest');
 const Delivery = require('../models/delivery');
@@ -172,7 +173,7 @@ class PackageService {
     }
 
     // 3: 'In Transit',
-    async addPackagesToDelivery(deliveryId, packageIds, user) {
+    async addPackagesToDelivery(deliveryId, packageIds, user,locationId,query) {
         return new Promise(async(resolve, reject) => {
             let error = []
             let packages = packageIds && packageIds.length && packageIds.split(',').filter(Boolean);
@@ -184,12 +185,18 @@ class PackageService {
             Promise.all(
                 packages.map(async(packageId) => {
                     this.updatePackage(packageId, { deliveryId: deliveryId });
-                    const status = await this.updatePackageStatus(packageId, 3, user);
-                    if (!status.success) error.push(status.message)
-                    return status
+                    const validateStore = await this.validateDeliveryStorePackage(locationId,packageId)
+                    if(query.override == undefined){
+                        if(!validateStore.success) error.push(validateStore.message)
+                    }
+                    if(validateStore.success || query.override !== undefined){
+                        const status = await this.updatePackageStatus(packageId, 3, user);
+                        if (!status.success) error.push(status.message)
+                        return status
+                    }
                 }),
             ).then((result) => {
-                if (error.length > 0) return resolve({ success: false, message: error })
+                if (error.length > 0) return resolve({ success: false, error_message: error })
                 resolve({ success: true, message: strings.string_response_received, status: PKG_STATUS[3] });
             });
         })
@@ -1795,6 +1802,50 @@ class PackageService {
         } 
     }
 
+
+    async validateDeliveryStorePackage(locationId,pkgId){
+        return new Promise(async (resolve,reject)=>{
+            let location = await Location.findOne({_id:locationId})
+            if(location){  
+             let pkgData = await Package.findOne({_id:pkgId})
+             .populate('customerId')
+             .populate('shipperId')
+             .populate('awbId');
+             pkgData = JSON.parse(JSON.stringify(pkgData));
+             if(pkgData.customerId && pkgData.customerId.pmb){
+                 let awb = await this.services.awbService.getAwb(pkgData.awbId)
+                 let pmb = pkgData.customerId.pmb
+                 let locationName = location.name.toUpperCase()
+                 if(pmb >0 && pmb <=1999  || pmb >= 4000 && pmb <=5999){
+                     if(locationName === 'CABLE BEACH'){
+                         resolve({ success: true, message: `Package is OK` })
+                     }else{
+                         resolve({ success: false, message: `The following package ${pkgId} belongs to Post Boxes Cable Beach with AWB:${awb.awbId}.Would you like to change it?` })
+                     }
+                 }else if (pmb >= 3000 && pmb <=3999){
+                     if(locationName === 'ALBANY'){
+                         resolve({ success: true, message: `Package is OK` })
+                     }else{
+                         resolve({ success: false, message: `The following package ${pkgId} belongs to Post Boxes Albany with AWB:${awb.awbId}.Would you like to change it?` })
+                     }
+                 }else if (pmb >= 9000 && pmb <=10000){
+                     if(locationName === '9TO5' || locationName ==='9to5'){
+                         resolve({ success: true, message: `Package is OK` })
+                     }else{
+                         resolve({ success: false, message: `The following package ${pkgId} belongs to 9 to 5 with AWB:${awb.awbId}.Would you like to change it?` })
+                     }
+                 }else{
+                  resolve({ success: false, message: `Following PackageId ${pkgId} with Tracking No.${pkgData.trackingNo} Doesn't belong to Right Store` })
+                 }
+             }else{
+                resolve({ success: false, message: `Customer Id Not Found` })
+               }
+            }else{
+             resolve({ success: false, message: `Location Id Not Found` })
+            }
+        }) 
+     }
+
     async validateStorePackage(zoneId,pkgId){
        return new Promise(async (resolve,reject)=>{
            let zone = await Zone.findOne({_id:zoneId})
@@ -1805,31 +1856,34 @@ class PackageService {
             .populate('awbId');
             pkgData = JSON.parse(JSON.stringify(pkgData));
             if(pkgData.customerId && pkgData.customerId.pmb){
+                let awb = await this.services.awbService.getAwb(pkgData.awbId)
                 let pmb = pkgData.customerId.pmb
                 if(pmb >0 && pmb <=1999  || pmb >= 4000 && pmb <=5999){
                     if(zone.name === 'CABLE BEACH'){
                         resolve({ success: true, message: `Package is OK` })
                     }else{
-                        resolve({ success: false, message: `Following PackageId ${pkgId} with Tracking No.${pkgData.trackingNo} belong to ${zone.name}` })
+                        resolve({ success: false, message: `The following package ${pkgId} belongs to Post Boxes Cable Beach with AWB:${awb.awbId} .Would you like to change it?` })
                     }
                 }else if (pmb >= 3000 && pmb <=3999){
                     if(zone.name === 'ALBANY'){
                         resolve({ success: true, message: `Package is OK` })
                     }else{
-                        resolve({ success: false, message: `Following PackageId ${pkgId} with Tracking No.${pkgData.trackingNo} belong to ${zone.name}` })
+                        resolve({ success: false, message: `The following package ${pkgId} belongs to Post Boxes Albany with AWB:${awb.awbId} .Would you like to change it?` })
                     }
                 }else if (pmb >= 9000 && pmb <=10000){
                     if(zone.name === '9TO5' || zone.name ==='9to5'){
                         resolve({ success: true, message: `Package is OK` })
                     }else{
-                        resolve({ success: false, message: `Following PackageId ${pkgId} with Tracking No.${pkgData.trackingNo} belong to ${zone.name}` })
+                        resolve({ success: false, message: `The following package ${pkgId} belongs to 9 to 5 with AWB:${awb.awbId} .Would you like to change it?` })
                     }
                 }else{
                  resolve({ success: false, message: `Following PackageId ${pkgId} with Tracking No.${pkgData.trackingNo} Doesn't belong to Right Store` })
                 }
+            }else{
+                resolve({ success: false, message: `Customer Id Not Found` })
             } 
            }else{
-            resolve({ success: true, message: `Zone Id Not Found` })
+            resolve({ success: false, message: `Zone Id Not Found` })
            }
            
        }) 

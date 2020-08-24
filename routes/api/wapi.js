@@ -329,10 +329,11 @@ router.post('/add-packages-to-manifests', passport.authenticate('jwt', { session
 router.post('/add-packages-to-delivery', passport.authenticate('jwt', { session: false }), (req, res, next) => {
   var deliveryId = req.body.deliveryId;
   var packageIds = req.body.packageIds
+  var locationId = req.body.locationId 
   var userId = req.headers.userId || req.body.userId;
-  const {valid,errors} = checkEmpty({packageIds:packageIds,deliveryId :deliveryId,userId:userId})
+  const {valid,errors} = checkEmpty({packageIds:packageIds,deliveryId :deliveryId,userId:userId,locationId : locationId})
   if(!valid) return res.send({success:false,message:errors})
-  services.packageService.addPackagesToDelivery(deliveryId, packageIds,userId).then(result => {
+  services.packageService.addPackagesToDelivery(deliveryId, packageIds,userId,locationId,req.query).then(result => {
     res.send(result)
   })
 })
