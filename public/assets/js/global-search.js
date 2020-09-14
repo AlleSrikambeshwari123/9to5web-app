@@ -133,7 +133,7 @@ $(function () {
   $.fn.dataTable.ext.search.push(
     function (settings, data, dataIndex) {
       var startDate = moment(jQuery(dtTable.table().node()).data('startDate')).format("YYYY/MM/DD");
-      var endDate = moment(jQuery(dtTable.table().node()).data('endDate')).format("YYYY/MM/DD");
+      var endDate = moment(jQuery(dtTable.table().node()).data('endDate')).add(1,'days').format("YYYY/MM/DD");
       if (jQuery(dtTable.table().node()).data('startDate') == null || jQuery(dtTable.table().node()).data('endDate') == null) {
         return true;
       }
