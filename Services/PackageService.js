@@ -486,6 +486,7 @@ class PackageService {
                 .populate('awbId')
                 .populate('originBarcode')
                 .populate('customerId')
+                .populate('shipperId')
                 .populate('zoneId')
                 .exec((err, result) => {
                     if (err) {

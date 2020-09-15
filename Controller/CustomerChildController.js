@@ -102,3 +102,17 @@ exports.delete_customer = (req, res, next) => {
     res.send(result);
   })
 }
+
+exports.get_sub_customer_no_docs = (req, res, next) => {
+  Promise.all([
+    services.customerChildService.getCustomerAwbsNoDocs({createdBy : req.params.customerId})
+  ]).then(results => {
+    console.log("resp",results)
+    res.render('pages/customer/no-docs/list', {
+      page: req.originalUrl,
+      title: "Consignee Details",
+      user: res.user,
+      awbs: results[0],
+    })
+  })
+}

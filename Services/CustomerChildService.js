@@ -16,6 +16,14 @@ const Customer = require('../models/customer');
 const CustomerChild = require('../models/customerChild');
 
 class CustomerChildService {
+
+  constructor() {
+    this.services = {};
+}
+
+setServiceInstances(services) {
+    this.services = services;
+}
   createCustomer(customer) {
     return new Promise(async (resolve, reject) => {
       if (customer.email) {
@@ -123,6 +131,7 @@ class CustomerChildService {
     })
   }
   getCustomers(object) {
+    console.log("obj",object)
     return new Promise((resolve, reject) => {
       CustomerChild.find(object)
       .populate('parentCustomer')
@@ -349,6 +358,27 @@ class CustomerChildService {
       }
     });
   }  
+  getCustomerAwbsNoDocs(object) {
+    return new Promise((resolve, reject) => {
+        CustomerChild.find(object)
+            .populate('parentCustomer')
+            .exec(async (err, awbData) => {
+                if (err) {
+                    resolve([]);
+                } else {
+                    let responseArray = []
+                    // for(let data of awbData){
+                    //     let packagesResult = await this.services.packageService.get_Packages_update({ customerId:data._id});
+                    //     responseArray.push(...packagesResult)
+                    // }
+                    let customerPackagesResult = await this.services.packageService.get_Packages_update({ customerId:object.createdBy});
+                    responseArray.push(...customerPackagesResult)
+
+                    resolve(responseArray);
+                }
+            });
+    });
+  }
 }
 
 module.exports = CustomerChildService;

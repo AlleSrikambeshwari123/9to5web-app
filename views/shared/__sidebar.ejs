@@ -340,16 +340,22 @@
 
 				<!-- Customer -->
 				<% if (user.roles[0].type == "Customers") { %>
-				<li class="nav-item <% if (page.includes('/customerchild/')) { %> active <% } %>">
+				<li class="nav-item <% if (page.includes('/customerchild/list')) { %> active <% } %>">
 					<a href="/customer/customerchild/list/<%= user._id %>">
 						<i class="fa fa-user-tie"></i>
 						<p>Sub Customers</p>
 					</a>
 				</li>
-				<li class="nav-item <% if (page.includes('/packages/')) { %> active <% } %>">
+				<li class="nav-item <% if (page.includes('/package/')) { %> active <% } %>">
 					<a href="/warehouse/customer/package/list/<%= user._id %>">
 						<i class="fa fa-cubes"></i>
 						<p>Packages </p>
+					</a>
+				</li>
+				<li class="nav-item <% if (page.includes('/no-docs/')) { %> active <% } %>">
+					<a href="/customer/customerchild/no-docs/<%= user._id %>">
+						<i class="fas fa-warehouse"></i>
+						<p>No Docs</p>
 					</a>
 				</li>
 				<% } %>
