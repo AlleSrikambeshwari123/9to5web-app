@@ -9,8 +9,12 @@ Number.prototype.formatMoney = function (c, d, t) {
   return "$" + s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
 };
 
+function openAddPackage(){
+  $('.mfp-fade').css({'display':'block'});
+}
 function closeAddPackage(){  
-  $('.mfp-close').trigger("click");
+  // $('.mfp-close').trigger("click");
+  $('.mfp-fade').css({'display':'none'});
 }
 $('select#originBarcode option').each(function(index,option){
   let text = option.text
@@ -183,7 +187,7 @@ $(function () {
         else{
            $('.btn-copy-last').hide();
         }
-
+        $(".hidden-div").css("display", "block");
         $('#id').val(undefined);
         $('#description').val("");
         $('#weight').val("");
@@ -193,8 +197,12 @@ $(function () {
         $('#W').val("");
         $('#H').val("");
         $('#L').val("");
+      },
+      close: function(){
+        $(".hidden-div").css("display", "none");
       }
-    }
+    },
+
   });
 
   $(".btn-copy-last").click(function () {
@@ -436,8 +444,9 @@ $(function () {
           type: response.success == true ? 'success' : 'error',
         }).then(() => {
           if (response.success) {
-            $("#link-add-package-popup").trigger('click');
-            var barCode = response.data;
+            // $("#link-add-package-popup").trigger('click');
+          $('.mfp-fade').css({'display':'block'});
+            var barCode = response.originBarcode;
             console.log(barCode);
             $('#originBarcode').append(`<option value="${barCode.barcode},${barCode._id}">${barCode.barcode}</option>`)
           }
