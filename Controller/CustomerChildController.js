@@ -1,5 +1,7 @@
 var services = require('../Services/RedisDataServices');
 var utils = require('../Util/utils');
+var momentz = require('moment-timezone')
+const aws = require('../Util/aws');
 
 exports.get_customer_list = (req, res, next) => {
   Promise.all([
@@ -116,3 +118,29 @@ exports.get_sub_customer_no_docs = (req, res, next) => {
     })
   })
 }
+
+exports.preview_awb = (req, res, next) => {
+  let id = req.params.id;
+  
+  services.awbService.getAwbPreviewDetails(id).then((awb) => {
+    awb['dateCreated'] = momentz(awb.createdAt).tz("America/New_York").format('dddd, MMMM Do YYYY, h:mm A');
+    awb._doc.createdBy = awb.createdBy ? (awb.createdBy.firstName || '')  + (awb.createdBy.lastName || ''): ''
+    if (awb.invoices && awb.invoices.length) {
+      awb.invoices = awb.invoices.map(invoice => {
+        if (invoice.filename) {
+          invoice.link = aws.getSignedUrl(invoice.filename);
+        }
+        return invoice;
+      });
+    }
+    res.render('pages/customer/awb/preview', {
+      page: req.originalUrl,
+      title: "AWB #" + awb.awbId,
+      user: res.user,
+      awb: awb,
+      shipper: awb.shipper,
+      carrier: awb.carrier,
+      hazmat: awb.hazmat
+    });
+  });
+};

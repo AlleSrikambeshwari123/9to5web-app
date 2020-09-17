@@ -72,7 +72,7 @@
               <th>AWB</th>
               <th>Description</th>
               <th>Shipper</th>
-              <th>View</th>
+              <!-- <th>View</th> -->
               <!-- <th></th> -->
             </tr>
           </thead>  
@@ -82,7 +82,7 @@
               <td>
                 <input type="checkbox" name="package-select" class="package-select" />
               </td>
-              <td><%= helpers.formatDate(pkg.OrignalBarcodeDate) %></td>
+              <td><%= helpers.formatDate(pkg.originBarcode.createdAt) %></td>
               <% if (pkg['customerId']) { %>
                 <td><%= pkg.customerId.firstName%></td>
                 <td><%= (pkg['customerId'].lastName ? pkg.customerId.lastName : '-')%></td>
@@ -90,7 +90,7 @@
                   <td> - </td>
                   <td> - </td>
                   <% } %>
-              <td><a class="text-decoration-none" href="/warehouse/nas/awb/manage/<%=pkg.awbId ? pkg.awbId._id: '#'%>/preview"><b><%= pkg.express ? '*': '' %></b><%= (pkg.awbId && pkg.awbId.awbId)?pkg.awbId.awbId:'' %> </a></td>
+              <td><a class="text-decoration-none" href="/customer/customerChild/awb/manage/<%=pkg.awbId ? pkg.awbId._id: '#'%>/preview"><b><%= pkg.express ? '*': '' %></b><%= (pkg.awbId && pkg.awbId.awbId)?pkg.awbId.awbId:'' %> </a></td>
               <td><%= pkg.description %></td>
               <% if (pkg['shipperId'] && pkg['shipperId'].name) { %>
                 <td><%= pkg['shipperId'].name %>
@@ -98,9 +98,7 @@
               <% } else { %>
                 <td> - </td>
               <% } %> 
-              <td><a class="btn btn-link btn-primary btn-edit-pricelabel" data-toggle="modal" data-id="<%=pkg.awbId._id%>"
-                data-original-title="Add Price" data-target="#pricelabel-popup"><i class="fa fa-edit"></i></a>
-            </td>
+
             </tr>
             <%})%>
           </tbody>

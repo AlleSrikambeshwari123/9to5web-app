@@ -1317,6 +1317,7 @@ class PackageService {
 
     //========== Customer Package ==========//
     getCustomerPackages(customerId) {
+        console.log("cus",customerId)
         return new Promise((resolve, reject) => {
             Package.find({ customerId })
                 .exec((error, packages) => {
@@ -1344,14 +1345,15 @@ class PackageService {
         });
     }
 
-    async getPopulatedCustomerPackages(customerId) {
-        let packages = await this.get_Packages_update({customerId : customerId});
+    async getPopulatedCustomerPackages(packages) {
         return await Promise.all(
             packages.map(async(pkg) => {
+                pkg = await this.get_Packages_update({_id :pkg._id});
+                console.log("pkg",pkg)
                 let status = await this.services.packageService.getPackageLastStatus(pkg._id);
                 pkg.lastStatusText = status && status.status;
                 if (pkg.originBarcode) {
-                    let barcode = await this.getOriginBarcode(pkg.originBarcode)
+                    let barcode = await this.getOriginBarcode(pkg[0].originBarcode._id)
                     if (barcode !== null && barcode.createdAt) {
                         pkg.OrignalBarcodeDate = barcode.createdAt;
                     }
@@ -1371,7 +1373,7 @@ class PackageService {
                 pkg.OrignalBarcodeDate = pkg.OrignalBarcodeDate || ''
                 pkg.awbCreatedAt = pkg.awbCreatedAt || ''
                 pkg.actualFlight = pkg.actualFlight || ''
-                return pkg;
+                return pkg[0];
             }),
         );
     }
