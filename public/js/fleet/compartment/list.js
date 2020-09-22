@@ -5,36 +5,36 @@ $(function () {
     clearForm()
   })
 
-  $(".compartment-table").on("click", ".rm-compartment", function() {  
-    var id = $(this).data('id');
-    //confirm 
-    swal({
-      title: 'Are you sure?',
-      showCancelButton: true,
-      confirmButtonText: 'Remove',
-    }).then(response => {
-      if (response.value) {
-        $.ajax({
-          url: 'delete',
-          type: 'delete',
-          data: {
-            id: id
-          },
-          success: function (response) {
-            swal({
-              title: response.success == true ? 'Removed' : 'Failed',
-              text: response.message,
-              type: response.success == true ? 'success' : 'error',
-            }).then(res => {
-              if (response.success == true) {
-                $('tr[data-record="' + id + '"]').fadeOut('slow', () => $('tr[data-record="' + id + '"]').remove())
-              }
-            })
-          }
-        })
-      }
-    })
-  })
+  // $(".compartment-table").on("click", ".rm-compartment", function() {  
+  //   var id = $(this).data('id');
+  //   //confirm 
+  //   swal({
+  //     title: 'Are you sure?',
+  //     showCancelButton: true,
+  //     confirmButtonText: 'Remove',
+  //   }).then(response => {
+  //     if (response.value) {
+  //       $.ajax({
+  //         url: 'delete',
+  //         type: 'delete',
+  //         data: {
+  //           id: id
+  //         },
+  //         success: function (response) {
+  //           swal({
+  //             title: response.success == true ? 'Removed' : 'Failed',
+  //             text: response.message,
+  //             type: response.success == true ? 'success' : 'error',
+  //           }).then(res => {
+  //             if (response.success == true) {
+  //               $('tr[data-record="' + id + '"]').fadeOut('slow', () => $('tr[data-record="' + id + '"]').remove())
+  //             }
+  //           })
+  //         }
+  //       })
+  //     }
+  //   })
+  // })
 
   $('.add-compartment').click(function () {
     var compartment = getCompartment();
@@ -67,9 +67,6 @@ $(function () {
     }
   })
 
-  $('.compartment-table').DataTable({
-    pageLength: 10,
-  })
 
   function clearForm() {
     $(add_form).find("#name").val('')
