@@ -31,6 +31,8 @@ exports.add_new_shipper = (req, res, next) => {
 
 exports.get_shipper_detail = (req, res, next) => {
   services.shipperService.getShipper(req.params.id).then(shipper => {
+    if(!shipper.country)
+      shipper.country = ''
     res.render('pages/warehouse/shipper/edit', {
       page: req.originalUrl,
       title: "Shipper Details",
