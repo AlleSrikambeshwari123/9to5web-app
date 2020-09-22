@@ -374,6 +374,12 @@ class AirCargoManifest {
         var mainFilePath = path.resolve(process.cwd(), `airCaroDownload/${this.data._id}_${datetime}_main.pdf`)
         doc.pipe(await fs.createWriteStream(mainFilePath));
         doc.end();
+        if(this.data.awbsArray.length == 0){
+            var docs = printer.createPdfKitDocument(definition);
+            var acmPdf = path.resolve(process.cwd(), `airCaroDownload/${this.data._id}-ACM.pdf`)
+            docs.pipe(await fs.createWriteStream(acmPdf));
+            docs.end();
+        }
 
         var dynamicAWBFilesPath = [];
         await Promise.all(

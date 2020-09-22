@@ -98,6 +98,7 @@ class InvoiceService {
         if (err) {
           resolve([]);
         } else {
+          if(result.length == 0) resolve([])
           Promise.all(result.map(async (singleInvoice) => {
             if(singleInvoice.filename) {
               let fileBuffer = await awsLib.getObjectData(singleInvoice.filename);
