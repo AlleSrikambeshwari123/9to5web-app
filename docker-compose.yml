@@ -13,4 +13,5 @@ services:
       - NODEMAIL_BASEURL
     ports:
       - '3000:3100'
+    restart: unless-stopped
 
