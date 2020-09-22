@@ -228,8 +228,14 @@ exports.downloadAirCargoManifest = async (req, res, next) => {
 			awbsArray: awbsArray,
 			invoicesArray: invoicesArray
 		});
-		let filePath = await airCargoManifest.generate();
-		res.download(filePath);
+		let result = await airCargoManifest.generate();
+		if(result.id){
+			res.type('pdf');
+			res.attachment(`${result.id}-ACM.pdf`);
+			result.stream.pipe(res);
+			result.stream.end();
+		}else
+			res.download(result);
 	} catch (error) {
 		next(error);
 	}
