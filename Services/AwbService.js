@@ -523,8 +523,6 @@ class AwbService {
             for(let i=0;i<invoices.length;i++){
               totalInvoice=totalInvoice+invoices[i].value;
             }
-            if(totalInvoice >= 100)
-              result.Insurance = totalInvoice * 0.015
 
             result.totalPrice = totalInvoice;
             result.noOfInvoices = invoices.length
@@ -541,7 +539,6 @@ class AwbService {
             result.Express = result.Express ? result.Express.toFixed(2) : 0
             result.Freight = result.Freight ? result.Freight.toFixed(2) : 0
             result.Hazmat = result.Hazmat ? result.Hazmat.toFixed(2) : 0
-            result.Insurance = result.Insurance ? result.Insurance.toFixed(2) : 0 
             result.NoDocs = result.NoDocs ? result.NoDocs.toFixed(2) : 0
             result.Pickup = result.Pickup ? result.Pickup.toFixed(2)  : 0
             result.Sed = result.Sed ? result.Sed.toFixed(2) : 0
@@ -557,12 +554,16 @@ class AwbService {
             Number(result.Insurance) + Number(result.Storage) + Number(result.Brokerage) +Number(result.Express) + Number(result.Delivery) + Number(result.Hazmat) + Number(result.Pickup)  + Number(result.Sed)
         
             result.SumOfAllCharges = result.SumOfAllCharges ? result.SumOfAllCharges.toFixed(2) : 0
-
+            result.Insurance = 0
             if(result.OverrideInvoiceValue){
               if(result.OverrideInvoiceValue > 0)
                 result.TotalInvoiceValue = result.OverrideInvoiceValue 
               else
                 result.TotalInvoiceValue = totalInvoice 
+              if(result.OverrideInvoiceValue >= 100)
+                  result.Insurance = result.OverrideInvoiceValue * 0.015
+
+              result.Insurance = result.Insurance ? result.Insurance.toFixed(2) : 0 
             }
           }
           resolve(result)

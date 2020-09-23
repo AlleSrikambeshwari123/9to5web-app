@@ -82,11 +82,9 @@ class AwbPriceLabelService {
       result.NoOfInvoice = pkg.invoices.length
     }
     result.TotalInvoiceValue = totalinvoiceVal
-    if(result.TotalInvoiceValue >= 100)
-      result.Insurance = result.TotalInvoiceValue * 0.015
     result.NoOfInvoice = result.NoOfInvoice ?result.NoOfInvoice.toFixed(2) : 0
     result.TotalInvoiceValue = result.TotalInvoiceValue ? result.TotalInvoiceValue.toFixed(2) : 0
-    result.Insurance = result.Insurance ? result.Insurance.toFixed(2) : 0 
+    result.Insurance = 0
     
     if(result.OverrideInvoiceValue){
       if(result.OverrideInvoiceValue > 0)
@@ -96,6 +94,10 @@ class AwbPriceLabelService {
     }else{
       result.OverrideInvoiceValue = result.TotalInvoiceValue 
     }
+    if(result.OverrideInvoiceValue >= 100)
+      result.Insurance = result.OverrideInvoiceValue * 0.015
+      
+    result.Insurance = result.Insurance ? result.Insurance.toFixed(2) : 0 
     return result
   }
 
@@ -126,6 +128,9 @@ class AwbPriceLabelService {
     //   if (!(PriceLabelData && PriceLabelData._id)) {
     //     return resolve({success: false, message: strings.string_not_found_location});
     //   }
+      if(priceLabel.OverrideInvoiceValue >= 100)
+        priceLabel.Insurance = priceLabel.OverrideInvoiceValue * 0.015
+
       priceLabel.CustomsVAT = (Number(priceLabel.OverrideInvoiceValue) + Number(priceLabel.Freight) + Number(priceLabel.Duty)+ Number(priceLabel.CustomsProc)+Number(priceLabel.EnvLevy)) * Number(priceLabel.VatMultiplier)
       priceLabel.ServiceVat = (Number(priceLabel.NoDocs) + Number(priceLabel.Insurance) + Number(priceLabel.Storage) + Number(priceLabel.Brokerage) +Number(priceLabel.Express) + Number(priceLabel.Delivery) ) * Number(priceLabel.VatMultiplier)
      
