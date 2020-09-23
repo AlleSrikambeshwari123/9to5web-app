@@ -61,7 +61,6 @@ class AwbPriceLabelService {
     result.Express = result.Express ? result.Express.toFixed(2) : 0
     result.Freight = result.Freight ? result.Freight.toFixed(2) : 0
     result.Hazmat = result.Hazmat ? result.Hazmat.toFixed(2) : 0
-    result.Insurance = result.Insurance ? result.Insurance.toFixed(2) : 0 
     result.NoDocs = result.NoDocs ? result.NoDocs.toFixed(2) : 0
     result.Pickup = result.Pickup ? result.Pickup.toFixed(2)  : 0
     result.Sed = result.Sed ? result.Sed.toFixed(2) : 0
@@ -83,8 +82,11 @@ class AwbPriceLabelService {
       result.NoOfInvoice = pkg.invoices.length
     }
     result.TotalInvoiceValue = totalinvoiceVal
+    if(result.TotalInvoiceValue >= 100)
+      result.Insurance = result.TotalInvoiceValue * 0.015
     result.NoOfInvoice = result.NoOfInvoice ?result.NoOfInvoice.toFixed(2) : 0
     result.TotalInvoiceValue = result.TotalInvoiceValue ? result.TotalInvoiceValue.toFixed(2) : 0
+    result.Insurance = result.Insurance ? result.Insurance.toFixed(2) : 0 
     
     if(result.OverrideInvoiceValue){
       if(result.OverrideInvoiceValue > 0)

@@ -523,6 +523,8 @@ class AwbService {
             for(let i=0;i<invoices.length;i++){
               totalInvoice=totalInvoice+invoices[i].value;
             }
+            if(totalInvoice >= 100)
+              result.Insurance = totalInvoice * 0.015
 
             result.totalPrice = totalInvoice;
             result.noOfInvoices = invoices.length
