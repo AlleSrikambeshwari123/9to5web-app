@@ -52,15 +52,15 @@
               <div class="col-sm-7 col-md-5 mb-3 mb-md-0 transfer-to">
                 <h5 class="sub">Shipper</h5>
                 <div class="account-transfer">
-                  <div><span>Shipper Name:</span><span><%= shipper.name%></span></div>
-                  <div><span>Shipper Phone:</span><span><%= shipper.telephone%></span></div>
+                  <div><span>Shipper Name:</span><span><%= (shipper && shipper.name) ? shipper.name : '' %></span></div>
+                  <div><span>Shipper Phone:</span><span><%= (shipper && shipper.telephone) ? shipper.telephone : '' %></span></div>
                 </div>
               </div>
               <div class="col-sm-7 col-md-5 mb-3 mb-md-0 transfer-to ml-auto">
                 <h5 class="sub">Carrier</h5>
                 <div class="account-transfer">
-                  <div><span>Carrier Name:</span><span><%= carrier.name %></span></div>
-                  <div><span>Carrier Phone:</span><span><%= carrier.telephone%></span></div>
+                  <div><span>Carrier Name:</span><span><%= (carrier && carrier.name) ? carrier.name :'' %></span></div>
+                  <div><span>Carrier Phone:</span><span><%= (carrier && carrier.telephone) ? carrier.telephone : '' %></span></div>
                 </div>
               </div>
             </div>
