@@ -24,7 +24,8 @@ router.post('/upload', function (req, res) {
     if (!_.isEmpty(files['upload'])) {
 
       let filePath = files['upload'].path;
-      var fileName = uniqid() + '_' + moment().utc().unix() + ".png";
+      let ext = files.upload.type.split('/')[1]
+      var fileName = uniqid() + '_' + moment().utc().unix() +'.'+ ext;
       var wordBuffer = fs.readFileSync(filePath)
       toPdf(wordBuffer).then(
         (pdfBuffer) => {
