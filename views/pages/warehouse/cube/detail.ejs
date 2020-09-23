@@ -50,11 +50,17 @@
                   <td><strong>Original Bar Code</strong></td>
                   <td><strong>Description</strong></td>
                   <td><strong>Weight</strong></td>
+                  <td><strong>Volumetric Weight</strong></td>
                   <td><strong>Dimension</strong></td>
                 </tr>
               </thead>
               <tbody>
-                <% const pkgdetail = cube.pkgdetail; pkgdetail.forEach(package => { %>
+                <% const pkgdetail = cube.pkgdetail; pkgdetail.forEach(package => {
+                  let check = 1
+                  package.dimensions.split('x').forEach(data =>{
+                    check = check * data
+                  })
+                  package.volumetricWeight = (check/139); %>
                 <tr data-record="<%= package.id %>">
                   <td><%= package.awbId && package.awbId.awbId %></td>
                   <td><%= package.OrignalBarcodeDate ? helpers.formatDate(package.OrignalBarcodeDate) : '' %></td>
@@ -63,6 +69,7 @@
                   <td><%= package.originBarcode ? package.originBarcode.barcode : '' %></td>
                   <td><%= package.description %></td>
                   <td><%= package.weight %> lbs</td>
+                  <td><%= package.volumetricWeight.toFixed(2) %> vlbs</td>
                   <td><%= package.dimensions %></td>
                 </tr>
                 <% }) %>

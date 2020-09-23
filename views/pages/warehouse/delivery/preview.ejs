@@ -42,10 +42,17 @@
                                     <th>AWB</th>
                                     <th>Shipper</th>
                                     <th>Weight</th>
+                                    <th>Volumetric Weight</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <% delivery.packages.forEach(package => { %>
+                                <% delivery.packages.forEach(package => { 
+                                    let check = 1
+                                    package.dimensions.split('x').forEach(data =>{
+                                      check = check * data
+                                    })
+                                    package.volumetricWeight = (check/139);
+                                    %>
                                     <tr data-record="<%= package.id %>">
                                         <td>
                                             <%= package.id %>
@@ -64,6 +71,8 @@
                                         </td>
                                         <td>
                                             <%= package.weight %> lbs</td>
+                                        <td>
+                                            <%= package.volumetricWeight.toFixed(2) %> vlbs</td>
                                     </tr>
                                     <% }) %>
                             </tbody>

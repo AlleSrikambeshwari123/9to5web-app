@@ -315,6 +315,16 @@ exports.update_awb = (req, res, next) => {
 
 exports.get_awb_list = (req, res, next) => {
   services.awbService.getAwbsFull().then(awbs => {
+    for(let awb of awbs){
+      awb.volumetricWeight = 0
+      awb.packages.forEach(package=>{
+        let check = 1
+        package.dimensions.split('x').forEach(data =>{
+          check = check * data
+        })
+        awb.volumetricWeight = (check/139);
+      })
+    }
     res.render('pages/warehouse/awb/list', {
       page: req.originalUrl,
       title: "AirWay Bills",

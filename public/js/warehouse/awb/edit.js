@@ -497,6 +497,11 @@ $(function () {
       // A bit hacky way to detect newly added packages, pkg.id == Date.now() for new package for 
       // some reason
       // console.error('pkg', pkg);
+      let check = 1
+      pkg.dimensions.split('x').forEach(data =>{
+        check = check * data
+      })
+      pkg.volumetricWeight = (check/139);
 
       let isNew = pkg.id > 1e9
       let rowNode = packageTable.row
@@ -505,6 +510,7 @@ $(function () {
           pkg.description,
           pkg.dimensions,
           Number(pkg.weight).toFixed(2) + ` ${pkg.packageCalculation || 'kg'}`,
+          Number(pkg.volumetricWeight).toFixed(2) + ` 'vlbs'`,
           pkg.lastStatusText ? pkg.lastStatusText : '',
           [
             `<a class="btn btn-link btn-primary btn-edit-pkg p-1" title="Edit" data-id="${pkg.id}" href="#add-package-popup"><i class="fa fa-pen"></i></a>`,

@@ -105,13 +105,20 @@
                             <td class="text-center"><strong>Type</strong></td>
                             <td class="text-center"><strong>Dimensions</strong></td>
                             <td class="text-right"><strong>Weight</strong></td>
+                            <td class="text-right"><strong>Volumetric Weight</strong></td>
                             <td></td>
                           </tr>
                         </thead>
                         <tbody>
-                          <% var totalWeight = 0;
+                          <% var totalWeight = 0,volumetricWeight =0;
                           awb.packages.forEach((package,pick) => {
                             totalWeight += Number(package.weight);
+                            let check = 1
+                            package.dimensions.split('x').forEach(data =>{
+                              check = check * data
+                            })
+                            package.volumetricWeight = (check/139);
+                            volumetricWeight  = volumetricWeight +  package.volumetricWeight; 
                           %>
                           <tr>
                             <td>Piece#<%= pick + 1%></td>
@@ -121,6 +128,7 @@
                             <td class="text-center"><%= package.dimensions%></td>
                             <td class="text-right"><%= Number(package.weight).toFixed(2)%>
                               <%= package.packageCalculation||'kg' %></td>
+                              <td class="text-right"><%= Number(package.volumetricWeight).toFixed(2)%> vlbs</td>
                               <td class="text-center">
                                 <a
                                     class="btn btn-link btn-primary btn-print-pkg"
@@ -136,9 +144,11 @@
                           <tr>
                             <td class="text-left"><strong>Total Pieces</strong></td>
                             <td class="text-center"><%= awb.packages.length%></td>
-                            <td></td>
                             <td class="text-center"><strong>Total Weight</strong></td>
                             <td class="text-right"><%= totalWeight.toFixed(2)%> lbs</td>
+                            <td></td>
+                            <td class="text-center"><strong>Total Volumetric Weight</strong></td>
+                            <td class="text-right"><%= volumetricWeight.toFixed(2)%> vlbs</td>
                           </tr>
                         </tbody>
                       </table>

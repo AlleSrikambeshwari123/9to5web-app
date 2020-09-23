@@ -93,16 +93,23 @@
                   <td><strong>Trackig No #</strong></td>
                   <td><strong>Description</strong></td>
                   <td><strong>Weight</strong></td>
+                  <td><strong>Volumetric Weight</strong></td>
                   <td><strong>Dimension</strong></td>
                 </tr>
               </thead>
               <tbody>
-                <% packages.forEach(package => { %>
+                <% packages.forEach(package => { 
+                  let check = 1
+                  package.dimensions.split('x').forEach(data =>{
+                    check = check * data
+                  })
+                  package.volumetricWeight = (check/139); %>
                 <tr data-record="<%= package.id %>">
                   <td><%= package.compartment && package.compartment.name %></td>
                   <td><%= package.trackingNo %></td>
                   <td><%= package.description %></td>
                   <td><%= package.weight %> lbs</td>
+                  <td><%= package.volumetricWeight.toFixed(2) %> vlbs</td>
                   <td><%= package.dimensions %></td>
                 </tr>
                 <% }) %>

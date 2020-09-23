@@ -114,15 +114,23 @@
                                     <td><strong>Package Number #</strong></td>
                                     <td><strong>Description</strong></td>
                                     <td><strong>Weight</strong></td>
+                                    <td><strong>Volumetric Weight</strong></td>
                                     <td><strong>Dimension</strong></td>
                                     <td><strong>Number Of Pieces #</strong></td>
                                 </tr>
                             </thead>
                             <tbody>
-                                <% var totalWeight = 0;
+                                <% var totalWeight = 0,volumetricWeight=0;
                               packages.forEach(package => { 
                                 let isExpress = package.express ? 'bolder':'normal';
-                                totalWeight += Number(package.weight);%>
+                                totalWeight += Number(package.weight);
+                                let check = 1
+                                package.dimensions.split('x').forEach(data =>{
+                                  check = check * data
+                                })
+                                package.volumetricWeight = (check/139);
+                                volumetricWeight  = volumetricWeight +  Number(package.volumetricWeight); 
+                                %>
                                 <tr data-record="<%= package.id %>" style="font-weight:<%=isExpress%>;">
                                     <td>
                                         <%= package.compartment && package.compartment.name %>
@@ -142,6 +150,8 @@
                                     <td>
                                         <%= package.weight %> lbs</td>
                                     <td>
+                                        <%= package.volumetricWeight.toFixed(2) %> vlbs</td>
+                                    <td>
                                         <%= package.dimensions %>
                                     </td>
                                     <td>
@@ -153,10 +163,11 @@
                             <tbody>
                                 <tr>
                                     <td></td>
-                                    <td></td>
                                     <td><strong>Total Weight</strong></td>
                                     <td><strong><%= totalWeight.toFixed(2)%></strong> lbs</td>
                                     <td></td>
+                                    <td><strong>Total Volumetric Weight</strong></td>
+                                    <td><strong><%= volumetricWeight.toFixed(2)%></strong> vlbs</td>
                                 </tr>
                             </tbody>
                         </table>
