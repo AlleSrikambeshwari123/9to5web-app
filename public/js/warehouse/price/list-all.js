@@ -11,6 +11,7 @@ let packageTable = $('.pricelabel-table').DataTable({
     selector: 'td:first-child input[type="checkbox"]',
   },
 });
+let TotalVolumetricWeight
 $('.checkPriceLabelExistPkg').map(function (i, dateElement) {
   const id = dateElement.value;
   checkPriceLabelExist(id)
@@ -71,7 +72,8 @@ function pricelLabelCheck(response) {
   let NoDocsVal = 0;
   let InsuranceVal = 0;
   let SedVal = 0;
-  let ExpressVal = 0;
+  let ExpressVal = response.Express;
+  TotalVolumetricWeight = response.TotalVolumetricWeight
   // if (pkg.packageCalculation == 'Kg') pkg.weight = 2.20462 * pkg.weight;
   // let totalinvoiceVal = 0;
 
@@ -124,6 +126,7 @@ function pricelLabelCheck(response) {
   if (response.Insurance > 0) $('#Insurance').prop('checked', true)
   if (response.Sed > 0) $('#Sed').prop('checked', true)
   if (response.Express > 0) $('#Express').prop('checked', true)
+  else $('#Express').prop('checked', false)
   pricelabelcommon(ServiceVat, NoDocsVal, InsuranceVal, SedVal, ExpressVal, response.TotalInvoiceValue)
 }
 
@@ -133,8 +136,9 @@ function packagePriceLabel(response) {
   let NoDocsVal = 0;
   let InsuranceVal = 0;
   let SedVal = 0;
-  let ExpressVal = 0;
+  let ExpressVal = response.Express;
   let VatMultiplier = 0.12;
+  TotalVolumetricWeight = response.TotalVolumetricWeight
   //if (pkg.packageCalculation == 'Kg') pkg.weight = 2.20462 * pkg.weight;
   // let totalinvoiceVal = 0;
   // if (pkg.invoices) {
@@ -169,7 +173,7 @@ function packagePriceLabel(response) {
   } else {
     $('#Freight').val(Freight);
   }
-  if (pkg.express) ExpressVal = 35, $('#Express').prop('checked', true), $('#ExpressVal').val('35');
+  // if (pkg.express) ExpressVal = 35, $('#Express').prop('checked', true), $('#ExpressVal').val('35');
   tval(0, 0, 0, 0, ExpressVal);
   pricelabelcommon(ServiceVat, NoDocsVal, InsuranceVal, SedVal, ExpressVal, response.TotalInvoiceValue)
 }
@@ -241,11 +245,11 @@ function pricelabelcommon(ServiceVat, NoDocsVal, InsuranceVal, SedVal, ExpressVa
   });
   $('#Express').click(function () {
     if ($(this).prop('checked') == true) {
-      $('#ExpressVal').val('35');
-      ExpressVal = 35;
+      $('#ExpressVal').val(ExpressVal);
+      // ExpressVal = 35;
     } else if ($(this).prop('checked') == false) {
       $('#ExpressVal').val('');
-      ExpressVal = 0;
+      // ExpressVal = 0;
     }
   });
 
@@ -337,6 +341,7 @@ $('#UpdatePriceLabelPackage').on('click', function (event) {
     TotalInvoiceValue: $("#total-value-invoice").val() == "" ? 0 : $("#total-value-invoice").val(),
     NoOfInvoice: $("#no_of_invoice").val() == "" ? 0 : $("#no_of_invoice").val(),
     TotalWeightValue: $("#total_weight_value").val() == "" ? 0 : $("#total_weight_value").val(),
+    TotalVolumetricWeight : TotalVolumetricWeight,
     TotalWet: TotalWet,
   };
   $.ajax({

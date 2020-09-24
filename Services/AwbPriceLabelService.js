@@ -37,8 +37,7 @@ class AwbPriceLabelService {
     })
   }
   calculations(result,pkg){
-
-    var totalweightVal = 0;
+    var totalweightVal = 0,totalVolumetricWeight=0;
     if (pkg.packages) {
       const pa = pkg.packages;
       for (var i = 0; i < pa.length; i++) {
@@ -47,10 +46,44 @@ class AwbPriceLabelService {
           weight = 2.20462 * pa[i].weight;
         }
         totalweightVal = totalweightVal + weight;
+        let check = 1;
+        pa[i].dimensions.split('x').forEach(data =>{
+          check = check * data
+        })
+        let volumetricWeight = (check/139);
+        totalVolumetricWeight = totalVolumetricWeight + volumetricWeight;
       }
     }
     result.TotalWeightValue = totalweightVal
-
+    result.TotalVolumetricWeight = totalVolumetricWeight
+    result.Express = result.Express ? result.Express.toFixed(2) : 0
+    
+    if(result.Express >0){
+      result.Express = 35
+      if(result.TotalWeightValue >= 12 && result.TotalVolumetricWeight >=12 ){
+        if(result.TotalWeightValue > result.TotalVolumetricWeight){
+          result.Freight = result.TotalWeightValue * 3
+          if(result.TotalWeightValue > 35) 
+            result.Express = result.TotalWeightValue
+        }
+        else{
+          result.Freight = result.TotalVolumetricWeight * 3
+          if(result.TotalVolumetricWeight > 35) 
+            result.Express = result.TotalVolumetricWeight
+        }
+      }else{
+        result.Freight =  35
+      }
+    }else{
+      if(result.TotalWeightValue >= 2 && result.TotalVolumetricWeight >=2 ){
+        if(result.TotalWeightValue > result.TotalVolumetricWeight)
+          result.Freight = result.TotalWeightValue * 1.55
+        else
+          result.Freight = result.TotalVolumetricWeight * 1.55
+      }else{
+        result.Freight =  3.10
+      }
+    }
     result.Brokerage = result.Brokerage ? result.Brokerage.toFixed(2) : 0
     result.CustomsProc = result.CustomsProc ? result.CustomsProc.toFixed(2) : 0 
     result.CustomsVAT = result.CustomsVAT ? result.CustomsVAT.toFixed(2) : 0 
@@ -58,7 +91,6 @@ class AwbPriceLabelService {
     result.Delivery =  result.Delivery ? result.Delivery.toFixed(2): 0 
     result.Duty =  result.Duty ? result.Duty.toFixed(2) : 0
     result.EnvLevy = result.EnvLevy ? result.EnvLevy.toFixed(2) : 0
-    result.Express = result.Express ? result.Express.toFixed(2) : 0
     result.Freight = result.Freight ? result.Freight.toFixed(2) : 0
     result.Hazmat = result.Hazmat ? result.Hazmat.toFixed(2) : 0
     result.NoDocs = result.NoDocs ? result.NoDocs.toFixed(2) : 0
@@ -67,6 +99,7 @@ class AwbPriceLabelService {
     result.ServiceVat = result.ServiceVat ? result.ServiceVat.toFixed(2) : 0 
     result.TotalWet = result.TotalWet ?result.TotalWet.toFixed(2) : 0
     result.TotalWeightValue = result.TotalWeightValue ? result.TotalWeightValue.toFixed(2) : 0
+    result.TotalVolumetricWeight = result.TotalVolumetricWeight ? result.TotalVolumetricWeight.toFixed(2) : 0
     result.totalPrice = result.totalPrice ? result.totalPrice.toFixed(2) : 0
     result.Storage = result.Storage ? result.Storage.toFixed(2) : 0 
     
@@ -128,6 +161,33 @@ class AwbPriceLabelService {
     //   if (!(PriceLabelData && PriceLabelData._id)) {
     //     return resolve({success: false, message: strings.string_not_found_location});
     //   }
+      if(priceLabel.Express >0){
+        priceLabel.Express = 35
+        if(priceLabel.TotalWeightValue >= 12 && priceLabel.TotalVolumetricWeight >=12 ){
+          if(priceLabel.TotalWeightValue > priceLabel.TotalVolumetricWeight){
+            priceLabel.Freight = priceLabel.TotalWeightValue * 3
+            if(priceLabel.TotalWeightValue > 35) 
+              priceLabel.Express = priceLabel.TotalWeightValue
+          }
+          else{
+            priceLabel.Freight = priceLabel.TotalVolumetricWeight * 3
+            if(priceLabel.TotalVolumetricWeight > 35) 
+              priceLabel.Express = priceLabel.TotalVolumetricWeight
+          }
+        }else{
+          priceLabel.Freight =  35
+        }
+      }else{
+        if(priceLabel.TotalWeightValue >= 2 && priceLabel.TotalVolumetricWeight >=2 ){
+          if(priceLabel.TotalWeightValue > priceLabel.TotalVolumetricWeight)
+            priceLabel.Freight = priceLabel.TotalWeightValue * 1.55
+          else
+            priceLabel.Freight = priceLabel.TotalVolumetricWeight * 1.55
+        }else{
+          priceLabel.Freight =  3.10
+        }
+      }
+
       if(priceLabel.OverrideInvoiceValue >= 100)
         priceLabel.Insurance = priceLabel.OverrideInvoiceValue * 0.015
 

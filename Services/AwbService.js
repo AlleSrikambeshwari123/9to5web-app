@@ -511,7 +511,7 @@ class AwbService {
         //.populate('shipper')
         //.populate('carrier')
         //.populate('hazmat')
-        //.populate('packages')
+        .populate('packages')
         //.populate('purchaseOrders')
         .populate('invoices')
         //.populate('driver')
@@ -522,6 +522,52 @@ class AwbService {
             var totalInvoice = 0;
             for(let i=0;i<invoices.length;i++){
               totalInvoice=totalInvoice+invoices[i].value;
+            }
+            let totalweightVal =0,totalVolumetricWeight =0;
+            if(awbData.packages){
+              for (var i = 0; i < awbData.packages.length; i++) {
+                var weight = awbData.packages[i].weight;
+                if (awbData.packages[i].packageCalculation == 'kg') {
+                  weight = 2.20462 * awbData.packages[i].weight;
+                }
+                totalweightVal = totalweightVal + weight;
+                let check = 1;
+                awbData.packages[i].dimensions.split('x').forEach(data =>{
+                  check = check * data
+                })
+                let volumetricWeight = (check/139);
+                totalVolumetricWeight = totalVolumetricWeight + volumetricWeight;
+              }
+              result.TotalWeightValue = totalweightVal
+              result.TotalVolumetricWeight = totalVolumetricWeight
+              result.Express = result.Express ? result.Express.toFixed(2) : 0
+          
+              if(result.Express >0){
+                result.Express = 35
+                if(result.TotalWeightValue >= 12 && result.TotalVolumetricWeight >=12 ){
+                  if(result.TotalWeightValue > result.TotalVolumetricWeight){
+                    result.Freight = result.TotalWeightValue * 3
+                    if(result.TotalWeightValue > 35) 
+                      result.Express = result.TotalWeightValue
+                  }
+                  else{
+                    result.Freight = result.TotalVolumetricWeight * 3
+                    if(result.TotalVolumetricWeight > 35) 
+                      result.Express = result.TotalVolumetricWeight
+                  }
+                }else{
+                  result.Freight =  35
+                }
+              }else{
+                if(result.TotalWeightValue >= 2 && result.TotalVolumetricWeight >=2 ){
+                  if(result.TotalWeightValue > result.TotalVolumetricWeight)
+                    result.Freight = result.TotalWeightValue * 1.55
+                  else
+                    result.Freight = result.TotalVolumetricWeight * 1.55
+                }else{
+                  result.Freight =  3.10
+                }
+              }
             }
 
             result.totalPrice = totalInvoice;
@@ -536,7 +582,6 @@ class AwbService {
             result.Delivery =  result.Delivery ? result.Delivery.toFixed(2): 0 
             result.Duty =  result.Duty ? result.Duty.toFixed(2) : 0
             result.EnvLevy = result.EnvLevy ? result.EnvLevy.toFixed(2) : 0
-            result.Express = result.Express ? result.Express.toFixed(2) : 0
             result.Freight = result.Freight ? result.Freight.toFixed(2) : 0
             result.Hazmat = result.Hazmat ? result.Hazmat.toFixed(2) : 0
             result.NoDocs = result.NoDocs ? result.NoDocs.toFixed(2) : 0
@@ -546,6 +591,7 @@ class AwbService {
             result.TotalWet = result.TotalWet ?result.TotalWet.toFixed(2) : 0
             result.TotalInvoiceValue = result.TotalInvoiceValue ? result.TotalInvoiceValue.toFixed(2) : 0
             result.TotalWeightValue = result.TotalWeightValue ? result.TotalWeightValue.toFixed(2) : 0
+            result.TotalVolumetricWeight = result.TotalVolumetricWeight ? result.TotalVolumetricWeight.toFixed(2) : 0
             result.NoOfInvoice = result.NoOfInvoice ?result.NoOfInvoice.toFixed(2) : 0
             result.totalPrice = result.totalPrice ? result.totalPrice.toFixed(2) : 0
             result.Storage = result.Storage ? result.Storage.toFixed(2) : 0 
