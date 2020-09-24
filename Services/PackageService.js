@@ -20,7 +20,7 @@ const PKG_STATUS = {
     1: 'Received in FLL',
     2: 'Loaded on AirCraft',
     3: 'In Transit',
-    4: 'Recieved in NAS',
+    4: 'In Warehouse Nassuau',
     5: 'Received By Customer',
     6: 'Delivered',
     7: 'No Invoice Present',
@@ -202,7 +202,7 @@ class PackageService {
         })
     }
 
-    // 4: 'Recieved in NAS',
+    // 4: 'In Warehouse Nassuau',
     async receivePackageToFlight(packageIds, userId) {
         try {
             let error = []
@@ -328,7 +328,7 @@ class PackageService {
                 if (item.lastStatusText == PKG_STATUS[1]) obj.received_fill += 1;
                 if (item.lastStatusText == PKG_STATUS[2]) obj.loaded_craft += 1;
                 if (item.lastStatusText == PKG_STATUS[3]) obj.in_transit += 1;
-                if (item.lastStatusText == PKG_STATUS[4]) obj.received_nas += 1;
+                if (item.lastStatusText == PKG_STATUS[4] || item.lastStatusText == 'Recieved in NAS') obj.received_nas += 1;
                 if (item.lastStatusText == PKG_STATUS[5]) obj.ready_pd += 1;
                 if (item.lastStatusText == PKG_STATUS[6]) obj.delivered += 1;
                 if (item.lastStatusText == PKG_STATUS[7]) obj.no_invoice += 1;
@@ -385,7 +385,11 @@ class PackageService {
                         let obj = final_obj[date];
                         obj["received_fill"] = obj["received_fill"] + (lastStatusData.status == PKG_STATUS[1] ? 1 : 0)
                         obj["loaded_craft"] = obj["loaded_craft"] + (lastStatusData.status == PKG_STATUS[2] ? 1 : 0)
-                        obj["received_nas"] = obj["received_nas"] + (lastStatusData.status == PKG_STATUS[4] ? 1 : 0)
+                        let flag =0
+                        if(lastStatusData.status == PKG_STATUS[4] || lastStatusData.status == 'Recieved in NAS'){
+                            flag = 1
+                        }
+                        obj["received_nas"] = obj["received_nas"] + flag
                         obj["ready_pd"] = obj["ready_pd"] + (lastStatusData.status == PKG_STATUS[5] ? 1 : 0)
                         obj["delivered"] = obj["delivered"] + (lastStatusData.status == PKG_STATUS[6] ? 1 : 0)
                     });
@@ -991,7 +995,7 @@ class PackageService {
                     let pkgs = [];
                     stats.forEach((status, i) => {
                         packages[i].lastStatusText = status.status;
-                        if (status.status == PKG_STATUS[4])
+                        if (status.status == PKG_STATUS[4] || status.status == 'Recieved in NAS')
                             pkgs.push(packages[i]);
                     });
                     resolve(pkgs);
