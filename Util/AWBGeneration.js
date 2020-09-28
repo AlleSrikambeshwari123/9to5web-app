@@ -122,7 +122,8 @@ class AWBGeneration {
             }
             var dimWeight = calculateDimensionalWeight(pkg.dimensions.toLowerCase())
             totalWeight += Number(pkg.weight)
-            totaldimWeight += Number(dimWeight);
+            dimWeight = dimWeight.replace(",","")
+            totaldimWeight += parseFloat(dimWeight);
             body.push([
                 { text: ptype, colSpan: 2 }, "",
                 { text: pkg.dimensions },
@@ -286,7 +287,7 @@ function calculateDimensionalWeight(dimensions) {
     var dimensionparts = dimensions.split('x');
     var numerator = 1;
     dimensionparts.forEach(part => numerator *= Number(part.trim()));
-    var dimWeight = numerator / 139;
+    var dimWeight = numerator / 166;
     return Number(dimWeight).formatMoney(2, '.', ',')
 }
 

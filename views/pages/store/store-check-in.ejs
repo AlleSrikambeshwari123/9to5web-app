@@ -48,7 +48,7 @@
 						pkg.dimensions.split('x').forEach(data =>{
 							check = check * data
 						})
-						pkg.volumetricWeight = (check/139); 
+						pkg.volumetricWeight = (check/166); 
 						let pmb = pkg.customerId ? pkg.customerId.pmb: 0
 						if((pmb > 0 && pmb <= 1999) || (pmb >= 4000 && pmb <= 4999)) {
 							%>
@@ -104,7 +104,7 @@
 						pkg.dimensions.split('x').forEach(data =>{
 							check = check * data
 						})
-						pkg.volumetricWeight = (check/139); 
+						pkg.volumetricWeight = (check/166); 
 						let pmb = pkg.customerId ? pkg.customerId.pmb: 0
 						if((pmb >= 3000 && pmb <= 3999)){%>
 					<tr data-record="<%= pkg.id %>">

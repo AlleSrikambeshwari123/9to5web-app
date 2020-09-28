@@ -324,7 +324,7 @@ exports.get_awb_list = (req, res, next) => {
         package.dimensions.split('x').forEach(data =>{
           check = check * data
         })
-        awb.volumetricWeight = (check/139);
+        awb.volumetricWeight = (check/166);
       })
     }
     res.render('pages/warehouse/awb/list', {

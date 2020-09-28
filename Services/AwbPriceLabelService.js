@@ -50,7 +50,7 @@ class AwbPriceLabelService {
         pa[i].dimensions.split('x').forEach(data =>{
           check = check * data
         })
-        let volumetricWeight = (check/139);
+        let volumetricWeight = (check/166);
         totalVolumetricWeight = totalVolumetricWeight + volumetricWeight;
       }
     }

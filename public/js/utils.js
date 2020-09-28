@@ -27,7 +27,7 @@ function extractFormData(form) {
 function calculatePackageVolumetricWeight(pkg) {
   let dimensions = pkg.dimensions.split('x').map(Number);
   // Assuming dimensions are in inches
-  return dimensions[0] * dimensions[1] * dimensions[2] / 139;
+  return dimensions[0] * dimensions[1] * dimensions[2] / 166;
 }
 
 function validateEmail(email) {

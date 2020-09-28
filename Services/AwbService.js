@@ -339,6 +339,19 @@ class AwbService {
         });
     
     }
+    createPurchaseOrder(pkg, awbId) {
+      return new Promise((resolve, reject) => {
+        pkg.awbId = awbId   
+        const newPurchaseOrder = new PurchaseOrder(pkg);
+        newPurchaseOrder.save((err, result) => {
+          if (err) {
+            resolve({ success: false });
+          } else {
+            resolve({ success: true });
+          }
+        });
+      });
+    }
     updatePurchaseOrder(purchaseOrderId, purchaseOrderData) {
         return new Promise((resolve, reject) => {
           PurchaseOrder.findOneAndUpdate({ _id: purchaseOrderId }, { ...purchaseOrderData }, (err, result) => {
@@ -535,7 +548,7 @@ class AwbService {
                 awbData.packages[i].dimensions.split('x').forEach(data =>{
                   check = check * data
                 })
-                let volumetricWeight = (check/139);
+                let volumetricWeight = (check/166);
                 totalVolumetricWeight = totalVolumetricWeight + volumetricWeight;
               }
               result.TotalWeightValue = totalweightVal

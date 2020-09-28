@@ -501,7 +501,7 @@ $(function () {
       pkg.dimensions.split('x').forEach(data =>{
         check = check * data
       })
-      pkg.volumetricWeight = (check/139);
+      pkg.volumetricWeight = (check/166);
 
       let isNew = pkg.id > 1e9
       let rowNode = packageTable.row

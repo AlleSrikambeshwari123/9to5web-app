@@ -556,7 +556,7 @@ var fonts = {
       var dimensionparts = dimensions.split('x');
       var numerator = 1;
       dimensionparts.forEach((part) => (numerator *= Number(part.trim())));
-      var dimWeight = numerator / 139;
+      var dimWeight = numerator / 166;
       return Number(dimWeight).formatMoney(2, '.', ',');
     }
     generateShiperCosigneeTable(awb) {
