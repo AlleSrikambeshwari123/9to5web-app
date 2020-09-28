@@ -6,6 +6,7 @@ const aws = require('../Util/aws');
 const mongoose = require('mongoose');
 const moment = require('moment');
 var momentz = require('moment-timezone')
+var countries = require('../public/js/countries');
 
 exports.preview_awb_invoice = (req, res, next) => {
   let id =res.user._id
@@ -148,6 +149,7 @@ exports.create_awb = (req, res, next) => {
       title: 'Create New AWB',
       user: res.user,
       printer: res.printer,
+      countries : countries.default,
       customers,
       hazmats,
       shippers,

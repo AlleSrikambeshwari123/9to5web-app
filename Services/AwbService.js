@@ -547,13 +547,13 @@ class AwbService {
                 if(result.TotalWeightValue >= 12 && result.TotalVolumetricWeight >=12 ){
                   if(result.TotalWeightValue > result.TotalVolumetricWeight){
                     result.Freight = result.TotalWeightValue * 3
-                    if(result.TotalWeightValue > 35) 
-                      result.Express = result.TotalWeightValue
+                    if(result.Freight > 35) 
+                      result.Express = result.Freight
                   }
                   else{
                     result.Freight = result.TotalVolumetricWeight * 3
-                    if(result.TotalVolumetricWeight > 35) 
-                      result.Express = result.TotalVolumetricWeight
+                    if(result.Freight > 35) 
+                      result.Express = result.Freight
                   }
                 }else{
                   result.Freight =  35
