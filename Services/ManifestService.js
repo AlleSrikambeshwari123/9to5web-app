@@ -164,7 +164,7 @@ class ManifestService {
 
   getManifests() {
     return new Promise(async(resolve, reject) => {
-      let totalPkgWeight = 0
+      let planeArray = []
       Manifest.find({})
       .populate([{path:'packages',select:'weight'},{path:'planeId'}])
       .exec((err, manifests) => {
@@ -172,8 +172,24 @@ class ManifestService {
           resolve([]);
         } else {
           manifests.map(cp=>{
+            let totalPkgWeight = 0
             cp.packages.map(w => totalPkgWeight+= w.weight)
-            cp._doc['available_weight'] = (cp.planeId.maximumCapacity - totalPkgWeight).toFixed(2)
+            if(totalPkgWeight == NaN || !totalPkgWeight)
+               totalPkgWeight =0
+            let planeActualCapacity = cp.planeId.maximumCapacity
+            let flag = 0;
+            planeArray.forEach(data=>{
+              if(data.id == cp.planeId._id){
+                data.availCapacity = data.availCapacity - totalPkgWeight
+                planeActualCapacity = data.availCapacity 
+                flag = 1
+              }
+            })
+            if(flag == 0){
+              planeActualCapacity = cp.planeId.maximumCapacity -totalPkgWeight
+              planeArray.push({id :cp.planeId._id,availCapacity : planeActualCapacity})
+            }
+            cp._doc['available_weight'] = (planeActualCapacity).toFixed(2)
           })
           resolve(manifests);
         }

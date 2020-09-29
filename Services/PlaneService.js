@@ -111,9 +111,9 @@ class PlaneService {
   }
   getCompartments(planeId) {
     return new Promise(async (resolve, reject) => {
-      let totalPkgWeight = 0
-      let compartments = await Compartment.find({ planeId: ObjectId(planeId) }).populate({path:'packages',select:'weight'})
+      let compartments = await Compartment.find({ planeId: ObjectId(planeId) }).populate([{path:'packages',select:'weight'},{path : 'planeId'}])
       compartments.map(cp=>{
+        let totalPkgWeight = 0
         cp.packages.map(w => totalPkgWeight+= w.weight)
         cp._doc['available_weight'] = (cp.weight - totalPkgWeight).toFixed(2)
       })
