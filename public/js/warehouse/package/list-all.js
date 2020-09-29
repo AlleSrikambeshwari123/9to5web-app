@@ -593,7 +593,11 @@ $(function() {
                     title: response.success ? 'Success' : 'Error',
                     type: response.success ? 'success' : 'error',
                     text: response.message,
-                  });
+                  }).then(res => {
+                    if (response.success) {
+                      location.reload()
+                    }
+                  })
                 }
               });
             }
