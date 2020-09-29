@@ -430,4 +430,16 @@ router.post('/web/packages/add-packages-to-nodoc',middleware().checkSession, (re
     res.send(result)
   })
 })
+
+router.post('/web/packages/add-packages-to-delivery',middleware().checkSession, (req, res, next) => {
+  var deliveryId = req.body.deliveryId;
+  var packageIds = req.body.packageIds
+  var locationId = req.body.locationId 
+  var userId = req['userId']
+  const {valid,errors} = checkEmpty({packageIds:packageIds,deliveryId :deliveryId,userId:userId,locationId : locationId})
+  if(!valid) return res.send({success:false,message:errors})
+  services.packageService.addPackagesToDelivery(deliveryId, packageIds,userId,locationId,req.query).then(result => {
+    res.send(result)
+  })
+})
 module.exports = router;

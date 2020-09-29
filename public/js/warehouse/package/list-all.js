@@ -453,6 +453,26 @@ $(function() {
         })
     },
   });
+
+    $.ajax({
+    url: '/warehouse/package/locations',
+    type: 'get',
+    dataType: 'json',
+    success(data) {    
+      addToDeliveryForm
+        .find('[name="locationId"]')
+        .select2({
+          theme: 'bootstrap',
+          width: '100%',
+          placeholder: 'Select Location',
+ 
+          data: data.map((locate) => ({
+            id: locate._id,
+            text: locate.name
+          })),
+        })
+    },
+  });
   // Zone
   $.ajax({
     url: '/warehouse/package/zones',
@@ -549,15 +569,42 @@ $(function() {
     addToDeliveryForm.find('[name="packageIds"]').val(packageIds);
     var data = extractFormData(this);
     $.ajax({
-      url: '/api/warehouse/add-packages-to-delivery',
+      url: '/api/warehouse/web/packages/add-packages-to-delivery',
       type: 'post',
       data: data,
       success: function(response) {
-        swal({
-          title: response.success ? 'Success' : 'Error',
-          type: response.success ? 'success' : 'error',
-          text: response.message,
-        });
+        if(!response.success && response.message && response.message.packageIds)
+          response.message = response.message.packageIds
+
+        if(response.error_message){
+          response.message = response.error_message
+          swal({
+            title: response.message[0],
+            showCancelButton: true,
+            confirmButtonText: 'yes',
+          }).then(response => {
+            if (response.value) {
+              $.ajax({
+                url: '/api/warehouse/web/packages/add-packages-to-delivery?override=true',
+                type: 'post',
+                data: data,
+                success: function (response) {
+                  swal({
+                    title: response.success ? 'Success' : 'Error',
+                    type: response.success ? 'success' : 'error',
+                    text: response.message,
+                  });
+                }
+              });
+            }
+          })
+        }else{
+          swal({
+            title: response.success ? 'Success' : 'Error',
+            type: response.success ? 'success' : 'error',
+            text: response.message,
+          });
+        }
       },
       error: function ()  {
         swal({
