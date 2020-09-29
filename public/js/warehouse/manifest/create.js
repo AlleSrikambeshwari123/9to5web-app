@@ -63,6 +63,10 @@ $('.add-manifest-form').submit(function (event) {
     showNotify('Failed', `Airport 'From' and 'To' can't be same!`, 'fa fa-info', 'danger');
     return;
   }
+  let status = window.location.href.split('/')[4]
+  manifestInfo.status = 'nas'
+  if(status == 'fll')
+    manifestInfo.status = 'fll'
 
   $.ajax({
     url: 'create',
@@ -75,7 +79,10 @@ $('.add-manifest-form').submit(function (event) {
         type: response.success == true ? 'success' : 'error',
       }).then(res => {
         if (response.success == true) {
-          window.location.href = 'list';
+          if(response.status == 'fll')
+            window.location.href = 'list';
+          else
+            window.location.href = 'incoming';
         }
       })
     }

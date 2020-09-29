@@ -6,6 +6,8 @@ var manifestCtrl = require('../../Controller/ManifestController');
 
 router.get('/fll/manifest/list', middleware().checkSession, manifestCtrl.get_manifest_list);
 router.get('/fll/manifest/create', middleware().checkSession, manifestCtrl.create_manifest)
+router.get('/nas/manifest/create', middleware().checkSession, manifestCtrl.create_manifest)
+router.post('/nas/manifest/create', middleware().checkSession, manifestCtrl.add_new_manifest);
 router.post('/fll/manifest/create', middleware().checkSession, manifestCtrl.add_new_manifest);
 router.get('/fll/manifest/manage/:id/get', middleware().checkSession, manifestCtrl.get_manifest_detail);
 router.get('/fll/manifest/clone/:id/get', middleware().checkSession, manifestCtrl.make_manifest_clone);

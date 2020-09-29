@@ -46,6 +46,7 @@ class ManifestService {
           manifest['id'] = manifest['_id'];
           resolve({ 
             success: true, 
+            status : manifest.status,
             message: strings.string_response_created, 
             manifest: result
           });
