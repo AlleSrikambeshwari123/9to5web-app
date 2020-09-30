@@ -140,7 +140,7 @@ class AWBGeneration {
                 colSpan: 6,
             }, ]);
         }
-
+        totalWeight = totalWeight.toFixed(2)
         var dimw = currencyFormatter.format(totaldimWeight, {
             symbol: '',
             decimal: '.',
@@ -234,14 +234,21 @@ class AWBGeneration {
     }
     generateShiperCosigneeTable(awb) {
         // In DB some shippers have zip field instead of zipcode
-        let shipperZipcode = awb.shipper.zipcode || awb.shipper.zip;
+        let shipperZipcode,shipperName,awbShipperAddress,awbShipperCity,awbShipperState;
+        if(awb.shipper){
+            shipperZipcode = awb.shipper.zipcode || awb.shipper.zip;
+            shipperName = awb.shipper.name ? awb.shipper.name : ''
+            awbShipperAddress = awb.shipper.address ? awb.shipper.address : ''
+            awbShipperCity = awb.shipper.city ? awb.shipper.city : ''
+            awbShipperState = awb.shipper.state ? awb.shipper.state : ''
+        }
         let shipperAddress = [
-            awb.shipper.name,
-            awb.shipper.address, [awb.shipper.city, awb.shipper.state, shipperZipcode].filter(Boolean).join(', '),
+            shipperName,
+            awbShipperAddress, [awbShipperCity, awbShipperState, shipperZipcode].filter(Boolean).join(', '),
         ].filter(Boolean).join('\n');
 
         var shipperDetails = `${shipperAddress} \n`;
-        if (awb.shipper.taxId)
+        if (awb.shipper && awb.shipper.taxId)
             shipperDetails += "TAX ID: " + awb.shipper.taxId + "\n"
         return {
             layout: 'lightHorizontallines',

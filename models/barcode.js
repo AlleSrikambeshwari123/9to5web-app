@@ -6,6 +6,10 @@ const barCodeSchema = new mongoose.Schema({
   barcode: {
     type : String,
     required: true
+  },
+  status: {
+    type : String,
+    default : "unused"
   }
 }, {
   timestamps: true

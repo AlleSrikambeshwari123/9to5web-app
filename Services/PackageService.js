@@ -715,7 +715,7 @@ class PackageService {
 
     getAllOriginBarcode() {
         return new Promise((resolve, reject) => {
-            Barcode.find({}, (err, barCodes) => {
+            Barcode.find({status : "unused"}, (err, barCodes) => {
                 if (err) {
                     resolve([]);
                 } else {
@@ -824,7 +824,7 @@ class PackageService {
     }
 
     createPackage(newPackage, awbId) {
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             newPackage.awbId = awbId;
             newPackage.id = Date.now().toString();
             newPackage.trackingNo = uniqId();
@@ -834,6 +834,7 @@ class PackageService {
             if (obarCode.length > 1) {
                 newPackage.originBarcode = newPackage.originBarcode.split(',')[1];
             }
+            await Barcode.updateOne({_id : newPackage.originBarcode},{status : "used"})
             const newPackageData = new Package(newPackage);
             newPackageData.save((err, result) => {
                 if (err) {
