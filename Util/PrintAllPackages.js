@@ -70,6 +70,7 @@ class AllPackagesOnAwb {
   generateItem(item,i) {
     // console.log("@@@@@@", i, item,png)
     let pkg = item._doc;
+    let shipperName = (this.awb.shipper && this.awb.shipper.name) ? this.awb.shipper.name : '' 
     return  [
         {
           // margin:[0,20],
@@ -169,7 +170,7 @@ class AllPackagesOnAwb {
                   margin: [1, 1],
                   stack: [
                     { text: 'SHIPPER', fontSize: 7, bold: true },
-                    { margin: [0, 5], text: this.awb.shipper.name, fontSize: 10, bold: true },
+                    { margin: [0, 5], text: shipperName, fontSize: 10, bold: true },
                   ],
                   border: [false, false, false, true],
                 }, //logo for lbl
