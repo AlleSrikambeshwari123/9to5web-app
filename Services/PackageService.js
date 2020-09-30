@@ -834,7 +834,12 @@ class PackageService {
             if (obarCode.length > 1) {
                 newPackage.originBarcode = newPackage.originBarcode.split(',')[1];
             }
-            await Barcode.updateOne({_id : newPackage.originBarcode},{status : "used"})
+            let statusObject = {status : "used"}
+            let checkBarcode = await Barcode.findById(newPackage.originBarcode)
+            if(checkBarcode && checkBarcode.barcode == "No tracking"){
+                statusObject = {status : "unused"}
+            }
+            await Barcode.updateOne({_id : newPackage.originBarcode},statusObject)
             const newPackageData = new Package(newPackage);
             newPackageData.save((err, result) => {
                 if (err) {

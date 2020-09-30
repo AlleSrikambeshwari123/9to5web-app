@@ -18,7 +18,7 @@ function closeAddPackage(){
 }
 $('select#originBarcode option').each(function(index,option){
   let text = option.text
- if(text === "No Tracking") option.selected = true; 
+ if(text === "No tracking") option.selected = true; 
 })
 // $('select#originBarcode option[=No Tracking]').attr('selected','selected'); 
 function refreshBarcode(){  
