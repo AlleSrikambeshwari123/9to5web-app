@@ -32,7 +32,7 @@ function refreshBarcode(){
         var selectBarcode = barcode+','+barcodeId;
         $('#originBarcode').val(selectBarcode).trigger('change');
       }else{
-        $('#originBarcode').val('').trigger('change');
+        // $('#originBarcode').val('No tracking').trigger('change');
       }
     }
   })
@@ -707,7 +707,12 @@ $(function () {
             $('#description').val(pkg.description);
             $('#weight').val(pkg.weight);
             $('#packageCalculation').val(pkg.packageCalculation||'lbs');
+            $('#select2-packageCalculation-container').text(pkg.packageCalculation || 'lbs');
             $('#packageType').val(pkg.packageType || 'BOX');
+            $('#select2-packageType-container').text(pkg.packageType || 'BOX');
+            $('#originBarcode').val(pkg.originBarcode || 'No tracking');
+            $('#select2-originBarcode-container').text(pkg.originBarcode.split(',')[0] || 'No tracking');
+            $("#express"). prop("checked", pkg.express);
             var dims = pkg.dimensions.toLowerCase().split('x');
             $("#W").val(dims[0])
             $("#H").val(dims[1])
