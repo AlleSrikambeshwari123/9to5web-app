@@ -131,6 +131,32 @@ class PlaneService {
       });
     });
   }
+
+  updateCompartment(planeId, cid,data) {
+    return new Promise((resolve, reject) => {
+      let weightCapacityReduced = 0;
+      this.getCompartment(cid).then(compartment => {
+        weightCapacityReduced = compartment.weight;
+      })
+      Compartment.updateOne({ _id: cid },data, (err, result) => {
+        if (err) {
+          resolve({ success: false, message: strings.string_response_error });
+        } else {
+          // Updating the maximum capacity of plane
+          this.getPlane(planeId).then(plane => {
+            plane.maximumCapacity -= weightCapacityReduced;
+            if (plane.maximumCapacity < 0) {
+              plane.maximumCapacity = 0;
+            }
+            plane.maximumCapacity =plane.maximumCapacity+ Number(data.weight);
+            this.updatePlane(planeId, plane);
+          });
+          resolve({ success: true, message: strings.string_response_updated });
+        }
+      })
+    })
+  }
+
   removeCompartment(planeId, cid) {
     return new Promise((resolve, reject) => {
       let weightCapacityReduced = 0;

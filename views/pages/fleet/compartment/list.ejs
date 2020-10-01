@@ -17,7 +17,7 @@
               <th>Date Created</th>
               <th>Capcity ( Lbs ) </th>
               <th>Capcity ( Vol ) </th>
-              <th></th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>
@@ -29,7 +29,10 @@
               <td><%=compart.volume %></td>
               <td>
                 <!-- temporary commenting the code -->
-                <!-- <a class='rm-compartment' data-id='<%=compart.id%>' href="#"><i class='fa fa-trash'></i></a> -->
+                <a class="btn btn-link btn-primary btn-edit-compartment p-1" data-toggle="modal" data-id="<%=compart.id%>"
+                  data-original-title="Edit Compartmentasa" data-target="#edit-compartment"><i class="fa fa-pen"></i></a>
+
+                <a class='rm-compartment p-1 btn btn-link btn-danger' data-id='<%=compart.id%>' href="#"><i class='fa fa-trash'></i></a>
               </td>
             </tr>
             <% }) %>
@@ -74,4 +77,37 @@
   </div>
 </div>
 
+<div class="modal fade" id="edit-compartment" tabindex="-1" role="dialog" aria-labelledby="add-plane" aria-hidden="true"
+  style="display: none;">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="editCompartmentModal">Edit Compartment</h2>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class='form-group'>
+          <label for="name">Name</label>
+          <input class='form-control' type='text' placeholder="Name" id='edit_name' name="name">
+          <input type='hidden' value='<%=plane.id%>' id='edit_planeId' name="planeId" />
+          <input type='hidden'  id='edit_compartment_id' name="compartmentId" />
+        </div>
+        <div class='form-group'>
+          <label for="max_weight">Max Weight (lbs)</label>
+          <input class='form-control' type='number' placeholder="Max Weight (Lbs)" id='edit_max_weight' name="max_weight">
+        </div>
+        <div class='form-group'>
+          <label for="max_vol">Capcity (vol)</label>
+          <input class='form-control' type='number' placeholder="Max Volume" id='edit_max_vol' name="max_vol">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id='update-plane' class='edit-compartment btn btn-primary'>Update</button>
+        <button type="button" class="btn btn-danger close-del" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
 <% block('scripts').append('<script src="/js/fleet/compartment/list.js"></script>')%>
