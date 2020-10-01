@@ -100,6 +100,9 @@ const packageSchema = new mongoose.Schema({
   lastStatusText: {
     type: String
   },
+  lastStatusDate: {
+    type: Date
+  },
   location: {
     type: String
   },

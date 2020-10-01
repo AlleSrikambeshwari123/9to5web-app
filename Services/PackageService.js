@@ -610,10 +610,13 @@ class PackageService {
 
     async getAllPackagesWithLastStatus() {
         let packages = await this.getAllPackages_updated();
+        let awbArray = []
         return await Promise.all(
             packages.map(async(pkg) => {
                 let status = await this.services.packageService.getPackageLastStatus(pkg._id);
                 pkg.lastStatusText = status && status.status;
+                if(pkg.lastStatusDate)
+                    pkg.lastStatusDates  = momentz(pkg.lastStatusDate).tz("America/New_York").format('dddd, MMMM Do YYYY, h:mm A')
                 if (pkg.originBarcode) {
                     let barcode = await this.getOriginBarcode(pkg.originBarcode)
                     if (barcode !== null && barcode.createdAt) {
@@ -623,12 +626,25 @@ class PackageService {
                 if (pkg.awbId) {
                     let awb = await this.services.awbService.getAwb(pkg.awbId)
                     if (awb !== null && awb.createdAt) {
+                        let flag = 0
+                        awbArray.forEach(data=>{
+                            if(data.awbId == awb.awbId){
+                                data.pkgNo++
+                                flag = 1
+                                pkg.pieceNo = data.pkgNo 
+                            }
+                        })
+                        if(flag == 0){
+                            awbArray.push({awbId : awb.awbId,pkgNo : 1})
+                            pkg.pieceNo = 1
+                        }
                         pkg.awbCreatedAt = momentz(awb.createdAt).tz("America/New_York").format('dddd, MMMM Do YYYY, h:mm A');
                     }
                 }
                 if (pkg.manifestId) {
                     let actualFlight = await Manifest.findById(pkg.manifestId).populate('planeId')
                     if (actualFlight !== null && actualFlight.planeId) {
+                        pkg.manifestId = actualFlight._id
                         pkg.actualFlight = actualFlight.planeId ? actualFlight.planeId.tailNumber : ''
                     }
                 }
@@ -1244,7 +1260,7 @@ class PackageService {
 
     getPackage_updated(packageId, pkgStatus) {
         return new Promise(async(resolve, reject) => {
-            let pkg = await Package.findOneAndUpdate({ _id: packageId }, { lastStatusText: pkgStatus }, { new: true })
+            let pkg = await Package.findOneAndUpdate({ _id: packageId }, { lastStatusText: pkgStatus , lastStatusDate :  new Date()}, { new: true })
             if (!pkg) resolve({})
             else resolve(pkg)
         })

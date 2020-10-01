@@ -73,12 +73,14 @@
               <th>Package No</th>
               <th>Description</th>
               <th>Zone</th>
-              <th>Type</th>
+              <!-- <th>Type</th> -->
+              <th>Piece Number</th>
               <th>Weight</th>
               <th>Number of Pieces</th>
               <th>Status</th>
               <th>AirwareBillDate</th>
-              <th>ActualFlight</th>
+              <th>Labeled Flight #</th>
+              <th>Status Date</th>
               <th></th>
               <!-- <th></th> -->
             </tr>
@@ -108,12 +110,14 @@
               <% } else { %>
                 <td> - </td>
               <% } %> 
-              <td><%= pkg.packageType %></td>
+              <!-- <td><%= pkg.packageType %></td> -->
+              <td><%= pkg.pieceNo%></td>
               <td><%= pkg.weight%></td>
               <td><%= (pkg.pieces || pkg.pieces > -1) ? pkg.pieces : ''%></td>
               <td class="lastStatusText_field"><%= pkg.lastStatusText %></td>
               <td><%= pkg.awbCreatedAt %></td>
-              <td><%= pkg.actualFlight %></td>
+              <td><%= pkg.manifestId %></td>
+              <td><%= (pkg.lastStatusDates) ? pkg.lastStatusDates : ''  %></td>
               <!-- <td><a href="../pkg-label/download/<%=pkg._id%>"><i class="fa fa-download"></i></a></td> -->
               <td class="text-center">
                 <a href="../pkg-label/download/<%=pkg._id%>"><i class="fa fa-download"></i></a>
