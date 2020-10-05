@@ -1160,14 +1160,21 @@ class PackageService {
     getPackagesForStores() {
         return new Promise((resolve, reject) => {
             Package.find({})
-                .populate('customerId')
-                .populate('awbId')
-                .exec((err, packages) => {
+            .populate('customerId')
+            .populate('awbId')
+            .exec(async (err, packages) => {
+                    let packageArray = []
+                    for(let data of packages){
+                        let statusPack = await PackageStatus.find({status : PKG_STATUS[5],packageId : data._id})
+                        if(statusPack.length == 0){
+                            packageArray.push(data)
+                        }
+                    }
                     if (err) {
                         resolve([]);
                     } else {
                         
-                        resolve(packages);
+                        resolve(packageArray);
                     }
                 })
         });

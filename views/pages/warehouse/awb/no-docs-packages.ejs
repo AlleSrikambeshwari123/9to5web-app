@@ -105,9 +105,10 @@
                         <th>Original Tracking No</th>
                         <th>Package No</th>
                         <th>Aging</th>
-                        <th>Aging $</th>
+                        <th>Storage Fees</th>
                         <th>Description</th>
                         <th>Zone</th>
+                        <th>Location</th>
                         <th>Type</th>
                         <th>Weight</th>
                         <th>Number of Pieces</th>
@@ -147,6 +148,7 @@
                       <% } else { %>
                         <td> - </td>
                         <% } %> 
+                        <td><%= (pkg.location) ? pkg.location : '' %></td>
                         <td><%= pkg.packageType %></td>
                         <td><%= pkg.weight%></td>
                         <td><%= (pkg.pieces || pkg.pieces > -1) ? pkg.pieces : ''%></td>

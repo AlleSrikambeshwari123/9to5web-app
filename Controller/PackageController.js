@@ -101,7 +101,10 @@ exports.get_filtered_package_list = (req, res, next) => {
 
                     // Adding package number and pieces in response
                     let awb = await services.printService.getAWBDataForPackagesRelatedEntitie(pkg.awbId);
-                    packages[i].pieces = awb.packages ? awb.packages.length : 0
+                    // packages[i].pieces = awb.packages ? awb.packages.length : 0
+                    let pkgsAwb = await services.packageService.get_Packages_update({awbId :pkg.awbId});
+                    packages[i].pieces = pkgsAwb ? pkgsAwb.length : 0
+
                     packages[i].packageNumber = "PK00" + packages[i].id;
 
                     if (req.params.filter === 'in-manifest-no-docs') {
