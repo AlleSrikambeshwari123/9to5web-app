@@ -16,7 +16,7 @@
         <div class="card card-invoice">
           <div class="card-header">
             <div class="invoice-header">
-              <h3 class="invoice-title">AirWay Bill</h3>
+              <h3 class="invoice-title">AirWay Bill #<%= awb.awbId%></h3>
               <div class="invoice-logo">
                 <img src="/img/logo.jpg" alt="company logo">
               </div>
@@ -31,20 +31,24 @@
             <div class="separator-solid"></div>
             <div class="row">
               <div class="col-md-3 info-invoice">
-                <h5 class="sub">Created At</h5>
+                <h5 class="sub">Date Received</h5>
+                <p><%= awb.dateCreated%></p>
+              </div>
+              <div class="col-md-3 info-invoice">
+                <h5 class="sub">Date Created</h5>
                 <p><%= awb.dateCreated%></p>
               </div>
               <div class="col-md-3 info-invoice">
                 <h5 class="sub">Created By</h5>
-                <p><%= awb.dateCreated%></p>
-              </div>
-              <div class="col-md-3 info-invoice">
-                <h5 class="sub">Bill ID</h5>
                 <p><%= "AWB #"+awb.createdBy %></p>
               </div>
               <div class="col-md-3 info-invoice">
                 <h5 class="sub">Customer</h5>
                 <p><%=helpers.getFullName(awb.customer)%></p>
+              </div>
+              <div class="col-md-3 info-invoice">
+                <h5 class="sub">PMB #</h5>
+                <p><%=awb.customerId.pmb%></p>
               </div>
             </div>
             <div class="separator-solid"></div>
