@@ -11,9 +11,13 @@ Number.prototype.formatMoney = function (c, d, t) {
 function closeAddPackage(){  
   $('.mfp-close').trigger("click");
 }
+let noTrackingId = ""
 $('select#originBarcode option').each(function(index,option){
   let text = option.text
- if(text === "No Tracking") option.selected = true; 
+ if(text === "No tracking") {
+   option.selected = true; 
+   noTrackingId = option.value
+ }
 })
 function refreshBarcode(){  
   $.ajax({
@@ -24,7 +28,7 @@ function refreshBarcode(){
         var barcodeId = (response.barcode)?response.barcode._id:'';        
         $('#originBarcode').val(barcodeId).trigger('change');
       }else{
-        $('#originBarcode').val(barcodeId).trigger('change');
+        // $('#originBarcode').val(barcodeId).trigger('change');
       }
     }
   })
@@ -116,6 +120,11 @@ $(function () {
     width: '100%',
     placeholder: "Select a package type"
   })
+  $('#originBarcode').select2({
+    theme: 'bootstrap',
+    width: '100%',
+    placeholder: "Select a package type"
+  })
   $('#packageCalculation').select2({
     theme: 'bootstrap',
     width: '100%',
@@ -192,7 +201,14 @@ $(function () {
         $('#description').val("");
         $('#weight').val("");
         $('#packageType').val("BOX");
+        $('#select2-packageType-container').text('BOX');
         $('#packageCalculation').val("lbs");
+        $('#select2-packageCalculation-container').text('lbs');        
+        $("#express"). prop("checked", false);
+        $('#originBarcode').val(noTrackingId);
+        
+        $('#select2-originBarcode-container').text('No tracking');
+        $('#originBarcode').val($('#originBarcode').val());
         $('#W').val("");
         $('#H').val("");
         $('#L').val("");
@@ -220,6 +236,8 @@ $(function () {
     let pkg = extractFormData(this);
    // console.log(pkg);
    // console.log(awbPackages);
+   if(pkg.express == "on") pkg.express = true;
+    else pkg.express = false
     let isNew=false;
     if (!pkg.id) {
       pkg.id = Date.now().toString();
@@ -540,7 +558,13 @@ $(function () {
             $('#description').val(pkg.description);
             $('#weight').val(pkg.weight);
             $('#packageType').val(pkg.packageType || 'BOX');
+            $('#select2-packageType-container').text(pkg.packageType || 'BOX');
+            $('#originBarcode').val(pkg.originBarcode || 'No tracking');
+            console.log("pkg.originBarcode",pkg.originBarcode,$('#originBarcode option:selected').text())
+            $('#select2-originBarcode-container').text($('#originBarcode option:selected').text());
+            $("#express"). prop("checked", pkg.express);
             $('#packageCalculation').val(pkg.packageCalculation||'lbs');
+            $('#select2-packageCalculation-container').text(pkg.packageCalculation || 'lbs');
             var dims = pkg.dimensions.toLowerCase().split('x');
             $("#W").val(dims[0])
             $("#H").val(dims[1])
