@@ -300,9 +300,9 @@ exports.update_awb = (req, res, next) => {
   }
 
   awb.invoices = invoiceIds;
+  awb.updatedBy = req['userId'];
   awb.packages = packageIds;
   awb.purchaseOrders = purchaseOrderIds;
-  
   // Updating awb
   services.awbService.updateAwb(awbId, awb, req['userId'])
   .then(async (result) => {
