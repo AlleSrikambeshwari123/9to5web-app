@@ -740,6 +740,17 @@ class PackageService {
             })
         })
     }
+    getAllOriginBarcodes() {
+        return new Promise((resolve, reject) => {
+            Barcode.find({}, (err, barCodes) => {
+                if (err) {
+                    resolve([]);
+                } else {
+                    resolve(barCodes);
+                }
+            })
+        })
+    }
     removeAllOriginBarcode() {
         return new Promise((resolve, reject) => {
             Barcode.deleteMany({}, (err, result) => {

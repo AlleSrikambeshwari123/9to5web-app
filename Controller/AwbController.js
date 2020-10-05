@@ -76,7 +76,7 @@ exports.get_awb_detail = (req, res, next) => {
     services.serviceTypeService.getAllServiceTypes(),
     services.awbService.getPurchaseOrder(id),
     services.packageService.getProcessOriginBarcode(res.user),
-    services.packageService.getAllOriginBarcode(),
+    services.packageService.getAllOriginBarcodes(),
     services.driverService.getDrivers()
   ]).then(([
     customers,
