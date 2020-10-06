@@ -64,7 +64,11 @@ exports.get_full_awb = (req, res, next) => {
 
 exports.download_pdf_awb = (req, res, next) => {
 	let id = req.params.id;
-	services.printService.getAWBDataForAllRelatedEntities(id).then((awb) => {
+	services.printService.getAWBDataForAllRelatedEntities(id).then(async(awb) => {
+		let priceLabelAwb  =  await services.AwbPriceLabelService.getPriceLabel(awb._id)
+		if(priceLabelAwb){
+			awb.express = priceLabelAwb.Express
+		}
 		awbPdfGen.generateAWb(awb).then(result => {
 			res.download(result.path);
 		})
@@ -132,7 +136,11 @@ exports.print_all_pkg_labels = async (req, res, next) => {
 }
 
 exports.generate_awb_pdf = (req, res, next) => {
-	services.printService.getAWBDataForAllRelatedEntities(req.params.id).then(awb => {
+	services.printService.getAWBDataForAllRelatedEntities(req.params.id).then(async(awb) => {
+		let priceLabelAwb  =  await services.AwbPriceLabelService.getPriceLabel(awb._id)
+		if(priceLabelAwb){
+			awb.express = priceLabelAwb.Express
+		}
 		awbPdfGen.generateAWb(awb).then(result => {
 			res.send(result);
 		})
