@@ -79,7 +79,8 @@
               <th>Number of Pieces</th>
               <th>Status</th>
               <th>AirwareBillDate</th>
-              <th>Labeled Flight #</th>
+              <th>Flight #</th>
+              <th>Manifest #</th>
               <th>Status Date</th>
               <th></th>
               <!-- <th></th> -->
@@ -116,6 +117,7 @@
               <td><%= (pkg.pieces || pkg.pieces > -1) ? pkg.pieces : ''%></td>
               <td class="lastStatusText_field"><%= pkg.lastStatusText %></td>
               <td><%= pkg.awbCreatedAt %></td>
+              <td><%= pkg.actualFlight %></td>
               <td><%= pkg.manifestId %></td>
               <td><%= (pkg.lastStatusDates) ? pkg.lastStatusDates : ''  %></td>
               <!-- <td><a href="../pkg-label/download/<%=pkg._id%>"><i class="fa fa-download"></i></a></td> -->

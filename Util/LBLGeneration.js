@@ -115,7 +115,13 @@ class LBLGeneration {
         this.awb.customer.pmb = 9000;
         company = this.companies.nineTofive;
       } else company = this.companies.postBoxes;
-      this.GernerateAWBLabel(0,pkg, company)
+      let pkgIndex = 0
+      this.awb.packages.forEach((data,index) =>{
+        if(data._id.toString() == pkg._id.toString()){
+          pkgIndex = index+1
+        }
+      })
+      this.GernerateAWBLabel(pkgIndex,pkg, company)
         .then((result) => {
           console.log(result);
           resolve(result);
