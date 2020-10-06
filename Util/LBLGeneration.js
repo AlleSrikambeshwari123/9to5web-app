@@ -324,7 +324,7 @@ class LBLGeneration {
       if ((this.awb.invoices || []).length === 0) {
         noDocs = '***';
       }
-
+      let shipperName = this.awb.shipper ? this.awb.shipper.name :''
       var notes = '';
       if (this.awb.hazmat && this.awb.hazmat.description) {
         notes = this.awb.hazmat.description;
@@ -436,7 +436,7 @@ class LBLGeneration {
                           margin: [1, 1],
                           stack: [
                             { text: 'SHIPPER', fontSize: 7, bold: true },
-                            { margin: [0, 5], text: this.awb.shipper.name, fontSize: 10, bold: true },
+                            { margin: [0, 5], text: shipperName, fontSize: 10, bold: true },
                           ],
                           border: [false, false, false, true],
                         }, //logo for lbl

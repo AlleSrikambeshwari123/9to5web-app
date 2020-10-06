@@ -81,12 +81,17 @@ exports.download_pkg_label = (req, res, next) => {
 	})
 }
 exports.download_pdf_pricelabel = (req, res, next) => {
-	services.AwbPriceLabelService.getPriceLabel(req.params.id).then(price => {
-		services.printService.getAWBDataForAllRelatedEntities(price.awbId).then((awb) => {
-			lblPdfGen.generateSinglePriceLabel(awb, price).then(result => {
-				res.download(result.path);
+		services.AwbPriceLabelService.getPriceLabel(req.params.id).then(price => {
+		if(!price.awbId){
+	        res.send({ success: false, message: "This AWB has no current pricing info. Please update it first." });
+		}else{
+			services.printService.getAWBDataForAllRelatedEntities(price.awbId).then((awb) => {
+				lblPdfGen.generateSinglePriceLabel(awb, price).then(result => {
+					res.download(result.path);
+					// res.send(result.path);
+				})
 			})
-		})
+		}
 	})
 
 }
@@ -160,11 +165,15 @@ exports.generate_cube_pdf = (req, res, next) => {
 exports.generate_price_label_pdf = (req, res, next) => {
 	console.log("DWLD PRICE LABEL")
 	services.AwbPriceLabelService.getPriceLabel(req.params.id).then(price => {
-		services.printService.getAWBDataForAllRelatedEntities(price.awbId).then((awb) => {
-			lblPdfGen.generateSinglePriceLabel(awb, price).then(result => {
-				res.send(result);
+		if(!price.awbId){
+	        res.send({ success: false, message: "This AWB has no current pricing info. Please update it first." });
+		}else{
+			services.printService.getAWBDataForAllRelatedEntities(price.awbId).then((awb) => {
+				lblPdfGen.generateSinglePriceLabel(awb, price).then(result => {
+					res.send(result);
+				})
 			})
-		})
+		}
 	})
 }
 

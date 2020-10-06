@@ -54,12 +54,30 @@ $('#pricelabel-table').on('click', '.btn-print-pkg', function () {
           });
         });
       } else {
-        $('.close-del').trigger('click');
+        setTimeout(function(){$('.close-del').trigger('click');}, 1000);
+            swal({
+              title: 'Failed',
+              text: response.message,
+              type: 'error',
+            });
+      }
+    },
+  });
+});
+$('#pricelabel-table').on('click', '.download-price-label', function () {
+  let id = $(this).data('id');
+  $.ajax({
+    url: '/warehouse/price-label/download/' + id,
+    type: 'get',
+    success: function (response) {
+      if (response && response.success == false ) {
         swal({
           title: 'Failed',
           text: response.message,
           type: 'error',
         });
+      }else{
+        window.location.href  = '/warehouse/price-label/download/' + id
       }
     },
   });

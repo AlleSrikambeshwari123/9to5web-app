@@ -72,8 +72,10 @@
                     data-original-title="Add Price" data-target="#pricelabel-popup"><i class="fa fa-edit"></i></a>
                 </td>
                 <% let ifNotPriceLabel = 'ifNotPriceLabel'+ awb._id %>
-                <td><a class="<%= ifNotPriceLabel %>" href="../price-label/download/<%=awb._id%>"><i
-                      class="fa fa-download ifNotPriceLabel"></i></a></td>
+                <!-- <td><a class=" <%= ifNotPriceLabel %>" href="/warehouse/price-label/download/"><i
+                      class="fa fa-download ifNotPriceLabel"></i></a></td> -->
+                      <td><button class="btn btn-link download-price-label <%= ifNotPriceLabel %>" data-id="<%=awb._id%>" ><i
+                        class="fa fa-download ifNotPriceLabel"></i></button></td>
                 <td>
                   <a class="btn btn-link btn-primary btn-print-pkg <%= ifNotPriceLabel %>" data-toggle="modal"
                     data-id="<%=awb._id%>" data-original-title="Print Label" data-target="#print-pricelabel-popup"><i

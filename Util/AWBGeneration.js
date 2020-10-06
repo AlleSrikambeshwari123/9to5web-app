@@ -174,7 +174,7 @@ class AWBGeneration {
             notes = this.awb.note;
         if (this.awb.express)
             express = this.awb.express
-        return {
+        let pdfObject = {
             layout: 'lightHorizontallines',
             margin: [0, 10],
             table: {
@@ -183,12 +183,17 @@ class AWBGeneration {
                 body: [
                     [{ margin: [1, 1], text: "Inland Carrier and Shipper Information", colSpan: 4, alignment: 'center', fillColor: '#cccccc', bold: true }, '', '', ''],
                     [{ text: 'Carrier Name:' }, { text: this.awb.carrier.name }, { text: 'P.O. Number (Nine to Five)' }, { text: po }],
-                    [{ text: 'Express:' }, { text: express }, { text: 'MAWB#' }, { text: '' }],
                     [{ text: 'Notes:', colSpan: 2, bold: true }, { text: notes }, { text: 'External Invoice No', bold: true }, { text: 'External PO', bold: true }],
                     [{ text: this.awb.no, colSpan: 2 }, { text: '' }, { text: (this.awb.invoices || []).map(i => i.number).join(', '), fontSize: 9, bold: true }, { text: '' }]
                 ]
             }
         }
+        if(express > 0)
+            pdfObject.table.body.splice(2,0,[{ text: 'Express:', bold: true }, { text: express },{ text: 'MAWB#' }, { text: '' }])
+        else{
+            pdfObject.table.body.splice(2,0,[{ text: 'MAWB#' ,colSpan: 4}, { text: '' }])
+        }
+        return pdfObject
     }
     generateHeader(png) {
         return [{
