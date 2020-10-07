@@ -556,7 +556,8 @@ exports.downloadDeliveryReport = async (req, res, next) => {
 				awb: pkg.awbId.id,
 				weight: services.packageService.getPackageWeightInLBS(pkg),
 				pmb: pkg.customerId && pkg.customerId.pmb,
-				description: pkg.description
+				description: pkg.description,
+				awbId : pkg.awbId.awbId
 			};
 		});
 
@@ -565,6 +566,8 @@ exports.downloadDeliveryReport = async (req, res, next) => {
 			deliveryDate: delivery.delivery_date,
 			vehicleNo: delivery.vehicleId.registration,
 			rows,
+			location : delivery.locationId.name,
+			deliveryNum : delivery.deliveryNum
 		});
 		let stream = await deliveryReport.generate();
 		res.type('pdf');

@@ -52,6 +52,9 @@ $(".btn-view-invoice-package").click(function () {
       response.forEach((data,i) =>{
         $('#invoice-package-tbody').append('<tr><td >'+(i+1)+'</td><td >'+data.packageId.trackingNo+'</td><td> '+data.status+'</td></tr>');
       })
+      if(response.length == 0){
+        $('#invoice-package-tbody').append('No data available');
+      }
     },
     error: function () {
       showNotify('Failed', response.message, 'fa fa-info', 'danger');
