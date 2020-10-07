@@ -135,7 +135,8 @@
                             <% } else { %>
                               <td> - </td>
                               <% } %>
-                              <td><%= helpers.formatDate(pkg.OrignalBarcodeDate) %></td>
+                              <td><a href="/warehouse/pkg-label-excel/download/<%=pkg._id%>"> <%= helpers.formatDate(pkg.OrignalBarcodeDate) %></a></td>
+                              
                         <td><a class="text-decoration-none" href="../../nas/awb/manage/<%=pkg.awbId._id%>/preview"><b><%= pkg.express ? '*': '' %></b><%= pkg.awbId.awbId %> </a></td>
                         <td><%= pkg.originBarcode ? pkg.originBarcode.barcode: ''%></td>
                         <td><%= pkg.packageNumber ? pkg.packageNumber : ''%></td>

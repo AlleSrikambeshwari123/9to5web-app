@@ -123,6 +123,38 @@ class InvoiceService {
     })
   }
 
+  async getInvoices() {
+    return new Promise((resolve, reject) => {
+      Invoice.find({}).populate('awbId').exec((err, result) => {
+        if (err) {
+          resolve([]);
+        } else {
+          resolve(result);
+        }
+      });
+    })
+  }
+
+  getSearchInvoice(id){
+    return new Promise((resolve, reject) => {
+      StoreInvoice.findById(id).populate('awbId').exec((err, result) => {
+        if (err) {
+          resolve({});
+        } else  if(result == null){
+          Invoice.findById(id).populate('awbId').exec((error, res) => {
+            if (error) {
+              resolve({});
+            }else{
+              resolve(res);
+            }   
+          })
+        }else{
+          resolve(result);
+        }
+      });
+    })
+  }
+
   async getAllStoreInvoice(){
     return new Promise((resolve, reject) => {
       StoreInvoice.find().populate('awbId').exec((err, result) => {
@@ -140,8 +172,15 @@ class InvoiceService {
       StoreInvoice.findOneAndRemove({_id:id}).exec((err, result) => {
         if (err) {
           resolve({success:false,message:err});
-        } else {
-
+        } else if(result == null){
+          Invoice.findOneAndRemove({_id:id}).exec((err, result) => {
+            if (err) {
+              resolve({success:false,message:err});
+            }else{
+              resolve({success:true,message:"Successfully Deleted"});
+            }   
+          })
+        }else{
           resolve({success:true,message:"Successfully Deleted"});
         }
       });

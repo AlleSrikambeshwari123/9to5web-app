@@ -39,6 +39,7 @@
 						<th>Description</th>
 						<th>Weight</th>
 						<th>Volumetric Weight</th>
+						<th></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -54,7 +55,7 @@
 							%>
 					<tr data-record="<%= pkg.id %>">
 						<td><%= pkg.location ? pkg.location:''%></td>
-						<td><%= helpers.formatDate(pkg.createdAt)%></td>
+						<td><a href="/warehouse/pkg-label-excel/download/<%=pkg._id%>"><%= helpers.formatDate(pkg.createdAt)%></a></td>
 						<td><%= pkg.trackingNo %></td>
 						<td><%= pkg.customerId ? pkg.customerId.pmb + '-' + helpers.getFullName(pkg.customerId) : "" %>
 						</td>
@@ -64,6 +65,9 @@
 						<td><%= pkg.description %></td>
 						<td><%= pkg.weight + ' lbs'%></td>
 						<td><%= pkg.volumetricWeight.toFixed(2) + ' vlbs'%></td>
+						<td class="text-center">
+							<a href="/warehouse/pkg-label/download/<%=pkg._id%>"><i class="fa fa-download"></i></a>
+						</td>
 					</tr>
 					<%}})%>
 				</tbody>

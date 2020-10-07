@@ -84,6 +84,18 @@ exports.download_pkg_label = (req, res, next) => {
 		})
 	})
 }
+
+exports.download_pkg_label_excel = (req, res, next) => {
+	services.packageService.getPackage_updated(req.params.id).then(package => {
+		services.printService.getAWBDataForAllRelatedEntities(package.awbId).then((awb) => {
+			package.ext = "excel"
+			lblPdfGen.generateSinglePackageLabel(awb, package).then(result => {
+				res.download(result.path);
+			})
+		})
+	})
+}
+
 exports.download_pdf_pricelabel = (req, res, next) => {
 		services.AwbPriceLabelService.getPriceLabel(req.params.id).then(price => {
 		if(!price.awbId){

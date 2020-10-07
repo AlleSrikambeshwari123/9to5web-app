@@ -1329,6 +1329,22 @@ class PackageService {
             return []
         }
     }
+
+    async getPackagesWithStatus(invoice){
+        return new Promise(async (resolve, reject) => {
+            let resultArray = [] 
+                if(invoice.awbId){
+                    for(let pkg of invoice.awbId.packages){
+                        let result = await PackageStatus.findOne({ packageId:pkg._id }).populate('packageId')
+                        if(result){
+                            resultArray.push(result) 
+                        }
+                    }
+                }
+            resolve(resultArray);
+        });
+    }
+
     getPackageLastStatus(packageId) {
         return new Promise((resolve, reject) => {
             this.getPackageStatuses_updated(packageId).then((stats) => {

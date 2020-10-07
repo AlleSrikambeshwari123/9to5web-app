@@ -570,7 +570,10 @@ class LBLGeneration {
             };
             var filestream;
             var pdfDoc = printer.createPdfKitDocument(docDefinition);
-            var filename = '/pkg.' + pkg.id +'.'+ key + '.pdf';
+            var ext = '.pdf'
+            if(pkg.ext == "excel")
+              ext = '.xls'
+            var filename = '/pkg.' + pkg.id +'.'+ key + ext;
             var filepath = global.uploadRoot + filename;
             pdfDoc.pipe((filestream = fs.createWriteStream(filepath)));
             pdfDoc.end();

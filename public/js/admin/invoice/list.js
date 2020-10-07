@@ -42,5 +42,25 @@ function deleteInvoice(filename,id){
    }
   })
 }
+
+$(".btn-view-invoice-package").click(function () { 
+  var id = $(this).data('id');
+  $.ajax({
+    url: '/admin/invoices/packageStatus/'+id,
+    type: 'get',
+    success: function (response) {
+      response.forEach((data,i) =>{
+        $('#invoice-package-tbody').append('<tr><td >'+(i+1)+'</td><td >'+data.packageId.trackingNo+'</td><td> '+data.status+'</td></tr>');
+      })
+    },
+    error: function () {
+      showNotify('Failed', response.message, 'fa fa-info', 'danger');
+    }
+  }) 
+})
+
+$('#invoice-packages').on('hidden.bs.modal', function () {
+  $("#invoice-package-tbody").empty();
+});
  
   
