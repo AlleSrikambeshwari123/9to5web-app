@@ -609,7 +609,7 @@ class PackageService {
     }
 
     async checkPackageStatus(awb){
-        let flag = 0,status = "Mixed"
+        let flag = 0,status = "Mixed",index = 10
         for(let pkg of awb.packages){
             for(let pack of awb.packages){
                 if(!pkg.lastStatusText){
@@ -625,7 +625,18 @@ class PackageService {
             }
             if(flag == 1) break;
         }
-        return status
+        if(status == PKG_STATUS[0]) index = 0
+        if(status == PKG_STATUS[1]) index = 1
+        if(status == PKG_STATUS[2]) index = 2
+        if(status == PKG_STATUS[3]) index = 3
+        if(status == PKG_STATUS[4]) index = 4
+        if(status == PKG_STATUS[5]) index = 5
+        if(status == PKG_STATUS[6]) index = 6
+        if(status == PKG_STATUS[7]) index = 7
+        if(status == PKG_STATUS[8]) index = 8
+        if(status == PKG_STATUS[9]) index = 9
+        
+        return {status : status,id : index }
     }
 
     async getAllPackagesWithLastStatus() {

@@ -26,33 +26,28 @@ var storage = multer.diskStorage({
 router.get('/list-awb/:id',passport.authenticate('jwt', { session: false }), async(req, res, next) => {
     try{
         const customerId = mongoose.Types.ObjectId(req.params.id);
-        const awbData = await services.awbService.getAwbsFullCustomer(customerId);
-        let awbResponse = []
+        let awbData = await services.awbService.getAwbsFullCustomer(customerId);
+        let awbResponse = [],queryStatus = req.query.status,flag;
         if(awbData.length > 0){
-            for(let awb of awbData){
-                awb = awb.toJSON()
-                awb.status = await services.packageService.checkPackageStatus(awb)
-                awb.totalPrice = "Not Priced"
-                let priceLabel = await services.AwbPriceLabelService.getPriceLabel(awb._id)
-                if(priceLabel.SumOfAllCharges)
-                    awb.totalPrice = priceLabel.SumOfAllCharges
-                awbResponse.push(awb)
-            }
-            return res.send(awbResponse); 
+            flag = 1
         }else{
             const result = await services.customerChildService.getCustomer({_id: customerId})
-            const awbData = await services.awbService.getAwbsFullCustomer(result.parentCustomer.id);
-            for(let awb of awbData){
-                awb = awb.toJSON()
-                awb.status = await services.packageService.checkPackageStatus(awb)
-                awb.totalPrice = "Not Priced"
-                let priceLabel = await services.AwbPriceLabelService.getPriceLabel(awb._id)
-                if(priceLabel.SumOfAllCharges)
-                    awb.totalPrice = priceLabel.SumOfAllCharges
+            awbData = await services.awbService.getAwbsFullCustomer(result.parentCustomer.id);
+        }
+        for(let awb of awbData){
+            awb = awb.toJSON()
+            let statusObject = await services.packageService.checkPackageStatus(awb)
+            awb.status = statusObject.status
+            awb.totalPrice = "Not Priced"
+            let priceLabel = await services.AwbPriceLabelService.getPriceLabel(awb._id)
+            if(priceLabel.SumOfAllCharges)
+                awb.totalPrice = priceLabel.SumOfAllCharges
+            if(!queryStatus || queryStatus == "All")
                 awbResponse.push(awb)
-            }
-            return res.send(awbResponse)
-    }
+            else if(String(statusObject.id) == String(queryStatus))
+                awbResponse.push(awb)
+        }
+        return res.send(awbResponse);
     }catch(err){        
         res.send({ success: false, message: strings.string_response_error });
     }
