@@ -139,7 +139,9 @@ class AwbPriceLabelService {
       Awb.findOne({_id: id})
       .populate({
         path:'invoices'        
-     })
+     }).populate({
+          path:'packages'        
+      })
       .exec(async (err, result) => {
         if (err) {
           resolve({});

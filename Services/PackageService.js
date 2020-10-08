@@ -608,6 +608,26 @@ class PackageService {
         })
     }
 
+    async checkPackageStatus(awb){
+        let flag = 0,status = "Mixed"
+        for(let pkg of awb.packages){
+            for(let pack of awb.packages){
+                if(!pkg.lastStatusText){
+                    break;
+                }else{
+                    status = pkg.lastStatusText
+                }
+                if(pkg.lastStatusText != pack.lastStatusText){
+                    flag = 1
+                    status = "Mixed"
+                    break;
+                }
+            }
+            if(flag == 1) break;
+        }
+        return status
+    }
+
     async getAllPackagesWithLastStatus() {
         let packages = await this.getAllPackages_updated();
         let awbArray = []
