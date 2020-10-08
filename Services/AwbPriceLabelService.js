@@ -42,7 +42,7 @@ class AwbPriceLabelService {
       const pa = pkg.packages;
       for (var i = 0; i < pa.length; i++) {
         var weight = pa[i].weight;
-        if (pa[i].packageCalculation == 'kg') {
+        if (pa[i].packageCalculation == 'kg' || pa[i].packageCalculation == 'Kg') {
           weight = 2.20462 * pa[i].weight;
         }
         totalweightVal = totalweightVal + weight;

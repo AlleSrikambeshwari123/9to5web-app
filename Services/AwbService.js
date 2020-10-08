@@ -514,6 +514,39 @@ class AwbService {
     })
   }
 
+  async getAwbPriceAndStatus(awbData,queryStatus){
+    let awbResponse = []
+    for(let awb of awbData){
+      awb = awb.toJSON()
+      let statusObject = await this.services.packageService.checkPackageStatus(awb)
+      awb.status = statusObject.status
+      awb.totalPrice = "Not Priced"
+      let priceLabel = await this.getAwbPriceLabel(awb._id)
+      awb.pricing = priceLabel
+      if(!priceLabel.TotalWeightValue){
+        let totalweightVal =0
+        if(awb.packages){
+            for (var i = 0; i < awb.packages.length; i++) {
+              var weight = awb.packages[i].weight;
+              if (awb.packages[i].packageCalculation == 'kg' || awb.packages[i].packageCalculation == 'Kg') {
+                weight = 2.20462 * awb.packages[i].weight;
+              }
+              totalweightVal = totalweightVal + weight;
+            }
+          }
+          awb.pricing.TotalWeightValue = totalweightVal
+      }
+      if(priceLabel.SumOfAllCharges)
+          awb.totalPrice = priceLabel.SumOfAllCharges
+      if(!queryStatus || queryStatus == "All")
+          awbResponse.push(awb)
+      else if(String(statusObject.id) == String(queryStatus)){
+        awbResponse.push(awb)
+      }
+    }
+    return awbResponse
+  }
+
   async getAwbPriceLabel(awbId) {    
     return new Promise((resolve, reject) => { 
       PriceLabel.findOne({awbId:awbId}).exec((err, result) => {
@@ -540,7 +573,7 @@ class AwbService {
             if(awbData.packages){
               for (var i = 0; i < awbData.packages.length; i++) {
                 var weight = awbData.packages[i].weight;
-                if (awbData.packages[i].packageCalculation == 'kg') {
+                if (awbData.packages[i].packageCalculation == 'kg' || awbData.packages[i].packageCalculation == 'Kg') {
                   weight = 2.20462 * awbData.packages[i].weight;
                 }
                 totalweightVal = totalweightVal + weight;

@@ -27,26 +27,14 @@ router.get('/list-awb/:id',passport.authenticate('jwt', { session: false }), asy
     try{
         const customerId = mongoose.Types.ObjectId(req.params.id);
         let awbData = await services.awbService.getAwbsFullCustomer(customerId);
-        let awbResponse = [],queryStatus = req.query.status,flag;
+        let queryStatus = req.query.status,flag;
         if(awbData.length > 0){
             flag = 1
         }else{
             const result = await services.customerChildService.getCustomer({_id: customerId})
             awbData = await services.awbService.getAwbsFullCustomer(result.parentCustomer.id);
         }
-        for(let awb of awbData){
-            awb = awb.toJSON()
-            let statusObject = await services.packageService.checkPackageStatus(awb)
-            awb.status = statusObject.status
-            awb.totalPrice = "Not Priced"
-            let priceLabel = await services.AwbPriceLabelService.getPriceLabel(awb._id)
-            if(priceLabel.SumOfAllCharges)
-                awb.totalPrice = priceLabel.SumOfAllCharges
-            if(!queryStatus || queryStatus == "All")
-                awbResponse.push(awb)
-            else if(String(statusObject.id) == String(queryStatus))
-                awbResponse.push(awb)
-        }
+        let awbResponse = await services.awbService.getAwbPriceAndStatus(awbData,queryStatus)
         return res.send(awbResponse);
     }catch(err){        
         res.send({ success: false, message: strings.string_response_error });
