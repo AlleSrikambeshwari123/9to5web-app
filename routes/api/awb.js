@@ -64,7 +64,10 @@ router.post('/store-invoice',passport.authenticate('jwt', { session: false }), u
             const awbData = await services.awbService.storeInvoceFile({
                 fileName: fileName,
                 filePath: data.Location,
-                awbId:req.body.awbId
+                awbId:req.body.awbId,
+                courierNo : req.body.courierNo,
+                pmb : req.body.pmb,
+                customerId : req.body.id
             });
             res.send(awbData);
 

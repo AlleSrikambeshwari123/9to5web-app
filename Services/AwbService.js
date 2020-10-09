@@ -499,7 +499,10 @@ class AwbService {
       const invoiceData = {
         awbId:data.awbId,
         filePath:data.filePath,
-        fileName:data.fileName
+        fileName:data.fileName,
+        courierNo : data.courierNo,
+        pmb : data.pmb,
+        customerId : data.customerId
       }
      
       const newInvoice = new StoreInvoice(invoiceData);

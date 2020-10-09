@@ -13,6 +13,16 @@ const storeInvoiceSchema = new mongoose.Schema({
     },
     filePath: {
         type: String
+    },
+    pmb: {
+        type: Number,
+    },
+    courierNo: {
+        type: String,
+    },
+    customerId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Customer',
     }
 }, {
     timestamps: true
