@@ -213,6 +213,7 @@ exports.add_new_awb = async (req, res, next) => {
 
   awb['_id'] = awbId;
   awb['createdBy'] = req['userId'];
+  awb['updatedBy'] = req['userId'];
 
   services.awbService.createAwb(awb).then(async result => {
     res.send(result);
