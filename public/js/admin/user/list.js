@@ -49,9 +49,6 @@ $(function () {
 }); 
 
 $(document).ready(function() { 
-  setTimeout(function(){ 
-    dataTable()
-  },50)
  
   $('.user-table').DataTable( {
     "processing": true,
@@ -62,10 +59,6 @@ $(document).ready(function() {
       data :{ daterange:$('#daterange').val(), clear:$('#clear').val()}
     },
   })
-
-
-
-  var table = $('.user-table').DataTable();
      
     // Event listener to the two range filtering inputs to redraw on input
     $(document).on('click', '.applyBtn', function() {

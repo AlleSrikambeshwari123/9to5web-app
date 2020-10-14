@@ -19,16 +19,16 @@ exports.add_new_user = (req, res, next) => {
 }
 
 exports.get_user_list = (req, res, next) => {  
-  services.userService.getAllUsers().then(userResult => {
+ // services.userService.getAllUsers().then(userResult => {
     res.render('pages/admin/user/list', {
       title: 'System Users',
       page: req.originalUrl,
       user: res.user,
-      users: userResult,
+      users: [],
       daterange:req.query.daterange?req.query.daterange:'',
       clear:req.query.clear
     });
-  });
+  //});
 }
 
 exports.get_user_detail = (req, res, next) => {
@@ -77,6 +77,9 @@ exports.allUsers = (req, res, next)=>{
     var d = new Date();
     d.setDate(d.getDate() -7);
     req.body.daterange = st.getMonth()+'/'+st.getDate()+'/'+st.getFullYear()+ ' - ' + d.getMonth()+'/'+d.getDate()+'/'+d.getFullYear();
+  }
+  if(req.body.clear){
+    req.body.daterange = '';
   }
   services.userService.allUsers(req).then(userResult => {
      var dataTable = {

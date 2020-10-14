@@ -25,4 +25,23 @@ $(function () {
       }
     })
   });
+});
+$(document).ready(function() { 
+  $('.location-table').DataTable( {
+    "processing": true,
+    "serverSide": true,    
+    "ajax": {
+      url: "/admin/locations/all-locations",
+      type: "POST",
+      data :{ daterange:$('#daterange').val(), clear:$('#clear').val()}
+    },
+  })
+     
+    // Event listener to the two range filtering inputs to redraw on input
+    $(document).on('click', '.applyBtn', function() {
+        window.location = "/admin/locations/list?daterange="+$('.daterange').val();
+    });
+    $(document).on('click', '.cancelBtn', function() {
+      window.location = "/admin/locations/list?clear=1";
+    });  
 })
