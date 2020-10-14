@@ -136,6 +136,67 @@ class UserService {
         });
     });
   }
+
+  allUsers(req){
+    return new Promise(async (resolve, reject) => {
+      var start = req.query.start ? parseInt(req.query.start) : 0;
+      var length = req.query.length ? parseInt(req.query.length) : 10;
+      var sortColumn = req.query.order;  
+      var field = (sortColumn && sortColumn.length) ? parseInt(sortColumn[0].column) : 0; 
+      var columns = {0:'createdAt', 1: 'createdAt', 2: 'username', 3:'firstName', 4: 'email', 5: 'mobile'} 
+      var dir = (sortColumn && sortColumn.length) ? sortColumn[0].dir : 'asc'; 
+      var sort = (dir=='asc') ? 1 : -1;
+      var sortField = columns[field];
+      var search = (req.query.search && req.query.search.value) ? req.query.search.value : '';
+      var searchData = {};
+      if(search){
+        searchData.$or = [
+          {username:{'$regex' : search, '$options' : 'i'}},
+          {firstName:{'$regex' : search, '$options' : 'i'}},
+          {email:{'$regex' : search, '$options' : 'i'}},
+          {mobile:{'$regex' : search, '$options' : 'i'}}
+        ]
+      }
+
+
+      var totalusers = await User.count(searchData);
+      console.log({[sortField]:sort});
+      User.find(searchData)
+        .populate({path:'roles'})
+        .sort({[sortField]:sort})
+        .skip(start)
+        .limit(length)
+        .exec((err, users) => {
+         // console.log(users)
+          if (err) {
+            resolve([]);
+          } else {
+            // Creating the user ids array i.e ['id1', 'id2']
+            const userIds = users.map((user) => user['_id']);
+
+            // Searching by array
+            Awb.find({ createdBy: { '$in': userIds } }, (err, awbs) => {
+              const awbByUserIds = {};
+              awbs.forEach((awb) => {
+                if (!awbByUserIds[awb['createdBy']]) {
+                  awbByUserIds[awb['createdBy']] = 0;
+                }
+                awbByUserIds[awb['createdBy']] += 1
+              })
+              users = users.map((user) => {
+                let newUser = user._doc;
+                if (awbByUserIds[user._id]) newUser['awbCount'] = awbByUserIds[user._id];
+                else newUser['awbCount'] = 0;
+                return newUser;
+              })
+              resolve({users:users, total: totalusers});
+            });
+          }
+        });
+    })
+  }
+
+
   removeUser(username, loggedInUserName) {
     return new Promise((resolve, reject) => {
       if (username === loggedInUserName) {

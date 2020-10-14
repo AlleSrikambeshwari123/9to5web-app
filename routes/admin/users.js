@@ -4,6 +4,7 @@ var middleware = require('../../middleware');
 var userCtrl = require('../../Controller/UserController');
 
 router.get('/users/list', middleware().checkSession, userCtrl.get_user_list);
+router.get('/users/all-users', middleware().checkSession, userCtrl.allUsers);
 router.get('/users/create', middleware().checkSession, userCtrl.create_user);
 router.post('/users/create', middleware().checkSession, userCtrl.add_new_user);
 router.get('/users/manage/:username/get', middleware().checkSession, userCtrl.get_user_detail);
