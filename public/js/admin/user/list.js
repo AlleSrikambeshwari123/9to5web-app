@@ -48,21 +48,34 @@ $(function () {
   });
 }); 
 
-$(document).ready(function() {
+$(document).ready(function() { 
+  setTimeout(function(){ 
+    dataTable()
+  },50)
+ 
   $('.user-table').DataTable( {
     "processing": true,
     "serverSide": true,    
-    "ajax": "/admin/users/all-users?daterange="+$('.daterange').val(),
+    "ajax": {
+      url: "/admin/users/all-users",
+      type: "POST",
+      data :{ daterange:$('#daterange').val(), clear:$('#clear').val()}
+    },
   })
+
+
+
   var table = $('.user-table').DataTable();
      
     // Event listener to the two range filtering inputs to redraw on input
-    $(".applyBtn").click(function(){
-      alert(1);
-        //table.search().draw();
+    $(document).on('click', '.applyBtn', function() {
+        window.location = "/admin/users/list?daterange="+$('.daterange').val();
     });
-  
+    $(document).on('click', '.cancelBtn', function() {
+      window.location = "/admin/users/list?clear=1";
+    });  
 })
+
 
 function enableUser(str){
   var username = $(str).data('id');

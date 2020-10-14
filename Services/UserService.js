@@ -139,16 +139,26 @@ class UserService {
 
   allUsers(req){
     return new Promise(async (resolve, reject) => {
-      var start = req.query.start ? parseInt(req.query.start) : 0;
-      var length = req.query.length ? parseInt(req.query.length) : 10;
-      var sortColumn = req.query.order;  
+      var start = req.body.start ? parseInt(req.body.start) : 0;
+      var length = req.body.length ? parseInt(req.body.length) : 10;
+      var sortColumn = req.body.order;  
       var field = (sortColumn && sortColumn.length) ? parseInt(sortColumn[0].column) : 0; 
       var columns = {0:'createdAt', 1: 'createdAt', 2: 'username', 3:'firstName', 4: 'email', 5: 'mobile'} 
       var dir = (sortColumn && sortColumn.length) ? sortColumn[0].dir : 'asc'; 
       var sort = (dir=='asc') ? 1 : -1;
       var sortField = columns[field];
-      var search = (req.query.search && req.query.search.value) ? req.query.search.value : '';
+      var search = (req.body.search && req.body.search.value) ? req.body.search.value : '';
+      var daterange = req.body.daterange?req.body.daterange:''
       var searchData = {};
+      if(daterange){
+        var date_arr = daterange.split('-');
+        var startDate = (date_arr[0]).trim();
+        var stDate = startDate.split('/');
+        var endDate = (date_arr[1]).trim();
+        var enDate = endDate.split('/')
+        console.log(stDate[2], stDate[0], stDate[1]);
+        searchData.createdAt = {"$gte": new Date(stDate[2], stDate[0]-1, stDate[1]), "$lte": new Date(enDate[2], enDate[0]-1, enDate[1])};
+      }
       if(search){
         searchData.$or = [
           {username:{'$regex' : search, '$options' : 'i'}},
@@ -157,10 +167,8 @@ class UserService {
           {mobile:{'$regex' : search, '$options' : 'i'}}
         ]
       }
-
-
       var totalusers = await User.count(searchData);
-      console.log({[sortField]:sort});
+     
       User.find(searchData)
         .populate({path:'roles'})
         .sort({[sortField]:sort})
