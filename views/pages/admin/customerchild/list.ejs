@@ -8,7 +8,9 @@
       </div>
       <div class="card-body daterangepickerbody">
         <div class="table-responsive">
-          <table id="customerTable" class="display table dataTable dateRangeFilterTable table-striped table-hover">
+            <input type="hidden" name="daterange" id="daterange" value="<%=daterange%>">
+            <input type="hidden" name="clear" id="clear" value="<%=clear%>">
+          <table id="customerTable" class="display table dataTable  table-striped table-hover customer-table">
             <thead>
               <tr>
                 <th>Parent Customer</th>
@@ -19,19 +21,7 @@
               </tr>
             </thead>
             <tbody>
-              <% customers.forEach(function(customer){%>
-              <tr data-record="<%= customer.id %>">
-                <td><%=helpers.getFullName(customer.parentCustomer)%></td>
-                <td><%=helpers.formatDate(customer.createdAt)%></td>
-                <td><%=helpers.getFullName(customer)%></td>
-                <td><%=customer.email%></td>
-                <td>
-                  <a href='manage/<%=customer.id%>/get'><i class="fas fa-user-edit"></i></a>
-                  <!-- temporary commenting the code -->
-                  <button class='btn btn-link btn-danger rm-customer ml-3' data-id='<%=customer.id%>'><i class="fas fa-trash"></i></a>
-                </td>
-              </tr>
-              <%})%>
+            
             </tbody>
           </table>
         </div>
@@ -40,4 +30,4 @@
   </div>
 </div>
 
-<% block('scripts').append('<script src="/js/admin/customer/list.js"></script>')%>
+<% block('scripts').append('<script src="/js/admin/customerchild/list.js"></script>')%>

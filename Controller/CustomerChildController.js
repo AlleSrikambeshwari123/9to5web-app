@@ -2,6 +2,7 @@ var services = require('../Services/RedisDataServices');
 var utils = require('../Util/utils');
 var momentz = require('moment-timezone')
 const aws = require('../Util/aws');
+var helpers = require('../views/helpers')
 
 exports.get_customer_list = (req, res, next) => {
   Promise.all([
@@ -13,7 +14,44 @@ exports.get_customer_list = (req, res, next) => {
       title: "Consignee",
       user: res.user,
       customers: customers.map(utils.formattedRecord),
+      daterange:req.query.daterange?req.query.daterange:'',
+      clear:req.query.clear
     })
+  })
+}
+
+exports.get_customers = (req,res,next)=>{
+  if(!req.body.daterange && !req.body.clear){
+    var st = new Date();
+    var d = new Date();
+    d.setDate(d.getDate() -7);
+    req.body.daterange = st.getMonth()+'/'+st.getDate()+'/'+st.getFullYear()+ ' - ' + d.getMonth()+'/'+d.getDate()+'/'+d.getFullYear();
+  }
+  if(req.body.clear)
+    req.body.daterange =''
+  services.customerChildService.getAllCustomers(req).then(async(results) => {
+    const customers = results.customers;
+    var dataTable = {
+      draw: req.query.draw,
+      recordsTotal: results.total,
+      recordsFiltered: results.total,
+      data:[]
+    }
+    var data = [];
+    for(var i=0; i< customers.length; i++){
+      var customerDetail = [];
+      customerDetail.push(helpers.getFullName(customers[i].parentCustomer));
+      customerDetail.push(helpers.formatDate(customers[i].createdAt));
+      customerDetail.push(helpers.getFullName(customers[i]))
+      customerDetail.push(customers[i].email);
+      
+      let action = `<a href='manage/${customers[i].id}/get'><i class="fas fa-user-edit"></i></a>
+      <button class='btn btn-link btn-danger rm-customer ml-3'  onclick="deleteCustomer(this)" data-id='${customers[i].id}'><i class="fas fa-trash"></i></a>`
+      customerDetail.push(action)
+       data.push(customerDetail);
+    }
+    dataTable.data = data;
+    res.json(dataTable);
   })
 }
 

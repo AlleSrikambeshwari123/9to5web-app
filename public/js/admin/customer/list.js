@@ -1,11 +1,11 @@
-$(function () {
-  $('.rm-customer').click(function () {
-    var id = $(this).data('id');
-    swal({
-      title: "Are you sure?",
-      showCancelButton: true,
-      confirmButtonText: 'Delete',
-    }).then(response => {
+  $(document).ready(function() {
+    $('.rm-customer').click(function () {
+      var id = $(this).data('id');
+      swal({
+        title: "Are you sure?",
+        showCancelButton: true,
+        confirmButtonText: 'Delete',
+      }).then(response => {
       if (response.value) {
         $.ajax({
           url: 'manage/' + id + '/delete',
@@ -24,5 +24,27 @@ $(function () {
         });
       }
     })
+
+    // setTimeout(function(){ 
+    //   dataTable()
+    // },50)
+    $('.customer-table').DataTable( {
+      "processing": true,
+      "serverSide": true,    
+      "ajax": {
+        url: "/admin/customers/allCustomers",
+        type: "POST",
+        data :{ daterange:$('#daterange').val(), clear:$('#clear').val()}
+      }
+    })
+    // var table = $('.customer-table').DataTable();
+    $(document).on('click', '.applyBtn', function() {
+      window.location = "/admin/customers/list?daterange="+$('.daterange').val();
+    });	    
+    
+    $(document).on('click', '.cancelBtn', function() {
+      window.location = "/admin/customers/list?clear=1";
+    });  
   });
+    
 }); 
