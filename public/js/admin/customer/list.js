@@ -1,11 +1,11 @@
-  $(document).ready(function() {
-    $('.rm-customer').click(function () {
-      var id = $(this).data('id');
-      swal({
-        title: "Are you sure?",
-        showCancelButton: true,
-        confirmButtonText: 'Delete',
-      }).then(response => {
+$(function () {
+  $('.rm-customer').click(function () {
+    var id = $(this).data('id');
+    swal({
+      title: "Are you sure?",
+      showCancelButton: true,
+      confirmButtonText: 'Delete',
+    }).then(response => {
       if (response.value) {
         $.ajax({
           url: 'manage/' + id + '/delete',
@@ -24,10 +24,21 @@
         });
       }
     })
+  });
 
-    // setTimeout(function(){ 
-    //   dataTable()
-    // },50)
+  $(document).ready(function() {
+    // if(localStorage.dateRangePickerStartDate){
+    //   $('#daterange').val(localStorage.dateRangePickerStartDate + ' - ' +localStorage.dateRangePickerEndDate)
+    // }
+    // localStorage.dateRangePickerStartDate = $('#daterange').val().split('-')[0]
+    // localStorage.dateRangePickerEndDate = $('#daterange').val().split('-')[1]
+    if($('#clear').val() || localStorage.dateRangePickerStartDate == "" || localStorage.dateRangePickerEndDate == "" ){
+      $('#daterange').val('')
+      $('#clear').val('1')
+      // localStorage.dateRangePickerStartDate = ''
+      // localStorage.dateRangePickerEndDate = ''
+    }
+    $('.daterange').val($('#daterange').val())
     $('.customer-table').DataTable( {
       "processing": true,
       "serverSide": true,    
@@ -37,7 +48,6 @@
         data :{ daterange:$('#daterange').val(), clear:$('#clear').val()}
       }
     })
-    // var table = $('.customer-table').DataTable();
     $(document).on('click', '.applyBtn', function() {
       window.location = "/admin/customers/list?daterange="+$('.daterange').val();
     });	    

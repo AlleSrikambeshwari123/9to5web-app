@@ -65,3 +65,52 @@ var pendingtable = $('#pending-awb-table').DataTable({
 var pickuptable = $('#pickup-awb-table').DataTable({
   pageLength: 10,
 })
+
+$(document).ready(function() {
+  if($('#clear').val() ){
+    $('#daterange').val('')
+    $('#clear').val('1')
+  }
+  $('.daterange').val($('#daterange').val())
+  $('.noDocsTable').DataTable( {
+    "processing": true,
+    "serverSide": true,    
+    "ajax": {
+      url: "/warehouse/fll/awb/no-docs-list",
+      type: "POST",
+      data :{ daterange:$('#daterange').val(), clear:$('#clear').val()}
+    }
+  })
+  $(document).on('click', '.applyBtn', function() {
+    window.location = "/warehouse/fll/awb/no-docs?daterange="+$('.daterange').val();
+  });	    
+  
+  $(document).on('click', '.cancelBtn', function() {
+    window.location = "/warehouse/fll/awb/no-docs?clear=1";
+  });
+});
+let pdfPath
+function printAwb(str){
+  let id = $(str).data('id');
+  $.ajax({
+    url: '/api/printer/pdf/generate/awb/' + id,
+    type: 'get',
+    success: function (response) {
+      pdfPath = '/util/pdf' + response.filename;
+      pdfjsLib.getDocument({ url: pdfPath }).promise.then(pdfData => {
+        pdfData.getPage(1).then(page => {
+          var canvas = $('#pdf-preview')[0];
+          var canvasContext = canvas.getContext('2d');
+          const viewport = page.getViewport({ scale: .5 });
+          canvas.height = canvas.width / viewport.width * viewport.height;
+          page.render({ canvasContext, viewport })
+        })
+      })
+    }
+  })
+}
+
+function print(){
+  $('.close-del').trigger('click');
+  printJS(pdfPath);
+}

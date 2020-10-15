@@ -285,6 +285,80 @@ class AwbService {
         });
     }
 
+    async getAwbsNoDocsList(req) {
+      var start = req.body.start ? parseInt(req.body.start) : 0;
+      var length = req.body.length ? parseInt(req.body.length) : 10;
+      var sortColumn = req.body.order;
+  
+      var field = req.body['order[0][column]'] ?parseInt(req.body['order[0][column]']) : 0;
+      var columns = {0:'createdAt', 1: 'createdAt', 2: 'customer.pmb', 3:'awbId', 4: 'customer.firstName', 5: 'shipper.name',6:'carrier.name',7:'packages.length',8:'weight'} 
+      var dir = req.body['order[0][dir]'] ? req.body['order[0][dir]'] : 0;
+      var sort = (dir=='asc') ? 1 : -1;
+      var sortField = columns[field];
+      var search = req.body['search[value]'] ? req.body['search[value]'] : '';
+      var daterange = req.body.daterange?req.body.daterange:''
+  
+      var searchData = {};
+
+      if(daterange){
+        var date_arr = daterange.split('-');
+        var startDate = (date_arr[0]).trim();      
+        var stdate = new Date(startDate);
+        stdate.setDate(stdate.getDate() +1);
+
+        var endDate = (date_arr[1]).trim();
+        var endate = new Date(endDate);
+        endate.setDate(endate.getDate() +1);     
+        searchData.createdAt = {"$gte":stdate, "$lte": endate};
+      }
+      
+      if(!req.body.daterange && !req.body.clear){
+        var endate = new Date();      
+        endate.setDate(endate.getDate()+1);
+        var stdate = new Date();
+        stdate.setDate(stdate.getDate() -21);      
+        searchData.createdAt = {"$gte":stdate, "$lte": endate};
+      }
+      console.log("search",search)
+      if(search){
+        // searchData.$or = [
+        //   {$where: "/^"+search+".*/.Awb(this.awbId)" }
+        //   // {awbId:{'$regex' : search}},
+        //   // {'customer.name':{'$regex' : search, '$options' : 'i'}},
+        // ]
+      }
+      searchData.invoices = { $eq: [] }
+      var totalAwbs = await Awb.count(searchData);
+      return new Promise((resolve, reject) => {
+          Awb.find(searchData)
+              .populate('customerId')
+              .populate('shipper')
+              .populate('carrier')
+              .populate('packages')
+              .populate('purchaseOrders')
+              .sort({[sortField]:sort})
+              .skip(start)
+              .limit(length)
+              .exec((err, awbData) => {
+                  if (err) {
+                      resolve([]);
+                  } else {
+                      awbData.forEach((data) => {
+                          data['customer'] = data['customerId'];
+                          data['customer']['name'] = (data['customerId'].lastName ? `${data['customerId'].firstName} ${data['customerId'].lastName}` : `${data['customerId'].lastName}`);
+                          if (data['packages'] && data['packages'].length) {
+                              let weight = 0;
+                              data.packages.forEach((pkg) => (weight += Number(pkg.weight)));
+                              data['weight'] = weight;
+                          }
+                          data['dateCreated'] = moment(data['createdAt']).format('MMM DD, YYYY');
+                      });
+                      resolve({awbs : awbData,total : totalAwbs});
+                  }
+              });
+      });
+  }
+
     renameKey(obj, key, newKey) {
         const awb = Object.assign({}, obj);
         const customer = awb._doc[key];

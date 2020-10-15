@@ -7,6 +7,7 @@ const mongoose = require('mongoose');
 const moment = require('moment');
 var momentz = require('moment-timezone')
 var countries = require('../public/js/countries');
+var helpers = require('../views/helpers')
 
 exports.preview_awb_invoice = (req, res, next) => {
   let id =res.user._id
@@ -344,7 +345,62 @@ exports.get_awb_no_docs = (req, res, next) => {
       title: "AirWay Bills - No Docs",
       user: res.user,
       awbs: awbs,
+      daterange:req.query.daterange?req.query.daterange:'',
+      clear:req.query.clear
     })
+  })
+};
+
+exports.get_awb_no_docs_list = (req, res, next) => {
+  if(!req.body.daterange && !req.body.clear){
+    var st = new Date();
+    var d = new Date();
+    d.setDate(d.getDate() -21);
+    req.body.daterange = st.getMonth()+'/'+st.getDate()+'/'+st.getFullYear()+ ' - ' + d.getMonth()+'/'+d.getDate()+'/'+d.getFullYear();
+  }
+  if(req.body.clear)
+    req.body.daterange =''
+  services.awbService.getAwbsNoDocsList(req).then(results => {
+    const awbs = results.awbs;
+    var dataTable = {
+      draw: req.query.draw,
+      recordsTotal: results.total,
+      recordsFiltered: results.total,
+      data:[]
+    }
+    var data = [];
+    for(var i=0; i< awbs.length; i++){
+      var awbDetail = [];
+      if(!awbs[i].invoice) {
+        awbDetail.push(awbs[i].customer.name);
+        awbDetail.push(helpers.formatDate(awbs[i].createdAt));
+        awbDetail.push(awbs[i].customer.pmb)
+        awbDetail.push(`<a href="manage/${awbs[i]._id}/preview">${awbs[i].awbId}</a>`)
+        awbDetail.push(helpers.getFullName(awbs[i].customer))
+        if(awbs[i].shipper && awbs[i].shipper.name)
+          awbDetail.push(awbs[i].shipper.name)
+        else
+          awbDetail.push('')
+
+        if(awbs[i].carrier && awbs[i].carrier.name)
+          awbDetail.push(awbs[i].carrier.name)
+        else
+          awbDetail.push('')
+        
+        awbDetail.push(awbs[i].packages.length)
+        awbDetail.push(awbs[i].weight)
+      }
+      let action = ` <button 
+      class="btn btn-link btn-primary btn-print-awb" 
+      data-toggle="modal" 
+      data-id="${awbs[i]._id}"
+      onclick="printAwb(this)"
+      data-target="#print-popup"><i class="fa fa-print"></i> </button>`
+      awbDetail.push(action)
+       data.push(awbDetail);
+    }
+    dataTable.data = data;
+    res.json(dataTable);
   })
 };
 

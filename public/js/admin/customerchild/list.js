@@ -27,11 +27,11 @@ $(function () {
   });
 
   $(document).ready(function() {
-    
+    if($('#clear').val() || localStorage.dateRangePickerStartDate == "" || localStorage.dateRangePickerEndDate == "" ){
+      $('#daterange').val('')
+      $('#clear').val('1')
+    }
     $('.daterange').val($('#daterange').val())
-    if($('#clear').val())
-      $('.daterange').val('')
-    
     $('.customer-table').DataTable( {
       "processing": true,
       "serverSide": true,    

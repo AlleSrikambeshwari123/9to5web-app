@@ -17,6 +17,7 @@ router.get('/fll/awb/manage/:awbId/print', middleware().checkSession, awbCtrl.ge
 router.get('/fll/awb/list', middleware().checkSession, awbCtrl.get_awb_list);
 
 router.get('/fll/awb/no-docs', middleware().checkSession, awbCtrl.get_awb_no_docs);
+router.post('/fll/awb/no-docs-list', middleware().checkSession, awbCtrl.get_awb_no_docs_list);
 router.get('/fll/awb/no-docs-packages', middleware().checkSession, awbCtrl.get_awb_no_docs_package_list);
 
 router.post('/fll/awb/create-barcode', awbCtrl.add_bar_code);

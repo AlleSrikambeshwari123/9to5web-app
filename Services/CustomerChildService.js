@@ -147,11 +147,22 @@ setServiceInstances(services) {
     var searchData = {};
     if(daterange){
       var date_arr = daterange.split('-');
-      var startDate = (date_arr[0]).trim();
-      var stDate = startDate.split('/');
+      var startDate = (date_arr[0]).trim();      
+      var stdate = new Date(startDate);
+      stdate.setDate(stdate.getDate() +1);
+
       var endDate = (date_arr[1]).trim();
-      var enDate = endDate.split('/')
-      searchData.createdAt = {"$gte": new Date(stDate[2], stDate[0]-1, stDate[1]), "$lte": new Date(enDate[2], enDate[0]-1, enDate[1])};
+      var endate = new Date(endDate);
+      endate.setDate(endate.getDate() +1);     
+      searchData.createdAt = {"$gte":stdate, "$lte": endate};
+    }
+    
+    if(!req.body.daterange && !req.body.clear){
+      var endate = new Date();      
+      endate.setDate(endate.getDate()+1);
+      var stdate = new Date();
+      stdate.setDate(stdate.getDate() -21);      
+      searchData.createdAt = {"$gte":stdate, "$lte": endate};
     }
     
     if(search){

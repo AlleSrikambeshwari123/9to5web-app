@@ -24,7 +24,7 @@ exports.get_customers = (req,res,next)=>{
   if(!req.body.daterange && !req.body.clear){
     var st = new Date();
     var d = new Date();
-    d.setDate(d.getDate() -7);
+    d.setDate(d.getDate() -21);
     req.body.daterange = st.getMonth()+'/'+st.getDate()+'/'+st.getFullYear()+ ' - ' + d.getMonth()+'/'+d.getDate()+'/'+d.getFullYear();
   }
   if(req.body.clear)
