@@ -67,6 +67,7 @@ var pickuptable = $('#pickup-awb-table').DataTable({
 })
 
 $(document).ready(function() {
+  let flagStatus = ''
   if($('#clear').val() ){
     $('#daterange').val('')
     $('#clear').val('1')
@@ -78,15 +79,40 @@ $(document).ready(function() {
     "ajax": {
       url: "/warehouse/fll/awb/no-docs-list",
       type: "POST",
-      data :{ daterange:$('#daterange').val(), clear:$('#clear').val()}
+      data :{ daterange:$('#daterange').val(), clear:$('#clear').val()},
+      
+    }
+  })
+  $('.awbTable').on( 'xhr.dt', function () {
+        flagStatus = 1
+  });
+  $('.noDocsTable').on( 'xhr.dt', function () {
+    flagStatus = 0
+  });
+
+  $('.awbTable').DataTable( {
+    "processing": true,
+    "serverSide": true,    
+    "ajax": {
+      url: "/warehouse/fll/awb/allAbws",
+      type: "POST",
+      data :{ daterange:$('#daterange').val(), clear:$('#clear').val()},
+      
     }
   })
   $(document).on('click', '.applyBtn', function() {
-    window.location = "/warehouse/fll/awb/no-docs?daterange="+$('.daterange').val();
+    if(flagStatus == 0)
+      window.location = "/warehouse/fll/awb/no-docs?daterange="+$('.daterange').val();
+    else if(flagStatus == 1)
+      window.location = "/warehouse/fll/awb/list?daterange="+$('.daterange').val();
+
   });	    
   
   $(document).on('click', '.cancelBtn', function() {
-    window.location = "/warehouse/fll/awb/no-docs?clear=1";
+    if(flagStatus == 0)
+      window.location = "/warehouse/fll/awb/no-docs?clear=1";
+    else if(flagStatus == 1)
+      window.location = "/warehouse/fll/awb/list?clear=1";
   });
 });
 let pdfPath

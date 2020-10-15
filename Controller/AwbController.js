@@ -334,7 +334,81 @@ exports.get_awb_list = (req, res, next) => {
       title: "AirWay Bills",
       user: res.user,
       awbs: awbs,
+      daterange:req.query.daterange?req.query.daterange:'',
+      clear:req.query.clear
     })
+  })
+};
+
+exports.get_all_awb = (req, res, next) => {
+  if(!req.body.daterange && !req.body.clear){
+    var st = new Date();
+    var d = new Date();
+    d.setDate(d.getDate() -21);
+    req.body.daterange = st.getMonth()+'/'+st.getDate()+'/'+st.getFullYear()+ ' - ' + d.getMonth()+'/'+d.getDate()+'/'+d.getFullYear();
+  }
+  if(req.body.clear)
+    req.body.daterange =''
+  services.awbService.getAllAwbsFull(req).then(results => {
+    const awbs = results.awbs;
+    var dataTable = {
+      draw: req.query.draw,
+      recordsTotal: results.total,
+      recordsFiltered: results.total,
+      data:[]
+    }
+    let data = [],total = 0;
+    for(var i=0; i< awbs.length; i++){
+      if(awbs[i].packages.length > 0){
+        var awbDetail = [];
+        total++;
+        awbs[i].volumetricWeight = 0
+        awbs[i].packages.forEach(package=>{
+          let check = 1
+          package.dimensions.split('x').forEach(data =>{
+            check = check * data
+          })
+          awbs[i].volumetricWeight = (check/166);
+        })
+        if(awbs[i].customer && awbs[i].customer.pmb){
+          awbDetail.push(awbs[i].customer.pmb);
+        }
+        awbDetail.push(helpers.formatDate(awbs[i].createdAt));
+        awbDetail.push(`<a href="manage/${awbs[i]._id}/preview">${awbs[i].awbId}</a>`)
+        awbDetail.push(helpers.getFullName(awbs[i].customer))
+        if(awbs[i].shipper && awbs[i].shipper.name)
+          awbDetail.push(awbs[i].shipper.name)
+        else
+          awbDetail.push('')
+
+        if(awbs[i].driver)
+          awbDetail.push(awbs[i].driver.firstName +' ' + awbs[i].driver.lastName)
+        else
+          awbDetail.push('')
+
+        if(awbs[i].carrier && awbs[i].carrier.name)
+          awbDetail.push(awbs[i].carrier.name)
+        else
+          awbDetail.push('')
+
+        if(awbs[i].packages)
+          awbDetail.push(awbs[i].packages.length)
+        else
+          awbDetail.push(0)
+        let weight = awbs[i].weight ? awbs[i].weight : 0
+        awbDetail.push(weight + ' lbs')
+        awbDetail.push(awbs[i].volumetricWeight.toFixed(2) + ' vlbs')
+        
+        let action = `<a href='manage/${awbs[i]._id}/get' class="btn btn-link btn-primary px-1" data-toggle="tooltip"
+        data-original-title="Edit"> <i class="fa fa-pen"></i> </a>`+
+        `<button class="btn btn-link btn-primary btn-print-awb p-1" onclick='printAwb(this)' data-toggle="modal" data-id="${awbs[i]._id}"
+      data-target="#print-popup"> <i class="fa fa-print"></i> </button>`
+      awbDetail.push(action)
+      data.push(awbDetail);
+    }
+    }
+    dataTable.data = data;
+    res.json(dataTable);
   })
 };
 
@@ -455,6 +529,8 @@ exports.nas_no_docs = (req, res, next) => {
       title: "AirWay Bills - No Docs",
       user: res.user,
       awbs: awbs,
+      daterange:req.query.daterange?req.query.daterange:'',
+      clear:req.query.clear
     })  
   })
 };

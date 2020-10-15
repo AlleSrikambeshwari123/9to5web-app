@@ -199,6 +199,98 @@ class AwbService {
         });
     }
 
+
+    async getAllAwbsFull(req) {
+      var start = req.body.start ? parseInt(req.body.start) : 0;
+      var length = req.body.length ? parseInt(req.body.length) : 10;
+      var sortColumn = req.body.order;
+  
+      var field = req.body['order[0][column]'] ?parseInt(req.body['order[0][column]']) : 0;
+      var columns = {0:'createdAt', 1: 'createdAt', 2: 'customer.pmb', 3:'awbId', 4: 'customer.firstName', 5: 'shipper.name',6:'carrier.name',7:'packages.length',8:'weight'} 
+      var dir = req.body['order[0][dir]'] ? req.body['order[0][dir]'] : 0;
+      var sort = (dir=='asc') ? 1 : -1;
+      var sortField = columns[field];
+      var search = req.body['search[value]'] ? req.body['search[value]'] : '';
+      var daterange = req.body.daterange?req.body.daterange:''
+  
+      var searchData = {};
+
+      if(daterange){
+        var date_arr = daterange.split('-');
+        var startDate = (date_arr[0]).trim();      
+        var stdate = new Date(startDate);
+        stdate.setDate(stdate.getDate() +1);
+
+        var endDate = (date_arr[1]).trim();
+        var endate = new Date(endDate);
+        endate.setDate(endate.getDate() +1);     
+        searchData.createdAt = {"$gte":stdate, "$lte": endate};
+      }
+      
+      if(!req.body.daterange && !req.body.clear){
+        var endate = new Date();      
+        endate.setDate(endate.getDate()+1);
+        var stdate = new Date();
+        stdate.setDate(stdate.getDate() -21);      
+        searchData.createdAt = {"$gte":stdate, "$lte": endate};
+      }
+      if(search ){
+        
+        searchData.$or = [
+          {'shipper.name':{'$regex' : search , '$options' : 'i'}  },
+          {'carrier.name':{'$regex' : search , '$options' : 'i'}  }
+        ]
+      }
+      searchData.packages =  { $gt: [] }
+      var totalAwbs = await Awb.count(searchData);
+      return new Promise((resolve, reject) => {
+          Awb.find(searchData)
+              .populate('customerId')
+              .populate('shipper')
+              .populate('carrier')
+              .populate('hazmat')
+              .populate('packages')
+              .populate('purchaseOrders')
+              .populate('invoices')
+              .populate('driver')
+              .sort({[sortField]:sort})
+              .skip(start)
+              .limit(length)      
+              .exec(async (err, result) => {
+                Promise.all(result.map(async res =>{
+                  let awbPriceLabel = await PriceLabel.findOne({awbId:res._id}) ;
+
+                  if(awbPriceLabel != null){
+
+                    awbPriceLabel.Brokerage = awbPriceLabel.Brokerage ? awbPriceLabel.Brokerage.toFixed(2) : 0
+                    awbPriceLabel.CustomsProc = awbPriceLabel.CustomsProc ? awbPriceLabel.CustomsProc.toFixed(2) : 0 
+                    awbPriceLabel.CustomsVAT = awbPriceLabel.CustomsVAT ? awbPriceLabel.CustomsVAT.toFixed(2) : 0 
+                    awbPriceLabel.Delivery =  awbPriceLabel.Delivery ? awbPriceLabel.Delivery.toFixed(2): 0 
+                    awbPriceLabel.Duty =  awbPriceLabel.Duty ? awbPriceLabel.Duty.toFixed(2) : 0
+                    awbPriceLabel.EnvLevy = awbPriceLabel.EnvLevy ? awbPriceLabel.EnvLevy.toFixed(2) : 0
+                    awbPriceLabel.Express = awbPriceLabel.Express ? awbPriceLabel.Express.toFixed(2) : 0
+                    awbPriceLabel.Freight = awbPriceLabel.Freight ? awbPriceLabel.Freight.toFixed(2) : 0
+                    awbPriceLabel.Hazmat = awbPriceLabel.Hazmat ? awbPriceLabel.Hazmat.toFixed(2) : 0
+                    awbPriceLabel.Insurance = awbPriceLabel.Insurance ? awbPriceLabel.Insurance.toFixed(2) : 0 
+                    awbPriceLabel.NoDocs = awbPriceLabel.NoDocs ? awbPriceLabel.NoDocs.toFixed(2) : 0
+                    awbPriceLabel.Pickup = awbPriceLabel.Pickup ? awbPriceLabel.Pickup.toFixed(2)  : 0
+                    awbPriceLabel.Sed = awbPriceLabel.Sed ? awbPriceLabel.Sed.toFixed(2) : 0
+                    awbPriceLabel.ServiceVat = awbPriceLabel.ServiceVat ? awbPriceLabel.ServiceVat.toFixed(2) : 0 
+                    awbPriceLabel.Storage = awbPriceLabel.Storage ? awbPriceLabel.Storage.toFixed(2) : 0 
+                    
+                    awbPriceLabel.SumOfAllCharges = Number(awbPriceLabel.CustomsVAT) + Number(awbPriceLabel.ServiceVat) + Number(awbPriceLabel.Freight) + Number(awbPriceLabel.Duty)+ Number(awbPriceLabel.CustomsProc)+Number(awbPriceLabel.EnvLevy) +Number(awbPriceLabel.NoDocs) +
+                    Number(awbPriceLabel.Insurance) + Number(awbPriceLabel.Storage) + Number(awbPriceLabel.Brokerage) +Number(awbPriceLabel.Express) + Number(awbPriceLabel.Delivery) + Number(awbPriceLabel.Hazmat) + Number(awbPriceLabel.Pickup)  + Number(awbPriceLabel.Sed)
+         
+                    res['awbPriceLabel'] = awbPriceLabel.SumOfAllCharges ? awbPriceLabel.SumOfAllCharges.toFixed(2) : 0;
+                    res.weight = awbPriceLabel.TotalWeightValue
+                  }
+                  res['customer'] = res['customerId'];
+                  return res;
+                })).then(()=> resolve({awbs : result,total : totalAwbs}))
+              });
+      });
+  }
+
     getAwbPreviewDetails(id) {
         return new Promise((resolve, reject) => {
             Awb.findOne({ _id: id })
@@ -322,9 +414,7 @@ class AwbService {
       console.log("search",search)
       if(search){
         // searchData.$or = [
-        //   {$where: "/^"+search+".*/.Awb(this.awbId)" }
-        //   // {awbId:{'$regex' : search}},
-        //   // {'customer.name':{'$regex' : search, '$options' : 'i'}},
+        //   {awbId: search}
         // ]
       }
       searchData.invoices = { $eq: [] }

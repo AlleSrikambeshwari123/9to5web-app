@@ -20,7 +20,9 @@
         <div class="tab-content m-4" id="awb-list-tabContent">
           <div class="tab-pane fade show active" id="awb-list" role="tabpanel" aria-labelledby="awb-list-tab">
             <div class="table-responsive">
-              <table id='awb-table' class='display table table-striped table-hover dateRangeFilterTable dataTable'>
+                <input type="hidden" name="daterange" id="daterange" value="<%=daterange%>">
+                <input type="hidden" name="clear" id="clear" value="<%=clear%>">
+              <table id='awb-tables' class='display table table-striped table-hover dataTable awbTable'>
                 <thead>
                   <tr>
                     <th>PMB</th>
@@ -38,35 +40,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <% awbs.forEach(function(awb){
-                    if(awb.packages.length > 0){ %>
-                  <tr data-record="<%= awb._id %>">
-                    <td><%=(awb.customer && awb.customer.pmb)?awb.customer.pmb:'' %></td>
-                    <td><%=helpers.formatDate(awb.createdAt)%></td>
-                    <td><a href="manage/<%=awb._id%>/preview"><%=awb.awbId%></a></td>
-                    <td><%=helpers.getFullName(awb.customer)%></td>
-                    <td><%=(awb.shipper && awb.shipper.name) ? awb.shipper.name : '' %></td>
-                    <td><%=awb.driver ? awb.driver.firstName +' ' + awb.driver.lastName:''%></td>
-                    <td><%=(awb.carrier && awb.carrier.name) ? awb.carrier.name : '' %></td>
-                    <td><%=awb.packages ? awb.packages.length : 0 %></td>
-                    <td><%=awb.weight %> lbs</td>
-                    <td><%=awb.volumetricWeight.toFixed(2) %> vlbs</td>
-                    <!-- <td><% if(awb.invoice) { %>
-                      <a class="btn btn-link btn-primary btn-invoice" data-id="<%=awb.invoice%>" data-toggle="tooltip"
-                        data-original-title="Invoice Attached"> <i class="fa fa-paperclip"></i> </a>
-                      <% } %>
-                    </td> -->
-                    <td class="text-center">
-                      <a href='manage/<%=awb._id%>/get' class="btn btn-link btn-primary px-1" data-toggle="tooltip"
-                        data-original-title="Edit"> <i class="fa fa-pen"></i> </a>
-                      <!-- temporary commenting the code -->  
-                      <!-- <a class="btn btn-link btn-danger btn-rm-awb p-1" data-toggle="modal" data-id="<%=awb._id%>"
-                        data-target="#confirm-delete-awb"> <i class="fa fa-trash"></i> </a> -->
-                      <a class="btn btn-link btn-primary btn-print-awb p-1" data-toggle="modal" data-id="<%=awb._id%>"
-                        data-target="#print-popup"> <i class="fa fa-print"></i> </a>
-                    </td>
-                  </tr>
-                  <%}})%>
+            
                 </tbody>
               </table>
             </div>
