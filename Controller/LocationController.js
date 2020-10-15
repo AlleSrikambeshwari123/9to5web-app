@@ -1,6 +1,6 @@
 var services = require('../Services/RedisDataServices');
 var utils = require('../Util/utils');
-var helpers = require('../views/helpers')
+var helpers = require('../views/helpers');
 
 exports.create_location = (req, res, next) => {
   services.locationService.getCompanies().then(function (companies) {
@@ -32,14 +32,7 @@ exports.get_location_list = (req, res, next) => {
  // });
 }
 
-exports.get_all_locations = (req, res, next) =>{
-
-  if(!req.body.daterange && !req.body.clear){
-    var st = new Date();
-    var d = new Date();
-    d.setDate(d.getDate() -7);
-    req.body.daterange = st.getMonth()+'/'+st.getDate()+'/'+st.getFullYear()+ ' - ' + d.getMonth()+'/'+d.getDate()+'/'+d.getFullYear();
-  }
+exports.get_all_locations = (req, res, next) =>{  
   if(req.body.clear){
     req.body.daterange = '';
   }

@@ -7,6 +7,7 @@ router.get('/zones/list', middleware().checkSession, zoneCtrl.get_zone_list);
 router.get('/zones/create', middleware().checkSession, zoneCtrl.create_zones);
 router.post('/zones/create', middleware().checkSession, zoneCtrl.add_new_zone);
 router.get('/zones/manage/:id/get', middleware().checkSession, zoneCtrl.get_zone);
+router.post('/zones/all-zones', middleware().checkSession, zoneCtrl.get_all_zone);
 router.post('/zones/manage/:id/update', middleware().checkSession, zoneCtrl.update_zone);
 router.delete('/zones/manage/:id/delete', middleware().checkSession, zoneCtrl.delete_zone);
 

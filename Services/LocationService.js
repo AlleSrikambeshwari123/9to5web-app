@@ -75,27 +75,37 @@ class LocationService {
     
     return new Promise(async (resolve, reject) => {
       var start = req.body.start ? parseInt(req.body.start) : 0;
-      var length = req.body.length ? parseInt(req.body.length) : 10;
-      var sortColumn = req.body.order;  
-      console.log(sortColumn)
-      //var field = (sortColumn && sortColumn.length) ? parseInt(sortColumn[0].column) : 0; 
+      var length = req.body.length ? parseInt(req.body.length) : 10;      
       var field = req.body['order[0][column]'] ?parseInt(req.body['order[0][column]']) : 0;
       var columns = {0:'company', 1: 'createdAt', 2: 'name', 3:'address', 4: 'phone'} 
-     // var dir = (sortColumn && sortColumn.length) ? sortColumn[0].dir : 'asc'; 
+      
       var dir = req.body['order[0][dir]'] ? req.body['order[0][dir]'] : 0;
       var sort = (dir=='asc') ? 1 : -1;
       var sortField = columns[field];
       var search = req.body['search[value]'] ? req.body['search[value]'] : '';
-      //console.log(req.body['search[value]']);
+     
       var daterange = req.body.daterange?req.body.daterange:''
       var searchData = {};
+      //date range
+      var daterange = req.body.daterange?req.body.daterange:''
       if(daterange){
         var date_arr = daterange.split('-');
-        var startDate = (date_arr[0]).trim();
-        var stDate = startDate.split('/');
+        var startDate = (date_arr[0]).trim();      
+        var stdate = new Date(startDate);
+        stdate.setDate(stdate.getDate() +1);
+
         var endDate = (date_arr[1]).trim();
-        var enDate = endDate.split('/');
-        searchData.createdAt = {"$gte": new Date(stDate[2], stDate[0]-1, stDate[1]), "$lte": new Date(enDate[2], enDate[0]-1, enDate[1])};
+        var endate = new Date(endDate);
+        endate.setDate(endate.getDate() +1);     
+        searchData.createdAt = {"$gte":stdate, "$lte": endate};
+      }
+
+      if(!req.body.daterange && !req.body.clear){
+        var endate = new Date();      
+        endate.setDate(endate.getDate()+1);
+        var stdate = new Date();
+        stdate.setDate(stdate.getDate() -21);      
+        searchData.createdAt = {"$gte":stdate, "$lte": endate};
       }
       if(search){
         searchData.$or = [          
@@ -104,7 +114,7 @@ class LocationService {
           {phone:{'$regex' : search, '$options' : 'i'}}
         ]
       }
-      console.log(searchData)
+      
       var totallocations = await Location.count(searchData);
      
       Location.find(searchData)

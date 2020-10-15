@@ -71,13 +71,7 @@ exports.enable_user = (req, res, next) => {
   })
 }
 
-exports.allUsers = (req, res, next)=>{
-  if(!req.body.daterange && !req.body.clear){
-    var st = new Date();
-    var d = new Date();
-    d.setDate(d.getDate() -7);
-    req.body.daterange = st.getMonth()+'/'+st.getDate()+'/'+st.getFullYear()+ ' - ' + d.getMonth()+'/'+d.getDate()+'/'+d.getFullYear();
-  }
+exports.allUsers = (req, res, next)=>{  
   if(req.body.clear){
     req.body.daterange = '';
   }
