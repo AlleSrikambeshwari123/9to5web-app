@@ -56,7 +56,6 @@ exports.get_all_zone = (req, res, next) => {
     dataTable.data = data;
     res.json(dataTable);
   })
-
 }
 
 exports.get_zone = (req, res, next) => {

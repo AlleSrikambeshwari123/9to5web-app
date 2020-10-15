@@ -23,9 +23,9 @@ $('#confirm-delete-manifest').find('#btn-rm').click(function () {
   });
 })
 
-$('.manifest-table').DataTable({
-  pageLength: 10,
-})
+// $('.manifest-table').DataTable({
+//   pageLength: 10,
+// })
 
 $(function() {
   let manifestChangeStatusForm = $('#change-manifest-status-form');
@@ -108,4 +108,24 @@ $(function() {
         });
       }
     });
+})
+
+$(document).ready(function() { 
+  $('.manifest-table').DataTable( {
+    "processing": true,
+    "serverSide": true,    
+    "ajax": {
+      url: "/warehouse/nas/manifest/all-incoming",
+      type: "POST",
+      data :{ daterange:$('#daterange').val(), clear:$('#clear').val()}
+    },
+  })
+     
+    // Event listener to the two range filtering inputs to redraw on input
+    $(document).on('click', '.applyBtn', function() {
+        window.location = "/warehouse/nas/manifest/incoming?daterange="+$('.daterange').val();
+    });
+    $(document).on('click', '.cancelBtn', function() {
+      window.location = "/warehouse/nas/manifest/incoming?clear=1";
+    });  
 })

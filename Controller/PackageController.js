@@ -201,17 +201,23 @@ exports.get_nas_package_list = (req, res, next) => {
 };
 
 exports.get_nas_package_aging = (req, res, next) => {
-    services.packageService.getAllPackages_updated().then((packages) => {
+    //services.packageService.getAllPackages_updated().then((packages) => {
         console.log({packages});
         res.render('pages/warehouse/package/aging', {
             page: req.originalUrl,
             user: res.user,
             title: 'Packages Aging',
             filterURL: '',
-            packages: packages,
+            packages: []//packages,
         });
-    });
+    //});
 };
+
+exports.get_all_nas_package_aging = (req, res, next) =>{
+    services.packageService.get_all_nas_package_aging(req).then((packages) => {
+        
+    })
+}
 
 exports.get_package_no_docs = (req, res, next) => {
     services.packageService.getPackagesNoDocs().then((packages) => {

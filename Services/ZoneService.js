@@ -35,7 +35,7 @@ class ZoneService {
 
     var search = req.body['search[value]'] ? req.body['search[value]'] : ''; 
     var searchData = {};
-    
+
     //date range
     var daterange = req.body.daterange?req.body.daterange:''
     if(daterange){
@@ -65,7 +65,7 @@ class ZoneService {
         {phone:{'$regex' : search, '$options' : 'i'}}
       ]
     }
-    console.log(searchData)
+    
     var totalzones = await Location.countDocuments(searchData);
     return new Promise((resolve, reject) => {
       Zone.find(searchData)
