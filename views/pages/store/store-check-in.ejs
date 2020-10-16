@@ -88,7 +88,9 @@
 			</div>
 		</div>
             <div class="table-responsive">
-              <table id='albonyList-table' class='display table table-striped  storeCheckInTable table-hover dateRangeFilterTable dataTable'>
+				<input type="hidden" name="daterange" id="daterange" value="<%=daterange%>">
+                <input type="hidden" name="clear" id="clear" value="<%=clear%>">
+              <table id='albonyList-tables' class='display table table-striped  storeCheckInTable table-hover  dataTable'>
 				<thead>
 					<tr>
 						<th>Location</th>

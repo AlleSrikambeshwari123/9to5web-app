@@ -1330,6 +1330,140 @@ class PackageService {
         });
     }
 
+    getPackagesForStoresList(req, customerPmb){
+        var searchData = {
+            statuspackageLength : 0,
+            $or:customerPmb           
+        }
+        var start = req.body.start ? parseInt(req.body.start) : 0;
+        var length = req.body.length ? parseInt(req.body.length) : 10;      
+        var field = req.body['order[0][column]'] ?parseInt(req.body['order[0][column]']) : 0;
+        var columns = {0:'deliveryNum', 1: 'createdAt', 2: 'user.name', 3: 'location.name', 5: 'driver', 6: 'vehicle.vehicleMake' } 
+        
+        var dir = req.body['order[0][dir]'] ? req.body['order[0][dir]'] : 0;
+        var sort = (dir=='asc') ? 1 : -1;
+        var sortField = columns[field];
+
+        var search = req.body['search[value]'] ? req.body['search[value]'] : ''; 
+
+        //date range
+        var daterange = req.body.daterange?req.body.daterange:''
+        if(daterange){
+        var date_arr = daterange.split('-');
+        var startDate = (date_arr[0]).trim();      
+        var stdate = new Date(startDate);
+        stdate.setDate(stdate.getDate() +1);
+
+        var endDate = (date_arr[1]).trim();
+        var endate = new Date(endDate);
+        endate.setDate(endate.getDate() +1);     
+        searchData.createdAt = {"$gte":stdate, "$lte": endate};
+        }
+
+        if(!req.body.daterange && !req.body.clear){
+        var endate = new Date();      
+        endate.setDate(endate.getDate()+1);
+        var stdate = new Date();
+        stdate.setDate(stdate.getDate() -21);      
+        searchData.createdAt = {"$gte":stdate, "$lte": endate};
+        }
+        if(req.body.location && req.body.location!="All"){
+            searchData.location = req.body.location;
+        }
+
+        if(search){
+        searchData.$or = [          
+            {location:{'$regex' : search, '$options' : 'i'}},
+            {trackingNo:{'$regex' : search, '$options' : 'i'}},  
+            {"customer.pmb":{'$regex' : search, '$options' : 'i'}},
+            {"customer.firstName":{'$regex' : search, '$options' : 'i'}},
+            {"customer.lastName":{'$regex' : search, '$options' : 'i'}},
+            {"awb.awbId":{'$regex' : search, '$options' : 'i'}},  
+            {description:{'$regex' : search, '$options' : 'i'}},
+            {weight:{'$regex' : search, '$options' : 'i'}}  
+        ]
+        }
+        return new Promise(async (resolve, reject) => {
+            var piplineAggregate = [
+                {
+                    $lookup:{
+                        from:"customers",
+                        localField: 'customerId',
+                        foreignField: '_id',
+                        as:"customer"
+                    }
+                },
+                {$unwind:"$customer"},
+                {
+                    $lookup:{
+                        from:"awbs",
+                        localField: 'awbId',
+                        foreignField: '_id',
+                        as:"awb"
+                    }
+                },
+                 {$unwind:"$awb"},
+                {
+                    $lookup:{
+                        from:"packagestatuses",
+                        localField: '_id',
+                        foreignField: 'packageId',
+                        as:"statuspackage"
+                    }
+                },
+                {
+                    $addFields:{
+                        statuspackage: {
+                            $filter: {
+                                input: "$statuspackage",
+                                as: "item",
+                                cond: { $eq: [ "$$item.status", PKG_STATUS[5] ] }
+                             }
+                        }
+                    }
+                },
+                
+                {
+                    $addFields:{
+                        statuspackageLength:{
+                            $size:"$statuspackage"
+                        }
+                    }
+                },
+                {
+                    $match:searchData
+                }                
+            ];
+            
+            
+            var totalRecords = await Package.aggregate([
+                ...piplineAggregate,
+                ...[{$count: "total"}]
+            ]);
+           if(totalRecords && totalRecords.length && totalRecords[0].total){
+                Package.aggregate([
+                    ...piplineAggregate,
+                    ...[
+                        {$sort: {createdAt:1}},
+                        {$skip: start},
+                        {$limit: length},
+                    ]
+                ]).exec((err,result)=>{
+                    if(err){
+                        console.log(err)
+                        resolve({total:0, packages: []})
+                    }else{
+                        resolve({total:totalRecords[0].total, packages: result})
+                    }
+                })
+            }else{
+                resolve({total:0, packages: []})
+            }
+
+        })
+    }
+
+
     //========== load Packages in cargo =============//
 
     updateManifestPackageToLoadOnAirCraft(manifestId, userId) {
