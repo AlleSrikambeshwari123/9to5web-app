@@ -1,6 +1,7 @@
 var services = require('../Services/RedisDataServices');
 var printerCtrl = require('./PrinterController');
 var utils = require('../Util/utils');
+var helpers = require('../views/helpers');
 
 exports.get_package_list = (req, res, next) => {
     services.packageService.getAllPackagesWithLastStatus().then((packages) => {
@@ -202,7 +203,6 @@ exports.get_nas_package_list = (req, res, next) => {
 
 exports.get_nas_package_aging = (req, res, next) => {
     //services.packageService.getAllPackages_updated().then((packages) => {
-        console.log({packages});
         res.render('pages/warehouse/package/aging', {
             page: req.originalUrl,
             user: res.user,
@@ -214,8 +214,49 @@ exports.get_nas_package_aging = (req, res, next) => {
 };
 
 exports.get_all_nas_package_aging = (req, res, next) =>{
-    services.packageService.get_all_nas_package_aging(req).then((packages) => {
-        
+    var filterURL =  '';
+    services.packageService.get_all_nas_package_aging(req).then((packagesResult) => {
+        var dataTable = {
+            draw: req.query.draw,
+            recordsTotal: packagesResult.total,
+            recordsFiltered: packagesResult.total,
+            data:[]
+          }
+          var data = [];
+          var packages = packagesResult.packages?packagesResult.packages:[];
+          for(var i=0; i< packages.length; i++){
+            var packageDetail = [];
+            var name = '';
+            if(packages[i].customer  && packages[i].customer.firstName) {
+                name = packages[i].customer.firstName + (packages[i].customer.lastName ? packages[i].customer.lastName : '')
+            }
+            packageDetail.push(name);
+            packageDetail.push(helpers.formatDate(packages[i].createdAt))
+            packageDetail.push(packages[i].barcode ? packages[i].barcode.barcode : '');
+            packageDetail.push(packages[i].description);
+            packageDetail.push((packages[i].customer && packages[i].customer.pmb) ? packages[i].customer.pmb: '');
+            packageDetail.push(packages[i].packageType);
+            packageDetail.push(packages[i].aging);
+            packageDetail.push(packages[i].agingdollar);
+            packageDetail.push(packages[i].weight);
+            packageDetail.push((packages[i].pieces || packages[i].pieces > -1) ? packages[i].pieces : '');
+            packageDetail.push(packages[i].lastStatusText);
+            var awb = (packages[i].awb && packages[i].awb.awbId) ? packages[i].awb.awbId : '';
+            packageDetail.push(`<a href="../awb/manage/${packages[i].awb._id}/preview">${awb}</a>`)
+            packageDetail.push();
+            if (typeof filterURL !== 'undefined' && filterURL === 'not-pmb9000') {
+                packageDetail.push(packages[i].location);
+            }
+            if (typeof filterURL !== 'undefined' && filterURL === 'in-pmb9000') {
+                packageDetail.push(packages[i].awbdeliveryMethod);
+            }
+            var action = `<a href="../../pkg-label/download/${packages[i]._id}"><i class="fa fa-download"></i></a>
+            <a class="btn btn-link btn-primary btn-print-pkg" data-toggle="modal" data-id="${packages[i]._id}" data-original-title="Print Label" data-target="#print-popup"><i class="fa fa-print"></i> </a>`;
+            packageDetail.push(action);
+            data.push(packageDetail);
+          }
+          dataTable.data = data;
+          res.json(dataTable);
     })
 }
 

@@ -488,7 +488,20 @@ class PackageService {
         var start = req.body.start ? parseInt(req.body.start) : 0;
         var length = req.body.length ? parseInt(req.body.length) : 10;      
         var field = req.body['order[0][column]'] ?parseInt(req.body['order[0][column]']) : 0;
-        var columns = {0:'title', 1: 'createdAt', 2: 'plane.number'} 
+        var columns = {
+            0:'customer.firstName', 
+            1: 'createdAt', 
+            2: 'barcode.barcode',
+            3: 'description',
+            4: 'customer.pmb',
+            5: 'packageType',
+            6: 'aging',
+            7: 'agingdollar',
+            8: 'weight',
+            9: 'pieces',
+            10: 'lastStatusText',
+            11:'awb.awbId'
+        } 
         
         var dir = req.body['order[0][dir]'] ? req.body['order[0][dir]'] : 0;
         var sort = (dir=='asc') ? 1 : -1;
@@ -496,80 +509,97 @@ class PackageService {
 
         var search = req.body['search[value]'] ? req.body['search[value]'] : ''; 
         var searchData = {};
-
-        //date range
-        var daterange = req.body.daterange?req.body.daterange:''
-        if(daterange){
-        var date_arr = daterange.split('-');
-        var startDate = (date_arr[0]).trim();      
-        var stdate = new Date(startDate);
-        stdate.setDate(stdate.getDate() +1);
-
-        var endDate = (date_arr[1]).trim();
-        var endate = new Date(endDate);
-        endate.setDate(endate.getDate() +1);     
-        searchData.createdAt = {"$gte":stdate, "$lte": endate};
-        }
-
-        if(!req.body.daterange && !req.body.clear){
-        var endate = new Date();      
-        endate.setDate(endate.getDate()+1);
-        var stdate = new Date();
-        stdate.setDate(stdate.getDate() -21);      
-        searchData.createdAt = {"$gte":stdate, "$lte": endate};
-        }
-
         if(search){
             searchData.$or = [          
-                {title:{'$regex' : search, '$options' : 'i'}},
-                {"plane.number":{'$regex' : search, '$options' : 'i'}}        
+                {"customer.firstName":{'$regex' : search, '$options' : 'i'}},
+                {"barcode.barcode":{'$regex' : search, '$options' : 'i'}}, 
+                {"description":{'$regex' : search, '$options' : 'i'}},
+                {"customer.pmb":{'$regex' : search, '$options' : 'i'}}, 
+                {"packageType":{'$regex' : search, '$options' : 'i'}},
+                {"aging":{'$regex' : search, '$options' : 'i'}},
+                {"agingdollar":{'$regex' : search, '$options' : 'i'}},
+                {"weight":{'$regex' : search, '$options' : 'i'}},
+                {"lastStatusText":{'$regex' : search, '$options' : 'i'}},
+                {"awbNumber":{'$regex' : search, '$options' : 'i'}}  
             ]
         }
-       var totalRecords =  await Package.countDocuments({});
-        Package.aggregate([
-            {
-                $lookup:{
-                  from:"awbs",
-                  localField: 'awbId',
-                  foreignField: '_id',
-                  as:"awb"
-                }
-            },
-            {
-                $lookup:{
-                  from:"barcodes",
-                  localField: 'originBarcode',
-                  foreignField: '_id',
-                  as:"barcode"
-                }
-            },
-            {
-                $lookup:{
-                  from:"customers",
-                  localField: 'customerId',
-                  foreignField: '_id',
-                  as:"awb"
-                }
-            },
-            {
-                $lookup:{
-                  from:"zones",
-                  localField: 'zoneId',
-                  foreignField: '_id',
-                  as:"zone"
-                }
-            },
-            {
-              $sort : { [sortField] : sort}, 
-            },
-            {
-              $skip:start,
-            },
-            {
-              $limit:length,
-            }
-        ]).exec((err, result)=>{
+        return new Promise(async (resolve, reject) => {
             
+            var pipeAggregate = [                
+                {
+                    $lookup:{
+                    from:"awbs",
+                    localField: 'awbId',
+                    foreignField: '_id',
+                    as:"awb"
+                    }
+                },
+                {$unwind:"$awb"},
+                {
+                    $addFields:{
+                       awbNumber: { $convert: { input: "$awb.awbId", to: "string" } }
+                    }
+                },
+                {
+                    $lookup:{
+                    from:"barcodes",
+                    localField: 'originBarcode',
+                    foreignField: '_id',
+                    as:"barcode"
+                    }
+                },
+                {$unwind:"$barcode"},
+                {
+                    $lookup:{
+                    from:"customers",
+                    localField: 'customerId',
+                    foreignField: '_id',
+                    as:"customer"
+                    }
+                },
+                {$unwind:"$customer"},
+                {
+                    $lookup:{
+                    from:"zones",
+                    localField: 'zoneId',
+                    foreignField: '_id',
+                    as:"zone"
+                    }
+                }, 
+                {$unwind:"$zone"}, 
+                {
+                    $match:searchData
+                }
+            ]
+            var totalRecords =  await Package.aggregate(
+                [...pipeAggregate,
+                ...[ {$count:"total"}]]);
+            if(totalRecords && totalRecords.length && totalRecords[0].total ){
+                Package.aggregate([
+                    ...pipeAggregate,
+                    ...[           
+                        {
+                        $sort : { [sortField] : sort}, 
+                        },
+                        {
+                        $skip:start,
+                        },
+                        {
+                        $limit:length,
+                        }
+                    ]
+                ]).exec((err, result)=>{
+                    if(err){  
+                        console.log(err)                      
+                        resolve({total: 0, packages: 0}) 
+                    }else{
+                        console.log(result[0])
+                        resolve({total: totalRecords[0].total, packages: result}) 
+                    }
+                });
+            }else{
+                resolve({total: 0, packages: []}) 
+            }
         });
 
     }

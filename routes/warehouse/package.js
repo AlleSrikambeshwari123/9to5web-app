@@ -15,7 +15,7 @@ router.get('/fll/package/list', middleware().checkSession, packageCtrl.get_fll_p
 router.get('/fll/package/get/:awbId', middleware().checkSession, packageCtrl.get_awb_packages);
 router.get('/nas/package/list', middleware().checkSession, packageCtrl.get_nas_package_list);
 router.get('/nas/package/aging', middleware().checkSession, packageCtrl.get_nas_package_aging);
-router.get('/nas/package/all-aging', middleware().checkSession, packageCtrl.get_all_nas_package_aging);
+router.post('/nas/package/all-aging', middleware().checkSession, packageCtrl.get_all_nas_package_aging);
 router.get('/fll/package/no-docs', middleware().checkSession, packageCtrl.get_package_no_docs);
 
 module.exports = router;

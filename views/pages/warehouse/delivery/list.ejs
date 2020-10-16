@@ -11,7 +11,9 @@
                 </div>
                 <div class="card-body daterangepickerbody">
                     <div class="table-responsive">
-                    <table class="display table table-striped table-hover dateRangeFilterTable dataTable delivery-table">
+                        <input type="hidden" name="daterange" id="daterange" value="<%=daterange%>">
+                        <input type="hidden" name="clear" id="clear" value="<%=clear%>">
+                    <table class="display table table-striped table-hover  dataTable delivery-table">
                         <thead>
                             <tr>
                                 <th>Delivery #</th>

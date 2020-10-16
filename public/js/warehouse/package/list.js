@@ -1,7 +1,3 @@
-$('.package-table').DataTable({
-  pageLength: 10,
-})
-
 var pdfPath;
 $("#package-table").on("click",'.btn-print-pkg',function() {
   let id = $(this).data('id');
@@ -35,4 +31,16 @@ $("#package-table").on("click",'.btn-print-pkg',function() {
 $('.print-package').click(function () {
   $('.close-del').trigger('click');
   printJS(pdfPath);
+});
+
+$(document).ready(function() {  
+  $('.package-table').DataTable( {
+    "processing": true,
+    "serverSide": true,    
+    "ajax": {
+      url: "/warehouse/nas/package/all-aging",
+      type: "POST",
+      //data :{ daterange:$('#daterange').val(), clear:$('#clear').val()}
+    },
+  }) 
 })
