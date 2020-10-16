@@ -340,13 +340,19 @@ exports.get_awb_list = (req, res, next) => {
   })
 };
 
+checkCondition = (awb,status) =>{
+  if(status == 1)
+    return (awb.packages.length > 0)
+  else if(status == 2)
+    return (!awb.invoice)
+  else if(status == 3)
+    return (awb.packages.length === 0)
+  else if(status == 4)
+    return (awb.fll_pickup)
+}
+
 exports.get_all_awb = (req, res, next) => {
-  if(!req.body.daterange && !req.body.clear){
-    var st = new Date();
-    var d = new Date();
-    d.setDate(d.getDate() -21);
-    req.body.daterange = st.getMonth()+'/'+st.getDate()+'/'+st.getFullYear()+ ' - ' + d.getMonth()+'/'+d.getDate()+'/'+d.getFullYear();
-  }
+  let status = req.body.status
   if(req.body.clear)
     req.body.daterange =''
   services.awbService.getAllAwbsFull(req).then(results => {
@@ -357,11 +363,10 @@ exports.get_all_awb = (req, res, next) => {
       recordsFiltered: results.total,
       data:[]
     }
-    let data = [],total = 0;
+    let data = [];
     for(var i=0; i< awbs.length; i++){
-      if(awbs[i].packages.length > 0){
+      if(checkCondition(awbs[i],status)){
         var awbDetail = [];
-        total++;
         awbs[i].volumetricWeight = 0
         awbs[i].packages.forEach(package=>{
           let check = 1
@@ -413,25 +418,19 @@ exports.get_all_awb = (req, res, next) => {
 };
 
 exports.get_awb_no_docs = (req, res, next) => {
-  services.awbService.getAwbsNoDocs().then(awbs => {
+  // services.awbService.getAwbsNoDocs().then(awbs => {
     res.render('pages/warehouse/awb/no-docs', {
       page: req.originalUrl,
       title: "AirWay Bills - No Docs",
       user: res.user,
-      awbs: awbs,
+      awbs: [],//awbs
       daterange:req.query.daterange?req.query.daterange:'',
       clear:req.query.clear
     })
-  })
+  // })
 };
 
 exports.get_awb_no_docs_list = (req, res, next) => {
-  if(!req.body.daterange && !req.body.clear){
-    var st = new Date();
-    var d = new Date();
-    d.setDate(d.getDate() -21);
-    req.body.daterange = st.getMonth()+'/'+st.getDate()+'/'+st.getFullYear()+ ' - ' + d.getMonth()+'/'+d.getDate()+'/'+d.getFullYear();
-  }
   if(req.body.clear)
     req.body.daterange =''
   services.awbService.getAwbsNoDocsList(req).then(results => {

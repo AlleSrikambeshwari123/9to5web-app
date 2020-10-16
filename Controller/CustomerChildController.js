@@ -5,28 +5,22 @@ const aws = require('../Util/aws');
 var helpers = require('../views/helpers')
 
 exports.get_customer_list = (req, res, next) => {
-  Promise.all([
-    services.customerChildService.getCustomers()
-  ]).then(results => {
-    const customers = results[0];
+  // Promise.all([
+  //   services.customerChildService.getCustomers()
+  // ]).then(results => {
+    // const customers = results[0];
     res.render('pages/admin/customerchild/list', {
       page: req.originalUrl,
       title: "Consignee",
       user: res.user,
-      customers: customers.map(utils.formattedRecord),
+      customers: [],//customers.map(utils.formattedRecord)
       daterange:req.query.daterange?req.query.daterange:'',
       clear:req.query.clear
     })
-  })
+  // })
 }
 
 exports.get_customers = (req,res,next)=>{
-  if(!req.body.daterange && !req.body.clear){
-    var st = new Date();
-    var d = new Date();
-    d.setDate(d.getDate() -21);
-    req.body.daterange = st.getMonth()+'/'+st.getDate()+'/'+st.getFullYear()+ ' - ' + d.getMonth()+'/'+d.getDate()+'/'+d.getFullYear();
-  }
   if(req.body.clear)
     req.body.daterange =''
   services.customerChildService.getAllCustomers(req).then(async(results) => {

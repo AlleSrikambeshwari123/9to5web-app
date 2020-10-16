@@ -51,18 +51,18 @@ exports.get_customer_package_list = (req, res, next) => {
 exports.get_customer_list = (req, res, next) => {
   Promise.all([
     services.locationService.getLocations(),
-    services.customerService.getCustomers(),
+    // services.customerService.getCustomers(),
     services.locationService.getCompanies()
   ]).then(results => {
     const locations = results[0];
-    const customers = results[1];
+    // const customers = results[1];
     const companies = results[2];
 
     res.render('pages/admin/customers/list', {
       page: req.originalUrl,
       title: "Consignee",
       user: res.user,
-      customers: customers.map(utils.formattedRecord),
+      customers:[],// customers.map(utils.formattedRecord)
       locations: locations,
       companies: companies,
       daterange:req.query.daterange?req.query.daterange:'',
@@ -71,12 +71,6 @@ exports.get_customer_list = (req, res, next) => {
   })
 }
 exports.get_customers = (req,res,next)=>{
-  if(!req.body.daterange && !req.body.clear){
-    var st = new Date();
-    var d = new Date();
-    d.setDate(d.getDate() -21);
-    req.body.daterange = st.getMonth()+'/'+st.getDate()+'/'+st.getFullYear()+ ' - ' + d.getMonth()+'/'+d.getDate()+'/'+d.getFullYear();
-  }
   if(req.body.clear)
     req.body.daterange =''
   services.customerService.getAllCustomers(req).then(async(results) => {

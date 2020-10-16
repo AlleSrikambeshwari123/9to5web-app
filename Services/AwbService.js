@@ -241,7 +241,15 @@ class AwbService {
           {'carrier.name':{'$regex' : search , '$options' : 'i'}  }
         ]
       }
-      searchData.packages =  { $gt: [] }
+      if(req.body.status == 1)
+        searchData.packages =  { $gt: [] }
+      else if(req.body.status == 2)
+        searchData.invoices =  []
+      else if(req.body.status == 3)
+        searchData.packages =  []
+      else if(req.body.status == 4)
+        searchData.fll_pickup =  true
+      
       var totalAwbs = await Awb.count(searchData);
       return new Promise((resolve, reject) => {
           Awb.find(searchData)

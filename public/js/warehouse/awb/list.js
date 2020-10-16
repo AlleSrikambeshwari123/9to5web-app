@@ -59,12 +59,12 @@ var awbTable = $('#awb-table').DataTable({
 var nodocsTable = $('#no-docs-table').DataTable({
   pageLength: 10,
 })
-var pendingtable = $('#pending-awb-table').DataTable({
-  pageLength: 10,
-})
-var pickuptable = $('#pickup-awb-table').DataTable({
-  pageLength: 10,
-})
+// var pendingtable = $('#pending-awb-table').DataTable({
+//   pageLength: 10,
+// })
+// var pickuptable = $('#pickup-awb-table').DataTable({
+//   pageLength: 10,
+// })
 
 $(document).ready(function() {
   let flagStatus = ''
@@ -72,7 +72,9 @@ $(document).ready(function() {
     $('#daterange').val('')
     $('#clear').val('1')
   }
-  $('.daterange').val($('#daterange').val())
+  setTimeout(()=>{
+    $('.daterange').val($('#daterange').val())
+  },1000)
   $('.noDocsTable').DataTable( {
     "processing": true,
     "serverSide": true,    
@@ -96,8 +98,35 @@ $(document).ready(function() {
     "ajax": {
       url: "/warehouse/fll/awb/allAbws",
       type: "POST",
-      data :{ daterange:$('#daterange').val(), clear:$('#clear').val()},
-      
+      data :{ daterange:$('#daterange').val(), clear:$('#clear').val(),status : 1},
+    }
+  })
+
+  $('.awb-no-docs-table').DataTable( {
+    "processing": true,
+    "serverSide": true,    
+    "ajax": {
+      url: "/warehouse/fll/awb/allAbws",
+      type: "POST",
+      data :{ daterange:$('#daterange').val(), clear:$('#clear').val(),status : 2},
+    }
+  })
+  $('.pending-awb-table').DataTable( {
+    "processing": true,
+    "serverSide": true,    
+    "ajax": {
+      url: "/warehouse/fll/awb/allAbws",
+      type: "POST",
+      data :{ daterange:$('#daterange').val(), clear:$('#clear').val(),status : 3},
+    }
+  })
+  $('.pickup-awb-table').DataTable( {
+    "processing": true,
+    "serverSide": true,    
+    "ajax": {
+      url: "/warehouse/fll/awb/allAbws",
+      type: "POST",
+      data :{ daterange:$('#daterange').val(), clear:$('#clear').val(),status : 4},
     }
   })
   $(document).on('click', '.applyBtn', function() {
