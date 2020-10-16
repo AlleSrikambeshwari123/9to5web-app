@@ -543,9 +543,10 @@ class AwbService {
           awb.totalPrice = priceLabel.SumOfAllCharges
       if(!queryStatus || queryStatus == "All")
           awbResponse.push(awb)
-      else if(String(statusObject.id) == String(queryStatus)){
+      else if(String(statusObject.id) == String(queryStatus))
         awbResponse.push(awb)
-      }
+      else if(awb.totalPrice != "Not Priced" && queryStatus == 11)
+        awbResponse.push(awb)
     }
     return awbResponse
   }
