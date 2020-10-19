@@ -27,7 +27,7 @@ $(function () {
   });
 
   $(document).ready(function() {
-    if($('#clear').val() || localStorage.dateRangePickerStartDate == "" || localStorage.dateRangePickerEndDate == "" ){
+    if($('#clear').val()){
       $('#daterange').val('')
       $('#clear').val('1')
     }

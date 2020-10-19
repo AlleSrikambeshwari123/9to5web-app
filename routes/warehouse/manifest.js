@@ -5,6 +5,7 @@ var middleware = require('../../middleware');
 var manifestCtrl = require('../../Controller/ManifestController');
 
 router.get('/fll/manifest/list', middleware().checkSession, manifestCtrl.get_manifest_list);
+router.post('/fll/manifest/listall', middleware().checkSession, manifestCtrl.get_all_manifests);
 router.get('/fll/manifest/create', middleware().checkSession, manifestCtrl.create_manifest)
 router.get('/nas/manifest/create', middleware().checkSession, manifestCtrl.create_manifest)
 router.post('/nas/manifest/create', middleware().checkSession, manifestCtrl.add_new_manifest);

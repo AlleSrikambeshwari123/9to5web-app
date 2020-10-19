@@ -23,9 +23,9 @@ $('#confirm-delete-manifest').find('#btn-rm').click(function () {
   });
 })
 
-$('.manifest-table').DataTable({
-  pageLength: 10,
-})
+// $('.manifest-table').DataTable({
+//   pageLength: 10,
+// })
 
 $(function() {
   let manifestChangeStatusForm = $('#change-manifest-status-form');
@@ -109,3 +109,33 @@ $(function() {
       }
     });
 })
+
+$(document).ready(function() {
+  if($('#clear').val()){
+    $('#daterange').val('')
+    $('#clear').val('1')
+  }
+  $('.daterange').val($('#daterange').val())
+  $('.manifest-table').DataTable( {
+    "processing": true,
+    "serverSide": true,    
+    "ajax": {
+      url: "/warehouse/fll/manifest/listall",
+      type: "POST",
+      data :{ daterange:$('#daterange').val(), clear:$('#clear').val()}
+    }
+  })
+  // var table = $('.customer-table').DataTable();
+  $(document).on('click', '.applyBtn', function() {
+    window.location = "/warehouse/fll/manifest/list?daterange="+$('.daterange').val();
+  });	    
+  
+  $(document).on('click', '.cancelBtn', function() {
+    window.location = "/warehouse/fll/manifest/list?clear=1";
+  });  
+});
+
+function setManifestId(str){
+  var id = $(str).data('id');
+  $('#ManifestIdStatus').val(id)
+}

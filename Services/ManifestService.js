@@ -154,6 +154,7 @@ class ManifestService {
       .populate('airportToId')
       .populate('planeId')
       .exec((err, result) => {
+        console.log("get ma",result,err)
         if(err){
           resolve({});
         }else{
@@ -195,6 +196,111 @@ class ManifestService {
           resolve(manifests);
         }
       });
+    })
+  }
+
+  getAllManifests(req){
+    var start = req.body.start ? parseInt(req.body.start) : 0;
+    var length = req.body.length ? parseInt(req.body.length) : 10;
+    var field = req.body['order[0][column]'] ?parseInt(req.body['order[0][column]']) : 0;
+    var columns = {0:'createdAt', 1: 'createdAt', 2: 'customer.pmb', 3:'awbId', 4: 'customer.firstName', 5: 'shipper.name',6:'carrier.name',7:'packages.length',8:'weight'} 
+    var dir = req.body['order[0][dir]'] ? req.body['order[0][dir]'] : 0;
+    var sort = (dir=='asc') ? 1 : -1;
+    var sortField = columns[field];
+    var search = req.body['search[value]'] ? req.body['search[value]'] : '';
+    var daterange = req.body.daterange?req.body.daterange:''
+
+    var searchData = {};
+
+    if(daterange){
+      var date_arr = daterange.split('-');
+      var startDate = (date_arr[0]).trim();      
+      var stdate = new Date(startDate);
+      stdate.setDate(stdate.getDate() +1);
+
+      var endDate = (date_arr[1]).trim();
+      var endate = new Date(endDate);
+      endate.setDate(endate.getDate() +1);     
+      searchData.createdAt = {"$gte":stdate, "$lte": endate};
+    }
+    if(!req.body.daterange && !req.body.clear){
+      var endate = new Date();      
+      endate.setDate(endate.getDate()+1);
+      var stdate = new Date();
+      stdate.setDate(stdate.getDate() -21);      
+      searchData.createdAt = {"$gte":stdate, "$lte": endate};
+    }
+    if(search){
+      searchData.$or = [
+      {"plane.title":{'$regex' : search, '$options' : 'i'}},        
+      {"stage":{'$regex' : search, '$options' : 'i'}},        
+      {"plane.tailNumber":{'$regex' : search, '$options' : 'i'}},
+      ]
+    }
+
+    return new Promise(async(resolve, reject) => {
+      let planeArray = []
+      var piplineAggregate = [
+        {
+            $lookup:{
+                from:"planes",
+                localField: 'planeId',
+                foreignField: '_id',
+                as:"plane"
+            }
+        },
+         {$unwind:"$plane"},
+        {
+            $match:searchData
+        }                
+    ];
+
+    var totalRecords = await Manifest.aggregate([
+      ...piplineAggregate,
+      ...[{$count: "total"}]
+    ]);
+    if(totalRecords && totalRecords.length && totalRecords[0].total){
+      Manifest.aggregate([
+        ...piplineAggregate,
+        ...[
+          {$sort: {createdAt:1}},
+          {$skip: start},
+          {$limit: length},
+        ]
+      ]).exec((err,result)=>{
+        if(err){
+            console.log(err)
+            resolve({total:0, packages: []})
+        }else{
+          result.map(cp=>{
+            let totalPkgWeight = 0
+            // if(cp.packages)
+            //   cp.packages.map(w => totalPkgWeight+= w.weight)
+            if(totalPkgWeight == NaN || !totalPkgWeight)
+               totalPkgWeight =0
+            let planeActualCapacity = cp.plane.maximumCapacity
+            let flag = 0;
+            planeArray.forEach(data=>{
+              if(data.id == cp.plane._id){
+                data.availCapacity = data.availCapacity - totalPkgWeight
+                planeActualCapacity = data.availCapacity 
+                flag = 1
+              }
+            })
+            if(flag == 0){
+              planeActualCapacity = cp.plane.maximumCapacity -totalPkgWeight
+              planeArray.push({id :cp.plane._id,availCapacity : planeActualCapacity})
+            }
+            // cp._doc['available_weight'] = (planeActualCapacity).toFixed(2)
+          })
+            resolve({total:totalRecords[0].total, manifests: result})
+        }
+      })
+    }else{
+      resolve({total:0, manifests: []})
+    }
+    
+   
     })
   }
 
