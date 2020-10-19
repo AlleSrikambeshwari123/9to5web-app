@@ -203,7 +203,7 @@ class ManifestService {
     var start = req.body.start ? parseInt(req.body.start) : 0;
     var length = req.body.length ? parseInt(req.body.length) : 10;
     var field = req.body['order[0][column]'] ?parseInt(req.body['order[0][column]']) : 0;
-    var columns = {0:'createdAt', 1: 'createdAt', 2: 'customer.pmb', 3:'awbId', 4: 'customer.firstName', 5: 'shipper.name',6:'carrier.name',7:'packages.length',8:'weight'} 
+    var columns = {0:'plane.tailNumber', 1: 'createdAt', 2: 'stage', 3:'plane.title'} 
     var dir = req.body['order[0][dir]'] ? req.body['order[0][dir]'] : 0;
     var sort = (dir=='asc') ? 1 : -1;
     var sortField = columns[field];
