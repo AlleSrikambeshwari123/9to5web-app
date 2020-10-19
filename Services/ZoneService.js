@@ -66,7 +66,7 @@ class ZoneService {
       ]
     }
     
-    var totalzones = await Location.countDocuments(searchData);
+    var totalzones = await Zone.countDocuments(searchData);
     return new Promise((resolve, reject) => {
       Zone.find(searchData)
       .populate('location')

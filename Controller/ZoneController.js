@@ -9,6 +9,8 @@ exports.create_zones = (req, res, next) => {
       title: 'Create New Zones',
       locations: locations,
       user: res.user,
+      daterange:req.query.daterange?req.query.daterange:'',
+      clear:req.query.clear
     });
   });
 }

@@ -1,5 +1,6 @@
 var services = require('../Services/RedisDataServices');
 var utils = require('../Util/utils');
+var helpers = require('../views/helpers');
 
 exports.get_pilot_list = (req, res, next) => {
   services.pilotService.getPilots().then(pilots => {
@@ -7,8 +8,38 @@ exports.get_pilot_list = (req, res, next) => {
       page: req.originalUrl,
       user: res.user,
       title: 'Pilots',
-      pilots: pilots.map(utils.formattedRecord),
+      pilots: [],//pilots.map(utils.formattedRecord),
+      daterange:req.query.daterange?req.query.daterange:'',
+      clear:req.query.clear
     })
+  })
+}
+
+exports.get_all_pilot_list = (req, res, next) => {
+  services.pilotService.getAllPilots(req).then(pilotsResult => {
+    var dataTable = {
+      draw: req.query.draw,
+      recordsTotal: pilotsResult.total,
+      recordsFiltered: pilotsResult.total,
+      data:[]
+    }
+    var data = [];
+    var pilots = pilotsResult.pilots?pilotsResult.pilots:[];
+    for(var i=0; i< pilots.length; i++){
+      var pilotDetail = [];
+      var fname = (pilots[i].firstName) ? pilots[i].firstName: '';
+      var lname = (pilots[i].lastName) ? pilots[i].lastName: '';
+      pilotDetail.push(fname + ' ' +lname);
+      pilotDetail.push(helpers.formatDate(pilots[i].createdAt));
+      pilotDetail.push(pilots[i].company ? pilots[i].company : '');
+      pilotDetail.push(pilots[i].mobile ? pilots[i].mobile : '');
+      pilotDetail.push(pilots[i].email ? pilots[i].email : '');
+      pilotDetail.push(`<a href='manage/${pilots[i]._id}/get'><i class="fas fa-user-edit"></i></a>`)
+
+      data.push(pilotDetail);
+    }
+    dataTable.data = data;
+    res.json(dataTable);
   })
 }
 

@@ -9,8 +9,10 @@
         <a href="create" class="btn btn-primary btn-round float-right ml-md-auto">Add Airport</a>
       </div>
       <div class="card-body daterangepickerbody">
+        <input type="hidden" name="daterange" id="daterange" value="<%=daterange%>">
+        <input type="hidden" name="clear" id="clear" value="<%=clear%>">
         <div class="table-responsive">
-          <table id="airportTable" class="display table table-striped dateRangeFilterTable dataTable table-hover">
+          <table id="airportTable" class="display table table-striped dataTable table-hover">
             <thead>
               <tr>
                 <th>Name</th>

@@ -4,6 +4,7 @@ var middleware = require('../../middleware');
 var planeCtrl = require('../../Controller/PlaneController');
 
 router.get('/plane/list', middleware().checkSession, planeCtrl.get_plane_list);
+router.post('/plane/all-list', middleware().checkSession, planeCtrl.get_all_plane_list);
 router.get('/plane/create', middleware().checkSession, planeCtrl.create_plane);
 router.post('/plane/create', middleware().checkSession, planeCtrl.add_new_plane);
 router.get('/plane/manage/:id/get', middleware().checkSession, planeCtrl.get_plane_detail);

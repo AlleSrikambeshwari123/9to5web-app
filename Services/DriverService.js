@@ -62,7 +62,6 @@ class DriverService {
         {location:{'$regex' : search, '$options' : 'i'}}
       ]
     }
-    console.log(searchData)
     return new Promise(async(resolve, reject) => {
 
       var totalRecords = await Driver.countDocuments(searchData);

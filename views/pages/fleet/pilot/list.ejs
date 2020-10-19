@@ -7,8 +7,10 @@
         <a href='create' class='btn btn-primary btn-round ml-md-auto float-right'>Add Pilot</a>
       </div>
       <div class="card-body daterangepickerbody">
+        <input type="hidden" name="daterange" id="daterange" value="<%=daterange%>">
+        <input type="hidden" name="clear" id="clear" value="<%=clear%>">
         <div class="table-responsive">
-        <table class="display table table-striped table-hover dateRangeFilterTable dataTable pilot-table">
+        <table class="display table table-striped table-hover dataTable pilot-table">
           <thead>
             <tr>
               <th>Name</th>

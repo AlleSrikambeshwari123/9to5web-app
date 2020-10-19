@@ -71,6 +71,106 @@ class PlaneService {
       resolve(planes)
     })
   }
+  getAllPlanes(req){
+
+    var start = req.body.start ? parseInt(req.body.start) : 0;
+    var length = req.body.length ? parseInt(req.body.length) : 10;      
+    var field = req.body['order[0][column]'] ?parseInt(req.body['order[0][column]']) : 0;
+    var columns = {0:'tailNumber', 1: 'createdAt', 2: 'flightName', 3: 'pilot.firstName', 3: 'airline.name', 4: 'aircraftType', 5:'maximumCapacity'} 
+    
+    var dir = req.body['order[0][dir]'] ? req.body['order[0][dir]'] : 0;
+    var sort = (dir=='asc') ? 1 : -1;
+    var sortField = columns[field];
+
+    var search = req.body['search[value]'] ? req.body['search[value]'] : ''; 
+    var searchData = {};
+
+    //date range
+    var daterange = req.body.daterange?req.body.daterange:''
+    if(daterange){
+      var date_arr = daterange.split('-');
+      var startDate = (date_arr[0]).trim();      
+      var stdate = new Date(startDate);
+      stdate.setDate(stdate.getDate() +1);
+
+      var endDate = (date_arr[1]).trim();
+      var endate = new Date(endDate);
+      endate.setDate(endate.getDate() +1);     
+      searchData.createdAt = {"$gte":stdate, "$lte": endate};
+    }
+
+    if(!req.body.daterange && !req.body.clear){
+      var endate = new Date();      
+      endate.setDate(endate.getDate()+1);
+      var stdate = new Date();
+      stdate.setDate(stdate.getDate() -21);      
+      searchData.createdAt = {"$gte":stdate, "$lte": endate};
+    }
+
+    if(search){
+      searchData.$or = [          
+        {tailNumber: {'$regex' : search, '$options' : 'i'}},
+        {flightName: {'$regex' : search, '$options' : 'i'}},
+        {"pilot.firstName": {'$regex' : search, '$options' : 'i'}},
+        {"airline.name": {'$regex' : search, '$options' : 'i'}},
+        {aircraftType: {'$regex' : search, '$options' : 'i'}},
+        {maximumCapacity: {'$regex' : search, '$options' : 'i'}}
+      ]
+    }
+    var pipeLineAggregate = [
+      {
+        $lookup:{
+          from: "airlines",
+          localField: "airlineId",
+          foreignField: "_id",
+          as: "airline"
+        }
+      },
+      {
+        $unwind: "$airline"
+      },
+      {
+        $lookup:{
+          from: "pilots",
+          localField: "pilotId",
+          foreignField: "_id",
+          as: "pilot"
+        }
+      },
+      {
+        $unwind: "$pilot"
+      },
+      {
+        $match: searchData
+      }
+    ]
+    return new Promise(async(resolve, reject) => {
+      var totalRecords = await Plane.aggregate([
+        ...pipeLineAggregate,
+        ...[
+          {"$count":"total"}
+        ]
+      ]);
+      if(totalRecords && totalRecords.length && totalRecords[0].total){
+        Plane.aggregate([
+          ...pipeLineAggregate,
+          ...[
+            {$sort: {[sortField]:sort}},
+            {$skip: start},
+            {$limit: length},
+          ]
+        ]).exec((err, result) => {
+          if(err){
+            resolve({total: 0, planes:[]});
+          }else{
+            resolve({ total: totalRecords[0].total, planes: result});
+          }
+        })    
+      }else{
+        resolve({total: 0, planes:[]});
+      }      
+    })
+  }
   getFullPlane(planeId) {
     return new Promise((resolve, reject) => {
       Promise.all([
