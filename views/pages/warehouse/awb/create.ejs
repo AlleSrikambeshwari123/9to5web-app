@@ -5,7 +5,13 @@
     <div class='col-xl-12 col-lg-6 col-md-12 col-sm-12'>
       <div class='card'>
         <div class="card-header">
-          <h4 class="card-title">Create New AirWay Bill</h4>
+          <h3>Create New AirWay Bill
+            <div class="pull-right">
+              <a href="#" data-toggle="modal" data-target="#add-additional-invoices-modal" class="btn btn-info btn-round  ml-auto mr-5" >
+                Add Additional Invoices
+              </a>
+            </div>
+          </h3>
         </div>
         <div class="card-body">
           <h3 class="card-title text-muted">Bill Content</h3>
@@ -170,6 +176,11 @@
                     </button> -->
                   </div>
                 </div>
+                <div class="col-sm-12">
+                <div id="additionalInvoices-list">
+                  
+                </div>
+                </div>  
               </div>
             </div>
           </div>
@@ -680,6 +691,36 @@
   </div>
 </div>
 
+<div  class="modal fade" id='add-additional-invoices-modal' tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog" role="document" >
+      <div class="modal-content">
+        <form name="add-additional-invoices-form">
+          <div class="modal-header">
+            <h2 class="modal-title">Add Additional Invoices</h2>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">×</span>
+            </button>
+          </div>
+          <div class="modal-body row">
+            <div class="col-md-12">
+              <div class='form-group'>
+                  <label for="Invoices">Invoices</label>
+                  <select name="additionalInvoices" class="form-control" required>
+                    <% additionalInvoices.forEach(invoice => {%>
+                      <option  value="<%= invoice._id %>" data-name="<%=invoice.fileName%>" data-path="<%=invoice.filePath%>" data-courier="<%=invoice.courierNo%>" data-pmb="<%=invoice.pmb%>"><%=invoice.fileName %> - <%=invoice.courierNo%></option>
+                    <% }) %>
+                  </select>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">Add</button>
+            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+          </div>
+        </form>
+      </div>
+    </div>
+</div>
 <div class="modal fade" id="add-purchase-order-item-modal" role="dialog" aria-hidden="true" style="display: none;">
   <div class="modal-dialog" role="document" style="max-width: 800px !important;">
     <div class="modal-content">

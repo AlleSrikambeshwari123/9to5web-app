@@ -495,7 +495,7 @@ class AwbService {
         });
       } 
 
-  async storeInvoceFile(data){
+  async storeInvoiceFile(data){
     return new Promise((resolve, reject) => { 
       const invoiceData = {
         awbId:data.awbId,

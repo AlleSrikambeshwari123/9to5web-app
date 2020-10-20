@@ -71,7 +71,7 @@ router.post('/store-invoice',passport.authenticate('jwt', { session: false }), u
             let awbData
             if(req.body.awbId){
                 invoiceObject.awbId = req.body.awbId 
-                awbData = await services.awbService.storeInvoceFile(invoiceObject);
+                awbData = await services.awbService.storeInvoiceFile(invoiceObject);
             }else{
                 awbData = await services.awbService.storeAdditionalInvoceFile(invoiceObject);
             }

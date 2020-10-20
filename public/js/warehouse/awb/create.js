@@ -49,6 +49,7 @@ $("select.awb-deliveryMethod").change(function(){
 });
 
 AWBInvoices.addInvoceRow();
+var AWBAdditionalInvoices = [],invoiceIdArray = []
 $(function () { 
   $(".copy-package-button").click(function(){    
     $(".copy-package-text").show();
@@ -238,6 +239,12 @@ $(function () {
     minimumResultsForSearch: -1
   })
 
+  $('form[name="add-additional-invoices-form"] select').select2({
+    theme: 'bootstrap',
+    width: '100%',
+    minimumResultsForSearch: -1
+  })
+
   $('form[name="add-purchase-order-item-form"]').submit(function (event) {
     event.preventDefault();
     let item = extractFormData(this);
@@ -253,7 +260,61 @@ $(function () {
       .data('amount');
 
     AWBPO.addItem(item);
-    
+    $(this).closest('.modal').modal('hide');
+  });
+
+  $('form[name="add-additional-invoices-form"]').submit(function (event) {
+    event.preventDefault();
+    let item = extractFormData(this), flag=0;
+    item.fileName = $(this)
+      .find('[name="additionalInvoices"] option:selected')
+      .data('name');
+    item.filePath = $(this)
+      .find('[name="additionalInvoices"] option:selected')
+      .data('path');
+    item.pmb = $(this)
+      .find('[name="additionalInvoices"] option:selected')
+      .data('pmb');
+    item.courierNo = $(this)
+      .find('[name="additionalInvoices"] option:selected')
+      .data('courier');
+
+    item._id = item.additionalInvoices
+    item.additionalInvoices = item.additionalInvoices + Math.floor(Math.random()*(999-100+1)+100);
+
+    for(let id of invoiceIdArray){
+      if(String(id) == String(item._id)){
+        flag = 1
+        break
+      }
+    }
+    if(flag == 0){
+      $('#additionalInvoices-list').append(`  <div class="card" data-record="${item.additionalInvoices}">
+      <div class="card-header">
+        Additional Invoice
+        <button type="button"  class="close" data-id="${item.additionalInvoices}" onclick="removeInvoice(this)">
+              <span aria-hidden="true" class="float-right">×</span>
+        </button>
+      </div>
+      <div class="card-body">
+        <div>
+          <b>Courier No</b> : <span class="float-right">${item.courierNo}</span>
+        </div>
+        <div>
+          <b>File Name</b> : <span class="float-right">${item.fileName}</span>
+        </div>
+        <div>
+          <b>File Path</b> : <span class="float-right">>${item.filePath}</span>
+        </div>
+        <div>
+          <b>PMB</b> : <span class="float-right">${item.pmb}</span>
+        </div>
+      </div>
+      </div>
+    `)
+      AWBAdditionalInvoices.push(item);
+      invoiceIdArray.push(item._id)
+    }
     $(this).closest('.modal').modal('hide');
   });
   
@@ -314,6 +375,7 @@ $(function () {
     awbInfo.packages = JSON.stringify(awbPackages);
     awbInfo.invoices = [];
     awbInfo.purchaseOrder = AWBPO.getItems();
+    awbInfo.additionalInvoices = AWBAdditionalInvoices
     awbInfo.purchaseOrder = JSON.stringify(awbInfo.purchaseOrder);
     if(awbInfo.fll_pickup == "on") awbInfo.fll_pickup = true;
     else awbInfo.fll_pickup = false
@@ -735,3 +797,14 @@ $(function () {
     });
   }
 });
+
+function removeInvoice(str){
+  var id = $(str).data('id');
+  for(var i=0;i<AWBAdditionalInvoices.length;i++){
+    if(id == AWBAdditionalInvoices[i].additionalInvoices){
+      AWBAdditionalInvoices.splice(i,1)
+      $('div[data-record="' + id + '"]').remove()
+      break
+    }
+  }
+}
