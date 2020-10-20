@@ -1,21 +1,43 @@
 
-let packageTable = $('.package-table').DataTable({
-  pageLength: 10,
-  columnDefs: [
-    {
-      orderable: false,
-      targets: 0,
+// let packageTable = $('.package-table').DataTable({
+//   pageLength: 10,
+//   columnDefs: [
+//     {
+//       orderable: false,
+//       targets: 0,
+//     },
+//   ],
+//   select: {
+//     style: 'multi',
+//     selector: 'td:first-child input[type="checkbox"]',
+//   }
+// });
+$(document).ready(function() { 
+  var packageTable = $('.package-table').DataTable( {
+    "processing": true,
+    "serverSide": true,    
+    "ajax": {
+      url: "/warehouse/package/all-list",
+      type: "POST",
+      data :{ daterange: $('#daterange').val(), 
+      clear:$('#clear').val()}
     },
-  ],
-  select: {
-    style: 'multi',
-    selector: 'td:first-child input[type="checkbox"]',
-  }
-});
+  })
+     
+    // Event listener to the two range filtering inputs to redraw on input
+    $(document).on('click', '.applyBtn', function() {
+        window.location = "/warehouse/package/list?daterange="+$('.daterange').val();
+    });
+    $(document).on('click', '.cancelBtn', function() {
+      window.location = "/warehouse/package/list?clear=1";
+    });
+})
 
-$('#package-table').on('draw.dt', function() {
-  unSelectAll();
-});
+
+
+// $('#package-table').on('draw.dt', function() {
+//   unSelectAll();
+// });
 
 function unSelectAll() {
   packageTable.rows().deselect();
@@ -261,19 +283,19 @@ function pricelabelcommon(ServiceVat, NoDocsVal, InsuranceVal, SedVal, ExpressVa
   });
 }
 
-packageTable.on("click", "input.package-select-all", function() {
-  if($("input.package-select-all").hasClass("selected")) {
-    packageTable.rows().deselect();
-    return unSelectAll()
-  }
-  var tableRows = packageTable.rows({ page: 'current' }).nodes();
-  packageTable.rows({ page: 'current' }).select();
-  $("input.package-select-all").addClass("selected");
-  $("input.package-select-all").prop("checked", true);
-  tableRows.each(function () {
-    $(this).find("input.package-select").prop("checked", true); 
-  });
-})
+// packageTable.on("click", "input.package-select-all", function() {
+//   if($("input.package-select-all").hasClass("selected")) {
+//     packageTable.rows().deselect();
+//     return unSelectAll()
+//   }
+//   var tableRows = packageTable.rows({ page: 'current' }).nodes();
+//   packageTable.rows({ page: 'current' }).select();
+//   $("input.package-select-all").addClass("selected");
+//   $("input.package-select-all").prop("checked", true);
+//   tableRows.each(function () {
+//     $(this).find("input.package-select").prop("checked", true); 
+//   });
+// })
 
 $('#package-table tbody').on('change', 'input[type="checkbox"]', function(){
   if(!this.checked) {

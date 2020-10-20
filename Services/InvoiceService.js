@@ -4,7 +4,7 @@ let assert = require('assert');
 let awsLib = require('../Util/aws');
 var path = require('path');
 var fs = require('fs');
-const imagesToPdf = require("images-to-pdf")
+//const imagesToPdf = require("images-to-pdf")
 
 
 // let client = require('./dataContext').redisClient;

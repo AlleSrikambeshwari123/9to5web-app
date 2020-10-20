@@ -6,6 +6,7 @@ var packageCtrl = require('../../Controller/PackageController');
 var printerCtrl = require('../../Controller/PrinterController');
 
 router.get('/package/list', middleware().checkSession, packageCtrl.get_package_list);
+router.post('/package/all-list', middleware().checkSession, packageCtrl.get_all_package_list);
 router.get('/customer/package/list/:id', middleware().checkSession, packageCtrl.get_customer_package_list);
 router.get('/package/locations', middleware().checkSession, packageCtrl.get_package_locations);
 router.get('/package/zones', middleware().checkSession, packageCtrl.get_package_zones);

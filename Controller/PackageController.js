@@ -4,27 +4,87 @@ var utils = require('../Util/utils');
 var helpers = require('../views/helpers');
 
 exports.get_package_list = (req, res, next) => {
-    services.packageService.getAllPackagesWithLastStatus().then((packages) => {
-        return Promise.all(
-            packages.map(async(pkg, i) => {
-                let awb = await services.printService.getAWBDataForPackagesRelatedEntitie(pkg.awbId._id);
-                packages[i].pieces = awb.packages ? awb.packages.length : 0
-                packages[i].packageNumber = "PK00" + packages[i].id;
-                return pkg
-            })
-        ).then(pkgs => {
-            res.render('pages/warehouse/package/list-all', {
-                page: req.originalUrl,
-                user: res.user,
-                title: 'All Packages',
-                filterURL: '',
-                buttonName: 'Add to Manifest',
-                packages: pkgs,
-            });
-        })
-
+    // services.packageService.getAllPackagesWithLastStatus().then((packages) => {
+    //     return Promise.all(
+    //         packages.map(async(pkg, i) => {
+    //             let awb = await services.printService.getAWBDataForPackagesRelatedEntitie(pkg.awbId._id);
+    //             packages[i].pieces = awb.packages ? awb.packages.length : 0
+    //             packages[i].packageNumber = "PK00" + packages[i].id;
+    //             return pkg
+    //         })
+    //     ).then(pkgs => {
+            
+    //     })
+    // });
+    res.render('pages/warehouse/package/list-all', {
+        page: req.originalUrl,
+        user: res.user,
+        title: 'All Packages',
+        filterURL: '',
+        buttonName: 'Add to Manifest',
+        packages: [],//pkgs,
+        daterange:req.query.daterange?req.query.daterange:'',
+        clear:req.query.clear
     });
 };
+
+exports.get_all_package_list = (req, res, next) => {
+    services.packageService.getAllFullPackagesWithLastStatus(req).then(async (packagesResult) => {
+        var dataTable = {
+            draw: req.query.draw,
+            recordsTotal: packagesResult.total,
+            recordsFiltered: packagesResult.total,
+            data:[]
+          }
+          var data = [];
+          var packages = packagesResult.packages?packagesResult.packages:[];
+              packages = await services.packageService.managePackagesData(packages);
+              
+          for(var i=0; i< packages.length; i++){
+            var packageDetail = [];
+            packageDetail.push(`<input type="checkbox" name="package-select" class="package-select" />`)
+            packageDetail.push(helpers.formatDate(packages[i].OrignalBarcodeDate));
+            if(packages[i].customer && packages[i].customer.length){
+                packageDetail.push((
+                    (packages[i]['customer'] && packages[i]['customer'].length && packages[i]['customer'][0].lastName )? 
+                `${packages[i]['customer'][0].firstName} ${packages[i]['customer'][0].lastName}` : 
+                `${packages[i]['customer'][0].firstName}`))
+            }else{
+                packageDetail.push('-')
+            }
+            var awbId = packages[i].awbId ? packages[i].awbId : "#";
+            var awbNumber = (packages[i].awb ) ? packages[i].awb.awbId :'-';
+            packageDetail.push(`<a class="text-decoration-none" href="/warehouse/nas/awb/manage/${awbId}/preview"><b>${packages[i].express? '*':'' }</b>${awbNumber} </a>`)
+            var barcode = (packages[i].barcode && packages[i].barcode.length) ? packages[i].barcode[0].barcode :'-';
+            packageDetail.push(barcode);
+            packageDetail.push(packages[i].packageNumber);
+            packageDetail.push(packages[i].description);
+            var zoneName = (packages[i].zone && packages[i].zone.length) ? packages[i].zone[0].name : '-';
+            packageDetail.push(zoneName);
+            packageDetail.push(packages[i].pieceNo);
+            packageDetail.push(packages[i].weight);
+            packageDetail.push((packages[i].pieces || packages[i].pieces > -1) ? packages[i].pieces : '');
+            packageDetail.push(packages[i].lastStatusText);
+            packageDetail.push(packages[i].awbCreatedAt);
+            packageDetail.push(packages[i].actualFlight);
+            packageDetail.push(packages[i].manifestId);
+            packageDetail.push((packages[i].lastStatusDates) ? packages[i].lastStatusDates : '' );
+            packageDetail.push(`<a href="../pkg-label/download/${packages[i]._id}"><i class="fa fa-download"></i></a>
+            <a
+              class="btn btn-link btn-primary btn-print-pkg"
+              data-toggle="modal"
+              data-id="${packages[i]._id}"
+              data-original-title="Print Label"
+              data-target="#print-popup"
+            ><i class="fa fa-print"></i>
+          </a>`);
+            
+            data.push(packageDetail);
+          }
+          dataTable.data = data;
+          res.json(dataTable);
+    })
+}
 
 exports.get_customer_package_list = async (req, res, next) => {
     let awbs = await services.awbService.getAwbCustomer(req.params.id)
