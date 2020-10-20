@@ -899,7 +899,7 @@ class PackageService {
                     {"zone.name":{'$regex' : search, '$options' : 'i'}},
                 ]
             }
-            console.log(searchData)
+           
             
             var pipeLineAggregate = [
                 {
@@ -1353,6 +1353,102 @@ class PackageService {
                 });
             });
         });
+    }
+
+    getAllPackagesInNas_updated(req){
+        // .populate('awbId')
+        //         .populate('originBarcode')
+        //         .populate('customerId')
+        //         .populate('zoneId')
+        return new Promise(async (resolve, reject) => {
+            var start = req.body.start ? parseInt(req.body.start) : 0;
+            var length = req.body.length ? parseInt(req.body.length) : 10;      
+            var field = req.body['order[0][column]'] ?parseInt(req.body['order[0][column]']) : 0;
+            var columns = {0:'barcode.createdAt', 1: 'createdAt', 2: 'location.name'} 
+            
+            var dir = req.body['order[0][dir]'] ? req.body['order[0][dir]'] : 0;
+            var sort = (dir=='asc') ? 1 : -1;
+            var sortField = columns[field];
+
+            var search = req.body['search[value]'] ? req.body['search[value]'] : ''; 
+            var searchData = {};
+
+            //date range
+            var daterange = req.body.daterange?req.body.daterange:'';
+            if(daterange){
+            var date_arr = daterange.split('-');
+            var startDate = (date_arr[0]).trim();      
+            var stdate = new Date(startDate);
+            stdate.setDate(stdate.getDate() +1);
+
+            var endDate = (date_arr[1]).trim();
+            var endate = new Date(endDate);
+            endate.setDate(endate.getDate() +1);     
+            searchData.barcodeDate = {"$gte":stdate, "$lte": endate}
+            }
+
+            if(!req.body.daterange && !req.body.clear){
+            var endate = new Date();      
+            endate.setDate(endate.getDate()+1);
+            var stdate = new Date();
+            stdate.setDate(stdate.getDate() -21);      
+            //searchData.createdAt = {"$gte":stdate, "$lte": endate};
+            searchData.barcodeDate =  {"$gte":stdate, "$lte": endate};
+            }
+
+            if(search){
+                searchData.$or = [          
+                    {"customer.firstName":{'$regex' : search, '$options' : 'i'}},
+                    {"awb.awbId":search},
+                    {"barcode.barcode":{'$regex' : search, '$options' : 'i'}},
+                    {"description":{'$regex' : search, '$options' : 'i'}},
+                    {"zone.name":{'$regex' : search, '$options' : 'i'}},
+                ]
+            }
+           var pipeAggregate = [
+               {
+                   $lookup:{
+                       from: "awbs",
+                       localField: "awbId",
+                       foreignField: "_id",
+                       as:"awb"
+                   }
+               },
+               {
+                    $lookup:{
+                        from: "barcode",
+                        localField: "originBarcode",
+                        foreignField: "_id",
+                        as:"barcode"
+                    }
+                },
+                {
+                    $lookup:{
+                        from: "customer",
+                        localField: "customerId",
+                        foreignField: "_id",
+                        as:"customer"
+                    }
+                },
+                {
+                    $lookup:{
+                        from: "zones",
+                        localField: "zoneId",
+                        foreignField: "_id",
+                        as:"zone"
+                    }
+                },
+                {
+                    $match:searchData
+                }
+           ] 
+           var totalRecords = await Package.aggregate([
+            ...pipeAggregate,
+            ...[{$count: "total"}]
+           ]);
+           resolve(totalRecords);
+        })
+
     }
 
     //========== Receive Packages From Truck that arrived at Airport ==========//

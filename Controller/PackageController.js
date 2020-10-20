@@ -261,6 +261,13 @@ exports.get_nas_package_list = (req, res, next) => {
     });
 };
 
+exports.get_all_nas_package_list = (req, res, next) => {
+    services.packageService.getAllPackagesInNas_updated(req).then((packages) => {
+        res.json(packages);       
+    });
+}
+
+
 exports.get_nas_package_aging = (req, res, next) => {
     //services.packageService.getAllPackages_updated().then((packages) => {
         res.render('pages/warehouse/package/aging', {
