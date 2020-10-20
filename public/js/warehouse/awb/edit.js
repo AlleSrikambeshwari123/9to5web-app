@@ -204,16 +204,13 @@ $(function () {
       </div>
       <div class="card-body">
         <div>
-          <b>Courier No</b> : <span class="float-right">${item.courierNo}</span>
+          <b>Courier No</b> : <span style="word-break: break-all" class="float-right">${item.courierNo}</span>
         </div>
         <div>
-          <b>File Name</b> : <span class="float-right">${item.fileName}</span>
+          <b>File Name</b> : <span style="word-break: break-all" class="float-right">${item.fileName}</span>
         </div>
         <div>
-          <b>File Path</b> : <span class="float-right">>${item.filePath}</span>
-        </div>
-        <div>
-          <b>PMB</b> : <span class="float-right">${item.pmb}</span>
+          <b>PMB</b> : <span style="word-break: break-all" class="float-right">${item.pmb}</span>
         </div>
       </div>
       </div>
