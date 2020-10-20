@@ -352,9 +352,10 @@ checkCondition = (awb,status) =>{
 }
 
 exports.get_all_awb = (req, res, next) => {
-  let status = req.body.status
+  // let status = req.body.status
   if(req.body.clear)
     req.body.daterange =''
+
   services.awbService.getAllAwbsFull(req).then(results => {
     const awbs = results.awbs;
     var dataTable = {
@@ -365,7 +366,7 @@ exports.get_all_awb = (req, res, next) => {
     }
     let data = [];
     for(var i=0; i< awbs.length; i++){
-      if(checkCondition(awbs[i],status)){
+      // if(checkCondition(awbs[i],status)){
         var awbDetail = [];
         awbs[i].volumetricWeight = 0
         awbs[i].packages.forEach(package=>{
@@ -375,24 +376,26 @@ exports.get_all_awb = (req, res, next) => {
           })
           awbs[i].volumetricWeight = (check/166);
         })
-        if(awbs[i].customer && awbs[i].customer.pmb){
-          awbDetail.push(awbs[i].customer.pmb);
-        }
+        if(awbs[i].customer[0] && awbs[i].customer[0].pmb){
+          awbDetail.push(awbs[i].customer[0].pmb);
+        }else
+          awbDetail.push('');
+
         awbDetail.push(helpers.formatDate(awbs[i].createdAt));
         awbDetail.push(`<a href="manage/${awbs[i]._id}/preview">${awbs[i].awbId}</a>`)
-        awbDetail.push(helpers.getFullName(awbs[i].customer))
-        if(awbs[i].shipper && awbs[i].shipper.name)
-          awbDetail.push(awbs[i].shipper.name)
+        awbDetail.push(helpers.getFullName(awbs[i].customer[0]))
+        if(awbs[i].shipper[0] && awbs[i].shipper[0].name)
+          awbDetail.push(awbs[i].shipper[0].name)
         else
           awbDetail.push('')
 
-        if(awbs[i].driver)
-          awbDetail.push(awbs[i].driver.firstName +' ' + awbs[i].driver.lastName)
+        if(awbs[i].driver[0])
+          awbDetail.push(awbs[i].driver[0].firstName +' ' + awbs[i].driver[0].lastName)
         else
           awbDetail.push('')
 
-        if(awbs[i].carrier && awbs[i].carrier.name)
-          awbDetail.push(awbs[i].carrier.name)
+        if(awbs[i].carrier[0] && awbs[i].carrier[0].name)
+          awbDetail.push(awbs[i].carrier[0].name)
         else
           awbDetail.push('')
 
@@ -410,7 +413,7 @@ exports.get_all_awb = (req, res, next) => {
       data-target="#print-popup"> <i class="fa fa-print"></i> </button>`
       awbDetail.push(action)
       data.push(awbDetail);
-    }
+      // }
     }
     dataTable.data = data;
     res.json(dataTable);

@@ -1,15 +1,45 @@
 var services = require('../Services/RedisDataServices');
 var utils = require('../Util/utils');
+var helpers = require('../views/helpers')
 
 exports.get_hazmat_list = (req, res, next) => {
-  services.hazmatService.getHazmats().then(hazmats => {
+  // services.hazmatService.getHazmats().then(hazmats => {
     res.render('pages/warehouse/hazmat/list', {
       page: req.originalUrl,
       title: 'HAZMAT Classes',
       user: res.user,
-      hazmats: hazmats
+      hazmats: [],//hazmats
+      daterange:req.query.daterange?req.query.daterange:'',
+      clear:req.query.clear
     })
-  })
+  // })
+}
+
+exports.get_all_hazmat_list = (req, res, next) => {
+  if(req.body.clear)
+    req.body.daterange =''
+  services.hazmatService.getAllHazmats(req).then(results => {
+    const hazmats = results.hazmats;
+    var dataTable = {
+      draw: req.query.draw,
+      recordsTotal: results.total,
+      recordsFiltered: results.total,
+      data:[]
+    }
+    let data = [];
+    for(var i=0; i< hazmats.length; i++){
+      var carrierDetail = [];
+      carrierDetail.push(hazmats[i].id)
+      carrierDetail.push(helpers.formatDate(hazmats[i].createdAt));
+      carrierDetail.push(hazmats[i].name)
+      carrierDetail.push(hazmats[i].description)
+      carrierDetail.push(` <button href='#' data-id='${hazmats[i].id}' data-target="#edit-hazmat" data-toggle='modal'
+      class='btn btn-link btn-primary btn-edit-hazmat mx-3' onclick="editHazmat(this)"><i class="fas fa-pen"></i></button>`)
+      data.push(carrierDetail);
+    }
+    dataTable.data = data;
+    res.json(dataTable);
+  })   
 }
 
 exports.add_new_hazmat = (req, res, next) => {

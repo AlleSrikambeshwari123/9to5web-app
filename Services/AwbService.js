@@ -238,7 +238,9 @@ class AwbService {
         
         searchData.$or = [
           {'shipper.name':{'$regex' : search , '$options' : 'i'}  },
-          {'carrier.name':{'$regex' : search , '$options' : 'i'}  }
+          {'carrier.name':{'$regex' : search , '$options' : 'i'}  },
+          {'driver.firstName':{'$regex' : search , '$options' : 'i'}  },
+          {'driver.lastName':{'$regex' : search , '$options' : 'i'}  }
         ]
       }
       if(req.body.status == 1)
@@ -249,21 +251,102 @@ class AwbService {
         searchData.packages =  []
       else if(req.body.status == 4)
         searchData.fll_pickup =  true
-      
-      var totalAwbs = await Awb.count(searchData);
-      return new Promise((resolve, reject) => {
-          Awb.find(searchData)
-              .populate('customerId')
-              .populate('shipper')
-              .populate('carrier')
-              .populate('hazmat')
-              .populate('packages')
-              .populate('purchaseOrders')
-              .populate('invoices')
-              .populate('driver')
-              .sort({[sortField]:sort})
-              .skip(start)
-              .limit(length)      
+        
+        return new Promise( async(resolve, reject) => {
+        var piplineAggregate = [
+          {
+              $lookup:{
+                from:"customers",
+                  localField: 'customerId',
+                  foreignField: '_id',
+                  as:"customerId"
+              }
+          },
+          //  {$unwind:"$customer"},
+           {
+            $lookup:{
+                from:"shippers",
+                localField: 'shipper',
+                foreignField: '_id',
+                as:"shipper"
+            }
+          },
+        //  {$unwind:"$shipper"}, 
+          {
+          $lookup:{
+              from:"carriers",
+              localField: 'carrier',
+              foreignField: '_id',
+              as:"carrier"
+          }
+          },
+          // {$unwind:"$carrier"},
+          {
+            $lookup:{
+                from:"hazmats",
+                localField: 'hazmat',
+                foreignField: '_id',
+                as:"hazmat"
+            }
+          },
+        //  {$unwind:"$hazmat"},  
+          {
+          $lookup:{
+              from:"drivers",
+              localField: 'driver',
+              foreignField: '_id',
+              as:"driver"
+          }
+          },
+          // {$unwind:"$driver"}, 
+     
+       {
+        $lookup:{
+            from:"packages",
+            localField: 'packages',
+            foreignField: '_id',
+            as:"packages"
+        }
+      },
+      // {$unwind:"$packages"}, 
+
+      {
+        $lookup:{
+            from:"purchaseorders",
+            localField: 'purchaseorders',
+            foreignField: '_id',
+            as:"purchaseOrders"
+        }
+      },
+      // {$unwind:"$purchaseOrders"}, 
+
+      {
+        $lookup:{
+            from:"invoices",
+            localField: 'invoices',
+            foreignField: '_id',
+            as:"invoices"
+        }
+      },
+      // {$unwind:"$invoices"}, 
+          {
+              $match:searchData
+          }
+        ];
+  
+        var totalRecords = await Awb.aggregate([
+          ...piplineAggregate,
+          ...[{$count: "total"}]
+        ]);
+        if(totalRecords && totalRecords.length && totalRecords[0].total){
+          await Awb.aggregate([
+            ...piplineAggregate,
+            ...[
+              {$sort: {createdAt:1}},
+              {$skip: start},
+              {$limit: length},
+            ]
+          ])
               .exec(async (err, result) => {
                 Promise.all(result.map(async res =>{
                   let awbPriceLabel = await PriceLabel.findOne({awbId:res._id}) ;
@@ -294,8 +377,12 @@ class AwbService {
                   }
                   res['customer'] = res['customerId'];
                   return res;
-                })).then(()=> resolve({awbs : result,total : totalAwbs}))
+                })).then(()=> resolve({awbs : result,total : totalRecords[0].total}))
               });
+          }
+          else{
+            resolve({awbs :[],total : 0})
+          }
       });
   }
 
