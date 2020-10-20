@@ -4,6 +4,7 @@ var strings = require('../Res/strings');
 
 const Awb = require('../models/awb');
 const StoreInvoice = require('../models/storeInvoice');
+const AdditionalInvoice = require('../models/additionalInvoice');
 const AwbStatus = require('../models/awbStatus');
 const Barcode = require('../models/barcode');
 const PurchaseOrder = require('../models/purchaseOrder');
@@ -506,6 +507,28 @@ class AwbService {
       }
      
       const newInvoice = new StoreInvoice(invoiceData);
+      newInvoice.save((err, result) => {
+        if(err){
+          console.log(err)
+          resolve({ success: false, message: strings.string_response_error });
+        }else{
+          resolve({ success: true, message: strings.string_response_created, storeInvoice: result });
+        }
+      })
+    })
+  }
+
+  async storeAdditionalInvoceFile(data){
+    return new Promise((resolve, reject) => { 
+      const invoiceData = {
+        filePath:data.filePath,
+        fileName:data.fileName,
+        courierNo : data.courierNo,
+        pmb : data.pmb,
+        customerId : data.customerId
+      }
+     
+      const newInvoice = new AdditionalInvoice(invoiceData);
       newInvoice.save((err, result) => {
         if(err){
           console.log(err)
