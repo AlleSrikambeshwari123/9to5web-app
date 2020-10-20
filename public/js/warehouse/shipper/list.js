@@ -25,6 +25,25 @@ $("#shipperTable").on("click", ".rm-shipper", function() {
   })
 });
 
-$('#shipperTable').DataTable({
-  pageLength: 10,
-});
+// $('#shipperTable').DataTable({
+//   pageLength: 10,
+// });
+$(document).ready(function() { 
+  $('#shipperTable').DataTable( {
+    "processing": true,
+    "serverSide": true,    
+    "ajax": {
+      url: "/warehouse/shipper/all-list",
+      type: "POST",
+      data :{ daterange:$('#daterange').val(), clear:$('#clear').val()}
+    },
+  })
+     
+    // Event listener to the two range filtering inputs to redraw on input
+    $(document).on('click', '.applyBtn', function() {
+        window.location = "/warehouse/shipper/list?daterange="+$('.daterange').val();
+    });
+    $(document).on('click', '.cancelBtn', function() {
+      window.location = "/warehouse/shipper/list?clear=1";
+    });  
+})

@@ -25,6 +25,25 @@ $('.rm-airline').click(function () {
   })
 });
 
-$('#airlineTable').DataTable({
-  pageLength: 10,
-});
+// $('#airlineTable').DataTable({
+//   pageLength: 10,
+// });
+$(document).ready(function() { 
+  $('#airlineTable').DataTable( {
+    "processing": true,
+    "serverSide": true,    
+    "ajax": {
+      url: "/warehouse/airline/all-list",
+      type: "POST",
+      data :{ daterange:$('#daterange').val(), clear:$('#clear').val()}
+    },
+  })
+     
+    // Event listener to the two range filtering inputs to redraw on input
+    $(document).on('click', '.applyBtn', function() {
+        window.location = "/warehouse/airline/list?daterange="+$('.daterange').val();
+    });
+    $(document).on('click', '.cancelBtn', function() {
+      window.location = "/warehouse/airline/list?clear=1";
+    });  
+})

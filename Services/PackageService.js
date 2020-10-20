@@ -1174,7 +1174,7 @@ class PackageService {
                     packages.map((pkg) => {
                         return this.getPackageLastStatus_updated(pkg._id);
                     }),
-                ).then((stats) => {
+                ).then((stats) => {                    
                     let pkgs = [];
                     stats.forEach((status, i) => {
                         packages[i].lastStatusText = status.status;
