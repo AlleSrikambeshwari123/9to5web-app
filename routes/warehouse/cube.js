@@ -4,6 +4,7 @@ var middleware = require('../../middleware');
 var cubeCtrl = require('../../Controller/CubeController');
 
 router.get('/cube/list', middleware().checkSession, cubeCtrl.get_cube_list);
+router.post('/cube/listAll', middleware().checkSession, cubeCtrl.get_all_cube_list);
 router.get('/cube/getall', middleware().checkSession, cubeCtrl.getAllCubes);
 router.post('/cube/create', middleware().checkSession, cubeCtrl.add_new_cube);
 router.post('/cube/cube2type/create', middleware().checkSession, cubeCtrl.add_new_cube2type);

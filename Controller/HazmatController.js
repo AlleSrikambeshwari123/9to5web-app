@@ -28,14 +28,14 @@ exports.get_all_hazmat_list = (req, res, next) => {
     }
     let data = [];
     for(var i=0; i< hazmats.length; i++){
-      var carrierDetail = [];
-      carrierDetail.push(hazmats[i].id)
-      carrierDetail.push(helpers.formatDate(hazmats[i].createdAt));
-      carrierDetail.push(hazmats[i].name)
-      carrierDetail.push(hazmats[i].description)
-      carrierDetail.push(` <button href='#' data-id='${hazmats[i].id}' data-target="#edit-hazmat" data-toggle='modal'
+      var hazmatDetail = [];
+      hazmatDetail.push(hazmats[i].id)
+      hazmatDetail.push(helpers.formatDate(hazmats[i].createdAt));
+      hazmatDetail.push(hazmats[i].name)
+      hazmatDetail.push(hazmats[i].description)
+      hazmatDetail.push(` <button href='#' data-id='${hazmats[i].id}' data-target="#edit-hazmat" data-toggle='modal'
       class='btn btn-link btn-primary btn-edit-hazmat mx-3' onclick="editHazmat(this)"><i class="fas fa-pen"></i></button>`)
-      data.push(carrierDetail);
+      data.push(hazmatDetail);
     }
     dataTable.data = data;
     res.json(dataTable);

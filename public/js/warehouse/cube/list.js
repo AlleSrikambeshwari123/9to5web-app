@@ -227,9 +227,9 @@ $('#add-cube2-form').submit(function (event) {
     })
   }
   
-  $('#cubeTable').DataTable({
-    pageLength: 10,
-  });
+  // $('#cubeTable').DataTable({
+  //   pageLength: 10,
+  // });
 
   var pdfPath;
 $("#cubeTable").on("click",'.btn-print-pkg',function() {
@@ -264,4 +264,39 @@ $("#cubeTable").on("click",'.btn-print-pkg',function() {
 $('.print-package').click(function() {
   $('.close-del').trigger('click');
   printJS(pdfPath);
+});
+
+
+
+
+$(document).ready(function() {
+  if($('#clear').val() ){
+    $('#daterange').val('')
+    $('#clear').val('1')
+  }
+  setTimeout(()=>{
+    if($('#clear').val() ){
+      $('#daterange').val('')
+      $('#clear').val('1')
+    }else
+      $('.daterange').val($('#daterange').val())
+  },1000)
+  $('.daterange').val($('#daterange').val())
+  $('#cubeTable').DataTable( {
+    "processing": true,
+    "serverSide": true,    
+    "ajax": {
+      url: "/warehouse/cube/listAll",
+      type: "POST",
+      data :{ daterange:$('#daterange').val(), clear:$('#clear').val()}
+    }
+  })
+  // var table = $('.customer-table').DataTable();
+  $(document).on('click', '.applyBtn', function() {
+    window.location = "/warehouse/cube/list?daterange="+$('.daterange').val();
+  });	    
+  
+  $(document).on('click', '.cancelBtn', function() {
+    window.location = "/warehouse/cube/list?clear=1";
+  });  
 });
