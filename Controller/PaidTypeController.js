@@ -1,15 +1,42 @@
 var services = require('../Services/RedisDataServices');
 var utils = require('../Util/utils');
+var helpers = require('../views/helpers')
 
 exports.get_paid_type_list = (req, res, next) => {
-  services.paidTypeService.getAllPaidTypes().then(paidTypes => {
+  // services.paidTypeService.getAllPaidTypes().then(paidTypes => {
     res.render('pages/warehouse/paid-type/list', {
       page: req.originalUrl,
       title: 'Paid Types',
       user: res.user,
-      paidTypes: paidTypes.map(utils.formattedRecord),
+      paidTypes: [],//paidTypes.map(utils.formattedRecord),
+      daterange:req.query.daterange?req.query.daterange:'',
+      clear:req.query.clear 
     })
-  })
+  // })
+}
+
+exports.get_all_paid_type_list = (req, res, next) => {
+  if(req.body.clear)
+    req.body.daterange =''
+  services.paidTypeService.getPaidTypes(req).then(results => {
+    const paidTypes = results.paidTypes;
+    var dataTable = {
+      draw: req.query.draw,
+      recordsTotal: results.total,
+      recordsFiltered: results.total,
+      data:[]
+    }
+    let data = [];
+    for(var i=0; i< paidTypes.length; i++){
+      var hazmatDetail = [];
+      hazmatDetail.push(paidTypes[i].name)
+      hazmatDetail.push(helpers.formatDate(paidTypes[i].createdAt));
+      hazmatDetail.push(`<a href='manage/${paidTypes[i].id}/get'><i class="fas fa-pen"></i></a>`)
+      data.push(hazmatDetail);
+    }
+    dataTable.data = data;
+    res.json(dataTable);
+})  
 }
 
 exports.create_paid_type = (req, res, next) => {

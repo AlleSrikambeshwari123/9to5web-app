@@ -8,7 +8,9 @@
       </div>
       <div class="card-body daterangepickerbody">
         <div class="table-responsive">
-          <table id="paid-typeTable" class="display table dataTable dateRangeFilterTable table-striped table-hover">
+            <input type="hidden" name="daterange" id="daterange" value="<%=daterange%>">
+            <input type="hidden" name="clear" id="clear" value="<%=clear%>">
+          <table id="paid-typeTable" class="display table dataTable table-striped table-hover">
             <thead>
               <tr>
                 <!-- <th>ID</th> -->
@@ -18,18 +20,7 @@
               </tr>
             </thead>
             <tbody>
-              <% paidTypes.forEach(function(paidType){%>
-              <tr data-record="<%= paidType.id %>">
-                <!-- <td><%=paidType.id%></td> -->
-                <td><strong><%=paidType.name%></strong></td>
-                <td><strong><%=helpers.formatDate(paidType.createdAt)%></strong></td>
-                <td>
-                  <a href='manage/<%=paidType.id%>/get'><i class="fas fa-pen"></i></a>
-                  <!-- temporary commenting the code -->
-                  <!-- <a href='#' class='rm-paid-type ml-3' data-id='<%=paidType.id%>'><i class="fas fa-trash"></i></a> -->
-                </td>
-              </tr>
-              <%})%>
+     
             </tbody>
           </table>
         </div>
