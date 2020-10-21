@@ -10,7 +10,51 @@ exports.get_manifest_list = (req, res, next) => {
       user: res.user,
       title: 'Manifests',
       manifests: manifests.map(utils.formattedRecord),
+      daterange:req.query.daterange?req.query.daterange:'',
+      clear:req.query.clear
     })
+  })
+}
+
+exports.get_all_manifest_list = (req, res, next)=>{
+  services.manifestService.getAllManifests(req).then(manifestsResult => {
+    var dataTable = {
+      draw: req.query.draw,
+      recordsTotal: manifestsResult.total,
+      recordsFiltered: manifestsResult.total,
+      data:[]
+    }
+    var data = [];
+    var manifests = manifestsResult.manifests?manifestsResult.manifests:[];
+    for(var i=0; i< manifests.length; i++){
+      var manifestDetail = [];
+      manifestDetail.push(`<strong>${manifests[i].plane &&  manifests[i].plane.tailNumber}${manifests[i].title}</strong>`);
+      manifestDetail.push(helpers.formatDate(manifests[i].createdAt))
+      if (manifests[i].stageId == 1 ) {
+        stage = `<span class="badge badge-secondary">${manifests[i].stage}</span>`;
+      } else if(manifests[i].stageId == 2) {
+        stage = `<span class="badge badge-default">${manifests[i].stage}</span>`;
+      } else if(manifests[i].stageId == 3) {
+        stage = `<span class="badge badge-warning">${manifests[i].stage}</span>`;
+      }else if(manifests[i].stageId == 4) {
+        stage = `<span class="badge badge-primary">${manifests[i].stage}</span>`;
+      }else if(manifests[i].stageId == 5) {
+        stage = `<span class="badge badge-success">${manifests[i].stage}</span>`;
+      }
+      manifestDetail.push(stage)
+      manifestDetail.push(manifests[i].plane &&  manifests[i].plane.tailNumber);
+      var actions = `<a href='manage/${manifests[i]._id}/get' class="btn btn-link btn-primary px-3" data-toggle="tooltip"
+      data-original-title="View Details"> <i class="fa fa-eye"></i> </a>`;
+      if(manifests[i].stageId == 1) {
+       actions = actions + ` <a class="btn btn-link btn-danger btn-rm-manifest px-3" data-toggle="modal" data-id="${manifests[i]._id}"
+       data-original-title="Delete" data-target="#confirm-delete-manifest"> <i class="fa fa-trash"></i> </a>`
+      }
+      manifestDetail.push(actions);
+
+      data.push(manifestDetail);
+    }
+    dataTable.data = data;
+    res.json(dataTable);
   })
 }
 

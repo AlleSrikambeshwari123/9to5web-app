@@ -43,4 +43,48 @@ $(document).ready(function() {
       //data :{ daterange:$('#daterange').val(), clear:$('#clear').val()}
     },
   }) 
+
+  $('.package-table-nas-package-hand').DataTable( {
+    "processing": true,
+    "serverSide": true,    
+    "ajax": {
+      url: "/warehouse/nas/package/all-list",
+      type: "POST",
+      data :{ daterange:$('#daterange').val(), clear:$('#clear').val(), filterURL: $('#filterURL').val()}
+    },
+  })
+
+  $('.package-table-filter-package').DataTable( {
+    "processing": true,
+    "serverSide": true,    
+    "ajax": {
+      url: "/warehouse/package/all-list/"+$("#filter").val(),
+      type: "POST",
+      data :{ 
+        daterange: $('#daterange').val(), 
+        clear: $('#clear').val(), 
+        filterURL: $('#filterURL').val()
+      }
+    },
+  })
+  var applyurl = "/warehouse/nas/package/list";
+  if( $("#filter").val() == "in-manifest"){
+    applyurl ="/warehouse/package/list/in-manifest";
+  }
+  if( $("#filter").val() == "in-pmb9000"){
+    applyurl ="/warehouse/package/list/in-pmb9000";
+  }
+  if( $("#filter").val() == "not-pmb9000"){
+    applyurl ="/warehouse/package/list/not-pmb9000";
+  }
+ 
+     
+    // Event listener to the two range filtering inputs to redraw on input
+    $(document).on('click', '.applyBtn', function() {
+        window.location = applyurl + "?daterange="+$('.daterange').val();
+    });
+    $(document).on('click', '.cancelBtn', function() {
+      window.location = applyurl + "?clear=1";
+    });  
+
 })

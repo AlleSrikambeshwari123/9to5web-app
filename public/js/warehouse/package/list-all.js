@@ -23,13 +23,29 @@ $(document).ready(function() {
       clear:$('#clear').val()}
     },
   })
-     
+  var packageTable = $('.package-table-filter-package').DataTable( {
+    "processing": true,
+    "serverSide": true,    
+    "ajax": {
+      url: "/warehouse/package/all-list/"+$("#filter").val(),
+      type: "POST",
+      data :{ 
+        daterange: $('#daterange').val(), 
+        clear: $('#clear').val(), 
+        filterURL: $('#filterURL').val()
+      }
+    },
+  })
+  var applyurl = "/warehouse/package/list";
+  if( $("#filter").val() == "deliver"){
+    applyurl ="/warehouse/package/list/deliver";
+  }
     // Event listener to the two range filtering inputs to redraw on input
     $(document).on('click', '.applyBtn', function() {
-        window.location = "/warehouse/package/list?daterange="+$('.daterange').val();
+        window.location = applyurl+"?daterange="+$('.daterange').val();
     });
     $(document).on('click', '.cancelBtn', function() {
-      window.location = "/warehouse/package/list?clear=1";
+      window.location = applyurl+"?clear=1";
     });
 })
 

@@ -114,11 +114,129 @@ exports.get_package_zones = (req, res, next) => {
     })
 };
 
+exports.get_all_filtered_package_list = (req, res, next) =>{
+    var filterURL = req.body.filterURL? req.body.filterURL: '';
+    services.packageService
+        .getFllPackageWithLastStatus(req)
+        .then(async(packagesResult) => {
+            var packages = packagesResult.packages?packagesResult.packages:[];
+            packages = await services.packageService.managePackagesData(packages); 
+            var dataTable = {
+                draw: req.query.draw,
+                recordsTotal: packagesResult.total,
+                recordsFiltered: packagesResult.total,
+                data:[]
+              }
+            var data = [];
+            for(var i=0; i< packages.length; i++){
+                if (req.params.filter === 'in-manifest') {
+                    let status = await services.packageService.getPackageLastStatus(packages[i]._id);
+                    packages[i].lastStatusText = status && status.status;
+                }
+                if (req.params.filter === 'in-pmb9000') {
+                        let awb = packages[i].awb ? packages[i].awb : {};
+                        if (awb.deliveryMethod) {
+                            packages[i].awbdeliveryMethod = awb.deliveryMethod;
+                        } else {
+                            packages[i].awbdeliveryMethod = '';
+                        }
+                        let status = await services.packageService.getPackageLastStatus(packages[i]._id);
+                        packages[i].customerpmb = '9000';
+                        packages[i].lastStatusText = status && status.status;
+                }
+                if (req.params.filter === 'not-pmb9000') {                    
+                    if (packages[i].locationId) {
+                        // There is a location (string) field already in package itself, but for some 
+                        // reason it's out of sync with locatioId, so we look by locationId.
+                        let location = await services.locationService.getLocation(pkg.locationId)
+                        packages[i].location = location && location.name;
+                    } 
+                }
+
+                var packageDetail = [];
+                var customerName = (packages[i].customer && packages[i].customer.lastName)?
+                                    `${packages[i].customer.firstName} ${packages[i].customer.lastName}`:
+                                    `${packages[i].customer.firstName}`;
+                packageDetail.push(customerName);
+                packageDetail.push(helpers.formatDate(packages[i].createdAt));
+                packageDetail.push(packages[i].barcode && packages[i].barcode.barcode ? packages[i].barcode.barcode : '');
+                packageDetail.push(packages[i].description ? packages[i].description : '');
+                packageDetail.push((packages[i].customer && packages[i].customer.pmb) ? packages[i].customer.pmb : '');
+                packageDetail.push(packages[i].packageType ? packages[i].packageType : '');
+                packageDetail.push(packages[i].aging ? packages[i].aging : '');
+                packageDetail.push(packages[i].agingdollar ? packages[i].agingdollar : 0);
+                packageDetail.push(packages[i].weight ? packages[i].weight : '');
+                packageDetail.push((packages[i].pieces || packages[i].pieces > -1) ? packages[i].pieces : '')
+                packageDetail.push(packages[i].lastStatusText ? packages[i].lastStatusText : '');
+                packageDetail.push(`<a href="../../nas/awb/manage/${packages[i].awb._id}/preview">
+                    ${packages[i].awb.awbId}
+                 </a>`)
+                 if (typeof filterURL !== 'undefined' && filterURL === 'not-pmb9000') {
+                    packageDetail.push(packages[i].location);
+                 }
+                 if (typeof filterURL !== 'undefined' && filterURL === 'in-pmb9000') {
+                    packageDetail.push(packages[i].awbdeliveryMethod);
+                 }
+                 packageDetail.push(` <a href="../../pkg-label/download/${packages[i]._id}"><i class="fa fa-download"></i></a>
+                 <a class="btn btn-link btn-primary btn-print-pkg" data-toggle="modal" data-id="${packages[i]._id}" data-original-title="Print Label" data-target="#print-popup"><i class="fa fa-print"></i> </a>
+             `);
+             data.push(packageDetail);
+            
+            } 
+            dataTable.data = data;
+            res.json(dataTable);
+        })
+}
+
 exports.get_filtered_package_list = (req, res, next) => {
     let title = 'All Packages';
     let filterURL = '';
     let buttonName = '';
-    services.packageService
+    if (req.params.filter === 'in-manifest') {        
+        title = 'Packages';
+        filterURL = 'in-manifest';
+    }
+    if (req.params.filter === 'deliver') {        
+        title = 'All Packages';
+        filterURL = 'deliver';
+        buttonName = 'Add to Delivery';
+    }
+    if (req.params.filter === 'in-pmb9000') {        
+        title = '9to5 Warehouse Packages';
+        filterURL = 'in-pmb9000';
+    }
+    if (req.params.filter === 'not-pmb9000'){
+        title = 'Post Boxes Etc';
+        filterURL = 'not-pmb9000';
+    }
+
+    if (req.params.filter === 'deliver') {
+        res.render('pages/warehouse/package/list-all', {
+            page: req.originalUrl,
+            user: res.user,
+            title: title,
+            filterURL: filterURL,
+            buttonName: 'Add to Delivery',
+            packages: [],//filtered,
+            datatable:"-filter-package",
+            daterange:req.query.daterange?req.query.daterange:'',
+            clear:req.query.clear,
+            filter: req.params.filter? req.params.filter :''
+        });
+    } else {
+        res.render('pages/warehouse/package/list', {
+            page: req.originalUrl,
+            user: res.user,
+            title: title,
+            filterURL: filterURL,
+            packages: [],//filtered
+            datatable:"-filter-package",
+            daterange:req.query.daterange?req.query.daterange:'',
+            clear:req.query.clear,
+            filter: req.params.filter? req.params.filter :''                     
+        });
+    }
+    /*services.packageService
         .getAllPackagesWithLastStatus({ filter: req.params.filter })
         .then(async(packages) => {
 
@@ -232,9 +350,13 @@ exports.get_filtered_package_list = (req, res, next) => {
                     title: title,
                     filterURL: filterURL,
                     packages: filtered,
+                    datatable:"filter-package",
+                    daterange:req.query.daterange?req.query.daterange:'',
+                    clear:req.query.clear,
+                    filter: req.params.filter? req.params.filter :''                     
                 });
             }
-        });
+        });*/
 };
 
 exports.get_fll_package_list = (req, res, next) => {
@@ -250,20 +372,60 @@ exports.get_fll_package_list = (req, res, next) => {
 };
 
 exports.get_nas_package_list = (req, res, next) => {
-    services.packageService.getPackagesInNas_updated().then((packages) => {
+    //services.packageService.getPackagesInNas_updated().then((packages) => {
         res.render('pages/warehouse/package/list', {
             page: req.originalUrl,
             user: res.user,
             title: 'Packages On Hand Of NAS',
             filterURL: '',
-            packages: packages,
+            packages: [],//packages,
+            daterange: req.query.daterange?req.query.daterange:'',
+            clear: req.query.clear,
+            datatable: "nas-package-hand"
         });
-    });
+   // });
 };
 
 exports.get_all_nas_package_list = (req, res, next) => {
-    services.packageService.getAllPackagesInNas_updated(req).then((packages) => {
-        res.json(packages);       
+    if(req.body.clear){
+        req.body.daterange = '';
+      }
+    services.packageService.getAllPackagesInNas_updated(req).then((packagesResult) => {
+        var dataTable = {
+            draw: req.query.draw,
+            recordsTotal: packagesResult.total,
+            recordsFiltered: packagesResult.total,
+            data:[]
+          }
+          var data = [];
+          var packages = packagesResult.packages?packagesResult.packages:[];
+          for(var i=0; i< packages.length; i++){
+            var packageDetail = [];
+            var customerName = '';
+            if(packages[i].customer){
+                customerName =  (packages[i]['customer'].lastName ? 
+                `${packages[i]['customer'].firstName} ${packages[i]['customer'].lastName}` : 
+                `${packages[i]['customer'].firstName}`)
+            }
+            packageDetail.push(customerName);
+            packageDetail.push(helpers.formatDate(packages[i].createdAt));
+            packageDetail.push((packages[i].barcode && packages[i].barcode.barcode)? packages[i].barcode.barcode : '');
+            packageDetail.push(packages[i].description ? packages[i].description : '');
+            packageDetail.push((packages[i].customer && packages[i].customer.pmb)? packages[i].customer.pmb : '');
+            packageDetail.push(packages[i].packageType ? packages[i].packageType : '');
+            packageDetail.push(packages[i].aging ? packages[i].aging : '');
+            packageDetail.push(packages[i].agingdollar ? packages[i].agingdollar : 0);
+            packageDetail.push(packages[i].weight ? packages[i].weight : '');
+            packageDetail.push((packages[i].pieces || packages[i].pieces > -1) ? packages[i].pieces : '')
+            packageDetail.push((packages[i].statsData && packages[i].statsData.length && packages[i].statsData[0].status) ? packages[i].statsData[0].status : '')
+            packageDetail.push(`<a href="../../nas/awb/manage/${packages[i].awb._id}/preview">${packages[i].awb.awbId}</a>`)
+            packageDetail.push(` <a href="../../pkg-label/download/${packages[i]._id}"><i class="fa fa-download"></i></a>
+            <a class="btn btn-link btn-primary btn-print-pkg" data-toggle="modal" data-id="${packages[i]._id}" data-original-title="Print Label" data-target="#print-popup"><i class="fa fa-print"></i> </a>
+            `)
+            data.push(packageDetail);
+          }
+          dataTable.data = data;
+          res.json(dataTable);     
     });
 }
 

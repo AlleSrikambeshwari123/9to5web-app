@@ -120,6 +120,15 @@ $(document).ready(function() {
       data :{ daterange:$('#daterange').val(), clear:$('#clear').val()}
     },
   })
+  $('.manifest-table-fll').DataTable( {
+    "processing": true,
+    "serverSide": true,    
+    "ajax": {
+      url: "/warehouse/fll/manifest/all-list",
+      type: "POST",
+      data :{ daterange:$('#daterange').val(), clear:$('#clear').val()}
+    },
+  })
      
     // Event listener to the two range filtering inputs to redraw on input
     $(document).on('click', '.applyBtn', function() {
