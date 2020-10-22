@@ -13,6 +13,8 @@ function downloadInvoice(fileName){
     })  
  }
 function deleteInvoice(filename,id){
+  if(!filename)
+    filename = 'null'
   swal({
     title: "Are you sure?",
     text: "You will not be able to recover this Invoice !",

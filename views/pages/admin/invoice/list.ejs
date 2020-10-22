@@ -1,46 +1,96 @@
 <% layout('./shared/__template')%>
 <div class='gutters'>
   <div class="col-xl-12 col-lg-6 col-md-12 col-sm-12">
-    <div class="card">
+      <div class='card card-with-nav'>
+          <div class="card-header">
+            <div class="row row-nav-line">
+              <ul class="nav nav-tabs nav-line nav-color-primary" id="awb-list-tab" role="tablist">
+                <li class="nav-item"> <a class="nav-link active show" data-toggle="tab" href="#awb-invoice" role="tab"
+                    aria-selected="true">AWB Invoices</a> </li>
+                <li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#no-awb-invoice" role="tab"
+                    aria-selected="false">Non AWB Invoices</a> </li>
+              </ul>
+            </div>
+          </div>
+    <!-- <div class="card">
       <div class="card-header d-flex align-items-left align-items-md-center flex-column flex-md-row">
         <div class="card-title"><%= title %></div>
 
-      </div>
+      </div> -->
       <div class="card-body daterangepickerbody">
-        <div class="table-responsive">
-          <table class="display table table-striped table-hover dateRangeFilterTable dataTable invoice-table ">
-            <thead>
-              <tr>
-                <th>Awb Number</th>
-                <th>Date Uploaded</th>
-                <th>Invoice</th>
-                <th>View</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              <% invoices.forEach(invoice => { %>
-              <tr data-record="<%=invoice._id%>">
-                <td><a class="text-decoration-none"
-                    href="/warehouse/nas/awb/manage/<%=invoice.awbId ? invoice.awbId._id: '#'%>/preview">
-                    <%= (invoice.awbId) ?invoice.awbId
-                .awbId : '' %> </a></td>
-                <td><%= helpers.formatDate(invoice.createdAt)%></td>
-                <td><a href="JavaScript:Void(0);"
-                    onclick="downloadInvoice('<%=(invoice.fileName) ? invoice.fileName :invoice.filename%>')">Invoice
-                </td>
-                <td>
-                  <button class="btn btn-primary btn-view-invoice-package btn-round float-right ml-md-auto" data-toggle="modal"
-                    data-original-title="View Packages" data-id="<%=invoice._id%>" data-target="#invoice-packages">View</button>
-                </td>
-                <td><a href="JavaScript:Void(0);"
-                    onclick="deleteInvoice('<%=(invoice.fileName) ? invoice.fileName : invoice.filename%>','<%=invoice._id%>')"><i
-                      class="fa fa-trash"></i></td>
+        <div class="tab-content m-4" id="awb-list-tabContent">
+          <div class="tab-pane fade show active" id="awb-invoice" role="tabpanel" aria-labelledby="awb-invoice-tab">
+            <div class="table-responsive">
+              <table class="display table table-striped table-hover dateRangeFilterTable dataTable invoice-table ">
+                <thead>
+                  <tr>
+                    <th>Awb Number</th>
+                    <th>Date Uploaded</th>
+                    <th>Invoice</th>
+                    <th>View</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% invoices.forEach(invoice => { %>
+                  <tr data-record="<%=invoice._id%>">
+                    <td><a class="text-decoration-none"
+                        href="/warehouse/nas/awb/manage/<%=invoice.awbId ? invoice.awbId._id: '#'%>/preview">
+                        <%= (invoice.awbId) ?invoice.awbId.awbId : '' %> </a></td>
+                    <td><%= helpers.formatDate(invoice.createdAt)%></td>
+                    <td><a href="JavaScript:Void(0);"
+                        onclick="downloadInvoice('<%=(invoice.fileName) ? invoice.fileName :invoice.filename%>')">Invoice
+                    </td>
+                    <td>
+                      <button class="btn btn-primary btn-view-invoice-package btn-round float-right ml-md-auto" data-toggle="modal"
+                        data-original-title="View Packages" data-id="<%=invoice._id%>" data-target="#invoice-packages">View</button>
+                    </td>
+                    <td><a href="JavaScript:Void(0);"
+                        onclick="deleteInvoice('<%=(invoice.fileName) ? invoice.fileName : invoice.filename%>','<%=invoice._id%>')"><i
+                          class="fa fa-trash"></i></td>
 
-              </tr>
-              <% }) %>
-            </tbody>
-          </table>
+                  </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="tab-pane fade" id="no-awb-invoice" role="tabpanel" aria-labelledby="no-awb-tab">
+              <div class="table-responsive">
+                  <table class="display table table-striped table-hover dateRangeFilterTable dataTable no-awb-invoice-table ">
+                    <thead>
+                      <tr>
+                        <th>Date Uploaded</th>
+                        <th>Invoice</th>
+                        <th>Tracking #</th>
+                        <th>Customer Name</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% additionalInvoices.forEach(invoice => { %>
+                      <tr data-record="<%=invoice._id%>">
+                        
+                        <td><%= helpers.formatDate(invoice.createdAt)%></td>
+                        <td><a href="JavaScript:Void(0);"
+                            onclick="downloadInvoice('<%=(invoice.fileName) ? invoice.fileName :invoice.filename%>')">Invoice
+                        </td>
+                        <td>
+                            <%= invoice.courierNo %>
+                         </td>
+                        <td>
+                            <%= helpers.getFullName(invoice.customerId)  %>
+                        </td>
+                        <td><a href="JavaScript:Void(0);"
+                            onclick="deleteInvoice('<%=(invoice.fileName) ? invoice.fileName : invoice.filename%>','<%=invoice._id%>')"><i
+                              class="fa fa-trash"></i></td>
+    
+                      </tr>
+                      <% }) %>
+                    </tbody>
+                  </table>
+              </div>
+          </div>
         </div>
       </div>
     </div>

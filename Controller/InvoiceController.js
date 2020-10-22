@@ -5,12 +5,14 @@ var aws = require('../Util/aws');
 exports.getInvoiceList = (req, res, next) => {
   Promise.all([
     services.invoiceService.getAllStoreInvoice(),
-    services.invoiceService.getInvoices()
+    services.invoiceService.getInvoices(),
+    services.invoiceService.getAdditionalInvoices(),
   ]).then(function (storeInvoices) {
       res.render('pages/admin/invoice/list', {
         page: req.originalUrl,
         title: 'All Invoice List',
         invoices: [...storeInvoices[0],...storeInvoices[1]],
+        additionalInvoices : storeInvoices[2],
         user: res.user,
       });
     });

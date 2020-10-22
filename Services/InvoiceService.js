@@ -138,7 +138,7 @@ class InvoiceService {
 
   async getAdditionalInvoices() {
     return new Promise((resolve, reject) => {
-      AdditionalInvoice.find({}).exec((err, result) => {
+      AdditionalInvoice.find({}).populate('customerId').exec((err, result) => {
         if (err) {
           resolve([]);
         } else {
@@ -201,6 +201,14 @@ class InvoiceService {
           Invoice.findOneAndRemove({_id:id}).exec((err, result) => {
             if (err) {
               resolve({success:false,message:err});
+            } else if(result == null){
+                AdditionalInvoice.findOneAndRemove({_id:id}).exec((err, result) => {
+                  if (err) {
+                    resolve({success:false,message:err});
+                  }else{
+                    resolve({success:true,message:"Successfully Deleted"});
+                  }
+                })
             }else{
               resolve({success:true,message:"Successfully Deleted"});
             }   

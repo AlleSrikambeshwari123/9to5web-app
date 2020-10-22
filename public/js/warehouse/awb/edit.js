@@ -186,7 +186,6 @@ $(function () {
       .data('courier');
 
     item._id = item.additionalInvoices
-    item.additionalInvoices = item.additionalInvoices + Math.floor(Math.random()*(999-100+1)+100);
 
     for(let id of invoiceIdArray){
       if(String(id) == String(item._id)){
@@ -699,6 +698,11 @@ function removeInvoice(str){
   for(var i=0;i<AWBAdditionalInvoices.length;i++){
     if(id == AWBAdditionalInvoices[i].additionalInvoices){
       AWBAdditionalInvoices.splice(i,1)
+      invoiceIdArray.forEach((itemId,index) => {
+        if(String(id) == String(itemId)){
+          invoiceIdArray.splice(index,1)
+        }
+      })
       $('div[data-record="' + id + '"]').remove()
       break
     }
