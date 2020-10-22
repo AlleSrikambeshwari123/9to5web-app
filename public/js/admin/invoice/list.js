@@ -43,7 +43,8 @@ function deleteInvoice(filename,id){
   })
 }
 
-$(".btn-view-invoice-package").click(function () { 
+// $(".btn-view-invoice-package").click(function () { 
+  $(document).on('click', '.btn-view-invoice-package', function() {
   var id = $(this).data('id');
   $.ajax({
     url: '/admin/invoices/packageStatus/'+id,
@@ -67,6 +68,17 @@ $('#invoice-packages').on('hidden.bs.modal', function () {
 });
 
 $(document).ready(function() { 
+  if($('#clear').val() ){
+    $('#daterange').val('')
+    $('#clear').val('1')
+  }
+  setTimeout(()=>{
+    if($('#clear').val() ){
+      $('#daterange').val('')
+      $('#clear').val('1')
+    }else
+      $('.daterange').val($('#daterange').val())
+  },1000)
   $('.invoice-table').DataTable( {
     "processing": true,
     "serverSide": true,    

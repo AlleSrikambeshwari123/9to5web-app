@@ -68,6 +68,17 @@ $(function () {
 //   order: [[0, 'desc']],
 // });
 $(document).ready(function() { 
+  if($('#clear').val() ){
+    $('#daterange').val('')
+    $('#clear').val('1')
+  }
+  setTimeout(()=>{
+    if($('#clear').val() ){
+      $('#daterange').val('')
+      $('#clear').val('1')
+    }else
+      $('.daterange').val($('#daterange').val())
+  },1000)
   var cableDataTable = $('#cableBeachList-table').DataTable( {
     "processing": true,
     "serverSide": true,    

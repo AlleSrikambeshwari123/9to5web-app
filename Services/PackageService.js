@@ -1463,6 +1463,155 @@ class PackageService {
         });
     }
 
+    getPackagesAllInFll_updated(req){
+        return new Promise(async (resolve, reject) => {
+             var start = req.body.start ? parseInt(req.body.start) : 0;
+            var length = req.body.length ? parseInt(req.body.length) : 10;      
+            var field = req.body['order[0][column]'] ?parseInt(req.body['order[0][column]']) : 0;
+            var columns = {
+                0: 'customer.firstName',
+                1: 'createdAt',
+                2: 'barcode.barcode',
+                3: 'description',
+                4: 'customer.pmb',
+                5: 'packageType',
+                6: 'aging',
+                10: "statusData.status",
+                11: 'awb.awbId'
+            } 
+
+             var dir = req.body['order[0][dir]'] ? req.body['order[0][dir]'] : 0;
+            var sort = (dir=='asc') ? 1 : -1;
+            var sortField = columns[field];
+
+             var search = req.body['search[value]'] ? req.body['search[value]'] : ''; 
+            var searchData = {};
+
+             //date range
+            var daterange = req.body.daterange?req.body.daterange:'';
+            if(daterange){
+            var date_arr = daterange.split('-');
+            var startDate = (date_arr[0]).trim();      
+            var stdate = new Date(startDate);
+            stdate.setDate(stdate.getDate() +1);
+
+             var endDate = (date_arr[1]).trim();
+            var endate = new Date(endDate);
+            endate.setDate(endate.getDate() +1);     
+            searchData.createdAt = {"$gte":stdate, "$lte": endate}
+            }
+
+             if(!req.body.daterange && !req.body.clear){
+            var endate = new Date();      
+            endate.setDate(endate.getDate()+1);
+            var stdate = new Date();
+            stdate.setDate(stdate.getDate() -21);      
+            //searchData.createdAt = {"$gte":stdate, "$lte": endate};
+            searchData.createdAt =  {"$gte":stdate, "$lte": endate};
+            }
+
+             if(search){
+                searchData.$or = [          
+                    {"customer.firstName":{'$regex' : search, '$options' : 'i'}},
+                    {"customer.pmb":{'$regex' : search, '$options' : 'i'}},
+                    {"awb.awbId":search},
+                    {"barcode.barcode":{'$regex' : search, '$options' : 'i'}},
+                    {"description":{'$regex' : search, '$options' : 'i'}},
+                    {"zone.name":{'$regex' : search, '$options' : 'i'}},
+                    {"packageType":{'$regex' : search, '$options' : 'i'}}
+                ]
+            }
+            var pipeAggregate = [
+                {
+                    $lookup: {
+                        from: "awbs",
+                        localField: "awbId",
+                        foreignField: "_id",
+                        as: "awb"
+                    }
+                },
+                {$unwind: "$awb"},
+                {
+                    $lookup: {
+                        from: "barcodes",
+                        localField: "originBarcode",
+                        foreignField: "_id",
+                        as: "barcode"
+                    }
+                },
+                {$unwind: "$barcode"},
+                {
+                    $lookup: {
+                        from: "customers",
+                        localField: "customerId",
+                        foreignField: "_id",
+                        as: "customer"
+                    }
+                },
+                {$unwind: "$customer"},
+                {
+                    $lookup: {
+                        from: "zones",
+                        localField: "zoneId",
+                        foreignField: "_id",
+                        as: "zone"
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "packagestatuses",
+                        localField: "_id",
+                        foreignField: "packageId",
+                        as: "stats"
+                    }
+                },
+                {
+                    $addFields: {
+                        statsData: { $arrayElemAt: [ "$stats", -1 ] }
+                    }
+                },
+                {
+                    $match :{
+                        $or:[
+                            {"statsData.status" : PKG_STATUS[1]},
+                            {"statsData.status": PKG_STATUS[2]}
+                        ]
+                    }
+                },
+                {
+                    $match:searchData
+                }
+            ];
+
+             var totalRecords =  await Package.aggregate([
+                ...pipeAggregate,
+                ...[
+                    {$count:"total"}
+                ]
+            ]);
+            if(totalRecords && totalRecords.length && totalRecords[0]){
+                Package.aggregate([
+                    ...pipeAggregate,
+                    ...[
+                        {$sort:{[sortField]:sort}},
+                        {$skip:start},
+                        {$limit:length}
+                    ]
+                ]).exec((err, result) => {
+                    if(err){
+                        resolve({total: 0, packages: []});
+                    }else{
+                        resolve({total: totalRecords[0].total, packages: result})
+                    }
+                })
+            }else{
+                resolve({total: 0, packages: []}); 
+            }
+
+         })
+
+     }
+
     getPackagesNoDocs() {
         return new Promise((resolve, reject) => {
             this.getAllPackagesNoDoc().then((packages) => {

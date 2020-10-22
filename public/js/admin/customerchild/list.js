@@ -27,11 +27,17 @@ $(function () {
   });
 
   $(document).ready(function() {
-    if($('#clear').val()){
+    if($('#clear').val() ){
       $('#daterange').val('')
       $('#clear').val('1')
     }
-    $('.daterange').val($('#daterange').val())
+    setTimeout(()=>{
+      if($('#clear').val() ){
+        $('#daterange').val('')
+        $('#clear').val('1')
+      }else
+        $('.daterange').val($('#daterange').val())
+    },1000)
     $('.customer-table').DataTable( {
       "processing": true,
       "serverSide": true,    

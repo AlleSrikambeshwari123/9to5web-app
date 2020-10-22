@@ -32,13 +32,17 @@ $(function () {
     // }
     // localStorage.dateRangePickerStartDate = $('#daterange').val().split('-')[0]
     // localStorage.dateRangePickerEndDate = $('#daterange').val().split('-')[1]
-    if($('#clear').val() || localStorage.dateRangePickerStartDate == "" || localStorage.dateRangePickerEndDate == "" ){
+    if($('#clear').val() ){
       $('#daterange').val('')
       $('#clear').val('1')
-      // localStorage.dateRangePickerStartDate = ''
-      // localStorage.dateRangePickerEndDate = ''
     }
-    $('.daterange').val($('#daterange').val())
+    setTimeout(()=>{
+      if($('#clear').val() ){
+        $('#daterange').val('')
+        $('#clear').val('1')
+      }else
+        $('.daterange').val($('#daterange').val())
+    },1000)
     $('.customer-table').DataTable( {
       "processing": true,
       "serverSide": true,    

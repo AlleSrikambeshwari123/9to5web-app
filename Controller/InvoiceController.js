@@ -47,7 +47,7 @@ exports.getInvoiceList = (req, res, next) => {
           onclick="downloadInvoice('${fileName}')">Invoice</a>`);
 
           invoiceDetail.push(`<button class="btn btn-primary btn-view-invoice-package btn-round float-right ml-md-auto" data-toggle="modal"
-          data-original-title="View Packages" data-id="${invoices[i]._id}%>" data-target="#invoice-packages">View</button>`)
+          data-original-title="View Packages" data-id="${invoices[i]._id}" data-target="#invoice-packages">View</button>`)
 
           invoiceDetail.push(`<a href="JavaScript:Void(0);"
                     onclick="deleteInvoice('${fileName}','${invoices[i]._id}')"><i

@@ -13,6 +13,17 @@
 //   }
 // });
 $(document).ready(function() { 
+  if($('#clear').val() ){
+    $('#daterange').val('')
+    $('#clear').val('1')
+  }
+  setTimeout(()=>{
+    if($('#clear').val() ){
+      $('#daterange').val('')
+      $('#clear').val('1')
+    }else
+      $('.daterange').val($('#daterange').val())
+  },1000)
   var packageTable = $('.package-table').DataTable( {
     "processing": true,
     "serverSide": true,    
@@ -27,7 +38,7 @@ $(document).ready(function() {
     "processing": true,
     "serverSide": true,    
     "ajax": {
-      url: "/warehouse/package/all-list/"+$("#filter").val(),
+      url: "/warehouse/package/all-deliver-list/",
       type: "POST",
       data :{ 
         daterange: $('#daterange').val(), 
@@ -732,4 +743,3 @@ $(function() {
     });
   });
 });
-

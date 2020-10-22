@@ -34,6 +34,17 @@ $('.print-package').click(function () {
 });
 
 $(document).ready(function() {  
+  if($('#clear').val() ){
+    $('#daterange').val('')
+    $('#clear').val('1')
+  }
+  setTimeout(()=>{
+    if($('#clear').val() ){
+      $('#daterange').val('')
+      $('#clear').val('1')
+    }else
+      $('.daterange').val($('#daterange').val())
+  },1000)
   $('.package-table').DataTable( {
     "processing": true,
     "serverSide": true,    
@@ -67,6 +78,20 @@ $(document).ready(function() {
       }
     },
   })
+  
+  $('.package-table-fll-package-hand').DataTable( {
+    "processing": true,
+    "serverSide": true,    
+    "ajax": {
+      url: "/warehouse/fll/package/all-list",
+      type: "POST",
+      data :{ 
+        daterange: $('#daterange').val(), 
+        clear: $('#clear').val(), 
+        filterURL: $('#filterURL').val()
+      }
+    },
+  })
   var applyurl = "/warehouse/nas/package/list";
   if( $("#filter").val() == "in-manifest"){
     applyurl ="/warehouse/package/list/in-manifest";
@@ -77,7 +102,9 @@ $(document).ready(function() {
   if( $("#filter").val() == "not-pmb9000"){
     applyurl ="/warehouse/package/list/not-pmb9000";
   }
- 
+ if( $("#filter").val() == "fllpackagelist" ){
+   applyurl ="/warehouse/fll/package/list";
+ }
      
     // Event listener to the two range filtering inputs to redraw on input
     $(document).on('click', '.applyBtn', function() {

@@ -358,18 +358,120 @@ exports.get_filtered_package_list = (req, res, next) => {
             }
         });*/
 };
+exports.get_all_delivered_package_list = (req, res, next) => {
+    services.packageService.getAllFullPackagesWithLastStatus(req).then(async (packagesResult) => {
+        var dataTable = {
+            draw: req.query.draw,
+            recordsTotal: packagesResult.total,
+            recordsFiltered: packagesResult.total,
+            data:[]
+          }
+          var data = [];
+          var packages = packagesResult.packages?packagesResult.packages:[];
+              packages = await services.packageService.managePackagesData(packages);
+              for(var i=0; i< packages.length; i++){
+                var packageDetail = [];
+                packageDetail.push(`<input type="checkbox" name="package-select" class="package-select" />`)
+                packageDetail.push(helpers.formatDate(packages[i].OrignalBarcodeDate));
+                if(packages[i].customer && packages[i].customer.length){
+                    packageDetail.push((
+                        (packages[i]['customer'] && packages[i]['customer'].length && packages[i]['customer'][0].lastName )? 
+                    `${packages[i]['customer'][0].firstName} ${packages[i]['customer'][0].lastName}` : 
+                    `${packages[i]['customer'][0].firstName}`))
+                }else{
+                    packageDetail.push('-')
+                }
+                packages[i].packageNumber = "PK00" + packages[i].id;
+                var awbId = packages[i].awbId ? packages[i].awbId : "#";
+                var awbNumber = (packages[i].awb ) ? packages[i].awb.awbId :'-';
+                packageDetail.push(`<a class="text-decoration-none" href="/warehouse/nas/awb/manage/${awbId}/preview"><b>${packages[i].express? '*':'' }</b>${awbNumber} </a>`)
+                var barcode = (packages[i].barcode && packages[i].barcode) ? packages[i].barcode.barcode :'-';
+                packageDetail.push(barcode);
+                packageDetail.push(packages[i].packageNumber);
+                packageDetail.push(packages[i].description);
+                var zoneName = (packages[i].zone && packages[i].zone.length) ? packages[i].zone[0].name : '-';
+                packageDetail.push(zoneName);
+                packageDetail.push(packages[i].pieceNo);
+                packageDetail.push(packages[i].weight);
+                packageDetail.push((packages[i].pieces || packages[i].pieces > -1) ? packages[i].pieces : '');
+                packageDetail.push(packages[i].lastStatusText);
+                packageDetail.push(packages[i].awbCreatedAt);
+                packageDetail.push(packages[i].actualFlight);
+                packageDetail.push(packages[i].manifestId);
+                packageDetail.push((packages[i].lastStatusDates) ? packages[i].lastStatusDates : '' );
+                packageDetail.push(`<a href="../pkg-label/download/${packages[i]._id}"><i class="fa fa-download"></i></a>
+                <a
+                  class="btn btn-link btn-primary btn-print-pkg"
+                  data-toggle="modal"
+                  data-id="${packages[i]._id}"
+                  data-original-title="Print Label"
+                  data-target="#print-popup"
+                ><i class="fa fa-print"></i>
+              </a>`);
+                
+                data.push(packageDetail);
+              }
+              dataTable.data = data;
+              res.json(dataTable); 
+    })
+};
 
 exports.get_fll_package_list = (req, res, next) => {
-    services.packageService.getPackagesInFll_updated().then((packages) => {
+   // services.packageService.getPackagesInFll_updated().then((packages) => {
         res.render('pages/warehouse/package/list', {
             page: req.originalUrl,
             user: res.user,
             title: 'Packages On Hands Of FLL',
             filterURL: '',
-            packages: packages,
+            packages: [],//packages,
+            daterange: req.query.daterange?req.query.daterange:'',
+            clear: req.query.clear,
+            filter:'fllpackagelist',
+            datatable: "-fll-package-hand"
         });
-    });
+   // });
 };
+
+exports.get_all_fll_package_list = (req, res, next) => {
+    services.packageService.getPackagesAllInFll_updated(req).then((packagesResult) => {
+        var dataTable = {
+            draw: req.query.draw,
+            recordsTotal: packagesResult.total,
+            recordsFiltered: packagesResult.total,
+            data:[]
+          }
+          var data = [];
+          var packages = packagesResult.packages?packagesResult.packages:[];
+          for(var i=0; i< packages.length; i++){
+            var packageDetail = [];
+            var customerName = '';
+            if(packages[i].customer){
+                customerName =  (packages[i]['customer'].lastName ? 
+                `${packages[i]['customer'].firstName} ${packages[i]['customer'].lastName}` : 
+                `${packages[i]['customer'].firstName}`)
+            }
+            //console.log(packages[i].statsData.status);
+            packageDetail.push(customerName);
+            packageDetail.push(helpers.formatDate(packages[i].createdAt));
+            packageDetail.push((packages[i].barcode && packages[i].barcode.barcode)? packages[i].barcode.barcode : '');
+            packageDetail.push(packages[i].description ? packages[i].description : '');
+            packageDetail.push((packages[i].customer && packages[i].customer.pmb)? packages[i].customer.pmb : '');
+            packageDetail.push(packages[i].packageType ? packages[i].packageType : '');
+            packageDetail.push(packages[i].aging ? packages[i].aging : '');
+            packageDetail.push(packages[i].agingdollar ? packages[i].agingdollar : 0);
+            packageDetail.push(packages[i].weight ? packages[i].weight : '');
+            packageDetail.push((packages[i].pieces || packages[i].pieces > -1) ? packages[i].pieces : '')
+            packageDetail.push((packages[i].statsData ) ? packages[i].statsData.status : '')
+            packageDetail.push(`<a href="../../nas/awb/manage/${packages[i].awb._id}/preview">${packages[i].awb.awbId}</a>`)
+            packageDetail.push(` <a href="../../pkg-label/download/${packages[i]._id}"><i class="fa fa-download"></i></a>
+            <a class="btn btn-link btn-primary btn-print-pkg" data-toggle="modal" data-id="${packages[i]._id}" data-original-title="Print Label" data-target="#print-popup"><i class="fa fa-print"></i> </a>
+            `)
+            data.push(packageDetail);
+          }
+          dataTable.data = data;
+          res.json(dataTable);  
+    })
+} 
 
 exports.get_nas_package_list = (req, res, next) => {
     //services.packageService.getPackagesInNas_updated().then((packages) => {
@@ -381,7 +483,8 @@ exports.get_nas_package_list = (req, res, next) => {
             packages: [],//packages,
             daterange: req.query.daterange?req.query.daterange:'',
             clear: req.query.clear,
-            datatable: "nas-package-hand"
+            filter:'',
+            datatable: "-nas-package-hand"
         });
    // });
 };

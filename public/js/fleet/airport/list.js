@@ -31,6 +31,17 @@ $("#airportTable").on("click", ".rm-airport", function() {
 //   pageLength: 10,
 // });
 $(document).ready(function() { 
+  if($('#clear').val() ){
+    $('#daterange').val('')
+    $('#clear').val('1')
+  }
+  setTimeout(()=>{
+    if($('#clear').val() ){
+      $('#daterange').val('')
+      $('#clear').val('1')
+    }else
+      $('.daterange').val($('#daterange').val())
+  },1000)
   $('#airportTable').DataTable( {
     "processing": true,
     "serverSide": true,    
