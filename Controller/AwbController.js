@@ -356,7 +356,7 @@ exports.get_all_awb = (req, res, next) => {
   if(req.body.clear)
     req.body.daterange =''
 
-  services.awbService.getAllAwbsFull(req).then(results => {
+  services.awbService.getAllAwbsFullList(req).then(results => {
     const awbs = results.awbs;
     var dataTable = {
       draw: req.query.draw,

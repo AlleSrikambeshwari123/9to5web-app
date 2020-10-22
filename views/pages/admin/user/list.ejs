@@ -8,7 +8,9 @@
       </div>
       <div class="card-body daterangepickerbody">
         <div class="table-responsive">
-        <table class="display table table-striped dateRangeFilterTable table-hover dataTable user-table">
+          <input type="hidden" name="daterange" id="daterange" value="<%=daterange%>">
+          <input type="hidden" name="clear" id="clear" value="<%=clear%>">
+        <table class="display table table-striped table-hover dataTable user-table">
           <thead>
             <tr>
               <th>Role</th>
@@ -22,42 +24,7 @@
             </tr>
           </thead>
           <tbody>
-            <% users.forEach(function(user){%>
-            <tr data-record="<%= user.username %>">
-              <td scope="row">
-                <% if (user.roles.length) {user.roles.forEach(function(role, roleIndex){%>
-                  <%=role.type%>
-                  <% if ((roleIndex + 1) !== user.roles.length){ %>
-                    <spna>,<span>
-                  <% }%>
-                <%})}%>
-              </td>
-              <td><%=helpers.formatDate(user.createdAt)%></td>
-              <td><%=user.username%></td>
-              <td><%=helpers.getFullName(user)%></td>
-              <td><%=user.email%></td>
-              <td><%=user.mobile %></td>
-              <td>
-                <% if (!user.enabled){ %>
-                <span class='badge badge-danger'>Inactive</span>
-                <% } else { %>
-                <span class='badge badge-info'>Active</span>
-                <% } %>
-              </td>
-              <td>
-                <a href='manage/<%=user.username%>/get'><i class="fas fa-user-edit"></i></a>
-                <!-- temporary commenting the code -->
-                <!-- <a href='#' class='rm-user' data-id='<%=user.username%>'><i class="fas fa-trash"></i></a> -->
-                <% if (!user.enabled){ %>
-                <a href='#' class='enableUser' data-id='<%=user.username%>' data-value='true'> <span
-                    class='badge badge-info float-right'>Enable</span></a>
-                <% } else {%>
-                <a href='#' class='enableUser' data-id='<%=user.username%>' data-value='false'> <span
-                    class='badge badge-danger float-right'>Disable</span> </a>
-                <% } %>
-              </td>
-            </tr>
-            <%})%>
+            
           </tbody>
         </table>
         </div>

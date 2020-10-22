@@ -8,7 +8,9 @@
       </div>
       <div class="card-body daterangepickerbody">
         <div class="table-responsive">
-        <table class="display table table-striped table-hover dateRangeFilterTable dataTable location-table ">
+          <input type="hidden" name="daterange" id="daterange" value="<%=daterange%>">
+          <input type="hidden" name="clear" id="clear" value="<%=clear%>">
+        <table class="display table table-striped table-hover dataTable location-table ">
           <thead>
             <tr>
               <th>Company</th>
@@ -19,21 +21,7 @@
               <th></th>
             </tr>
           </thead>
-          <tbody>
-            <% locations.forEach(location => { %>
-            <tr data-record="<%=location.id%>">
-              <td><%=(location.company && location.company.name) || '' %></td>
-              <td><%=helpers.formatDate(location.createdAt)%></td>
-              <td><%=location.name%></td>
-              <td><%=location.address%></td>
-              <td><%=location.phone%></td>
-              <th>
-                <a href="manage/<%=location.id%>/get"><i class='fas fa-pencil-alt'></i></a>
-                <!-- temporary commenting the code -->
-                <!-- <a href='#' class='rm-location ml-3' data-id='<%=location.id%>'><i class="fas fa-trash"></i></a> -->
-              </th>
-            </tr>
-            <% }) %>
+          <tbody>            
           </tbody>
         </table>
         </div>

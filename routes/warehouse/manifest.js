@@ -5,7 +5,7 @@ var middleware = require('../../middleware');
 var manifestCtrl = require('../../Controller/ManifestController');
 
 router.get('/fll/manifest/list', middleware().checkSession, manifestCtrl.get_manifest_list);
-router.post('/fll/manifest/listall', middleware().checkSession, manifestCtrl.get_all_manifests);
+router.post('/fll/manifest/all-list', middleware().checkSession, manifestCtrl.get_all_manifest_list);
 router.get('/fll/manifest/create', middleware().checkSession, manifestCtrl.create_manifest)
 router.get('/nas/manifest/create', middleware().checkSession, manifestCtrl.create_manifest)
 router.post('/nas/manifest/create', middleware().checkSession, manifestCtrl.add_new_manifest);
@@ -20,6 +20,7 @@ router.get('/fll/manifest/manage/:id/ship', middleware().checkSession, manifestC
 router.post('/manifest/manage/:id/close', middleware().checkSession, manifestCtrl.close_manifest);
 
 router.get('/nas/manifest/incoming', middleware().checkSession, manifestCtrl.get_incoming_manifest)
+router.post('/nas/manifest/all-incoming', middleware().checkSession, manifestCtrl.get_all_incoming_manifest)
 router.get('/nas/manifest/manage/:id/get', middleware().checkSession, manifestCtrl.get_manifest_detail);
 router.get('/fll/manifest/manage/:id/receive', middleware().checkSession, manifestCtrl.receive_manifest);
 

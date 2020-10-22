@@ -7,6 +7,7 @@ var priceCtrl = require('../../Controller/AwbPriceLabelController');
 var printerCtrl = require('../../Controller/PrinterController');
 
 router.get('/price/list', middleware().checkSession, priceCtrl.get_awb_list);
+router.post('/price/all-list', middleware().checkSession, priceCtrl.get_all_awb_list);
 router.get('/pricelabels/:id', middleware().checkSession, priceCtrl.get_pricelabel_awb);
 router.get('/pricelabels-package/:id', middleware().checkSession, priceCtrl.get_awb_pricelabel);
 router.post('/pricelabels/:id', middleware().checkSession, priceCtrl.add_pricelabel_awb);

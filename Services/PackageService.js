@@ -484,6 +484,125 @@ class PackageService {
                 });
         });
     }
+    async get_all_nas_package_aging(req) {
+        var start = req.body.start ? parseInt(req.body.start) : 0;
+        var length = req.body.length ? parseInt(req.body.length) : 10;      
+        var field = req.body['order[0][column]'] ?parseInt(req.body['order[0][column]']) : 0;
+        var columns = {
+            0:'customer.firstName', 
+            1: 'createdAt', 
+            2: 'barcode.barcode',
+            3: 'description',
+            4: 'customer.pmb',
+            5: 'packageType',
+            6: 'aging',
+            7: 'agingdollar',
+            8: 'weight',
+            9: 'pieces',
+            10: 'lastStatusText',
+            11:'awb.awbId'
+        } 
+        
+        var dir = req.body['order[0][dir]'] ? req.body['order[0][dir]'] : 0;
+        var sort = (dir=='asc') ? 1 : -1;
+        var sortField = columns[field];
+
+        var search = req.body['search[value]'] ? req.body['search[value]'] : ''; 
+        var searchData = {};
+        if(search){
+            searchData.$or = [          
+                {"customer.firstName":{'$regex' : search, '$options' : 'i'}},
+                {"barcode.barcode":{'$regex' : search, '$options' : 'i'}}, 
+                {"description":{'$regex' : search, '$options' : 'i'}},
+                {"customer.pmb":{'$regex' : search, '$options' : 'i'}}, 
+                {"packageType":{'$regex' : search, '$options' : 'i'}},
+                {"aging":{'$regex' : search, '$options' : 'i'}},
+                {"agingdollar":{'$regex' : search, '$options' : 'i'}},
+                {"weight":{'$regex' : search, '$options' : 'i'}},
+                {"lastStatusText":{'$regex' : search, '$options' : 'i'}},
+                {"awbNumber":{'$regex' : search, '$options' : 'i'}}  
+            ]
+        }
+        return new Promise(async (resolve, reject) => {
+            
+            var pipeAggregate = [                
+                {
+                    $lookup:{
+                    from:"awbs",
+                    localField: 'awbId',
+                    foreignField: '_id',
+                    as:"awb"
+                    }
+                },
+                {$unwind:"$awb"},
+                {
+                    $addFields:{
+                       awbNumber: { $convert: { input: "$awb.awbId", to: "string" } }
+                    }
+                },
+                {
+                    $lookup:{
+                    from:"barcodes",
+                    localField: 'originBarcode',
+                    foreignField: '_id',
+                    as:"barcode"
+                    }
+                },
+                {$unwind:"$barcode"},
+                {
+                    $lookup:{
+                    from:"customers",
+                    localField: 'customerId',
+                    foreignField: '_id',
+                    as:"customer"
+                    }
+                },
+                {$unwind:"$customer"},
+                {
+                    $lookup:{
+                    from:"zones",
+                    localField: 'zoneId',
+                    foreignField: '_id',
+                    as:"zone"
+                    }
+                }, 
+                {$unwind:"$zone"}, 
+                {
+                    $match:searchData
+                }
+            ]
+            var totalRecords =  await Package.aggregate(
+                [...pipeAggregate,
+                ...[ {$count:"total"}]]);
+            if(totalRecords && totalRecords.length && totalRecords[0].total ){
+                Package.aggregate([
+                    ...pipeAggregate,
+                    ...[           
+                        {
+                        $sort : { [sortField] : sort}, 
+                        },
+                        {
+                        $skip:start,
+                        },
+                        {
+                        $limit:length,
+                        }
+                    ]
+                ]).exec((err, result)=>{
+                    if(err){  
+                        console.log(err)                      
+                        resolve({total: 0, packages: 0}) 
+                    }else{
+                        console.log(result[0])
+                        resolve({total: totalRecords[0].total, packages: result}) 
+                    }
+                });
+            }else{
+                resolve({total: 0, packages: []}) 
+            }
+        });
+
+    }
     get_Packages_update(object) {
         return new Promise((resolve, reject) => {
             Package.find(object)
@@ -685,6 +804,324 @@ class PackageService {
                 return pkg;
             }),
         );
+    }
+
+    async managePackagesData(packages) {
+        let awbArray = []
+        return await Promise.all(
+            packages.map(async(pkg) => {
+                let status = await this.services.packageService.getPackageLastStatus(pkg._id);
+                pkg.lastStatusText = status && status.status;
+                if(pkg.lastStatusDate)
+                    pkg.lastStatusDates  = momentz(pkg.lastStatusDate).tz("America/New_York").format('dddd, MMMM Do YYYY, h:mm A')
+                if (pkg.barcode ) {
+                    let barcode = await this.getOriginBarcode(pkg.barcode)
+                    if (barcode !== null && barcode.createdAt) {
+                        pkg.OrignalBarcodeDate = barcode.createdAt;
+                    }
+                }
+                if (pkg.awbId) {
+                    var awb =  pkg.awb ? pkg.awb : {};
+                    if (awb !== null && awb.createdAt) {
+                        let flag = 0
+                        awbArray.forEach(data=>{
+                            if(data.awbId == awb.awbId){
+                                data.pkgNo++
+                                flag = 1
+                                pkg.pieceNo = data.pkgNo 
+                            }
+                        })
+                        if(flag == 0){
+                            awbArray.push({awbId : awb.awbId,pkgNo : 1})
+                            pkg.pieceNo = 1
+                        }
+                        pkg.awbCreatedAt = momentz(awb.createdAt).tz("America/New_York").format('dddd, MMMM Do YYYY, h:mm A');
+                    }
+                }
+                if (pkg.manifestId) {
+                    let actualFlight = await Manifest.findById(pkg.manifestId).populate('planeId')
+                    if (actualFlight !== null && actualFlight.planeId) {
+                        pkg.manifestId = actualFlight._id
+                        pkg.actualFlight = actualFlight.planeId ? actualFlight.planeId.tailNumber : ''
+                    }
+                }
+                pkg.OrignalBarcodeDate = pkg.OrignalBarcodeDate || ''
+                pkg.awbCreatedAt = pkg.awbCreatedAt || ''
+                pkg.actualFlight = pkg.actualFlight || ''
+                return pkg;
+            }),
+        );
+    }
+
+    async getFllPackageWithLastStatus(req){
+        return new Promise(async (resolve, reject) => {
+            var start = req.body.start ? parseInt(req.body.start) : 0;
+            var length = req.body.length ? parseInt(req.body.length) : 10;      
+            var field = req.body['order[0][column]'] ?parseInt(req.body['order[0][column]']) : 0;
+            var columns = {
+                0: 'customer.firstName',
+                1: 'createdAt',
+                2: 'barcode.barcode',
+                3: 'description',
+                4: 'customer.pmb',
+                5: 'packageType',
+                12: 'awb.awbId'
+            } 
+            
+            var dir = req.body['order[0][dir]'] ? req.body['order[0][dir]'] : 0;
+            var sort = (dir=='asc') ? 1 : -1;
+            var sortField = columns[field];
+
+            var search = req.body['search[value]'] ? req.body['search[value]'] : ''; 
+            var searchData = {};
+            if(req.params.filter && req.params.filter == "in-manifest"){
+                searchData.manifestId = {$ne: null}
+            }
+            if(req.params.filter && req.params.filter == "in-pmb9000"){
+                searchData.manifestId = {$ne: null};
+                searchData.customerId = {$ne: null};
+                searchData.awbId = {$ne: null};
+                searchData.pmb = 9000;
+            }
+            if(req.params.filter && req.params.filter == "not-pmb9000"){
+                searchData.manifestId = {$ne: null};
+                searchData.customerId = {$ne: null};
+                searchData.awbId = {$ne: null};
+                searchData.pmb = {$ne: 9000};
+            }
+            
+            //date range
+            var daterange = req.body.daterange?req.body.daterange:'';
+            if(daterange){
+                var date_arr = daterange.split('-');
+                var startDate = (date_arr[0]).trim();      
+                var stdate = new Date(startDate);
+                stdate.setDate(stdate.getDate() +1);
+
+                var endDate = (date_arr[1]).trim();
+                var endate = new Date(endDate);
+                endate.setDate(endate.getDate() +1);     
+                searchData.createdAt = {"$gte":stdate, "$lte": endate};
+            }
+
+            if(!req.body.daterange && !req.body.clear){
+                var endate = new Date();      
+                endate.setDate(endate.getDate()+1);
+                var stdate = new Date();
+                stdate.setDate(stdate.getDate() -21);      
+                searchData.createdAt = {"$gte":stdate, "$lte": endate};
+            
+            }
+
+            if(search){
+                searchData.$or = [          
+                    {"customer.firstName":{'$regex' : search, '$options' : 'i'}},
+                    {"customer.lastName":{'$regex' : search, '$options' : 'i'}},
+                    {"awb.awbId":search},
+                    {"barcode.barcode":{'$regex' : search, '$options' : 'i'}},
+                    {"description":{'$regex' : search, '$options' : 'i'}},
+                    {"zone.name":{'$regex' : search, '$options' : 'i'}},
+                ]
+            }
+           
+            console.log(searchData);
+            var pipeLineAggregate = [
+                {
+                    $lookup:{
+                        from: "awbs",
+                        localField: "awbId",
+                        foreignField: "_id",
+                        as: "awb"
+                    }
+                },
+                {
+                    $unwind: "$awb"
+                },
+                {
+                    $lookup:{
+                        from: "barcodes",
+                        localField: "originBarcode",
+                        foreignField: "_id",
+                        as: "barcode"
+                    }
+                },                
+                {
+                    $unwind: "$barcode"
+                },
+                {
+                    $lookup:{
+                        from: "customers",
+                        localField: "customerId",
+                        foreignField: "_id",
+                        as: "customer"
+                    }
+                },
+                {$unwind: "$customer"},
+                {
+                    $lookup:{
+                        from: "zones",
+                        localField: "zoneId",
+                        foreignField: "_id",
+                        as: "zone"
+                    }
+                },
+                {
+                    $addFields:{
+                        pmb:"$customer.pmb"
+                    }
+                },
+                {
+                    $match: searchData
+                }
+            ]
+            var totalRecords = await Package.aggregate([
+                ...pipeLineAggregate,
+                ...[{$count:"total"}]
+            ]);
+            
+            if(totalRecords && totalRecords.length && totalRecords[0].total){
+                Package.aggregate([
+                    ...pipeLineAggregate,
+                    ...[
+                        {$sort:{[sortField]: sort}},
+                        {$skip: start},
+                        {$limit: length}
+                    ]
+                ]).exec((err, result) => {
+                    if(err){
+                        resolve({total: 0, packages:[]})
+                    }else{
+                        console.log(result)
+                        resolve({total: totalRecords[0].total, packages:result})
+                    }
+                })
+            }else{
+                resolve({total: 0, packages:[]})
+            }
+        }) 
+    }
+
+    async getAllFullPackagesWithLastStatus(req) {
+        return new Promise(async (resolve, reject) => {
+            var start = req.body.start ? parseInt(req.body.start) : 0;
+            var length = req.body.length ? parseInt(req.body.length) : 10;      
+            var field = req.body['order[0][column]'] ?parseInt(req.body['order[0][column]']) : 0;
+            var columns = {0:'barcode.createdAt', 1: 'createdAt', 2: 'location.name'} 
+            
+            var dir = req.body['order[0][dir]'] ? req.body['order[0][dir]'] : 0;
+            var sort = (dir=='asc') ? 1 : -1;
+            var sortField = columns[field];
+
+            var search = req.body['search[value]'] ? req.body['search[value]'] : ''; 
+            var searchData = {};
+            if(req.params.filter && req.params.filter == "in-manifest"){
+                searchData.manifestId = {$ne: null}
+            }
+            //date range
+            var daterange = req.body.daterange?req.body.daterange:'';
+            if(daterange){
+            var date_arr = daterange.split('-');
+            var startDate = (date_arr[0]).trim();      
+            var stdate = new Date(startDate);
+            stdate.setDate(stdate.getDate() +1);
+
+            var endDate = (date_arr[1]).trim();
+            var endate = new Date(endDate);
+            endate.setDate(endate.getDate() +1);     
+            searchData.barcodeDate = {"$gte":stdate, "$lte": endate}
+            }
+
+            if(!req.body.daterange && !req.body.clear){
+            var endate = new Date();      
+            endate.setDate(endate.getDate()+1);
+            var stdate = new Date();
+            stdate.setDate(stdate.getDate() -21);      
+            //searchData.createdAt = {"$gte":stdate, "$lte": endate};
+            searchData.barcodeDate =  {"$gte":stdate, "$lte": endate};
+            }
+
+            if(search){
+                searchData.$or = [          
+                    {"customer.firstName":{'$regex' : search, '$options' : 'i'}},
+                    {"awb.awbId":search},
+                    {"barcode.barcode":{'$regex' : search, '$options' : 'i'}},
+                    {"description":{'$regex' : search, '$options' : 'i'}},
+                    {"zone.name":{'$regex' : search, '$options' : 'i'}},
+                ]
+            }
+           
+            
+            var pipeLineAggregate = [
+                {
+                    $lookup:{
+                        from: "awbs",
+                        localField: "awbId",
+                        foreignField: "_id",
+                        as: "awb"
+                    }
+                },
+                {
+                    $unwind: "$awb"
+                },
+                {
+                    $lookup:{
+                        from: "barcodes",
+                        localField: "originBarcode",
+                        foreignField: "_id",
+                        as: "barcode"
+                    }
+                },                
+                {
+                    $unwind: "$barcode"
+                },
+                {
+                    $lookup:{
+                        from: "customers",
+                        localField: "customerId",
+                        foreignField: "_id",
+                        as: "customer"
+                    }
+                },
+                {
+                    $lookup:{
+                        from: "zones",
+                        localField: "zoneId",
+                        foreignField: "_id",
+                        as: "zone"
+                    }
+                },
+                {
+                    $addFields:{barcodeDate:"$barcode.createdAt"}
+                },
+                {
+                    $match: searchData
+                }
+            ]
+            var totalRecords = await Package.aggregate([
+                ...pipeLineAggregate,
+                ...[{$count:"total"}]
+            ]);
+            
+            if(totalRecords && totalRecords.length && totalRecords[0].total){
+                Package.aggregate([
+                    ...pipeLineAggregate,
+                    ...[
+                        {$sort:{[sortField]: sort}},
+                        {$skip: start},
+                        {$limit: length}
+                    ]
+                ]).exec((err, result) => {
+                    if(err){
+                        resolve({total: 0, packages:[]})
+                    }else{
+                        console.log(result)
+                        resolve({total: totalRecords[0].total, packages:result})
+                    }
+                })
+            }else{
+                resolve({total: 0, packages:[]})
+            }
+        })
     }
 
     addOriginBarcode(originBarcode) {
@@ -1055,7 +1492,7 @@ class PackageService {
                     packages.map((pkg) => {
                         return this.getPackageLastStatus_updated(pkg._id);
                     }),
-                ).then((stats) => {
+                ).then((stats) => {                    
                     let pkgs = [];
                     stats.forEach((status, i) => {
                         packages[i].lastStatusText = status.status;
@@ -1066,6 +1503,142 @@ class PackageService {
                 });
             });
         });
+    }
+
+    getAllPackagesInNas_updated(req){
+        return new Promise(async (resolve, reject) => {
+            var start = req.body.start ? parseInt(req.body.start) : 0;
+            var length = req.body.length ? parseInt(req.body.length) : 10;      
+            var field = req.body['order[0][column]'] ?parseInt(req.body['order[0][column]']) : 0;
+            var columns = {0:'barcode.createdAt', 1: 'createdAt', 2: 'location.name'} 
+            
+            var dir = req.body['order[0][dir]'] ? req.body['order[0][dir]'] : 0;
+            var sort = (dir=='asc') ? 1 : -1;
+            var sortField = columns[field];
+
+            var search = req.body['search[value]'] ? req.body['search[value]'] : ''; 
+            var searchData = {};
+
+            //date range
+            var daterange = req.body.daterange?req.body.daterange:'';
+            if(daterange){
+            var date_arr = daterange.split('-');
+            var startDate = (date_arr[0]).trim();      
+            var stdate = new Date(startDate);
+            stdate.setDate(stdate.getDate() +1);
+
+            var endDate = (date_arr[1]).trim();
+            var endate = new Date(endDate);
+            endate.setDate(endate.getDate() +1);     
+            searchData.createdAt = {"$gte":stdate, "$lte": endate}
+            }
+
+            if(!req.body.daterange && !req.body.clear){
+            var endate = new Date();      
+            endate.setDate(endate.getDate()+1);
+            var stdate = new Date();
+            stdate.setDate(stdate.getDate() -21);      
+            //searchData.createdAt = {"$gte":stdate, "$lte": endate};
+            searchData.createdAt =  {"$gte":stdate, "$lte": endate};
+            }
+
+            if(search){
+                searchData.$or = [          
+                    {"customer.firstName":{'$regex' : search, '$options' : 'i'}},
+                    {"customer.pmb":{'$regex' : search, '$options' : 'i'}},
+                    {"awb.awbId":search},
+                    {"barcode.barcode":{'$regex' : search, '$options' : 'i'}},
+                    {"description":{'$regex' : search, '$options' : 'i'}},
+                    {"zone.name":{'$regex' : search, '$options' : 'i'}},
+                    {"packageType":{'$regex' : search, '$options' : 'i'}}
+                ]
+            }
+           var pipeAggregate = [
+               {
+                   $lookup:{
+                       from: "awbs",
+                       localField: "awbId",
+                       foreignField: "_id",
+                       as:"awb"
+                   }
+               },
+               {$unwind:"$awb"},
+               {
+                    $lookup:{
+                        from: "barcodes",
+                        localField: "originBarcode",
+                        foreignField: "_id",
+                        as:"barcode"
+                    }
+                },
+                {$unwind:"$barcode"},
+                {
+                    $lookup:{
+                        from: "customers",
+                        localField: "customerId",
+                        foreignField: "_id",
+                        as:"customer"
+                    }
+                },
+                {$unwind:"$customer"},
+                {
+                    $lookup:{
+                        from: "zones",
+                        localField: "zoneId",
+                        foreignField: "_id",
+                        as:"zone"
+                    }
+                },
+                {
+                    $lookup:{
+                        from: "packagestatuses",
+                        localField: "_id",
+                        foreignField: "packageId",
+                        as: "stats"
+                    }
+                },
+                {
+                    $addFields:{
+                        statsData: { $arrayElemAt: [ "$stats", -1 ] } 
+                    }
+                },                
+                {
+                    $match :{
+                        $or:[
+                            {"statsData.status" : PKG_STATUS[4]},
+                            {"statsData.status": "Recieved in NAS"}
+                        ]
+                    }
+                },
+                {
+                    $match:searchData
+                }
+           ] 
+           var totalRecords = await Package.aggregate([
+            ...pipeAggregate,
+            ...[{$count: "total"}]
+           ]);
+           if(totalRecords && totalRecords.length && totalRecords[0].total){
+                var packages = await Package.aggregate([
+                    ...pipeAggregate,
+                    ...[
+                        {$sort: {createdAt:1}},
+                        {$skip: start},
+                        {$limit: length}
+                    ]
+                ]).exec((err, result) => {
+                    if (err){
+                        resolve({total: 0, packages:[]});
+                    }else {
+                        resolve({total: totalRecords[0].total, packages: result});
+                    }
+                });
+            }else{
+                resolve({total: 0, packages:[]});
+            }
+           
+        })
+
     }
 
     //========== Receive Packages From Truck that arrived at Airport ==========//
@@ -1210,6 +1783,140 @@ class PackageService {
                 })
         });
     }
+
+    getPackagesForStoresList(req, customerPmb){
+        var searchData = {
+            statuspackageLength : 0,
+            $or:customerPmb           
+        }
+        var start = req.body.start ? parseInt(req.body.start) : 0;
+        var length = req.body.length ? parseInt(req.body.length) : 10;      
+        var field = req.body['order[0][column]'] ?parseInt(req.body['order[0][column]']) : 0;
+        var columns = {0:'deliveryNum', 1: 'createdAt', 2: 'user.name', 3: 'location.name', 5: 'driver', 6: 'vehicle.vehicleMake' } 
+        
+        var dir = req.body['order[0][dir]'] ? req.body['order[0][dir]'] : 0;
+        var sort = (dir=='asc') ? 1 : -1;
+        var sortField = columns[field];
+
+        var search = req.body['search[value]'] ? req.body['search[value]'] : ''; 
+
+        //date range
+        var daterange = req.body.daterange?req.body.daterange:''
+        if(daterange){
+        var date_arr = daterange.split('-');
+        var startDate = (date_arr[0]).trim();      
+        var stdate = new Date(startDate);
+        stdate.setDate(stdate.getDate() +1);
+
+        var endDate = (date_arr[1]).trim();
+        var endate = new Date(endDate);
+        endate.setDate(endate.getDate() +1);     
+        searchData.createdAt = {"$gte":stdate, "$lte": endate};
+        }
+
+        if(!req.body.daterange && !req.body.clear){
+        var endate = new Date();      
+        endate.setDate(endate.getDate()+1);
+        var stdate = new Date();
+        stdate.setDate(stdate.getDate() -21);      
+        searchData.createdAt = {"$gte":stdate, "$lte": endate};
+        }
+        if(req.body.location && req.body.location!="All"){
+            searchData.location = req.body.location;
+        }
+
+        if(search){
+        searchData.$or = [          
+            {location:{'$regex' : search, '$options' : 'i'}},
+            {trackingNo:{'$regex' : search, '$options' : 'i'}},  
+            {"customer.pmb":{'$regex' : search, '$options' : 'i'}},
+            {"customer.firstName":{'$regex' : search, '$options' : 'i'}},
+            {"customer.lastName":{'$regex' : search, '$options' : 'i'}},
+            {"awb.awbId":{'$regex' : search, '$options' : 'i'}},  
+            {description:{'$regex' : search, '$options' : 'i'}},
+            {weight:{'$regex' : search, '$options' : 'i'}}  
+        ]
+        }
+        return new Promise(async (resolve, reject) => {
+            var piplineAggregate = [
+                {
+                    $lookup:{
+                        from:"customers",
+                        localField: 'customerId',
+                        foreignField: '_id',
+                        as:"customer"
+                    }
+                },
+                {$unwind:"$customer"},
+                {
+                    $lookup:{
+                        from:"awbs",
+                        localField: 'awbId',
+                        foreignField: '_id',
+                        as:"awb"
+                    }
+                },
+                 {$unwind:"$awb"},
+                {
+                    $lookup:{
+                        from:"packagestatuses",
+                        localField: '_id',
+                        foreignField: 'packageId',
+                        as:"statuspackage"
+                    }
+                },
+                {
+                    $addFields:{
+                        statuspackage: {
+                            $filter: {
+                                input: "$statuspackage",
+                                as: "item",
+                                cond: { $eq: [ "$$item.status", PKG_STATUS[5] ] }
+                             }
+                        }
+                    }
+                },
+                
+                {
+                    $addFields:{
+                        statuspackageLength:{
+                            $size:"$statuspackage"
+                        }
+                    }
+                },
+                {
+                    $match:searchData
+                }                
+            ];
+            
+            
+            var totalRecords = await Package.aggregate([
+                ...piplineAggregate,
+                ...[{$count: "total"}]
+            ]);
+           if(totalRecords && totalRecords.length && totalRecords[0].total){
+                Package.aggregate([
+                    ...piplineAggregate,
+                    ...[
+                        {$sort: {createdAt:1}},
+                        {$skip: start},
+                        {$limit: length},
+                    ]
+                ]).exec((err,result)=>{
+                    if(err){
+                        console.log(err)
+                        resolve({total:0, packages: []})
+                    }else{
+                        resolve({total:totalRecords[0].total, packages: result})
+                    }
+                })
+            }else{
+                resolve({total:0, packages: []})
+            }
+
+        })
+    }
+
 
     //========== load Packages in cargo =============//
 
@@ -1387,7 +2094,7 @@ class PackageService {
 
     getPackageLastStatus_updated(packageId) {
         return new Promise((resolve, reject) => {
-            this.getPackageStatuses_updated(packageId).then((stats) => {
+            this.getPackageStatuses_updated(packageId).then((stats) => {                
                 if (stats.length == 0) resolve(PKG_STATUS[1]);
                 else resolve(stats[stats.length - 1]);
             });

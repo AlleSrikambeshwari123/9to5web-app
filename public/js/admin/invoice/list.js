@@ -65,5 +65,24 @@ $(".btn-view-invoice-package").click(function () {
 $('#invoice-packages').on('hidden.bs.modal', function () {
   $("#invoice-package-tbody").empty();
 });
+
+$(document).ready(function() { 
+  $('.invoice-table').DataTable( {
+    "processing": true,
+    "serverSide": true,    
+    "ajax": {
+      url: "/admin/invoices/all-invoices",
+      type: "POST",
+      data :{ daterange:$('#daterange').val(), clear:$('#clear').val()}
+    },
+  })     
+    // Event listener to the two range filtering inputs to redraw on input
+  $(document).on('click', '.applyBtn', function() {
+      window.location = "/admin/invoices/list?daterange="+$('.daterange').val();
+  });
+  $(document).on('click', '.cancelBtn', function() {
+    window.location = "/admin/invoices/list?clear=1";
+  });  
+})
  
   

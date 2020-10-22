@@ -7,8 +7,10 @@
         <a href='create' class='btn btn-primary btn-round float-right ml-md-auto'>Add Airline</a>
       </div>
       <div class="card-body daterangepickerbody">
+        <input type="hidden" name="daterange" id="daterange" value="<%=daterange%>">
+        <input type="hidden" name="clear" id="clear" value="<%=clear%>">
         <div class="table-responsive">
-          <table id="airlineTable" class="display table table-striped dateRangeFilterTable table-hover">
+          <table id="airlineTable" class="display table table-striped table-hover">
             <thead>
               <tr>
                 <!-- <th>ID</th> -->

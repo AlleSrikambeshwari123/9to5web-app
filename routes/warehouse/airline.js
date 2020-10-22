@@ -4,6 +4,7 @@ var middleware = require('../../middleware');
 var airlineCtrl = require('../../Controller/AirlineController');
 
 router.get('/airline/list', middleware().checkSession, airlineCtrl.get_airline_list);
+router.post('/airline/all-list', middleware().checkSession, airlineCtrl.get_all_airline_list);
 router.get('/airline/create', middleware().checkSession, airlineCtrl.create_airline);
 router.post('/airline/create', middleware().checkSession, airlineCtrl.add_new_airline);
 router.get('/airline/manage/:id/get', middleware().checkSession, airlineCtrl.get_airline_detail);

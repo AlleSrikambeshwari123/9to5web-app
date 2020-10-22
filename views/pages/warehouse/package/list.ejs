@@ -9,8 +9,12 @@
                     <!-- <a href='create' class='btn btn-primary btn-round float-right ml-md-auto'>Add User</a> -->
                 </div>
                 <div class="card-body daterangepickerbody">
+                    <input type="hidden" name="daterange" id="daterange" value="<%=daterange%>">
+                    <input type="hidden" name="clear" id="clear" value="<%=clear%>">
+                    <input type="hidden" name="filterURL" id="filterURL" value="<%=filterURL ? filterURL: ''%>">
+                    <input type="hidden" name="filter" id="filter" value="<%=filter ? filter: ''%>">
                     <div class="table-responsive">
-                        <table id="package-table" class="display table table-striped table-hover dateRangeFilterTable dataTable package-table">
+                        <table id="package-table" class="display table table-striped table-hover  dataTable package-table<%=datatable ? datatable : ''%>">
                             <thead>
                                 <tr>
                                     <th>Customer Name</th>
