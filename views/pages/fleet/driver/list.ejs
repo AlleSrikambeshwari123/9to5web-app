@@ -7,8 +7,10 @@
         <a href='create' class='btn btn-primary btn-round ml-md-auto float-right'>Add Driver</a>
       </div>
       <div class="card-body daterangepickerbody">
+        <input type="hidden" name="daterange" id="daterange" value="<%=daterange%>">
+        <input type="hidden" name="clear" id="clear" value="<%=clear%>">
         <div class="table-responsive">
-        <table class="display table table-striped table-hover dateRangeFilterTable dataTable driver-table">
+        <table class="display table table-striped table-hover dataTable driver-table">
           <thead>
             <tr>
               <th>Name</th>

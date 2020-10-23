@@ -8,7 +8,9 @@
       </div>
       <div class="card-body daterangepickerbody">
         <div class="table-responsive">
-        <table class="display table table-striped table-hover dateRangeFilterTable dataTable manifest-table">
+            <input type="hidden" name="daterange" id="daterange" value="<%=daterange%>">
+            <input type="hidden" name="clear" id="clear" value="<%=clear%>">
+        <table class="display table table-striped table-hover  dataTable manifest-table-fll">
           <thead>
             <tr>
               <th>Manifest ID#</th>
@@ -21,46 +23,7 @@
             </tr>
           </thead>
           <tbody>
-            <% manifests.forEach(function(manifest){ %>
-            <tr data-record="<%= manifest.id %>">
-              <td><strong><%= manifest.plane &&  manifest.plane.tailNumber%><%= manifest.title%></strong></td>
-              <td><%=helpers.formatDate(manifest.createdAt)%></td>
-              <td>
-                <% if (manifest.stageId == 1 ) { %>
-                <span class="badge badge-secondary"><%=manifest.stage %></span>
-                <% } else if(manifest.stageId == 2) { %>
-                <span class="badge badge-default"><%=manifest.stage %></span>
-                <% } else if(manifest.stageId == 3) { %>
-                <span class="badge badge-warning"><%=manifest.stage %></span>
-                <% } else if(manifest.stageId == 4) { %>
-                <span class="badge badge-primary"><%=manifest.stage %></span>
-                <% } else if(manifest.stageId == 5) { %>
-                <span class="badge badge-success"><%=manifest.stage %></span>
-                <% } %>
-              </td>
-              <td><%= manifest.plane &&  manifest.plane.tailNumber%></td>
-              <td class="text-center">
-                <a 
-                data-toggle="modal"
-                data-id="<%=manifest.id%>"
-                data-target="#change-manifest-status"
-                class="btn btn-link btn-primary btn-manifest-status px-3"><i class="fa fa-edit"></i></a> 
-              </td>
-              <td class="text-center">
-                <a href='manage/<%=manifest.id%>/get' class="btn btn-link btn-primary px-3" data-toggle="tooltip"
-                  data-original-title="View Details"> <i class="fa fa-eye"></i> </a>
-                <!-- temporary commenting the code -->
-                <!-- <% if(manifest.stageId == 1) { %>
-                <a class="btn btn-link btn-danger btn-rm-manifest px-3" data-toggle="modal" data-id="<%=manifest.id%>"
-                  data-original-title="Delete" data-target="#confirm-delete-manifest"> <i class="fa fa-trash"></i> </a>
-                <% } %> -->
-              </td>
-              <td class="text-center">
-                <a href='clone/<%=manifest.id%>/get' class="btn btn-link btn-primary px-3" data-toggle="tooltip"
-                  data-original-title="Create Manifest Clone"> <i class="fa fa-clone"></i> </a>
-              </td>
-            </tr>
-            <%})%>
+        
           </tbody>
         </table>
         </div>

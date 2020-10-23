@@ -200,6 +200,347 @@ class AwbService {
         });
     }
 
+    async getAllAwbsFullList(req){
+      var start = req.body.start ? parseInt(req.body.start) : 0;
+      var length = req.body.length ? parseInt(req.body.length) : 10;
+      var sortColumn = req.body.order;
+  
+      var field = req.body['order[0][column]'] ?parseInt(req.body['order[0][column]']) : 0;
+      var columns = {0:'createdAt', 1: 'createdAt', 2: 'customer.pmb', 3:'awbId', 4: 'customer.firstName', 5: 'shipper.name',6:'carrier.name',7:'packages.length',8:'weight'} 
+      var dir = req.body['order[0][dir]'] ? req.body['order[0][dir]'] : 0;
+      var sort = (dir=='asc') ? 1 : -1;
+      var sortField = columns[field];
+      var search = req.body['search[value]'] ? req.body['search[value]'] : '';
+      var daterange = req.body.daterange?req.body.daterange:''
+  
+      var searchData = {};
+
+      //date range
+      var daterange = req.body.daterange?req.body.daterange:''
+      if(daterange){
+        var date_arr = daterange.split('-');
+        var startDate = (date_arr[0]).trim();      
+        var stdate = new Date(startDate);
+        stdate.setDate(stdate.getDate() +1);
+
+        var endDate = (date_arr[1]).trim();
+        var endate = new Date(endDate);
+        endate.setDate(endate.getDate() +1);     
+        searchData.createdAt = {"$gte":stdate, "$lte": endate};
+      }
+
+      if(!req.body.daterange && !req.body.clear){
+        var endate = new Date();      
+        endate.setDate(endate.getDate()+1);
+        var stdate = new Date();
+        stdate.setDate(stdate.getDate() -21);      
+        searchData.createdAt = {"$gte":stdate, "$lte": endate};
+      }
+
+      if(search ){
+        
+        searchData.$or = [
+          {'shipper.name':{'$regex' : search , '$options' : 'i'}  },
+          {'carrier.name':{'$regex' : search , '$options' : 'i'}  },
+          {'driver.firstName':{'$regex' : search , '$options' : 'i'}  },
+          {'driver.lastName':{'$regex' : search , '$options' : 'i'}  }
+        ]
+      }
+      if(req.body.status == 1)
+        searchData.packages =  { $gt: [] }
+      else if(req.body.status == 2)
+        searchData.invoices =  []
+      else if(req.body.status == 3)
+        searchData.packages =  []
+      else if(req.body.status == 4)
+        searchData.fll_pickup =  true
+        
+        return new Promise( async(resolve, reject) => {
+        var piplineAggregate = [
+          {
+              $lookup:{
+                from:"customers",
+                  localField: 'customerId',
+                  foreignField: '_id',
+                  as:"customerId"
+              }
+          },
+          //  {$unwind:"$customer"},
+           {
+            $lookup:{
+                from:"shippers",
+                localField: 'shipper',
+                foreignField: '_id',
+                as:"shipper"
+            }
+          },
+        //  {$unwind:"$shipper"}, 
+          {
+          $lookup:{
+              from:"carriers",
+              localField: 'carrier',
+              foreignField: '_id',
+              as:"carrier"
+          }
+          },
+          // {$unwind:"$carrier"},
+          {
+            $lookup:{
+                from:"hazmats",
+                localField: 'hazmat',
+                foreignField: '_id',
+                as:"hazmat"
+            }
+          },
+        //  {$unwind:"$hazmat"},  
+          {
+          $lookup:{
+              from:"drivers",
+              localField: 'driver',
+              foreignField: '_id',
+              as:"driver"
+          }
+          },
+          // {$unwind:"$driver"}, 
+     
+       {
+        $lookup:{
+            from:"packages",
+            localField: 'packages',
+            foreignField: '_id',
+            as:"packages"
+        }
+      },
+      // {$unwind:"$packages"}, 
+
+      {
+        $lookup:{
+            from:"purchaseorders",
+            localField: 'purchaseorders',
+            foreignField: '_id',
+            as:"purchaseOrders"
+        }
+      },
+      // {$unwind:"$purchaseOrders"}, 
+
+      {
+        $lookup:{
+            from:"invoices",
+            localField: 'invoices',
+            foreignField: '_id',
+            as:"invoices"
+        }
+      },
+      // {$unwind:"$invoices"}, 
+          {
+              $match:searchData
+          }
+        ];
+  
+        var totalRecords = await Awb.aggregate([
+          ...piplineAggregate,
+          ...[{$count: "total"}]
+        ]);
+        if(totalRecords && totalRecords.length && totalRecords[0].total){
+          await Awb.aggregate([
+            ...piplineAggregate,
+            ...[
+              {$sort: {createdAt:1}},
+              {$skip: start},
+              {$limit: length},
+            ]
+          ])
+              .exec(async (err, result) => {
+                Promise.all(result.map(async res =>{
+                  let awbPriceLabel = await PriceLabel.findOne({awbId:res._id}) ;
+
+                  if(awbPriceLabel != null){
+
+                    awbPriceLabel.Brokerage = awbPriceLabel.Brokerage ? awbPriceLabel.Brokerage.toFixed(2) : 0
+                    awbPriceLabel.CustomsProc = awbPriceLabel.CustomsProc ? awbPriceLabel.CustomsProc.toFixed(2) : 0 
+                    awbPriceLabel.CustomsVAT = awbPriceLabel.CustomsVAT ? awbPriceLabel.CustomsVAT.toFixed(2) : 0 
+                    awbPriceLabel.Delivery =  awbPriceLabel.Delivery ? awbPriceLabel.Delivery.toFixed(2): 0 
+                    awbPriceLabel.Duty =  awbPriceLabel.Duty ? awbPriceLabel.Duty.toFixed(2) : 0
+                    awbPriceLabel.EnvLevy = awbPriceLabel.EnvLevy ? awbPriceLabel.EnvLevy.toFixed(2) : 0
+                    awbPriceLabel.Express = awbPriceLabel.Express ? awbPriceLabel.Express.toFixed(2) : 0
+                    awbPriceLabel.Freight = awbPriceLabel.Freight ? awbPriceLabel.Freight.toFixed(2) : 0
+                    awbPriceLabel.Hazmat = awbPriceLabel.Hazmat ? awbPriceLabel.Hazmat.toFixed(2) : 0
+                    awbPriceLabel.Insurance = awbPriceLabel.Insurance ? awbPriceLabel.Insurance.toFixed(2) : 0 
+                    awbPriceLabel.NoDocs = awbPriceLabel.NoDocs ? awbPriceLabel.NoDocs.toFixed(2) : 0
+                    awbPriceLabel.Pickup = awbPriceLabel.Pickup ? awbPriceLabel.Pickup.toFixed(2)  : 0
+                    awbPriceLabel.Sed = awbPriceLabel.Sed ? awbPriceLabel.Sed.toFixed(2) : 0
+                    awbPriceLabel.ServiceVat = awbPriceLabel.ServiceVat ? awbPriceLabel.ServiceVat.toFixed(2) : 0 
+                    awbPriceLabel.Storage = awbPriceLabel.Storage ? awbPriceLabel.Storage.toFixed(2) : 0 
+                    
+                    awbPriceLabel.SumOfAllCharges = Number(awbPriceLabel.CustomsVAT) + Number(awbPriceLabel.ServiceVat) + Number(awbPriceLabel.Freight) + Number(awbPriceLabel.Duty)+ Number(awbPriceLabel.CustomsProc)+Number(awbPriceLabel.EnvLevy) +Number(awbPriceLabel.NoDocs) +
+                    Number(awbPriceLabel.Insurance) + Number(awbPriceLabel.Storage) + Number(awbPriceLabel.Brokerage) +Number(awbPriceLabel.Express) + Number(awbPriceLabel.Delivery) + Number(awbPriceLabel.Hazmat) + Number(awbPriceLabel.Pickup)  + Number(awbPriceLabel.Sed)
+         
+                    res['awbPriceLabel'] = awbPriceLabel.SumOfAllCharges ? awbPriceLabel.SumOfAllCharges.toFixed(2) : 0;
+                    res.weight = awbPriceLabel.TotalWeightValue
+                  }
+                  res['customer'] = res['customerId'];
+                  return res;
+                })).then(()=> resolve({awbs : result,total : totalRecords[0].total}))
+              });
+          }
+          else{
+            resolve({awbs :[],total : 0})
+          }
+      });
+  }
+
+    getAllAwbsFull(req) {
+      var start = req.body.start ? parseInt(req.body.start) : 0;
+      var length = req.body.length ? parseInt(req.body.length) : 10;      
+      var field = req.body['order[0][column]'] ?parseInt(req.body['order[0][column]']) : 0;
+      var columns = {
+          0:'customer.firstName',
+          1: 'createdAt',
+          2: 'customer.pmb',
+          3: 'awbId',
+          4: 'shipper.name',
+          4: 'carrier.name'
+        } 
+      
+      var dir = req.body['order[0][dir]'] ? req.body['order[0][dir]'] : 0;
+      var sort = (dir=='asc') ? 1 : -1;
+      var sortField = columns[field];
+
+      var search = req.body['search[value]'] ? req.body['search[value]'] : ''; 
+      var searchData = {};
+
+      //date range
+      var daterange = req.body.daterange?req.body.daterange:''
+      if(daterange){
+        var date_arr = daterange.split('-');
+        var startDate = (date_arr[0]).trim();      
+        var stdate = new Date(startDate);
+        stdate.setDate(stdate.getDate() +1);
+
+        var endDate = (date_arr[1]).trim();
+        var endate = new Date(endDate);
+        endate.setDate(endate.getDate() +1);     
+        searchData.createdAt = {"$gte":stdate, "$lte": endate};
+      }
+
+      if(!req.body.daterange && !req.body.clear){
+        var endate = new Date();      
+        endate.setDate(endate.getDate()+1);
+        var stdate = new Date();
+        stdate.setDate(stdate.getDate() -21);      
+        searchData.createdAt = {"$gte":stdate, "$lte": endate};
+      }
+
+      if(search){
+        searchData.$or = [          
+          {"customer.firstName": {'$regex' : search, '$options' : 'i'}},
+          {"customer.pmb": {'$regex' : search, '$options' : 'i'}},
+          {"awbId": search},
+          {"shipper.name":{'$regex' : search, '$options' : 'i'}},
+          {"carrier.name":{'$regex' : search, '$options' : 'i'}},
+        ]
+      }   
+      
+      var pipeLineAggregate = [
+        
+        {
+          $lookup: {
+            from: "customers",
+            localField: "customerId",
+            foreignField: "_id",
+            as:"customer"
+          }
+        },
+        {$unwind:"$customer"},
+        {
+          $lookup: {
+            from: "shippers",
+            localField: "shipper",
+            foreignField: "_id",
+            as:"shipper"
+          }
+        },
+        {
+          $lookup: {
+            from: "carriers",
+            localField: "carrier",
+            foreignField: "_id",
+            as:"carrier"
+          }
+        },
+        {
+          $lookup: {
+            from: "hazmats",
+            localField: "hazmat",
+            foreignField: "_id",
+            as:"hazmat"
+          }
+        },
+        {
+          $lookup: {
+            from: "purchaseOrders",
+            localField: "purchaseOrders",
+            foreignField: "_id",
+            as:"packages"
+          }
+        },
+        {
+          $lookup: {
+            from: "invoices",
+            localField: "invoices",
+            foreignField: "_id",
+            as:"invoices"
+          }
+        },
+        {
+          $lookup: {
+            from: "drivers",
+            localField: "driver",
+            foreignField: "_id",
+            as:"drivers"
+          }
+        },
+        {
+          $lookup: {
+            from: "pricelabels",
+            localField: "_id",
+            foreignField: "awbId",
+            as:"pricelabel"
+          }
+        },
+        {
+          $match:searchData
+        }
+      ];
+      
+      return new Promise(async (resolve, reject) => {
+          var totalRecords = await Awb.aggregate([
+            ...pipeLineAggregate,
+            ...[{
+                $count:"total"
+              }]
+          ]);
+        if(totalRecords && totalRecords.length && totalRecords[0].total){
+          Awb.aggregate([
+            ...pipeLineAggregate,
+            ...[
+              {$sort:{[sortField]: sort}},
+              {$skip: start},
+              {$limit: length}
+            ]
+          ]).exec((err, result) => {
+            if(!err){
+              resolve({total: totalRecords[0].total, awbs: result});
+            }else{
+              resolve({total: 0, awbs: []})
+            }
+          })          
+        }else{
+          resolve({total: 0, awbs: []})
+        }
+    })
+    }
+
     getAwbPreviewDetails(id) {
         return new Promise((resolve, reject) => {
             Awb.findOne({ _id: id })
@@ -285,6 +626,136 @@ class AwbService {
                 });
         });
     }
+
+    async getAwbsNoDocsList(req) {
+      var start = req.body.start ? parseInt(req.body.start) : 0;
+      var length = req.body.length ? parseInt(req.body.length) : 10;
+      var sortColumn = req.body.order;
+  
+      var field = req.body['order[0][column]'] ?parseInt(req.body['order[0][column]']) : 0;
+      var columns = {0:'createdAt', 1: 'createdAt', 2: 'customer.pmb', 3:'awbId', 4: 'customer.firstName', 5: 'shipper.name',6:'carrier.name',7:'packages.length',8:'weight'} 
+      var dir = req.body['order[0][dir]'] ? req.body['order[0][dir]'] : 0;
+      var sort = (dir=='asc') ? 1 : -1;
+      var sortField = columns[field];
+      var search = req.body['search[value]'] ? req.body['search[value]'] : '';
+      var daterange = req.body.daterange?req.body.daterange:''
+  
+      var searchData = {};
+
+      if(daterange){
+        var date_arr = daterange.split('-');
+        var startDate = (date_arr[0]).trim();      
+        var stdate = new Date(startDate);
+        stdate.setDate(stdate.getDate() +1);
+
+        var endDate = (date_arr[1]).trim();
+        var endate = new Date(endDate);
+        endate.setDate(endate.getDate() +1);     
+        searchData.createdAt = {"$gte":stdate, "$lte": endate};
+      }
+      
+      if(!req.body.daterange && !req.body.clear){
+        var endate = new Date();      
+        endate.setDate(endate.getDate()+1);
+        var stdate = new Date();
+        stdate.setDate(stdate.getDate() -21);      
+        searchData.createdAt = {"$gte":stdate, "$lte": endate};
+      }
+      console.log("search",search)
+      if(search){
+        searchData.$or = [          
+          {"customer.firstName": {'$regex' : search, '$options' : 'i'}},
+          {"customer.pmb": {'$regex' : search, '$options' : 'i'}},
+          {"awbId": search},
+          {"shipper.name":{'$regex' : search, '$options' : 'i'}},
+          {"carrier.name":{'$regex' : search, '$options' : 'i'}},
+        ]
+      }   
+    
+    var pipeLineAggregate = [
+      
+      {
+        $lookup: {
+          from: "customers",
+          localField: "customerId",
+          foreignField: "_id",
+          as:"customer"
+        }
+      },
+      {$unwind:"$customer"},
+      {
+        $lookup: {
+          from: "shippers",
+          localField: "shipper",
+          foreignField: "_id",
+          as:"shipper"
+        }
+      },
+      {
+        $lookup: {
+          from: "carriers",
+          localField: "carrier",
+          foreignField: "_id",
+          as:"carrier"
+        }
+      },
+      {
+        $lookup:{
+            from:"packages",
+            localField: 'packages',
+            foreignField: '_id',
+            as:"packages"
+        }
+      },
+      // {
+      //   $lookup: {
+      //     from: "purchaseorders",
+      //     localField: "purchaseorders",
+      //     foreignField: "_id",
+      //     as:"packages"
+      //   }
+      // },
+      {
+        $match:searchData
+      }
+    ];
+      return new Promise(async (resolve, reject) => {  
+        var totalRecords = await Awb.aggregate([
+          ...pipeLineAggregate,
+          ...[{
+              $count:"total"
+            }]
+        ]);
+      if(totalRecords && totalRecords.length && totalRecords[0].total){
+        await Awb.aggregate([
+          ...pipeLineAggregate,
+          ...[
+            {$sort:{[sortField]: sort}},
+            {$skip: start},
+            {$limit: length}
+          ]
+        ]).exec((err, awbData) => {
+          if (err) {
+            resolve([]);
+          } else {
+            awbData.forEach((data) => {
+              data['customer']['name'] = (data['customer'].lastName ? `${data['customer'].firstName} ${data['customer'].lastName}` : `${data['customer'].firstName}`);
+              if (data['packages'] && data['packages'].length) {
+                              let weight = 0;
+                              data.packages.forEach((pkg) => (weight += Number(pkg.weight)));
+                              data['weight'] = weight.toFixed(2);
+                            }
+                            data['dateCreated'] = moment(data['createdAt']).format('MMM DD, YYYY');
+                          });
+                          console.log("awb",awbData)
+                      resolve({awbs : awbData,total : totalRecords[0].total});
+                  }
+              });
+      }else{
+        resolve({total: 0, awbs: []})
+      }
+      });
+  }
 
     renameKey(obj, key, newKey) {
         const awb = Object.assign({}, obj);

@@ -8,7 +8,9 @@
       </div>
       <div class="card-body daterangepickerbody">
         <div class="table-responsive">
-          <table id="customerTable" class="display table dataTable dateRangeFilterTable table-striped table-hover">
+            <input type="hidden" name="daterange" id="daterange" value="<%=daterange%>">
+            <input type="hidden" name="clear" id="clear" value="<%=clear%>">
+          <table id="customerTable" class="display table dataTable table-striped table-hover customer-table">
             <thead>
               <tr>
                 <th>Company</th>
@@ -22,22 +24,6 @@
               </tr>
             </thead>
             <tbody>
-              <% customers.forEach(function(customer){%>
-              <tr data-record="<%= customer.id %>">
-                <td><%=customer.company.name%></td>
-                <td><%=helpers.formatDate(customer.createdAt)%></td>
-                <td scope="row"><%=customer.pmb%></td>
-                <td><%=helpers.getFullName(customer)%></td>
-                <td><%=customer.email%></td>
-                <td><%=customer.telephone %></td>
-                <td><%=customer.location && customer.location.name %></td>
-                <td>
-                  <a href='manage/<%=customer.id%>/get'><i class="fas fa-user-edit"></i></a>
-                  <!-- temporary commenting the code -->
-                  <!-- <a href='#' class='rm-customer ml-3' data-id='<%=customer.id%>'><i class="fas fa-trash"></i></a> -->
-                </td>
-              </tr>
-              <%})%>
             </tbody>
           </table>
         </div>

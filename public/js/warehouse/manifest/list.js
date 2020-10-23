@@ -23,9 +23,9 @@ $('#confirm-delete-manifest').find('#btn-rm').click(function () {
   });
 })
 
-$('.manifest-table').DataTable({
-  pageLength: 10,
-})
+// $('.manifest-table').DataTable({
+//   pageLength: 10,
+// })
 
 $(function() {
   let manifestChangeStatusForm = $('#change-manifest-status-form');
@@ -108,4 +108,64 @@ $(function() {
         });
       }
     });
+})
+
+function setManifestId(str){
+  var id = $(str).data('id');
+  $('#ManifestIdStatus').val(id)
+}
+$(document).ready(function() { 
+  let flagStatus = 1;
+ 
+  if($('#clear').val() ){
+    $('#daterange').val('')
+    $('#clear').val('1')
+  }
+  setTimeout(()=>{
+    if($('#clear').val() ){
+      $('#daterange').val('')
+      $('#clear').val('1')
+    }else
+      $('.daterange').val($('#daterange').val())
+  },1000)
+
+  $('.manifest-table').on( 'xhr.dt', function () {
+    flagStatus = 1
+  });
+  $('.manifest-table-fll').on( 'xhr.dt', function () {
+    flagStatus = 0
+  });
+
+  $('.manifest-table').DataTable( {
+    "processing": true,
+    "serverSide": true,    
+    "ajax": {
+      url: "/warehouse/nas/manifest/all-incoming",
+      type: "POST",
+      data :{ daterange:$('#daterange').val(), clear:$('#clear').val()}
+    },
+  })
+  $('.manifest-table-fll').DataTable( {
+    "processing": true,
+    "serverSide": true,    
+    "ajax": {
+      url: "/warehouse/fll/manifest/all-list",
+      type: "POST",
+      data :{ daterange:$('#daterange').val(), clear:$('#clear').val()}
+    },
+  })
+     
+    // Event listener to the two range filtering inputs to redraw on input
+    $(document).on('click', '.applyBtn', function() {
+      if(flagStatus == 1)
+        window.location = "/warehouse/nas/manifest/incoming?daterange="+$('.daterange').val();
+      else
+        window.location = "/warehouse/fll/manifest/list?daterange="+$('.daterange').val();     
+    });
+    $(document).on('click', '.cancelBtn', function() {
+      if(flagStatus  == 1)
+        window.location = "/warehouse/nas/manifest/incoming?clear=1";
+      else
+        window.location = "/warehouse/fll/manifest/list?clear=1";
+    });  
 })

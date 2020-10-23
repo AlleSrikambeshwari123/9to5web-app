@@ -12,7 +12,9 @@
       </div>
       <div class="card-body daterangepickerbody">
         <div class="table-responsive">
-          <table id="cubeTable" class="display table dataTable table-striped dateRangeFilterTable table-hover">
+            <input type="hidden" name="daterange" id="daterange" value="<%=daterange%>">
+            <input type="hidden" name="clear" id="clear" value="<%=clear%>">
+          <table id="cubeTable" class="display table dataTable table-striped table-hover">
             <thead>
               <tr>
                 <th>ID</th>
@@ -24,45 +26,7 @@
               </tr>
             </thead>
             <tbody>
-              <% cubes.forEach(function(cube){ %>
-              <tr data-record="<%= cube.id %>">
-                <td><%= cube.id %></td>
-                <td><%=helpers.formatDate(cube.createdAt)%></td> 
-                <td><strong><%=cube.name%></strong></td> 
-                <% let cube2link = cube.cubeAwbId ? cube.cubeAwbId.id : ''
-                if(cube2link == '') cube2link = '#' 
-                else cube2link = '/warehouse/cube/awbDetail/'+cube2link
-                %>
-                <td><a class="btn btn-link" href="<%=cube2link %>"><%=cube.awbId%></a></td> 
-                <!--<td><a href="/warehouse/cube/detail/<%=cube.id%>" data-id='<%=cube.id%>' data-target="#package-cube" data-toggle='modal' class="package-detail" onclick="cubePackaceDetail('<%=cube._id%>')"><i class="fas fa-eye"></i></a></td>              
-                -->
-                <% 
-                let viewCubeLink = (cube.packages.length ? cube.id : '')
-                let downloadpdfLink = (cube.packages.length ? cube.id : '')
-                  if(downloadpdfLink == '') {
-                    viewCubeLink = '#';
-                    downloadpdfLink = '#'
-                  } 
-                  else {
-                    viewCubeLink = '/warehouse/cube/detail/'+ downloadpdfLink
-                    downloadpdfLink = '/api/printer/download-pdf/cube/'+ downloadpdfLink
-                  }
-                %>
-                <td><a href="<%= viewCubeLink %>" ><i class="fas fa-eye"></i></a></td>
-                
-                <td class="text-center">
-                  <a href="<%= downloadpdfLink %>"><i class="fa fa-download"></i></a>
-                  <a
-                    class="btn btn-link btn-primary btn-print-pkg"
-                    data-toggle="modal"
-                    data-id="<%=cube.id%>"
-                    data-original-title="Print Label"
-                    data-target="#print-popup"
-                  ><i class="fa fa-print"></i>
-                </a>
-                </td>
-              </tr>
-              <%})%>
+           
             </tbody>
           </table>
         </div>

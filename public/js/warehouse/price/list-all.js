@@ -1,16 +1,16 @@
-let packageTable = $('.pricelabel-table').DataTable({
-  pageLength: 10,
-  columnDefs: [
-    {
-      orderable: false,
-      targets: 0,
-    },
-  ],
-  select: {
-    style: 'multi',
-    selector: 'td:first-child input[type="checkbox"]',
-  },
-});
+// let packageTable = $('.pricelabel-table').DataTable({
+//   pageLength: 10,
+//   columnDefs: [
+//     {
+//       orderable: false,
+//       targets: 0,
+//     },
+//   ],
+//   select: {
+//     style: 'multi',
+//     selector: 'td:first-child input[type="checkbox"]',
+//   },
+// });
 let TotalVolumetricWeight
 $('.checkPriceLabelExistPkg').map(function (i, dateElement) {
   const id = dateElement.value;
@@ -392,4 +392,35 @@ $('.print-package').click(function () {
   $('.close-del').trigger('click');
   printJS(pdfPath);
 });
+
+$(document).ready(function() { 
+  if($('#clear').val() ){
+    $('#daterange').val('')
+    $('#clear').val('1')
+  }
+  setTimeout(()=>{
+    if($('#clear').val() ){
+      $('#daterange').val('')
+      $('#clear').val('1')
+    }else
+      $('.daterange').val($('#daterange').val())
+  },1000)
+  $('.pricelabel-table').DataTable( {
+    "processing": true,
+    "serverSide": true,    
+    "ajax": {
+      url: "/warehouse/price/all-list",
+      type: "POST",
+      data :{ daterange:$('#daterange').val(), clear:$('#clear').val()}
+    },
+  })
+     
+    // Event listener to the two range filtering inputs to redraw on input
+    $(document).on('click', '.applyBtn', function() {
+        window.location = "/warehouse/price/list?daterange="+$('.daterange').val();
+    });
+    $(document).on('click', '.cancelBtn', function() {
+      window.location = "/warehouse/price/list?clear=1";
+    });  
+})
 

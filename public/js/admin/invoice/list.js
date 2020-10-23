@@ -45,7 +45,8 @@ function deleteInvoice(filename,id){
   })
 }
 
-$(".btn-view-invoice-package").click(function () { 
+// $(".btn-view-invoice-package").click(function () { 
+  $(document).on('click', '.btn-view-invoice-package', function() {
   var id = $(this).data('id');
   $.ajax({
     url: '/admin/invoices/packageStatus/'+id,
@@ -67,5 +68,35 @@ $(".btn-view-invoice-package").click(function () {
 $('#invoice-packages').on('hidden.bs.modal', function () {
   $("#invoice-package-tbody").empty();
 });
+
+$(document).ready(function() { 
+  if($('#clear').val() ){
+    $('#daterange').val('')
+    $('#clear').val('1')
+  }
+  setTimeout(()=>{
+    if($('#clear').val() ){
+      $('#daterange').val('')
+      $('#clear').val('1')
+    }else
+      $('.daterange').val($('#daterange').val())
+  },1000)
+  $('.invoice-table').DataTable( {
+    "processing": true,
+    "serverSide": true,    
+    "ajax": {
+      url: "/admin/invoices/all-invoices",
+      type: "POST",
+      data :{ daterange:$('#daterange').val(), clear:$('#clear').val()}
+    },
+  })     
+    // Event listener to the two range filtering inputs to redraw on input
+  $(document).on('click', '.applyBtn', function() {
+      window.location = "/admin/invoices/list?daterange="+$('.daterange').val();
+  });
+  $(document).on('click', '.cancelBtn', function() {
+    window.location = "/admin/invoices/list?clear=1";
+  });  
+})
  
   

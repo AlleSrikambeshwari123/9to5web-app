@@ -7,7 +7,9 @@
       </div>
       <div class="card-body daterangepickerbody">
         <div class="table-responsive">
-        <table id='no-docs-table' class='display table table-striped table-hover dateRangeFilterTable dataTable'>
+          <input type="hidden" name="daterange" id="daterange" value="<%=daterange%>">
+          <input type="hidden" name="clear" id="clear" value="<%=clear%>">
+        <table id='no-docs-table_list' class='display table table-striped table-hover dataTable noDocsTable'>
           <thead>
             <tr>
               <th>Customer Name</th>
@@ -23,35 +25,6 @@
             </tr>
           </thead>
           <tbody>
-
-            <% 
-                  awbs.forEach(function(awb){
-                    if(!awb.invoice) {
-                  %>
-            <tr data-record="<%= awb._id %>">
-              <td><%= awb.customer.name %></td>
-              <td><%=helpers.formatDate(awb.createdAt)%></td>
-              <td><%=awb.customer.pmb %></td>
-              <td><a href="manage/<%=awb._id%>/preview"><%=awb.awbId%></a></td>
-              <td><%=helpers.getFullName(awb.customer)%></td>
-              <td><%=(awb.shipper && awb.shipper.name) ?awb.shipper.name : '' %></td>
-              <td><%=(awb.carrier && awb.carrier.name) ? awb.carrier.name : '' %></td>
-              <td><%=awb.packages.length %></td>
-              <td><%=awb.weight %></td>
-              <td>
-                <!-- <a href='manage/<%=awb._id%>/get' class="btn btn-link btn-primary p-1" data-toggle="tooltip"
-                  data-original-title="Edit"> <i class="fa fa-pencil-alt"></i> </a> -->
-                <!-- temporary commenting the code -->
-                <!-- <a class="btn btn-link btn-danger btn-rm-awb p-1" data-toggle="modal" data-id="<%=awb._id%>"
-                  data-target="#confirm-delete-awb"> <i class="fa fa-trash"></i> </a> -->
-                <a 
-                class="btn btn-link btn-primary btn-print-awb" 
-                data-toggle="modal" 
-                data-id="<%=awb._id%>"
-                data-target="#print-popup"><i class="fa fa-print"></i> </a>
-              </td>
-            </tr>
-            <% }}) %>
           </tbody>
         </table>
       </div>
@@ -119,7 +92,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-danger close-del" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary print-awb" id='print-awb'>Print</button>
+        <button type="button" class="btn btn-primary print-awb" onclick="print()" >Print</button>
       </div>
     </div>
   </div>

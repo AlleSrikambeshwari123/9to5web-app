@@ -1,6 +1,7 @@
 var services = require('../Services/RedisDataServices');
 var utils = require('../Util/utils');
 var momentz = require('moment-timezone')
+var helpers = require('../views/helpers')
 
 
 exports.get_customer_awb_list = (req, res, next) => {
@@ -50,21 +51,56 @@ exports.get_customer_package_list = (req, res, next) => {
 exports.get_customer_list = (req, res, next) => {
   Promise.all([
     services.locationService.getLocations(),
-    services.customerService.getCustomers(),
+    // services.customerService.getCustomers(),
     services.locationService.getCompanies()
   ]).then(results => {
     const locations = results[0];
-    const customers = results[1];
+    // const customers = results[1];
     const companies = results[2];
 
     res.render('pages/admin/customers/list', {
       page: req.originalUrl,
       title: "Consignee",
       user: res.user,
-      customers: customers.map(utils.formattedRecord),
+      customers:[],// customers.map(utils.formattedRecord)
       locations: locations,
-      companies: companies
+      companies: companies,
+      daterange:req.query.daterange?req.query.daterange:'',
+      clear:req.query.clear
     })
+  })
+}
+exports.get_customers = (req,res,next)=>{
+  if(req.body.clear)
+    req.body.daterange =''
+  services.customerService.getAllCustomers(req).then(async(results) => {
+    const customers = results.customers;
+    var dataTable = {
+      draw: req.query.draw,
+      recordsTotal: results.total,
+      recordsFiltered: results.total,
+      data:[]
+    }
+    var data = [];
+    for(var i=0; i< customers.length; i++){
+      var customerDetail = [];
+      customerDetail.push(customers[i].company.name);
+      customerDetail.push(helpers.formatDate(customers[i].createdAt));
+      customerDetail.push(customers[i].pmb)
+      customerDetail.push(helpers.getFullName(customers[i]))
+      customerDetail.push(customers[i].email);
+      customerDetail.push(customers[i].telephone)
+      if(customers[i].location && customers[i].location.name)
+        customerDetail.push(customers[i].location.name)
+      else
+        customerDetail.push('')
+      
+      let action = `<a href='manage/${customers[i].id}/get'><i class="fas fa-user-edit"></i></a>`
+      customerDetail.push(action)
+       data.push(customerDetail);
+    }
+    dataTable.data = data;
+    res.json(dataTable);
   })
 }
 

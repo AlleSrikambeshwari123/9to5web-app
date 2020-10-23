@@ -15,8 +15,10 @@ router.delete('/fll/awb/manage/:id/delete', middleware().checkSession, awbCtrl.d
 router.get('/fll/awb/manage/:awbId/print', middleware().checkSession, awbCtrl.generate_awb_pdf);
 
 router.get('/fll/awb/list', middleware().checkSession, awbCtrl.get_awb_list);
+router.post('/fll/awb/allAbws', middleware().checkSession, awbCtrl.get_all_awb);
 
 router.get('/fll/awb/no-docs', middleware().checkSession, awbCtrl.get_awb_no_docs);
+router.post('/fll/awb/no-docs-list', middleware().checkSession, awbCtrl.get_awb_no_docs_list);
 router.get('/fll/awb/no-docs-packages', middleware().checkSession, awbCtrl.get_awb_no_docs_package_list);
 
 router.post('/fll/awb/create-barcode', awbCtrl.add_bar_code);

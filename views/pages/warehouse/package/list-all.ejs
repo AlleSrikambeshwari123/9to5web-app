@@ -62,7 +62,11 @@
       </div>
       <div class="card-body daterangepickerbody">
         <div class="table-responsive p-4">
-        <table id = "package-table" class="display dateRangeFilterTable table table-striped table-hover dataTable package-table">
+          <input type="hidden" name="daterange" id="daterange" value="<%=daterange%>">
+          <input type="hidden" name="clear" id="clear" value="<%=clear%>">
+          <input type="hidden" name="filterURL" id="filterURL" value="<%=filterURL ? filterURL: ''%>">
+          <input type="hidden" name="filter" id="filter" value="<%=filter ? filter: ''%>">
+        <table id = "package-table" class="display table table-striped table-hover dataTable package-table<%=datatable ? datatable : ''%>">
           <thead>
             <tr>
               <th><input id="checkall" type="checkbox" class="package-select-all" /></th>
