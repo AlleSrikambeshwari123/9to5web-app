@@ -44,6 +44,27 @@ exports.get_all_package_list = (req, res, next) => {
               
           for(var i=0; i< packages.length; i++){
             var packageDetail = [];
+            if (packages[i].awb) {
+                let awb = await this.services.awbService.getAwb(packages[i].awbId)
+                if (awb !== null && awb.createdAt) {
+                    let flag = 0
+                    awbArray.forEach(data=>{
+                        if(data.awbId == awb.awbId){
+                            data.pkgNo++
+                            flag = 1
+                            packages[i].pieceNo = data.pkgNo 
+                        }
+                    })
+                    if(flag == 0){
+                        awbArray.push({awbId : awb.awbId,pkgNo : 1})
+                        packages[i].pieceNo = 1
+                    }
+                    packages[i].awbCreatedAt = momentz(awb.createdAt).tz("America/New_York").format('dddd, MMMM Do YYYY, h:mm A');
+                }
+            }
+            let pkgsAwb = await services.packageService.get_Packages_update({awbId :packages[i].awbId});
+            packages[i].pieces = pkgsAwb ? pkgsAwb.length : 0
+
             packageDetail.push(`<input type="checkbox" name="package-select" class="package-select" />`)
             packageDetail.push(helpers.formatDate(packages[i].OrignalBarcodeDate));
             if(packages[i].customer && packages[i].customer.length){
@@ -395,7 +416,7 @@ exports.get_all_delivered_package_list = (req, res, next) => {
                 packageDetail.push(zoneName);
                 packageDetail.push(packages[i].pieceNo);
                 packageDetail.push(packages[i].weight);
-                packageDetail.push((packages[i].pieces || packages[i].pieces > -1) ? packages[i].pieces : '');
+                packageDetail.push((packages[i].awb) ? packages[i].awb.packages.length : '');
                 packageDetail.push(packages[i].lastStatusText);
                 packageDetail.push(packages[i].awbCreatedAt);
                 packageDetail.push(packages[i].actualFlight);
@@ -462,7 +483,7 @@ exports.get_all_fll_package_list = (req, res, next) => {
             packageDetail.push(packages[i].aging ? packages[i].aging : '');
             packageDetail.push(packages[i].agingdollar ? packages[i].agingdollar : 0);
             packageDetail.push(packages[i].weight ? packages[i].weight : '');
-            packageDetail.push((packages[i].pieces || packages[i].pieces > -1) ? packages[i].pieces : '')
+            packageDetail.push((packages[i].awb) ? packages[i].awb.packages.length : '')
             packageDetail.push((packages[i].statsData ) ? packages[i].statsData.status : '')
             packageDetail.push(`<a href="../../nas/awb/manage/${packages[i].awb._id}/preview">${packages[i].awb.awbId}</a>`)
             packageDetail.push(` <a href="../../pkg-label/download/${packages[i]._id}"><i class="fa fa-download"></i></a>
