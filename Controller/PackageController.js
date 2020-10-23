@@ -24,7 +24,9 @@ exports.get_package_list = (req, res, next) => {
         buttonName: 'Add to Manifest',
         packages: [],//pkgs,
         daterange:req.query.daterange?req.query.daterange:'',
-        clear:req.query.clear
+        clear:req.query.clear,
+        datatable:"-filter-package",
+        filter: req.params.filter? req.params.filter :''                     
     });
 };
 
@@ -166,7 +168,7 @@ exports.get_all_filtered_package_list = (req, res, next) =>{
                 packageDetail.push(packages[i].aging ? packages[i].aging : '');
                 packageDetail.push(packages[i].agingdollar ? packages[i].agingdollar : 0);
                 packageDetail.push(packages[i].weight ? packages[i].weight : '');
-                packageDetail.push((packages[i].pieces || packages[i].pieces > -1) ? packages[i].pieces : '')
+                packageDetail.push((packages[i].awb) ? packages[i].awb.packages.length : '')
                 packageDetail.push(packages[i].lastStatusText ? packages[i].lastStatusText : '');
                 packageDetail.push(`<a href="../../nas/awb/manage/${packages[i].awb._id}/preview">
                     ${packages[i].awb.awbId}
@@ -519,7 +521,7 @@ exports.get_all_nas_package_list = (req, res, next) => {
             packageDetail.push(packages[i].aging ? packages[i].aging : '');
             packageDetail.push(packages[i].agingdollar ? packages[i].agingdollar : 0);
             packageDetail.push(packages[i].weight ? packages[i].weight : '');
-            packageDetail.push((packages[i].pieces || packages[i].pieces > -1) ? packages[i].pieces : '')
+            packageDetail.push((packages[i].awb) ? packages[i].awb.packages.length : '')
             packageDetail.push((packages[i].statsData && packages[i].statsData.length && packages[i].statsData[0].status) ? packages[i].statsData[0].status : '')
             packageDetail.push(`<a href="../../nas/awb/manage/${packages[i].awb._id}/preview">${packages[i].awb.awbId}</a>`)
             packageDetail.push(` <a href="../../pkg-label/download/${packages[i]._id}"><i class="fa fa-download"></i></a>
@@ -571,7 +573,7 @@ exports.get_all_nas_package_aging = (req, res, next) =>{
             packageDetail.push(packages[i].aging);
             packageDetail.push(packages[i].agingdollar);
             packageDetail.push(packages[i].weight);
-            packageDetail.push((packages[i].pieces || packages[i].pieces > -1) ? packages[i].pieces : '');
+            packageDetail.push((packages[i].awb) ? packages[i].awb.packages.length : '');
             packageDetail.push(packages[i].lastStatusText);
             var awb = (packages[i].awb && packages[i].awb.awbId) ? packages[i].awb.awbId : '';
             packageDetail.push(`<a href="../awb/manage/${packages[i].awb._id}/preview">${awb}</a>`)

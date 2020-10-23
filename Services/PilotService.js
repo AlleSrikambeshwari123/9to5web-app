@@ -83,7 +83,7 @@ class PilotService {
       searchData.$or = [          
         {firstName:{'$regex' : search, '$options' : 'i'}},
         {company:{'$regex' : search, '$options' : 'i'}},
-        {mobile:search},
+        // {mobile:search},
         {email:{'$regex' : search, '$options' : 'i'}}
       ]
     }
