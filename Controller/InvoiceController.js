@@ -4,21 +4,21 @@ var aws = require('../Util/aws');
 var helpers = require('../views/helpers');
 
 exports.getInvoiceList = (req, res, next) => {
-  Promise.all([
-    services.invoiceService.getAllStoreInvoice(),
-    services.invoiceService.getInvoices(),
-    services.invoiceService.getAdditionalInvoices(),
-  ]).then(function (storeInvoices) {
+  // Promise.all([
+  //   services.invoiceService.getAllStoreInvoice(),
+  //   services.invoiceService.getInvoices(),
+  //   services.invoiceService.getAdditionalInvoices(),
+  // ]).then(function (storeInvoices) {
       res.render('pages/admin/invoice/list', {
         page: req.originalUrl,
         title: 'All Invoice List',
-        invoices: [...storeInvoices[0],...storeInvoices[1]],
-        additionalInvoices : storeInvoices[2],
+        invoices: [],//[...storeInvoices[0],...storeInvoices[1]],
+        additionalInvoices : [],//storeInvoices[2],
         user: res.user,
         daterange:req.query.daterange?req.query.daterange:'',
         clear:req.query.clear
       });
-    
+  // })
   }
 
   exports.getAllInvoice = (req, res, next) =>{
@@ -64,6 +64,40 @@ exports.getInvoiceList = (req, res, next) => {
         res.json(dataTable);
       })
     })
+  }
+
+  exports.getAllAdditionallInvoice = (req, res, next) =>{
+    if(req.body.clear){
+      req.body.daterange = '';
+    }
+    services.invoiceService.getAllAdditionalInvoices(req).then(async function (invoiceresult) {
+        var dataTable = {
+          draw: req.query.draw,
+          recordsTotal: invoiceresult.total,
+          recordsFiltered: invoiceresult.total,
+          data:[]
+        }
+        var data = [];
+        var invoices = invoiceresult.invoices?invoiceresult.invoices:[];
+        for(var i=0; i< invoices.length; i++){
+          var invoiceDetail = [];
+          var fileName = (invoices[i].fileName) ? invoices[i].fileName :invoices[i].filename
+          invoiceDetail.push(helpers.formatDate(invoices[i].createdAt));
+
+          invoiceDetail.push(`<a href="JavaScript:Void(0);"
+          onclick="downloadInvoice('${fileName}')">Invoice</a>`);
+          invoiceDetail.push(invoices[i].courierNo)
+          invoiceDetail.push(helpers.getFullName(invoices[i].customerId)) 
+
+          invoiceDetail.push(`<a href="JavaScript:Void(0);"
+                    onclick="deleteInvoice('${fileName}','${invoices[i]._id}')"><i
+                      class="fa fa-trash"></i>`);
+        
+          data.push(invoiceDetail);
+        }
+        dataTable.data = data;
+        res.json(dataTable);
+      })
   }
 
   exports.getInvoicePackages = (req, res, next) => {

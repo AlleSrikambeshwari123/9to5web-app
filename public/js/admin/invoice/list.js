@@ -70,17 +70,17 @@ $('#invoice-packages').on('hidden.bs.modal', function () {
 });
 
 $(document).ready(function() { 
-  if($('#clear').val() ){
-    $('#daterange').val('')
-    $('#clear').val('1')
-  }
-  setTimeout(()=>{
-    if($('#clear').val() ){
-      $('#daterange').val('')
-      $('#clear').val('1')
-    }else
-      $('.daterange').val($('#daterange').val())
-  },1000)
+  // if($('#clear').val() ){
+  //   $('#daterange').val('')
+  //   $('#clear').val('1')
+  // }
+  // setTimeout(()=>{
+  //   if($('#clear').val() ){
+  //     $('#daterange').val('')
+  //     $('#clear').val('1')
+  //   }else
+  //     $('.daterange').val($('#daterange').val())
+  // },1000)
   $('.invoice-table').DataTable( {
     "processing": true,
     "serverSide": true,    
@@ -90,6 +90,15 @@ $(document).ready(function() {
       data :{ daterange:$('#daterange').val(), clear:$('#clear').val()}
     },
   })     
+  $('.no-awb-invoice-table').DataTable( {
+    "processing": true,
+    "serverSide": true,    
+    "ajax": {
+      url: "/admin/invoices/all-additional-invoices",
+      type: "POST",
+      data :{ daterange:$('#daterange').val(), clear:$('#clear').val()}
+    },
+  })
     // Event listener to the two range filtering inputs to redraw on input
   $(document).on('click', '.applyBtn', function() {
       window.location = "/admin/invoices/list?daterange="+$('.daterange').val();
