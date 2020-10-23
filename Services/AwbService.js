@@ -495,6 +495,39 @@ class AwbService {
         });
       } 
 
+      async getAwbsNoInvoiceCustomer(id) {
+        return new Promise((resolve, reject) => {
+          Awb.find({ invoices: { $eq: [] }, customerId:id })
+            .populate('customerId')
+            .populate('shipper')
+            .populate('carrier')
+            .populate('packages')
+            .populate('purchaseOrders')
+            .exec(async (err, awbData) => {
+              if (err) {
+                resolve([]);
+              } else {
+                let awbResponse = []
+                for(let data of awbData){
+                  let storeInvoices = await StoreInvoice.find({awbId :data._id})
+                  if(storeInvoices.length == 0){
+                    data['customer'] = data['customerId'];
+                    data['customer']['name'] = (data['customerId'].lastName ? `${data['customerId'].firstName} ${data['customerId'].lastName}` : `${data['customerId'].lastName}`);
+                    if (data['packages'] && data['packages'].length) {
+                      let weight = 0;
+                      data.packages.forEach((pkg) => (weight += Number(pkg.weight)));
+                      data['weight'] = weight;
+                    }
+                    data['dateCreated'] = moment(data['createdAt']).format('MMM DD, YYYY');
+                    awbResponse.push(data)
+                  }
+                }
+                resolve(awbResponse);
+              }
+            });
+        });
+      }
+
   async storeInvoiceFile(data){
     return new Promise((resolve, reject) => { 
       const invoiceData = {

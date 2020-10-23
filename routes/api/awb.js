@@ -52,6 +52,17 @@ router.get('/awb-without-invoice/:id',passport.authenticate('jwt', { session: fa
     }
 });
 
+//list awb without invoice and storeInvoice
+router.get('/awb-no-invoice/:id',passport.authenticate('jwt', { session: false }),async(req, res, next) => {
+    try{   
+        const customerId = mongoose.Types.ObjectId(req.params.id);     
+        const awbData = await services.awbService.getAwbsNoInvoiceCustomer(customerId);
+        res.send(awbData); 
+    }catch(err){
+        res.send({ success: false, message: strings.string_response_error });
+    }
+});
+
 //store invoice
 router.post('/store-invoice',passport.authenticate('jwt', { session: false }), upload.single('invoice'),async(req, res, next) => {    
     try{ 
