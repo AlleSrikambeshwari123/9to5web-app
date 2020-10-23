@@ -9,6 +9,7 @@ const imagesToPdf = require("images-to-pdf")
 
 // let client = require('./dataContext').redisClient;
 const Invoice = require('../models/invoice');
+const AdditionalInvoice = require('../models/additionalInvoice');
 const StoreInvoice = require('../models/storeInvoice');
 
 const Keys = {
@@ -135,6 +136,30 @@ class InvoiceService {
     })
   }
 
+  async getAdditionalInvoices() {
+    return new Promise((resolve, reject) => {
+      AdditionalInvoice.find({}).populate('customerId').exec((err, result) => {
+        if (err) {
+          resolve([]);
+        } else {
+          resolve(result);
+        }
+      });
+    })
+  }
+
+  async removeAdditionalInvoices(id){
+    return new Promise((resolve, reject) => {
+      AdditionalInvoice.findOneAndRemove({_id:id}).exec((err, result) => {
+        if (err) {
+          resolve({success:false,message:err});
+        }else{
+          resolve({success:true,message:"Successfully Deleted"});
+        }   
+      })
+    })
+  }
+
   getSearchInvoice(id){
     return new Promise((resolve, reject) => {
       StoreInvoice.findById(id).populate('awbId').exec((err, result) => {
@@ -176,6 +201,14 @@ class InvoiceService {
           Invoice.findOneAndRemove({_id:id}).exec((err, result) => {
             if (err) {
               resolve({success:false,message:err});
+            } else if(result == null){
+                AdditionalInvoice.findOneAndRemove({_id:id}).exec((err, result) => {
+                  if (err) {
+                    resolve({success:false,message:err});
+                  }else{
+                    resolve({success:true,message:"Successfully Deleted"});
+                  }
+                })
             }else{
               resolve({success:true,message:"Successfully Deleted"});
             }   

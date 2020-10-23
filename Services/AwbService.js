@@ -4,6 +4,7 @@ var strings = require('../Res/strings');
 
 const Awb = require('../models/awb');
 const StoreInvoice = require('../models/storeInvoice');
+const AdditionalInvoice = require('../models/additionalInvoice');
 const AwbStatus = require('../models/awbStatus');
 const Barcode = require('../models/barcode');
 const PurchaseOrder = require('../models/purchaseOrder');
@@ -965,7 +966,40 @@ class AwbService {
         });
       } 
 
-  async storeInvoceFile(data){
+    async getAwbsNoInvoiceCustomer(id) {
+      return new Promise((resolve, reject) => {
+        Awb.find({ invoices: { $eq: [] }, customerId:id })
+          .populate('customerId')
+          .populate('shipper')
+          .populate('carrier')
+          .populate('packages')
+          .populate('purchaseOrders')
+          .exec(async (err, awbData) => {
+            if (err) {
+              resolve([]);
+            } else {
+              let awbResponse = []
+              for(let data of awbData){
+                let storeInvoices = await StoreInvoice.find({awbId :data._id})
+                if(storeInvoices.length == 0){
+                  data['customer'] = data['customerId'];
+                  data['customer']['name'] = (data['customerId'].lastName ? `${data['customerId'].firstName} ${data['customerId'].lastName}` : `${data['customerId'].lastName}`);
+                  if (data['packages'] && data['packages'].length) {
+                    let weight = 0;
+                    data.packages.forEach((pkg) => (weight += Number(pkg.weight)));
+                    data['weight'] = weight;
+                  }
+                  data['dateCreated'] = moment(data['createdAt']).format('MMM DD, YYYY');
+                  awbResponse.push(data)
+                }
+              }
+              resolve(awbResponse);
+            }
+          });
+      });
+    }
+
+  async storeInvoiceFile(data){
     return new Promise((resolve, reject) => { 
       const invoiceData = {
         awbId:data.awbId,
@@ -977,6 +1011,28 @@ class AwbService {
       }
      
       const newInvoice = new StoreInvoice(invoiceData);
+      newInvoice.save((err, result) => {
+        if(err){
+          console.log(err)
+          resolve({ success: false, message: strings.string_response_error });
+        }else{
+          resolve({ success: true, message: strings.string_response_created, storeInvoice: result });
+        }
+      })
+    })
+  }
+
+  async storeAdditionalInvoceFile(data){
+    return new Promise((resolve, reject) => { 
+      const invoiceData = {
+        filePath:data.filePath,
+        fileName:data.fileName,
+        courierNo : data.courierNo,
+        pmb : data.pmb,
+        customerId : data.customerId
+      }
+     
+      const newInvoice = new AdditionalInvoice(invoiceData);
       newInvoice.save((err, result) => {
         if(err){
           console.log(err)
@@ -1014,9 +1070,10 @@ class AwbService {
           awb.totalPrice = priceLabel.SumOfAllCharges
       if(!queryStatus || queryStatus == "All")
           awbResponse.push(awb)
-      else if(String(statusObject.id) == String(queryStatus)){
+      else if(String(statusObject.id) == String(queryStatus))
         awbResponse.push(awb)
-      }
+      else if(awb.totalPrice != "Not Priced" && queryStatus == 11)
+        awbResponse.push(awb)
     }
     return awbResponse
   }

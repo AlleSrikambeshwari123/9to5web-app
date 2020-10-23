@@ -78,7 +78,8 @@ exports.get_awb_detail = (req, res, next) => {
     services.awbService.getPurchaseOrder(id),
     services.packageService.getProcessOriginBarcode(res.user),
     services.packageService.getAllOriginBarcodes(),
-    services.driverService.getDrivers()
+    services.driverService.getDrivers(),
+    services.invoiceService.getAdditionalInvoices()
   ]).then(([
     customers,
     hazmats,
@@ -93,7 +94,8 @@ exports.get_awb_detail = (req, res, next) => {
     purchaseOrder,
     processBarcode,
     barcodes,
-    drivers
+    drivers,
+    additionalInvoices
   ]) => {
     awb['customer'] = awb['customerId'];
     res.render('pages/warehouse/awb/edit', {
@@ -114,7 +116,8 @@ exports.get_awb_detail = (req, res, next) => {
       purchaseOrder,
       processBarcode,
       barcodes,
-      drivers
+      drivers,
+      additionalInvoices
     });
   })
 };
@@ -131,7 +134,8 @@ exports.create_awb = (req, res, next) => {
     services.packageService.getAllOriginBarcode(),
     services.packageService.getProcessOriginBarcode(res.user),
     services.locationService.getCompanies(),
-    services.driverService.getDrivers()
+    services.driverService.getDrivers(),
+    services.invoiceService.getAdditionalInvoices()
   ]).then(([
     customers,
     hazmats,
@@ -143,7 +147,8 @@ exports.create_awb = (req, res, next) => {
     barcodes,
     processBarcode,
     companies,
-    drivers
+    drivers,
+    additionalInvoices
   ]) => {
     res.render('pages/warehouse/awb/create', {
       page: req.originalUrl,
@@ -161,7 +166,8 @@ exports.create_awb = (req, res, next) => {
       barcodes,
       processBarcode,
       companies,
-      drivers
+      drivers,
+      additionalInvoices
     });
   })
 };
@@ -197,6 +203,19 @@ exports.add_new_awb = async (req, res, next) => {
   // Creating Packages
   await services.packageService.createPackages(awbId, packages);
 
+  // Additional Invoices
+  for(let inv of awb.additionalInvoices){
+    let invoiceObject = {
+      awbId : awbId,
+      filePath : inv.filePath,
+      fileName : inv.fileName,
+      courierNo : inv.courierNo,
+      pmb : inv.pmb,
+      customerId : awb.customerId
+    }
+      await services.awbService.storeInvoiceFile(invoiceObject)
+      await services.invoiceService.removeAdditionalInvoices(inv._id)
+  }
   const purchaseOrderIds = [];
   // PurchaseOrders
   if (purchaseOrders && purchaseOrders.length) {
@@ -224,7 +243,7 @@ exports.add_new_awb = async (req, res, next) => {
   });
 };
 
-exports.update_awb = (req, res, next) => {
+exports.update_awb = async (req, res, next) => {
   let awbId = req.params.id;
   let {invoices, ...awb} = req.body;
   console.log('bodydd',req.body)
@@ -235,6 +254,19 @@ exports.update_awb = (req, res, next) => {
   const packageIds = [];
   const purchaseOrderIds = [];
   const promises = [];
+
+  for(let inv of awb.additionalInvoices){
+    let invoiceObject = {
+      awbId : awbId,
+      filePath : inv.filePath,
+      fileName : inv.fileName,
+      courierNo : inv.courierNo,
+      pmb : inv.pmb,
+      customerId : awb.customerId
+    }
+      await services.awbService.storeInvoiceFile(invoiceObject)
+      await services.invoiceService.removeAdditionalInvoices(inv._id)
+  }
 
   // Invoice create and update
   if (invoices && invoices.length) {
