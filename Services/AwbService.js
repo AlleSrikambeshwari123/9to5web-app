@@ -662,39 +662,97 @@ class AwbService {
       }
       console.log("search",search)
       if(search){
-        // searchData.$or = [
-        //   {awbId: search}
-        // ]
+        searchData.$or = [          
+          {"customer.firstName": {'$regex' : search, '$options' : 'i'}},
+          {"customer.pmb": {'$regex' : search, '$options' : 'i'}},
+          {"awbId": search},
+          {"shipper.name":{'$regex' : search, '$options' : 'i'}},
+          {"carrier.name":{'$regex' : search, '$options' : 'i'}},
+        ]
+      }   
+    
+    var pipeLineAggregate = [
+      
+      {
+        $lookup: {
+          from: "customers",
+          localField: "customerId",
+          foreignField: "_id",
+          as:"customer"
+        }
+      },
+      {$unwind:"$customer"},
+      {
+        $lookup: {
+          from: "shippers",
+          localField: "shipper",
+          foreignField: "_id",
+          as:"shipper"
+        }
+      },
+      {
+        $lookup: {
+          from: "carriers",
+          localField: "carrier",
+          foreignField: "_id",
+          as:"carrier"
+        }
+      },
+      {
+        $lookup:{
+            from:"packages",
+            localField: 'packages',
+            foreignField: '_id',
+            as:"packages"
+        }
+      },
+      // {
+      //   $lookup: {
+      //     from: "purchaseorders",
+      //     localField: "purchaseorders",
+      //     foreignField: "_id",
+      //     as:"packages"
+      //   }
+      // },
+      {
+        $match:searchData
       }
-      searchData.invoices = { $eq: [] }
-      var totalAwbs = await Awb.count(searchData);
-      return new Promise((resolve, reject) => {
-          Awb.find(searchData)
-              .populate('customerId')
-              .populate('shipper')
-              .populate('carrier')
-              .populate('packages')
-              .populate('purchaseOrders')
-              .sort({[sortField]:sort})
-              .skip(start)
-              .limit(length)
-              .exec((err, awbData) => {
-                  if (err) {
-                      resolve([]);
-                  } else {
-                      awbData.forEach((data) => {
-                          data['customer'] = data['customerId'];
-                          data['customer']['name'] = (data['customerId'].lastName ? `${data['customerId'].firstName} ${data['customerId'].lastName}` : `${data['customerId'].lastName}`);
-                          if (data['packages'] && data['packages'].length) {
+    ];
+      return new Promise(async (resolve, reject) => {  
+        var totalRecords = await Awb.aggregate([
+          ...pipeLineAggregate,
+          ...[{
+              $count:"total"
+            }]
+        ]);
+      if(totalRecords && totalRecords.length && totalRecords[0].total){
+        await Awb.aggregate([
+          ...pipeLineAggregate,
+          ...[
+            {$sort:{[sortField]: sort}},
+            {$skip: start},
+            {$limit: length}
+          ]
+        ]).exec((err, awbData) => {
+          if (err) {
+            resolve([]);
+          } else {
+            awbData.forEach((data) => {
+              data['customer']['name'] = (data['customer'].lastName ? `${data['customer'].firstName} ${data['customer'].lastName}` : `${data['customer'].firstName}`);
+              if (data['packages'] && data['packages'].length) {
                               let weight = 0;
                               data.packages.forEach((pkg) => (weight += Number(pkg.weight)));
-                              data['weight'] = weight;
-                          }
-                          data['dateCreated'] = moment(data['createdAt']).format('MMM DD, YYYY');
-                      });
-                      resolve({awbs : awbData,total : totalAwbs});
+                              data['weight'] = weight.toFixed(2);
+                            }
+                            data['dateCreated'] = moment(data['createdAt']).format('MMM DD, YYYY');
+                          });
+                          console.log("awb",awbData)
+                      resolve({awbs : awbData,total : totalRecords[0].total});
                   }
               });
+      }else{
+        resolve({total: 0, awbs: []})
+      }
       });
   }
 

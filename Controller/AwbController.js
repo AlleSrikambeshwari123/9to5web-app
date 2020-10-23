@@ -453,18 +453,18 @@ exports.get_awb_no_docs_list = (req, res, next) => {
         awbDetail.push(awbs[i].customer.pmb)
         awbDetail.push(`<a href="manage/${awbs[i]._id}/preview">${awbs[i].awbId}</a>`)
         awbDetail.push(helpers.getFullName(awbs[i].customer))
-        if(awbs[i].shipper && awbs[i].shipper.name)
-          awbDetail.push(awbs[i].shipper.name)
+        if(awbs[i].shipper[0] && awbs[i].shipper[0].name)
+          awbDetail.push(awbs[i].shipper[0].name)
         else
           awbDetail.push('')
 
-        if(awbs[i].carrier && awbs[i].carrier.name)
-          awbDetail.push(awbs[i].carrier.name)
+        if(awbs[i].carrier[0] && awbs[i].carrier[0].name)
+          awbDetail.push(awbs[i].carrier[0].name)
         else
           awbDetail.push('')
         
         awbDetail.push(awbs[i].packages.length)
-        awbDetail.push(awbs[i].weight)
+        awbDetail.push(awbs[i].weight )
       }
       let action = ` <button 
       class="btn btn-link btn-primary btn-print-awb" 
