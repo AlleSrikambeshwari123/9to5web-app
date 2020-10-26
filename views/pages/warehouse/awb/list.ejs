@@ -52,7 +52,7 @@
                     <td><%=awb.carrier.name %></td>
                     <td><%=awb.packages.length %></td>
                     <td><%=awb.weight %> lbs</td>
-                    <td><%=awb.volumetricWeight %> lbs</td>
+                    <td><%=(awb.volumetricWeight).toFixed(2) %> lbs</td>
                     <!-- <td><% if(awb.invoice) { %>
                       <a class="btn btn-link btn-primary btn-invoice" data-id="<%=awb.invoice%>" data-toggle="tooltip"
                         data-original-title="Invoice Attached"> <i class="fa fa-paperclip"></i> </a>
