@@ -819,7 +819,7 @@ class PackageService {
                     if (barcode !== null && barcode.createdAt) {
                         pkg.OrignalBarcodeDate = barcode.createdAt;
                     }
-                    if(barcode !== null && barcode.barcode == "No tracking"){
+                    if(barcode !== null && (barcode.barcode == "No tracking" || barcode.barcode == "No Tracking")){
                         pkg.OrignalBarcodeDate = pkg.createdAt
                     }
                 }
