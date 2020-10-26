@@ -819,6 +819,9 @@ class PackageService {
                     if (barcode !== null && barcode.createdAt) {
                         pkg.OrignalBarcodeDate = barcode.createdAt;
                     }
+                    if(barcode !== null && barcode.barcode == "No tracking"){
+                        pkg.OrignalBarcodeDate = pkg.createdAt
+                    }
                 }
                 if (pkg.awbId) {
                     var awb =  pkg.awb ? pkg.awb : {};
@@ -1114,7 +1117,6 @@ class PackageService {
                     if(err){
                         resolve({total: 0, packages:[]})
                     }else{
-                        console.log(result)
                         resolve({total: totalRecords[0].total, packages:result})
                     }
                 })
