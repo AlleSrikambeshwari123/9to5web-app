@@ -535,11 +535,11 @@ class PackageService {
                     }
                 },
                 {$unwind:"$awb"},
-                {
-                    $addFields:{
-                       awbNumber: { $convert: { input: "$awb.awbId", to: "string" } }
-                    }
-                },
+                // {
+                //     $addFields:{
+                //        awbNumber: { $convert: { input: "$awb.awbId", to: "string" } }
+                //     }
+                // },
                 {
                     $lookup:{
                     from:"barcodes",

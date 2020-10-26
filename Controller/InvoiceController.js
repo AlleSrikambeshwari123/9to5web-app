@@ -51,6 +51,10 @@ exports.getInvoiceList = (req, res, next) => {
           invoiceDetail.push(`<a href="JavaScript:Void(0);"
           onclick="downloadInvoice('${fileName}')">Invoice</a>`);
 
+          if(invoices[i].courierNo)
+            invoiceDetail.push(invoices[i].courierNo)
+          else
+            invoiceDetail.push('')
           invoiceDetail.push(`<button class="btn btn-primary btn-view-invoice-package btn-round float-right ml-md-auto" data-toggle="modal"
           data-original-title="View Packages" data-id="${invoices[i]._id}" data-target="#invoice-packages">View</button>`)
 
