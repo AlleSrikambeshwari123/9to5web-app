@@ -399,15 +399,17 @@ exports.get_all_awb = (req, res, next) => {
     let data = [];
     for(var i=0; i< awbs.length; i++){
       // if(checkCondition(awbs[i],status)){
-        var awbDetail = [];
+        var awbDetail = [],weightAwb=0;
         awbs[i].volumetricWeight = 0
         awbs[i].packages.forEach(package=>{
           let check = 1
           package.dimensions.split('x').forEach(data =>{
             check = check * data
           })
+          weightAwb  =+ package.weight
           awbs[i].volumetricWeight = (check/166);
         })
+        awbs[i].weight = weightAwb;
         if(awbs[i].customer[0] && awbs[i].customer[0].pmb){
           awbDetail.push(awbs[i].customer[0].pmb);
         }else
