@@ -78,7 +78,15 @@ $(document).ready(function() {
       // $('#daterange').val('')
       $('#clear').val('1')
     }
-    $('.daterange').val($('#daterange').val())
+    var endate = new Date();      
+    endate.setDate(endate.getDate());
+    var stdate = new Date();
+    stdate.setDate(stdate.getDate() -14);      
+    var dateRange = (stdate.getMonth() + 1)+ '/'+stdate.getDate()+'/'+stdate.getFullYear()+' - '+
+    (endate.getMonth() + 1)+ '/'+endate.getDate()+'/'+endate.getFullYear()
+    
+    console.log(dateRange);
+    $('.daterange').val(dateRange)
   },1000)
   $('.noDocsTable').DataTable( {
     "processing": true,
