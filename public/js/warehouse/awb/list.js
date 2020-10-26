@@ -1,3 +1,4 @@
+
 $("#no-docs-table").on("click", ".btn-rm-awb", function(){
   let id = $(this).data('id');
   $('#confirm-delete-awb').find('#rm-awb').attr('data-id', id);
@@ -69,15 +70,23 @@ var nodocsTable = $('#no-docs-table').DataTable({
 $(document).ready(function() {
   let flagStatus = ''
   if($('#clear').val() ){
-    $('#daterange').val('')
+    // $('#daterange').val('')
     $('#clear').val('1')
   }
   setTimeout(()=>{
     if($('#clear').val() ){
-      $('#daterange').val('')
+      // $('#daterange').val('')
       $('#clear').val('1')
-    }else
-      $('.daterange').val($('#daterange').val())
+    }
+    var endate = new Date();      
+    endate.setDate(endate.getDate());
+    var stdate = new Date();
+    stdate.setDate(stdate.getDate() -14);      
+    var dateRange = (stdate.getMonth() + 1)+ '/'+stdate.getDate()+'/'+stdate.getFullYear()+' - '+
+    (endate.getMonth() + 1)+ '/'+endate.getDate()+'/'+endate.getFullYear()
+    
+    console.log(dateRange);
+    $('.daterange').val(dateRange)
   },1000)
   $('.noDocsTable').DataTable( {
     "processing": true,
@@ -89,22 +98,24 @@ $(document).ready(function() {
       
     }
   })
-  $('.awbTable').on( 'xhr.dt', function () {
+  $('#awb-table').on( 'xhr.dt', function () {
+    
         flagStatus = 1
   });
   $('.noDocsTable').on( 'xhr.dt', function () {
     flagStatus = 0
   });
+  flagStatus = 1
 
-  $('.awbTable').DataTable( {
-    "processing": true,
-    "serverSide": true,    
-    "ajax": {
-      url: "/warehouse/fll/awb/allAbws",
-      type: "POST",
-      data :{ daterange:$('#daterange').val(), clear:$('#clear').val(),status : 1},
-    }
-  })
+  // $('.awbTable').DataTable( {
+  //   "processing": true,
+  //   "serverSide": true,    
+  //   "ajax": {
+  //     url: "/warehouse/fll/awb/allAbws",
+  //     type: "POST",
+  //     data :{ daterange:$('#daterange').val(), clear:$('#clear').val(),status : 1},
+  //   }
+  // })
 
   $('.awb-no-docs-table').DataTable( {
     "processing": true,
@@ -168,7 +179,12 @@ function printAwb(str){
     }
   })
 }
-
+$(document).on('click', '.applyBtn', function() {
+  window.location = "fll/awb/list?daterange="+$('.daterange').val();
+})
+$(document).on('click', '.cancelBtn', function() {
+  window.location = "fll/awb/list?clear=1";
+})
 function print(){
   $('.close-del').trigger('click');
   printJS(pdfPath);
