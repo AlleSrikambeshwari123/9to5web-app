@@ -70,15 +70,15 @@ var nodocsTable = $('#no-docs-table').DataTable({
 $(document).ready(function() {
   let flagStatus = ''
   if($('#clear').val() ){
-    $('#daterange').val('')
+    // $('#daterange').val('')
     $('#clear').val('1')
   }
   setTimeout(()=>{
     if($('#clear').val() ){
-      $('#daterange').val('')
+      // $('#daterange').val('')
       $('#clear').val('1')
-    }else
-      $('.daterange').val($('#daterange').val())
+    }
+    $('.daterange').val($('#daterange').val())
   },1000)
   $('.noDocsTable').DataTable( {
     "processing": true,
