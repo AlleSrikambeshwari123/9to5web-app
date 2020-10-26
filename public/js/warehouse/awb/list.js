@@ -82,8 +82,7 @@ $(document).ready(function() {
       var stdate = new Date();
       stdate.setDate(stdate.getDate() -14);      
       var dateRange = (stdate.getMonth() + 1)+ '/'+stdate.getDate()+'/'+stdate.getFullYear()+' - '+
-      (endate.getMonth() + 1)+ '/'+endate.getDate()+'/'+endate.getFullYear()
-      
+      (endate.getMonth() + 1)+ '/'+endate.getDate()+'/'+endate.getFullYear()      
       $('.daterange').val(dateRange)
     }
 
