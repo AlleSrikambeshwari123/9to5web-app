@@ -377,14 +377,17 @@ exports.get_awb_list = (req, res, next) => {
   }  
   services.awbService.getAwbsFull(req).then(awbs => {
     for(let awb of awbs){
-      awb.volumetricWeight = 0
+      let weightAwb = 0;
+      awb.volumetricWeight = 0;
       awb.packages.forEach(package=>{
         let check = 1
         package.dimensions.split('x').forEach(data =>{
           check = check * data
         })
+        weightAwb = weightAwb + package.weight;
         awb.volumetricWeight = (check/166);
       })
+      awb.weight = weightAwb
     }
    // return res.json(awbs);
     res.render('pages/warehouse/awb/list', {

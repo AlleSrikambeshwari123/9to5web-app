@@ -176,7 +176,14 @@ class AwbService {
         stdate.setDate(stdate.getDate() -21);      
         searchData.createdAt = {"$gte":stdate, "$lte": endate};
       }
-      console.log(searchData);
+      if(req.query.clear){
+        var endate = new Date();      
+        endate.setDate(endate.getDate()+1);
+        var stdate = new Date();
+        stdate.setDate(stdate.getDate() -14);      
+        searchData.createdAt = {"$gte":stdate, "$lte": endate};
+      }
+      
         return new Promise((resolve, reject) => {
             Awb.find(searchData)
                 .populate('customerId')
