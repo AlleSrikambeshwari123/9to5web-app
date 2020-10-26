@@ -1,3 +1,4 @@
+
 $("#no-docs-table").on("click", ".btn-rm-awb", function(){
   let id = $(this).data('id');
   $('#confirm-delete-awb').find('#rm-awb').attr('data-id', id);
@@ -89,22 +90,24 @@ $(document).ready(function() {
       
     }
   })
-  $('.awbTable').on( 'xhr.dt', function () {
+  $('#awb-table').on( 'xhr.dt', function () {
+    
         flagStatus = 1
   });
   $('.noDocsTable').on( 'xhr.dt', function () {
     flagStatus = 0
   });
+  flagStatus = 1
 
-  $('.awbTable').DataTable( {
-    "processing": true,
-    "serverSide": true,    
-    "ajax": {
-      url: "/warehouse/fll/awb/allAbws",
-      type: "POST",
-      data :{ daterange:$('#daterange').val(), clear:$('#clear').val(),status : 1},
-    }
-  })
+  // $('.awbTable').DataTable( {
+  //   "processing": true,
+  //   "serverSide": true,    
+  //   "ajax": {
+  //     url: "/warehouse/fll/awb/allAbws",
+  //     type: "POST",
+  //     data :{ daterange:$('#daterange').val(), clear:$('#clear').val(),status : 1},
+  //   }
+  // })
 
   $('.awb-no-docs-table').DataTable( {
     "processing": true,
@@ -168,7 +171,12 @@ function printAwb(str){
     }
   })
 }
-
+$(document).on('click', '.applyBtn', function() {
+  window.location = "fll/awb/list?daterange="+$('.daterange').val();
+})
+$(document).on('click', '.cancelBtn', function() {
+  window.location = "fll/awb/list?clear=1";
+})
 function print(){
   $('.close-del').trigger('click');
   printJS(pdfPath);

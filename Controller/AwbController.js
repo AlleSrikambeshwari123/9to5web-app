@@ -349,7 +349,7 @@ exports.update_awb = async (req, res, next) => {
   });
 };
 
-exports.get_awb_list = (req, res, next) => {
+exports.get_awb_list_server = (req, res, next) => {
   // services.awbService.getAwbsFull().then(awbs => {
   //   for(let awb of awbs){
   //     awb.volumetricWeight = 0
@@ -370,6 +370,32 @@ exports.get_awb_list = (req, res, next) => {
       clear:req.query.clear
     })
   // })
+};
+exports.get_awb_list = (req, res, next) => {
+  if(req.query.clear){
+    req.query.daterange = '';
+  }  
+  services.awbService.getAwbsFull(req).then(awbs => {
+    for(let awb of awbs){
+      awb.volumetricWeight = 0
+      awb.packages.forEach(package=>{
+        let check = 1
+        package.dimensions.split('x').forEach(data =>{
+          check = check * data
+        })
+        awb.volumetricWeight = (check/166);
+      })
+    }
+   // return res.json(awbs);
+    res.render('pages/warehouse/awb/list', {
+      page: req.originalUrl,
+      title: "AirWay Bills",
+      user: res.user,
+      awbs: awbs,
+      daterange:req.query.daterange?req.query.daterange:'',
+      clear:req.query.clear
+    })
+   })
 };
 
 checkCondition = (awb,status) =>{
