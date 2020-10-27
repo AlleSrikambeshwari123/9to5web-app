@@ -3,10 +3,13 @@ var utils = require('../Util/utils');
 var aws = require('../Util/aws');
 
 exports.getInvoiceList = (req, res, next) => {
+  if(req.query.clear){
+    req.query.daterange = '';
+  } 
   Promise.all([
-    services.invoiceService.getAllStoreInvoice(),
-    services.invoiceService.getInvoices(),
-    services.invoiceService.getAdditionalInvoices(),
+    services.invoiceService.getAllStoreInvoice(req),
+    services.invoiceService.getInvoices(req),
+    services.invoiceService.getAdditionalInvoices(req),
   ]).then(function (storeInvoices) {
       res.render('pages/admin/invoice/list', {
         page: req.originalUrl,
@@ -14,6 +17,7 @@ exports.getInvoiceList = (req, res, next) => {
         invoices: [...storeInvoices[0],...storeInvoices[1]],
         additionalInvoices : storeInvoices[2],
         user: res.user,
+        clear:req.query.clear
       });
     });
   }
