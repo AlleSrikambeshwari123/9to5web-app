@@ -653,6 +653,9 @@ class PackageService {
                     if (barcode !== null && barcode.createdAt) {
                         pkg.OrignalBarcodeDate = barcode.createdAt;
                     }
+                    if(barcode !== null && (barcode.barcode == "No tracking" || barcode.barcode == "No Tracking")){
+                        pkg.OrignalBarcodeDate = pkg.createdAt
+                    }
                 }
                 if (pkg.awbId) {
                     let awb = await this.services.awbService.getAwb(pkg.awbId)
@@ -1448,6 +1451,9 @@ class PackageService {
                     if (barcode !== null && barcode.createdAt) {
                         pkg.OrignalBarcodeDate = barcode.createdAt;
                     }
+                    if(barcode !== null && (barcode.barcode == "No tracking" || barcode.barcode == "No Tracking")){
+                        pkg.OrignalBarcodeDate = pkg.createdAt
+                    }
                 }
                 if (pkg.awbId) {
                     let awb = await this.services.awbService.getAwb(pkg.awbId)
@@ -1707,6 +1713,9 @@ class PackageService {
                     let barcode = await this.getOriginBarcode(pkg.originBarcode)
                     if (barcode !== null && barcode.createdAt) {
                         pkg.OrignalBarcodeDate = barcode.createdAt;
+                    }
+                    if(barcode !== null && (barcode.barcode == "No tracking" || barcode.barcode == "No Tracking")){
+                        pkg.OrignalBarcodeDate = pkg.createdAt
                     }
                 }
                 if (pkg.awbId) {
