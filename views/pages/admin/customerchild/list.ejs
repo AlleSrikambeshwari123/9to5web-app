@@ -7,6 +7,7 @@
         <a href='create' class='btn btn-primary btn-round float-right ml-md-auto'>Add Sub Consignee</a>
       </div>
       <div class="card-body daterangepickerbody">
+        <input type="hidden" name="clear" id="clear" value="<%=clear%>">
         <div class="table-responsive">
           <table id="customerTable" class="display table dataTable dateRangeFilterTable table-striped table-hover">
             <thead>
@@ -40,4 +41,4 @@
   </div>
 </div>
 
-<% block('scripts').append('<script src="/js/admin/customer/list.js"></script>')%>
+<% block('scripts').append('<script src="/js/admin/customerchild/list.js"></script>')%>

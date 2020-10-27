@@ -18,12 +18,13 @@ exports.add_new_user = (req, res, next) => {
 }
 
 exports.get_user_list = (req, res, next) => {
-  services.userService.getAllUsers().then(userResult => {
+  services.userService.getAllUsers(req).then(userResult => {
     res.render('pages/admin/user/list', {
       title: 'System Users',
       page: req.originalUrl,
       user: res.user,
       users: userResult,
+      clear: req.query.clear
     });
   });
 }
