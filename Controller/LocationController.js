@@ -25,6 +25,7 @@ exports.get_location_list = (req, res, next) => {
       page: req.originalUrl,
       user: res.user,
       locations: locations.map(utils.formattedRecord),
+      clear: req.query.clear
     });
   });
 }
