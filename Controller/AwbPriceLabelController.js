@@ -4,7 +4,7 @@ var utils = require('../Util/utils');
 var helpers = require('../views/helpers');
 
 exports.get_awb_list = (req, res, next) => {
-  services.awbService.getAwbsFull().then((awbs) => {
+  services.awbService.getAwbsFull(req).then((awbs) => {
     res.render('pages/warehouse/awbprice/list-all', {
       page: req.originalUrl,
       user: res.user,
