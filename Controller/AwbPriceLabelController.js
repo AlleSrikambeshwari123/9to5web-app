@@ -2,13 +2,17 @@ var services = require('../Services/RedisDataServices');
 var printerCtrl = require('./PrinterController');
 var utils = require('../Util/utils');
 exports.get_awb_list = (req, res, next) => {
-  services.awbService.getAwbsFull().then((awbs) => {
+  if(req.query.clear){
+    req.query.daterange = '';
+  }
+  services.awbService.getAwbsFull(req).then((awbs) => {
     res.render('pages/warehouse/awbprice/list-all', {
       page: req.originalUrl,
       user: res.user,
       title: 'All Price Label',
       filterURL: '',
       awbs: awbs,
+      clear:req.query.clear,
     });
   });
 };
