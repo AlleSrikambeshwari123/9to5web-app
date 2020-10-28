@@ -70,9 +70,39 @@ class DeliveryService {
         })
     }
 
-    getDeliveriesFullData() {
+    getDeliveriesFullData(req) {
         return new Promise(async(resolve, reject) => {
-            Delivery.find({ status: { $ne: 1 } })
+            var searchData = { status: { $ne: 1 } };
+            if(req && req.query){
+                var daterange = req.query.daterange?req.query.daterange:'';
+                if(daterange){
+                  var date_arr = daterange.split('-');
+                  var startDate = (date_arr[0]).trim();      
+                  var stdate = new Date(startDate);
+                  stdate.setDate(stdate.getDate() );
+          
+                  var endDate = (date_arr[1]).trim();
+                  var endate = new Date(endDate);
+                  endate.setDate(endate.getDate() +1);     
+                  searchData.createdAt = {"$gte":stdate, "$lte": endate};
+                }
+          
+                if(!req.query.daterange && !req.query.clear){
+                  var endate = new Date();      
+                  endate.setDate(endate.getDate()+1);
+                  var stdate = new Date();
+                  stdate.setDate(stdate.getDate() -21);      
+                  searchData.createdAt = {"$gte":stdate, "$lte": endate};
+                }
+                if(req.query.clear){
+                  var endate = new Date();      
+                  endate.setDate(endate.getDate()+1);
+                  var stdate = new Date();
+                  stdate.setDate(stdate.getDate() -14);      
+                  searchData.createdAt = {"$gte":stdate, "$lte": endate};
+                }
+              }
+            Delivery.find(searchData)
                 .populate('locationId')
                 .populate('deliveryId')
                 .populate('vehicleId')

@@ -515,8 +515,7 @@ class PackageService {
                   stdate.setDate(stdate.getDate() -14);      
                   searchData.createdAt = {"$gte":stdate, "$lte": endate};
                 }
-              }
-              console.log(searchData);   
+              }   
             Package.find(searchData)
                 .populate('awbId')
                 .populate('originBarcode')
