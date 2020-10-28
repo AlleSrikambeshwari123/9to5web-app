@@ -49,7 +49,7 @@ exports.getInvoiceList = (req, res, next) => {
           else if(invoices[i].filename)
             invoiceDetail.push(invoices[i].filename)
           else
-            invoiceDetail.push('')
+            invoiceDetail.push('-')
           invoiceDetail.push(`<a class="text-decoration-none"
           href="/warehouse/nas/awb/manage/${awbNumberLink}/preview">
            ${awbNumber}</a>`);

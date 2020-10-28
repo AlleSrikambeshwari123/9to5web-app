@@ -173,7 +173,7 @@ async function sendInvoicesEmail(invoice,customer){
     emailBody = emailBody.replace("{{PMB}}",invoice.pmb)
     emailBody = emailBody.replace("{{TRACKINGID}}",invoice.courierNo)
     message = { 
-        to : "manishn@mailinator.com", 
+        to : "invoice@postboxesetc.com", 
         from : 'info@postboxesetc.com ',
         subject: `Invoice Uploaded`,
         html:emailBody
