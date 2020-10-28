@@ -161,13 +161,11 @@ class AwbService {
         var startDate = (date_arr[0]).trim();      
         var stdate = new Date(startDate);
         stdate.setDate(stdate.getDate() +1);
-
         var endDate = (date_arr[1]).trim();
         var endate = new Date(endDate);
         endate.setDate(endate.getDate() +1);     
         searchData.createdAt = {"$gte":stdate, "$lte": endate};
       }
-
       if(!req.query.daterange && !req.query.clear){
         var endate = new Date();      
         endate.setDate(endate.getDate()+1);
