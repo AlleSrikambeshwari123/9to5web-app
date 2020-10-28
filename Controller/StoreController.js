@@ -3,7 +3,7 @@ var utils = require('../Util/utils');
 
 exports.render_store_check_in = (req, res, next) => {
   Promise.all([
-    services.packageService.getPackagesForStores(),
+    services.packageService.getPackagesForStores(req),
     services.locationService.getPackageLocations()
   ]).then(([packages, locations]) => {
     console.log({locations});
@@ -12,7 +12,8 @@ exports.render_store_check_in = (req, res, next) => {
       title: 'Store Packages',
       user: res.user,
       packages: packages,
-      locations: locations
+      locations: locations,
+      clear: req.query.clear
     })
   });
 }

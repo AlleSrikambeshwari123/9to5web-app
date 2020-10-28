@@ -64,6 +64,9 @@ if(urlPage == "/warehouse/package/list/not-pmb9000"){
 if(urlPage == "/warehouse/package/list/in-manifest-no-docs"){
   redirectUrl = "/warehouse/package/list/in-manifest-no-docs";
 }
+if(urlPage == "/warehouse/fll/package/list"){
+  redirectUrl = "/warehouse/fll/package/list";
+}
 
 $(document).on('click', '.applyBtn', function() {
   window.location = redirectUrl+"?daterange="+$('.daterange').val();
