@@ -1094,9 +1094,9 @@ class PackageService {
         });
     }
 
-    getPackagesInFll_updated() {
+    getPackagesInFll_updated(req) {
         return new Promise((resolve, reject) => {
-            this.getAllPackages_updated().then((packages) => {
+            this.getAllPackagesUpdated(req).then((packages) => {
                 Promise.all(
                     packages.map((pkg) => {
                         if(pkg.customerId) {
@@ -1284,9 +1284,39 @@ class PackageService {
     }
 
     //======== Packages for store ========//
-    getPackagesForStores() {
+    getPackagesForStores(req) {
         return new Promise((resolve, reject) => {
-            Package.find({})
+            var searchData = {};
+            if(req && req.query){
+                var daterange = req.query.daterange?req.query.daterange:'';
+                if(daterange){
+                  var date_arr = daterange.split('-');
+                  var startDate = (date_arr[0]).trim();      
+                  var stdate = new Date(startDate);
+                  stdate.setDate(stdate.getDate() );
+          
+                  var endDate = (date_arr[1]).trim();
+                  var endate = new Date(endDate);
+                  endate.setDate(endate.getDate() +1);     
+                  searchData.createdAt = {"$gte":stdate, "$lte": endate};
+                }
+          
+                if(!req.query.daterange && !req.query.clear){
+                  var endate = new Date();      
+                  endate.setDate(endate.getDate()+1);
+                  var stdate = new Date();
+                  stdate.setDate(stdate.getDate() -21);      
+                  searchData.createdAt = {"$gte":stdate, "$lte": endate};
+                }
+                if(req.query.clear){
+                  var endate = new Date();      
+                  endate.setDate(endate.getDate()+1);
+                  var stdate = new Date();
+                  stdate.setDate(stdate.getDate() -14);      
+                  searchData.createdAt = {"$gte":stdate, "$lte": endate};
+                }
+              }  
+            Package.find(searchData)
             .populate('customerId')
             .populate('awbId')
             .exec(async (err, packages) => {
