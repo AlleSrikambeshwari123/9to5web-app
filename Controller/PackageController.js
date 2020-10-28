@@ -58,7 +58,8 @@ exports.get_filtered_package_list = (req, res, next) => {
     let filterURL = '';
     let buttonName = '';
     services.packageService
-        .getAllPackagesWithLastStatus({ filter: req.params.filter })
+        //.getAllPackagesWithLastStatus({ filter: req.params.filter })
+        .getAwbNoDocsAllPackagesWithLastStatus(req)
         .then(async(packages) => {
 
             if (req.params.filter === 'in-manifest') {
@@ -163,6 +164,7 @@ exports.get_filtered_package_list = (req, res, next) => {
                     filterURL: filterURL,
                     buttonName: 'Add to Delivery',
                     packages: filtered,
+                    clear: req.query.clear
                 });
             } else {
                 res.render('pages/warehouse/package/list', {
@@ -171,6 +173,7 @@ exports.get_filtered_package_list = (req, res, next) => {
                     title: title,
                     filterURL: filterURL,
                     packages: filtered,
+                    clear: req.query.clear
                 });
             }
         });
@@ -196,19 +199,21 @@ exports.get_nas_package_list = (req, res, next) => {
             title: 'Packages On Hand Of NAS',
             filterURL: '',
             packages: packages,
+            clear: req.query.clear
         });
     });
 };
 
 exports.get_nas_package_aging = (req, res, next) => {
-    services.packageService.getAllPackages_updated().then((packages) => {
-        console.log({packages});
+    console.log('allData>>>>>>>>>>>>>>>>>>>>>>',"-----------------")
+    services.packageService.getAllPackagesUpdated(req).then((packages) => {        
         res.render('pages/warehouse/package/aging', {
             page: req.originalUrl,
             user: res.user,
             title: 'Packages Aging',
             filterURL: '',
             packages: packages,
+            clear: req.query.clear
         });
     });
 };

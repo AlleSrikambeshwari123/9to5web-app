@@ -104,9 +104,41 @@ class UserService {
       })
     });
   }
-  getAllUsers() {
+  getAllUsers(req) {
     return new Promise((resolve, reject) => {
-      User.find({})
+      var searchData = {};
+      if(req && req.query){
+      var daterange = req.query.daterange?req.query.daterange:'';  
+          
+      
+      if(daterange){
+        var date_arr = daterange.split('-');
+        var startDate = (date_arr[0]).trim();      
+        var stdate = new Date(startDate);
+        stdate.setDate(stdate.getDate() +1);
+
+        var endDate = (date_arr[1]).trim();
+        var endate = new Date(endDate);
+        endate.setDate(endate.getDate() +1);     
+        searchData.createdAt = {"$gte":stdate, "$lte": endate};
+      }
+
+      if(!req.query.daterange && !req.query.clear){
+        var endate = new Date();      
+        endate.setDate(endate.getDate()+1);
+        var stdate = new Date();
+        stdate.setDate(stdate.getDate() -21);      
+        searchData.createdAt = {"$gte":stdate, "$lte": endate};
+      }
+      if(req.query.clear){
+        var endate = new Date();      
+        endate.setDate(endate.getDate()+1);
+        var stdate = new Date();
+        stdate.setDate(stdate.getDate() -14);      
+        searchData.createdAt = {"$gte":stdate, "$lte": endate};
+      }
+    }
+      User.find(searchData)
         .populate('roles')
         .exec((err, users) => {
           if (err) {

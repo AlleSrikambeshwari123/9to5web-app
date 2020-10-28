@@ -5,7 +5,7 @@ const aws = require('../Util/aws');
 
 exports.get_customer_list = (req, res, next) => {
   Promise.all([
-    services.customerChildService.getCustomers()
+    services.customerChildService.getAllCustomers(req)
   ]).then(results => {
     const customers = results[0];
     res.render('pages/admin/customerchild/list', {
@@ -13,6 +13,7 @@ exports.get_customer_list = (req, res, next) => {
       title: "Consignee",
       user: res.user,
       customers: customers.map(utils.formattedRecord),
+      clear: req.query.clear
     })
   })
 }

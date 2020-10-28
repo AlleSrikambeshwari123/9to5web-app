@@ -1,4 +1,7 @@
 <% layout('./shared/__template')%>
+<script>
+  var pageUrl = "<%=page%>";
+</script>
 <div class='gutters'>
   <div class='col-xl-12 col-lg-6 col-md-12 col-sm-12'>
     <div class='card'>
@@ -6,6 +9,7 @@
         <h4 class="card-title"><%=title%></h4>
       </div>
       <div class="card-body daterangepickerbody">
+        <input type="hidden" name="clear" id="clear" value="<%=clear%>">
         <div class="table-responsive">
         <table id='no-docs-table' class='display table table-striped table-hover dateRangeFilterTable dataTable'>
           <thead>

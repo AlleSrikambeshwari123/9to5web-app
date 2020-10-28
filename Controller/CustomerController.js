@@ -50,7 +50,7 @@ exports.get_customer_package_list = (req, res, next) => {
 exports.get_customer_list = (req, res, next) => {
   Promise.all([
     services.locationService.getLocations(),
-    services.customerService.getCustomers(),
+    services.customerService.getCustomers(req),
     services.locationService.getCompanies()
   ]).then(results => {
     const locations = results[0];
@@ -63,7 +63,8 @@ exports.get_customer_list = (req, res, next) => {
       user: res.user,
       customers: customers.map(utils.formattedRecord),
       locations: locations,
-      companies: companies
+      companies: companies,
+      clear: req.query.clear
     })
   })
 }

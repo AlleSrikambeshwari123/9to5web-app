@@ -36,3 +36,55 @@ $('.print-package').click(function () {
   $('.close-del').trigger('click');
   printJS(pdfPath);
 })
+
+var pageUrl = pageUrl ? pageUrl : '';
+var pageArr =  pageUrl.split('?');
+var urlPage = (pageArr && pageArr.length) ? pageArr[0] : '';
+var redirectUrl = "/warehouse/nas/package/list";
+if(urlPage == "/warehouse/nas/package/list"){
+  redirectUrl = "/warehouse/nas/package/list";
+}
+
+if(urlPage == "/warehouse/nas/package/aging"){
+  redirectUrl = "/warehouse/nas/package/aging";
+}
+if(urlPage == "/warehouse/package/list/in-manifest"){
+  redirectUrl = "/warehouse/package/list/in-manifest";
+}
+
+if(urlPage == "/warehouse/package/list/deliver"){
+  redirectUrl = "/warehouse/package/list/deliver";
+}
+if(urlPage == "/warehouse/package/list/in-pmb9000"){
+  redirectUrl = "/warehouse/package/list/in-pmb9000";
+}
+if(urlPage == "/warehouse/package/list/not-pmb9000"){
+  redirectUrl = "/warehouse/package/list/not-pmb9000";
+}
+if(urlPage == "/warehouse/package/list/in-manifest-no-docs"){
+  redirectUrl = "/warehouse/package/list/in-manifest-no-docs";
+}
+
+$(document).on('click', '.applyBtn', function() {
+  window.location = redirectUrl+"?daterange="+$('.daterange').val();
+})
+
+$(document).on('click', '.cancelBtn', function() {
+  window.location = redirectUrl+"?clear=1";
+})
+$(document).ready(function() {
+  setTimeout(()=>{
+		if($('#clear').val() ){
+		  // $('#daterange').val('')
+		  $('#clear').val('1');
+		  var endate = new Date();      
+		  endate.setDate(endate.getDate());
+		  var stdate = new Date();
+		  stdate.setDate(stdate.getDate() -14);      
+		  var dateRange = (stdate.getMonth() + 1)+ '/'+stdate.getDate()+'/'+stdate.getFullYear()+' - '+
+		  (endate.getMonth() + 1)+ '/'+endate.getDate()+'/'+endate.getFullYear()      
+		  $('.daterange').val(dateRange)
+		}	   
+	},100)
+
+})
