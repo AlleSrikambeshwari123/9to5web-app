@@ -2,13 +2,18 @@ var services = require('../Services/RedisDataServices');
 var utils = require('../Util/utils');
 
 exports.get_manifest_list = (req, res, next) => {
-  services.manifestService.getManifests().then(manifests => {
+  if(req.query.clear){
+    req.query.daterange = '';
+  }
+  services.manifestService.getManifests(req).then(manifests => {
     manifests.forEach((manifest, i) => manifest.plane = manifest.planeId);
     res.render('pages/warehouse/manifest/list', {
       page: req.originalUrl,
       user: res.user,
       title: 'Manifests',
       manifests: manifests.map(utils.formattedRecord),
+      clear:req.query.clear,
+      filter:"Manifests"
     })
   })
 }
@@ -126,12 +131,17 @@ exports.ship_manifest = (req, res, next) => {
 }
 
 exports.get_incoming_manifest = (req, res, next) => {
-  services.manifestService.getManifestProcessing().then(manifests => {
+  if(req.query.clear){
+    req.query.daterange = '';
+  }
+  services.manifestService.getManifestProcessing(req).then(manifests => {
     res.render('pages/warehouse/manifest/incoming', {
       page: req.originalUrl,
       user: res.user,
       title: 'Incoming Flights',
       manifests: manifests.map(utils.formattedRecord),
+      clear:req.query.clear,
+      filter: "Incoming"
     });
   })
 }

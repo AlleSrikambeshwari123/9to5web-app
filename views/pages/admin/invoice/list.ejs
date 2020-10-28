@@ -25,7 +25,8 @@
               <table class="display table table-striped table-hover dateRangeFilterTable dataTable invoice-table ">
                 <thead>
                   <tr>
-                    <th>Awb Number</th>
+                    <th>File Name</th>
+                    <th>AWB Number</th>
                     <th>Date Uploaded</th>
                     <th>Invoice</th>
                     <th>Tracking #</th>
@@ -36,6 +37,7 @@
                 <tbody>
                   <% invoices.forEach(invoice => { %>
                   <tr data-record="<%=invoice._id%>">
+                      <td><%= invoice.fileName ? invoice.fileName : (invoice.filename) ? invoice.filename : '-'  %></td>
                     <td><a class="text-decoration-none"
                         href="/warehouse/nas/awb/manage/<%=invoice.awbId ? invoice.awbId._id: '#'%>/preview">
                         <%= (invoice.awbId) ?invoice.awbId.awbId : '' %> </a></td>
@@ -63,6 +65,7 @@
                   <table class="display table table-striped table-hover dateRangeFilterTable dataTable no-awb-invoice-table ">
                     <thead>
                       <tr>
+                        <th>File Name</th>
                         <th>Date Uploaded</th>
                         <th>Invoice</th>
                         <th>Tracking #</th>
@@ -73,7 +76,7 @@
                     <tbody>
                       <% additionalInvoices.forEach(invoice => { %>
                       <tr data-record="<%=invoice._id%>">
-                        
+                        <td><%= invoice.fileName %></td>
                         <td><%= helpers.formatDate(invoice.createdAt)%></td>
                         <td><a href="JavaScript:Void(0);"
                             onclick="downloadInvoice('<%=(invoice.fileName) ? invoice.fileName :invoice.filename%>')">Invoice
