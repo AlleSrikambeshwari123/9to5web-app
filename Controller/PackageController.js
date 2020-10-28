@@ -58,7 +58,8 @@ exports.get_filtered_package_list = (req, res, next) => {
     let filterURL = '';
     let buttonName = '';
     services.packageService
-        .getAllPackagesWithLastStatus({ filter: req.params.filter })
+        //.getAllPackagesWithLastStatus({ filter: req.params.filter })
+        .getAwbNoDocsAllPackagesWithLastStatus(req)
         .then(async(packages) => {
 
             if (req.params.filter === 'in-manifest') {
@@ -163,6 +164,7 @@ exports.get_filtered_package_list = (req, res, next) => {
                     filterURL: filterURL,
                     buttonName: 'Add to Delivery',
                     packages: filtered,
+                    clear: req.query.clear
                 });
             } else {
                 res.render('pages/warehouse/package/list', {
@@ -171,6 +173,7 @@ exports.get_filtered_package_list = (req, res, next) => {
                     title: title,
                     filterURL: filterURL,
                     packages: filtered,
+                    clear: req.query.clear
                 });
             }
         });

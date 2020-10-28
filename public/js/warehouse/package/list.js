@@ -48,6 +48,22 @@ if(urlPage == "/warehouse/nas/package/list"){
 if(urlPage == "/warehouse/nas/package/aging"){
   redirectUrl = "/warehouse/nas/package/aging";
 }
+if(urlPage == "/warehouse/package/list/in-manifest"){
+  redirectUrl = "/warehouse/package/list/in-manifest";
+}
+
+if(urlPage == "/warehouse/package/list/deliver"){
+  redirectUrl = "/warehouse/package/list/deliver";
+}
+if(urlPage == "/warehouse/package/list/in-pmb9000"){
+  redirectUrl = "/warehouse/package/list/in-pmb9000";
+}
+if(urlPage == "/warehouse/package/list/not-pmb9000"){
+  redirectUrl = "/warehouse/package/list/not-pmb9000";
+}
+if(urlPage == "/warehouse/package/list/in-manifest-no-docs"){
+  redirectUrl = "/warehouse/package/list/in-manifest-no-docs";
+}
 
 $(document).on('click', '.applyBtn', function() {
   window.location = redirectUrl+"?daterange="+$('.daterange').val();
