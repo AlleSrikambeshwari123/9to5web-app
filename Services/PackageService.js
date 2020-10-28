@@ -484,6 +484,53 @@ class PackageService {
                 });
         });
     }
+    getAllPackagesUpdated(req){        
+        return new Promise((resolve, reject) => {
+            var searchData = {};
+            if(req && req.query){
+                var daterange = req.query.daterange?req.query.daterange:'';
+                if(daterange){
+                  var date_arr = daterange.split('-');
+                  var startDate = (date_arr[0]).trim();      
+                  var stdate = new Date(startDate);
+                  stdate.setDate(stdate.getDate() );
+          
+                  var endDate = (date_arr[1]).trim();
+                  var endate = new Date(endDate);
+                  endate.setDate(endate.getDate() +1);     
+                  searchData.createdAt = {"$gte":stdate, "$lte": endate};
+                }
+          
+                if(!req.query.daterange && !req.query.clear){
+                  var endate = new Date();      
+                  endate.setDate(endate.getDate()+1);
+                  var stdate = new Date();
+                  stdate.setDate(stdate.getDate() -21);      
+                  searchData.createdAt = {"$gte":stdate, "$lte": endate};
+                }
+                if(req.query.clear){
+                  var endate = new Date();      
+                  endate.setDate(endate.getDate()+1);
+                  var stdate = new Date();
+                  stdate.setDate(stdate.getDate() -14);      
+                  searchData.createdAt = {"$gte":stdate, "$lte": endate};
+                }
+              }
+              console.log(searchData);   
+            Package.find(searchData)
+                .populate('awbId')
+                .populate('originBarcode')
+                .populate('customerId')
+                .populate('zoneId')
+                .exec((err, result) => {
+                    if (err) {
+                        resolve([]);
+                    } else {
+                        resolve(result);
+                    }
+                });
+        });
+    }
     get_Packages_update(object) {
         return new Promise((resolve, reject) => {
             Package.find(object)
@@ -655,6 +702,53 @@ class PackageService {
                     }
                     if(barcode !== null && (barcode.barcode == "No tracking" || barcode.barcode == "No Tracking")){
                         pkg.OrignalBarcodeDate = pkg.createdAt
+                    }
+                }
+                if (pkg.awbId) {
+                    let awb = await this.services.awbService.getAwb(pkg.awbId)
+                    if (awb !== null && awb.createdAt) {
+                        let flag = 0
+                        awbArray.forEach(data=>{
+                            if(data.awbId == awb.awbId){
+                                data.pkgNo++
+                                flag = 1
+                                pkg.pieceNo = data.pkgNo 
+                            }
+                        })
+                        if(flag == 0){
+                            awbArray.push({awbId : awb.awbId,pkgNo : 1})
+                            pkg.pieceNo = 1
+                        }
+                        pkg.awbCreatedAt = momentz(awb.createdAt).tz("America/New_York").format('dddd, MMMM Do YYYY, h:mm A');
+                    }
+                }
+                if (pkg.manifestId) {
+                    let actualFlight = await Manifest.findById(pkg.manifestId).populate('planeId')
+                    if (actualFlight !== null && actualFlight.planeId) {
+                        pkg.manifestId = actualFlight._id
+                        pkg.actualFlight = actualFlight.planeId ? actualFlight.planeId.tailNumber : ''
+                    }
+                }
+                pkg.OrignalBarcodeDate = pkg.OrignalBarcodeDate || ''
+                pkg.awbCreatedAt = pkg.awbCreatedAt || ''
+                pkg.actualFlight = pkg.actualFlight || ''
+                return pkg;
+            }),
+        );
+    }
+    async getAwbNoDocsAllPackagesWithLastStatus(req) {
+        let packages = await this.getAllPackagesUpdated(req);
+        let awbArray = []
+        return await Promise.all(
+            packages.map(async(pkg) => {
+                let status = await this.services.packageService.getPackageLastStatus(pkg._id);
+                pkg.lastStatusText = status && status.status;
+                if(pkg.lastStatusDate)
+                    pkg.lastStatusDates  = momentz(pkg.lastStatusDate).tz("America/New_York").format('dddd, MMMM Do YYYY, h:mm A')
+                if (pkg.originBarcode) {
+                    let barcode = await this.getOriginBarcode(pkg.originBarcode)
+                    if (barcode !== null && barcode.createdAt) {
+                        pkg.OrignalBarcodeDate = barcode.createdAt;
                     }
                 }
                 if (pkg.awbId) {
@@ -1051,9 +1145,9 @@ class PackageService {
         });
     }
 
-    getPackagesInNas_updated() {
+    getPackagesInNas_updated(req) {
         return new Promise((resolve, reject) => {
-            this.getAllPackages_updated().then((packages) => {
+            this.getAllPackagesUpdated(req).then((packages) => {
                 Promise.all(
                     packages.map((pkg) => {
                         return this.getPackageLastStatus_updated(pkg._id);

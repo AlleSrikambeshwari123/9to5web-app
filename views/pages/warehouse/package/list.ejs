@@ -9,6 +9,7 @@
                     <!-- <a href='create' class='btn btn-primary btn-round float-right ml-md-auto'>Add User</a> -->
                 </div>
                 <div class="card-body daterangepickerbody">
+                    <input type="hidden" name="clear" id="clear" value="<%=clear%>">
                     <div class="table-responsive">
                         <table id="package-table" class="display table table-striped table-hover dateRangeFilterTable dataTable package-table">
                             <thead>
@@ -129,7 +130,9 @@
             </div>
         </div>
     </div>
-
+    <script> 
+        var pageUrl = "<%=page ? page :''%>";
+    </script>
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.2.0/sweetalert2.all.min.js"></script> -->
     <% block('scripts').append('<script src="/js/utils.js"></script>')%>
         <% block('scripts').append('<script src="/js/warehouse/package/list.js"></script>')%>

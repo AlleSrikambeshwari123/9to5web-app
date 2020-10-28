@@ -389,7 +389,7 @@ exports.get_awb_no_docs = (req, res, next) => {
 };
 
 exports.get_awb_no_docs_package_list = (req, res, next) => {
-  services.packageService.getAllPackagesWithLastStatus().then((packages) => {
+  services.packageService.getAwbNoDocsAllPackagesWithLastStatus(req).then((packages) => {
       return Promise.all(
           packages.map(async(pkg, i) => {
               let awb = await services.printService.getAWBDataForPackagesRelatedEntitie(pkg.awbId._id);
@@ -406,6 +406,7 @@ exports.get_awb_no_docs_package_list = (req, res, next) => {
               filterURL: '',
               buttonName: 'Add to Manifest',
               packages: pkgs,
+              clear: req.query.clear
           });
       })
 
