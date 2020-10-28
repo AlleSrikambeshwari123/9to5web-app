@@ -66,12 +66,20 @@ var pickuptable = $('#pickup-awb-table').DataTable({
   pageLength: 10,
 })
 
+var pageUrl = pageUrl ? pageUrl : '';
+var pageArr =  pageUrl.split('?');
+var urlPage = (pageArr && pageArr.length) ? pageArr[0] : '';
+var redirectUrl = "/warehouse/fll/awb/list";
+if(urlPage == "/warehouse/nas/awb/no-docs"){
+  redirectUrl = "/warehouse/nas/awb/no-docs";
+}
+
 $(document).on('click', '.applyBtn', function() {
-  window.location = "/warehouse/fll/awb/list?daterange="+$('.daterange').val();
+  window.location = redirectUrl+"?daterange="+$('.daterange').val();
 })
 
 $(document).on('click', '.cancelBtn', function() {
-  window.location = "/warehouse/fll/awb/list?clear=1";
+  window.location = redirectUrl+"?clear=1";
 })
 $(document).ready(function() {
   setTimeout(()=>{
