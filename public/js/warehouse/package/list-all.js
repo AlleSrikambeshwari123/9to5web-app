@@ -703,6 +703,9 @@ var redirectUrl = "/warehouse/package/list/deliver";
 if(urlPage == "/warehouse/package/list/deliver"){
   redirectUrl = "/warehouse/package/list/deliver";
 }
+if(urlPage == "/warehouse/package/list"){
+  redirectUrl = "/warehouse/package/list";
+}
 
 $(document).on('click', '.applyBtn', function() {
   window.location = redirectUrl+"?daterange="+$('.daterange').val();
