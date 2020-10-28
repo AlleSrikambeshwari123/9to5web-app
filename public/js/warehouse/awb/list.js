@@ -73,6 +73,9 @@ var redirectUrl = "/warehouse/fll/awb/list";
 if(urlPage == "/warehouse/nas/awb/no-docs"){
   redirectUrl = "/warehouse/nas/awb/no-docs";
 }
+if(urlPage == "/warehouse/fll/awb/no-docs"){
+  redirectUrl = "/warehouse/fll/awb/no-docs";
+}
 
 $(document).on('click', '.applyBtn', function() {
   window.location = redirectUrl+"?daterange="+$('.daterange').val();

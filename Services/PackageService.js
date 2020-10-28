@@ -1094,9 +1094,9 @@ class PackageService {
         });
     }
 
-    getPackagesInFll_updated() {
+    getPackagesInFll_updated(req) {
         return new Promise((resolve, reject) => {
-            this.getAllPackages_updated().then((packages) => {
+            this.getAllPackagesUpdated(req).then((packages) => {
                 Promise.all(
                     packages.map((pkg) => {
                         if(pkg.customerId) {
