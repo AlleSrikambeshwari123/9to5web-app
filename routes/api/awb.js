@@ -10,6 +10,7 @@ var mongoose = require('mongoose');
 var aws = require('../../Util/aws');
 var uniqid = require('uniqid');
 const multer = require('multer');
+var emailService = require('../../Util/EmailService');
 
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -82,6 +83,8 @@ router.post('/store-invoice',passport.authenticate('jwt', { session: false }), u
             let awbData
             if(req.body.awbId){
                 invoiceObject.awbId = req.body.awbId 
+                let customer = await services.customerService.getCustomer({_id : invoiceObject.customerId})
+                await emailService.sendInvoicesEmail(invoiceObject,customer);
                 awbData = await services.awbService.storeInvoiceFile(invoiceObject);
             }else{
                 awbData = await services.awbService.storeAdditionalInvoceFile(invoiceObject);

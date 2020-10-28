@@ -44,6 +44,10 @@ exports.getInvoiceList = (req, res, next) => {
           var awbNumber = (invoices[i].awbId) ?invoices[i].awb.awbId : ''
           var awbNumberLink = invoices[i].awb ? invoices[i].awb._id: '#'
           var fileName = (invoices[i].fileName) ? invoices[i].fileName :invoices[i].filename
+          if(invoices[i].fileName)
+            invoiceDetail.push(invoices[i].fileName)
+          else if(invoices[i].filename)
+            invoiceDetail.push(invoices[i].filename)
           invoiceDetail.push(`<a class="text-decoration-none"
           href="/warehouse/nas/awb/manage/${awbNumberLink}/preview">
            ${awbNumber}</a>`);
@@ -86,6 +90,7 @@ exports.getInvoiceList = (req, res, next) => {
         for(var i=0; i< invoices.length; i++){
           var invoiceDetail = [];
           var fileName = (invoices[i].fileName) ? invoices[i].fileName :invoices[i].filename
+          invoiceDetail.push(invoices[i].fileName)
           invoiceDetail.push(helpers.formatDate(invoices[i].createdAt));
 
           invoiceDetail.push(`<a href="JavaScript:Void(0);"
