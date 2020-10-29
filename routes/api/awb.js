@@ -71,10 +71,10 @@ router.post('/store-invoice',passport.authenticate('jwt', { session: false }), u
         const filePath = files.path?files.path:'';        
         var fileName = files.filename;
         
+        if(req.body.fileType)
+            fileName = fileName.split('.')[0] + '.' + req.body.fileType
         aws.uploadFile(filePath, fileName).then(async data => {
             console.log(`File Uploaded successfully. ${data.Location}`);            
-            if(req.body.fileType)
-                fileName = fileName.split('.')[0] + '.' + req.body.fileType
             let invoiceObject ={
                 fileName: fileName,
                 filePath: data.Location,
