@@ -89,6 +89,10 @@ $(document).ready(function() {
       type: "POST",
       data :{ daterange:$('#daterange').val(), clear:$('#clear').val()}
     },
+    columns : [{ createdCell: function (td, cellData, rowData, row, col) {
+     $(td).css('word-break', 'break-word');
+     $(td).css('min-width', '150px');
+   }},{},{},{},{},{},{}]
   })     
   $('.no-awb-invoice-table').DataTable( {
     "processing": true,
