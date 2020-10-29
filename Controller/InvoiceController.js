@@ -44,20 +44,23 @@ exports.getInvoiceList = (req, res, next) => {
           var awbNumber = (invoices[i].awbId) ?invoices[i].awb.awbId : ''
           var awbNumberLink = invoices[i].awb ? invoices[i].awb._id: '#'
           var fileName = (invoices[i].fileName) ? invoices[i].fileName :invoices[i].filename
-          if(invoices[i].fileName){
-            invoiceDetail.push(invoices[i].fileName)
-            if(invoices[i].fileName.split('.').length >1)
-              invoiceDetail.push(invoices[i].fileName.split('.')[1])
+          if(fileName){
+            if(invoices[i].name)
+              invoiceDetail.push(invoices[i].name)
+            else
+              invoiceDetail.push(fileName)
+            if(fileName.split('.').length >1)
+              invoiceDetail.push(fileName.split('.')[1])
             else
               invoiceDetail.push('')
           }
-          else if(invoices[i].filename){
-            invoiceDetail.push(invoices[i].filename)
-            if(invoices[i].filename.split('.').length >1)
-              invoiceDetail.push(invoices[i].filename.split('.')[1])
-            else
-              invoiceDetail.push('')
-          }
+          // else if(invoices[i].filename){
+          //   invoiceDetail.push(invoices[i].filename)
+          //   if(invoices[i].filename.split('.').length >1)
+          //     invoiceDetail.push(invoices[i].filename.split('.')[1])
+          //   else
+          //     invoiceDetail.push('')
+          // }
           else{
             invoiceDetail.push('-')
             invoiceDetail.push('-')

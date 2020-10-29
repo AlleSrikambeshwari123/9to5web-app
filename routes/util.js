@@ -22,7 +22,7 @@ router.post('/upload', function (req, res) {
   form.parse(req, (err, fields, files) => {
     if (err) res.send({});
     if (!_.isEmpty(files['upload'])) {
-
+      let name = files['upload'].name
       let filePath = files['upload'].path;
       let ext = files.upload.type.split('/')[1]
       var fileName = uniqid() + '_' + moment().utc().unix() +'.'+ ext;
@@ -39,7 +39,8 @@ router.post('/upload', function (req, res) {
         console.log(`File Uploaded successfully. ${data.Location}`);
         res.send({
           fileName: fileName,
-          filePath: data.Location
+          filePath: data.Location,
+          name : name
         })
       }).catch(err => {
         console.error(err);

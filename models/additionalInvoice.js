@@ -6,6 +6,9 @@ const additionalInvoiceSchema = new mongoose.Schema({
     fileName: {
         type: String
     },
+    name: {
+        type: String
+    },
     filePath: {
         type: String
     },

@@ -82,6 +82,8 @@ router.post('/store-invoice',passport.authenticate('jwt', { session: false }), u
                 pmb : req.body.pmb,
                 customerId : req.body.id
             }
+            if(files.originalname)
+                invoiceObject.name = files.originalname;
             let awbData
             if(req.body.awbId){
                 invoiceObject.awbId = req.body.awbId 
