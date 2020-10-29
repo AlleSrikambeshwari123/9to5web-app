@@ -160,7 +160,7 @@ async function sendAtStoreEmail(store,pkg){
     return result; 
 }
 
-async function sendInvoicesEmail(invoice,customer){
+async function sendInvoicesEmail(invoice,customer,awbId){
     console.log("sending at invoices mail.")
     console.log("ABOUT TO SEND EMAIL")
     var emailBody = await readEmailTemplate("invoice"); 
@@ -169,7 +169,7 @@ async function sendInvoicesEmail(invoice,customer){
     customerName = customerName +' '+(customer.lastName?customer.lastName:'')
     emailBody = emailBody.replace("{{HOST}}","https://9to5-qa.sprocket.solutions/");
     emailBody = emailBody.replace("{{CUSTOMERNAME}}",customerName)
-    emailBody = emailBody.replace("{{AWBID}}",invoice.awbId)
+    emailBody = emailBody.replace("{{AWBID}}",awbId)
     emailBody = emailBody.replace("{{PMB}}",invoice.pmb)
     emailBody = emailBody.replace("{{TRACKINGID}}",invoice.courierNo)
     message = { 
