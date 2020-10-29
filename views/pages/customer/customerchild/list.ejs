@@ -7,6 +7,8 @@
         <a href='/customer/customerchild/<%=createdBy%>/create' class='btn btn-primary btn-round float-right ml-md-auto'>Add Sub Consignee</a>
       </div>
       <div class="card-body daterangepickerbody">
+        <input type="hidden" name="customer" id="customer" value="<%=createdBy%>">
+        <input type="hidden" name="clear" id="clear" value="<%=clear%>">
         <div class="table-responsive">
           <table id="customerTable" class="display table dataTable dateRangeFilterTable table-striped table-hover">
             <thead>

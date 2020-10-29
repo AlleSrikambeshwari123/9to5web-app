@@ -154,7 +154,7 @@ class CustomerService {
           stdate.setDate(stdate.getDate() -14);      
           searchData.createdAt = {"$gte":stdate, "$lte": endate};
         }
-      }
+      }    
       Customer.find(searchData)
       .populate(['company','location'])
       .exec((err, customers) => {

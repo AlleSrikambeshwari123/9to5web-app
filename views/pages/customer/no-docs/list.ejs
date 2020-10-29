@@ -6,8 +6,10 @@
         <h4 class="card-title"><%=title%></h4>
       </div>
       <div class="card-body daterangepickerbody">
+        <input type="hidden" name="customer" id="customer" value="<%=createdBy%>">
+        <input type="hidden" name="clear" id="clear" value="<%=clear%>">
         <div class="table-responsive">
-        <table id='no-docs-table' class='display table table-striped table-hover dateRangeFilterTable dataTable'>
+        <table id='no-docs-table' class='display table table-striped table-hover dataTable'>
           <thead>
             <tr>
               <th>Customer First Name</th>
@@ -28,7 +30,7 @@
                     if(!awb.invoice) {
                   %>
             <tr data-record="<%= awb._id %>">
-              <td><%= awb.customerId.firstName%></td>
+              <!-- <td><%= awb.customerId.firstName%></td> -->
               <td><%= awb.customerId.lastName%></td>
               <td><%=helpers.formatDate(awb.createdAt)%></td>
               <td><%=awb.customerId.pmb %></td>
@@ -123,4 +125,4 @@
   </div>
 </div>
 
-<!-- <% block('scripts').append('<script src="/js/warehouse/awb/list.js"></script>')%> -->
+<% block('scripts').append('<script src="/js/customer/no-docs/list.js"></script>')%>

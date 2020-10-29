@@ -82,7 +82,11 @@
               <td>
                 <input type="checkbox" name="package-select" class="package-select" />
               </td>
+            <% if(pkg && pkg.originBarcode){ %>
               <td><%= helpers.formatDate(pkg.originBarcode.createdAt) %></td>
+            <% }else{ %>
+              <td></td>
+            <% } %>
               <% if (pkg['customerId']) { %>
                 <td><%= pkg.customerId.firstName%></td>
                 <td><%= (pkg['customerId'].lastName ? pkg.customerId.lastName : '-')%></td>
