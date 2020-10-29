@@ -125,9 +125,8 @@ class CustomerService {
   }
   getCustomers(req) {    
     return new Promise((resolve, reject) => {
-      if(req.query){
+      if(req && req.query){
         var daterange = req.query.daterange?req.query.daterange:'';  
-        }    
         var searchData = {};
         if(daterange){
           var date_arr = daterange.split('-');
@@ -155,6 +154,7 @@ class CustomerService {
           stdate.setDate(stdate.getDate() -14);      
           searchData.createdAt = {"$gte":stdate, "$lte": endate};
         }
+      }    
       Customer.find(searchData)
       .populate(['company','location'])
       .exec((err, customers) => {
