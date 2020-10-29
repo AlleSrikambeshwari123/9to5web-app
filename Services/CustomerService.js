@@ -125,9 +125,9 @@ class CustomerService {
   }
   getCustomers(req) {    
     return new Promise((resolve, reject) => {
+      var searchData = {};
       if(req && req.query){
         var daterange = req.query.daterange?req.query.daterange:'';  
-        var searchData = {};
         if(daterange){
           var date_arr = daterange.split('-');
           var startDate = (date_arr[0]).trim();      

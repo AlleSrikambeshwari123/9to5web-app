@@ -125,8 +125,10 @@ class InvoiceService {
   }
 
   async getInvoices(req) {
-    var daterange = req.query.daterange?req.query.daterange:'';            
-      var searchData = {};
+    var searchData = {};
+    if(req && req.query){
+      var daterange = req.query.daterange?req.query.daterange:'';            
+
       if(daterange){
         var date_arr = daterange.split('-');
         var startDate = (date_arr[0]).trim();      
@@ -153,6 +155,7 @@ class InvoiceService {
         stdate.setDate(stdate.getDate() -14);      
         searchData.createdAt = {"$gte":stdate, "$lte": endate};
       }
+    }
     return new Promise((resolve, reject) => {
       Invoice.find(searchData).populate('awbId').exec((err, result) => {
         if (err) {
@@ -165,8 +168,9 @@ class InvoiceService {
   }
 
   async getAdditionalInvoices(req) {
-    var daterange = req.query.daterange?req.query.daterange:'';            
-      var searchData = {};
+    var searchData = {};
+    if(req && req.query){
+      var daterange = req.query.daterange?req.query.daterange:'';            
       if(daterange){
         var date_arr = daterange.split('-');
         var startDate = (date_arr[0]).trim();      
@@ -193,6 +197,7 @@ class InvoiceService {
         stdate.setDate(stdate.getDate() -14);      
         searchData.createdAt = {"$gte":stdate, "$lte": endate};
       }
+    }
     return new Promise((resolve, reject) => {
       AdditionalInvoice.find(searchData).populate('customerId').exec((err, result) => {
         if (err) {
@@ -237,8 +242,9 @@ class InvoiceService {
   }
 
   async getAllStoreInvoice(req){
-    var daterange = req.query.daterange?req.query.daterange:'';            
-      var searchData = {};
+    var searchData = {};
+    if(req && req.query){
+      var daterange = req.query.daterange?req.query.daterange:'';            
       if(daterange){
         var date_arr = daterange.split('-');
         var startDate = (date_arr[0]).trim();      
@@ -265,6 +271,7 @@ class InvoiceService {
         stdate.setDate(stdate.getDate() -14);      
         searchData.createdAt = {"$gte":stdate, "$lte": endate};
       }
+    }
     return new Promise((resolve, reject) => {
       StoreInvoice.find(searchData).populate('awbId').exec((err, result) => {
         if (err) {

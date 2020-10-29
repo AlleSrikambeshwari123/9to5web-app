@@ -3,7 +3,7 @@ var printerCtrl = require('./PrinterController');
 var utils = require('../Util/utils');
 
 exports.get_package_list = (req, res, next) => {
-    services.packageService.getAllPackagesWithLastStatus().then((packages) => {
+    services.packageService.getAwbNoDocsAllPackagesWithLastStatus(req).then((packages) => {
         return Promise.all(
             packages.map(async(pkg, i) => {
                 let awb = await services.printService.getAWBDataForPackagesRelatedEntitie(pkg.awbId._id);
@@ -11,7 +11,7 @@ exports.get_package_list = (req, res, next) => {
                 packages[i].packageNumber = "PK00" + packages[i].id;
                 return pkg
             })
-        ).then(pkgs => {
+        ).then(pkgs => {            
             res.render('pages/warehouse/package/list-all', {
                 page: req.originalUrl,
                 user: res.user,
@@ -19,6 +19,7 @@ exports.get_package_list = (req, res, next) => {
                 filterURL: '',
                 buttonName: 'Add to Manifest',
                 packages: pkgs,
+                clear: req.query.clear
             });
         })
 
@@ -180,19 +181,20 @@ exports.get_filtered_package_list = (req, res, next) => {
 };
 
 exports.get_fll_package_list = (req, res, next) => {
-    services.packageService.getPackagesInFll_updated().then((packages) => {
+    services.packageService.getPackagesInFll_updated(req).then((packages) => {
         res.render('pages/warehouse/package/list', {
             page: req.originalUrl,
             user: res.user,
             title: 'Packages On Hands Of FLL',
             filterURL: '',
             packages: packages,
+            clear: req.query.clear
         });
     });
 };
 
 exports.get_nas_package_list = (req, res, next) => {
-    services.packageService.getPackagesInNas_updated().then((packages) => {
+    services.packageService.getPackagesInNas_updated(req).then((packages) => {
         res.render('pages/warehouse/package/list', {
             page: req.originalUrl,
             user: res.user,

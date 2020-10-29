@@ -28,6 +28,7 @@
 				</div>
 			</div>
             <div class="table-responsive">
+				<input type="hidden" name="clear" id="clear" value="<%=clear%>">
               <table id='cableBeachList-table' class='display table storeCheckInTable table-striped table-hover dataTable'>
 				<thead>
 					<tr>
@@ -42,7 +43,7 @@
 						<th></th>
 					</tr>
 				</thead>
-				<tbody>
+				<tbody>					
 					<input class="packages" value="<%=JSON.stringify(packages)%>" hidden/>
 					<% packages.forEach(function(pkg,i){ 
 						let check = 1

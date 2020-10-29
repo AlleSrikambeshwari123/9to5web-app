@@ -378,12 +378,13 @@ exports.get_awb_list = (req, res, next) => {
 };
 
 exports.get_awb_no_docs = (req, res, next) => {
-  services.awbService.getAwbsNoDocs().then(awbs => {
+  services.awbService.getAwbsNoDocs(req).then(awbs => {
     res.render('pages/warehouse/awb/no-docs', {
       page: req.originalUrl,
       title: "AirWay Bills - No Docs",
       user: res.user,
       awbs: awbs,
+      clear: req.query.clear
     })
   })
 };
