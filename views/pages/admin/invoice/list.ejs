@@ -22,10 +22,11 @@
         <div class="tab-content m-4" id="awb-list-tabContent">
           <div class="tab-pane fade show active" id="awb-invoice" role="tabpanel" aria-labelledby="awb-invoice-tab">
             <div class="table-responsive">
-              <table class="display table table-striped table-hover dateRangeFilterTable dataTable invoice-table ">
+              <table class="display table table-striped table-hover  dataTable invoice-table ">
                 <thead>
                   <tr>
                     <th>File Name</th>
+                    <th>Extension</th>
                     <th>AWB Number</th>
                     <th>Date Uploaded</th>
                     <th>Invoice</th>
@@ -38,6 +39,14 @@
                   <% invoices.forEach(invoice => { %>
                   <tr data-record="<%=invoice._id%>">
                       <td><%= invoice.fileName ? invoice.fileName : (invoice.filename) ? invoice.filename : '-'  %></td>
+                      <% if(invoice.fileName) { %>
+                        <td><%= (invoice.fileName.split('.').length > 1) ? invoice.fileName.split('.')[1] : '-' %></td>
+                      <% }else if (invoice.filename){ %>
+                        <td><%= (invoice.filename.split('.').length > 1) ? invoice.filename.split('.')[1] : '-' %></td>
+                      <% }else{ %>
+                        <td> - </td>
+                      <% } %>
+
                     <td><a class="text-decoration-none"
                         href="/warehouse/nas/awb/manage/<%=invoice.awbId ? invoice.awbId._id: '#'%>/preview">
                         <%= (invoice.awbId) ?invoice.awbId.awbId : '' %> </a></td>
@@ -66,6 +75,7 @@
                     <thead>
                       <tr>
                         <th>File Name</th>
+                        <th>Extension</th>
                         <th>Date Uploaded</th>
                         <th>Invoice</th>
                         <th>Tracking #</th>
@@ -77,6 +87,7 @@
                       <% additionalInvoices.forEach(invoice => { %>
                       <tr data-record="<%=invoice._id%>">
                         <td><%= invoice.fileName %></td>
+                        <td><%= (invoice.fileName && invoice.fileName.split('.').length > 1) ? invoice.fileName.split('.')[1] : '' %></td>
                         <td><%= helpers.formatDate(invoice.createdAt)%></td>
                         <td><a href="JavaScript:Void(0);"
                             onclick="downloadInvoice('<%=(invoice.fileName) ? invoice.fileName :invoice.filename%>')">Invoice

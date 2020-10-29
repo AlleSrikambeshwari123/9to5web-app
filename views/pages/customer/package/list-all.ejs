@@ -519,6 +519,8 @@
     </form>
   </div>
 </div>
-
+<script> 
+  var pageUrl = "<%=page ? page :''%>";
+</script>
 <% block('scripts').append('<script src="/js/utils.js"></script>')%>
 <% block('scripts').append('<script src="/js/warehouse/package/list-all.js"></script>')%>

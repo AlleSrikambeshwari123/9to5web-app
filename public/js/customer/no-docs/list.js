@@ -1,3 +1,5 @@
+
+
 $(document).on('click', '.applyBtn', function() {
     window.location = "/customer/customerchild/no-docs/"+$('#customer').val()+"?daterange="+$('.daterange').val();
 })
@@ -21,3 +23,6 @@ $(document).ready(function() {
         }	   
 },100) 
 })  
+let noDocsTable = $('#no-docs-tables').DataTable({
+    pageLength: 10,
+});

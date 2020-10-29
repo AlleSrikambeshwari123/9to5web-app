@@ -68,6 +68,10 @@ $('#invoice-packages').on('hidden.bs.modal', function () {
   $("#invoice-package-tbody").empty();
 });
 
+let invoixeTable = $('.invoice-table').DataTable({
+  pageLength: 10,
+});
+
 $(document).on('click', '.applyBtn', function() {
   window.location = "/admin/invoices/list?daterange="+$('.daterange').val();
 })
