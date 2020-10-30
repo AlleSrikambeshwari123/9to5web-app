@@ -40,10 +40,19 @@ router.get('/get-package-detail/:trackingNo', passport.authenticate('jwt', { ses
   services.packageService.getPackageByTrackingId(trackingNo)
   .then( result => {
     if(result.success){
-      result.packageInfo = [result.package],
-      result.awb = [result.package.awbId]
-    } 
-    res.send(result);
+      Promise.all([
+        services.packageService.getPackageById(result.package._id),
+        services.awbService.getFullAwb(result.package.awbId),
+      ]).then(results => {
+      res.send({
+        success:true,
+        packageInfo: [results[0]],
+        awb: results[1]
+      });
+    })
+  }else{
+    res.send({ success:false,message: "Please scan one of the system generated labels" })
+  }
   });
 })
 
