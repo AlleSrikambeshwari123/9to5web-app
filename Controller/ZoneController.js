@@ -52,7 +52,7 @@ exports.get_all_zone = (req, res, next) => {
       zoneDetail.push(zones[i].name ? zones[i].name : '');
       zoneDetail.push(helpers.formatDate(zones[i].createdAt))
       zoneDetail.push((zones[i].location && zones[i].location.name)  ? zones[i].location.name : '');
-      zoneDetail.push(`<a href="manage/${zones[i]._id}%>/get"><i class='fas fa-pencil-alt'></i></a>`);
+      zoneDetail.push(`<a href="manage/${zones[i]._id}/get"><i class='fas fa-pencil-alt'></i></a>`);
       data.push(zoneDetail);
     }
     dataTable.data = data;
