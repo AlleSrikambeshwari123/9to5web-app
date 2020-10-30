@@ -567,14 +567,37 @@ class PackageService {
         });
     }
 
-    getPackageWithFilter(filter, query) {
+    getPackageWithFilter(filter, query) {        
         return new Promise(async(resolve, reject) => {
             let nineToPackages = [],
                 postBox = [],
                 noDocs = [];
+            var daterange = query.daterange?query.daterange:'';
+            var type = query.type?query.type:'';
+            
+            var searchData = {};
+            if(daterange && type){
+                console.log(query);
+                var date_arr = daterange.split('-');
+                  var startDate = (date_arr[0]).trim();      
+                  var stdate = new Date(startDate);
+                  stdate.setDate(stdate.getDate() );
+          
+                  var endDate = (date_arr[1]).trim();
+                  var endate = new Date(endDate);
+                  endate.setDate(endate.getDate() +1);     
+                  var searchDataType = {createdAt: {"$gte":stdate, "$lte": endate}}; 
+            }
+                var endate = new Date();      
+                endate.setDate(endate.getDate()+1);
+                var stdate = new Date();
+                stdate.setDate(stdate.getDate() -21);      
+                searchData.createdAt = {"$gte":stdate, "$lte": endate};
+            
+            console.log("searchData>>>>>>>>>>>>>>>>",searchData)
             if (filter === 'all') {
-                let packages = await Package.find({}).populate(["awbId", "customerId", "zoneId"])
-
+                let packages = await Package.find(searchData).populate(["awbId", "customerId", "zoneId"])
+                
                 let result = await Promise.all(packages.map(async(pkg) => {
                     let statuses = await PackageStatus.find({ packageId: pkg._id }) || [];
                     if (statuses.length > 0) {
@@ -593,6 +616,38 @@ class PackageService {
                         }
                     }
                 }))
+                
+                if(type){
+                        if(type == "postbox"){
+                            postBox = [];
+                        }
+                        if(type == "noDocs"){
+                            noDocs = [];
+                        }
+                        if(type == "nineToPackages"){
+                            nineToPackages = [];
+                        }
+
+                    let packages = await Package.find(searchDataType).populate(["awbId", "customerId", "zoneId"])
+                   
+                    let resultType = await Promise.all(packages.map(async(pkg) => {
+                        let statuses = await PackageStatus.find({ packageId: pkg._id }) || [];
+                        if (statuses.length > 0) {
+                            let packageStatus = statuses[statuses.length - 1];
+                            if (pkg.customerId && pkg.customerId.pmb != "9000" && type=="postbox" ) {
+                                postBox.push({ _id: pkg.id, last_status: packageStatus.status, awb: "AWB" + pkg.awbId.awbId, customer_email: pkg.customerId ? pkg.customerId.email : '', zone: pkg.zoneId ? pkg.zoneId.name : '',createdAt:pkg.createdAt })
+                            }
+                            if (pkg.awbId && pkg.awbId.invoices && pkg.awbId.invoices.length == 0 &&  type=="noDocs") {
+                                noDocs.push({ _id: pkg.id, last_status: packageStatus.status, awb: "AWB" + pkg.awbId.awbId, customer_email: pkg.customerId ? pkg.customerId.email : '', zone: pkg.zoneId ? pkg.zoneId.name : '',createdAt:pkg.createdAt })
+                            }
+    
+                            if (pkg.customerId && pkg.customerId.pmb == "9000" && type == "nineToPackages") {
+                                nineToPackages.push({ _id: pkg.id, last_status: packageStatus.status, awb: "AWB" + pkg.awbId.awbId, customer_email: pkg.customerId ? pkg.customerId.email : '', zone: pkg.zoneId ? pkg.zoneId.name : '',createdAt:pkg.createdAt })
+                            }
+                        }
+                    }))
+                }
+                
 
                 resolve({ nineToPackages, postBox, noDocs });
 

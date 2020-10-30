@@ -50,7 +50,7 @@ router.get('/dashboard', middleware(services.userService).checkSession, function
         page: req.originalUrl,
         title: "AirWay Bills",
         user: res.user,
-        awbs: awbs,
+        awbs: awbs,        
       })
     })
   })
@@ -69,7 +69,8 @@ router.get('/dashboard', middleware(services.userService).checkSession, function
         5: 'Ready for Pickup / Delivery',
         6: 'Delivered',
       },
-      users: users
+      users: users,
+      query : req.query
     })
     )
   }

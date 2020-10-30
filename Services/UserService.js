@@ -122,6 +122,7 @@ class UserService {
         endate.setDate(endate.getDate() +1);     
         searchData.createdAt = {"$gte":stdate, "$lte": endate};
       }
+      
 
       if(!req.query.daterange && !req.query.clear){
         var endate = new Date();      

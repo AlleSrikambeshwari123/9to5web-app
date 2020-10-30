@@ -154,6 +154,12 @@ $(function () {
     }
   }
   $(document).ready(function () {
+    $('#daterange-postbox').daterangepicker({});
+    $('#daterange-nineToPackages').daterangepicker({});
+    $('#daterange-noDocs').daterangepicker({});
+    $('#daterange-user').daterangepicker({});
+    
+
     $('input[name="daterange"]').daterangepicker({
       //autoUpdateInput: false,
       locale: { cancelLabel: 'Clear' },
