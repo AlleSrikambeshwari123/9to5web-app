@@ -428,6 +428,8 @@ class PackageService {
                                     resolve({
                                         success: true,
                                         package: pkg,
+                                        packageInfo : pkg,
+                                        awb : pkg.awbId,
                                         status: stats
                                     });
                                 })

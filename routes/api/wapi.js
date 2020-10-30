@@ -39,10 +39,6 @@ router.get('/get-package-detail/:trackingNo', passport.authenticate('jwt', { ses
   let trackingNo = req.params.trackingNo;
   services.packageService.getPackageByTrackingId(trackingNo)
   .then( result => {
-    if(result.success){
-      result.packageInfo = [result.package],
-      result.awb = [result.package.awbId]
-    } 
     res.send(result);
   });
 })
