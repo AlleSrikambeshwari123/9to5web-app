@@ -428,8 +428,6 @@ class PackageService {
                                     resolve({
                                         success: true,
                                         package: pkg,
-                                        packageInfo : pkg,
-                                        awb : pkg.awbId,
                                         status: stats
                                     });
                                 })
@@ -1235,6 +1233,26 @@ class PackageService {
     getPackage(packageId) {
         return new Promise((resolve, reject) => {
             Package.find({ id: packageId },async (err, pkg) => {
+                if (err || pkg == null) {
+                    resolve({}) 
+                }
+                else{
+                    if(pkg[0]){
+                        pkg[0] = pkg[0].toJSON()
+                        let zoned = await Zone.findById(pkg[0].zoneId)
+                        if(zoned && zoned.name){
+                            pkg[0].zoneValue = zoned.name
+                        }
+                    }
+                    resolve(pkg);
+                } 
+            });
+        });
+    }
+
+    getPackageById(packageId) {
+        return new Promise((resolve, reject) => {
+            Package.findById(packageId,async (err, pkg) => {
                 if (err || pkg == null) {
                     resolve({}) 
                 }
