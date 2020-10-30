@@ -46,7 +46,7 @@ router.get('/get-package-detail/:trackingNo', passport.authenticate('jwt', { ses
       ]).then(results => {
       res.send({
         success:true,
-        packageInfo: results[0],
+        packageInfo: [results[0]],
         awb: results[1]
       });
     })
