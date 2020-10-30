@@ -595,6 +595,7 @@ class AwbService {
         fileName:data.fileName,
         courierNo : data.courierNo,
         pmb : data.pmb,
+        name : data.name,
         customerId : data.customerId
       }
      
@@ -617,6 +618,7 @@ class AwbService {
         fileName:data.fileName,
         courierNo : data.courierNo,
         pmb : data.pmb,
+        name : data.name,
         customerId : data.customerId
       }
      

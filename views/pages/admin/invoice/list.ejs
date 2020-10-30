@@ -25,6 +25,7 @@
               <table class="display table table-striped table-hover  dataTable invoice-table ">
                 <thead>
                   <tr>
+                    <th>Actual File Name</th>
                     <th>File Name</th>
                     <th>Extension</th>
                     <th>AWB Number</th>
@@ -38,6 +39,7 @@
                 <tbody>
                   <% invoices.forEach(invoice => { %>
                   <tr data-record="<%=invoice._id%>">
+                      <td><%= invoice.name ? invoice.name : '-'  %></td>
                       <td><%= invoice.fileName ? invoice.fileName : (invoice.filename) ? invoice.filename : '-'  %></td>
                       <% if(invoice.fileName) { %>
                         <td><%= (invoice.fileName.split('.').length > 1) ? invoice.fileName.split('.')[1] : '-' %></td>
@@ -74,6 +76,7 @@
                   <table class="display table table-striped table-hover dateRangeFilterTable dataTable no-awb-invoice-table ">
                     <thead>
                       <tr>
+                        <th>Actual File Name</th>
                         <th>File Name</th>
                         <th>Extension</th>
                         <th>Date Uploaded</th>
@@ -86,6 +89,7 @@
                     <tbody>
                       <% additionalInvoices.forEach(invoice => { %>
                       <tr data-record="<%=invoice._id%>">
+                        <td><%= invoice.name ? invoice.name : '-'  %></td>
                         <td><%= invoice.fileName %></td>
                         <td><%= (invoice.fileName && invoice.fileName.split('.').length > 1) ? invoice.fileName.split('.')[1] : '' %></td>
                         <td><%= helpers.formatDate(invoice.createdAt)%></td>

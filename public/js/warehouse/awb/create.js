@@ -385,7 +385,9 @@ $(function () {
         if (result.fileName) {
           invoice.filename = result.fileName;
         }
-
+        if(result.name){
+          invoice.name = result.name
+        }
         awbInfo.invoices.push(invoice);
       });
     });

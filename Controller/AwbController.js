@@ -184,6 +184,7 @@ exports.add_new_awb = async (req, res, next) => {
     invoice.awbId = awbId;
     invoice['createdBy'] = req['userId'];
     invoiceIds.push(invoice['_id']);
+    invoice.name = invoice.name 
     return services.invoiceService.create(invoice);
   }));
 

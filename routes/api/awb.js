@@ -71,10 +71,11 @@ router.post('/store-invoice',passport.authenticate('jwt', { session: false }), u
         const filePath = files.path?files.path:'';        
         var fileName = files.filename;
         
+        if(req.body.fileType)
+            fileName = fileName.split('.')[0] + '.' + req.body.fileType
+
         aws.uploadFile(filePath, fileName).then(async data => {
             console.log(`File Uploaded successfully. ${data.Location}`);            
-            if(req.body.fileType)
-                fileName = fileName.split('.')[0] + '.' + req.body.fileType
             let invoiceObject ={
                 fileName: fileName,
                 filePath: data.Location,
@@ -82,11 +83,14 @@ router.post('/store-invoice',passport.authenticate('jwt', { session: false }), u
                 pmb : req.body.pmb,
                 customerId : req.body.id
             }
+            if(files.originalname)
+                invoiceObject.name = files.originalname;
             let awbData
             if(req.body.awbId){
                 invoiceObject.awbId = req.body.awbId 
                 let customer = await services.customerService.getCustomer({_id : invoiceObject.customerId})
-                await emailService.sendInvoicesEmail(invoiceObject,customer);
+                let awb = await services.awbService.getAwb(req.body.awbId)
+                await emailService.sendInvoicesEmail(invoiceObject,customer,awb.awbId);
                 awbData = await services.awbService.storeInvoiceFile(invoiceObject);
             }else{
                 awbData = await services.awbService.storeAdditionalInvoceFile(invoiceObject);

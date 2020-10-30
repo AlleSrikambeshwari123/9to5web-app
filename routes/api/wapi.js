@@ -39,7 +39,20 @@ router.get('/get-package-detail/:trackingNo', passport.authenticate('jwt', { ses
   let trackingNo = req.params.trackingNo;
   services.packageService.getPackageByTrackingId(trackingNo)
   .then( result => {
-    res.send(result);
+    if(result.success){
+      Promise.all([
+        services.packageService.getPackageById(result.package._id),
+        services.awbService.getFullAwb(result.package.awbId),
+      ]).then(results => {
+      res.send({
+        success:true,
+        packageInfo: [results[0]],
+        awb: results[1]
+      });
+    })
+  }else{
+    res.send({ success:false,message: "Please scan one of the system generated labels" })
+  }
   });
 })
 
@@ -122,7 +135,7 @@ router.get("/get_packages_7days_status", middleware().checkSession, (req, res, n
 router.get("/get_packages_filter/:filter", middleware().checkSession, (req, res, next) => {
   Promise.all([
     services.packageService.getPackageWithFilter(req.params.filter, req.query),
-    services.userService.getAllUsers()
+    services.userService.getAllUsers(req)
   ]).then(result => {
     result[0]['users'] = result[1]; 
     res.send(result[0])

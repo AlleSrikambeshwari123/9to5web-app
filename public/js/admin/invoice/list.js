@@ -70,6 +70,18 @@ $('#invoice-packages').on('hidden.bs.modal', function () {
 
 let invoixeTable = $('.invoice-table').DataTable({
   pageLength: 10,
+  columndefs : [{ createdCell: function (td, cellData, rowData, row, col) {
+    $(td).css('word-break', 'break-word');
+    $(td).css('min-width', '150px');
+  }}]
+});
+
+let ajks = $('.no-awb-invoice-table').DataTable({
+  pageLength: 10,
+  columndefs : [{ createdCell: function (td, cellData, rowData, row, col) {
+    $(td).css('word-break', 'break-word');
+    $(td).css('min-width', '150px');
+  }}]
 });
 
 $(document).on('click', '.applyBtn', function() {
