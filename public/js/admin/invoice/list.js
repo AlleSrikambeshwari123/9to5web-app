@@ -92,7 +92,7 @@ $(document).ready(function() {
     columns : [{ createdCell: function (td, cellData, rowData, row, col) {
      $(td).css('word-break', 'break-word');
      $(td).css('min-width', '150px');
-   }},{},{},{},{},{},{},{}]
+   }},{},{},{},{},{},{},{},{}]
   })     
   $('.no-awb-invoice-table').DataTable( {
     "processing": true,
@@ -102,6 +102,10 @@ $(document).ready(function() {
       type: "POST",
       data :{ daterange:$('#daterange').val(), clear:$('#clear').val()}
     },
+    columns : [{ createdCell: function (td, cellData, rowData, row, col) {
+      $(td).css('word-break', 'break-word');
+      $(td).css('min-width', '150px');
+    }},{},{},{},{},{},{},{}]
   })
     // Event listener to the two range filtering inputs to redraw on input
   $(document).on('click', '.applyBtn', function() {
