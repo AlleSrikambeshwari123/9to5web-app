@@ -92,7 +92,7 @@ $(document).ready(function() {
     columns : [{ createdCell: function (td, cellData, rowData, row, col) {
      $(td).css('word-break', 'break-word');
      $(td).css('min-width', '150px');
-   }},{},{},{},{},{},{}]
+   }},{},{},{},{},{},{},{}]
   })     
   $('.no-awb-invoice-table').DataTable( {
     "processing": true,

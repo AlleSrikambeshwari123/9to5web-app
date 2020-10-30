@@ -107,8 +107,10 @@ exports.getInvoiceList = (req, res, next) => {
         var invoices = invoiceresult.invoices?invoiceresult.invoices:[];
         for(var i=0; i< invoices.length; i++){
           var invoiceDetail = [];
-          var fileName = (invoices[i].fileName) ? invoices[i].fileName :invoices[i].filename
-          invoiceDetail.push(invoices[i].fileName)
+          if(invoices[i].name)
+            invoiceDetail.push(invoices[i].name)
+          else
+            invoiceDetail.push(invoices[i].fileName)
           if(invoices[i].fileName.split('.').length >1)
             invoiceDetail.push(invoices[i].fileName.split('.')[1])
           else
@@ -116,12 +118,12 @@ exports.getInvoiceList = (req, res, next) => {
           invoiceDetail.push(helpers.formatDate(invoices[i].createdAt));
 
           invoiceDetail.push(`<a href="JavaScript:Void(0);"
-          onclick="downloadInvoice('${fileName}')">Invoice</a>`);
+          onclick="downloadInvoice('${invoices[i].fileName}')">Invoice</a>`);
           invoiceDetail.push(invoices[i].courierNo)
           invoiceDetail.push(helpers.getFullName(invoices[i].customerId)) 
 
           invoiceDetail.push(`<a href="JavaScript:Void(0);"
-                    onclick="deleteInvoice('${fileName}','${invoices[i]._id}')"><i
+                    onclick="deleteInvoice('${invoices[i].fileName}','${invoices[i]._id}')"><i
                       class="fa fa-trash"></i>`);
         
           data.push(invoiceDetail);
