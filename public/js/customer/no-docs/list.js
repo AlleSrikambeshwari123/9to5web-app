@@ -26,3 +26,18 @@ $(document).ready(function() {
 let noDocsTable = $('#no-docs-tables').DataTable({
     pageLength: 10,
 });
+
+$('#no-docs-table').DataTable({
+    pageLength: 10,
+    columns:[
+        //"dummy" configuration
+        { visible: true }, //col 1
+        { visible: true }, //col 2
+        { visible: true }, //col 3
+        { visible: true }, //col 4
+        { visible: true }, //col 5
+        { visible: true }, //col 6 
+        { visible: true }, //col 7
+        { visible: true }  //col 8 
+    ]
+});

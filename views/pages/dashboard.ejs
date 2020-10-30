@@ -123,9 +123,10 @@
           </div>
         </div>
       </div>
-      <div class="card-body">
-        <table id="post_packages" class="display table table-striped table-hover dataTable manifest-table">
-          <thead>
+      <div class="card-body daterangepickerbody">
+        <div class="table-responsive">
+          <table id="post_packages" class="display table table-striped table-hover dataTable manifest-table">
+            <thead>
             <tr>
               <th>Package ID#</th>
               <th>Package Status</th>
@@ -137,6 +138,7 @@
           <tbody>
           </tbody>
         </table>
+      </div>
       </div>
     </div>
   </div>
@@ -191,9 +193,11 @@
         </div>
       </div>
     </div>
-    <div class="card-body">
-      <table id="9to5packages" class="display table table-striped table-hover dataTable manifest-table">
-        <thead>
+    <div class="card-body daterangepickerbody">
+      <div class="table-responsive">
+        
+        <table id="9to5packages" class="display table table-striped table-hover dataTable manifest-table">
+          <thead>
           <tr>
             <th>Package ID#</th>
             <!-- <th>Date Created</th> -->
@@ -206,6 +210,7 @@
         <tbody>
         </tbody>
       </table>
+    </div>  
     </div>
   </div>
 </div>
@@ -260,9 +265,10 @@
           </div>
         </div>
       </div>
-      <div class="card-body">
-        <table id="no_docs_packages" class="display table table-striped table-hover dataTable manifest-table">
-          <thead>
+      <div class="card-body daterangepickerbody">
+        <div class="table-responsive">
+          <table id="no_docs_packages" class="display table table-striped table-hover dataTable manifest-table">
+            <thead>
             <tr>
               <th>Package ID#</th>
               <!-- <th>Date Created</th> -->
@@ -276,6 +282,7 @@
           </tbody>
         </table>
       </div>
+      </div>
     </div>
   </div>
 </div>
@@ -288,7 +295,8 @@
           <div class="card-title pd-18 col-md-2">Users </div>
         </div>
       </div>
-      <div class="card-body">
+      <div class="card-body daterangepickerbody">
+      <div class="table-responsive ">
         <table id="user_table" class=" display table table-striped table-hover dataTable ">
           <thead>
             <tr>
@@ -302,6 +310,7 @@
           <tbody>
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   </div>
@@ -343,6 +352,23 @@
       usersData(users);
     }
   })
+
+  $(document).ready(function() {
+    setTimeout(()=>{
+        console.log("no docs",$('#clear').val())
+        if($('#clear').val() ){
+        // $('#daterange').val('')
+        $('#clear').val('1');
+        var endate = new Date();      
+        endate.setDate(endate.getDate());
+        var stdate = new Date();
+        stdate.setDate(stdate.getDate() -14);      
+        var dateRange = (stdate.getMonth() + 1)+ '/'+stdate.getDate()+'/'+stdate.getFullYear()+' - '+
+        (endate.getMonth() + 1)+ '/'+endate.getDate()+'/'+endate.getFullYear()      
+        $('.daterange').val(dateRange)
+        }	   
+},100) 
+})  
 
   function data9to5(data) {
     let result = data.map((row) => {
