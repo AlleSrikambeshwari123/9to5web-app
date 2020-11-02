@@ -220,6 +220,31 @@ class PlaneService {
       resolve(compartments)
     });
   }
+
+  getCompartmentsManifest(planeId,manifestId) {
+    return new Promise(async (resolve, reject) => {
+      let compartments = await Compartment.find({ planeId: ObjectId(planeId) }).populate([{path:'packages',select:'weight compartmentId manifestId'},{path : 'planeId'}])
+      let loadedManifestWeight =0,planeWeight
+      compartments.map(cp=>{
+        let totalPkgWeight = 0,totalCompartmentWeight =0;
+        for(let pkg of cp.packages){
+          if(manifestId){
+            if(pkg.manifestId == manifestId){
+              totalCompartmentWeight+=pkg.weight
+            }
+          }
+        }
+        cp.packages.map(w => totalPkgWeight+= w.weight)
+        cp._doc['available_weight'] = (cp.weight - totalPkgWeight).toFixed(2)
+        cp._doc['compartment_weight_loaded'] = totalCompartmentWeight.toFixed(2)
+        cp._doc['available_compartment_weight'] = (cp.weight - totalCompartmentWeight).toFixed(2)
+        loadedManifestWeight+=totalCompartmentWeight
+        planeWeight = cp.planeId.maximumCapacity
+      })
+      resolve({result : compartments,loadedFlightWeight : loadedManifestWeight,availableWeightOnFLight :planeWeight - loadedManifestWeight })
+    });
+  }
+
   getCompartment(compartmentId) {
     return new Promise((resolve, reject) => {
       Compartment.findOne({ _id: compartmentId }).exec((err, result) => {

@@ -235,7 +235,7 @@ router.get('/get-compartments', (req, res, next) => {
   let query = req.query;
   // FIXME: we should filter by query here
   services.planeService
-    .getCompartments(query.planeId)
+    .getCompartmentsManifest(query.planeId,query.manifestId)
     .then((compartments) => {
       res.json(compartments);
     })
