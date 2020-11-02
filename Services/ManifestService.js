@@ -286,6 +286,7 @@ class ManifestService {
               planeArray.push({id :cp.planeId._id,availCapacity : planeActualCapacity})
             }
             cp._doc['available_weight'] = (planeActualCapacity).toFixed(2)
+            cp._doc['totalManifestWeight'] = totalPkgWeight;
           })
           console.log(manifests.length)
           resolve(manifests);
