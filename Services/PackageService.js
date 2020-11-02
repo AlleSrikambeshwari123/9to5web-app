@@ -681,7 +681,7 @@ class PackageService {
                     }
 
                     if (pkg.customerId && pkg.customerId.pmb != 9000 && query.filter_for === "postBox" && (query.package_status === packageStatus.status || query.package_status === "all")) {
-                        postBox.push({ _id: pkg.id, last_status: packageStatus.status, awb: pkg.awbId.awbId, customer_email: pkg.customerId.email,createdAt:pkg.createdAt })
+                        postBox.push({ _id: pkg.id, last_status: packageStatus.status, awb: pkg.awbId.awbId, customer_email: pkg.customerId ? pkg.customerId.email : '',createdAt:pkg.createdAt })
                     }
                 }))
 
