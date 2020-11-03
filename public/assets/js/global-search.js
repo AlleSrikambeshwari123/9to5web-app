@@ -158,7 +158,12 @@ $(function () {
     $('#daterange-nineToPackages').daterangepicker({});
     $('#daterange-noDocs').daterangepicker({});
     $('#daterange-user').daterangepicker({});
-    
+
+    //report
+    $('#daterange-awbStatus').daterangepicker({});
+    $('#daterange-package-detail').daterangepicker({});    
+    $('#daterange-dekivery-detail').daterangepicker({});    
+    $('#daterange-package-status').daterangepicker({});
 
     $('input[name="daterange"]').daterangepicker({
       //autoUpdateInput: false,

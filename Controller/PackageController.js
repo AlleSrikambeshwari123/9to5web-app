@@ -29,10 +29,13 @@ exports.get_package_list = (req, res, next) => {
 exports.get_customer_package_list = async (req, res, next) => {
     let awbs = await services.awbService.getAwbCustomer(req.params.id)
     let packageResponse = []
-    for(let awb of awbs){
-        let packages = await services.packageService.getPopulatedCustomerPackages(awb.packages)
+    for(let awb of awbs){       
+        //let packages = await services.packageService.getPopulatedCustomerPackages(awb.packages)
+        let packageFilter = await services.packageService.getPackagesFilterDate(req, awb.packages);
+        let packages = await services.packageService.getPopulatedCustomerPackagesDateFilter(req.query, packageFilter)
         packageResponse.push(...packages)
     }
+    
     res.render('pages/customer/package/list-all', {
         page: req.originalUrl,
         user: res.user,
@@ -40,6 +43,7 @@ exports.get_customer_package_list = async (req, res, next) => {
         filterURL: '',
         buttonName: 'Add to Manifest',
         packages: packageResponse,
+        query : req.query
     });
 };
 
