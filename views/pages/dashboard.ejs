@@ -513,6 +513,7 @@ function get_data_dataTable(dataTable, daterange){
     if ($("#no_docs_packages > tbody > tr").length) {
       $("#no_docs_packages > tbody > tr").empty();
     }
+    $("#no_docs_packages tbody").html("")
     $("#no_docs_packages").DataTable().destroy();
     $("#no_docs_packages tbody").append(result)
     if (!($.fn.dataTable.isDataTable('#no_docs_packages'))) {
