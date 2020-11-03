@@ -156,6 +156,7 @@ class CubeService {
   updateAwbCube(cube) {
     return new Promise((resolve, reject) => {
       const updatedCubeData = {
+        weight : cube.weight,
         dimensions: cube.dimensions, 
         description: cube.description
       };
