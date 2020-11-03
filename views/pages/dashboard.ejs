@@ -352,12 +352,14 @@ var endate = new Date();
       data: obj,
       type: "GET",
       success: function (data) {
+
         let nineToPackages = data.nineToPackages;
         let noDocs = data.noDocs;
         let postBox = data.postBox;
         data.nineToPackages ? data9to5(nineToPackages) : null;
         data.noDocs ? dataNoDocs(noDocs) : null;
         data.postBox ? dataPostBox(postBox) : null;
+         
       }
     })
   }
@@ -492,8 +494,9 @@ function get_data_dataTable(dataTable, daterange){
     if ($("#9to5packages > tbody > tr").length) {
       $("#9to5packages > tbody > tr").empty();
     }
-
+    $("#9to5packages").DataTable().destroy();
     $("#9to5packages tbody").html("")
+   
     $("#9to5packages tbody").append(result)
     if (!($.fn.dataTable.isDataTable('#9to5packages'))) {
       $("#9to5packages").DataTable({ searching: false, "bLengthChange": false, "order": [[ 2, "desc" ]] });
@@ -510,7 +513,7 @@ function get_data_dataTable(dataTable, daterange){
     if ($("#no_docs_packages > tbody > tr").length) {
       $("#no_docs_packages > tbody > tr").empty();
     }
-
+    $("#no_docs_packages").DataTable().destroy();
     $("#no_docs_packages tbody").append(result)
     if (!($.fn.dataTable.isDataTable('#no_docs_packages'))) {
       $("#no_docs_packages").DataTable({ searching: false, "bLengthChange": false, "order": [[ 2, "desc" ]] });
@@ -526,11 +529,11 @@ function get_data_dataTable(dataTable, daterange){
 
     if ($("#post_packages > tbody > tr").length) {
       $("#post_packages > tbody > tr").empty();
-    }
-
-    $("#post_packages tbody").append(result)
-    if (!($.fn.dataTable.isDataTable('#post_packages'))) {
-      
+    }   
+    $("#post_packages").DataTable().destroy();
+    $("#post_packages tbody").html(result)
+    //
+   if (!($.fn.dataTable.isDataTable('#post_packages'))) {
       $("#post_packages").DataTable({ searching: false, "bLengthChange": false, "order": [[ 2, "desc" ]] });
     }
   }

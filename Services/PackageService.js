@@ -648,7 +648,6 @@ class PackageService {
                     }))
                 }
                 
-
                 resolve({ nineToPackages, postBox, noDocs });
 
             } else {
@@ -667,21 +666,21 @@ class PackageService {
                     dbQuery['createdBy'] = query.users;
                 }
 
-                const packages = await Package.find(dbQuery).populate("awbId").populate("customerId");
+                const packages = await Package.find(dbQuery).populate("awbId").populate("customerId").populate("zoneId");
 
                 let result = await Promise.all(packages.map(async(pkg) => {
                     let statuses = await PackageStatus.find({ packageId: pkg._id }) || [];
                     let packageStatus = statuses[statuses.length - 1];
-
-                    if (pkg.awbId.invoices.length == 0 && query.filter_for === "noDocs" && (query.package_status === packageStatus.status || query.package_status === "all")) {
-                        noDocs.push({ _id: pkg.id, last_status: packageStatus.status, awb: pkg.awbId.awbId, customer_email: pkg.customerId.email,createdAt:pkg.createdAt })
+                    packageStatus = packageStatus ? packageStatus : {status:''}
+                    if (pkg.customerId && pkg.awbId.invoices.length == 0 && query.filter_for === "noDocs" && (query.package_status === packageStatus.status || query.package_status === "all")) {
+                        noDocs.push({ _id: pkg.id, last_status: packageStatus.status, awb: pkg.awbId.awbId, customer_email: pkg.customerId.email, zone: pkg.zoneId ? pkg.zoneId.name : '', createdAt:pkg.createdAt })
                     }
                     if (pkg.customerId && pkg.customerId.pmb == 9000 && query.filter_for === "9to5" && (query.package_status === packageStatus.status || query.package_status === "all")) {
-                        nineToPackages.push({ _id: pkg.id, last_status: packageStatus.status, awb: pkg.awbId.awbId, customer_email: pkg.customerId.email,createdAt:pkg.createdAt })
+                        nineToPackages.push({ _id: pkg.id, last_status: packageStatus.status, awb: pkg.awbId.awbId, customer_email: pkg.customerId.email, zone: pkg.zoneId ? pkg.zoneId.name : '', createdAt:pkg.createdAt })
                     }
 
                     if (pkg.customerId && pkg.customerId.pmb != 9000 && query.filter_for === "postBox" && (query.package_status === packageStatus.status || query.package_status === "all")) {
-                        postBox.push({ _id: pkg.id, last_status: packageStatus.status, awb: pkg.awbId.awbId, customer_email: pkg.customerId ? pkg.customerId.email : '',createdAt:pkg.createdAt })
+                        postBox.push({ _id: pkg.id, last_status: packageStatus.status, awb: pkg.awbId.awbId, customer_email: pkg.customerId ? pkg.customerId.email : '',zone: pkg.zoneId ? pkg.zoneId.name : '',createdAt:pkg.createdAt })
                     }
                 }))
 
