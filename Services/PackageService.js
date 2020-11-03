@@ -339,6 +339,57 @@ class PackageService {
             resolve(obj)
         })
     }
+    getPackageStatusFilterDate(query){
+        return new Promise(async(resolve, reject) => {
+            var searchData = {};
+            if(query && query.daterange && query.type == "packageStatus"){
+                var daterange = query.daterange;
+                var date_arr = daterange.split('-');
+                var startDate = (date_arr[0]).trim();      
+                var stdate = new Date(startDate);
+                stdate.setDate(stdate.getDate() );
+            
+                var endDate = (date_arr[1]).trim();
+                var endate = new Date(endDate);
+                endate.setDate(endate.getDate() +1);     
+                searchData.createdAt = {"$gte":stdate, "$lte": endate};             
+            }else if(query && query.daterange && !query.type ){
+              var endate = new Date();      
+              endate.setDate(endate.getDate()+1);
+              var stdate = new Date();
+              stdate.setDate(stdate.getDate() -21);      
+              searchData.createdAt = {"$gte":stdate, "$lte": endate};
+            }
+            let packages = await Package.find(searchData)
+            let obj = {
+                created: 0,
+                received_fill: 0,
+                loaded_craft: 0,
+                in_transit: 0,
+                received_nas: 0,
+                ready_pd: 0,
+                delivered: 0,
+                no_invoice: 0,
+                assigned_to_cube: 0,
+                delivered_to_store: 0
+            };
+
+            packages.map((item) => {
+                if (!item.lastStatusText) obj.created += 1;
+                if (item.lastStatusText == PKG_STATUS[1]) obj.received_fill += 1;
+                if (item.lastStatusText == PKG_STATUS[2]) obj.loaded_craft += 1;
+                if (item.lastStatusText == PKG_STATUS[3]) obj.in_transit += 1;
+                if (item.lastStatusText == PKG_STATUS[4] || item.lastStatusText == 'Recieved in NAS') obj.received_nas += 1;
+                if (item.lastStatusText == PKG_STATUS[5]) obj.ready_pd += 1;
+                if (item.lastStatusText == PKG_STATUS[6]) obj.delivered += 1;
+                if (item.lastStatusText == PKG_STATUS[7]) obj.no_invoice += 1;
+                if (item.lastStatusText == PKG_STATUS[8]) obj.assigned_to_cube += 1;
+                if (item.lastStatusText == PKG_STATUS[9]) obj.delivered_to_store += 1;
+            })
+
+            resolve(obj)
+        })
+    }
 
     getPackage7daysStatus() {
         return new Promise((resolve, reject) => {
@@ -1672,6 +1723,86 @@ class PackageService {
         );
     }
 
+    async getPackagesFilterDate(req,packages){
+        return new Promise((resolve, reject) => {
+        var searchData = {_id:{$in:packages}};
+            if(req && req.query){
+                var daterange = req.query.daterange?req.query.daterange:'';
+                if(daterange){
+                  var date_arr = daterange.split('-');
+                  var startDate = (date_arr[0]).trim();      
+                  var stdate = new Date(startDate);
+                  stdate.setDate(stdate.getDate() );
+          
+                  var endDate = (date_arr[1]).trim();
+                  var endate = new Date(endDate);
+                  endate.setDate(endate.getDate() +1);     
+                  searchData.createdAt = {"$gte":stdate, "$lte": endate};
+                }
+          
+                if(!req.query.daterange && !req.query.clear){
+                  var endate = new Date();      
+                  endate.setDate(endate.getDate()+1);
+                  var stdate = new Date();
+                  stdate.setDate(stdate.getDate() -21);      
+                  searchData.createdAt = {"$gte":stdate, "$lte": endate};
+                }
+                if(req.query.clear){
+                  var endate = new Date();      
+                  endate.setDate(endate.getDate()+1);
+                  var stdate = new Date();
+                  stdate.setDate(stdate.getDate() -14);      
+                  searchData.createdAt = {"$gte":stdate, "$lte": endate};
+                }
+              } 
+
+              Package.find(searchData).exec((err,data)=>{
+                var packageData = [];
+                for(var i=0; i<data.length; i++){
+                    packageData.push(data[i]._id)
+                }
+                resolve(packageData)
+              })
+              
+            })
+
+    }
+
+    async getPopulatedCustomerPackagesDateFilter(query,packages) {
+        return await Promise.all(
+            packages.map(async(pkg) => {                
+                pkg = await this.get_Packages_update({_id :pkg._id});               
+                let status = await this.services.packageService.getPackageLastStatus(pkg._id);
+                pkg.lastStatusText = status && status.status;
+                if (pkg.originBarcode) {
+                    let barcode = await this.getOriginBarcode(pkg[0].originBarcode._id)
+                    if (barcode !== null && barcode.createdAt) {
+                        pkg.OrignalBarcodeDate = barcode.createdAt;
+                    }
+                    if(barcode !== null && (barcode.barcode == "No tracking" || barcode.barcode == "No Tracking")){
+                        pkg.OrignalBarcodeDate = pkg.createdAt
+                    }
+                }
+                if (pkg.awbId) {
+                    let awb = await this.services.awbService.getAwb(pkg.awbId)
+                    if (awb !== null && awb.createdAt) {
+                        pkg.awbCreatedAt = momentz(awb.createdAt).tz("America/New_York").format('dddd, MMMM Do YYYY, h:mm A');
+                    }
+                }
+                if (pkg.manifestId) {
+                    let actualFlight = await Manifest.findById(pkg.manifestId).populate('planeId')
+                    if (actualFlight !== null && actualFlight.planeId) {
+                        pkg.actualFlight = actualFlight.planeId ? actualFlight.planeId.tailNumber : ''
+                    }
+                }
+                pkg.OrignalBarcodeDate = pkg.OrignalBarcodeDate || ''
+                pkg.awbCreatedAt = pkg.awbCreatedAt || ''
+                pkg.actualFlight = pkg.actualFlight || ''
+                return pkg[0];
+            }),
+        );
+    }
+
     getPackagesDataByDeliveryId(deliveryId) {
         return new Promise((resolve, reject) => {
             Package.find({ deliveryId })
@@ -1711,9 +1842,28 @@ class PackageService {
         })
     }
 
-    getDeliveryPackageDetail() {
+    getDeliveryPackageDetail(query) {
+        var searchData = { deliveryId: { $exists: true, $ne: null } };
+            if(query && query.daterange && query.type == "deliveryDetail"){
+                var daterange = query.daterange;
+                var date_arr = daterange.split('-');
+                var startDate = (date_arr[0]).trim();      
+                var stdate = new Date(startDate);
+                stdate.setDate(stdate.getDate() );
+            
+                var endDate = (date_arr[1]).trim();
+                var endate = new Date(endDate);
+                endate.setDate(endate.getDate() +1);     
+                searchData.createdAt = {"$gte":stdate, "$lte": endate};             
+            }else if(query && query.daterange && !query.type ){
+                var endate = new Date();      
+                endate.setDate(endate.getDate()+1);
+                var stdate = new Date();
+                stdate.setDate(stdate.getDate() -21);      
+                searchData.createdAt = {"$gte":stdate, "$lte": endate};
+            }
         return new Promise((resolve, reject) => {
-            Package.find({ deliveryId: { $exists: true, $ne: null } }, (err, packages) => {
+            Package.find(searchData, (err, packages) => {
                 Promise.all(
                     packages.map(async(pkg) => {
                         let result = await deliveryService.getDeliveryAndDriverInfo(pkg.deliveryId);
@@ -1751,6 +1901,25 @@ class PackageService {
                         dbQuery['status'] = query.package_status;
                     }
                 }
+            }
+           
+            if(query && query.daterange && query.type == "packageDetail"){
+                var daterange = query.daterange;
+                var date_arr = daterange.split('-');
+                var startDate = (date_arr[0]).trim();      
+                var stdate = new Date(startDate);
+                stdate.setDate(stdate.getDate() );
+            
+                var endDate = (date_arr[1]).trim();
+                var endate = new Date(endDate);
+                endate.setDate(endate.getDate() +1);     
+                dbQuery.createdAt = {"$gte":stdate, "$lte": endate};             
+            }else if(query && query.daterange && !query.type ){
+              var endate = new Date();      
+              endate.setDate(endate.getDate()+1);
+              var stdate = new Date();
+              stdate.setDate(stdate.getDate() -21);      
+              dbQuery.createdAt = {"$gte":stdate, "$lte": endate};
             }
 
             PackageStatus

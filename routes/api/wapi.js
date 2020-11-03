@@ -145,11 +145,12 @@ router.get("/get_packages_filter/:filter", middleware().checkSession, (req, res,
 // Report Page
 router.get("/get_packages_data/:filter", middleware().checkSession, (req, res, next) => {
   // console.log('req.query', req.query);
+  
   Promise.all([
-    services.awbService.getAwbStatuses(),
-    services.packageService.getPackageStatus(),
+    services.awbService.getAwbStatuses(req.query),
+    services.packageService.getPackageStatusFilterDate(req.query),
     services.packageService.getPackageStatusWithUser(req.params.filter, req.query),
-    services.packageService.getDeliveryPackageDetail()
+    services.packageService.getDeliveryPackageDetail(req.query)
   ]).then(result => { 
     res.send(result)
   })
