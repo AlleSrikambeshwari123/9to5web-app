@@ -160,11 +160,13 @@ class CubeService {
         dimensions: cube.dimensions, 
         description: cube.description
       };
-      CubeAwb.findOneAndUpdate({_id: cube.id}, updatedCubeData, (err, result) => {
+      CubeAwb.findOneAndUpdate({_id: cube.id}, updatedCubeData, async (err, result) => {
         if (err) {
           resolve({ success: false, message: strings.string_response_error });
         } else {
-          console.log('rs',result)
+          let cubeResult = await Cube.findOne({cubeAwbId : cube.id});
+          if(cubeResult && cubeResult.cubepackageId)
+            await Package.findOneAndUpdate({_id : cubeResult.cubepackageId},updatedCubeData)
           resolve({ success: true, message: strings.string_response_updated });
         }
       });
