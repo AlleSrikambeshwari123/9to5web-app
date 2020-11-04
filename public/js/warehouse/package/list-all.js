@@ -12,6 +12,7 @@
 //     selector: 'td:first-child input[type="checkbox"]',
 //   }
 // });
+let packageTable
 $(document).ready(function() { 
   if($('#clear').val() ){
     $('#daterange').val('')
@@ -24,7 +25,7 @@ $(document).ready(function() {
     }else
       $('.daterange').val($('#daterange').val())
   },1000)
-  var packageTable = $('.package-table').DataTable( {
+  packageTable = $('.package-table').DataTable( {
     "processing": true,
     "serverSide": true,    
     "ajax": {
@@ -34,7 +35,7 @@ $(document).ready(function() {
       clear:$('#clear').val()}
     },
   })
-  var packageTable = $('.package-table-filter-package').DataTable( {
+  packageTable = $('.package-table-filter-package').DataTable( {
     "processing": true,
     "serverSide": true,    
     "ajax": {
