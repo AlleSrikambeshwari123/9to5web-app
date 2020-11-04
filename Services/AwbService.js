@@ -529,9 +529,28 @@ class AwbService {
             });
         });
       }
-      getAwbCustomer(id) {
+      getAwbCustomer(id,query) {
+        var searchData = {customerId:id};
+        if(query && query.daterange && query.type == "awbStatus"){
+            var daterange = query.daterange;
+            var date_arr = daterange.split('-');
+            var startDate = (date_arr[0]).trim();      
+            var stdate = new Date(startDate);
+            stdate.setDate(stdate.getDate() );
+        
+            var endDate = (date_arr[1]).trim();
+            var endate = new Date(endDate);
+            endate.setDate(endate.getDate() +1);     
+            searchData.createdAt = {"$gte":stdate, "$lte": endate};             
+        }else if(query && query.daterange && !query.type ){
+          var endate = new Date();      
+          endate.setDate(endate.getDate()+1);
+          var stdate = new Date();
+          stdate.setDate(stdate.getDate() -21);      
+          searchData.createdAt = {"$gte":stdate, "$lte": endate};
+        }
         return new Promise((resolve, reject) => {
-          Awb.find({customerId:id})
+          Awb.find(searchData)
           // .populate('invoices')
           // .populate('customerId')
           // .populate('shipper')

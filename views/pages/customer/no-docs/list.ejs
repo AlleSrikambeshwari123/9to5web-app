@@ -30,7 +30,7 @@
                     if(!awb.invoice) {
                   %>
             <tr data-record="<%= awb._id %>">
-              <!-- <td><%= awb.customerId.firstName%></td> -->
+              <td><%= awb.customerId.firstName%></td>
               <td><%= awb.customerId.lastName%></td>
               <td><%=helpers.formatDate(awb.createdAt)%></td>
               <td><%=awb.customerId.pmb %></td>

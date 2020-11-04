@@ -35,7 +35,7 @@ router.get('/report', middleware(services.userService).checkSession, function (r
 
 router.get('/dashboard', middleware(services.userService).checkSession, function (req, res, next) {
   if(res.user.roles[0].type == 'Customers'){
-    services.awbService.getAwbCustomer(res.user._id).then(async (awbs) => {
+    services.awbService.getAwbCustomer(res.user._id,req).then(async (awbs) => {
       return Promise.all(
       awbs.map(async (data,i) =>{
         let awb = await services.awbService.getAwbPriceLabel(data._id)
@@ -50,7 +50,8 @@ router.get('/dashboard', middleware(services.userService).checkSession, function
         page: req.originalUrl,
         title: "AirWay Bills",
         user: res.user,
-        awbs: awbs,        
+        awbs: awbs,   
+        clear: req.query.clear
       })
     })
   })

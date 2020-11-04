@@ -4,7 +4,7 @@ var momentz = require('moment-timezone')
 
 
 exports.get_customer_awb_list = (req, res, next) => {
-    services.awbService.getAwbCustomer(res.user._id).then(async (awbs) => {
+    services.awbService.getAwbCustomer(res.user._id,req).then(async (awbs) => {
       return Promise.all(
       awbs.map(async (data,i) =>{
         let awb = await services.awbService.getAwbPriceLabel(data._id)
@@ -20,6 +20,7 @@ exports.get_customer_awb_list = (req, res, next) => {
         title: "AirWay Bills",
         user: res.user,
         awbs: awbs,
+        clear: req.query.clear
       })
     })
   })
