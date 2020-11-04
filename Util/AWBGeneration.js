@@ -124,13 +124,23 @@ class AWBGeneration {
             totalWeight += Number(pkg.weight)
             dimWeight = dimWeight.replace(",","")
             totaldimWeight += parseFloat(dimWeight);
-            body.push([
-                { text: ptype, colSpan: 2 }, "",
-                { text: pkg.dimensions },
-                { text: pkg.description },
-                { text: pkg.weight + " lbs" },
-                { text: dimWeight }
-            ])
+            if(pkg.express){
+                body.push([
+                    { text: ptype, colSpan: 2 ,bold: true}, "",
+                    { text: pkg.dimensions ,bold: true},
+                    { text: pkg.description ,bold: true},
+                    { text: pkg.weight + " lbs" ,bold: true},
+                    { text: dimWeight ,bold: true}
+                ])
+            }else{
+                body.push([
+                    { text: ptype, colSpan: 2 }, "",
+                    { text: pkg.dimensions },
+                    { text: pkg.description },
+                    { text: pkg.weight + " lbs" },
+                    { text: dimWeight }
+                ])
+            }
 
             let barcode = await this.generateBarcode(`${pkg.trackingNo}`);
             body.push([{
