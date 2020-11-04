@@ -347,7 +347,7 @@ class CubeService {
       },
       {$unwind:"$cubeDetail"},
       {
-        $project:{_id:1, packages:1,name:1,cubepackageId: 1, "cubeDetail._id":1, "cubeDetail._id":1, "cubeDetail.trackingNo":1}
+        $project:{_id:1, packages:1,name:1,cubepackageId: 1, cubeDetail:1}
       }
       ]).exec((err, result) => {
         if(result && result.length>0){
