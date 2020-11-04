@@ -121,14 +121,17 @@ class CubeService {
   updateAwbCube(cube) {
     return new Promise((resolve, reject) => {
       const updatedCubeData = {
+        weight : cube.weight,
         dimensions: cube.dimensions, 
         description: cube.description
       };
-      CubeAwb.findOneAndUpdate({_id: cube.id}, updatedCubeData, (err, result) => {
+      CubeAwb.findOneAndUpdate({_id: cube.id}, updatedCubeData, async (err, result) => {
         if (err) {
           resolve({ success: false, message: strings.string_response_error });
         } else {
-          console.log('rs',result)
+          let cubeResult = await Cube.findOne({cubeAwbId : cube.id});
+          if(cubeResult && cubeResult.cubepackageId)
+            await Package.findOneAndUpdate({_id : cubeResult.cubepackageId},updatedCubeData)
           resolve({ success: true, message: strings.string_response_updated });
         }
       });
@@ -309,7 +312,7 @@ class CubeService {
       },
       {$unwind:"$cubeDetail"},
       {
-        $project:{_id:1, packages:1,name:1,cubepackageId: 1, "cubeDetail._id":1, "cubeDetail._id":1, "cubeDetail.trackingNo":1}
+        $project:{_id:1, packages:1,name:1,cubepackageId: 1, cubeDetail:1}
       }
       ]).exec((err, result) => {
         if(result && result.length>0){

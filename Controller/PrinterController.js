@@ -293,6 +293,10 @@ exports.downloadCubePdf = async (req, res, next) => {
 			manifest.airportToId && services.airportService.get(manifest.airportToId),
 		]);
 
+		for(pack of packages){
+			let awbCustomer =await services.awbService.getAwbPreviewDetails(pack.awbId._id)
+			pack.customerDetail = awbCustomer
+		}
 		let packagesByAWB = packages.reduce((acc, pkg) => {
 			acc[pkg.awbId] = acc[pkg.awbId] || {};
 			let item = acc[pkg.awbId];
@@ -312,10 +316,29 @@ exports.downloadCubePdf = async (req, res, next) => {
 				name: '',
 				address: ''
 			};
-
+			item.shipper = {
+				name: '',
+				address: ''
+			};
 			if (pkg.customerId) {
 				item.consignee.name = pkg.customerId.lastName ? (pkg.customerId.firstName + ' ' + pkg.customerId.lastName) : pkg.customerId.firstName
 				item.consignee.address = (pkg.customerId && pkg.customerId.address) ? pkg.customerId.address : ''
+			}
+			else if(pkg.customerDetail){
+				item.consignee.name = pkg.customerDetail.customerId.lastName ? (pkg.customerDetail.customerId.firstName + ' ' + pkg.customerDetail.customerId.lastName) : pkg.customerDetail.customerId.firstName
+				item.consignee.address = (pkg.customerDetail.customerId && pkg.customerDetail.customerId.address) ? pkg.customerDetail.customerId.address : ''
+			}
+
+			if(pkg.shipperId){
+				item.shipper = {
+					name: String(pkg.shipperId && pkg.shipperId.name),
+					address: String(pkg.shipperId && pkg.shipperId.address),
+				};
+			}else if(pkg.customerDetail && pkg.customerDetail.shipper){
+				item.shipper = {
+					name: String(pkg.shipperId.name),
+					address: String(pkg.shipperId.address),
+				};
 			}
 
 			item.shipper = {
