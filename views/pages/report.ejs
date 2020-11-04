@@ -1,6 +1,7 @@
 <% layout('./shared/__template')%>
 <script src="/js/jquery.js"></script>
 <script src="/assets/js/plugin/datatables/datatables.min.js"></script>
+<script src="/assets/js/plugin/moment/moment.min.js"></script>
 <%
 var endate = new Date();      
         endate.setDate(endate.getDate());
@@ -345,7 +346,7 @@ var endate = new Date();
     if ($("#package_status > tbody > tr").length) {
       $("#package_status > tbody > tr").empty();
     }
-
+    $("#package_status tbody").empty()
     $("#package_status tbody").append(result)
     if (!($.fn.dataTable.isDataTable('#package_status'))) {
       $("#package_status").DataTable({ searching: true, "bLengthChange": true });
