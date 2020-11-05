@@ -407,7 +407,38 @@ $(function () {
               type: response.success == true ? 'success' : 'error',
             }).then((res) => {
               if (response.success == true) {
-                window.location.href = 'manage/' + response.awb.id + '/preview';
+                window.location.href = 'manage/' + response.awb.id + '/preview';                
+                data = {
+                  Brokerage:  0,
+                  CustomsProc:  0,
+                  SumOfAllCharges: 0,
+                  CustomsVAT  : 0,
+                  VatMultiplier :  0,
+                  Delivery:  0,
+                  Duty:  0,
+                  EnvLevy:  0,
+                  Freight:  0,
+                  Hazmat:  0,
+                  Pickup:  0,
+                  ServiceVat: 0,
+                  Storage:  0,
+                  NoDocs:  0,
+                  Insurance:  0,
+                  Sed:  0,
+                  Express:  0,
+                  OverrideInvoiceValue:  0,
+                  TotalInvoiceValue: 0,
+                  NoOfInvoice: 0,
+                  TotalWeightValue: 0,
+                  TotalVolumetricWeight : 0,
+                  TotalWet: 0,
+                };
+                $.ajax({
+                  url: '/warehouse/pricelabels/' + response.awb.id,
+                  type: 'post',
+                  data: data,
+                });
+
               }
             });
           },
