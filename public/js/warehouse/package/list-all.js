@@ -507,7 +507,7 @@ $(function() {
           width: '100%',
           placeholder: 'Select compartment',
           dropdownParent: addToManifestModal,
-          data: data.map((compartment) => ({
+          data: data.result.map((compartment) => ({
             id: compartment._id,
             text: compartment.name
           })),

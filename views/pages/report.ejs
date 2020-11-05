@@ -349,7 +349,7 @@ var endate = new Date();
     $("#package_status tbody").empty()
     $("#package_status tbody").append(result)
     if (!($.fn.dataTable.isDataTable('#package_status'))) {
-      $("#package_status").DataTable({ searching: true, "bLengthChange": true });
+      $("#package_status").DataTable({ searching: false, "bLengthChange": false });
     }
   }
 
