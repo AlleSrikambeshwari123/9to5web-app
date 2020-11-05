@@ -173,7 +173,7 @@ exports.generate_pkg_label_pdf = (req, res, next) => {
 exports.generate_cube_pdf = (req, res, next) => {
 	services.cubeService.getCube(req.params.id).then(cube => {
 		cube.trackingNo = cube.cubeDetail ? cube.cubeDetail.trackingNo : null;
-		services.printService.getAWBDataForAllRelatedEntities(cube.packages[0].awbId).then((awb) => {
+		services.printService.getAWBDataForAllRelatedEntities(cube.cubeDetail.awbId).then((awb) => {
 			awb['cubePkg'] = true;
 			awb.customer.pmb = 9000
 			cubPdfGen.generateSinglePackageLabel(awb, cube).then(result => {
