@@ -65,7 +65,7 @@ exports.get_all_package_list = (req, res, next) => {
             let pkgsAwb = await services.packageService.get_Packages_update({awbId :packages[i].awbId});
             packages[i].pieces = pkgsAwb ? pkgsAwb.length : 0
 
-            packageDetail.push(`<input type="checkbox" name="package-select" class="package-select" />`)
+            packageDetail.push(`<input type="checkbox" data-record="${packages[i]._id}" id="${packages[i]._id}" name="package-select" class="package-select" />`)
             packageDetail.push(helpers.formatDate(packages[i].OrignalBarcodeDate));
             if(packages[i].customer && packages[i].customer.length){
                 packageDetail.push((
@@ -394,7 +394,7 @@ exports.get_all_delivered_package_list = (req, res, next) => {
               packages = await services.packageService.managePackagesData(packages);
               for(var i=0; i< packages.length; i++){
                 var packageDetail = [];
-                packageDetail.push(`<input type="checkbox" name="package-select" class="package-select" />`)
+                packageDetail.push(`<input type="checkbox" data-record="${packages[i]._id}" id="${packages[i]._id}" name="package-select" class="package-select" />`)
                 packageDetail.push(helpers.formatDate(packages[i].OrignalBarcodeDate));
                 if(packages[i].customer && packages[i].customer.length){
                     packageDetail.push((
