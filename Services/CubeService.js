@@ -88,9 +88,9 @@ class CubeService {
             var cube = result[i];
             const awbId = (cube.cubepackageId && cube.cubepackageId.awbId)?cube.cubepackageId.awbId:null;
             const awbData = await Awb.findOne({_id:awbId});
-            // result[i]['awbId'] = awbData.awbId?awbData.awbId:'';
-            let cubeAwbNo = result[i].cubeAwbId ? result[i].cubeAwbId.cubeAwbNo: ''
-            result[i]['awbId'] = 'C'+cubeAwbNo
+            result[i]['awbId'] = (awbData && awbData.awbId)?awbData.awbId:'';
+            // let cubeAwbNo = result[i].cubeAwbId ? result[i].cubeAwbId.cubeAwbNo: ''
+            // result[i]['awbId'] = 'C'+cubeAwbNo
           }
           resolve({cubes:result, total: totalCube});
         }

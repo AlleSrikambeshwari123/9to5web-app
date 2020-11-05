@@ -175,6 +175,7 @@ exports.generate_cube_pdf = (req, res, next) => {
 		cube.trackingNo = cube.cubeDetail ? cube.cubeDetail.trackingNo : null;
 		services.printService.getAWBDataForAllRelatedEntities(cube.packages[0].awbId).then((awb) => {
 			awb['cubePkg'] = true;
+			awb.customer.pmb = 9000
 			cubPdfGen.generateSinglePackageLabel(awb, cube).then(result => {
 				res.send(result);
 			})
