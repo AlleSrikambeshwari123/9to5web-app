@@ -279,8 +279,10 @@ exports.downloadCubePdf = async (req, res, next) => {
 
 		if (cubeDataObject.cubeDetail && cubeDataObject.cubeDetail.manifestId) {
 			manifest = await services.manifestService.getManifest(cubeDataObject.cubeDetail.manifestId);
-			packages = await services.packageService.cloneManifestAndOriginal(cubeDataObject.cubeDetail.manifestId);
-		} else if (cubeDataObject && cubeDataObject.packageList && cubeDataObject.packageList.length) {
+			// packages = await services.packageService.cloneManifestAndOriginal(cubeDataObject.cubeDetail.manifestId);
+		} 
+		// else 
+		if (cubeDataObject && cubeDataObject.packageList && cubeDataObject.packageList.length) {
 			packages = await services.packageService.getPackagesById(cubeDataObject.packageList.map(a => a._id))
 		} else {
 			return res.send({ success: true, message: strings.string_noData })
