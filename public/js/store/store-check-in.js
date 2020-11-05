@@ -95,7 +95,7 @@ $('#cableBeachList-table').DataTable({
   order: [[0, 'desc']],
 });
 
-var redirectUrl = '/  store/store-check-in';
+var redirectUrl = '/store/store-check-in';
 $(document).on('click', '.applyBtn', function() {
   window.location = redirectUrl+"?daterange="+$('.daterange').val();
 })
