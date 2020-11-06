@@ -358,9 +358,14 @@ exports.downloadCubePdf = async (req, res, next) => {
 			rows: Object.values(packagesByAWB),
 		});
 
-		awbPdfGen.getPdfArray(cubeManifest,cubeDataObject._id,packages).then((pdfArray)=>{
-			res.zip(pdfArray)
-		})
+		let stream = await cubeManifest.generate();	
+		 res.type('pdf');
+		 res.attachment(`${cubeDataObject._id}-Cube.pdf`);
+		 stream.pipe(res);
+		 stream.end();
+		// awbPdfGen.getPdfArray(cubeManifest,cubeDataObject._id,packages).then((pdfArray)=>{
+		// 	res.zip(pdfArray)
+		// })
 
 	} catch (error) {
 		next(error);
@@ -397,9 +402,15 @@ exports.downloadFlightManifest = async (req, res, next) => {
 			flightNumber: manifest.planeId.tailNumber,
 			rows,
 		});
-		awbPdfGen.getPdfArray(flightManifest,manifest.id,packages).then((pdfArray)=>{
-			res.zip(pdfArray)
-		})
+
+		let stream = await flightManifest.generate();
+		res.type('pdf');
+		res.attachment(`${manifest.id}-FM.pdf`);
+		stream.pipe(res);
+		stream.end();
+		// awbPdfGen.getPdfArray(flightManifest,manifest.id,packages).then((pdfArray)=>{
+		// 	res.zip(pdfArray)
+		// })
 	} catch (error) {
 		next(error);
 	}
