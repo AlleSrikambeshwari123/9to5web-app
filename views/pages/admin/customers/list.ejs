@@ -6,6 +6,7 @@
         <div class="card-title"><%=title%></div>
         <a href='create' class='btn btn-primary btn-round float-right ml-md-auto'>Add Consignee</a>
       </div>
+      <div id="myLoader"><img src="../../../img/preloader.gif"></div>
       <div class="card-body daterangepickerbody">
         <input type="hidden" name="clear" id="clear" value="<%=clear%>">
         <div class="table-responsive">
@@ -46,5 +47,5 @@
     </div>
   </div>
 </div>
-
+<% block('scripts').append('<script src="/js/utils.js"></script>')%>
 <% block('scripts').append('<script src="/js/admin/customer/list.js"></script>')%>

@@ -8,6 +8,7 @@
       <div class="card-header">
         <h4 class="card-title"><%=title%></h4>
       </div>
+      <div id="myLoader"><img src="../../../img/preloader.gif"></div>
       <div class="card-body daterangepickerbody">
         <input type="hidden" name="clear" id="clear" value="<%=clear%>">
         <div class="table-responsive">
@@ -132,5 +133,5 @@
   var pageUrl = "<%=page ? page :''%>";
   
   </script>
-
+<% block('scripts').append('<script src="/js/utils.js"></script>')%>
 <% block('scripts').append('<script src="/js/warehouse/awb/list.js"></script>')%>
