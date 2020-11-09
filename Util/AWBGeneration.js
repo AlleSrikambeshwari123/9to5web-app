@@ -30,6 +30,8 @@ var printer = new PdfPrinter(fonts);
 var fs = require('fs');
 var bwipjs = require('bwip-js')
 var moment = require('moment');
+var services = require('../Services/RedisDataServices');
+var aws = require('../Util/aws')
 
 class AWBGeneration {
     constructor() {
@@ -96,6 +98,132 @@ class AWBGeneration {
             })
         })
     }
+
+    async getPdfArray(flightManifest,manifestId,packages){
+        return new Promise(async(resolve,reject)=>{
+            let pdfArray = []
+            let pdfDoc = await flightManifest.generate();
+
+             var filestream;
+            var filename = '/'+manifestId +'-FM'+ '.pdf';
+            var filepath = global.uploadRoot + filename;
+            pdfDoc.pipe((filestream = fs.createWriteStream(filepath)));
+            pdfDoc.end();
+            let obj = await this.getFileStream(filestream,filepath,filename)
+            pdfArray.push(obj);
+
+             let awbArray = []
+            for(let pkg of packages){
+                await services.printService.getAWBDataForAllRelatedEntities(pkg.awbId._id).then(async(awb) => {
+                    let priceLabelAwb  =  await services.AwbPriceLabelService.getPriceLabel(awb._id)
+                    let flag = 0
+                    for(let arr of awbArray){
+                        if(String(arr) == String(awb._id))
+                            flag = 1
+                    }
+                    if(flag == 0){
+                        awbArray.push(awb._id)
+                        if(priceLabelAwb){
+                            awb.express = priceLabelAwb.Express
+                        }
+                        let responses = await this.generateAWbPrint(awb)
+                        let filestream;
+                        let filename = '/'+awb._id +'-AWB'+ '.pdf';
+                        let filepath = global.uploadRoot + filename;
+                        responses.pipe((filestream = fs.createWriteStream(filepath)));
+                        responses.end();
+                        let awbRes = await this.getFileStream(filestream,filepath,filename)
+                        pdfArray.push(awbRes)
+                        for(let invoice of awb.invoices){
+                            await this.invoiceResult(invoice).then(async(arr)=>{
+                                console.log(arr)
+                                pdfArray.push(arr)
+                            })
+                        }
+                    }
+    			})
+            }
+            resolve(pdfArray)
+        })
+    }
+
+     async getFileStream(filestream,filepath,filename){
+        return new Promise(async (resolve,reject)=>{
+            await filestream.on('finish',async function(resp)  {
+                resolve({ success: true, path: filepath, name: filename });
+            })
+        })
+    }
+
+     async invoiceResult(invoice) {
+        return new Promise(async (resolve,reject)=>{
+            await this.invoicePipe(invoice)
+            resolve({ success: true, path: '/home/monty/Desktop/revelcorp/9to5-web/public/uploads/' + invoice.filename, name: invoice.filename })
+        })
+    }
+
+     async invoicePipe(invoice){
+        return new Promise(async (resolve,reject)=>{
+            let filestream
+            let invoiceFile = await Promise.resolve(aws.getObjectReadStream(invoice.filename))
+            invoiceFile.pipe(filestream = fs.createWriteStream('/home/monty/Desktop/revelcorp/9to5-web/public/uploads/' + invoice.filename))
+            filestream.on('finish', async function() {
+                resolve('')
+            })
+        })
+    }
+
+     async generateAWbPrint(awb) {
+        this.awb = awb;
+            let png = await this.generateBarcode(awb._id)
+
+                 var docDefinition = {
+                    footer: this.generateFooter,
+                    content: [{
+                            columns: this.generateHeader(png)
+                        },
+                        this.generateShiperCosigneeTable(awb),
+                        this.generateCarrierandShipper(),
+                        {
+                            layout: 'lightHorizontallines',
+                            margin: [0, 10],
+                            table: {
+                                headerRows: 2,
+                                widths: ["*", "*", "*", "*", "*", "*"],
+                                body: await this.generatePackagesTable()
+                            }
+                        }
+                    ],
+                    styles: {
+                        header: {
+                            fontSize: 18,
+                            bold: true,
+                            margin: [0, 0, 0, 10]
+                        },
+                        subheader: {
+                            fontSize: 16,
+                            bold: true,
+                            margin: [0, 10, 0, 5]
+                        },
+                        tableExample: {
+                            margin: [0, 5, 0, 15]
+                        },
+                        tableHeader: {
+                            bold: true,
+                            fontSize: 13,
+                            color: 'black',
+                            fillColor: "#cccccc"
+                        }
+                    },
+                    defaultStyle: {
+                        font: 'Helvetica',
+                        fontSize: 11
+                    },
+                };
+                return printer.createPdfKitDocument(docDefinition);
+    }
+
+
     async generatePackagesTable() {
         let body = [
                 [{ text: "Pcs", fillColor: "#cccccc" },

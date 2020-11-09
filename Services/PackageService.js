@@ -1297,6 +1297,17 @@ class PackageService {
         });
     }
 
+    getPackagesByObject(object) {
+        return new Promise((resolve, reject) => {
+            Package.find(object, (err, result) => {
+                if (err) {
+                    resolve([]);
+                } else {
+                    resolve(result);
+                }
+            });
+        });
+    }
 
     //========== Load Packages to AirCraft (Add to Manifest) ==========//
     addToFlight(packageIds, manifestId, compartmentId, userId) {

@@ -129,7 +129,7 @@ class PlaneService {
         let totalPkgWeight = 0,totalCompartmentWeight =0;
         for(let pkg of cp.packages){
           if(manifestId){
-            if(pkg.manifestId == manifestId){
+            if(pkg.manifestId == manifestId && String(pkg.compartmentId) == String(cp._id)){
               totalCompartmentWeight+=pkg.weight
             }
           }

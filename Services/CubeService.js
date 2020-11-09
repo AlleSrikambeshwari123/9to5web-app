@@ -54,9 +54,9 @@ class CubeService {
             var cube = result[i];
             const awbId = (cube.cubepackageId && cube.cubepackageId.awbId)?cube.cubepackageId.awbId:null;
             const awbData = await Awb.findOne({_id:awbId});
-            // result[i]['awbId'] = awbData.awbId?awbData.awbId:'';
-            let cubeAwbNo = result[i].cubeAwbId ? result[i].cubeAwbId.cubeAwbNo: ''
-            result[i]['awbId'] = 'C'+cubeAwbNo
+            result[i]['awbId'] = (awbData && awbData.awbId)?awbData.awbId:'';
+            // let cubeAwbNo = result[i].cubeAwbId ? result[i].cubeAwbId.cubeAwbNo: ''
+            // result[i]['awbId'] = 'C'+cubeAwbNo
           }
           resolve(result);
         }
@@ -65,16 +65,13 @@ class CubeService {
   }
   createCube(cube) {
     return new Promise((resolve, reject) => {
-      console.log('cuborigfnal',cube)
       const newCube = new Cube(cube)
       newCube.save(async (err, result) => {
         if (err) {
           console.log(err);
           resolve({ success: false, message: strings.string_response_error, data:null });
         } else {
-          console.log('result',result);     
           const awb = await this.createAwbCube(result)
-          console.log('awbbb',awb)   
           if(awb.success) return resolve(awb)          
           resolve({ success: true, message: strings.string_response_added, data:result,awb:awb });
         }
@@ -84,7 +81,6 @@ class CubeService {
 
   createAwbCube(cbresult){
     return new Promise((resolve,reject)=>{
-      console.log('cbbb',cbresult)
       let newAwbCube ={
         cubeId:cbresult.userId,
         cubeTrackingNo:cbresult.name,
