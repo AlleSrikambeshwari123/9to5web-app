@@ -1294,6 +1294,18 @@ class PackageService {
         });
     }
 
+    getPackagesByObject(object) {
+        return new Promise((resolve, reject) => {
+            Package.find(object, (err, result) => {
+                if (err) {
+                    resolve([]);
+                } else {
+                    resolve(result);
+                }
+            });
+        });
+    }
+
     // Only show 7 trackingNo on the list;
     getPackages(awbId) {
         return new Promise((resolve, reject) => {

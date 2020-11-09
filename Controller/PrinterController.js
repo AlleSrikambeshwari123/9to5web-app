@@ -206,7 +206,7 @@ exports.downloadAirCargoManifest = async (req, res, next) => {
 			manifest.airportFromId && services.airportService.get(manifest.airportFromId),
 			manifest.airportToId && services.airportService.get(manifest.airportToId),
 		]);
-
+		let cubePackages = await services.packageService.getPackagesByObject({packageType : "Cube"})
 		let awbIds = [];
 
 		let packagesByAWB = packages.reduce((acc, pkg) => {
@@ -236,6 +236,14 @@ exports.downloadAirCargoManifest = async (req, res, next) => {
 				name: String(pkg.shipperId && pkg.shipperId.name),
 				address: String(pkg.shipperId && pkg.shipperId.address),
 			};
+			for(let cube of cubePackages){
+				if(String(cube.awbId) == String(item.awbId._id)){
+					item.consignee.name = "Nine to Five Import Export"
+					item.consignee.address = ''
+					item.shipper.name = "Nine to Five Import Export"
+					item.shipper.address = ''
+				}
+			}
 
 			item.hazmat = (pkg.hazmatId && pkg.hazmatId.description) || " ";
 			item.natureOfGoods = (pkg.description && pkg.description)
@@ -376,21 +384,33 @@ exports.downloadFlightManifest = async (req, res, next) => {
 	try {
 		let manifest = await services.manifestService.getManifest(req.params.id);
 		let packages = await services.packageService.cloneManifestAndOriginal(req.params.id);
+		let cubePackages = await services.packageService.getPackagesByObject({packageType : "Cube"})
 
 		let rows = packages.map((pkg) => {
+			let consignee = {
+				name: String(
+					pkg.customerId && [pkg.customerId.firstName, pkg.customerId.lastName].filter(Boolean).join(' '),
+				),
+			};
+			let shipper = {
+				name: String(pkg.shipperId && pkg.shipperId.name),
+				address: String(pkg.shipperId && pkg.shipperId.address)
+			};
+
+			for(let cube of cubePackages){
+				if(String(cube.awbId) == String(pkg.awbId._id)){
+					consignee.name = "Nine to Five Import Export"
+					consignee.address = ''
+					shipper.name = "Nine to Five Import Export"
+					shipper.address = ''
+				}
+			}
 			return {
 				id: pkg.id,
 				awb: pkg.awbId.awbId,
 				weight: services.packageService.getPackageWeightInLBS(pkg),
-				consignee: {
-					name: String(
-						pkg.customerId && [pkg.customerId.firstName, pkg.customerId.lastName].filter(Boolean).join(' '),
-					),
-				},
-				shipper: {
-					name: String(pkg.shipperId && pkg.shipperId.name),
-					address: String(pkg.shipperId && pkg.shipperId.address),
-				},
+				consignee : consignee,
+				shipper : shipper
 			};
 		});
 		let image = await lblPdfGen.generateBarcode(manifest.id)
