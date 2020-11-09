@@ -237,7 +237,7 @@ exports.downloadAirCargoManifest = async (req, res, next) => {
 				address: String(pkg.shipperId && pkg.shipperId.address),
 			};
 			for(let cube of cubePackages){
-				if(String(cube.awbId) == String(item.awbId._id)){
+				if(String(cube.awbId) == String(pkg.awbId._id)){
 					item.consignee.name = "Nine to Five Import Export"
 					item.consignee.address = ''
 					item.shipper.name = "Nine to Five Import Export"
