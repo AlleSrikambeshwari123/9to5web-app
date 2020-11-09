@@ -69,7 +69,7 @@ class PrintService {
 				.populate('invoices')
 				.populate('createdBy')
 				.exec((err, result) => {
-					if (result.customerId) {
+					if (result && result.customerId) {
 						result.customer = result.customerId;
 					}
 					resolve(result);

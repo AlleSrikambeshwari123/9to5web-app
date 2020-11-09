@@ -23,21 +23,47 @@ $(document).ready(function() {
         }	   
 },100) 
 })  
-let noDocsTable = $('#no-docs-tables').DataTable({
+let noDocsTable = $('#no-docs-table').DataTable({
     pageLength: 10,
 });
 
-$('#no-docs-table').DataTable({
-    pageLength: 10,
-    columns:[
-        //"dummy" configuration
-        { visible: true }, //col 1
-        { visible: true }, //col 2
-        { visible: true }, //col 3
-        { visible: true }, //col 4
-        { visible: true }, //col 5
-        { visible: true }, //col 6 
-        { visible: true }, //col 7
-        { visible: true }  //col 8 
-    ]
-});
+var pdfPath;
+$('.btn-print-awb').click(function () {
+    let id = $(this).data('id');
+    $.ajax({
+      url: '/api/printer/pdf/generate/awb/' + id,
+      type: 'get',
+      success: function (response) {
+        pdfPath = '/util/pdf' + response.filename;
+        pdfjsLib.getDocument({ url: pdfPath }).promise.then(pdfData => {
+          pdfData.getPage(1).then(page => {
+            var canvas = $('#pdf-preview')[0];
+            var canvasContext = canvas.getContext('2d');
+            const viewport = page.getViewport({ scale: .5 });
+            canvas.height = canvas.width / viewport.width * viewport.height;
+            page.render({ canvasContext, viewport })
+          })
+        })
+      }
+    })
+})
+
+$('.print-awb').click(function () {
+  $('.close-del').trigger('click');
+  printJS(pdfPath);
+})
+
+// $('#no-docs-table').DataTable({
+//     pageLength: 10,
+//     columns:[
+//         //"dummy" configuration
+//         { visible: true }, //col 1
+//         { visible: true }, //col 2
+//         { visible: true }, //col 3
+//         { visible: true }, //col 4
+//         { visible: true }, //col 5
+//         { visible: true }, //col 6 
+//         { visible: true }, //col 7
+//         { visible: true }  //col 8 
+//     ]
+// });

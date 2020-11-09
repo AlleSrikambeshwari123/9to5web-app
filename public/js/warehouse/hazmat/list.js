@@ -83,5 +83,5 @@ $("#hazmatTable").on("click", ".rm-hazmat", function() {
 });
 
 $('#hazmatTable').DataTable({
-  pageLength: 3,
+  pageLength: 10,
 });
