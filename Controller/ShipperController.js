@@ -4,16 +4,16 @@ var countries = require('../public/js/countries');
 var helpers = require('../views/helpers');
 
 exports.get_shipper_list = (req, res, next) => {
-  //services.shipperService.getAllShippers().then(shippers => {
+  services.shipperService.getAllShippers().then(shippers => {
     res.render('pages/warehouse/shipper/list', {
       page: req.originalUrl,
       title: 'Shippers',
       user: res.user,
-      shippers: [],//shippers.map(utils.formattedRecord),
+      shippers: shippers.map(utils.formattedRecord),
       daterange:req.query.daterange?req.query.daterange:'',
       clear:req.query.clear
     })
-  //})
+  })
 }
 exports.get_all_shipper_list = (req, res, next) => {
   services.shipperService.getAllShipper(req).then(shippersResult => {

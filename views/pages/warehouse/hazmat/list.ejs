@@ -10,9 +10,7 @@
       <div id="myLoader"><img src="../../../img/preloader.gif"></div>
       <div class="card-body daterangepickerbody-1">
         <div class="table-responsive">
-            <input type="hidden" name="daterange" id="daterange" value="<%=daterange%>">
-            <input type="hidden" name="clear" id="clear" value="<%=clear%>">
-          <table id="hazmatTable" class="display table  table-striped table-hover">
+          <table id="hazmatTable" class="display table dateRangeFilterTable table-striped table-hover">
             <thead>
               <tr>
                 <th>ID</th>
@@ -23,7 +21,20 @@
               </tr>
             </thead>
             <tbody>
-        
+              <% hazmats.forEach(function(hazmat){ %>
+              <tr data-record="<%= hazmat.id %>">
+                <td><%=hazmat.id%></td>
+                <td><%=helpers.formatDate(hazmat.createdAt)%></td>
+                <td><strong><%=hazmat.name%></strong></td>
+                <td><%=hazmat.description%></td>
+                <td>
+                  <a href='#' data-id='<%=hazmat.id%>' data-target="#edit-hazmat" data-toggle='modal'
+                    class='btn-edit-hazmat mx-3'><i class="fas fa-pen"></i></a>
+                  <!-- temporary commenting the code -->
+                  <!-- <a href='#' class='rm-hazmat ml-3' data-id='<%=hazmat.id%>'><i class="fas fa-trash"></i></a> -->
+                </td>
+              </tr>
+              <%})%>
             </tbody>
           </table>
         </div>

@@ -3,16 +3,16 @@ var utils = require('../Util/utils');
 var helpers = require('../views/helpers');
 
 exports.get_container_list = (req, res, next) => {
-  //services.containerService.getAllContainers().then((containers) => {
+  services.containerService.getAllContainers().then((containers) => {
     res.render('pages/warehouse/container/list', {
       page: req.originalUrl,
       title: 'Containers',
       user: res.user,
-      containers: [],//containers.map(utils.formattedRecord),
+      containers: containers.map(utils.formattedRecord),
       daterange:req.query.daterange?req.query.daterange:'',
       clear:req.query.clear
     });
-  //});
+  });
 };
 
 exports.get_all_container_list = (req, res, next) => {

@@ -3,16 +3,16 @@ var utils = require('../Util/utils');
 var helpers = require('../views/helpers');
 
 exports.get_driver_list = (req, res, next) => {
- // services.driverService.getDrivers().then(drivers => {
+ services.driverService.getDrivers().then(drivers => {
     res.render('pages/fleet/driver/list', {
       page: req.originalUrl,
       title: 'Drivers',
       user: res.user,
-      drivers: [],//drivers.map(utils.formattedRecord),
+      drivers: drivers.map(utils.formattedRecord),
       daterange:req.query.daterange?req.query.daterange:'',
       clear:req.query.clear
     })
-  //})
+  })
 }
 
 exports.get_all_driver_list = (req, res, next) =>{

@@ -3,16 +3,16 @@ var utils = require('../Util/utils');
 var helpers = require('../views/helpers')
 
 exports.get_carrier_list = (req, res, next) => {
-  // services.carrierService.getAllCarriers().then(carriers => {
+  services.carrierService.getAllCarriers().then(carriers => {
     res.render('pages/warehouse/carrier/list', {
       page: req.originalUrl,
       title: 'Carriers',
       user: res.user,
-      carriers: [],//carriers.map(utils.formattedRecord),
+      carriers: carriers.map(utils.formattedRecord),
       daterange:req.query.daterange?req.query.daterange:'',
       clear:req.query.clear
     })
-  // })
+  })
 }
 
 exports.get_all_carrier_list = (req, res, next) =>{

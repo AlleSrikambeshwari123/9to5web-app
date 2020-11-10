@@ -3,16 +3,16 @@ var utils = require('../Util/utils');
 var helpers = require('../views/helpers')
 
 exports.get_paid_type_list = (req, res, next) => {
-  // services.paidTypeService.getAllPaidTypes().then(paidTypes => {
+  services.paidTypeService.getAllPaidTypes().then(paidTypes => {
     res.render('pages/warehouse/paid-type/list', {
       page: req.originalUrl,
       title: 'Paid Types',
       user: res.user,
-      paidTypes: [],//paidTypes.map(utils.formattedRecord),
+      paidTypes: paidTypes.map(utils.formattedRecord),
       daterange:req.query.daterange?req.query.daterange:'',
       clear:req.query.clear 
     })
-  // })
+  })
 }
 
 exports.get_all_paid_type_list = (req, res, next) => {

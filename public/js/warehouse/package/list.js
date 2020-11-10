@@ -1,3 +1,7 @@
+$('.package-table').DataTable({
+  pageLength: 10,
+})
+
 var pdfPath;
 $("#package-table").on("click",'.btn-print-pkg',function() {
   let id = $(this).data('id');

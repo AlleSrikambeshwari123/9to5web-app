@@ -15,8 +15,8 @@ exports.getInvoiceList = (req, res, next) => {
       res.render('pages/admin/invoice/list', {
         page: req.originalUrl,
         title: 'All Invoice List',
-        invoices: [],//[...storeInvoices[0],...storeInvoices[1]],
-        additionalInvoices : [],//storeInvoices[2],
+        invoices: [...storeInvoices[0],...storeInvoices[1]],
+        additionalInvoices : storeInvoices[2],
         user: res.user,
         clear:req.query.clear
       });

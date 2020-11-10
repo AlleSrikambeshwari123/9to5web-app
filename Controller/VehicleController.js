@@ -3,18 +3,18 @@ var utils = require('../Util/utils');
 var helpers = require('../views/helpers');
 
 exports.get_vehicle_list = (req, res, next) => {
-  //services.vehicleService.getVehicles().then(vehicles => {
-    //getFullVehicles(vehicles).then(vehicles => {
+  services.vehicleService.getVehicles().then(vehicles => {
+    getFullVehicles(vehicles).then(vehicles => {
       res.render('pages/fleet/vehicle/list', {
         page: req.originalUrl,
         title: 'Vehicles',
         user: res.user,
-        vehicles: [],//vehicles.map(utils.formattedRecord),
+        vehicles: vehicles.map(utils.formattedRecord),
         daterange:req.query.daterange?req.query.daterange:'',
         clear:req.query.clear
       })
-   // })
-  //})
+   })
+  })
 }
 exports.get_all_vehicle_list = (req, res, next) => {
   services.vehicleService.getAllVehicles(req).then(vehiclesResult => {    

@@ -3,26 +3,26 @@ var utils = require('../Util/utils');
 var helpers = require('../views/helpers');
 
 exports.get_plane_list = (req, res, next) => {
-  //services.planeService.getPlanes().then(async (planes) => {
-    // await Promise.all(
-    //   planes.map(async (plane) => {
-    //     let [pilot, airline] = await Promise.all([
-    //       services.pilotService.getPilot(plane.pilotId),
-    //       plane.airlineId && services.airlineService.getAirline(plane.airlineId),
-    //     ]);
-    //     plane.pilot = pilot;
-    //     plane.airline = airline;
-    //   }),
-    // );
+  services.planeService.getPlanes().then(async (planes) => {
+    await Promise.all(
+      planes.map(async (plane) => {
+        let [pilot, airline] = await Promise.all([
+          services.pilotService.getPilot(plane.pilotId),
+          plane.airlineId && services.airlineService.getAirline(plane.airlineId),
+        ]);
+        plane.pilot = pilot;
+        plane.airline = airline;
+      }),
+    );
     res.render('pages/fleet/plane/list', {
       page: req.originalUrl,
       user: res.user,
       title: 'Planes',
-      planes: [],//planes.map(utils.formattedRecord),
+      planes: planes.map(utils.formattedRecord),
       daterange:req.query.daterange?req.query.daterange:'',
       clear:req.query.clear
     });
-  //});
+  });
 }
 
 exports.get_all_plane_list = (req, res, next) => {

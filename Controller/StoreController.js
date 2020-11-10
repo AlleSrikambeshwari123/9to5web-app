@@ -6,7 +6,7 @@ exports.render_store_check_in = (req, res, next) => {
   Promise.all([
     services.packageService.getPackagesForStores(req),
     services.locationService.getPackageLocations()
-  ]).then(([locations]) => {
+  ]).then(([packages,locations]) => {
     console.log({locations});
     res.render('pages/store/store-check-in', {
       page: req.originalUrl,

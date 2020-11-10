@@ -3,16 +3,16 @@ var utils = require('../Util/utils');
 var helpers = require('../views/helpers')
 
 exports.get_service_type_list = (req, res, next) => {
-  // services.serviceTypeService.getAllServiceTypes().then(serviceTypes => {
+  services.serviceTypeService.getAllServiceTypes().then(serviceTypes => {
     res.render('pages/warehouse/service-type/list', {
       page: req.originalUrl,
       title: 'Service Types',
       user: res.user,
-      serviceTypes: [],//serviceTypes.map(utils.formattedRecord),
+      serviceTypes: serviceTypes.map(utils.formattedRecord),
       daterange:req.query.daterange?req.query.daterange:'',
       clear:req.query.clear
     })
-  // })
+  })
 }
 
 exports.get_all_service_type_list = (req, res, next) =>{

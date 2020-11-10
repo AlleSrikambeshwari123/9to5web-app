@@ -27,7 +27,7 @@ exports.get_zone_list = (req, res, next) => {
       title: 'Zones',
       page: req.originalUrl,
       user: res.user,
-      zones: [],
+      zones: zones,
       daterange:req.query.daterange?req.query.daterange:'',
       clear:req.query.clear
     });

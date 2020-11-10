@@ -12,9 +12,7 @@
       <div class="card-body daterangepickerbody">
         <input type="hidden" name="clear" id="clear" value="<%=clear%>">
         <div class="table-responsive">
-          <input type="hidden" name="daterange" id="daterange" value="<%=daterange%>">
-          <input type="hidden" name="clear" id="clear" value="<%=clear%>">
-        <table id='no-docs-table_list' class='display table table-striped table-hover dataTable noDocsTable'>
+        <table id='no-docs-table' class='display table table-striped table-hover dateRangeFilterTable dataTable'>
           <thead>
             <tr>
               <th>Customer Name</th>
@@ -126,7 +124,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-danger close-del" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary print-awb" onclick="print()" >Print</button>
+        <button type="button" class="btn btn-primary print-awb" id='print-awb'>Print</button>
       </div>
     </div>
   </div>

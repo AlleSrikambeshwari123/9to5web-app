@@ -1,71 +1,21 @@
 
-// let packageTable = $('.package-table').DataTable({
-//   pageLength: 10,
-//   columnDefs: [
-//     {
-//       orderable: false,
-//       targets: 0,
-//     },
-//   ],
-//   select: {
-//     style: 'multi',
-//     selector: 'td:first-child input[type="checkbox"]',
-//   }
-// });
-let packageTable
-$(document).ready(function() { 
-  if($('#clear').val() ){
-    $('#daterange').val('')
-    $('#clear').val('1')
-  }
-  setTimeout(()=>{
-    if($('#clear').val() ){
-      $('#daterange').val('')
-      $('#clear').val('1')
-    }else
-      $('.daterange').val($('#daterange').val())
-  },1000)
-  packageTable = $('.package-table').DataTable( {
-    "processing": true,
-    "serverSide": true,    
-    "ajax": {
-      url: "/warehouse/package/all-list",
-      type: "POST",
-      data :{ daterange: $('#daterange').val(), 
-      clear:$('#clear').val()}
+let packageTable = $('.package-table').DataTable({
+  pageLength: 10,
+  columnDefs: [
+    {
+      orderable: false,
+      targets: 0,
     },
-  })
-  packageTable = $('.package-table-filter-package').DataTable( {
-    "processing": true,
-    "serverSide": true,    
-    "ajax": {
-      url: "/warehouse/package/all-deliver-list/",
-      type: "POST",
-      data :{ 
-        daterange: $('#daterange').val(), 
-        clear: $('#clear').val(), 
-        filterURL: $('#filterURL').val()
-      }
-    },
-  })
-  var applyurl = "/warehouse/package/list";
-  if( $("#filter").val() == "deliver"){
-    applyurl ="/warehouse/package/list/deliver";
+  ],
+  select: {
+    style: 'multi',
+    selector: 'td:first-child input[type="checkbox"]',
   }
-    // Event listener to the two range filtering inputs to redraw on input
-    $(document).on('click', '.applyBtn', function() {
-        window.location = applyurl+"?daterange="+$('.daterange').val();
-    });
-    $(document).on('click', '.cancelBtn', function() {
-      window.location = applyurl+"?clear=1";
-    });
-})
+});
 
-
-
-// $('#package-table').on('draw.dt', function() {
-//   unSelectAll();
-// });
+$('#package-table').on('draw.dt', function() {
+  unSelectAll();
+});
 
 function unSelectAll() {
   packageTable.rows().deselect();
@@ -311,19 +261,19 @@ function pricelabelcommon(ServiceVat, NoDocsVal, InsuranceVal, SedVal, ExpressVa
   });
 }
 
-// packageTable.on("click", "input.package-select-all", function() {
-//   if($("input.package-select-all").hasClass("selected")) {
-//     packageTable.rows().deselect();
-//     return unSelectAll()
-//   }
-//   var tableRows = packageTable.rows({ page: 'current' }).nodes();
-//   packageTable.rows({ page: 'current' }).select();
-//   $("input.package-select-all").addClass("selected");
-//   $("input.package-select-all").prop("checked", true);
-//   tableRows.each(function () {
-//     $(this).find("input.package-select").prop("checked", true); 
-//   });
-// })
+packageTable.on("click", "input.package-select-all", function() {
+  if($("input.package-select-all").hasClass("selected")) {
+    packageTable.rows().deselect();
+    return unSelectAll()
+  }
+  var tableRows = packageTable.rows({ page: 'current' }).nodes();
+  packageTable.rows({ page: 'current' }).select();
+  $("input.package-select-all").addClass("selected");
+  $("input.package-select-all").prop("checked", true);
+  tableRows.each(function () {
+    $(this).find("input.package-select").prop("checked", true); 
+  });
+})
 
 $('#package-table tbody').on('change', 'input[type="checkbox"]', function(){
   if(!this.checked) {
@@ -571,17 +521,12 @@ $(function() {
   addToManifestForm.submit(function(event) {
     addToManifestModal.modal('hide');
     event.preventDefault();
-    // var packageIds = packageTable
-    //   .rows({ selected: true })
-    //   .nodes()
-    //   .map((i) => $(i).data('record'))
-    //   .toArray()
-    //   .join(',');
-    var packageIds = []
-    for(var i=0;i<packageTable.rows('.selected').data().length;i++){
-      packageIds.push(packageTable.rows('.selected').data()[i][0].split(' ')[2].split('"')[1])
-    }
-    console.log("pac",packageIds)
+    var packageIds = packageTable
+      .rows({ selected: true })
+      .nodes()
+      .map((i) => $(i).data('record'))
+      .toArray()
+      .join(',');
     addToManifestForm.find('[name="packageIds"]').val(packageIds);
     var data = extractFormData(this);
    
@@ -615,17 +560,12 @@ $(function() {
   addToDeliveryForm.submit(function(event) {
     addToDeliveryModal.modal('hide');
     event.preventDefault();
-    // var packageIds = packageTable
-    //   .rows({ selected: true })
-    //   .nodes()
-    //   .map((i) => $(i).data('record'))
-    //   .toArray()
-    //   .join(',');
-      var packageIds = []
-      for(var i=0;i<packageTable.rows('.selected').data().length;i++){
-        packageIds.push(packageTable.rows('.selected').data()[i][0].split(' ')[2].split('"')[1])
-      }
-      console.log("pac",packageIds)
+    var packageIds = packageTable
+      .rows({ selected: true })
+      .nodes()
+      .map((i) => $(i).data('record'))
+      .toArray()
+      .join(',');
     addToDeliveryForm.find('[name="packageIds"]').val(packageIds);
     var data = extractFormData(this);
     $.ajax({
@@ -684,17 +624,12 @@ $(function() {
   addToCubeForm.submit(function(event) {
     addToCubeModal.modal('hide');
     event.preventDefault();
-    // var packageIds = packageTable
-    //   .rows({ selected: true })
-    //   .nodes()
-    //   .map((i) => $(i).data('record'))
-    //   .toArray()
-    //   .join(',');
-      var packageIds = []
-      for(var i=0;i<packageTable.rows('.selected').data().length;i++){
-        packageIds.push(packageTable.rows('.selected').data()[i][0].split(' ')[2].split('"')[1])
-      }
-      console.log("pac",packageIds)
+    var packageIds = packageTable
+      .rows({ selected: true })
+      .nodes()
+      .map((i) => $(i).data('record'))
+      .toArray()
+      .join(',');
       addToCubeForm.find('[name="packageIds"]').val(packageIds);
     var data = extractFormData(this);
     $.ajax({
@@ -722,18 +657,12 @@ $(function() {
   addtoNoDocForm.submit(function(event) {
     addToNoDocModal.modal('hide');
     event.preventDefault();
-    // var packageIds = packageTable
-    //   .rows({ selected: true })
-    //   .nodes()
-    //   .map((i) => $(i).data('record'))
-    //   .toArray()
-    //   .join(',');
-
-    var packageIds = []
-    for(var i=0;i<packageTable.rows('.selected').data().length;i++){
-      packageIds.push(packageTable.rows('.selected').data()[i][0].split(' ')[2].split('"')[1])
-    }
-    console.log("pac",packageIds)
+    var packageIds = packageTable
+      .rows({ selected: true })
+      .nodes()
+      .map((i) => $(i).data('record'))
+      .toArray()
+      .join(',');
       addtoNoDocForm.find('[name="packageIds"]').val(packageIds);
     var data = extractFormData(this);
     if(data.packageIds == ''){
@@ -804,4 +733,3 @@ $(document).ready(function() {
 	},100)
 
 })
-

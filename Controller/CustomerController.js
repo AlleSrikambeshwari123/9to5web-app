@@ -56,14 +56,14 @@ exports.get_customer_list = (req, res, next) => {
     services.locationService.getCompanies()
   ]).then(results => {
     const locations = results[0];
-    // const customers = results[1];
+    const customers = results[1];
     const companies = results[2];
 
     res.render('pages/admin/customers/list', {
       page: req.originalUrl,
       title: "Consignee",
       user: res.user,
-      customers:[],// customers.map(utils.formattedRecord)
+      customers : customers.map(utils.formattedRecord),
       locations: locations,
       companies: companies,
       clear: req.query.clear

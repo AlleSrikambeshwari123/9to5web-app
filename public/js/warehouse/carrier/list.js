@@ -25,38 +25,6 @@ $("#carrierTable").on("click", ".rm-carrier", function() {
   })
 });
 
-// $('#carrierTable').DataTable({
-//   pageLength: 10,
-// });
-
-$(document).ready(function() {
-  if($('#clear').val() ){
-    $('#daterange').val('')
-    $('#clear').val('1')
-  }
-  setTimeout(()=>{
-    if($('#clear').val() ){
-      $('#daterange').val('')
-      $('#clear').val('1')
-    }else
-      $('.daterange').val($('#daterange').val())
-  },1000)
-  $('.daterange').val($('#daterange').val())
-  $('#carrierTable').DataTable( {
-    "processing": true,
-    "serverSide": true,    
-    "ajax": {
-      url: "/warehouse/carrier/listAll",
-      type: "POST",
-      data :{ daterange:$('#daterange').val(), clear:$('#clear').val()}
-    }
-  })
-  // var table = $('.customer-table').DataTable();
-  $(document).on('click', '.applyBtn', function() {
-    window.location = "/warehouse/carrier/list?daterange="+$('.daterange').val();
-  });	    
-  
-  $(document).on('click', '.cancelBtn', function() {
-    window.location = "/warehouse/carrier/list?clear=1";
-  });  
+$('#carrierTable').DataTable({
+  pageLength: 10,
 });

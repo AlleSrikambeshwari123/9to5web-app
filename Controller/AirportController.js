@@ -4,17 +4,17 @@ const utils = require('../Util/utils');
 var helpers = require('../views/helpers');
 
 exports.get_airport_list = (req, res, next) => {
-  //services.airportService.all().then((airports) => {
+  services.airportService.all().then((airports) => {
       res.render('pages/fleet/airport/list', {
         page: req.originalUrl,
         title: 'Airports',
         user: res.user,
-        airports: [],//airports.map(utils.formattedRecord),
+        airports: airports.map(utils.formattedRecord),
         daterange:req.query.daterange?req.query.daterange:'',
         clear:req.query.clear
       });
-    //})
-    //.catch(next);
+    })
+    .catch(next);
 };
 
 exports.get_all_airport_list = (req, res, next) => {

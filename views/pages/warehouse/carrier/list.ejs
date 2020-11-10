@@ -9,9 +9,7 @@
       <div id="myLoader"><img src="../../../img/preloader.gif"></div>
       <div class="card-body daterangepickerbody-1">
         <div class="table-responsive">
-            <input type="hidden" name="daterange" id="daterange" value="<%=daterange%>">
-            <input type="hidden" name="clear" id="clear" value="<%=clear%>">
-          <table id="carrierTable" class="display table table-striped  table-hover">
+          <table id="carrierTable" class="display table table-striped dateRangeFilterTable table-hover">
             <thead>
               <tr>
                 <!-- <th>ID</th> -->
@@ -29,7 +27,26 @@
               </tr>
             </thead>
             <tbody>
-          
+              <% carriers.forEach(function(carrier){%>
+              <tr data-record="<%= carrier.id %>">
+                <!-- <td><%=carrier.id%></td> -->
+                <td><strong><%=carrier.name%></strong></td>
+                <td><%=helpers.formatDate(carrier.createdAt)%></td>
+                <td><%=helpers.getFullName(carrier)%></td>
+                <td><%=carrier.email%></td>
+                <td><%=carrier.telephone %></td>
+                <!-- <td><%=carrier.fax %></td> -->
+                <td><%=carrier.address %></td>
+                <!-- <td><%=carrier.state %></td> -->
+                <!-- <td><%=carrier.country %></td> -->
+                <!-- <td><%=carrier.zipcode %></td> -->
+                <td>
+                  <a href='manage/<%=carrier.id%>/get'><i class="fas fa-pen"></i></a>
+                  <!-- temporary commenting the code -->
+                  <!-- <a href='#' class='rm-carrier ml-3' data-id='<%=carrier.id%>'><i class="fas fa-trash"></i></a> -->
+                </td>
+              </tr>
+              <%})%>
             </tbody>
           </table>
         </div>

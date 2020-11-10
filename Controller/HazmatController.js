@@ -3,16 +3,16 @@ var utils = require('../Util/utils');
 var helpers = require('../views/helpers')
 
 exports.get_hazmat_list = (req, res, next) => {
-  // services.hazmatService.getHazmats().then(hazmats => {
+  services.hazmatService.getHazmats().then(hazmats => {
     res.render('pages/warehouse/hazmat/list', {
       page: req.originalUrl,
       title: 'HAZMAT Classes',
       user: res.user,
-      hazmats: [],//hazmats
+      hazmats: hazmats,
       daterange:req.query.daterange?req.query.daterange:'',
       clear:req.query.clear
     })
-  // })
+  })
 }
 
 exports.get_all_hazmat_list = (req, res, next) => {

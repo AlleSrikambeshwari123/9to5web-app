@@ -8,7 +8,7 @@ exports.get_pilot_list = (req, res, next) => {
       page: req.originalUrl,
       user: res.user,
       title: 'Pilots',
-      pilots: [],//pilots.map(utils.formattedRecord),
+      pilots: pilots.map(utils.formattedRecord),
       daterange:req.query.daterange?req.query.daterange:'',
       clear:req.query.clear
     })

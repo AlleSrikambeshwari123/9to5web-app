@@ -3,16 +3,16 @@ var utils = require('../Util/utils');
 var helpers = require('../views/helpers');
 
 exports.get_airline_list = (req, res, next) => {
- // services.airlineService.getAllAirlines().then(airlines => {
+ services.airlineService.getAllAirlines().then(airlines => {
     res.render('pages/warehouse/airline/list', {
       page: req.originalUrl,
       title: 'Airlines',
       user: res.user,
-      airlines: [],//airlines.map(utils.formattedRecord),
+      airlines: airlines.map(utils.formattedRecord),
       daterange:req.query.daterange?req.query.daterange:'',
       clear:req.query.clear
     })
-  //})
+  })
 }
 
 exports.get_all_airline_list = (req, res, next) => {

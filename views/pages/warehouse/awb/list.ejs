@@ -22,9 +22,7 @@
           <input type="hidden" name="clear" id="clear" value="<%=clear%>">
           <div class="tab-pane fade show active" id="awb-list" role="tabpanel" aria-labelledby="awb-list-tab">
             <div class="table-responsive">
-                <input type="hidden" name="daterange" id="daterange" value="<%=daterange%>">
-                <input type="hidden" name="clear" id="clear" value="<%=clear%>">
-                <table id='awb-table' class='display table table-striped table-hover dataTable'>
+              <table id='awb-table' class='display table table-striped table-hover dateRangeFilterTable dataTable'>
                 <thead>
                   <tr>
                     <th>PMB</th>
@@ -49,12 +47,12 @@
                     <td><%=helpers.formatDate(awb.createdAt)%></td>
                     <td><a href="manage/<%=awb._id%>/preview"><%=awb.awbId%></a></td>
                     <td><%=helpers.getFullName(awb.customer)%></td>
-                    <td><%=(awb.shipper && awb.shipper.name)? awb.shipper.name: '' %></td>
+                    <td><%=(awb.shipper && awb.shipper.name) ? awb.shipper.name : '' %></td>
                     <td><%=awb.driver ? awb.driver.firstName +' ' + awb.driver.lastName:''%></td>
-                    <td><%=awb.carrier.name %></td>
-                    <td><%=awb.packages.length %></td>
-                    <td><%=(awb.weight).toFixed(2) %> lbs</td>
-                    <td><%=(awb.volumetricWeight).toFixed(2) %> vlbs</td>
+                    <td><%=(awb.carrier && awb.carrier.name) ? awb.carrier.name : '' %></td>
+                    <td><%=awb.packages ? awb.packages.length : 0 %></td>
+                    <td><%=awb.weight.toFixed(2) %> lbs</td>
+                    <td><%=awb.volumetricWeight.toFixed(2) %> vlbs</td>
                     <!-- <td><% if(awb.invoice) { %>
                       <a class="btn btn-link btn-primary btn-invoice" data-id="<%=awb.invoice%>" data-toggle="tooltip"
                         data-original-title="Invoice Attached"> <i class="fa fa-paperclip"></i> </a>
@@ -71,7 +69,6 @@
                     </td>
                   </tr>
                   <%}})%>
-            
                 </tbody>
               </table>
             </div>
@@ -79,9 +76,7 @@
           <!-- Nodocs -->
           <div class="tab-pane fade" id="awb-no-docs" role="tabpanel" aria-labelledby="awb-no-docs-tab">
             <div class="table-responsive">
-                <input type="hidden" name="daterange" id="daterange" value="<%=daterange%>">
-                <input type="hidden" name="clear" id="clear" value="<%=clear%>">
-              <table id='awb-no-docs-table' class='display table table-striped table-hover dataTable awb-no-docs-table'>
+              <table id='no-docs-table' class='display table table-striped table-hover dateRangeFilterTable dataTable'>
                 <thead>
                   <tr>
                     <th>PMB</th>
@@ -89,7 +84,6 @@
                     <th>AWB Number</th>
                     <th>Consignee</th>
                     <th>Shipper</th>
-                    <th>Driver</th>
                     <th>Carrier</th>
                     <th>Pieces</th>
                     <th>Weight</th>
@@ -98,7 +92,30 @@
                   </tr>
                 </thead>
                 <tbody>
-               
+                  <% 
+                  awbs.forEach(function(awb){
+                    if(!awb.invoice) {
+                  %>
+                  <tr data-record="<%= awb._id %>">
+                    <td><%= awb.customer && awb.customer.pmb %></td>
+                    <td><%=helpers.formatDate(awb.createdAt)%></td>
+                    <td><a href="manage/<%=awb._id%>/preview"><%=awb.awbId%></a></td>
+                    <td><%= helpers.getFullName(awb.customer)%></td>
+                    <td><%=(awb.shipper && awb.shipper.name) ? awb.shipper.name :'' %></td>
+                    <td><%=(awb.carrier && awb.carrier.name ) ?awb.carrier.name :'' %></td>
+                    <td><%=awb.packages.length %></td>
+                    <td><%=awb.weight %></td>
+                    <td><%=awb.volumetricWeight.toFixed(2) %> vlbs</td>
+                    <td class="text-center">
+                      <a href='manage/<%=awb._id%>/get' class="btn btn-link btn-primary p-1" data-toggle="tooltip"
+                        data-original-title="Edit"> <i class="fa fa-pen"></i> </a>
+                      <!-- <a class="btn btn-link btn-danger btn-rm-awb p-1" data-toggle="modal" data-id="<%=awb._id%>"
+                        data-target="#confirm-delete-awb"> <i class="fa fa-trash"></i> </a> -->
+                      <a class="btn btn-link btn-primary btn-print-awb p-1" data-toggle="modal" data-id="<%=awb._id%>"
+                        data-target="#print-popup"> <i class="fa fa-print"></i> </a>
+                    </td>
+                  </tr>
+                  <% }}) %>
                 </tbody>
               </table>
             </div>
@@ -107,33 +124,7 @@
           <!-- Pending Awbs -->
           <div class="tab-pane fade" id="awb-no-packages" role="tabpanel" aria-labelledby="awb-no-packages-tab">
             <div class="table-responsive">
-                <table id='pending-awb-table' class='display table table-striped table-hover  dataTable pending-awb-table'>
-                <thead>
-                  <tr>
-                    <th>PMB</th>
-                    <th>Date Received</th>
-                    <th>AWB Number</th>
-                    <th>Consignee</th>
-                    <th>Shipper</th>
-                    <th>Driver</th>
-                    <th>Carrier</th>
-                    <th>Pieces</th>
-                    <th>Weight</th>
-                    <th>Volumetric Weight</th>
-                    <!-- <th>Invoice</th> -->
-                    <th></th>
-                  </tr>
-                </thead>
-                
-                </tbody>
-              </table>
-            </div>
-          </div>
-          <!-- End Pending Awbs -->
-          <!-- Pickups Awbs -->
-          <div class="tab-pane fade" id="awb-pickups" role="tabpanel" aria-labelledby="awb-pickups-tab">
-            <div class="table-responsive">
-                <table id='pickup-awb-table' class='display table table-striped table-hover  dataTable pickup-awb-table'>
+                <table id='pending-awb-table' class='display table table-striped table-hover dateRangeFilterTable dataTable'>
                 <thead>
                   <tr>
                     <th>PMB</th>
@@ -151,7 +142,92 @@
                   </tr>
                 </thead>
                 <tbody>
-               
+                  <% awbs.forEach(function(awb){
+                    if(awb.packages.length === 0) {
+                      %>
+                  <tr data-record="<%= awb._id %>">
+                    <td><%=awb.customer.pmb %></td>
+                    <td><%=helpers.formatDate(awb.createdAt)%></td>
+                    <td><a href="manage/<%=awb._id%>/preview"><%=awb.awbId%></a></td>
+                    <td><%=helpers.getFullName(awb.customer)%></td>
+                    <td><%=(awb.shipper && awb.shipper.name) ? awb.shipper.name :'' %></td>
+                    <td><%=awb.driver ? awb.driver.firstName +' ' + awb.driver.lastName:''%></td>
+                    <td><%=(awb.carrier && awb.carrier.name) ? awb.carrier.name : '' %></td>
+                    <td><%=awb.packages.length %></td>
+                    <td><%=awb.weight %> lbs</td>
+                    <td><%=awb.volumetricWeight.toFixed(2) %> vlbs</td>
+                    <!-- <td><% if(awb.invoice) { %>
+                      <a class="btn btn-link btn-primary btn-invoice" data-id="<%=awb.invoice%>" data-toggle="tooltip"
+                        data-original-title="Invoice Attached"> <i class="fa fa-paperclip"></i> </a>
+                      <% } %>
+                    </td> -->
+                    <td class="text-center">
+                      <a href='manage/<%=awb._id%>/get' class="btn btn-link btn-primary px-1" data-toggle="tooltip"
+                        data-original-title="Edit"> <i class="fa fa-pen"></i> </a>
+                      <!-- temporary commenting the code -->  
+                      <!-- <a class="btn btn-link btn-danger btn-rm-awb p-1" data-toggle="modal" data-id="<%=awb._id%>"
+                        data-target="#confirm-delete-awb"> <i class="fa fa-trash"></i> </a> -->
+                      <a class="btn btn-link btn-primary btn-print-awb p-1" data-toggle="modal" data-id="<%=awb._id%>"
+                        data-target="#print-popup"> <i class="fa fa-print"></i> </a>
+                    </td>
+                  </tr>
+                  <%}})%>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <!-- End Pending Awbs -->
+          <!-- Pickups Awbs -->
+          <div class="tab-pane fade" id="awb-pickups" role="tabpanel" aria-labelledby="awb-pickups-tab">
+            <div class="table-responsive">
+                <table id='pickup-awb-table' class='display table table-striped table-hover dateRangeFilterTable dataTable'>
+                <thead>
+                  <tr>
+                    <th>PMB</th>
+                    <th>Date Received</th>
+                    <th>AWB Number</th>
+                    <th>Consignee</th>
+                    <th>Shipper</th>
+                    <th>Driver</th>
+                    <th>Carrier</th>
+                    <th>Pieces</th>
+                    <th>Weight</th>
+                    <th>Volumetric Weight</th>
+                    <!-- <th>Invoice</th> -->
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% awbs.forEach(function(awb){
+                    if(awb.fll_pickup) {
+                      %>
+                  <tr data-record="<%= awb._id %>">
+                    <td><%=awb.customer.pmb %></td>
+                    <td><%=helpers.formatDate(awb.createdAt)%></td>
+                    <td><a href="manage/<%=awb._id%>/preview"><%=awb.awbId%></a></td>
+                    <td><%=helpers.getFullName(awb.customer)%></td>
+                    <td><%=(awb.shipper && awb.shipper.name) ? awb.shipper.name :'' %></td>
+                    <td><%=awb.driver ? awb.driver.firstName +' ' + awb.driver.lastName:''%></td>
+                    <td><%=(awb.carrier && awb.carrier.name) ? awb.carrier.name :'' %></td>
+                    <td><%=awb.packages.length %></td>
+                    <td><%=awb.weight %> lbs</td>
+                    <td><%=awb.volumetricWeight.toFixed(2) %> vlbs</td>
+                    <!-- <td><% if(awb.invoice) { %>
+                      <a class="btn btn-link btn-primary btn-invoice" data-id="<%=awb.invoice%>" data-toggle="tooltip"
+                        data-original-title="Invoice Attached"> <i class="fa fa-paperclip"></i> </a>
+                      <% } %>
+                    </td> -->
+                    <td class="text-center">
+                      <a href='manage/<%=awb._id%>/get' class="btn btn-link btn-primary px-1" data-toggle="tooltip"
+                        data-original-title="Edit"> <i class="fa fa-pen"></i> </a>
+                      <!-- temporary commenting the code -->  
+                      <!-- <a class="btn btn-link btn-danger btn-rm-awb p-1" data-toggle="modal" data-id="<%=awb._id%>"
+                        data-target="#confirm-delete-awb"> <i class="fa fa-trash"></i> </a> -->
+                      <a class="btn btn-link btn-primary btn-print-awb p-1" data-toggle="modal" data-id="<%=awb._id%>"
+                        data-target="#print-popup"> <i class="fa fa-print"></i> </a>
+                    </td>
+                  </tr>
+                  <%}})%>
                 </tbody>
               </table>
             </div>
