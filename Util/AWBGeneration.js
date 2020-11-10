@@ -134,12 +134,12 @@ class AWBGeneration {
                         responses.end();
                         let awbRes = await this.getFileStream(filestream,filepath,filename)
                         pdfArray.push(awbRes)
-                        for(let invoice of awb.invoices){
-                            await this.invoiceResult(invoice).then(async(arr)=>{
-                                console.log(arr)
-                                pdfArray.push(arr)
-                            })
-                        }
+                        // for(let invoice of awb.invoices){
+                        //     await this.invoiceResult(invoice).then(async(arr)=>{
+                        //         console.log(arr)
+                        //         pdfArray.push(arr)
+                        //     })
+                        // }
                     }
     			})
             }
