@@ -9,7 +9,7 @@ var endate = new Date();
         var dateRangeDefault = (stdate.getMonth() + 1)+ '/'+stdate.getDate()+'/'+stdate.getFullYear()+' - '+
         (endate.getMonth() + 1)+ '/'+endate.getDate()+'/'+endate.getFullYear(); 
 %>
-
+<div id="myLoader"><img src="../../../img/preloader.gif"></div>
 <div class="row mt--2">
   <div class="col-md-6">
     <div class="card full-height">
@@ -564,3 +564,4 @@ function get_data_dataTable(dataTable, daterange){
     return "<tr><td>" + row._id + "</td><td>" + row.last_status + "</td><td>" + row.awb + "</td><td>" + row.customer_email + "</td><td>" + row.zone + "</td></tr>"
   }
 </script>
+<% block('scripts').append('<script src="/js/utils.js"></script>')%>
