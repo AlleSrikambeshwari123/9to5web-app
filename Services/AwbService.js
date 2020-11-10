@@ -77,9 +77,28 @@ class AwbService {
         });
     }
 
-    async getAwbStatuses() {
+    async getAwbStatuses(query) {
         return new Promise((resolve, reject) => {
-            AwbStatus.find({}, (err, result) => {
+          var searchData = {};
+            if(query && query.daterange && query.type == "awbStatus"){
+                var daterange = query.daterange;
+                var date_arr = daterange.split('-');
+                var startDate = (date_arr[0]).trim();      
+                var stdate = new Date(startDate);
+                stdate.setDate(stdate.getDate() );
+            
+                var endDate = (date_arr[1]).trim();
+                var endate = new Date(endDate);
+                endate.setDate(endate.getDate() +1);     
+                searchData.createdAt = {"$gte":stdate, "$lte": endate};             
+            }else if(query && query.daterange && !query.type ){
+              var endate = new Date();      
+              endate.setDate(endate.getDate()+1);
+              var stdate = new Date();
+              stdate.setDate(stdate.getDate() -21);      
+              searchData.createdAt = {"$gte":stdate, "$lte": endate};
+            }
+            AwbStatus.find(searchData, (err, result) => {
                 if (err) {
                     resolve([]);
                 } else {
@@ -156,19 +175,18 @@ class AwbService {
     getAwbsFull(req) {
       var searchData = {};
       if(req && req.query){
-        var daterange = req.query.daterange?req.query.daterange:'';
-        if(daterange){
+
+          var daterange = req.query.daterange?req.query.daterange:'';      
+          if(daterange){
           var date_arr = daterange.split('-');
           var startDate = (date_arr[0]).trim();      
           var stdate = new Date(startDate);
           stdate.setDate(stdate.getDate() +1);
-
           var endDate = (date_arr[1]).trim();
           var endate = new Date(endDate);
           endate.setDate(endate.getDate() +1);     
           searchData.createdAt = {"$gte":stdate, "$lte": endate};
         }
-
         if(!req.query.daterange && !req.query.clear){
           var endate = new Date();      
           endate.setDate(endate.getDate()+1);
@@ -184,7 +202,6 @@ class AwbService {
           searchData.createdAt = {"$gte":stdate, "$lte": endate};
         }
       }
-    
         return new Promise((resolve, reject) => {
             Awb.find(searchData)
                 .populate('customerId')
@@ -630,9 +647,42 @@ class AwbService {
         });
     }
 
-    async getAwbsNoDocs() {
+    async getAwbsNoDocs(req) {
+
         return new Promise((resolve, reject) => {
-            Awb.find({ invoices: { $eq: [] } })
+                
+          var searchData = { invoices: { $eq: [] } };
+          if(req && req.query){
+            var daterange = req.query.daterange?req.query.daterange:'';
+            if(daterange){
+              var date_arr = daterange.split('-');
+              var startDate = (date_arr[0]).trim();      
+              var stdate = new Date(startDate);
+              stdate.setDate(stdate.getDate() );
+      
+              var endDate = (date_arr[1]).trim();
+              var endate = new Date(endDate);
+              endate.setDate(endate.getDate() +1);     
+              searchData.createdAt = {"$gte":stdate, "$lte": endate};
+            }
+      
+            if(!req.query.daterange && !req.query.clear){
+              var endate = new Date();      
+              endate.setDate(endate.getDate()+1);
+              var stdate = new Date();
+              stdate.setDate(stdate.getDate() -21);      
+              searchData.createdAt = {"$gte":stdate, "$lte": endate};
+            }
+            if(req.query.clear){
+              var endate = new Date();      
+              endate.setDate(endate.getDate()+1);
+              var stdate = new Date();
+              stdate.setDate(stdate.getDate() -14);      
+              searchData.createdAt = {"$gte":stdate, "$lte": endate};
+            }
+          }         
+            //Awb.find({ invoices: { $eq: [] } })
+            Awb.find(searchData)
                 .populate('customerId')
                 .populate('shipper')
                 .populate('carrier')
@@ -950,9 +1000,28 @@ class AwbService {
             });
         });
       }
-      getAwbCustomer(id) {
+      getAwbCustomer(id,query) {
+        var searchData = {customerId:id};
+        if(query && query.daterange && query.type == "awbStatus"){
+            var daterange = query.daterange;
+            var date_arr = daterange.split('-');
+            var startDate = (date_arr[0]).trim();      
+            var stdate = new Date(startDate);
+            stdate.setDate(stdate.getDate() );
+        
+            var endDate = (date_arr[1]).trim();
+            var endate = new Date(endDate);
+            endate.setDate(endate.getDate() +1);     
+            searchData.createdAt = {"$gte":stdate, "$lte": endate};             
+        }else if(query && query.daterange && !query.type ){
+          var endate = new Date();      
+          endate.setDate(endate.getDate()+1);
+          var stdate = new Date();
+          stdate.setDate(stdate.getDate() -21);      
+          searchData.createdAt = {"$gte":stdate, "$lte": endate};
+        }
         return new Promise((resolve, reject) => {
-          Awb.find({customerId:id})
+          Awb.find(searchData)
           // .populate('invoices')
           // .populate('customerId')
           // .populate('shipper')

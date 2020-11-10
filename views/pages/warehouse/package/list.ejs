@@ -8,13 +8,11 @@
                     </div>
                     <!-- <a href='create' class='btn btn-primary btn-round float-right ml-md-auto'>Add User</a> -->
                 </div>
+                <div id="myLoader"><img src="../../../img/preloader.gif"></div>
                 <div class="card-body daterangepickerbody">
-                    <input type="hidden" name="daterange" id="daterange" value="<%=daterange%>">
                     <input type="hidden" name="clear" id="clear" value="<%=clear%>">
-                    <input type="hidden" name="filterURL" id="filterURL" value="<%=filterURL ? filterURL: ''%>">
-                    <input type="hidden" name="filter" id="filter" value="<%=filter ? filter: ''%>">
                     <div class="table-responsive">
-                        <table id="package-table" class="display table table-striped table-hover  dataTable package-table<%=datatable ? datatable : ''%>">
+                        <table id="package-table" class="display table table-striped table-hover  dataTable package-table">
                             <thead>
                                 <tr>
                                     <th>Customer Name</th>
@@ -77,7 +75,7 @@
                                                         <%= pkg.weight%>
                                                     </td>
                                                     <td>
-                                                        <%= (pkg.pieces || pkg.pieces > -1) ? pkg.pieces : ''%>
+                                                        <%= pkg.awbId.packages.length%>
                                                     </td>
                                                     <td>
                                                         <%= pkg.lastStatusText %>
@@ -133,7 +131,9 @@
             </div>
         </div>
     </div>
-
+    <script> 
+        var pageUrl = "<%=page ? page :''%>";
+    </script>
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.2.0/sweetalert2.all.min.js"></script> -->
     <% block('scripts').append('<script src="/js/utils.js"></script>')%>
         <% block('scripts').append('<script src="/js/warehouse/package/list.js"></script>')%>

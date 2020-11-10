@@ -20,16 +20,15 @@ exports.add_new_location = (req, res, next) => {
 }
 
 exports.get_location_list = (req, res, next) => {
-  //services.locationService.getLocations().then(locations => {
+  services.locationService.getLocations().then(locations => {
     res.render('pages/admin/location/list', {
       title: 'Locations',
       page: req.originalUrl,
       user: res.user,
-      locations: [],
-      daterange:req.query.daterange?req.query.daterange:'',
-      clear:req.query.clear
+      locations: locations.map(utils.formattedRecord),
+      clear: req.query.clear
     });
- // });
+ });
 }
 
 exports.get_all_locations = (req, res, next) =>{  

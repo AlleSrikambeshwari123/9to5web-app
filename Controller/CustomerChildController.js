@@ -5,19 +5,18 @@ const aws = require('../Util/aws');
 var helpers = require('../views/helpers')
 
 exports.get_customer_list = (req, res, next) => {
-  // Promise.all([
-  //   services.customerChildService.getCustomers()
-  // ]).then(results => {
-    // const customers = results[0];
+  Promise.all([
+    services.customerChildService.getAllCustomers(req)
+  ]).then(results => {
+    const customers = results[0];
     res.render('pages/admin/customerchild/list', {
       page: req.originalUrl,
       title: "Consignee",
       user: res.user,
-      customers: [],//customers.map(utils.formattedRecord)
-      daterange:req.query.daterange?req.query.daterange:'',
-      clear:req.query.clear
+      customers: customers.map(utils.formattedRecord),
+      clear: req.query.clear
     })
-  // })
+  })
 }
 
 exports.get_customers = (req,res,next)=>{
@@ -51,7 +50,7 @@ exports.get_customers = (req,res,next)=>{
 
 exports.get_sub_customer_list = (req, res, next) => {
   Promise.all([
-    services.customerChildService.getCustomers({createdBy : req.params.customerId })
+    services.customerChildService.getCustomers(req,{createdBy : req.params.customerId })
   ]).then(results => {
     const  customers = results[0]
     res.render('pages/customer/customerchild/list', {
@@ -59,7 +58,8 @@ exports.get_sub_customer_list = (req, res, next) => {
       title: "Consignee",
       user: res.user,
       customers: customers.map(utils.formattedRecord),
-      createdBy : req.params.customerId
+      createdBy : req.params.customerId,
+      clear: req.query.clear
     })
   })
 }
@@ -139,14 +139,15 @@ exports.delete_customer = (req, res, next) => {
 
 exports.get_sub_customer_no_docs = (req, res, next) => {
   Promise.all([
-    services.customerChildService.getCustomerAwbsNoDocs({createdBy : req.params.customerId})
+    services.customerChildService.getCustomerAwbsNoDocs(req,{createdBy : req.params.customerId})
   ]).then(results => {
-    console.log("resp",results)
     res.render('pages/customer/no-docs/list', {
       page: req.originalUrl,
-      title: "Consignee Details",
+      title: "Consignee No docs Details",
       user: res.user,
       awbs: results[0],
+      createdBy : req.params.customerId,
+      clear: req.query.clear
     })
   })
 }

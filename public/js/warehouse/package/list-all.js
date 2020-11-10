@@ -765,3 +765,43 @@ $(function() {
     });
   });
 });
+
+var pageUrl = pageUrl ? pageUrl : '';
+var pageArr =  pageUrl.split('?');
+var urlPage = (pageArr && pageArr.length) ? pageArr[0] : '';
+var urlPage = (pageArr && pageArr.length) ? pageArr[0] : '';
+var redirectUrl = "/warehouse/package/list/deliver";
+if(urlPage == "/warehouse/package/list/deliver"){
+  redirectUrl = "/warehouse/package/list/deliver";
+}
+if(urlPage == "/warehouse/package/list"){
+  redirectUrl = "/warehouse/package/list";
+}
+if(pageUrl.split('/')[2] == "customer"){
+  redirectUrl = window.location.pathname;
+}
+
+$(document).on('click', '.applyBtn', function() {
+  window.location = redirectUrl+"?daterange="+$('.daterange').val();
+})
+
+$(document).on('click', '.cancelBtn', function() {
+  window.location = redirectUrl+"?clear=1";
+})
+$(document).ready(function() {
+  setTimeout(()=>{
+		if($('#clear').val() ){
+		  // $('#daterange').val('')
+		  $('#clear').val('1');
+		  var endate = new Date();      
+		  endate.setDate(endate.getDate());
+		  var stdate = new Date();
+		  stdate.setDate(stdate.getDate() -14);      
+		  var dateRange = (stdate.getMonth() + 1)+ '/'+stdate.getDate()+'/'+stdate.getFullYear()+' - '+
+		  (endate.getMonth() + 1)+ '/'+endate.getDate()+'/'+endate.getFullYear()      
+		  $('.daterange').val(dateRange)
+		}	   
+	},100)
+
+})
+

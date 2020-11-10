@@ -5,9 +5,12 @@
       <div class="card-header">
         <h4 class="card-title"><%=title%></h4>
       </div>
+      <div id="myLoader"><img src="../../../img/preloader.gif"></div>
       <div class="card-body daterangepickerbody">
+        <input type="hidden" name="customer" id="customer" value="<%=createdBy%>">
+        <input type="hidden" name="clear" id="clear" value="<%=clear%>">
         <div class="table-responsive">
-        <table id='no-docs-table' class='display table table-striped table-hover dateRangeFilterTable dataTable'>
+        <table id='no-docs-table' class='display table table-striped table-hover'>
           <thead>
             <tr>
               <th>Customer First Name</th>
@@ -45,7 +48,7 @@
                 <a 
                 class="btn btn-link btn-primary btn-print-awb" 
                 data-toggle="modal" 
-                data-id="<%=awb._id%>"
+                data-id="<%=awb.awbId._id%>"
                 data-target="#print-popup"><i class="fa fa-print"></i> </a>
               </td>
             </tr>
@@ -122,5 +125,5 @@
     </div>
   </div>
 </div>
-
-<!-- <% block('scripts').append('<script src="/js/warehouse/awb/list.js"></script>')%> -->
+<% block('scripts').append('<script src="/js/utils.js"></script>')%>
+<% block('scripts').append('<script src="/js/customer/no-docs/list.js"></script>')%>

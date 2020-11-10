@@ -165,8 +165,8 @@ async function sendInvoicesEmail(invoice,customer,awbId){
     console.log("ABOUT TO SEND EMAIL")
     var emailBody = await readEmailTemplate("invoice"); 
     let customerName = customer.firstName;
-    
-    customerName = customerName +' '+(customer.lastName?customer.lastName:'')
+
+     customerName = customerName +' '+(customer.lastName?customer.lastName:'')
     emailBody = emailBody.replace("{{HOST}}","https://9to5-qa.sprocket.solutions/");
     emailBody = emailBody.replace("{{CUSTOMERNAME}}",customerName)
     emailBody = emailBody.replace("{{AWBID}}",awbId)
@@ -180,7 +180,7 @@ async function sendInvoicesEmail(invoice,customer,awbId){
     }; 
     var result = await sendGrid.send(message);
 
-    return result; 
+     return result; 
 }
 
 async function sendAgingEmail(pkg){

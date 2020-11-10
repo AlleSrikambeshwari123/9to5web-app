@@ -4,21 +4,23 @@ var aws = require('../Util/aws');
 var helpers = require('../views/helpers');
 
 exports.getInvoiceList = (req, res, next) => {
-  // Promise.all([
-  //   services.invoiceService.getAllStoreInvoice(),
-  //   services.invoiceService.getInvoices(),
-  //   services.invoiceService.getAdditionalInvoices(),
-  // ]).then(function (storeInvoices) {
+  if(req.query.clear){
+    req.query.daterange = '';
+  } 
+  Promise.all([
+    services.invoiceService.getAllStoreInvoice(req),
+    services.invoiceService.getInvoices(req),
+    services.invoiceService.getAdditionalInvoices(req),
+  ]).then(function (storeInvoices) {
       res.render('pages/admin/invoice/list', {
         page: req.originalUrl,
         title: 'All Invoice List',
         invoices: [],//[...storeInvoices[0],...storeInvoices[1]],
         additionalInvoices : [],//storeInvoices[2],
         user: res.user,
-        daterange:req.query.daterange?req.query.daterange:'',
         clear:req.query.clear
       });
-  // })
+  })
   }
 
   exports.getAllInvoice = (req, res, next) =>{

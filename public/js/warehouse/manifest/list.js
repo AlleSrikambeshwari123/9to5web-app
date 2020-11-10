@@ -110,62 +110,29 @@ $(function() {
     });
 })
 
-function setManifestId(str){
-  var id = $(str).data('id');
-  $('#ManifestIdStatus').val(id)
-}
-$(document).ready(function() { 
-  let flagStatus = 1;
- 
-  if($('#clear').val() ){
-    $('#daterange').val('')
-    $('#clear').val('1')
-  }
-  setTimeout(()=>{
-    if($('#clear').val() ){
-      $('#daterange').val('')
-      $('#clear').val('1')
-    }else
-      $('.daterange').val($('#daterange').val())
-  },1000)
-
-  $('.manifest-table').on( 'xhr.dt', function () {
-    flagStatus = 1
-  });
-  $('.manifest-table-fll').on( 'xhr.dt', function () {
-    flagStatus = 0
-  });
-
-  $('.manifest-table').DataTable( {
-    "processing": true,
-    "serverSide": true,    
-    "ajax": {
-      url: "/warehouse/nas/manifest/all-incoming",
-      type: "POST",
-      data :{ daterange:$('#daterange').val(), clear:$('#clear').val()}
-    },
-  })
-  $('.manifest-table-fll').DataTable( {
-    "processing": true,
-    "serverSide": true,    
-    "ajax": {
-      url: "/warehouse/fll/manifest/all-list",
-      type: "POST",
-      data :{ daterange:$('#daterange').val(), clear:$('#clear').val()}
-    },
-  })
-     
-    // Event listener to the two range filtering inputs to redraw on input
-    $(document).on('click', '.applyBtn', function() {
-      if(flagStatus == 1)
-        window.location = "/warehouse/nas/manifest/incoming?daterange="+$('.daterange').val();
-      else
-        window.location = "/warehouse/fll/manifest/list?daterange="+$('.daterange').val();     
-    });
-    $(document).on('click', '.cancelBtn', function() {
-      if(flagStatus  == 1)
-        window.location = "/warehouse/nas/manifest/incoming?clear=1";
-      else
-        window.location = "/warehouse/fll/manifest/list?clear=1";
-    });  
+$(document).on('click', '.applyBtn', function() {
+  if($('#filter').val() == "Manifests")
+    window.location = "/warehouse/fll/manifest/list?daterange="+$('.daterange').val();
+  else
+    window.location = "/warehouse/nas/manifest/incoming?daterange="+$('.daterange').val();
 })
+ $(document).on('click', '.cancelBtn', function() {
+  if($('#filter').val() == "Manifests")
+    window.location = "/warehouse/fll/manifest/list?clear=1";
+  else
+    window.location = "/warehouse/nas/manifest/incoming?clear=1";
+})
+$(document).ready(function() {
+  setTimeout(()=>{
+		if($('#clear').val() ){
+		  $('#clear').val('1');
+		  var endate = new Date();      
+		  endate.setDate(endate.getDate());
+		  var stdate = new Date();
+		  stdate.setDate(stdate.getDate() -14);      
+		  var dateRange = (stdate.getMonth() + 1)+ '/'+stdate.getDate()+'/'+stdate.getFullYear()+' - '+
+		  (endate.getMonth() + 1)+ '/'+endate.getDate()+'/'+endate.getFullYear()      
+		  $('.daterange').val(dateRange)
+		}	   
+  },100) 
+})  

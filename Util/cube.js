@@ -107,9 +107,9 @@ class CUBE {
                 {},
                 {
                   stack: [
-                    { text: '3. Marks Of Nationality and Registration', fontSize: 9 },
+                    { text: '3. Cube Name', fontSize: 9 },
                     {
-                      text: String(this.data.marksOfNationalityAndRegistration),
+                      text: String(this.data.cubeName),
                       fontSize: 12,
                       bold: true,
                     },
@@ -119,8 +119,8 @@ class CUBE {
                 {},
                 {
                   stack: [
-                    { text: '4. Flight No', fontSize: 9 },
-                    { text: String(this.data.flightNumber), fontSize: 12, bold: true },
+                    { text: '4. AWB #', fontSize: 9 },
+                    { text: String(this.data.awbId), fontSize: 12, bold: true },
                   ],
                 },
               ],

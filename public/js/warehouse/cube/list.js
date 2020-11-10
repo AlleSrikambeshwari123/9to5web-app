@@ -266,37 +266,23 @@ $('.print-package').click(function() {
   printJS(pdfPath);
 });
 
-
-
-
+$(document).on('click', '.applyBtn', function() {
+  window.location = "/warehouse/cube/list?daterange="+$('.daterange').val();
+})
+ $(document).on('click', '.cancelBtn', function() {
+  window.location = "/warehouse/cube/list?clear=1";
+})
 $(document).ready(function() {
-  if($('#clear').val() ){
-    $('#daterange').val('')
-    $('#clear').val('1')
-  }
   setTimeout(()=>{
-    if($('#clear').val() ){
-      $('#daterange').val('')
-      $('#clear').val('1')
-    }else
-      $('.daterange').val($('#daterange').val())
-  },1000)
-  $('.daterange').val($('#daterange').val())
-  $('#cubeTable').DataTable( {
-    "processing": true,
-    "serverSide": true,    
-    "ajax": {
-      url: "/warehouse/cube/listAll",
-      type: "POST",
-      data :{ daterange:$('#daterange').val(), clear:$('#clear').val()}
-    }
-  })
-  // var table = $('.customer-table').DataTable();
-  $(document).on('click', '.applyBtn', function() {
-    window.location = "/warehouse/cube/list?daterange="+$('.daterange').val();
-  });	    
-  
-  $(document).on('click', '.cancelBtn', function() {
-    window.location = "/warehouse/cube/list?clear=1";
-  });  
-});
+		if($('#clear').val() ){
+		  $('#clear').val('1');
+		  var endate = new Date();      
+		  endate.setDate(endate.getDate());
+		  var stdate = new Date();
+		  stdate.setDate(stdate.getDate() -14);      
+		  var dateRange = (stdate.getMonth() + 1)+ '/'+stdate.getDate()+'/'+stdate.getFullYear()+' - '+
+		  (endate.getMonth() + 1)+ '/'+endate.getDate()+'/'+endate.getFullYear()      
+		  $('.daterange').val(dateRange)
+		}	   
+  },100) 
+})  

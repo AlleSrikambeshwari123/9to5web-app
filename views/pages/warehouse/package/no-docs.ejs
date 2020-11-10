@@ -5,6 +5,7 @@
       <div class="card-header">
         <h4 class="card-title"><%=title%></h4>
       </div>
+      <div id="myLoader"><img src="../../../img/preloader.gif"></div>
       <div class="card-body daterangepickerbody">
         <table id='package-table'
           class='display table-responsive table table-striped table-hover dateRangeFilterTable dataTable package-table'>
@@ -135,5 +136,5 @@
     </div>
   </div>
 </div>
-
+<% block('scripts').append('<script src="/js/utils.js"></script>')%>
 <% block('scripts').append('<script src="/js/warehouse/package/list.js"></script>')%>

@@ -9,7 +9,9 @@
                     </h3>
                     <a href='create' class='btn btn-primary btn-round float-right ml-md-auto text-white' data-toggle='modal' data-target='#addDelivery'>Create Delivery</a>
                 </div>
+                <div id="myLoader"><img src="../../../img/preloader.gif"></div>
                 <div class="card-body daterangepickerbody">
+                    <input type="hidden" name="clear" id="clear" value="<%=clear%>">
                     <div class="table-responsive">
                         <input type="hidden" name="daterange" id="daterange" value="<%=daterange%>">
                         <input type="hidden" name="clear" id="clear" value="<%=clear%>">

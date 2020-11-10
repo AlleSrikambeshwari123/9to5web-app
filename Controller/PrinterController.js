@@ -282,15 +282,14 @@ exports.downloadAirCargoManifest = async (req, res, next) => {
 exports.downloadCubePdf = async (req, res, next) => {
 	try {
 		let cubeDataObject = await services.cubeService.getCubeCompleteData(req.params.id);
-
+		let cubePackage = await services.packageService.getPackagesById([cubeDataObject.cubeDetail._id])
 		let packages = [];
 		let manifest = {};
 
 		if (cubeDataObject.cubeDetail && cubeDataObject.cubeDetail.manifestId) {
 			manifest = await services.manifestService.getManifest(cubeDataObject.cubeDetail.manifestId);
 			// packages = await services.packageService.cloneManifestAndOriginal(cubeDataObject.cubeDetail.manifestId);
-		} 
-		// else 
+		}
 		if (cubeDataObject && cubeDataObject.packageList && cubeDataObject.packageList.length) {
 			packages = await services.packageService.getPackagesById(cubeDataObject.packageList.map(a => a._id))
 		} else {
@@ -351,12 +350,19 @@ exports.downloadCubePdf = async (req, res, next) => {
 				};
 			}
 
+			item.shipper = {
+				name: String(pkg.shipperId && pkg.shipperId.name),
+				address: String(pkg.shipperId && pkg.shipperId.address),
+			};
+
 			item.hazmat = (pkg.hazmatId && pkg.hazmatId.description) || " ";
 			item.natureOfGoods = (pkg.description && pkg.description)
 			return acc;
 		}, {});
 
 		let cubeManifest = new CUBE({
+			cubeName : cubeDataObject.name,
+			awbId : cubePackage[0].awbId.awbId,
 			owner: 'Nine To Five Import Export LLC',
 			marksOfNationalityAndRegistration: 'United States - ' + (manifest.planeId ? manifest.planeId.tailNumber : ''),
 			flightNumber: ((manifest && manifest.planeId) ? manifest.planeId.tailNumber : '') + (manifest ? manifest.title : ''),
@@ -365,12 +371,12 @@ exports.downloadCubePdf = async (req, res, next) => {
 			portOfOnlading: (airportTo && airportTo.name) ? String(airportTo && airportTo.name) : '',
 			rows: Object.values(packagesByAWB),
 		});
+		// let stream = await cubeManifest.generate();
+		// res.type('pdf');
+		// res.attachment(`${cubeDataObject._id}-Cube.pdf`);
+		// stream.pipe(res);
+		// stream.end();
 
-		// let stream = await cubeManifest.generate();	
-		//  res.type('pdf');
-		//  res.attachment(`${cubeDataObject._id}-Cube.pdf`);
-		//  stream.pipe(res);
-		//  stream.end();
 		awbPdfGen.getPdfArray(cubeManifest,cubeDataObject._id,packages).then((pdfArray)=>{
 			res.zip(pdfArray)
 		})
@@ -385,7 +391,6 @@ exports.downloadFlightManifest = async (req, res, next) => {
 		let manifest = await services.manifestService.getManifest(req.params.id);
 		let packages = await services.packageService.cloneManifestAndOriginal(req.params.id);
 		let cubePackages = await services.packageService.getPackagesByObject({packageType : "Cube"})
-
 		let rows = packages.map((pkg) => {
 			let consignee = {
 				name: String(
@@ -397,7 +402,7 @@ exports.downloadFlightManifest = async (req, res, next) => {
 				address: String(pkg.shipperId && pkg.shipperId.address)
 			};
 
-			for(let cube of cubePackages){
+ 			for(let cube of cubePackages){
 				if(String(cube.awbId) == String(pkg.awbId._id)){
 					consignee.name = "Nine to Five Import Export"
 					consignee.address = ''
@@ -409,8 +414,8 @@ exports.downloadFlightManifest = async (req, res, next) => {
 				id: pkg.id,
 				awb: pkg.awbId.awbId,
 				weight: services.packageService.getPackageWeightInLBS(pkg),
-				consignee : consignee,
-				shipper : shipper
+				consignee: consignee,
+				shipper: shipper
 			};
 		});
 		let image = await lblPdfGen.generateBarcode(manifest.id)
@@ -422,7 +427,6 @@ exports.downloadFlightManifest = async (req, res, next) => {
 			flightNumber: manifest.planeId.tailNumber,
 			rows,
 		});
-
 		// let stream = await flightManifest.generate();
 		// res.type('pdf');
 		// res.attachment(`${manifest.id}-FM.pdf`);

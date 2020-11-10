@@ -5,7 +5,7 @@ var middleware = require('../../middleware');
 var deliveryCtrl = require('../../Controller/DeliveryController');
 
 router.get('/nas/delivery/list', middleware().checkSession, deliveryCtrl.get_delivery_list);
-router.post('/nas/delivery/all-list', middleware().checkSession, deliveryCtrl.get_all_delivery_list);
+// router.post('/nas/delivery/all-list', middleware().checkSession, deliveryCtrl.get_all_delivery_list);
 // router.get('/nas/delivery/create', middleware().checkSession, deliveryCtrl.create_delivery)
 router.post('/nas/delivery/create', middleware().checkSession, deliveryCtrl.add_new_delivery);
 router.get('/nas/delivery/manage/:id/get', middleware().checkSession, deliveryCtrl.get_delivery_detail);

@@ -61,6 +61,7 @@
       </div>
       </div>
       <div class="card-body daterangepickerbody">
+        <input type="hidden" name="clear" id="clear" value="<%=query.clear ? query.clear : ''%>">
         <div class="table-responsive p-4">
         <table id = "package-table" class="display dateRangeFilterTable table table-striped table-hover dataTable package-table">
           <thead>
@@ -82,7 +83,11 @@
               <td>
                 <input type="checkbox" name="package-select" class="package-select" />
               </td>
+            <% if(pkg && pkg.originBarcode){ %>
               <td><%= helpers.formatDate(pkg.originBarcode.createdAt) %></td>
+            <% }else{ %>
+              <td></td>
+            <% } %>
               <% if (pkg['customerId']) { %>
                 <td><%= pkg.customerId.firstName%></td>
                 <td><%= (pkg['customerId'].lastName ? pkg.customerId.lastName : '-')%></td>
@@ -515,6 +520,8 @@
     </form>
   </div>
 </div>
-
+<script> 
+  var pageUrl = "<%=page ? page :''%>";
+</script>
 <% block('scripts').append('<script src="/js/utils.js"></script>')%>
 <% block('scripts').append('<script src="/js/warehouse/package/list-all.js"></script>')%>

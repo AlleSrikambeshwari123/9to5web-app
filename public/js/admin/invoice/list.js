@@ -69,51 +69,41 @@ $('#invoice-packages').on('hidden.bs.modal', function () {
   $("#invoice-package-tbody").empty();
 });
 
-$(document).ready(function() { 
-  // if($('#clear').val() ){
-  //   $('#daterange').val('')
-  //   $('#clear').val('1')
-  // }
-  // setTimeout(()=>{
-  //   if($('#clear').val() ){
-  //     $('#daterange').val('')
-  //     $('#clear').val('1')
-  //   }else
-  //     $('.daterange').val($('#daterange').val())
-  // },1000)
-  $('.invoice-table').DataTable( {
-    "processing": true,
-    "serverSide": true,    
-    "ajax": {
-      url: "/admin/invoices/all-invoices",
-      type: "POST",
-      data :{ daterange:$('#daterange').val(), clear:$('#clear').val()}
-    },
-    columns : [{ createdCell: function (td, cellData, rowData, row, col) {
-     $(td).css('word-break', 'break-word');
-     $(td).css('min-width', '150px');
-   }},{},{},{},{},{},{},{},{}]
-  })     
-  $('.no-awb-invoice-table').DataTable( {
-    "processing": true,
-    "serverSide": true,    
-    "ajax": {
-      url: "/admin/invoices/all-additional-invoices",
-      type: "POST",
-      data :{ daterange:$('#daterange').val(), clear:$('#clear').val()}
-    },
-    columns : [{ createdCell: function (td, cellData, rowData, row, col) {
-      $(td).css('word-break', 'break-word');
-      $(td).css('min-width', '150px');
-    }},{},{},{},{},{},{},{}]
-  })
-    // Event listener to the two range filtering inputs to redraw on input
-  $(document).on('click', '.applyBtn', function() {
-      window.location = "/admin/invoices/list?daterange="+$('.daterange').val();
-  });
-  $(document).on('click', '.cancelBtn', function() {
-    window.location = "/admin/invoices/list?clear=1";
-  });  
+let invoixeTable = $('.invoice-table').DataTable({
+  pageLength: 10,
+  columndefs : [{ createdCell: function (td, cellData, rowData, row, col) {
+    $(td).css('word-break', 'break-word');
+    $(td).css('min-width', '150px');
+  }}]
+});
+
+let ajks = $('.no-awb-invoice-table').DataTable({
+  pageLength: 10,
+  columndefs : [{ createdCell: function (td, cellData, rowData, row, col) {
+    $(td).css('word-break', 'break-word');
+    $(td).css('min-width', '150px');
+  }}]
+});
+
+$(document).on('click', '.applyBtn', function() {
+  window.location = "/admin/invoices/list?daterange="+$('.daterange').val();
 })
- 
-  
+
+ $(document).on('click', '.cancelBtn', function() {
+  window.location = "/admin/invoices/list?clear=1";
+})
+$(document).ready(function() {
+  setTimeout(()=>{
+		if($('#clear').val() ){
+		  // $('#daterange').val('')
+		  $('#clear').val('1');
+		  var endate = new Date();      
+		  endate.setDate(endate.getDate());
+		  var stdate = new Date();
+		  stdate.setDate(stdate.getDate() -14);      
+		  var dateRange = (stdate.getMonth() + 1)+ '/'+stdate.getDate()+'/'+stdate.getFullYear()+' - '+
+		  (endate.getMonth() + 1)+ '/'+endate.getDate()+'/'+endate.getFullYear()      
+		  $('.daterange').val(dateRange)
+		}	   
+  },100) 
+})  

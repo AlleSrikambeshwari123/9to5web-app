@@ -3,16 +3,18 @@ var utils = require('../Util/utils');
 var helpers = require('../views/helpers')
 
 exports.get_cube_list = (req, res, next) => {
-  // services.cubeService.getCubes().then(cubes => {    
+  if(req.query.clear){
+    req.query.daterange = '';
+  }
+  services.cubeService.getCubes(req).then(cubes => {    
     res.render('pages/warehouse/cube/list', {
       page: req.originalUrl,
       title: 'Cube',
       user: res.user,
-      cubes: [],//cubes.map(utils.formattedRecord),
-      daterange:req.query.daterange?req.query.daterange:'',
-      clear:req.query.clear
+      cubes: cubes.map(utils.formattedRecord),
+      clear:req.query.clear,      
     })
-  // })
+  })
 }
 
 exports.get_all_cube_list = (req, res, next) => {

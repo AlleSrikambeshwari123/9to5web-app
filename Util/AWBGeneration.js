@@ -103,8 +103,8 @@ class AWBGeneration {
         return new Promise(async(resolve,reject)=>{
             let pdfArray = []
             let pdfDoc = await flightManifest.generate();
-            
-            var filestream;
+
+             var filestream;
             var filename = '/'+manifestId +'-FM'+ '.pdf';
             var filepath = global.uploadRoot + filename;
             pdfDoc.pipe((filestream = fs.createWriteStream(filepath)));
@@ -112,7 +112,7 @@ class AWBGeneration {
             let obj = await this.getFileStream(filestream,filepath,filename)
             pdfArray.push(obj);
 
-            let awbArray = []
+             let awbArray = []
             for(let pkg of packages){
                 await services.printService.getAWBDataForAllRelatedEntities(pkg.awbId._id).then(async(awb) => {
                     let priceLabelAwb  =  await services.AwbPriceLabelService.getPriceLabel(awb._id)
@@ -134,12 +134,12 @@ class AWBGeneration {
                         responses.end();
                         let awbRes = await this.getFileStream(filestream,filepath,filename)
                         pdfArray.push(awbRes)
-                        // for(let invoice of awb.invoices){
-                        //     await this.invoiceResult(invoice).then(async(arr)=>{
-                        //         console.log(arr)
-                        //         pdfArray.push(arr)
-                        //     })
-                        // }
+                        for(let invoice of awb.invoices){
+                            await this.invoiceResult(invoice).then(async(arr)=>{
+                                console.log(arr)
+                                pdfArray.push(arr)
+                            })
+                        }
                     }
     			})
             }
@@ -147,7 +147,7 @@ class AWBGeneration {
         })
     }
 
-    async getFileStream(filestream,filepath,filename){
+     async getFileStream(filestream,filepath,filename){
         return new Promise(async (resolve,reject)=>{
             await filestream.on('finish',async function(resp)  {
                 resolve({ success: true, path: filepath, name: filename });
@@ -155,14 +155,14 @@ class AWBGeneration {
         })
     }
 
-    async invoiceResult(invoice) {
+     async invoiceResult(invoice) {
         return new Promise(async (resolve,reject)=>{
             await this.invoicePipe(invoice)
             resolve({ success: true, path: '/home/monty/Desktop/revelcorp/9to5-web/public/uploads/' + invoice.filename, name: invoice.filename })
         })
     }
 
-    async invoicePipe(invoice){
+     async invoicePipe(invoice){
         return new Promise(async (resolve,reject)=>{
             let filestream
             let invoiceFile = await Promise.resolve(aws.getObjectReadStream(invoice.filename))
@@ -173,11 +173,11 @@ class AWBGeneration {
         })
     }
 
-    async generateAWbPrint(awb) {
+     async generateAWbPrint(awb) {
         this.awb = awb;
             let png = await this.generateBarcode(awb._id)
 
-                var docDefinition = {
+                 var docDefinition = {
                     footer: this.generateFooter,
                     content: [{
                             columns: this.generateHeader(png)

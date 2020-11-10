@@ -8,9 +8,8 @@
           <a href='create' class='btn btn-primary btn-round float-right'>Add Vehicle</a>
         </div>
       </div>
-      <div class="card-body daterangepickerbody">
-        <input type="hidden" name="daterange" id="daterange" value="<%=daterange%>">
-        <input type="hidden" name="clear" id="clear" value="<%=clear%>">
+      <div id="myLoader"><img src="../../../img/preloader.gif"></div>
+      <div class="card-body daterangepickerbody-1">
         <div class="table-responsive">
         <table class="display table table-striped table-hover dataTable vehicle-table">
           <thead>
@@ -45,5 +44,5 @@
     </div>
   </div>
 </div>
-
+<% block('scripts').append('<script src="/js/utils.js"></script>')%>
 <% block('scripts').append('<script src="/js/fleet/vehicle/list.js"></script>')%>

@@ -185,7 +185,7 @@ exports.add_new_awb = async (req, res, next) => {
     invoice.awbId = awbId;
     invoice['createdBy'] = req['userId'];
     invoiceIds.push(invoice['_id']);
-    invoice.name = invoice.name    
+    invoice.name = invoice.name 
     return services.invoiceService.create(invoice);
   }));
 
@@ -375,7 +375,8 @@ exports.get_awb_list_server = (req, res, next) => {
 exports.get_awb_list = (req, res, next) => {
   if(req.query.clear){
     req.query.daterange = '';
-  }  
+  } 
+
   services.awbService.getAwbsFull(req).then(awbs => {
     for(let awb of awbs){
       let weightAwb = 0;
@@ -396,7 +397,6 @@ exports.get_awb_list = (req, res, next) => {
       title: "AirWay Bills",
       user: res.user,
       awbs: awbs,
-      daterange:req.query.daterange?req.query.daterange:'',
       clear:req.query.clear
     })
    })
@@ -485,16 +485,15 @@ exports.get_all_awb = (req, res, next) => {
 };
 
 exports.get_awb_no_docs = (req, res, next) => {
-  // services.awbService.getAwbsNoDocs().then(awbs => {
+  services.awbService.getAwbsNoDocs(req).then(awbs => {
     res.render('pages/warehouse/awb/no-docs', {
       page: req.originalUrl,
       title: "AirWay Bills - No Docs",
       user: res.user,
-      awbs: [],//awbs
-      daterange:req.query.daterange?req.query.daterange:'',
-      clear:req.query.clear
+      awbs: awbs,
+      clear: req.query.clear
     })
-  // })
+  })
 };
 
 exports.get_awb_no_docs_list = (req, res, next) => {
@@ -545,7 +544,7 @@ exports.get_awb_no_docs_list = (req, res, next) => {
 };
 
 exports.get_awb_no_docs_package_list = (req, res, next) => {
-  services.packageService.getAllPackagesWithLastStatus().then((packages) => {
+  services.packageService.getAwbNoDocsAllPackagesWithLastStatus(req).then((packages) => {
       return Promise.all(
           packages.map(async(pkg, i) => {
               let awb = await services.printService.getAWBDataForPackagesRelatedEntitie(pkg.awbId._id);
@@ -562,6 +561,7 @@ exports.get_awb_no_docs_package_list = (req, res, next) => {
               filterURL: '',
               buttonName: 'Add to Manifest',
               packages: pkgs,
+              clear: req.query.clear
           });
       })
 
@@ -589,14 +589,13 @@ exports.generate_awb_pdf = (req, res, next) => {
 };
 
 exports.nas_no_docs = (req, res, next) => {
-  services.awbService.getAwbsNoDocs().then(awbs => {
+  services.awbService.getAwbsNoDocs(req).then(awbs => {
     res.render('pages/warehouse/awb/no-docs', {
       page: req.originalUrl,
       title: "AirWay Bills - No Docs",
       user: res.user,
       awbs: awbs,
-      daterange:req.query.daterange?req.query.daterange:'',
-      clear:req.query.clear
+      clear: req.query.clear
     })  
   })
 };

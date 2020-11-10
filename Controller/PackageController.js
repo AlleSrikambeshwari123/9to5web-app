@@ -4,29 +4,26 @@ var utils = require('../Util/utils');
 var helpers = require('../views/helpers');
 
 exports.get_package_list = (req, res, next) => {
-    // services.packageService.getAllPackagesWithLastStatus().then((packages) => {
-    //     return Promise.all(
-    //         packages.map(async(pkg, i) => {
-    //             let awb = await services.printService.getAWBDataForPackagesRelatedEntitie(pkg.awbId._id);
-    //             packages[i].pieces = awb.packages ? awb.packages.length : 0
-    //             packages[i].packageNumber = "PK00" + packages[i].id;
-    //             return pkg
-    //         })
-    //     ).then(pkgs => {
-            
-    //     })
-    // });
-    res.render('pages/warehouse/package/list-all', {
-        page: req.originalUrl,
-        user: res.user,
-        title: 'All Packages',
-        filterURL: '',
-        buttonName: 'Add to Manifest',
-        packages: [],//pkgs,
-        daterange:req.query.daterange?req.query.daterange:'',
-        clear:req.query.clear,
-        datatable:"-filter-package",
-        filter: req.params.filter? req.params.filter :''                     
+    services.packageService.getAwbNoDocsAllPackagesWithLastStatus(req).then((packages) => {
+        return Promise.all(
+            packages.map(async(pkg, i) => {
+                let awb = await services.printService.getAWBDataForPackagesRelatedEntitie(pkg.awbId._id);
+                packages[i].pieces = awb.packages ? awb.packages.length : 0
+                packages[i].packageNumber = "PK00" + packages[i].id;
+                return pkg
+            })
+        ).then(pkgs => {            
+            res.render('pages/warehouse/package/list-all', {
+                page: req.originalUrl,
+                user: res.user,
+                title: 'All Packages',
+                filterURL: '',
+                buttonName: 'Add to Manifest',
+                packages: pkgs,
+                clear: req.query.clear
+            });
+        })
+
     });
 };
 
@@ -112,10 +109,13 @@ exports.get_all_package_list = (req, res, next) => {
 exports.get_customer_package_list = async (req, res, next) => {
     let awbs = await services.awbService.getAwbCustomer(req.params.id)
     let packageResponse = []
-    for(let awb of awbs){
-        let packages = await services.packageService.getPopulatedCustomerPackages(awb.packages)
+    for(let awb of awbs){       
+        //let packages = await services.packageService.getPopulatedCustomerPackages(awb.packages)
+        let packageFilter = await services.packageService.getPackagesFilterDate(req, awb.packages);
+        let packages = await services.packageService.getPopulatedCustomerPackagesDateFilter(req.query, packageFilter)
         packageResponse.push(...packages)
     }
+    
     res.render('pages/customer/package/list-all', {
         page: req.originalUrl,
         user: res.user,
@@ -123,6 +123,7 @@ exports.get_customer_package_list = async (req, res, next) => {
         filterURL: '',
         buttonName: 'Add to Manifest',
         packages: packageResponse,
+        query : req.query
     });
 };
 
@@ -215,52 +216,9 @@ exports.get_filtered_package_list = (req, res, next) => {
     let title = 'All Packages';
     let filterURL = '';
     let buttonName = '';
-    if (req.params.filter === 'in-manifest') {        
-        title = 'Packages';
-        filterURL = 'in-manifest';
-    }
-    if (req.params.filter === 'deliver') {        
-        title = 'All Packages';
-        filterURL = 'deliver';
-        buttonName = 'Add to Delivery';
-    }
-    if (req.params.filter === 'in-pmb9000') {        
-        title = '9to5 Warehouse Packages';
-        filterURL = 'in-pmb9000';
-    }
-    if (req.params.filter === 'not-pmb9000'){
-        title = 'Post Boxes Etc';
-        filterURL = 'not-pmb9000';
-    }
-
-    if (req.params.filter === 'deliver') {
-        res.render('pages/warehouse/package/list-all', {
-            page: req.originalUrl,
-            user: res.user,
-            title: title,
-            filterURL: filterURL,
-            buttonName: 'Add to Delivery',
-            packages: [],//filtered,
-            datatable:"-filter-package",
-            daterange:req.query.daterange?req.query.daterange:'',
-            clear:req.query.clear,
-            filter: req.params.filter? req.params.filter :''
-        });
-    } else {
-        res.render('pages/warehouse/package/list', {
-            page: req.originalUrl,
-            user: res.user,
-            title: title,
-            filterURL: filterURL,
-            packages: [],//filtered
-            datatable:"-filter-package",
-            daterange:req.query.daterange?req.query.daterange:'',
-            clear:req.query.clear,
-            filter: req.params.filter? req.params.filter :''                     
-        });
-    }
-    /*services.packageService
-        .getAllPackagesWithLastStatus({ filter: req.params.filter })
+    services.packageService
+        //.getAllPackagesWithLastStatus({ filter: req.params.filter })
+        .getAwbNoDocsAllPackagesWithLastStatus(req)
         .then(async(packages) => {
 
             if (req.params.filter === 'in-manifest') {
@@ -365,6 +323,7 @@ exports.get_filtered_package_list = (req, res, next) => {
                     filterURL: filterURL,
                     buttonName: 'Add to Delivery',
                     packages: filtered,
+                    clear: req.query.clear
                 });
             } else {
                 res.render('pages/warehouse/package/list', {
@@ -373,13 +332,10 @@ exports.get_filtered_package_list = (req, res, next) => {
                     title: title,
                     filterURL: filterURL,
                     packages: filtered,
-                    datatable:"filter-package",
-                    daterange:req.query.daterange?req.query.daterange:'',
-                    clear:req.query.clear,
-                    filter: req.params.filter? req.params.filter :''                     
+                    clear: req.query.clear
                 });
             }
-        });*/
+        });
 };
 exports.get_all_delivered_package_list = (req, res, next) => {
     services.packageService.getAllFullPackagesWithLastStatus(req).then(async (packagesResult) => {
@@ -440,19 +396,16 @@ exports.get_all_delivered_package_list = (req, res, next) => {
 };
 
 exports.get_fll_package_list = (req, res, next) => {
-   // services.packageService.getPackagesInFll_updated().then((packages) => {
+    services.packageService.getPackagesInFll_updated(req).then((packages) => {
         res.render('pages/warehouse/package/list', {
             page: req.originalUrl,
             user: res.user,
             title: 'Packages On Hands Of FLL',
             filterURL: '',
-            packages: [],//packages,
-            daterange: req.query.daterange?req.query.daterange:'',
-            clear: req.query.clear,
-            filter:'fllpackagelist',
-            datatable: "-fll-package-hand"
+            packages: packages,
+            clear: req.query.clear
         });
-   // });
+   });
 };
 
 exports.get_all_fll_package_list = (req, res, next) => {
@@ -497,19 +450,16 @@ exports.get_all_fll_package_list = (req, res, next) => {
 } 
 
 exports.get_nas_package_list = (req, res, next) => {
-    //services.packageService.getPackagesInNas_updated().then((packages) => {
+    services.packageService.getPackagesInNas_updated(req).then((packages) => {
         res.render('pages/warehouse/package/list', {
             page: req.originalUrl,
             user: res.user,
             title: 'Packages On Hand Of NAS',
             filterURL: '',
-            packages: [],//packages,
-            daterange: req.query.daterange?req.query.daterange:'',
-            clear: req.query.clear,
-            filter:'',
-            datatable: "-nas-package-hand"
+            packages: packages,
+            clear: req.query.clear
         });
-   // });
+   });
 };
 
 exports.get_all_nas_package_list = (req, res, next) => {
@@ -557,15 +507,17 @@ exports.get_all_nas_package_list = (req, res, next) => {
 
 
 exports.get_nas_package_aging = (req, res, next) => {
-    //services.packageService.getAllPackages_updated().then((packages) => {
+    console.log('allData>>>>>>>>>>>>>>>>>>>>>>',"-----------------")
+    services.packageService.getAllPackagesUpdated(req).then((packages) => {        
         res.render('pages/warehouse/package/aging', {
             page: req.originalUrl,
             user: res.user,
             title: 'Packages Aging',
             filterURL: '',
-            packages: []//packages,
+            packages: packages,
+            clear: req.query.clear
         });
-    //});
+    });
 };
 
 exports.get_all_nas_package_aging = (req, res, next) =>{

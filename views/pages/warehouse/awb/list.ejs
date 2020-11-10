@@ -16,8 +16,10 @@
           </ul>
         </div>
       </div>
+      <div id="myLoader"><img src="../../../img/preloader.gif"></div>
       <div class="card-body daterangepickerbody">
         <div class="tab-content m-4" id="awb-list-tabContent">
+          <input type="hidden" name="clear" id="clear" value="<%=clear%>">
           <div class="tab-pane fade show active" id="awb-list" role="tabpanel" aria-labelledby="awb-list-tab">
             <div class="table-responsive">
                 <input type="hidden" name="daterange" id="daterange" value="<%=daterange%>">
@@ -225,5 +227,5 @@
     </div>
   </div>
 </div>
-
+<% block('scripts').append('<script src="/js/utils.js"></script>')%>
 <% block('scripts').append('<script src="/js/warehouse/awb/list.js"></script>')%>

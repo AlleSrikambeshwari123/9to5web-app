@@ -8,7 +8,7 @@ $(function () {
   let initialPackages = JSON.parse($('.packages').val());
   //var packageTable = $('#cableBeachList-table').DataTable();
 
-  $('#locationId-cableBeach').change(function () {
+  /*$('#locationId-cableBeach').change(function () {
     var locationId = $(this).val();
     var locationName = $(this).find(':selected').text();
     // Clearing the previous data
@@ -26,14 +26,40 @@ $(function () {
               pkg.awbId ? pkg.awbId.awbId : '',
               pkg.description,
               pkg.weight + ' lbs',
+              pkg.weight + ' lbs',
+              pkg.weight + ' lbs',
             ])
             .draw(false);
         }
       }
     });
-  });
+  });*/
+  
+ 
+// #column3_search is a <input type="text"> element
+$('#locationId-cableBeach').on( 'change', function () {
+  if(this.value != "All"){
+    packageTable
+          .columns( 0 )
+          .search( this.value )
+          .draw();
+  }else{
+    window.location.reload();
+  }
+} );
 
- // var albonyTable = $('#albonyList-table').DataTable();
+$('#albonyList-table').on( 'change', function () {
+  if(this.value != "All"){
+    packageTable
+          .columns( 0 )
+          .search( this.value )
+          .draw();
+  }else{
+    window.location.reload();
+  }
+});
+
+  /*var albonyTable = $('#albonyList-table').DataTable();
   $('#locationId-albony').change(function () {
     var locationId = $(this).val();
     var locationName = $(this).find(':selected').text();
@@ -57,73 +83,38 @@ $(function () {
         }
       }
     });
-  });
+  });*/
 });
 
-// $('#albonyList-table').DataTable({
-//   pageLength: 10,
-// });
-// $('#cableBeachList-table').DataTable({
-//   pageLenth: 10,
-//   order: [[0, 'desc']],
-// });
-$(document).ready(function() { 
-  if($('#clear').val() ){
-    $('#daterange').val('')
-    $('#clear').val('1')
-  }
+$('#albonyList-table').DataTable({
+  pageLength: 10,
+});
+$('#cableBeachList-table').DataTable({
+  pageLenth: 10,
+  order: [[0, 'desc']],
+});
+
+var redirectUrl = '/store/store-check-in';
+$(document).on('click', '.applyBtn', function() {
+  window.location = redirectUrl+"?daterange="+$('.daterange').val();
+})
+
+$(document).on('click', '.cancelBtn', function() {
+  window.location = redirectUrl+"?clear=1";
+})
+$(document).ready(function() {
   setTimeout(()=>{
-    if($('#clear').val() ){
-      $('#daterange').val('')
-      $('#clear').val('1')
-    }else
-      $('.daterange').val($('#daterange').val())
-  },1000)
-  var cableDataTable = $('#cableBeachList-table').DataTable( {
-    "processing": true,
-    "serverSide": true,    
-    "ajax": {
-      url: "/store/all_store-check-in",
-      type: "POST",
-      data :function(data){
-        data.daterange = $('#daterange').val();
-        data.clear = $('#clear').val();
-        data.location =$("#locationId-cableBeach").val();
-     }
-      
-    },
-  })
-     
-    // Event listener to the two range filtering inputs to redraw on input
-    $(document).on('click', '.applyBtn', function() {
-        window.location = "/store/store-check-in?daterange="+$('.daterange').val();
-    });
-    $(document).on('click', '.cancelBtn', function() {
-      window.location = "/store/store-check-in?clear=1";
-    });  
-    $(document).on('change', '#locationId-cableBeach', function() {     
-      cableDataTable.draw();
-    })
+		if($('#clear').val() ){
+		  // $('#daterange').val('')
+		  $('#clear').val('1');
+		  var endate = new Date();      
+		  endate.setDate(endate.getDate());
+		  var stdate = new Date();
+		  stdate.setDate(stdate.getDate() -14);      
+		  var dateRange = (stdate.getMonth() + 1)+ '/'+stdate.getDate()+'/'+stdate.getFullYear()+' - '+
+		  (endate.getMonth() + 1)+ '/'+endate.getDate()+'/'+endate.getFullYear()      
+		  $('.daterange').val(dateRange)
+		}	   
+	},100)
 
-    //albony
-
-    var albonyDataTable = $('#albonyList-tables').DataTable( {
-      "processing": true,
-      "serverSide": true,    
-      "ajax": {
-        url: "/store/all_store-check-in-albony",
-        type: "POST",
-        data :function(data){
-          data.daterange = $('#daterange').val();
-          data.clear = $('#clear').val();
-          data.location =$("#locationId-albony").val();
-       }        
-      },
-    })
-       
-       
-      $(document).on('change', '#locationId-albony', function() {     
-        albonyDataTable.draw();
-      })
-    
 })

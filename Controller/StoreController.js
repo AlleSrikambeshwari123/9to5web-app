@@ -4,7 +4,7 @@ var helpers = require('../views/helpers');
 
 exports.render_store_check_in = (req, res, next) => {
   Promise.all([
-    //services.packageService.getPackagesForStores(),
+    services.packageService.getPackagesForStores(req),
     services.locationService.getPackageLocations()
   ]).then(([locations]) => {
     console.log({locations});
@@ -12,10 +12,9 @@ exports.render_store_check_in = (req, res, next) => {
       page: req.originalUrl,
       title: 'Store Packages',
       user: res.user,
-      packages: [],//packages,
+      packages: packages,
       locations: locations,
-      daterange:req.query.daterange?req.query.daterange:'',
-      clear:req.query.clear
+      clear: req.query.clear
     })
   });
 }

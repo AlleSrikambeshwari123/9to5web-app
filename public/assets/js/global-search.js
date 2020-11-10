@@ -154,6 +154,17 @@ $(function () {
     }
   }
   $(document).ready(function () {
+    $('#daterange-postbox').daterangepicker({});
+    $('#daterange-nineToPackages').daterangepicker({});
+    $('#daterange-noDocs').daterangepicker({});
+    $('#daterange-user').daterangepicker({});
+
+    //report
+    $('#daterange-awbStatus').daterangepicker({});
+    $('#daterange-package-detail').daterangepicker({});    
+    $('#daterange-dekivery-detail').daterangepicker({});    
+    $('#daterange-package-status').daterangepicker({});
+
     $('input[name="daterange"]').daterangepicker({
       //autoUpdateInput: false,
       locale: { cancelLabel: 'Clear' },
@@ -184,10 +195,10 @@ $(function () {
       localStorage.setItem('filterPath', location.pathname)
       dtTable.draw();
     });
-
-    $(dtTable.table().node()).data('startDate', localStorage.dateRangePickerStartDate ? moment(localStorage.dateRangePickerStartDate) : moment().startOf('hour').subtract(21, 'days'));
-    $(dtTable.table().node()).data('endDate', localStorage.dateRangePickerEndDate ? moment(localStorage.dateRangePickerEndDate) : moment());
-
+    if($('input[name="daterange"]').val()){
+      $(dtTable.table().node()).data('startDate', localStorage.dateRangePickerStartDate ? moment(localStorage.dateRangePickerStartDate) : moment().startOf('hour').subtract(21, 'days'));
+      $(dtTable.table().node()).data('endDate', localStorage.dateRangePickerEndDate ? moment(localStorage.dateRangePickerEndDate) : moment());
+    }
     if(localStorage.dateRangePickerStartDate == ""){
       $(dtTable.table().node()).data('startDate', null);
       $(dtTable.table().node()).data('endDate', null);

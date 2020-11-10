@@ -407,7 +407,7 @@ $(function () {
               type: response.success == true ? 'success' : 'error',
             }).then((res) => {
               if (response.success == true) {
-                window.location.href = 'manage/' + response.awb.id + '/preview';                
+                window.location.href = 'manage/' + response.awb.id + '/preview';
                 data = {
                   Brokerage:  0,
                   CustomsProc:  0,
@@ -438,7 +438,6 @@ $(function () {
                   type: 'post',
                   data: data,
                 });
-
               }
             });
           },

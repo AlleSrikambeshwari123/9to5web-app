@@ -4,6 +4,9 @@ var utils = require('../Util/utils');
 var helpers = require('../views/helpers');
 
 exports.get_awb_list = (req, res, next) => {
+  if(req.query.clear){
+    req.query.daterange = '';
+  }
   services.awbService.getAwbsFull(req).then((awbs) => {
     res.render('pages/warehouse/awbprice/list-all', {
       page: req.originalUrl,
@@ -11,8 +14,7 @@ exports.get_awb_list = (req, res, next) => {
       title: 'All Price Label',
       filterURL: '',
       awbs: awbs,
-      daterange:req.query.daterange?req.query.daterange:'',
-      clear:req.query.clear
+      clear:req.query.clear,
     });
   });
 };

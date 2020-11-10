@@ -6,9 +6,8 @@
         <div class="card-title"><%= title %></div>
         <a href='create' class='btn btn-primary btn-round ml-md-auto float-right'>Add Pilot</a>
       </div>
-      <div class="card-body daterangepickerbody">
-        <input type="hidden" name="daterange" id="daterange" value="<%=daterange%>">
-        <input type="hidden" name="clear" id="clear" value="<%=clear%>">
+      <div id="myLoader"><img src="../../../img/preloader.gif"></div>
+      <div class="card-body daterangepickerbody-1">
         <div class="table-responsive">
         <table class="display table table-striped table-hover dataTable pilot-table">
           <thead>
@@ -68,5 +67,5 @@
     </div>
   </div>
 </div>
-
+<% block('scripts').append('<script src="/js/utils.js"></script>')%>
 <% block('scripts').append('<script src="/js/fleet/pilot/list.js"></script>')%>

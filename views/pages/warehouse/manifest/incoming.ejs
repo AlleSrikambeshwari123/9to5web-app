@@ -6,9 +6,10 @@
         <div class="card-title"><%= title %></div>
         <a href='create' class='btn btn-primary btn-round float-right ml-md-auto'>Create Manifest</a>
       </div>
+      <div id="myLoader"><img src="../../../img/preloader.gif"></div>
       <div class="card-body daterangepickerbody">
-        <input type="hidden" name="daterange" id="daterange" value="<%=daterange%>">
-        <input type="hidden" name="clear" id="clear" value="<%=clear%>">
+          <input type="hidden" name="clear" id="clear" value="<%=clear%>">
+          <input type="hidden" name="filter" id="filter" value="<%=filter%>">
         <div class="table-responsive">
         <table class="display table table-striped table-hover dataTable manifest-table">
           <thead>
@@ -56,5 +57,5 @@
     </div>
   </div>
 </div>
-
+<% block('scripts').append('<script src="/js/utils.js"></script>')%>
 <% block('scripts').append('<script src="/js/warehouse/manifest/list.js"></script>')%>

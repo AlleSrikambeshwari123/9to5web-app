@@ -49,3 +49,13 @@ function getFullName(objData) {
     return objData.firstName + ' ' + objData.lastName;
   }
 };
+
+document.onreadystatechange = function() { 
+  if (document.readyState !== "complete") { 
+      document.querySelector( 
+        "#myLoader").style.visibility = "visible"; 
+  } else { 
+      document.querySelector( 
+        "#myLoader").style.display = "none"; 
+  } 
+};

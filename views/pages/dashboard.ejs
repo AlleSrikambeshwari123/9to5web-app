@@ -1,7 +1,15 @@
 <% layout('./shared/__template')%>
 <script src="/js/jquery.js"></script>
 <script src="/assets/js/plugin/datatables/datatables.min.js"></script>
-
+<%
+var endate = new Date();      
+        endate.setDate(endate.getDate());
+        var stdate = new Date();
+        stdate.setDate(stdate.getDate() -21);      
+        var dateRangeDefault = (stdate.getMonth() + 1)+ '/'+stdate.getDate()+'/'+stdate.getFullYear()+' - '+
+        (endate.getMonth() + 1)+ '/'+endate.getDate()+'/'+endate.getFullYear(); 
+%>
+<div id="myLoader"><img src="../../../img/preloader.gif"></div>
 <div class="row mt--2">
   <div class="col-md-6">
     <div class="card full-height">
@@ -72,6 +80,7 @@
   </div>
 
 </div>
+<input type="hidden" name="typeTable" id="typeTable" value="<%=query.type?query.type:dateRangeDefault%>">
 <div class="row">
   <div class="col-md-12">
     <div class="card full-height">
@@ -124,8 +133,13 @@
         </div>
       </div>
       <div class="card-body">
-        <table id="post_packages" class="display table table-striped table-hover dataTable manifest-table">
-          <thead>
+        <div class="d-flex w-100 d-inline-block py-4 col-xs-10 col-sm-4 float-left ">
+          <label class="w-10-rem align-text-bottom">Select Dates : </label>
+          <input type="text" class="form-control form-control-sm" name="" id="daterange-postbox" value="<%=(query.daterange && query.type=='postbox')? query.daterange: dateRangeDefault%>"  placeholder="Select dates"/>
+        </div>
+        <div class="table-responsive">
+          <table id="post_packages" class="display table table-striped table-hover dataTable manifest-table">
+            <thead>
             <tr>
               <th>Package ID#</th>
               <th>Package Status</th>
@@ -137,6 +151,7 @@
           <tbody>
           </tbody>
         </table>
+      </div>
       </div>
     </div>
   </div>
@@ -191,9 +206,14 @@
         </div>
       </div>
     </div>
-    <div class="card-body">
-      <table id="9to5packages" class="display table table-striped table-hover dataTable manifest-table">
-        <thead>
+    <div class="card-body daterangepickerbody-1">
+      <div class="d-flex w-100 d-inline-block py-4 col-xs-10 col-sm-4 float-left ">
+        <label class="w-10-rem align-text-bottom">Select Dates : </label>
+        <input type="text" class="form-control form-control-sm" name="" id="daterange-nineToPackages" value="<%=(query.daterange && query.type=='nineToPackages')? query.daterange: dateRangeDefault%>"  placeholder="Select dates"/>
+      </div>
+      <div class="table-responsive">        
+        <table id="9to5packages" class="display table table-striped table-hover dataTable manifest-table">
+          <thead>
           <tr>
             <th>Package ID#</th>
             <!-- <th>Date Created</th> -->
@@ -206,6 +226,7 @@
         <tbody>
         </tbody>
       </table>
+    </div>  
     </div>
   </div>
 </div>
@@ -260,9 +281,14 @@
           </div>
         </div>
       </div>
-      <div class="card-body">
-        <table id="no_docs_packages" class="display table table-striped table-hover dataTable manifest-table">
-          <thead>
+      <div class="card-body daterangepickerbody-1">
+        <div class="d-flex w-100 d-inline-block py-4 col-xs-10 col-sm-4 float-left ">
+          <label class="w-10-rem align-text-bottom">Select Dates : </label>
+          <input type="text" class="form-control form-control-sm" name="" id="daterange-noDocs" value="<%=(query.daterange && query.type=='noDocs')? query.daterange: dateRangeDefault%>"  placeholder="Select dates"/>
+        </div>
+        <div class="table-responsive">
+          <table id="no_docs_packages" class="display table table-striped table-hover dataTable manifest-table">
+            <thead>
             <tr>
               <th>Package ID#</th>
               <!-- <th>Date Created</th> -->
@@ -275,6 +301,7 @@
           <tbody>
           </tbody>
         </table>
+      </div>
       </div>
     </div>
   </div>
@@ -289,6 +316,11 @@
         </div>
       </div>
       <div class="card-body">
+        <div class="d-flex w-100 d-inline-block py-4 col-xs-10 col-sm-4 float-left ">
+          <label class="w-10-rem align-text-bottom">Select Dates : </label>
+          <input type="text" class="form-control form-control-sm" name="" id="daterange-user" value="<%=(query.daterange && query.type=='user')? query.daterange: dateRangeDefault%>"  placeholder="Select dates"/>
+        </div>
+      <div class="table-responsive ">
         <table id="user_table" class=" display table table-striped table-hover dataTable ">
           <thead>
             <tr>
@@ -302,6 +334,7 @@
           <tbody>
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   </div>
@@ -319,30 +352,137 @@
       data: obj,
       type: "GET",
       success: function (data) {
+
         let nineToPackages = data.nineToPackages;
         let noDocs = data.noDocs;
         let postBox = data.postBox;
         data.nineToPackages ? data9to5(nineToPackages) : null;
         data.noDocs ? dataNoDocs(noDocs) : null;
         data.postBox ? dataPostBox(postBox) : null;
+         
       }
     })
   }
-  $.ajax({
-    url: '/api/warehouse/get_packages_filter/all',
-    dataType: "json",
-    type: "GET",
-    success: function (data) {
-      let nineToPackages = data.nineToPackages;
-      let noDocs = data.noDocs;
-      let postBox = data.postBox;
-      let users = data.users;
-      data9to5(nineToPackages);
-      dataNoDocs(noDocs);
-      dataPostBox(postBox);
-      usersData(users);
+  //setTimeout(function(){
+    var daterangeval = $('#daterange-postbox').val();
+    if($("#typeTable").val()){
+      daterangeval = '<%=query.daterange? query.daterange : ""%>';
     }
-  })
+    $.ajax({
+      url: '/api/warehouse/get_packages_filter/all?daterange='+daterangeval+'&type='+'<%=query.type?query.type:""%>',
+      dataType: "json",
+      type: "GET",
+      success: function (data) {
+        let nineToPackages = data.nineToPackages;
+        let noDocs = data.noDocs;
+        let postBox = data.postBox;
+        let users = data.users;
+        data9to5(nineToPackages);
+        dataNoDocs(noDocs);
+        dataPostBox(postBox);
+        usersData(users);
+      }
+    })
+ // },1000);
+
+  $(document).ready(function() {
+    setTimeout(()=>{
+        console.log("no docs",$('#clear').val())
+        if($('#clear').val() ){
+        // $('#daterange').val('')
+        $('#clear').val('1');
+        var endate = new Date();      
+        endate.setDate(endate.getDate());
+        var stdate = new Date();
+        stdate.setDate(stdate.getDate() -14);      
+        var dateRange = (stdate.getMonth() + 1)+ '/'+stdate.getDate()+'/'+stdate.getFullYear()+' - '+
+        (endate.getMonth() + 1)+ '/'+endate.getDate()+'/'+endate.getFullYear()      
+        $('.daterange').val(dateRange)
+        }	   
+},100);
+
+  $('#daterange-postbox').on('apply.daterangepicker', function (ev, picker) {
+   var daterange = picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY');  
+    window.location.href = "/dashboard?type=postbox&daterange="+daterange;
+  }); 
+  $('#daterange-postbox').on('cancel.daterangepicker', function (ev, picker) {
+        var endate = new Date();      
+        endate.setDate(endate.getDate());
+        var stdate = new Date();
+        stdate.setDate(stdate.getDate() -14);      
+        var dateRange = (stdate.getMonth() + 1)+ '/'+stdate.getDate()+'/'+stdate.getFullYear()+' - '+
+        (endate.getMonth() + 1)+ '/'+endate.getDate()+'/'+endate.getFullYear();  
+       window.location.href = "/dashboard?type=postbox&daterange="+dateRange;
+  });
+
+  $('#daterange-nineToPackages').on('apply.daterangepicker', function (ev, picker) {
+   var daterange = picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY');  
+    window.location.href = "/dashboard?type=nineToPackages&daterange="+daterange;
+  }); 
+  $('#daterange-nineToPackages').on('cancel.daterangepicker', function (ev, picker) {
+        var endate = new Date();      
+        endate.setDate(endate.getDate());
+        var stdate = new Date();
+        stdate.setDate(stdate.getDate() -14);      
+        var dateRange = (stdate.getMonth() + 1)+ '/'+stdate.getDate()+'/'+stdate.getFullYear()+' - '+
+        (endate.getMonth() + 1)+ '/'+endate.getDate()+'/'+endate.getFullYear();  
+       window.location.href = "/dashboard?type=nineToPackages&daterange="+dateRange;
+  });
+
+  $('#daterange-noDocs').on('apply.daterangepicker', function (ev, picker) {
+   var daterange = picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY');  
+    window.location.href = "/dashboard?type=noDocs&daterange="+daterange;
+  }); 
+  $('#daterange-noDocs').on('cancel.daterangepicker', function (ev, picker) {
+        var endate = new Date();      
+        endate.setDate(endate.getDate());
+        var stdate = new Date();
+        stdate.setDate(stdate.getDate() -14);      
+        var dateRange = (stdate.getMonth() + 1)+ '/'+stdate.getDate()+'/'+stdate.getFullYear()+' - '+
+        (endate.getMonth() + 1)+ '/'+endate.getDate()+'/'+endate.getFullYear();  
+       window.location.href = "/dashboard?type=noDocs&daterange="+dateRange;
+  });
+
+  $('#daterange-user').on('apply.daterangepicker', function (ev, picker) {
+   var daterange = picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY');  
+    window.location.href = "/dashboard?type=user&daterange="+daterange;
+  }); 
+  $('#daterange-user').on('cancel.daterangepicker', function (ev, picker) {
+        var endate = new Date();      
+        endate.setDate(endate.getDate());
+        var stdate = new Date();
+        stdate.setDate(stdate.getDate() -14);      
+        var dateRange = (stdate.getMonth() + 1)+ '/'+stdate.getDate()+'/'+stdate.getFullYear()+' - '+
+        (endate.getMonth() + 1)+ '/'+endate.getDate()+'/'+endate.getFullYear();  
+       window.location.href = "/dashboard?type=user&daterange="+dateRange;
+  });
+
+
+}) 
+
+
+
+function get_data_dataTable(dataTable, daterange){
+  $.ajax({
+      url: '/api/warehouse/get_packages_filter/all?daterange='+$('#daterange-postbox').val(),
+      dataType: "json",
+      type: "GET",
+      success: function (data) {
+        let nineToPackages = data.nineToPackages;
+        let noDocs = data.noDocs;
+        let postBox = data.postBox;
+        let users = data.users;
+        if(dataTable == "postbox"){
+          dataPostBox(postBox);
+        }
+        //data9to5(nineToPackages);
+        // dataNoDocs(noDocs);
+         
+        // usersData(users);
+      }
+    })
+}
+
 
   function data9to5(data) {
     let result = data.map((row) => {
@@ -354,8 +494,9 @@
     if ($("#9to5packages > tbody > tr").length) {
       $("#9to5packages > tbody > tr").empty();
     }
-
+    $("#9to5packages").DataTable().destroy();
     $("#9to5packages tbody").html("")
+   
     $("#9to5packages tbody").append(result)
     if (!($.fn.dataTable.isDataTable('#9to5packages'))) {
       $("#9to5packages").DataTable({ searching: false, "bLengthChange": false, "order": [[ 2, "desc" ]] });
@@ -372,7 +513,8 @@
     if ($("#no_docs_packages > tbody > tr").length) {
       $("#no_docs_packages > tbody > tr").empty();
     }
-
+    $("#no_docs_packages tbody").html("")
+    $("#no_docs_packages").DataTable().destroy();
     $("#no_docs_packages tbody").append(result)
     if (!($.fn.dataTable.isDataTable('#no_docs_packages'))) {
       $("#no_docs_packages").DataTable({ searching: false, "bLengthChange": false, "order": [[ 2, "desc" ]] });
@@ -388,10 +530,11 @@
 
     if ($("#post_packages > tbody > tr").length) {
       $("#post_packages > tbody > tr").empty();
-    }
-
-    $("#post_packages tbody").append(result)
-    if (!($.fn.dataTable.isDataTable('#post_packages'))) {
+    }   
+    $("#post_packages").DataTable().destroy();
+    $("#post_packages tbody").html(result)
+    //
+   if (!($.fn.dataTable.isDataTable('#post_packages'))) {
       $("#post_packages").DataTable({ searching: false, "bLengthChange": false, "order": [[ 2, "desc" ]] });
     }
   }
@@ -421,3 +564,4 @@
     return "<tr><td>" + row._id + "</td><td>" + row.last_status + "</td><td>" + row.awb + "</td><td>" + row.customer_email + "</td><td>" + row.zone + "</td></tr>"
   }
 </script>
+<% block('scripts').append('<script src="/js/utils.js"></script>')%>
