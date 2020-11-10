@@ -282,7 +282,7 @@ exports.downloadAirCargoManifest = async (req, res, next) => {
 exports.downloadCubePdf = async (req, res, next) => {
 	try {
 		let cubeDataObject = await services.cubeService.getCubeCompleteData(req.params.id);
-		let cubePackages = await services.packageService.getPackagesByObject({packageType : "Cube"})
+		let cubePackage = await services.packageService.getPackagesById([cubeDataObject.cubeDetail._id])
 		let packages = [];
 		let manifest = {};
 
@@ -362,6 +362,8 @@ exports.downloadCubePdf = async (req, res, next) => {
 		}, {});
 
 		let cubeManifest = new CUBE({
+			cubeName : cubeDataObject.name,
+			awbId : cubePackage[0].awbId.awbId,
 			owner: 'Nine To Five Import Export LLC',
 			marksOfNationalityAndRegistration: 'United States - ' + (manifest.planeId ? manifest.planeId.tailNumber : ''),
 			flightNumber: ((manifest && manifest.planeId) ? manifest.planeId.tailNumber : '') + (manifest ? manifest.title : ''),
