@@ -4,7 +4,6 @@ var middleware = require('../../middleware');
 var customerCtrl = require('../../Controller/CustomerController');
 
 router.get('/customers/list', middleware().checkSession, customerCtrl.get_customer_list);
-router.post('/customers/allCustomers', middleware().checkSession, customerCtrl.get_customers);
 router.get('/customers/create', middleware().checkSession, customerCtrl.create_customer);
 router.post('/customers/create', middleware().checkSession, customerCtrl.add_new_customer);
 router.get('/customers/manage/:id/get', middleware().checkSession, customerCtrl.get_customer_detail);
