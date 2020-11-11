@@ -61,25 +61,19 @@
       </div>
       </div>
       <div class="card-body daterangepickerbody">
+        <input type="hidden" name="clear" id="clear" value="<%=query.clear ? query.clear : ''%>">
         <div class="table-responsive p-4">
         <table id = "package-table" class="display dateRangeFilterTable table table-striped table-hover dataTable package-table">
           <thead>
             <tr>
               <th><input id="checkall" type="checkbox" class="package-select-all" /></th>
               <th>OrignalScanDate</th>
-              <th>Customer Name</th>
+              <th>First Name</th>
+              <th>Last Name</th>
               <th>AWB</th>
-              <th>Original Tracking No</th>
-              <th>Package No</th>
               <th>Description</th>
-              <th>Zone</th>
-              <th>Type</th>
-              <th>Weight</th>
-              <th>Number of Pieces</th>
-              <th>Status</th>
-              <th>AirwareBillDate</th>
-              <th>ActualFlight</th>
-              <th></th>
+              <th>Shipper</th>
+              <!-- <th>View</th> -->
               <!-- <th></th> -->
             </tr>
           </thead>  
@@ -89,43 +83,27 @@
               <td>
                 <input type="checkbox" name="package-select" class="package-select" />
               </td>
-              <td><%= helpers.formatDate(pkg.OrignalBarcodeDate) %></td>
+            <% if(pkg && pkg.originBarcode){ %>
+              <td><%= helpers.formatDate(pkg.originBarcode.createdAt) %></td>
+            <% }else{ %>
+              <td></td>
+            <% } %>
               <% if (pkg['customerId']) { %>
-                <td><%= (pkg['customerId'].lastName ? 
-                  `${pkg['customerId'].firstName} ${pkg['customerId'].lastName}` : 
-                  `${pkg['customerId'].firstName}`); %>
-                </td>
+                <td><%= pkg.customerId.firstName%></td>
+                <td><%= (pkg['customerId'].lastName ? pkg.customerId.lastName : '-')%></td>
                 <% } else { %>
                   <td> - </td>
+                  <td> - </td>
                   <% } %>
-              <td><a class="text-decoration-none" href="/warehouse/nas/awb/manage/<%=pkg.awbId ? pkg.awbId._id: '#'%>/preview"><b><%= pkg.express ? '*': '' %></b><%= (pkg.awbId && pkg.awbId.awbId)?pkg.awbId.awbId:'' %> </a></td>
-              <td><%= pkg.originBarcode ? pkg.originBarcode.barcode: ''%></td>
-              <td><%= pkg.packageNumber ? pkg.packageNumber : ''%></td>
+              <td><a class="text-decoration-none" href="/customer/customerChild/awb/manage/<%=pkg.awbId ? pkg.awbId._id: '#'%>/preview"><b><%= pkg.express ? '*': '' %></b><%= (pkg.awbId && pkg.awbId.awbId)?pkg.awbId.awbId:'' %> </a></td>
               <td><%= pkg.description %></td>
-              <% if (pkg['zoneId'] && pkg['zoneId'].name) { %>
-                <td><%= pkg['zoneId'].name %>
+              <% if (pkg['shipperId'] && pkg['shipperId'].name) { %>
+                <td><%= pkg['shipperId'].name %>
                 </td>
               <% } else { %>
                 <td> - </td>
               <% } %> 
-              <td><%= pkg.packageType %></td>
-              <td><%= pkg.weight%></td>
-              <td><%= (pkg.pieces || pkg.pieces > -1) ? pkg.pieces : ''%></td>
-              <td class="lastStatusText_field"><%= pkg.lastStatusText %></td>
-              <td><%= pkg.awbCreatedAt %></td>
-              <td><%= pkg.actualFlight %></td>
-              <!-- <td><a href="../pkg-label/download/<%=pkg._id%>"><i class="fa fa-download"></i></a></td> -->
-              <td class="text-center">
-                <a href="/warehouse/package/pkg-label/download/<%=pkg._id%>"><i class="fa fa-download"></i></a>
-                <a
-                  class="btn btn-link btn-primary btn-print-pkg"
-                  data-toggle="modal"
-                  data-id="<%=pkg._id%>"
-                  data-original-title="Print Label"
-                  data-target="#print-popup"
-                ><i class="fa fa-print"></i>
-              </a>
-              </td>
+
             </tr>
             <%})%>
           </tbody>
@@ -323,5 +301,227 @@
     </div>
   </div>
 </div>
+
+<div class="modal fade" id="pricelabel-popup" tabindex="-1" role="dialog" aria-labelledby="pricelabel-popup"
+  aria-hidden="true" style="display: none;">
+  <div class="modal-dialog modal-lg">
+    <form id="add-to-pricelabel-form" method="post">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title">Add Price Labels</h2>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="col-sm-1 text-left h3">Charges</div>
+          <div class="row gutters">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group form-show-validation row">
+                    <label for="Duty" class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">Duty </label>
+                    <div class="col-lg-8 col-md-8 col-sm-8">
+                      <input disabled="true" type="number" class="form-control" id="Duty" name="Duty" placeholder="Duty">
+                    </div>
+                  </div>
+                  <div class="form-group form-show-validation row">
+                    <label for="Customs Proc" class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">Customs Proc
+                    </label>
+                    <div class="col-lg-8 col-md-8 col-sm-8">
+                      <input disabled="true" type="number" class="form-control" id="CustomsProc" name="CustomsProc"
+                        placeholder="Customs Proc">
+                    </div>
+                  </div>
+                  <div class="form-group form-show-validation row">
+                    <label for="Env. Levy" class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">Env. Levy </label>
+                    <div class="col-lg-8 col-md-8 col-sm-8">
+                      <input disabled="true" type="number" class="form-control" id="EnvLevy" name="EnvLevy" placeholder="Env. Levy">
+                    </div>
+                  </div>
+                  <div class="form-group form-show-validation row">
+                    <label for="Customs VAT" class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">Customs VAT </label>
+                    <div class="col-lg-8 col-md-8 col-sm-8">
+                      <input disabled="true" type="number" class="form-control" id="CustomsVAT" name="CustomsVAT"
+                        placeholder="Customs VAT">
+                    </div>
+                  </div>
+                  <div class="form-group form-show-validation row">
+                    <label for="VAT Multiplier" class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">VAT Multiplier </label>
+                    <div class="col-lg-8 col-md-8 col-sm-8">
+                      <input disabled="true" type="number" class="form-control" id="VatMultiplier" name="VatMultiplier"
+                        placeholder="VAT Multiplier">
+                    </div>
+                  </div>
+                  <div class="form-group form-show-validation row">
+                    <label class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">Total Invoice Value</label>
+                    <div class="col-lg-8 col-md-8 col-sm-8">
+                      <input type="number" id="total-value-invoice" class="form-control" disabled="true" placeholder="Total Invoice Value">
+                    </div>
+                  </div>
+
+                  <div class="form-group form-show-validation row">
+                    <label class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">Override Invoice 
+                      <br>
+                      Value</label>
+                    <div class="col-lg-8 col-md-8 col-sm-8">
+                      <input disabled="true" type="number" id="override-value-invoice" class="form-control"  placeholder="Invoice Value">
+                    </div>
+                  </div>
+
+                  <div class="form-group form-show-validation row">
+                    <label class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">Final Price</label>
+                    <div class="col-lg-8 col-md-8 col-sm-8">
+                      <input  type="number" id="sum-of-charges" class="form-control" disabled="true"  placeholder="Sum of charges">
+                    </div>
+                  </div>
+
+                  <div class="form-group form-show-validation row">
+                    <label class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right"></label>
+                    <div class="col-lg-8 col-md-8 col-sm-8">
+                      <input disabled="true" type="number" class="form-control" hidden>
+                    </div>
+                  </div>
+                  <div class="form-group form-show-validation row">
+                    <label class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right"></label>
+                    <div class="col-lg-8 col-md-8 col-sm-8">
+                      <input disabled="true" type="number" class="form-control" hidden>
+                    </div>
+                  </div>
+                  <div class="form-group form-show-validation row">
+                    <label class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right"></label>
+                    <div class="col-lg-8 col-md-8 col-sm-8">
+                      <input disabled="true" type="number" class="form-control" hidden>
+                    </div>
+                  </div>
+                  <div class="form-group form-show-validation row">
+                    <label for="ServiceVat" class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">ServiceVat</label>
+                    <div class="col-lg-8 col-md-8 col-sm-8">
+                      <input disabled="true" type="number" class="form-control" id="ServiceVat" name="ServiceVat"
+                        placeholder="ServiceVat">
+                      <span id="serviceVatSpan"></span>
+                    </div>
+                  </div>
+                  <div class="form-group form-show-validation row">
+                    <label for="TotalWet" class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">Total Wet</label>
+                    <div class="col-lg-8 col-md-8 col-sm-8">
+                      <input disabled="true" type="number" class="form-control" id="TotalWet" name="TotalWet" placeholder="TotalWet">
+                      <span id="totalWetSpan"></span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group form-show-validation row">
+                    <label for="Freight" class="col-lg-3 col-md-4 col-sm-4 mt-sm-2 text-right">Freight </label>
+                    <div class="col-lg-7 col-md-8 col-sm-8">
+                      <input disabled="true" type="number" class="form-control" id="Freight" name="Freight"
+                        placeholder="Freight">
+                    </div>
+                  </div>
+                  <div class="form-group form-show-validation row">
+                    <div class="col-lg-7 col-md-8 col-sm-8 d-flex flex-md-row">
+                      <div class="custom-control custom-checkbox">
+                        <input disabled="true" type="checkbox" class="custom-control-input" id="NoDocs">
+                        <label class="custom-control-label" for="NoDocs">No Docs</label>
+                      </div>
+                      <div class="col-lg-7 col-md-8 col-sm-8">
+                        <input disabled="true" type="number" class="form-control form-control-sm text-right" id="NoDocsVal" />
+                      </div>
+                    </div>
+
+                  </div>
+                  <div class="form-group form-show-validation row">
+                    <div class="col-lg-7 col-md-8 col-sm-8 d-flex flex-md-row">
+                      <div class="custom-control custom-checkbox">
+                        <input disabled="true" type="checkbox" class="custom-control-input" id="Insurance">
+                        <label class="custom-control-label" for="Insurance">Insurance</label>
+                      </div>
+                      <div class="col-lg-7 col-md-8 col-sm-8">
+                        <input disabled="true" type="number" class="form-control form-control-sm text-right" id="InsuranceVal" />
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group form-show-validation row">
+                    <label for="Freight" class="col-lg-3 col-md-4 col-sm-4 mt-sm-2 text-right">No of Invoices </label>
+                    <div class="col-lg-7 col-md-8 col-sm-8">
+                      <input disabled="true" type="number" class="form-control" id="no_of_invoice"
+                        placeholder="No of invoices">
+                    </div>
+                  </div>
+                  <div class="form-group form-show-validation row">
+                    <label for="Freight" class="col-lg-3 col-md-4 col-sm-4 mt-sm-2 text-right">Total Weight </label>
+                    <div class="col-lg-7 col-md-8 col-sm-8">
+                      <input disabled="true" type="number" class="form-control" id="total_weight_value"
+                        placeholder="Total value">
+                    </div>
+                  </div>
+                  <div class="form-group form-show-validation row">
+                    <label for="Storage" class="col-lg-3 col-md-4 col-sm-4 mt-sm-2 text-right">Storage </label>
+                    <div class="col-lg-7 col-md-8 col-sm-8">
+                      <input disabled="true" type="number" class="form-control" id="Storage" name="Storage" placeholder="Storage">
+                    </div>
+                  </div>
+                  <div class="form-group form-show-validation row">
+                    <label for="Brokerage" class="col-lg-3 col-md-4 col-sm-4 mt-sm-2 text-right">Brokerage </label>
+                    <div class="col-lg-7 col-md-8 col-sm-8">
+                      <input disabled="true" type="number" class="form-control" id="Brokerage" name="Brokerage" placeholder="Brokerage">
+                    </div>
+                  </div>
+                  <div class="form-group form-show-validation row">
+                    <div class="col-lg-7 col-md-8 col-sm-8 d-flex flex-md-row">
+                      <div class="custom-control custom-checkbox">
+                        <input disabled="true" type="checkbox" class="custom-control-input" id="Sed">
+                        <label class="custom-control-label" for="Sed">Sed</label>
+                      </div>
+                      <div class="col-lg-7 col-md-8 col-sm-8">
+                        <input disabled="true" type="number" class="form-control form-control-sm text-right" id="SedVal" />
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group form-show-validation row">
+                    <div class="col-lg-7 col-md-8 col-sm-8 d-flex flex-md-row">
+                      <div class="custom-control custom-checkbox">
+                        <input disabled="true" type="checkbox" class="custom-control-input" id="Express">
+                        <label class="custom-control-label" for="Express">Express</label>
+                      </div>
+                      <div class="col-lg-7 col-md-8 col-sm-8">
+                        <input disabled="true" type="number" class="form-control form-control-sm text-right" id="ExpressVal" />
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group form-show-validation row">
+                    <label for="Delivery" class="col-lg-3 col-md-4 col-sm-4 mt-sm-2 text-right">Delivery </label>
+                    <div class="col-lg-7 col-md-8 col-sm-8">
+                      <input disabled="true" type="number" class="form-control" id="Delivery" name="Delivery" placeholder="Delivery">
+                    </div>
+                  </div>
+                  <div class="form-group form-show-validation row">
+                    <label for="Pickup" class="col-lg-3 col-md-4 col-sm-4 mt-sm-2 text-right">Pickup </label>
+                    <div class="col-lg-7 col-md-8 col-sm-8">
+                      <input disabled="true" type="number" class="form-control" id="Pickup" name="Pickup" placeholder="Pickup">
+                    </div>
+                  </div>
+                  <div class="form-group form-show-validation row">
+                    <label for="Hazmat" class="col-lg-3 col-md-4 col-sm-4 mt-sm-2 text-right">Hazmat </label>
+                    <div class="col-lg-7 col-md-8 col-sm-8">
+                      <input disabled="true" type="number" class="form-control" id="Hazmat" name="Hazmat" placeholder="Hazmat">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <input disabled="true" type="text" id="setIdPriceLabel" hidden />
+          <div class="modal-footer">
+            <!-- <button type="submit" class="btn btn-primary" id="UpdatePriceLabelPackage">Update</button> -->
+            <button type="button" class="btn btn-danger close-del" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+    </form>
+  </div>
+</div>
+<script> 
+  var pageUrl = "<%=page ? page :''%>";
+</script>
 <% block('scripts').append('<script src="/js/utils.js"></script>')%>
 <% block('scripts').append('<script src="/js/warehouse/package/list-all.js"></script>')%>

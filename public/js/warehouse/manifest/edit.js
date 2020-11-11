@@ -36,7 +36,7 @@ $('#shipDate').datetimepicker({
   useCurrent: false,
   showTodayButton: true,
   showClear: true,
-  minDate: new Date(),
+  // minDate: new Date(),
   toolbarPlacement: 'bottom',
   sideBySide: true,
   icons: {

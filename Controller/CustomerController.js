@@ -1,10 +1,11 @@
 var services = require('../Services/RedisDataServices');
 var utils = require('../Util/utils');
 var momentz = require('moment-timezone')
+var helpers = require('../views/helpers')
 
 
 exports.get_customer_awb_list = (req, res, next) => {
-    services.awbService.getAwbCustomer(res.user._id).then(async (awbs) => {
+    services.awbService.getAwbCustomer(res.user._id,req).then(async (awbs) => {
       return Promise.all(
       awbs.map(async (data,i) =>{
         let awb = await services.awbService.getAwbPriceLabel(data._id)
@@ -20,6 +21,7 @@ exports.get_customer_awb_list = (req, res, next) => {
         title: "AirWay Bills",
         user: res.user,
         awbs: awbs,
+        clear: req.query.clear
       })
     })
   })
@@ -50,7 +52,7 @@ exports.get_customer_package_list = (req, res, next) => {
 exports.get_customer_list = (req, res, next) => {
   Promise.all([
     services.locationService.getLocations(),
-    services.customerService.getCustomers(),
+    services.customerService.getCustomers(req),
     services.locationService.getCompanies()
   ]).then(results => {
     const locations = results[0];
@@ -61,9 +63,10 @@ exports.get_customer_list = (req, res, next) => {
       page: req.originalUrl,
       title: "Consignee",
       user: res.user,
-      customers: customers.map(utils.formattedRecord),
+      customers : customers.map(utils.formattedRecord),
       locations: locations,
-      companies: companies
+      companies: companies,
+      clear: req.query.clear
     })
   })
 }

@@ -17,6 +17,8 @@ var moment = require('moment');
             epath = "public/emails/no_docs_package/index.html"
         else if (emailType == "storepackage")
             epath = "public/emails/store_package/index.html"        
+        else if (emailType == "invoice")
+            epath = "public/emails/invoices/index.html"
         console.log('using email:',epath)
         fs.readFile(path.join(__dirname.replace("Util",""),epath), "UTF8", function(err, data) {
             if (err)
@@ -158,6 +160,29 @@ async function sendAtStoreEmail(store,pkg){
     return result; 
 }
 
+async function sendInvoicesEmail(invoice,customer,awbId){
+    console.log("sending at invoices mail.")
+    console.log("ABOUT TO SEND EMAIL")
+    var emailBody = await readEmailTemplate("invoice"); 
+    let customerName = customer.firstName;
+
+     customerName = customerName +' '+(customer.lastName?customer.lastName:'')
+    emailBody = emailBody.replace("{{HOST}}","https://9to5-qa.sprocket.solutions/");
+    emailBody = emailBody.replace("{{CUSTOMERNAME}}",customerName)
+    emailBody = emailBody.replace("{{AWBID}}",awbId)
+    emailBody = emailBody.replace("{{PMB}}",invoice.pmb)
+    emailBody = emailBody.replace("{{TRACKINGID}}",invoice.courierNo)
+    message = { 
+        to : "invoice@postboxesetc.com", 
+        from : 'info@postboxesetc.com ',
+        subject: `Invoice Uploaded`,
+        html:emailBody
+    }; 
+    var result = await sendGrid.send(message);
+
+     return result; 
+}
+
 async function sendAgingEmail(pkg){
     console.log("sending at store package.")
     console.log("ABOUT TO SEND EMAIL")
@@ -264,6 +289,6 @@ module.exports = {
     sendAgingEmail: sendAgingEmail,
     sendNoDocsFL : sendNoDocsFl,
     sendNoDocsPackageEmail:sendNoDocsPackageEmail,
-    sendStorePackageEmail:sendStorePackageEmail
-    
+    sendStorePackageEmail:sendStorePackageEmail,
+    sendInvoicesEmail : sendInvoicesEmail
 }

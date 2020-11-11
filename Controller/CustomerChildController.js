@@ -1,9 +1,12 @@
 var services = require('../Services/RedisDataServices');
 var utils = require('../Util/utils');
+var momentz = require('moment-timezone')
+const aws = require('../Util/aws');
+var helpers = require('../views/helpers')
 
 exports.get_customer_list = (req, res, next) => {
   Promise.all([
-    services.customerChildService.getCustomers()
+    services.customerChildService.getAllCustomers(req)
   ]).then(results => {
     const customers = results[0];
     res.render('pages/admin/customerchild/list', {
@@ -11,13 +14,15 @@ exports.get_customer_list = (req, res, next) => {
       title: "Consignee",
       user: res.user,
       customers: customers.map(utils.formattedRecord),
+      clear: req.query.clear
     })
   })
 }
 
+
 exports.get_sub_customer_list = (req, res, next) => {
   Promise.all([
-    services.customerChildService.getCustomers({createdBy : req.params.customerId })
+    services.customerChildService.getCustomers(req,{createdBy : req.params.customerId })
   ]).then(results => {
     const  customers = results[0]
     res.render('pages/customer/customerchild/list', {
@@ -25,7 +30,8 @@ exports.get_sub_customer_list = (req, res, next) => {
       title: "Consignee",
       user: res.user,
       customers: customers.map(utils.formattedRecord),
-      createdBy : req.params.customerId
+      createdBy : req.params.customerId,
+      clear: req.query.clear
     })
   })
 }
@@ -102,3 +108,44 @@ exports.delete_customer = (req, res, next) => {
     res.send(result);
   })
 }
+
+exports.get_sub_customer_no_docs = (req, res, next) => {
+  Promise.all([
+    services.customerChildService.getCustomerAwbsNoDocs(req,{createdBy : req.params.customerId})
+  ]).then(results => {
+    res.render('pages/customer/no-docs/list', {
+      page: req.originalUrl,
+      title: "Consignee No docs Details",
+      user: res.user,
+      awbs: results[0],
+      createdBy : req.params.customerId,
+      clear: req.query.clear
+    })
+  })
+}
+
+exports.preview_awb = (req, res, next) => {
+  let id = req.params.id;
+  
+  services.awbService.getAwbPreviewDetails(id).then((awb) => {
+    awb['dateCreated'] = momentz(awb.createdAt).tz("America/New_York").format('dddd, MMMM Do YYYY, h:mm A');
+    awb._doc.createdBy = awb.createdBy ? (awb.createdBy.firstName || '')  + (awb.createdBy.lastName || ''): ''
+    if (awb.invoices && awb.invoices.length) {
+      awb.invoices = awb.invoices.map(invoice => {
+        if (invoice.filename) {
+          invoice.link = aws.getSignedUrl(invoice.filename);
+        }
+        return invoice;
+      });
+    }
+    res.render('pages/customer/awb/preview', {
+      page: req.originalUrl,
+      title: "AWB #" + awb.awbId,
+      user: res.user,
+      awb: awb,
+      shipper: awb.shipper,
+      carrier: awb.carrier,
+      hazmat: awb.hazmat
+    });
+  });
+};

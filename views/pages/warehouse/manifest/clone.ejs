@@ -7,6 +7,7 @@
       <div class="card-header">
         <h4 class="card-title"><%=title%></h4>
       </div>
+      <div id="myLoader"><img src="/img/preloader.gif"></div>
       <div class="card-body">
         <h3 class="card-title text-muted">Plane</h3>
         <div class='row'>
@@ -93,16 +94,23 @@
                   <td><strong>Trackig No #</strong></td>
                   <td><strong>Description</strong></td>
                   <td><strong>Weight</strong></td>
+                  <td><strong>Volumetric Weight</strong></td>
                   <td><strong>Dimension</strong></td>
                 </tr>
               </thead>
               <tbody>
-                <% packages.forEach(package => { %>
+                <% packages.forEach(package => { 
+                  let check = 1
+                  package.dimensions.split('x').forEach(data =>{
+                    check = check * data
+                  })
+                  package.volumetricWeight = (check/166); %>
                 <tr data-record="<%= package.id %>">
                   <td><%= package.compartment && package.compartment.name %></td>
                   <td><%= package.trackingNo %></td>
                   <td><%= package.description %></td>
                   <td><%= package.weight %> lbs</td>
+                  <td><%= package.volumetricWeight.toFixed(2) %> vlbs</td>
                   <td><%= package.dimensions %></td>
                 </tr>
                 <% }) %>

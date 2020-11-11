@@ -60,11 +60,12 @@ $('.delivery-form').submit(function (event) {
   })
 })
 
-$('.delivery-table').DataTable({
-  pageLength: 10
-})
+// $('.delivery-table').DataTable({
+//   pageLength: 10
+// })
 
-$('.close-deliveryy').click(function() {
+//$('.close-deliveryy').click(function() {
+$(document).on('click', '.close-deliveryy', function() {
   var id = $(this).data('id');
 
   swal({
@@ -91,3 +92,27 @@ $('.close-deliveryy').click(function() {
     }
   })
 });  
+var redirectUrl = '/warehouse/nas/delivery/list';
+$(document).on('click', '.applyBtn', function() {
+  window.location = redirectUrl+"?daterange="+$('.daterange').val();
+})
+
+$(document).on('click', '.cancelBtn', function() {
+  window.location = redirectUrl+"?clear=1";
+})
+$(document).ready(function() {
+  setTimeout(()=>{
+		if($('#clear').val() ){
+		  // $('#daterange').val('')
+		  $('#clear').val('1');
+		  var endate = new Date();      
+		  endate.setDate(endate.getDate());
+		  var stdate = new Date();
+		  stdate.setDate(stdate.getDate() -14);      
+		  var dateRange = (stdate.getMonth() + 1)+ '/'+stdate.getDate()+'/'+stdate.getFullYear()+' - '+
+		  (endate.getMonth() + 1)+ '/'+endate.getDate()+'/'+endate.getFullYear()      
+		  $('.daterange').val(dateRange)
+		}	   
+	},100)
+
+})

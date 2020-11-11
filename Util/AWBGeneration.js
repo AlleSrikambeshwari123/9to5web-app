@@ -30,6 +30,9 @@ var printer = new PdfPrinter(fonts);
 var fs = require('fs');
 var bwipjs = require('bwip-js')
 var moment = require('moment');
+var services = require('../Services/RedisDataServices');
+var aws = require('../Util/aws')
+var fetch = require('node-fetch')
 
 class AWBGeneration {
     constructor() {
@@ -96,6 +99,149 @@ class AWBGeneration {
             })
         })
     }
+
+    async getPdfArray(flightManifest,manifestId,packages){
+        return new Promise(async(resolve,reject)=>{
+            let pdfArray = []
+            let pdfDoc = await flightManifest.generate();
+
+             var filestream;
+            var filename = '/'+manifestId +'-FM'+ '.pdf';
+            var filepath = global.uploadRoot + filename;
+            pdfDoc.pipe((filestream = fs.createWriteStream(filepath)));
+            pdfDoc.end();
+            let obj = await this.getFileStream(filestream,filepath,filename)
+            pdfArray.push(obj);
+
+             let awbArray = []
+            for(let pkg of packages){
+                await services.printService.getAWBDataForAllRelatedEntities(pkg.awbId._id).then(async(awb) => {
+                    let priceLabelAwb  =  await services.AwbPriceLabelService.getPriceLabel(awb._id)
+                    let flag = 0
+                    for(let arr of awbArray){
+                        if(String(arr) == String(awb._id))
+                            flag = 1
+                    }
+                    if(flag == 0){
+                        awbArray.push(awb._id)
+                        if(priceLabelAwb){
+                            awb.express = priceLabelAwb.Express
+                        }
+                        let responses = await this.generateAWbPrint(awb)
+                        let filestream;
+                        let filename = '/'+awb._id +'-AWB'+ '.pdf';
+                        let filepath = global.uploadRoot + filename;
+                        responses.pipe((filestream = fs.createWriteStream(filepath)));
+                        responses.end();
+                        let awbRes = await this.getFileStream(filestream,filepath,filename)
+                        pdfArray.push(awbRes)
+                        for(let invoice of awb.invoices){
+                            if(invoice.filename){
+                                await this.invoiceResult(invoice).then(async(arr)=>{
+                                    console.log('arr',arr)
+                                    if(arr.success){
+                                        pdfArray.push(arr)
+                                    }
+                                })
+                            }
+                        }
+                    }
+    			})
+            }
+            resolve(pdfArray)
+        })
+    }
+
+     async getFileStream(filestream,filepath,filename){
+        return new Promise(async (resolve,reject)=>{
+            await filestream.on('finish',async function(resp)  {
+                resolve({ success: true, path: filepath, name: filename });
+            })
+        })
+    }
+
+     async invoiceResult(invoice) {
+        return new Promise(async (resolve,reject)=>{
+            let invoiceResult = await this.invoicePipe(invoice)
+            if(invoiceResult == 'Success')
+                resolve({ success: true, path: global.uploadRoot +'/'+ invoice.filename, name: invoice.filename })
+            else
+                resolve({ success: false, message: 'File not found' })
+        })
+    }
+
+     async invoicePipe(invoice){
+        return new Promise(async (resolve,reject)=>{
+            try{
+                let filestream
+                let invoiceFile = await aws.getObjectReadStream(invoice.filename)
+                let path = global.uploadRoot +'/'+ invoice.filename
+                invoiceFile.pipe(filestream = fs.createWriteStream(path))
+                filestream.on('finish', async function() {
+                    if(fs.existsSync(path)){
+                        resolve('Success')
+                    }else{
+                        resolve('Error')
+                    }
+                })
+            }
+            catch(error){
+                console.log("err",error)
+                reject(error)
+            }
+        })
+    }
+
+     async generateAWbPrint(awb) {
+        this.awb = awb;
+            let png = await this.generateBarcode(awb._id)
+
+                 var docDefinition = {
+                    footer: this.generateFooter,
+                    content: [{
+                            columns: this.generateHeader(png)
+                        },
+                        this.generateShiperCosigneeTable(awb),
+                        this.generateCarrierandShipper(),
+                        {
+                            layout: 'lightHorizontallines',
+                            margin: [0, 10],
+                            table: {
+                                headerRows: 2,
+                                widths: ["*", "*", "*", "*", "*", "*"],
+                                body: await this.generatePackagesTable()
+                            }
+                        }
+                    ],
+                    styles: {
+                        header: {
+                            fontSize: 18,
+                            bold: true,
+                            margin: [0, 0, 0, 10]
+                        },
+                        subheader: {
+                            fontSize: 16,
+                            bold: true,
+                            margin: [0, 10, 0, 5]
+                        },
+                        tableExample: {
+                            margin: [0, 5, 0, 15]
+                        },
+                        tableHeader: {
+                            bold: true,
+                            fontSize: 13,
+                            color: 'black',
+                            fillColor: "#cccccc"
+                        }
+                    },
+                    defaultStyle: {
+                        font: 'Helvetica',
+                        fontSize: 11
+                    },
+                };
+                return printer.createPdfKitDocument(docDefinition);
+    }
+
     async generatePackagesTable() {
         let body = [
                 [{ text: "Pcs", fillColor: "#cccccc" },
@@ -122,14 +268,25 @@ class AWBGeneration {
             }
             var dimWeight = calculateDimensionalWeight(pkg.dimensions.toLowerCase())
             totalWeight += Number(pkg.weight)
-            totaldimWeight += Number(dimWeight);
-            body.push([
-                { text: ptype, colSpan: 2 }, "",
-                { text: pkg.dimensions },
-                { text: pkg.description },
-                { text: pkg.weight + " lbs" },
-                { text: dimWeight }
-            ])
+            dimWeight = dimWeight.replace(",","")
+            totaldimWeight += parseFloat(dimWeight);
+            if(pkg.express){
+                body.push([
+                    { text: ptype, colSpan: 2 ,bold: true}, "",
+                    { text: pkg.dimensions ,bold: true},
+                    { text: pkg.description ,bold: true},
+                    { text: pkg.weight + " lbs" ,bold: true},
+                    { text: dimWeight ,bold: true}
+                ])
+            }else{
+                body.push([
+                    { text: ptype, colSpan: 2 }, "",
+                    { text: pkg.dimensions },
+                    { text: pkg.description },
+                    { text: pkg.weight + " lbs" },
+                    { text: dimWeight }
+                ])
+            }
 
             let barcode = await this.generateBarcode(`${pkg.trackingNo}`);
             body.push([{
@@ -139,7 +296,7 @@ class AWBGeneration {
                 colSpan: 6,
             }, ]);
         }
-
+        totalWeight = totalWeight.toFixed(2)
         var dimw = currencyFormatter.format(totaldimWeight, {
             symbol: '',
             decimal: '.',
@@ -173,7 +330,7 @@ class AWBGeneration {
             notes = this.awb.note;
         if (this.awb.express)
             express = this.awb.express
-        return {
+        let pdfObject = {
             layout: 'lightHorizontallines',
             margin: [0, 10],
             table: {
@@ -182,12 +339,17 @@ class AWBGeneration {
                 body: [
                     [{ margin: [1, 1], text: "Inland Carrier and Shipper Information", colSpan: 4, alignment: 'center', fillColor: '#cccccc', bold: true }, '', '', ''],
                     [{ text: 'Carrier Name:' }, { text: this.awb.carrier.name }, { text: 'P.O. Number (Nine to Five)' }, { text: po }],
-                    [{ text: 'Express:' }, { text: express }, { text: 'MAWB#' }, { text: '' }],
                     [{ text: 'Notes:', colSpan: 2, bold: true }, { text: notes }, { text: 'External Invoice No', bold: true }, { text: 'External PO', bold: true }],
                     [{ text: this.awb.no, colSpan: 2 }, { text: '' }, { text: (this.awb.invoices || []).map(i => i.number).join(', '), fontSize: 9, bold: true }, { text: '' }]
                 ]
             }
         }
+        if(express > 0)
+            pdfObject.table.body.splice(2,0,[{ text: 'Express:', bold: true }, { text: express },{ text: 'MAWB#' }, { text: '' }])
+        else{
+            pdfObject.table.body.splice(2,0,[{ text: 'MAWB#' ,colSpan: 4}, { text: '' }])
+        }
+        return pdfObject
     }
     generateHeader(png) {
         return [{
@@ -233,14 +395,21 @@ class AWBGeneration {
     }
     generateShiperCosigneeTable(awb) {
         // In DB some shippers have zip field instead of zipcode
-        let shipperZipcode = awb.shipper.zipcode || awb.shipper.zip;
+        let shipperZipcode,shipperName,awbShipperAddress,awbShipperCity,awbShipperState;
+        if(awb.shipper){
+            shipperZipcode = awb.shipper.zipcode || awb.shipper.zip;
+            shipperName = awb.shipper.name ? awb.shipper.name : ''
+            awbShipperAddress = awb.shipper.address ? awb.shipper.address : ''
+            awbShipperCity = awb.shipper.city ? awb.shipper.city : ''
+            awbShipperState = awb.shipper.state ? awb.shipper.state : ''
+        }
         let shipperAddress = [
-            awb.shipper.name,
-            awb.shipper.address, [awb.shipper.city, awb.shipper.state, shipperZipcode].filter(Boolean).join(', '),
+            shipperName,
+            awbShipperAddress, [awbShipperCity, awbShipperState, shipperZipcode].filter(Boolean).join(', '),
         ].filter(Boolean).join('\n');
 
         var shipperDetails = `${shipperAddress} \n`;
-        if (awb.shipper.taxId)
+        if (awb.shipper && awb.shipper.taxId)
             shipperDetails += "TAX ID: " + awb.shipper.taxId + "\n"
         return {
             layout: 'lightHorizontallines',
@@ -286,7 +455,7 @@ function calculateDimensionalWeight(dimensions) {
     var dimensionparts = dimensions.split('x');
     var numerator = 1;
     dimensionparts.forEach(part => numerator *= Number(part.trim()));
-    var dimWeight = numerator / 139;
+    var dimWeight = numerator / 166;
     return Number(dimWeight).formatMoney(2, '.', ',')
 }
 

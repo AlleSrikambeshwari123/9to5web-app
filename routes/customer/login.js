@@ -18,7 +18,7 @@ router.post('/login', (req, res, next) => {
       req.session.token = loginResult.token;
       req.session.customerId = loginResult.user._id
   const webUrl = req.protocol + '://' + req.get('host'); 
-  res.send({success : true ,role : loginResult,url : webUrl + "/dashboard"});
+  res.send({success : true ,role : loginResult,url : webUrl + '/warehouse/customer/package/list/'+req.session.customerId});
     }else{
       services.customerChildService.login(req.body.email, req.body.password).then(loginResultchild => {
         return res.send(loginResultchild)

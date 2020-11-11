@@ -9,12 +9,16 @@ Number.prototype.formatMoney = function (c, d, t) {
   return "$" + s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
 };
 
+function openAddPackage(){
+  $('.mfp-fade').css({'display':'block'});
+}
 function closeAddPackage(){  
-  $('.mfp-close').trigger("click");
+  // $('.mfp-close').trigger("click");
+  $('.mfp-fade').css({'display':'none'});
 }
 $('select#originBarcode option').each(function(index,option){
   let text = option.text
- if(text === "No Tracking") option.selected = true; 
+ if(text === "No tracking") option.selected = true; 
 })
 // $('select#originBarcode option[=No Tracking]').attr('selected','selected'); 
 function refreshBarcode(){  
@@ -28,7 +32,7 @@ function refreshBarcode(){
         var selectBarcode = barcode+','+barcodeId;
         $('#originBarcode').val(selectBarcode).trigger('change');
       }else{
-        $('#originBarcode').val('').trigger('change');
+        // $('#originBarcode').val('No tracking').trigger('change');
       }
     }
   })
@@ -45,6 +49,7 @@ $("select.awb-deliveryMethod").change(function(){
 });
 
 AWBInvoices.addInvoceRow();
+var AWBAdditionalInvoices = [],invoiceIdArray = []
 $(function () { 
   $(".copy-package-button").click(function(){    
     $(".copy-package-text").show();
@@ -183,7 +188,7 @@ $(function () {
         else{
            $('.btn-copy-last').hide();
         }
-
+        $(".hidden-div").css("display", "block");
         $('#id').val(undefined);
         $('#description').val("");
         $('#weight').val("");
@@ -193,8 +198,12 @@ $(function () {
         $('#W').val("");
         $('#H').val("");
         $('#L').val("");
+      },
+      close: function(){
+        $(".hidden-div").css("display", "none");
       }
-    }
+    },
+
   });
 
   $(".btn-copy-last").click(function () {
@@ -230,6 +239,12 @@ $(function () {
     minimumResultsForSearch: -1
   })
 
+  $('form[name="add-additional-invoices-form"] select').select2({
+    theme: 'bootstrap',
+    width: '100%',
+    minimumResultsForSearch: -1
+  })
+
   $('form[name="add-purchase-order-item-form"]').submit(function (event) {
     event.preventDefault();
     let item = extractFormData(this);
@@ -245,7 +260,57 @@ $(function () {
       .data('amount');
 
     AWBPO.addItem(item);
-    
+    $(this).closest('.modal').modal('hide');
+  });
+
+  $('form[name="add-additional-invoices-form"]').submit(function (event) {
+    event.preventDefault();
+    let item = extractFormData(this), flag=0;
+    item.fileName = $(this)
+      .find('[name="additionalInvoices"] option:selected')
+      .data('name');
+    item.filePath = $(this)
+      .find('[name="additionalInvoices"] option:selected')
+      .data('path');
+    item.pmb = $(this)
+      .find('[name="additionalInvoices"] option:selected')
+      .data('pmb');
+    item.courierNo = $(this)
+      .find('[name="additionalInvoices"] option:selected')
+      .data('courier');
+
+    item._id = item.additionalInvoices
+
+    for(let id of invoiceIdArray){
+      if(String(id) == String(item._id)){
+        flag = 1
+        break
+      }
+    }
+    if(flag == 0){
+      $('#additionalInvoices-list').append(`  <div class="card" data-record="${item.additionalInvoices}">
+      <div class="card-header">
+        Additional Invoice
+        <button type="button"  class="close" data-id="${item.additionalInvoices}" onclick="removeInvoice(this)">
+              <span aria-hidden="true" class="float-right">×</span>
+        </button>
+      </div>
+      <div class="card-body">
+        <div>
+          <b>Courier No</b> : <span style="word-break: break-all" class="float-right">${item.courierNo}</span>
+        </div>
+        <div>
+          <b>File Name</b> : <span style="word-break: break-all" class="float-right">${item.fileName}</span>
+        </div>
+        <div>
+          <b>PMB</b> : <span style="word-break: break-all" class="float-right">${item.pmb}</span>
+        </div>
+      </div>
+      </div>
+    `)
+      AWBAdditionalInvoices.push(item);
+      invoiceIdArray.push(item._id)
+    }
     $(this).closest('.modal').modal('hide');
   });
   
@@ -306,6 +371,7 @@ $(function () {
     awbInfo.packages = JSON.stringify(awbPackages);
     awbInfo.invoices = [];
     awbInfo.purchaseOrder = AWBPO.getItems();
+    awbInfo.additionalInvoices = AWBAdditionalInvoices
     awbInfo.purchaseOrder = JSON.stringify(awbInfo.purchaseOrder);
     if(awbInfo.fll_pickup == "on") awbInfo.fll_pickup = true;
     else awbInfo.fll_pickup = false
@@ -319,7 +385,9 @@ $(function () {
         if (result.fileName) {
           invoice.filename = result.fileName;
         }
-
+        if(result.name){
+          invoice.name = result.name
+        }
         awbInfo.invoices.push(invoice);
       });
     });
@@ -340,6 +408,36 @@ $(function () {
             }).then((res) => {
               if (response.success == true) {
                 window.location.href = 'manage/' + response.awb.id + '/preview';
+                data = {
+                  Brokerage:  0,
+                  CustomsProc:  0,
+                  SumOfAllCharges: 0,
+                  CustomsVAT  : 0,
+                  VatMultiplier :  0,
+                  Delivery:  0,
+                  Duty:  0,
+                  EnvLevy:  0,
+                  Freight:  0,
+                  Hazmat:  0,
+                  Pickup:  0,
+                  ServiceVat: 0,
+                  Storage:  0,
+                  NoDocs:  0,
+                  Insurance:  0,
+                  Sed:  0,
+                  Express:  0,
+                  OverrideInvoiceValue:  0,
+                  TotalInvoiceValue: 0,
+                  NoOfInvoice: 0,
+                  TotalWeightValue: 0,
+                  TotalVolumetricWeight : 0,
+                  TotalWet: 0,
+                };
+                $.ajax({
+                  url: '/warehouse/pricelabels/' + response.awb.id,
+                  type: 'post',
+                  data: data,
+                });
               }
             });
           },
@@ -436,8 +534,9 @@ $(function () {
           type: response.success == true ? 'success' : 'error',
         }).then(() => {
           if (response.success) {
-            $("#link-add-package-popup").trigger('click');
-            var barCode = response.data;
+            // $("#link-add-package-popup").trigger('click');
+          $('.mfp-fade').css({'display':'block'});
+            var barCode = response.originBarcode;
             console.log(barCode);
             $('#originBarcode').append(`<option value="${barCode.barcode},${barCode._id}">${barCode.barcode}</option>`)
           }
@@ -698,7 +797,12 @@ $(function () {
             $('#description').val(pkg.description);
             $('#weight').val(pkg.weight);
             $('#packageCalculation').val(pkg.packageCalculation||'lbs');
+            $('#select2-packageCalculation-container').text(pkg.packageCalculation || 'lbs');
             $('#packageType').val(pkg.packageType || 'BOX');
+            $('#select2-packageType-container').text(pkg.packageType || 'BOX');
+            $('#originBarcode').val(pkg.originBarcode || 'No tracking');
+            $('#select2-originBarcode-container').text(pkg.originBarcode.split(',')[0] || 'No tracking');
+            $("#express"). prop("checked", pkg.express);
             var dims = pkg.dimensions.toLowerCase().split('x');
             $("#W").val(dims[0])
             $("#H").val(dims[1])
@@ -721,3 +825,19 @@ $(function () {
     });
   }
 });
+
+function removeInvoice(str){
+  var id = $(str).data('id');
+  for(var i=0;i<AWBAdditionalInvoices.length;i++){
+    if(id == AWBAdditionalInvoices[i].additionalInvoices){
+      AWBAdditionalInvoices.splice(i,1)
+      invoiceIdArray.forEach((itemId,index) => {
+        if(String(id) == String(itemId)){
+          invoiceIdArray.splice(index,1)
+        }
+      })
+      $('div[data-record="' + id + '"]').remove()
+      break
+    }
+  }
+}

@@ -1,11 +1,16 @@
 <% layout('./shared/__template')%>
+<script>
+  var pageUrl = "<%=page%>";
+</script>
 <div class='gutters'>
   <div class='col-xl-12 col-lg-6 col-md-12 col-sm-12'>
     <div class='card'>
       <div class="card-header">
         <h4 class="card-title"><%=title%></h4>
       </div>
+      <div id="myLoader"><img src="/img/preloader.gif"></div>
       <div class="card-body daterangepickerbody">
+        <input type="hidden" name="clear" id="clear" value="<%=clear%>">
         <div class="table-responsive">
         <table id='no-docs-table' class='display table table-striped table-hover dateRangeFilterTable dataTable'>
           <thead>
@@ -34,10 +39,10 @@
               <td><%=awb.customer.pmb %></td>
               <td><a href="manage/<%=awb._id%>/preview"><%=awb.awbId%></a></td>
               <td><%=helpers.getFullName(awb.customer)%></td>
-              <td><%=awb.shipper.name %></td>
-              <td><%=awb.carrier.name %></td>
+              <td><%=(awb.shipper && awb.shipper.name) ?awb.shipper.name : '' %></td>
+              <td><%=(awb.carrier && awb.carrier.name) ? awb.carrier.name : '' %></td>
               <td><%=awb.packages.length %></td>
-              <td><%=awb.weight %></td>
+              <td><%=awb.weight ? (awb.weight).toFixed(2) : '0'%></td>
               <td>
                 <!-- <a href='manage/<%=awb._id%>/get' class="btn btn-link btn-primary p-1" data-toggle="tooltip"
                   data-original-title="Edit"> <i class="fa fa-pencil-alt"></i> </a> -->
@@ -124,5 +129,9 @@
     </div>
   </div>
 </div>
-
+<script>
+  var pageUrl = "<%=page ? page :''%>";
+  
+  </script>
+<% block('scripts').append('<script src="/js/utils.js"></script>')%>
 <% block('scripts').append('<script src="/js/warehouse/awb/list.js"></script>')%>

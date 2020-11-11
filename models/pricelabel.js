@@ -33,6 +33,7 @@ const PriceLabelSchema = new mongoose.Schema(
     TotalInvoiceValue: { type: Number,default:0 },
     OverrideInvoiceValue: { type: Number,default:0 },
     TotalWeightValue: { type: Number,default:0 },
+    TotalVolumetricWeight: { type: Number,default:0 },
     NoOfInvoice: { type: Number,default:0 },
   },
   {

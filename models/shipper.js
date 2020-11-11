@@ -35,6 +35,9 @@ const shipperSchema = new mongoose.Schema({
   zipcode: {
     type: Number
   },
+  tax: {
+    type: String
+  },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId, 
     ref: 'User', 

@@ -1,16 +1,72 @@
 var services = require('../Services/RedisDataServices');
 var utils = require('../Util/utils');
+var helpers = require('../views/helpers')
 
 exports.get_cube_list = (req, res, next) => {
-  services.cubeService.getCubes().then(cubes => {    
+  if(req.query.clear){
+    req.query.daterange = '';
+  }
+  services.cubeService.getCubes(req).then(cubes => {    
     res.render('pages/warehouse/cube/list', {
       page: req.originalUrl,
       title: 'Cube',
       user: res.user,
-      cubes: cubes.map(utils.formattedRecord)
+      cubes: cubes.map(utils.formattedRecord),
+      clear:req.query.clear,      
     })
   })
 }
+
+exports.get_all_cube_list = (req, res, next) => {
+  if(req.body.clear)
+    req.body.daterange =''
+  services.cubeService.getAllCubes(req).then(results => {
+    const cubes = results.cubes;
+    var dataTable = {
+      draw: req.query.draw,
+      recordsTotal: results.total,
+      recordsFiltered: results.total,
+      data:[]
+    }
+    let data = [];
+    for(var i=0; i< cubes.length; i++){
+      var cubeDetail = [];
+      cubeDetail.push(cubes[i].id)
+      cubeDetail.push(helpers.formatDate(cubes[i].createdAt));
+      let cube2link = cubes[i].cubeAwbId ? cubes[i].cubeAwbId.id : ''
+      if(cube2link == '') cube2link = '#' 
+      else cube2link = '/warehouse/cube/awbDetail/'+cube2link
+      cubeDetail.push(cubes[i].name)
+      cubeDetail.push(` <a class="btn btn-link" href="${cube2link}">${cubes[i].awbId}</a>`)
+      let viewCubeLink = (cubes[i].packages.length ? cubes[i].id : '')
+      let downloadpdfLink = (cubes[i].packages.length ? cubes[i].id : '')
+      if(downloadpdfLink == '') {
+        viewCubeLink = '#';
+        downloadpdfLink = '#'
+      } 
+      else {
+        viewCubeLink = '/warehouse/cube/detail/'+ downloadpdfLink
+        downloadpdfLink = '/api/printer/download-pdf/cube/'+ downloadpdfLink
+      }
+      cubeDetail.push(`<a href="${viewCubeLink}" ><i class="fas fa-eye"></i></a>`)
+      cubeDetail.push(`<a href="${downloadpdfLink}"><i class="fa fa-download"></i></a>
+      <a
+        class="btn btn-link btn-primary btn-print-pkg"
+        data-toggle="modal"
+        data-id="${cubes[i].id}"
+        data-original-title="Print Label"
+        data-target="#print-popup"
+      ><i class="fa fa-print"></i>
+    </a>`)
+      cubeDetail.push(`<button href='#' data-id='${cubes[i].id}' data-target="#edit-hazmat" data-toggle='modal'
+      class='btn btn-link btn-primary btn-edit-hazmat mx-3' onclick="editHazmat(this)"><i class="fas fa-pen"></i></button>`)
+      data.push(cubeDetail);
+    }
+    dataTable.data = data;
+    res.json(dataTable);
+  }) 
+}
+
 exports.getAllCubes = async (req,res,next) =>{
   try{
     const cubeData = await services.cubeService.allCubes();

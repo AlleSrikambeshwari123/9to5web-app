@@ -104,9 +104,42 @@ class UserService {
       })
     });
   }
-  getAllUsers() {
+  getAllUsers(req) {
     return new Promise((resolve, reject) => {
-      User.find({})
+      var searchData = {};
+      if(req && req.query){
+      var daterange = req.query.daterange?req.query.daterange:'';  
+          
+      
+      if(daterange){
+        var date_arr = daterange.split('-');
+        var startDate = (date_arr[0]).trim();      
+        var stdate = new Date(startDate);
+        stdate.setDate(stdate.getDate() +1);
+
+        var endDate = (date_arr[1]).trim();
+        var endate = new Date(endDate);
+        endate.setDate(endate.getDate() +1);     
+        searchData.createdAt = {"$gte":stdate, "$lte": endate};
+      }
+      
+
+      if(!req.query.daterange && !req.query.clear){
+        var endate = new Date();      
+        endate.setDate(endate.getDate()+1);
+        var stdate = new Date();
+        stdate.setDate(stdate.getDate() -21);      
+        searchData.createdAt = {"$gte":stdate, "$lte": endate};
+      }
+      if(req.query.clear){
+        var endate = new Date();      
+        endate.setDate(endate.getDate()+1);
+        var stdate = new Date();
+        stdate.setDate(stdate.getDate() -14);      
+        searchData.createdAt = {"$gte":stdate, "$lte": endate};
+      }
+    }
+      User.find(searchData)
         .populate('roles')
         .exec((err, users) => {
           if (err) {
@@ -136,6 +169,89 @@ class UserService {
         });
     });
   }
+
+  allUsers(req){
+    return new Promise(async (resolve, reject) => {
+      var start = req.body.start ? parseInt(req.body.start) : 0;
+      var length = req.body.length ? parseInt(req.body.length) : 10;
+      var sortColumn = req.body.order;  
+      
+      var field = req.body['order[0][column]'] ?parseInt(req.body['order[0][column]']) : 0;
+      var columns = {0:'createdAt', 1: 'createdAt', 2: 'username', 3:'firstName', 4: 'email', 5: 'mobile'} 
+      
+      var dir = req.body['order[0][dir]'] ? req.body['order[0][dir]'] : 0;
+      var sort = (dir=='asc') ? 1 : -1;
+      var sortField = columns[field];
+      var search = req.body['search[value]'] ? req.body['search[value]'] : '';
+      var daterange = req.body.daterange?req.body.daterange:''
+      var searchData = {};
+      //date range
+      var daterange = req.body.daterange?req.body.daterange:''
+      if(daterange){
+        var date_arr = daterange.split('-');
+        var startDate = (date_arr[0]).trim();      
+        var stdate = new Date(startDate);
+        stdate.setDate(stdate.getDate() +1);
+
+        var endDate = (date_arr[1]).trim();
+        var endate = new Date(endDate);
+        endate.setDate(endate.getDate() +1);     
+        searchData.createdAt = {"$gte":stdate, "$lte": endate};
+      }
+
+      if(!req.body.daterange && !req.body.clear){
+        var endate = new Date();      
+        endate.setDate(endate.getDate()+1);
+        var stdate = new Date();
+        stdate.setDate(stdate.getDate() -21);      
+        searchData.createdAt = {"$gte":stdate, "$lte": endate};
+      }
+      if(search){
+        searchData.$or = [
+          {username:{'$regex' : search, '$options' : 'i'}},
+          {firstName:{'$regex' : search, '$options' : 'i'}},
+          {email:{'$regex' : search, '$options' : 'i'}},
+          {mobile:{'$regex' : search, '$options' : 'i'}}
+        ]
+      }
+      var totalusers = await User.count(searchData);
+     
+      User.find(searchData)
+        .populate({path:'roles'})
+        .sort({[sortField]:sort})
+        .skip(start)
+        .limit(length)
+        .exec((err, users) => {
+         // console.log(users)
+          if (err) {
+            resolve([]);
+          } else {
+            // Creating the user ids array i.e ['id1', 'id2']
+            const userIds = users.map((user) => user['_id']);
+
+            // Searching by array
+            Awb.find({ createdBy: { '$in': userIds } }, (err, awbs) => {
+              const awbByUserIds = {};
+              awbs.forEach((awb) => {
+                if (!awbByUserIds[awb['createdBy']]) {
+                  awbByUserIds[awb['createdBy']] = 0;
+                }
+                awbByUserIds[awb['createdBy']] += 1
+              })
+              users = users.map((user) => {
+                let newUser = user._doc;
+                if (awbByUserIds[user._id]) newUser['awbCount'] = awbByUserIds[user._id];
+                else newUser['awbCount'] = 0;
+                return newUser;
+              })
+              resolve({users:users, total: totalusers});
+            });
+          }
+        });
+    })
+  }
+
+
   removeUser(username, loggedInUserName) {
     return new Promise((resolve, reject) => {
       if (username === loggedInUserName) {

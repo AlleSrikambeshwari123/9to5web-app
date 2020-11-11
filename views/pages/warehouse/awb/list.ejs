@@ -16,8 +16,10 @@
           </ul>
         </div>
       </div>
+      <div id="myLoader"><img src="/img/preloader.gif"></div>
       <div class="card-body daterangepickerbody">
         <div class="tab-content m-4" id="awb-list-tabContent">
+          <input type="hidden" name="clear" id="clear" value="<%=clear%>">
           <div class="tab-pane fade show active" id="awb-list" role="tabpanel" aria-labelledby="awb-list-tab">
             <div class="table-responsive">
               <table id='awb-table' class='display table table-striped table-hover dateRangeFilterTable dataTable'>
@@ -32,6 +34,7 @@
                     <th>Carrier</th>
                     <th>Pieces</th>
                     <th>Weight</th>
+                    <th>Volumetric Weight</th>
                     <!-- <th>Invoice</th> -->
                     <th></th>
                   </tr>
@@ -44,11 +47,12 @@
                     <td><%=helpers.formatDate(awb.createdAt)%></td>
                     <td><a href="manage/<%=awb._id%>/preview"><%=awb.awbId%></a></td>
                     <td><%=helpers.getFullName(awb.customer)%></td>
-                    <td><%=awb.shipper.name %></td>
+                    <td><%=(awb.shipper && awb.shipper.name) ? awb.shipper.name : '' %></td>
                     <td><%=awb.driver ? awb.driver.firstName +' ' + awb.driver.lastName:''%></td>
-                    <td><%=awb.carrier.name %></td>
-                    <td><%=awb.packages.length %></td>
-                    <td><%=awb.weight %> lbs</td>
+                    <td><%=(awb.carrier && awb.carrier.name) ? awb.carrier.name : '' %></td>
+                    <td><%=awb.packages ? awb.packages.length : 0 %></td>
+                    <td><%=awb.weight.toFixed(2) %> lbs</td>
+                    <td><%=awb.volumetricWeight.toFixed(2) %> vlbs</td>
                     <!-- <td><% if(awb.invoice) { %>
                       <a class="btn btn-link btn-primary btn-invoice" data-id="<%=awb.invoice%>" data-toggle="tooltip"
                         data-original-title="Invoice Attached"> <i class="fa fa-paperclip"></i> </a>
@@ -83,6 +87,7 @@
                     <th>Carrier</th>
                     <th>Pieces</th>
                     <th>Weight</th>
+                    <th>Volumetric Weight</th>
                     <th></th>
                   </tr>
                 </thead>
@@ -96,10 +101,11 @@
                     <td><%=helpers.formatDate(awb.createdAt)%></td>
                     <td><a href="manage/<%=awb._id%>/preview"><%=awb.awbId%></a></td>
                     <td><%= helpers.getFullName(awb.customer)%></td>
-                    <td><%=awb.shipper.name %></td>
-                    <td><%=awb.carrier.name %></td>
+                    <td><%=(awb.shipper && awb.shipper.name) ? awb.shipper.name :'' %></td>
+                    <td><%=(awb.carrier && awb.carrier.name ) ?awb.carrier.name :'' %></td>
                     <td><%=awb.packages.length %></td>
                     <td><%=awb.weight %></td>
+                    <td><%=awb.volumetricWeight.toFixed(2) %> vlbs</td>
                     <td class="text-center">
                       <a href='manage/<%=awb._id%>/get' class="btn btn-link btn-primary p-1" data-toggle="tooltip"
                         data-original-title="Edit"> <i class="fa fa-pen"></i> </a>
@@ -130,6 +136,7 @@
                     <th>Carrier</th>
                     <th>Pieces</th>
                     <th>Weight</th>
+                    <th>Volumetric Weight</th>
                     <!-- <th>Invoice</th> -->
                     <th></th>
                   </tr>
@@ -143,11 +150,12 @@
                     <td><%=helpers.formatDate(awb.createdAt)%></td>
                     <td><a href="manage/<%=awb._id%>/preview"><%=awb.awbId%></a></td>
                     <td><%=helpers.getFullName(awb.customer)%></td>
-                    <td><%=awb.shipper.name %></td>
+                    <td><%=(awb.shipper && awb.shipper.name) ? awb.shipper.name :'' %></td>
                     <td><%=awb.driver ? awb.driver.firstName +' ' + awb.driver.lastName:''%></td>
-                    <td><%=awb.carrier.name %></td>
+                    <td><%=(awb.carrier && awb.carrier.name) ? awb.carrier.name : '' %></td>
                     <td><%=awb.packages.length %></td>
                     <td><%=awb.weight %> lbs</td>
+                    <td><%=awb.volumetricWeight.toFixed(2) %> vlbs</td>
                     <!-- <td><% if(awb.invoice) { %>
                       <a class="btn btn-link btn-primary btn-invoice" data-id="<%=awb.invoice%>" data-toggle="tooltip"
                         data-original-title="Invoice Attached"> <i class="fa fa-paperclip"></i> </a>
@@ -184,6 +192,7 @@
                     <th>Carrier</th>
                     <th>Pieces</th>
                     <th>Weight</th>
+                    <th>Volumetric Weight</th>
                     <!-- <th>Invoice</th> -->
                     <th></th>
                   </tr>
@@ -197,11 +206,12 @@
                     <td><%=helpers.formatDate(awb.createdAt)%></td>
                     <td><a href="manage/<%=awb._id%>/preview"><%=awb.awbId%></a></td>
                     <td><%=helpers.getFullName(awb.customer)%></td>
-                    <td><%=awb.shipper.name %></td>
+                    <td><%=(awb.shipper && awb.shipper.name) ? awb.shipper.name :'' %></td>
                     <td><%=awb.driver ? awb.driver.firstName +' ' + awb.driver.lastName:''%></td>
-                    <td><%=awb.carrier.name %></td>
+                    <td><%=(awb.carrier && awb.carrier.name) ? awb.carrier.name :'' %></td>
                     <td><%=awb.packages.length %></td>
                     <td><%=awb.weight %> lbs</td>
+                    <td><%=awb.volumetricWeight.toFixed(2) %> vlbs</td>
                     <!-- <td><% if(awb.invoice) { %>
                       <a class="btn btn-link btn-primary btn-invoice" data-id="<%=awb.invoice%>" data-toggle="tooltip"
                         data-original-title="Invoice Attached"> <i class="fa fa-paperclip"></i> </a>
@@ -293,5 +303,5 @@
     </div>
   </div>
 </div>
-
+<% block('scripts').append('<script src="/js/utils.js"></script>')%>
 <% block('scripts').append('<script src="/js/warehouse/awb/list.js"></script>')%>

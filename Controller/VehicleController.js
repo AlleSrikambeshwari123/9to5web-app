@@ -1,5 +1,6 @@
 var services = require('../Services/RedisDataServices');
 var utils = require('../Util/utils');
+var helpers = require('../views/helpers');
 
 exports.get_vehicle_list = (req, res, next) => {
   services.vehicleService.getVehicles().then(vehicles => {
@@ -9,8 +10,38 @@ exports.get_vehicle_list = (req, res, next) => {
         title: 'Vehicles',
         user: res.user,
         vehicles: vehicles.map(utils.formattedRecord),
+        daterange:req.query.daterange?req.query.daterange:'',
+        clear:req.query.clear
       })
-    })
+   })
+  })
+}
+exports.get_all_vehicle_list = (req, res, next) => {
+  services.vehicleService.getAllVehicles(req).then(vehiclesResult => {    
+    var dataTable = {
+      draw: req.query.draw,
+      recordsTotal: vehiclesResult.total,
+      recordsFiltered: vehiclesResult.total,
+      data:[]
+    }
+    var data = [];
+    var vehicles = vehiclesResult.vehicles?vehiclesResult.vehicles:[];
+    vehicles = vehicles.map(utils.formattedRecord);
+    for(var i=0; i< vehicles.length; i++){
+      var vehicleDetail = [];
+      vehicleDetail.push(vehicles[i].vehicleMake ? vehicles[i].vehicleMake : '');
+      vehicleDetail.push(helpers.formatDate(vehicles[i].createdAt));
+      vehicleDetail.push(vehicles[i].model ? vehicles[i].model : '');
+      vehicleDetail.push(vehicles[i].registration ? vehicles[i].registration : '');
+      var fname = (vehicles[i].driver && vehicles[i].driver.firstName) ?vehicles[i].driver.firstName: '';
+      var lname = (vehicles[i].driver && vehicles[i].driver.lastName) ?vehicles[i].driver.lastName: '';
+      vehicleDetail.push(fname+ '' +lname);
+      vehicleDetail.push(vehicles[i].location ? vehicles[i].location : '');
+      vehicleDetail.push(`<a href='manage/${vehicles[i]._id}/get'><i class="fas fa-user-edit"></i></a>`);
+      data.push(vehicleDetail);
+    }
+    dataTable.data = data;
+    res.json(dataTable);
   })
 }
 

@@ -24,4 +24,8 @@ $(function () {
       }
     });
   })
+});
+
+$('.plane-table').DataTable({
+  pageLength: 10
 })

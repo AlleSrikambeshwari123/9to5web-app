@@ -70,6 +70,7 @@ class AllPackagesOnAwb {
   generateItem(item,i) {
     // console.log("@@@@@@", i, item,png)
     let pkg = item._doc;
+    let shipperName = (this.awb.shipper && this.awb.shipper.name) ? this.awb.shipper.name : '' 
     return  [
         {
           // margin:[0,20],
@@ -93,9 +94,10 @@ class AllPackagesOnAwb {
                   border: [false, false, false, true],
                   stack: [
                     { margin: [1, 5], text: this.company.name, fontSize: 10, bold: true },
-                    { margin: [1, 2], text: '1811 51st Street', fontSize: 9 },
-                    { margin: [1, 2], text: 'Hanger 42 D', fontSize: 9 },
-                    { margin: [1, 2], text: 'Fort Lauderdale, FL 33309 ', fontSize: 9 },
+                    { margin: [1, 2], text: '2801 NW 55TH COURT,', fontSize: 9 },
+                    { margin: [1, 2], text: 'BUILDING 6W,', fontSize: 9 },
+                    { margin: [1, 2], text: 'FORT LAUDERDALE,', fontSize: 9 },
+                    { margin: [1, 2], text: 'FLORIDA, 33309', fontSize: 9 },
                     { margin: [1, 2], text: 'UNITED STATES ', fontSize: 9 },
                   ],
                 },
@@ -168,7 +170,7 @@ class AllPackagesOnAwb {
                   margin: [1, 1],
                   stack: [
                     { text: 'SHIPPER', fontSize: 7, bold: true },
-                    { margin: [0, 5], text: this.awb.shipper.name, fontSize: 10, bold: true },
+                    { margin: [0, 5], text: shipperName, fontSize: 10, bold: true },
                   ],
                   border: [false, false, false, true],
                 }, //logo for lbl

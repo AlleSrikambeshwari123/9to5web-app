@@ -10,6 +10,7 @@ var mongoose = require('mongoose');
 var aws = require('../../Util/aws');
 var uniqid = require('uniqid');
 const multer = require('multer');
+var emailService = require('../../Util/EmailService');
 
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -26,14 +27,16 @@ var storage = multer.diskStorage({
 router.get('/list-awb/:id',passport.authenticate('jwt', { session: false }), async(req, res, next) => {
     try{
         const customerId = mongoose.Types.ObjectId(req.params.id);
-        const awbData = await services.awbService.getAwbsFullCustomer(customerId);
+        let awbData = await services.awbService.getAwbsFullCustomer(customerId);
+        let queryStatus = req.query.status,flag;
         if(awbData.length > 0){
-            return res.send(awbData); 
+            flag = 1
         }else{
             const result = await services.customerChildService.getCustomer({_id: customerId})
-            const awbData = await services.awbService.getAwbsFullCustomer(result.parentCustomer.id);
-            return res.send(awbData)
-    }
+            awbData = await services.awbService.getAwbsFullCustomer(result.parentCustomer.id);
+        }
+        let awbResponse = await services.awbService.getAwbPriceAndStatus(awbData,queryStatus)
+        return res.send(awbResponse);
     }catch(err){        
         res.send({ success: false, message: strings.string_response_error });
     }
@@ -50,6 +53,17 @@ router.get('/awb-without-invoice/:id',passport.authenticate('jwt', { session: fa
     }
 });
 
+//list awb without invoice and storeInvoice
+router.get('/awb-no-invoice/:id',passport.authenticate('jwt', { session: false }),async(req, res, next) => {
+    try{   
+        const customerId = mongoose.Types.ObjectId(req.params.id);     
+        const awbData = await services.awbService.getAwbsNoInvoiceCustomer(customerId);
+        res.send(awbData); 
+    }catch(err){
+        res.send({ success: false, message: strings.string_response_error });
+    }
+});
+
 //store invoice
 router.post('/store-invoice',passport.authenticate('jwt', { session: false }), upload.single('invoice'),async(req, res, next) => {    
     try{ 
@@ -57,13 +71,29 @@ router.post('/store-invoice',passport.authenticate('jwt', { session: false }), u
         const filePath = files.path?files.path:'';        
         var fileName = files.filename;
         
+        if(req.body.fileType)
+            fileName = fileName.split('.')[0] + '.' + req.body.fileType
         aws.uploadFile(filePath, fileName).then(async data => {
             console.log(`File Uploaded successfully. ${data.Location}`);            
-            const awbData = await services.awbService.storeInvoceFile({
+            let invoiceObject ={
                 fileName: fileName,
                 filePath: data.Location,
-                awbId:req.body.awbId
-            });
+                courierNo : req.body.courierNo,
+                pmb : req.body.pmb,
+                customerId : req.body.id
+            }
+            if(files.originalname)
+                invoiceObject.name = files.originalname;
+            let awbData
+            if(req.body.awbId){
+                invoiceObject.awbId = req.body.awbId 
+                let customer = await services.customerService.getCustomer({_id : invoiceObject.customerId})
+                let awb = await services.awbService.getAwb(req.body.awbId)
+                await emailService.sendInvoicesEmail(invoiceObject,customer,awb.awbId);
+                awbData = await services.awbService.storeInvoiceFile(invoiceObject);
+            }else{
+                awbData = await services.awbService.storeAdditionalInvoceFile(invoiceObject);
+            }
             res.send(awbData);
 
           }).catch(err => {

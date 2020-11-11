@@ -16,7 +16,7 @@
         <div class="card card-invoice">
           <div class="card-header">
             <div class="invoice-header">
-              <h3 class="invoice-title">AirWay Bill</h3>
+              <h3 class="invoice-title">AirWay Bill #<%= awb.awbId%></h3>
               <div class="invoice-logo">
                 <img src="/img/logo.jpg" alt="company logo">
               </div>
@@ -27,24 +27,29 @@
               F: (242) 377-3587
             </div>
           </div>
+          <div id="myLoader"><img src="/img/preloader.gif"></div>
           <div class="card-body">
             <div class="separator-solid"></div>
             <div class="row">
               <div class="col-md-3 info-invoice">
-                <h5 class="sub">Created At</h5>
+                <h5 class="sub">Date Received</h5>
+                <p><%= awb.dateCreated%></p>
+              </div>
+              <div class="col-md-3 info-invoice">
+                <h5 class="sub">Date Created</h5>
                 <p><%= awb.dateCreated%></p>
               </div>
               <div class="col-md-3 info-invoice">
                 <h5 class="sub">Created By</h5>
-                <p><%= awb.dateCreated%></p>
-              </div>
-              <div class="col-md-3 info-invoice">
-                <h5 class="sub">Bill ID</h5>
                 <p><%= "AWB #"+awb.createdBy %></p>
               </div>
               <div class="col-md-3 info-invoice">
                 <h5 class="sub">Customer</h5>
                 <p><%=helpers.getFullName(awb.customer)%></p>
+              </div>
+              <div class="col-md-3 info-invoice">
+                <h5 class="sub">PMB #</h5>
+                <p><%=awb.customerId.pmb%></p>
               </div>
             </div>
             <div class="separator-solid"></div>
@@ -52,15 +57,15 @@
               <div class="col-sm-7 col-md-5 mb-3 mb-md-0 transfer-to">
                 <h5 class="sub">Shipper</h5>
                 <div class="account-transfer">
-                  <div><span>Shipper Name:</span><span><%= shipper.name%></span></div>
-                  <div><span>Shipper Phone:</span><span><%= shipper.telephone%></span></div>
+                  <div><span>Shipper Name:</span><span><%= (shipper && shipper.name) ? shipper.name : '' %></span></div>
+                  <div><span>Shipper Phone:</span><span><%= (shipper && shipper.telephone) ? shipper.telephone : '' %></span></div>
                 </div>
               </div>
               <div class="col-sm-7 col-md-5 mb-3 mb-md-0 transfer-to ml-auto">
                 <h5 class="sub">Carrier</h5>
                 <div class="account-transfer">
-                  <div><span>Carrier Name:</span><span><%= carrier.name %></span></div>
-                  <div><span>Carrier Phone:</span><span><%= carrier.telephone%></span></div>
+                  <div><span>Carrier Name:</span><span><%= (carrier && carrier.name) ? carrier.name : '' %></span></div>
+                  <div><span>Carrier Phone:</span><span><%= (carrier && carrier.telephone) ? carrier.telephone : ''%></span></div>
                 </div>
               </div>
             </div>
@@ -101,26 +106,36 @@
                           <tr>
                             <td><strong>S.No</strong></td>
                             <td><strong>Tracking No</strong></td>
+                            <td><strong>Status</strong></td>
                             <td class="text-center"><strong>Description</strong></td>
                             <td class="text-center"><strong>Type</strong></td>
                             <td class="text-center"><strong>Dimensions</strong></td>
                             <td class="text-right"><strong>Weight</strong></td>
+                            <td class="text-right"><strong>Volumetric Weight</strong></td>
                             <td></td>
                           </tr>
                         </thead>
                         <tbody>
-                          <% var totalWeight = 0;
+                          <% var totalWeight = 0,volumetricWeight =0;
                           awb.packages.forEach((package,pick) => {
                             totalWeight += Number(package.weight);
+                            let check = 1
+                            package.dimensions.split('x').forEach(data =>{
+                              check = check * data
+                            })
+                            package.volumetricWeight = (check/166);
+                            volumetricWeight  = volumetricWeight +  package.volumetricWeight; 
                           %>
                           <tr>
                             <td>Piece#<%= pick + 1%></td>
                             <td><%= package.trackingNo%></td>
+                            <td><%= package.lastStatusText%></td>
                             <td class="text-center"><%= package.description%></td>
                             <td class="text-center"><%= package.packageType%></td>
                             <td class="text-center"><%= package.dimensions%></td>
                             <td class="text-right"><%= Number(package.weight).toFixed(2)%>
                               <%= package.packageCalculation||'kg' %></td>
+                              <td class="text-right"><%= Number(package.volumetricWeight).toFixed(2)%> vlbs</td>
                               <td class="text-center">
                                 <a
                                     class="btn btn-link btn-primary btn-print-pkg"
@@ -136,9 +151,11 @@
                           <tr>
                             <td class="text-left"><strong>Total Pieces</strong></td>
                             <td class="text-center"><%= awb.packages.length%></td>
-                            <td></td>
                             <td class="text-center"><strong>Total Weight</strong></td>
                             <td class="text-right"><%= totalWeight.toFixed(2)%> lbs</td>
+                            <td></td>
+                            <td class="text-center"><strong>Total Volumetric Weight</strong></td>
+                            <td class="text-right"><%= volumetricWeight.toFixed(2)%> vlbs</td>
                           </tr>
                         </tbody>
                       </table>
@@ -167,7 +184,7 @@
                 </div>
               </div>
               <div class="col-sm-5 col-md-7 transfer-total">
-                <h5 class="sub">Total Amount</h5>
+                <h5 class="sub">Price Total</h5>
                 <div class="price">$<%= awb.invoices.reduce((acc, i) => acc + (!isNaN(i.value) ? Number(i.value) : 0) , 0).toFixed(2) %></div>
                 <% if(Number(awb.isSed) == 1) { %>
                 <span>SED Included</span>

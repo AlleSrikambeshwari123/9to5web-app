@@ -6,6 +6,8 @@ const aws = require('../Util/aws');
 const mongoose = require('mongoose');
 const moment = require('moment');
 var momentz = require('moment-timezone')
+var countries = require('../public/js/countries');
+var helpers = require('../views/helpers')
 
 exports.preview_awb_invoice = (req, res, next) => {
   let id =res.user._id
@@ -75,8 +77,9 @@ exports.get_awb_detail = (req, res, next) => {
     services.serviceTypeService.getAllServiceTypes(),
     services.awbService.getPurchaseOrder(id),
     services.packageService.getProcessOriginBarcode(res.user),
-    services.packageService.getAllOriginBarcode(),
-    services.driverService.getDrivers()
+    services.packageService.getAllOriginBarcodes(),
+    services.driverService.getDrivers(),
+    services.invoiceService.getAdditionalInvoices()
   ]).then(([
     customers,
     hazmats,
@@ -91,7 +94,8 @@ exports.get_awb_detail = (req, res, next) => {
     purchaseOrder,
     processBarcode,
     barcodes,
-    drivers
+    drivers,
+    additionalInvoices
   ]) => {
     awb['customer'] = awb['customerId'];
     res.render('pages/warehouse/awb/edit', {
@@ -112,7 +116,8 @@ exports.get_awb_detail = (req, res, next) => {
       purchaseOrder,
       processBarcode,
       barcodes,
-      drivers
+      drivers,
+      additionalInvoices
     });
   })
 };
@@ -129,7 +134,8 @@ exports.create_awb = (req, res, next) => {
     services.packageService.getAllOriginBarcode(),
     services.packageService.getProcessOriginBarcode(res.user),
     services.locationService.getCompanies(),
-    services.driverService.getDrivers()
+    services.driverService.getDrivers(),
+    services.invoiceService.getAdditionalInvoices()
   ]).then(([
     customers,
     hazmats,
@@ -141,13 +147,15 @@ exports.create_awb = (req, res, next) => {
     barcodes,
     processBarcode,
     companies,
-    drivers
+    drivers,
+    additionalInvoices
   ]) => {
     res.render('pages/warehouse/awb/create', {
       page: req.originalUrl,
       title: 'Create New AWB',
       user: res.user,
       printer: res.printer,
+      countries : countries.default,
       customers,
       hazmats,
       shippers,
@@ -158,7 +166,8 @@ exports.create_awb = (req, res, next) => {
       barcodes,
       processBarcode,
       companies,
-      drivers
+      drivers,
+      additionalInvoices
     });
   })
 };
@@ -176,6 +185,7 @@ exports.add_new_awb = async (req, res, next) => {
     invoice.awbId = awbId;
     invoice['createdBy'] = req['userId'];
     invoiceIds.push(invoice['_id']);
+    invoice.name = invoice.name 
     return services.invoiceService.create(invoice);
   }));
 
@@ -194,6 +204,19 @@ exports.add_new_awb = async (req, res, next) => {
   // Creating Packages
   await services.packageService.createPackages(awbId, packages);
 
+  // Additional Invoices
+  for(let inv of awb.additionalInvoices){
+    let invoiceObject = {
+      awbId : awbId,
+      filePath : inv.filePath,
+      fileName : inv.fileName,
+      courierNo : inv.courierNo,
+      pmb : inv.pmb,
+      customerId : awb.customerId
+    }
+      await services.awbService.storeInvoiceFile(invoiceObject)
+      await services.invoiceService.removeAdditionalInvoices(inv._id)
+  }
   const purchaseOrderIds = [];
   // PurchaseOrders
   if (purchaseOrders && purchaseOrders.length) {
@@ -211,6 +234,7 @@ exports.add_new_awb = async (req, res, next) => {
 
   awb['_id'] = awbId;
   awb['createdBy'] = req['userId'];
+  awb['updatedBy'] = req['userId'];
 
   services.awbService.createAwb(awb).then(async result => {
     res.send(result);
@@ -220,7 +244,7 @@ exports.add_new_awb = async (req, res, next) => {
   });
 };
 
-exports.update_awb = (req, res, next) => {
+exports.update_awb = async (req, res, next) => {
   let awbId = req.params.id;
   let {invoices, ...awb} = req.body;
   console.log('bodydd',req.body)
@@ -231,6 +255,19 @@ exports.update_awb = (req, res, next) => {
   const packageIds = [];
   const purchaseOrderIds = [];
   const promises = [];
+
+  for(let inv of awb.additionalInvoices){
+    let invoiceObject = {
+      awbId : awbId,
+      filePath : inv.filePath,
+      fileName : inv.fileName,
+      courierNo : inv.courierNo,
+      pmb : inv.pmb,
+      customerId : awb.customerId
+    }
+      await services.awbService.storeInvoiceFile(invoiceObject)
+      await services.invoiceService.removeAdditionalInvoices(inv._id)
+  }
 
   // Invoice create and update
   if (invoices && invoices.length) {
@@ -298,9 +335,9 @@ exports.update_awb = (req, res, next) => {
   }
 
   awb.invoices = invoiceIds;
+  awb.updatedBy = req['userId'];
   awb.packages = packageIds;
   awb.purchaseOrders = purchaseOrderIds;
-  
   // Updating awb
   services.awbService.updateAwb(awbId, awb, req['userId'])
   .then(async (result) => {
@@ -313,30 +350,201 @@ exports.update_awb = (req, res, next) => {
   });
 };
 
-exports.get_awb_list = (req, res, next) => {
+exports.get_awb_list_server = (req, res, next) => {
   services.awbService.getAwbsFull().then(awbs => {
+    for(let awb of awbs){
+      awb.volumetricWeight = 0
+      awb.packages.forEach(package=>{
+        let check = 1
+        package.dimensions.split('x').forEach(data =>{
+          check = check * data
+        })
+        awb.volumetricWeight = (check/166);
+      })
+    }
     res.render('pages/warehouse/awb/list', {
       page: req.originalUrl,
       title: "AirWay Bills",
       user: res.user,
       awbs: awbs,
+      daterange:req.query.daterange?req.query.daterange:'',
+      clear:req.query.clear
     })
+  })
+};
+exports.get_awb_list = (req, res, next) => {
+  if(req.query.clear){
+    req.query.daterange = '';
+  } 
+
+  services.awbService.getAwbsFull(req).then(awbs => {
+    for(let awb of awbs){
+      let weightAwb = 0;
+      awb.volumetricWeight = 0;
+      awb.packages.forEach(package=>{
+        let check = 1
+        package.dimensions.split('x').forEach(data =>{
+          check = check * data
+        })
+        weightAwb = weightAwb + package.weight;
+        awb.volumetricWeight = (check/166);
+      })
+      awb.weight = weightAwb
+    }
+   // return res.json(awbs);
+    res.render('pages/warehouse/awb/list', {
+      page: req.originalUrl,
+      title: "AirWay Bills",
+      user: res.user,
+      awbs: awbs,
+      clear:req.query.clear
+    })
+   })
+};
+
+checkCondition = (awb,status) =>{
+  if(status == 1)
+    return (awb.packages.length > 0)
+  else if(status == 2)
+    return (!awb.invoice)
+  else if(status == 3)
+    return (awb.packages.length === 0)
+  else if(status == 4)
+    return (awb.fll_pickup)
+}
+
+exports.get_all_awb = (req, res, next) => {
+  // let status = req.body.status
+  if(req.body.clear)
+    req.body.daterange =''
+
+  services.awbService.getAllAwbsFullList(req).then(results => {
+    const awbs = results.awbs;
+    var dataTable = {
+      draw: req.query.draw,
+      recordsTotal: results.total,
+      recordsFiltered: results.total,
+      data:[]
+    }
+    let data = [];
+    for(var i=0; i< awbs.length; i++){
+      // if(checkCondition(awbs[i],status)){
+        var awbDetail = [],weightAwb=0;
+        awbs[i].volumetricWeight = 0
+        awbs[i].packages.forEach(package=>{
+          let check = 1
+          package.dimensions.split('x').forEach(data =>{
+            check = check * data
+          })
+          weightAwb  =+ package.weight
+          awbs[i].volumetricWeight = (check/166);
+        })
+        awbs[i].weight = weightAwb;
+        if(awbs[i].customer[0] && awbs[i].customer[0].pmb){
+          awbDetail.push(awbs[i].customer[0].pmb);
+        }else
+          awbDetail.push('');
+
+        awbDetail.push(helpers.formatDate(awbs[i].createdAt));
+        awbDetail.push(`<a href="manage/${awbs[i]._id}/preview">${awbs[i].awbId}</a>`)
+        awbDetail.push(helpers.getFullName(awbs[i].customer[0]))
+        if(awbs[i].shipper[0] && awbs[i].shipper[0].name)
+          awbDetail.push(awbs[i].shipper[0].name)
+        else
+          awbDetail.push('')
+
+        if(awbs[i].driver[0])
+          awbDetail.push(awbs[i].driver[0].firstName +' ' + awbs[i].driver[0].lastName)
+        else
+          awbDetail.push('')
+
+        if(awbs[i].carrier[0] && awbs[i].carrier[0].name)
+          awbDetail.push(awbs[i].carrier[0].name)
+        else
+          awbDetail.push('')
+
+        if(awbs[i].packages)
+          awbDetail.push(awbs[i].packages.length)
+        else
+          awbDetail.push(0)
+        let weight = awbs[i].weight ? awbs[i].weight : 0
+        awbDetail.push(weight + ' lbs')
+        awbDetail.push(awbs[i].volumetricWeight.toFixed(2) + ' vlbs')
+        
+        let action = `<a href='manage/${awbs[i]._id}/get' class="btn btn-link btn-primary px-1" data-toggle="tooltip"
+        data-original-title="Edit"> <i class="fa fa-pen"></i> </a>`+
+        `<button class="btn btn-link btn-primary btn-print-awb p-1" onclick='printAwb(this)' data-toggle="modal" data-id="${awbs[i]._id}"
+      data-target="#print-popup"> <i class="fa fa-print"></i> </button>`
+      awbDetail.push(action)
+      data.push(awbDetail);
+      // }
+    }
+    dataTable.data = data;
+    res.json(dataTable);
   })
 };
 
 exports.get_awb_no_docs = (req, res, next) => {
-  services.awbService.getAwbsNoDocs().then(awbs => {
+  services.awbService.getAwbsNoDocs(req).then(awbs => {
     res.render('pages/warehouse/awb/no-docs', {
       page: req.originalUrl,
       title: "AirWay Bills - No Docs",
       user: res.user,
       awbs: awbs,
+      clear: req.query.clear
     })
   })
 };
 
+exports.get_awb_no_docs_list = (req, res, next) => {
+  if(req.body.clear)
+    req.body.daterange =''
+  services.awbService.getAwbsNoDocsList(req).then(results => {
+    const awbs = results.awbs;
+    var dataTable = {
+      draw: req.query.draw,
+      recordsTotal: results.total,
+      recordsFiltered: results.total,
+      data:[]
+    }
+    var data = [];
+    for(var i=0; i< awbs.length; i++){
+      var awbDetail = [];
+      if(!awbs[i].invoice) {
+        awbDetail.push(awbs[i].customer.name);
+        awbDetail.push(helpers.formatDate(awbs[i].createdAt));
+        awbDetail.push(awbs[i].customer.pmb)
+        awbDetail.push(`<a href="manage/${awbs[i]._id}/preview">${awbs[i].awbId}</a>`)
+        awbDetail.push(helpers.getFullName(awbs[i].customer))
+        if(awbs[i].shipper[0] && awbs[i].shipper[0].name)
+          awbDetail.push(awbs[i].shipper[0].name)
+        else
+          awbDetail.push('')
+
+        if(awbs[i].carrier[0] && awbs[i].carrier[0].name)
+          awbDetail.push(awbs[i].carrier[0].name)
+        else
+          awbDetail.push('')
+        
+        awbDetail.push(awbs[i].packages.length)
+        awbDetail.push(awbs[i].weight )
+      }
+      let action = ` <button 
+      class="btn btn-link btn-primary btn-print-awb" 
+      data-toggle="modal" 
+      data-id="${awbs[i]._id}"
+      onclick="printAwb(this)"
+      data-target="#print-popup"><i class="fa fa-print"></i> </button>`
+      awbDetail.push(action)
+       data.push(awbDetail);
+    }
+    dataTable.data = data;
+    res.json(dataTable);
+  })
+};
+
 exports.get_awb_no_docs_package_list = (req, res, next) => {
-  services.packageService.getAllPackagesWithLastStatus().then((packages) => {
+  services.packageService.getAwbNoDocsAllPackagesWithLastStatus(req).then((packages) => {
       return Promise.all(
           packages.map(async(pkg, i) => {
               let awb = await services.printService.getAWBDataForPackagesRelatedEntitie(pkg.awbId._id);
@@ -353,6 +561,7 @@ exports.get_awb_no_docs_package_list = (req, res, next) => {
               filterURL: '',
               buttonName: 'Add to Manifest',
               packages: pkgs,
+              clear: req.query.clear
           });
       })
 
@@ -380,12 +589,13 @@ exports.generate_awb_pdf = (req, res, next) => {
 };
 
 exports.nas_no_docs = (req, res, next) => {
-  services.awbService.getAwbsNoDocs().then(awbs => {
+  services.awbService.getAwbsNoDocs(req).then(awbs => {
     res.render('pages/warehouse/awb/no-docs', {
       page: req.originalUrl,
       title: "AirWay Bills - No Docs",
       user: res.user,
       awbs: awbs,
+      clear: req.query.clear
     })  
   })
 };

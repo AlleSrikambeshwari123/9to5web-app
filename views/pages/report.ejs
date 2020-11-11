@@ -1,6 +1,15 @@
 <% layout('./shared/__template')%>
 <script src="/js/jquery.js"></script>
 <script src="/assets/js/plugin/datatables/datatables.min.js"></script>
+<script src="/assets/js/plugin/moment/moment.min.js"></script>
+<%
+var endate = new Date();      
+        endate.setDate(endate.getDate());
+        var stdate = new Date();
+        stdate.setDate(stdate.getDate() -21);      
+        var dateRangeDefault = (stdate.getMonth() + 1)+ '/'+stdate.getDate()+'/'+stdate.getFullYear()+' - '+
+        (endate.getMonth() + 1)+ '/'+endate.getDate()+'/'+endate.getFullYear(); 
+%>
 
 <div class="row">
   <div class="col-md-12">
@@ -10,7 +19,13 @@
           <div class="card-title pd-18 col-md-2">All Awb Status</div>
         </div>
       </div>
-      <div class="card-body">
+      <div id="myLoader"><img src="/img/preloader.gif"></div>
+      <div class="card-body daterangepickerbody-1">
+        <div class="d-flex w-100 d-inline-block py-4 col-xs-10 col-sm-4 float-left ">
+          <label class="w-10-rem align-text-bottom">Select Dates : </label>
+          <input type="text" class="form-control form-control-sm" name="" id="daterange-awbStatus" value="<%=dateRangeDefault%>"  placeholder="Select dates"/>
+        </div>
+        <div class="table-responsive ">
         <table id="awbStatus" class=" display table table-striped table-hover dataTable ">
           <thead>
             <tr>
@@ -23,6 +38,7 @@
           <tbody>
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   </div>
@@ -36,7 +52,12 @@
           <div class="card-title pd-18 col-md-2">Package Status</div>
         </div>
       </div>
-      <div class="card-body">
+      <div class="card-body daterangepickerbody-1">
+        <div class="d-flex w-100 d-inline-block py-4 col-xs-10 col-sm-4 float-left ">
+          <label class="w-10-rem align-text-bottom">Select Dates : </label>
+          <input type="text" class="form-control form-control-sm" name="" id="daterange-package-status" value="<%=dateRangeDefault%>"  placeholder="Select dates"/>
+        </div>
+        <div class="table-responsive ">
         <table id="package_status" class=" display table table-striped table-hover dataTable ">
           <thead>
             <tr>
@@ -47,6 +68,7 @@
           <tbody>
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   </div>
@@ -102,7 +124,12 @@
         </div>
       </div>
     </div>
-    <div class="card-body">
+    <div class="card-body daterangepickerbody-1">
+      <div class="d-flex w-100 d-inline-block py-4 col-xs-10 col-sm-4 float-left ">
+        <label class="w-10-rem align-text-bottom">Select Dates : </label>
+        <input type="text" class="form-control form-control-sm" name="" id="daterange-package-detail" value="<%=dateRangeDefault%>"  placeholder="Select dates"/>
+      </div>
+      <div class="table-responsive ">
       <table id="all_package_table" class=" display table table-striped table-hover dataTable ">
         <thead>
           <tr>
@@ -115,6 +142,7 @@
         <tbody>
         </tbody>
       </table>
+      </div>
     </div>
   </div>
 </div>
@@ -128,7 +156,12 @@
           <div class="card-title pd-18 col-md-2">Delivery Detail</div>
         </div>
       </div>
-      <div class="card-body">
+      <div class="card-body daterangepickerbody-1">
+        <div class="d-flex w-100 d-inline-block py-4 col-xs-10 col-sm-4 float-left ">
+          <label class="w-10-rem align-text-bottom">Select Dates : </label>
+          <input type="text" class="form-control form-control-sm" name="" id="daterange-dekivery-detail" value="<%=dateRangeDefault%>"  placeholder="Select dates"/>
+        </div>
+        <div class="table-responsive ">
         <table id="delivery_table" class=" display table table-striped table-hover dataTable ">
           <thead>
             <tr>
@@ -142,6 +175,7 @@
           <tbody>
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   </div>
@@ -166,7 +200,7 @@
     })
   }
   $.ajax({
-    url: '/api/warehouse/get_packages_data/all',
+    url: '/api/warehouse/get_packages_data/all?daterange=<%=dateRangeDefault%>',
     dataType: "json",
     type: "GET",
     success: function (data) {
@@ -176,6 +210,91 @@
       deliveryData(data[3])
     }
   })
+  //date range picker
+  $(document).ready(function() {
+    $('#daterange-awbStatus').on('apply.daterangepicker', function (ev, picker) {
+    var daterange = picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY');  
+    getAwbdata(daterange,'awbStatus');
+    });
+    $('#daterange-awbStatus').on('cancel.daterangepicker', function (ev, picker) {
+        var endate = new Date();      
+        endate.setDate(endate.getDate());
+        var stdate = new Date();
+        stdate.setDate(stdate.getDate() -14);      
+        var dateRange = (stdate.getMonth() + 1)+ '/'+stdate.getDate()+'/'+stdate.getFullYear()+' - '+
+        (endate.getMonth() + 1)+ '/'+endate.getDate()+'/'+endate.getFullYear();  
+        $("#daterange-awbStatus").val(dateRange)
+        getAwbdata(dateRange,'awbStatus');
+    });
+    
+    $('#daterange-package-detail').on('apply.daterangepicker', function (ev, picker) {
+    var daterange = picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY');  
+    getAwbdata(daterange,'packageDetail');
+    });
+    $('#daterange-package-detail').on('cancel.daterangepicker', function (ev, picker) {
+        var endate = new Date();      
+        endate.setDate(endate.getDate());
+        var stdate = new Date();
+        stdate.setDate(stdate.getDate() -14);      
+        var dateRange = (stdate.getMonth() + 1)+ '/'+stdate.getDate()+'/'+stdate.getFullYear()+' - '+
+        (endate.getMonth() + 1)+ '/'+endate.getDate()+'/'+endate.getFullYear();  
+        $("#daterange-package-detail").val(dateRange)
+        getAwbdata(dateRange,'packageDetail');
+    });
+
+    $('#daterange-dekivery-detail').on('apply.daterangepicker', function (ev, picker) {
+      var daterange = picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY');  
+      getAwbdata(daterange,'deliveryDetail');
+    });
+    $('#daterange-dekivery-detail').on('cancel.daterangepicker', function (ev, picker) {
+        var endate = new Date();      
+        endate.setDate(endate.getDate());
+        var stdate = new Date();
+        stdate.setDate(stdate.getDate() -14);      
+        var dateRange = (stdate.getMonth() + 1)+ '/'+stdate.getDate()+'/'+stdate.getFullYear()+' - '+
+        (endate.getMonth() + 1)+ '/'+endate.getDate()+'/'+endate.getFullYear();  
+        $("#daterange-dekivery-detail").val(dateRange)
+        getAwbdata(dateRange,'deliveryDetail');
+    });
+
+    $('#daterange-package-status').on('apply.daterangepicker', function (ev, picker) {
+      var daterange = picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY');  
+      getAwbdata(daterange,'packageStatus');
+    });
+    $('#daterange-package-status').on('cancel.daterangepicker', function (ev, picker) {
+        var endate = new Date();      
+        endate.setDate(endate.getDate());
+        var stdate = new Date();
+        stdate.setDate(stdate.getDate() -14);      
+        var dateRange = (stdate.getMonth() + 1)+ '/'+stdate.getDate()+'/'+stdate.getFullYear()+' - '+
+        (endate.getMonth() + 1)+ '/'+endate.getDate()+'/'+endate.getFullYear();  
+        $("#daterange-package-status").val(dateRange)
+        getAwbdata(dateRange,'packageStatus');
+    });
+  }) 
+  
+
+  function getAwbdata(daterange, type){
+    $.ajax({
+      url: '/api/warehouse/get_packages_data/all?type='+type+'&daterange='+daterange,
+      dataType: "json",
+      type: "GET",
+      success: function (data) {
+        if(type == 'awbStatus'){
+          awbsStatus(data[0]);
+        }
+        if(type == "packageDetail"){
+          allPackages(data[2])
+        }
+        if(type == "deliveryDetail"){
+          deliveryData(data[3])
+        }
+        if(type == "packageStatus"){
+          packageStatus(data[1])
+        }       
+      }
+    })
+  }
 
   function awbsStatus(data) {
     let result = data.map((row) => {
@@ -191,7 +310,7 @@
     if ($("#awbStatus > tbody > tr").length) {
       $("#awbStatus > tbody > tr").empty();
     }
-
+    $("#awbStatus").DataTable().destroy();
     $("#awbStatus tbody").html("")
     $("#awbStatus tbody").append(result)
     if (!($.fn.dataTable.isDataTable('#awbStatus'))) {
@@ -205,7 +324,7 @@
       1: 'Received in FLL',
       2: 'Loaded on AirCraft',
       3: 'In Transit',
-      4: 'Recieved in NAS',
+      4: 'In Warehouse Nassuau',
       5: 'Ready for Pickup / Delivery',
       6: 'Delivered',
       7: 'No Invoice Present',
@@ -228,10 +347,10 @@
     if ($("#package_status > tbody > tr").length) {
       $("#package_status > tbody > tr").empty();
     }
-
+    $("#package_status tbody").empty()
     $("#package_status tbody").append(result)
     if (!($.fn.dataTable.isDataTable('#package_status'))) {
-      $("#package_status").DataTable({ searching: true, "bLengthChange": true });
+      $("#package_status").DataTable({ searching: false, "bLengthChange": false });
     }
   }
 
@@ -249,7 +368,8 @@
     if ($("#all_package_table > tbody > tr").length) {
       $("#all_package_table > tbody > tr").empty();
     }
-
+    $("#all_package_table").DataTable().destroy();
+    $("#all_package_table tbody").html("");
     $("#all_package_table tbody").append(result)
     if (!($.fn.dataTable.isDataTable('#all_package_table'))) {
       $("#all_package_table").DataTable({ searching: false, "bLengthChange": false });
@@ -267,11 +387,13 @@
           `</td></tr>`;
       }
     })
-
+    
     if ($("#delivery_table > tbody > tr").length) {
       $("#delivery_table > tbody > tr").empty();
     }
-
+    $("#delivery_table").DataTable().destroy();
+    $("#delivery_table tbody").html("");
+    
     $("#delivery_table tbody").append(result)
     if (!($.fn.dataTable.isDataTable('#delivery_table'))) {
       $("#delivery_table").DataTable({ searching: true, "bLengthChange": true });
@@ -279,3 +401,4 @@
   }
 
 </script>
+<% block('scripts').append('<script src="/js/utils.js"></script>')%>

@@ -1,3 +1,4 @@
+
 $("#no-docs-table").on("click", ".btn-rm-awb", function(){
   let id = $(this).data('id');
   $('#confirm-delete-awb').find('#rm-awb').attr('data-id', id);
@@ -59,9 +60,163 @@ var awbTable = $('#awb-table').DataTable({
 var nodocsTable = $('#no-docs-table').DataTable({
   pageLength: 10,
 })
-var pendingtable = $('#pending-awb-table').DataTable({
-  pageLength: 10,
+// var pendingtable = $('#pending-awb-table').DataTable({
+//   pageLength: 10,
+// })
+// var pickuptable = $('#pickup-awb-table').DataTable({
+//   pageLength: 10,
+// })
+
+$(document).ready(function() {
+  let flagStatus = ''
+  if($('#clear').val() ){
+    // $('#daterange').val('')
+    $('#clear').val('1')
+  }
+  setTimeout(()=>{
+    if($('#clear').val() ){
+      // $('#daterange').val('')
+      $('#clear').val('1');
+      var endate = new Date();      
+      endate.setDate(endate.getDate());
+      var stdate = new Date();
+      stdate.setDate(stdate.getDate() -14);      
+      var dateRange = (stdate.getMonth() + 1)+ '/'+stdate.getDate()+'/'+stdate.getFullYear()+' - '+
+      (endate.getMonth() + 1)+ '/'+endate.getDate()+'/'+endate.getFullYear()      
+      $('.daterange').val(dateRange)
+    }
+
+   
+  },1000)
+  $('.noDocsTable').DataTable( {
+    "processing": true,
+    "serverSide": true,    
+    "ajax": {
+      url: "/warehouse/fll/awb/no-docs-list",
+      type: "POST",
+      data :{ daterange:$('#daterange').val(), clear:$('#clear').val()},
+      
+    }
+  })
+  $('#awb-table').on( 'xhr.dt', function () {
+    
+        flagStatus = 1
+  });
+  $('.noDocsTable').on( 'xhr.dt', function () {
+    flagStatus = 0
+  });
+  flagStatus = 1
+
+  // $('.awbTable').DataTable( {
+  //   "processing": true,
+  //   "serverSide": true,    
+  //   "ajax": {
+  //     url: "/warehouse/fll/awb/allAbws",
+  //     type: "POST",
+  //     data :{ daterange:$('#daterange').val(), clear:$('#clear').val(),status : 1},
+  //   }
+  // })
+
+  $('.awb-no-docs-table').DataTable( {
+    "processing": true,
+    "serverSide": true,    
+    "ajax": {
+      url: "/warehouse/fll/awb/allAbws",
+      type: "POST",
+      data :{ daterange:$('#daterange').val(), clear:$('#clear').val(),status : 2},
+    }
+  })
+  $('.pending-awb-table').DataTable( {
+    "processing": true,
+    "serverSide": true,    
+    "ajax": {
+      url: "/warehouse/fll/awb/allAbws",
+      type: "POST",
+      data :{ daterange:$('#daterange').val(), clear:$('#clear').val(),status : 3},
+    }
+  })
+  $('.pickup-awb-table').DataTable( {
+    "processing": true,
+    "serverSide": true,    
+    "ajax": {
+      url: "/warehouse/fll/awb/allAbws",
+      type: "POST",
+      data :{ daterange:$('#daterange').val(), clear:$('#clear').val(),status : 4},
+    }
+  })
+  $(document).on('click', '.applyBtn', function() {
+    if(flagStatus == 0)
+      window.location = "/warehouse/fll/awb/no-docs?daterange="+$('.daterange').val();
+    else if(flagStatus == 1)
+      window.location = "/warehouse/fll/awb/list?daterange="+$('.daterange').val();
+
+  });	    
+  
+  $(document).on('click', '.cancelBtn', function() {
+    if(flagStatus == 0)
+      window.location = "/warehouse/fll/awb/no-docs?clear=1";
+    else if(flagStatus == 1)
+      window.location = "/warehouse/fll/awb/list?clear=1";
+  });
+});
+let pdfPath
+function printAwb(str){
+  let id = $(str).data('id');
+  $.ajax({
+    url: '/api/printer/pdf/generate/awb/' + id,
+    type: 'get',
+    success: function (response) {
+      pdfPath = '/util/pdf' + response.filename;
+      pdfjsLib.getDocument({ url: pdfPath }).promise.then(pdfData => {
+        pdfData.getPage(1).then(page => {
+          var canvas = $('#pdf-preview')[0];
+          var canvasContext = canvas.getContext('2d');
+          const viewport = page.getViewport({ scale: .5 });
+          canvas.height = canvas.width / viewport.width * viewport.height;
+          page.render({ canvasContext, viewport })
+        })
+      })
+    }
+  })
+}
+$(document).on('click', '.applyBtn', function() {
+  window.location = "fll/awb/list?daterange="+$('.daterange').val();
 })
 var pickuptable = $('#pickup-awb-table').DataTable({
   pageLength: 10,
+})
+
+var pageUrl = pageUrl ? pageUrl : '';
+var pageArr =  pageUrl.split('?');
+var urlPage = (pageArr && pageArr.length) ? pageArr[0] : '';
+var redirectUrl = "/warehouse/fll/awb/list";
+if(urlPage == "/warehouse/nas/awb/no-docs"){
+  redirectUrl = "/warehouse/nas/awb/no-docs";
+}
+if(urlPage == "/warehouse/fll/awb/no-docs"){
+  redirectUrl = "/warehouse/fll/awb/no-docs";
+}
+
+$(document).on('click', '.applyBtn', function() {
+  window.location = redirectUrl+"?daterange="+$('.daterange').val();
+})
+
+$(document).on('click', '.cancelBtn', function() {
+  window.location = redirectUrl+"?clear=1";
+})
+$(document).ready(function() {
+  setTimeout(()=>{
+		if($('#clear').val() ){
+		  // $('#daterange').val('')
+		  $('#clear').val('1');
+		  var endate = new Date();      
+		  endate.setDate(endate.getDate());
+		  var stdate = new Date();
+		  stdate.setDate(stdate.getDate() -14);      
+		  var dateRange = (stdate.getMonth() + 1)+ '/'+stdate.getDate()+'/'+stdate.getFullYear()+' - '+
+		  (endate.getMonth() + 1)+ '/'+endate.getDate()+'/'+endate.getFullYear()      
+		  $('.daterange').val(dateRange)
+		}	   
+	},100)
+
 })

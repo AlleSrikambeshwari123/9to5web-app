@@ -39,7 +39,20 @@ router.get('/get-package-detail/:trackingNo', passport.authenticate('jwt', { ses
   let trackingNo = req.params.trackingNo;
   services.packageService.getPackageByTrackingId(trackingNo)
   .then( result => {
-    res.send(result);
+    if(result.success){
+      Promise.all([
+        services.packageService.getPackageById(result.package._id),
+        services.awbService.getFullAwb(result.package.awbId),
+      ]).then(results => {
+      res.send({
+        success:true,
+        packageInfo: [results[0]],
+        awb: results[1]
+      });
+    })
+  }else{
+    res.send({ success:false,message: "Please scan one of the system generated labels" })
+  }
   });
 })
 
@@ -122,7 +135,7 @@ router.get("/get_packages_7days_status", middleware().checkSession, (req, res, n
 router.get("/get_packages_filter/:filter", middleware().checkSession, (req, res, next) => {
   Promise.all([
     services.packageService.getPackageWithFilter(req.params.filter, req.query),
-    services.userService.getAllUsers()
+    services.userService.getAllUsers(req)
   ]).then(result => {
     result[0]['users'] = result[1]; 
     res.send(result[0])
@@ -132,11 +145,12 @@ router.get("/get_packages_filter/:filter", middleware().checkSession, (req, res,
 // Report Page
 router.get("/get_packages_data/:filter", middleware().checkSession, (req, res, next) => {
   // console.log('req.query', req.query);
+  
   Promise.all([
-    services.awbService.getAwbStatuses(),
-    services.packageService.getPackageStatus(),
+    services.awbService.getAwbStatuses(req.query),
+    services.packageService.getPackageStatusFilterDate(req.query),
     services.packageService.getPackageStatusWithUser(req.params.filter, req.query),
-    services.packageService.getDeliveryPackageDetail()
+    services.packageService.getDeliveryPackageDetail(req.query)
   ]).then(result => { 
     res.send(result)
   })
@@ -222,7 +236,7 @@ router.get('/get-compartments', (req, res, next) => {
   let query = req.query;
   // FIXME: we should filter by query here
   services.planeService
-    .getCompartments(query.planeId)
+    .getCompartmentsManifest(query.planeId,query.manifestId)
     .then((compartments) => {
       res.json(compartments);
     })
@@ -427,6 +441,18 @@ router.post('/web/packages/add-packages-to-nodoc',middleware().checkSession, (re
   if(!valid) return res.send({success:false,message:errors})
   req.body.userId = req['userId']
   services.packageService.addAwbsPkgNoDocs(req.body).then((result)=>{
+    res.send(result)
+  })
+})
+
+router.post('/web/packages/add-packages-to-delivery',middleware().checkSession, (req, res, next) => {
+  var deliveryId = req.body.deliveryId;
+  var packageIds = req.body.packageIds
+  var locationId = req.body.locationId 
+  var userId = req['userId']
+  const {valid,errors} = checkEmpty({packageIds:packageIds,deliveryId :deliveryId,userId:userId,locationId : locationId})
+  if(!valid) return res.send({success:false,message:errors})
+  services.packageService.addPackagesToDelivery(deliveryId, packageIds,userId,locationId,req.query).then(result => {
     res.send(result)
   })
 })

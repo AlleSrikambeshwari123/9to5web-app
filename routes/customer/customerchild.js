@@ -9,6 +9,8 @@ router.post('/customerchild/:customerId/create', middleware().checkSession, cust
 router.get('/customerchild/:customerId/manage/:id/get', middleware().checkSession, customerChildCtrl.get_sub_customer_detail);
 router.post('/customerchild/:customerId/manage/:id/update', middleware().checkSession, customerChildCtrl.update_customer);
 router.delete('/customerchild/manage/:id/delete', middleware().checkSession, customerChildCtrl.delete_customer);
+router.get('/customerchild/no-docs/:customerId', middleware().checkSession, customerChildCtrl.get_sub_customer_no_docs);
+router.get('/customerChild/awb/manage/:id/preview', middleware().checkSession, customerChildCtrl.preview_awb);
 
 module.exports = router;
 

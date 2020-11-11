@@ -21,7 +21,9 @@
       <div class="card-header d-flex align-items-left align-items-md-center flex-column flex-md-row">
         <div class="card-title"><%= title %></div>
       </div>
+      <div id="myLoader"><img src="/img/preloader.gif"></div>
       <div class="card-body daterangepickerbody">
+          <input type="hidden" name="clear" id="clear" value="<%=clear%>">
         <div class="table-responsive">
           <table id="pricelabel-table"
             class="display table table-striped table-hover dataTable dateRangeFilterTable pricelabel-table">
@@ -72,8 +74,10 @@
                     data-original-title="Add Price" data-target="#pricelabel-popup"><i class="fa fa-edit"></i></a>
                 </td>
                 <% let ifNotPriceLabel = 'ifNotPriceLabel'+ awb._id %>
-                <td><a class="<%= ifNotPriceLabel %>" href="../price-label/download/<%=awb._id%>"><i
-                      class="fa fa-download ifNotPriceLabel"></i></a></td>
+                <!-- <td><a class=" <%= ifNotPriceLabel %>" href="/warehouse/price-label/download/"><i
+                      class="fa fa-download ifNotPriceLabel"></i></a></td> -->
+                      <td><button class="btn btn-link download-price-label <%= ifNotPriceLabel %>" data-id="<%=awb._id%>" ><i
+                        class="fa fa-download ifNotPriceLabel"></i></button></td>
                 <td>
                   <a class="btn btn-link btn-primary btn-print-pkg <%= ifNotPriceLabel %>" data-toggle="modal"
                     data-id="<%=awb._id%>" data-original-title="Print Label" data-target="#print-pricelabel-popup"><i

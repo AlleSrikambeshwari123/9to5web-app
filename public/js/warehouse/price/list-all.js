@@ -1,16 +1,17 @@
-let packageTable = $('.pricelabel-table').DataTable({
-  pageLength: 10,
-  columnDefs: [
-    {
-      orderable: false,
-      targets: 0,
-    },
-  ],
-  select: {
-    style: 'multi',
-    selector: 'td:first-child input[type="checkbox"]',
-  },
-});
+// let packageTable = $('.pricelabel-table').DataTable({
+//   pageLength: 10,
+//   columnDefs: [
+//     {
+//       orderable: false,
+//       targets: 0,
+//     },
+//   ],
+//   select: {
+//     style: 'multi',
+//     selector: 'td:first-child input[type="checkbox"]',
+//   },
+// });
+let TotalVolumetricWeight
 $('.checkPriceLabelExistPkg').map(function (i, dateElement) {
   const id = dateElement.value;
   checkPriceLabelExist(id)
@@ -53,12 +54,30 @@ $('#pricelabel-table').on('click', '.btn-print-pkg', function () {
           });
         });
       } else {
-        $('.close-del').trigger('click');
+        setTimeout(function(){$('.close-del').trigger('click');}, 1000);
+            swal({
+              title: 'Failed',
+              text: response.message,
+              type: 'error',
+            });
+      }
+    },
+  });
+});
+$('#pricelabel-table').on('click', '.download-price-label', function () {
+  let id = $(this).data('id');
+  $.ajax({
+    url: '/warehouse/price-label/download/' + id,
+    type: 'get',
+    success: function (response) {
+      if (response && response.success == false ) {
         swal({
           title: 'Failed',
           text: response.message,
           type: 'error',
         });
+      }else{
+        window.location.href  = '/warehouse/price-label/download/' + id
       }
     },
   });
@@ -71,7 +90,8 @@ function pricelLabelCheck(response) {
   let NoDocsVal = 0;
   let InsuranceVal = 0;
   let SedVal = 0;
-  let ExpressVal = 0;
+  let ExpressVal = response.Express;
+  TotalVolumetricWeight = response.TotalVolumetricWeight
   // if (pkg.packageCalculation == 'Kg') pkg.weight = 2.20462 * pkg.weight;
   // let totalinvoiceVal = 0;
 
@@ -124,6 +144,7 @@ function pricelLabelCheck(response) {
   if (response.Insurance > 0) $('#Insurance').prop('checked', true)
   if (response.Sed > 0) $('#Sed').prop('checked', true)
   if (response.Express > 0) $('#Express').prop('checked', true)
+  else $('#Express').prop('checked', false)
   pricelabelcommon(ServiceVat, NoDocsVal, InsuranceVal, SedVal, ExpressVal, response.TotalInvoiceValue)
 }
 
@@ -133,8 +154,9 @@ function packagePriceLabel(response) {
   let NoDocsVal = 0;
   let InsuranceVal = 0;
   let SedVal = 0;
-  let ExpressVal = 0;
+  let ExpressVal = response.Express;
   let VatMultiplier = 0.12;
+  TotalVolumetricWeight = response.TotalVolumetricWeight
   //if (pkg.packageCalculation == 'Kg') pkg.weight = 2.20462 * pkg.weight;
   // let totalinvoiceVal = 0;
   // if (pkg.invoices) {
@@ -169,7 +191,7 @@ function packagePriceLabel(response) {
   } else {
     $('#Freight').val(Freight);
   }
-  if (pkg.express) ExpressVal = 35, $('#Express').prop('checked', true), $('#ExpressVal').val('35');
+  // if (pkg.express) ExpressVal = 35, $('#Express').prop('checked', true), $('#ExpressVal').val('35');
   tval(0, 0, 0, 0, ExpressVal);
   pricelabelcommon(ServiceVat, NoDocsVal, InsuranceVal, SedVal, ExpressVal, response.TotalInvoiceValue)
 }
@@ -241,11 +263,13 @@ function pricelabelcommon(ServiceVat, NoDocsVal, InsuranceVal, SedVal, ExpressVa
   });
   $('#Express').click(function () {
     if ($(this).prop('checked') == true) {
-      $('#ExpressVal').val('35');
       ExpressVal = 35;
+      if($('#Freight').val() > 35) 
+        ExpressVal = $('#Freight').val();
+      $('#ExpressVal').val(ExpressVal);
     } else if ($(this).prop('checked') == false) {
       $('#ExpressVal').val('');
-      ExpressVal = 0;
+      // ExpressVal = 0;
     }
   });
 
@@ -337,6 +361,7 @@ $('#UpdatePriceLabelPackage').on('click', function (event) {
     TotalInvoiceValue: $("#total-value-invoice").val() == "" ? 0 : $("#total-value-invoice").val(),
     NoOfInvoice: $("#no_of_invoice").val() == "" ? 0 : $("#no_of_invoice").val(),
     TotalWeightValue: $("#total_weight_value").val() == "" ? 0 : $("#total_weight_value").val(),
+    TotalVolumetricWeight : TotalVolumetricWeight,
     TotalWet: TotalWet,
   };
   $.ajax({
@@ -368,3 +393,24 @@ $('.print-package').click(function () {
   printJS(pdfPath);
 });
 
+
+$(document).on('click', '.applyBtn', function() {
+  window.location = "/warehouse/price/list?daterange="+$('.daterange').val();
+})
+ $(document).on('click', '.cancelBtn', function() {
+  window.location = "/warehouse/price/list?clear=1";
+})
+$(document).ready(function() {
+  setTimeout(()=>{
+		if($('#clear').val() ){
+		  $('#clear').val('1');
+		  var endate = new Date();      
+		  endate.setDate(endate.getDate());
+		  var stdate = new Date();
+		  stdate.setDate(stdate.getDate() -14);      
+		  var dateRange = (stdate.getMonth() + 1)+ '/'+stdate.getDate()+'/'+stdate.getFullYear()+' - '+
+		  (endate.getMonth() + 1)+ '/'+endate.getDate()+'/'+endate.getFullYear()      
+		  $('.daterange').val(dateRange)
+		}	   
+  },100) 
+})  

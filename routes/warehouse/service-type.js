@@ -4,6 +4,7 @@ var middleware = require('../../middleware');
 var serviceTypeCtrl = require('../../Controller/ServiceTypeController');
 
 router.get('/service-type/list', middleware().checkSession, serviceTypeCtrl.get_service_type_list);
+router.post('/service-type/listAll', middleware().checkSession, serviceTypeCtrl.get_all_service_type_list);
 router.get('/service-type/create', middleware().checkSession, serviceTypeCtrl.create_service_type);
 router.post('/service-type/create', middleware().checkSession, serviceTypeCtrl.add_new_service_type);
 router.get('/service-type/manage/:id/get', middleware().checkSession, serviceTypeCtrl.get_service_type_detail);

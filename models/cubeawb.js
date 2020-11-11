@@ -30,6 +30,9 @@ const cubeAwbSchema = new mongoose.Schema(
     dimensions: {
       type: String,
     },
+    weight: {
+      type: Number,
+    },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',

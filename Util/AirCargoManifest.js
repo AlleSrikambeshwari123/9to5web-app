@@ -374,6 +374,17 @@ class AirCargoManifest {
         var mainFilePath = path.resolve(process.cwd(), `airCaroDownload/${this.data._id}_${datetime}_main.pdf`)
         doc.pipe(await fs.createWriteStream(mainFilePath));
         doc.end();
+        if(this.data.awbsArray.length == 0){
+            var docs = printer.createPdfKitDocument(definition);
+            let acmPdf = path.resolve(process.cwd(), `airCaroDownload/${this.data._id}-ACM.pdf`)
+            merge([mainFilePath, mainFilePath], path.resolve(process.cwd(), `airCaroDownload/${this.data._id}-ACM.pdf`), async(err) => {
+                if (err) {
+                    return console.log(err)
+                }
+                this.removefile(mainFilePath);
+            });
+            return {id : this.data._id,stream : docs}
+        }
 
         var dynamicAWBFilesPath = [];
         await Promise.all(
@@ -672,7 +683,7 @@ function calculateDimensionalWeight(dimensions) {
     var dimensionparts = dimensions.split('x');
     var numerator = 1;
     dimensionparts.forEach(part => numerator *= Number(part.trim()));
-    var dimWeight = numerator / 139;
+    var dimWeight = numerator / 166;
     return Number(dimWeight).formatMoney(2, '.', ',')
 }
 

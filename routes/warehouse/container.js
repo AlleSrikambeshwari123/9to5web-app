@@ -4,6 +4,7 @@ var middleware = require('../../middleware');
 var containerCtrl = require('../../Controller/ContainerController');
 
 router.get('/container/list', middleware().checkSession, containerCtrl.get_container_list);
+router.post('/container/all-list', middleware().checkSession, containerCtrl.get_all_container_list);
 router.get('/container/create', middleware().checkSession, containerCtrl.create_container);
 router.post('/container/create', middleware().checkSession, containerCtrl.add_new_container);
 router.get(

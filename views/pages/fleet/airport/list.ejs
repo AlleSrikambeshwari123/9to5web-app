@@ -8,15 +8,17 @@
         <div class="card-title"><%=title%></div>
         <a href="create" class="btn btn-primary btn-round float-right ml-md-auto">Add Airport</a>
       </div>
-      <div class="card-body daterangepickerbody">
+      <div id="myLoader"><img src="/img/preloader.gif"></div>
+      <div class="card-body daterangepickerbody-1">
         <div class="table-responsive">
-          <table id="airportTable" class="display table table-striped dateRangeFilterTable dataTable table-hover">
+          <table id="airportTable" class="display table table-striped dataTable table-hover">
             <thead>
               <tr>
                 <th>Name</th>
                 <th>Date Created</th>
                 <th>Short code</th>
                 <th>Country</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>

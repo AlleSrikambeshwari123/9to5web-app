@@ -13,6 +13,9 @@ const invoiceSchema = new mongoose.Schema({
   filename: {
     type: String
   },
+  name: {
+    type: String
+  },
   awbId: {
     type: mongoose.Schema.Types.ObjectId, 
     ref: 'Awb', 

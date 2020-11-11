@@ -499,6 +499,8 @@ var fonts = {
                           {
                             margin: [0, 0],
                             stack: [
+                              { margin: [0, 5], text: 'DESCRIPTION', fontSize: 7, bold: true },
+                              { margin: [0, 5], text: pkg.cubeDetail.description, fontSize: 7, bold: true },
                               { margin: [0, 2], text: noDocs, fontSize: 11, bold: true },
                               //table here
                               {
@@ -523,7 +525,20 @@ var fonts = {
                               },
                             ],
                             border: [false, false, false, true],
-                          }
+                          },
+                          {
+                            margin: [1, 1],
+                            stack: [
+                              { margin: [0, 1], text: 'WEIGHT', fontSize: 6, bold: true },
+                              { margin: [0, 2], text: `${pkg.cubeDetail.weight} lbs.`, fontSize: 8, bold: true },
+                              { margin: [0, 1], text: 'DIMENSIONS', fontSize: 6, bold: true },
+                              { margin: [0, 1], text: `${pkg.cubeDetail.dimensions} ins.`, fontSize: 8, bold: true },
+                              { margin: [0, 1], text: 'VOL. WEIGHT', fontSize: 6, bold: true },
+                              { margin: [0, 2], text: `${this.calculateDimensionalWeight(pkg.cubeDetail.dimensions)} Vlbs`, fontSize: 5, bold: true },
+                              //table here
+                            ],
+                            border: [true, false, false, true],
+                          },
                         ],
                       ], //end table body
                     },
@@ -536,7 +551,7 @@ var fonts = {
               };
               var filestream;
               var pdfDoc = printer.createPdfKitDocument(docDefinition);
-              var filename = '/pkg.' + pkg.id +'.'+ key + '.pdf';
+              var filename = '/pkg.' + pkg._id +'.'+ key + '.pdf';
               var filepath = global.uploadRoot + filename;
               pdfDoc.pipe((filestream = fs.createWriteStream(filepath)));
               pdfDoc.end();
@@ -556,7 +571,7 @@ var fonts = {
       var dimensionparts = dimensions.split('x');
       var numerator = 1;
       dimensionparts.forEach((part) => (numerator *= Number(part.trim())));
-      var dimWeight = numerator / 139;
+      var dimWeight = numerator / 166;
       return Number(dimWeight).formatMoney(2, '.', ',');
     }
     generateShiperCosigneeTable(awb) {

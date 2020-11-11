@@ -64,7 +64,11 @@ exports.get_full_awb = (req, res, next) => {
 
 exports.download_pdf_awb = (req, res, next) => {
 	let id = req.params.id;
-	services.printService.getAWBDataForAllRelatedEntities(id).then((awb) => {
+	services.printService.getAWBDataForAllRelatedEntities(id).then(async(awb) => {
+		let priceLabelAwb  =  await services.AwbPriceLabelService.getPriceLabel(awb._id)
+		if(priceLabelAwb){
+			awb.express = priceLabelAwb.Express
+		}
 		awbPdfGen.generateAWb(awb).then(result => {
 			res.download(result.path);
 		})
@@ -80,13 +84,30 @@ exports.download_pkg_label = (req, res, next) => {
 		})
 	})
 }
-exports.download_pdf_pricelabel = (req, res, next) => {
-	services.AwbPriceLabelService.getPriceLabel(req.params.id).then(price => {
-		services.printService.getAWBDataForAllRelatedEntities(price.awbId).then((awb) => {
-			lblPdfGen.generateSinglePriceLabel(awb, price).then(result => {
+
+exports.download_pkg_label_excel = (req, res, next) => {
+	services.packageService.getPackage_updated(req.params.id).then(package => {
+		services.printService.getAWBDataForAllRelatedEntities(package.awbId).then((awb) => {
+			package.ext = "excel"
+			lblPdfGen.generateSinglePackageLabel(awb, package).then(result => {
 				res.download(result.path);
 			})
 		})
+	})
+}
+
+exports.download_pdf_pricelabel = (req, res, next) => {
+		services.AwbPriceLabelService.getPriceLabel(req.params.id).then(price => {
+		if(!price.awbId){
+	        res.send({ success: false, message: "This AWB has no current pricing info. Please update it first." });
+		}else{
+			services.printService.getAWBDataForAllRelatedEntities(price.awbId).then((awb) => {
+				lblPdfGen.generateSinglePriceLabel(awb, price).then(result => {
+					res.download(result.path);
+					// res.send(result.path);
+				})
+			})
+		}
 	})
 
 }
@@ -127,7 +148,11 @@ exports.print_all_pkg_labels = async (req, res, next) => {
 }
 
 exports.generate_awb_pdf = (req, res, next) => {
-	services.printService.getAWBDataForAllRelatedEntities(req.params.id).then(awb => {
+	services.printService.getAWBDataForAllRelatedEntities(req.params.id).then(async(awb) => {
+		let priceLabelAwb  =  await services.AwbPriceLabelService.getPriceLabel(awb._id)
+		if(priceLabelAwb){
+			awb.express = priceLabelAwb.Express
+		}
 		awbPdfGen.generateAWb(awb).then(result => {
 			res.send(result);
 		})
@@ -148,8 +173,9 @@ exports.generate_pkg_label_pdf = (req, res, next) => {
 exports.generate_cube_pdf = (req, res, next) => {
 	services.cubeService.getCube(req.params.id).then(cube => {
 		cube.trackingNo = cube.cubeDetail ? cube.cubeDetail.trackingNo : null;
-		services.printService.getAWBDataForAllRelatedEntities(cube.packages[0].awbId).then((awb) => {
+		services.printService.getAWBDataForAllRelatedEntities(cube.cubeDetail.awbId).then((awb) => {
 			awb['cubePkg'] = true;
+			awb.customer.pmb = 9000
 			cubPdfGen.generateSinglePackageLabel(awb, cube).then(result => {
 				res.send(result);
 			})
@@ -160,11 +186,15 @@ exports.generate_cube_pdf = (req, res, next) => {
 exports.generate_price_label_pdf = (req, res, next) => {
 	console.log("DWLD PRICE LABEL")
 	services.AwbPriceLabelService.getPriceLabel(req.params.id).then(price => {
-		services.printService.getAWBDataForAllRelatedEntities(price.awbId).then((awb) => {
-			lblPdfGen.generateSinglePriceLabel(awb, price).then(result => {
-				res.send(result);
+		if(!price.awbId){
+	        res.send({ success: false, message: "This AWB has no current pricing info. Please update it first." });
+		}else{
+			services.printService.getAWBDataForAllRelatedEntities(price.awbId).then((awb) => {
+				lblPdfGen.generateSinglePriceLabel(awb, price).then(result => {
+					res.send(result);
+				})
 			})
-		})
+		}
 	})
 }
 
@@ -176,7 +206,7 @@ exports.downloadAirCargoManifest = async (req, res, next) => {
 			manifest.airportFromId && services.airportService.get(manifest.airportFromId),
 			manifest.airportToId && services.airportService.get(manifest.airportToId),
 		]);
-
+		let cubePackages = await services.packageService.getPackagesByObject({packageType : "Cube"})
 		let awbIds = [];
 
 		let packagesByAWB = packages.reduce((acc, pkg) => {
@@ -206,6 +236,14 @@ exports.downloadAirCargoManifest = async (req, res, next) => {
 				name: String(pkg.shipperId && pkg.shipperId.name),
 				address: String(pkg.shipperId && pkg.shipperId.address),
 			};
+			for(let cube of cubePackages){
+				if(String(cube.awbId) == String(pkg.awbId._id)){
+					item.consignee.name = "Nine to Five Import Export"
+					item.consignee.address = ''
+					item.shipper.name = "Nine to Five Import Export"
+					item.shipper.address = ''
+				}
+			}
 
 			item.hazmat = (pkg.hazmatId && pkg.hazmatId.description) || " ";
 			item.natureOfGoods = (pkg.description && pkg.description)
@@ -228,8 +266,14 @@ exports.downloadAirCargoManifest = async (req, res, next) => {
 			awbsArray: awbsArray,
 			invoicesArray: invoicesArray
 		});
-		let filePath = await airCargoManifest.generate();
-		res.download(filePath);
+		let result = await airCargoManifest.generate();
+		if(result.id){
+			res.type('pdf');
+			res.attachment(`${result.id}-ACM.pdf`);
+			result.stream.pipe(res);
+			result.stream.end();
+		}else
+			res.download(result);
 	} catch (error) {
 		next(error);
 	}
@@ -238,14 +282,15 @@ exports.downloadAirCargoManifest = async (req, res, next) => {
 exports.downloadCubePdf = async (req, res, next) => {
 	try {
 		let cubeDataObject = await services.cubeService.getCubeCompleteData(req.params.id);
-
+		let cubePackage = await services.packageService.getPackagesById([cubeDataObject.cubeDetail._id])
 		let packages = [];
 		let manifest = {};
 
 		if (cubeDataObject.cubeDetail && cubeDataObject.cubeDetail.manifestId) {
 			manifest = await services.manifestService.getManifest(cubeDataObject.cubeDetail.manifestId);
-			packages = await services.packageService.cloneManifestAndOriginal(cubeDataObject.cubeDetail.manifestId);
-		} else if (cubeDataObject && cubeDataObject.packageList && cubeDataObject.packageList.length) {
+			// packages = await services.packageService.cloneManifestAndOriginal(cubeDataObject.cubeDetail.manifestId);
+		}
+		if (cubeDataObject && cubeDataObject.packageList && cubeDataObject.packageList.length) {
 			packages = await services.packageService.getPackagesById(cubeDataObject.packageList.map(a => a._id))
 		} else {
 			return res.send({ success: true, message: strings.string_noData })
@@ -258,6 +303,10 @@ exports.downloadCubePdf = async (req, res, next) => {
 			manifest.airportToId && services.airportService.get(manifest.airportToId),
 		]);
 
+		for(pack of packages){
+			let awbCustomer =await services.awbService.getAwbPreviewDetails(pack.awbId._id)
+			pack.customerDetail = awbCustomer
+		}
 		let packagesByAWB = packages.reduce((acc, pkg) => {
 			acc[pkg.awbId] = acc[pkg.awbId] || {};
 			let item = acc[pkg.awbId];
@@ -277,10 +326,28 @@ exports.downloadCubePdf = async (req, res, next) => {
 				name: '',
 				address: ''
 			};
-
+			item.shipper = {
+				name: '',
+				address: ''
+			};
 			if (pkg.customerId) {
 				item.consignee.name = pkg.customerId.lastName ? (pkg.customerId.firstName + ' ' + pkg.customerId.lastName) : pkg.customerId.firstName
 				item.consignee.address = (pkg.customerId && pkg.customerId.address) ? pkg.customerId.address : ''
+			}
+			else if(pkg.customerDetail){
+				item.consignee.name = pkg.customerDetail.customerId.lastName ? (pkg.customerDetail.customerId.firstName + ' ' + pkg.customerDetail.customerId.lastName) : pkg.customerDetail.customerId.firstName
+				item.consignee.address = (pkg.customerDetail.customerId && pkg.customerDetail.customerId.address) ? pkg.customerDetail.customerId.address : ''
+			}
+			if(pkg.shipperId){
+				item.shipper = {
+					name: String(pkg.shipperId && pkg.shipperId.name),
+					address: String(pkg.shipperId && pkg.shipperId.address),
+				};
+			}else if(pkg.customerDetail && pkg.customerDetail.shipper){
+				item.shipper = {
+					name: String(pkg.shipperId.name),
+					address: String(pkg.shipperId.address),
+				};
 			}
 
 			item.shipper = {
@@ -294,6 +361,8 @@ exports.downloadCubePdf = async (req, res, next) => {
 		}, {});
 
 		let cubeManifest = new CUBE({
+			cubeName : cubeDataObject.name,
+			awbId : cubePackage[0].awbId.awbId,
 			owner: 'Nine To Five Import Export LLC',
 			marksOfNationalityAndRegistration: 'United States - ' + (manifest.planeId ? manifest.planeId.tailNumber : ''),
 			flightNumber: ((manifest && manifest.planeId) ? manifest.planeId.tailNumber : '') + (manifest ? manifest.title : ''),
@@ -302,11 +371,16 @@ exports.downloadCubePdf = async (req, res, next) => {
 			portOfOnlading: (airportTo && airportTo.name) ? String(airportTo && airportTo.name) : '',
 			rows: Object.values(packagesByAWB),
 		});
-		let stream = await cubeManifest.generate();
-		res.type('pdf');
-		res.attachment(`${cubeDataObject._id}-Cube.pdf`);
-		stream.pipe(res);
-		stream.end();
+		// let stream = await cubeManifest.generate();
+		// res.type('pdf');
+		// res.attachment(`${cubeDataObject._id}-Cube.pdf`);
+		// stream.pipe(res);
+		// stream.end();
+
+		awbPdfGen.getPdfArray(cubeManifest,cubeDataObject._id,packages).then((pdfArray)=>{
+			res.zip(pdfArray)
+		})
+
 	} catch (error) {
 		next(error);
 	}
@@ -316,21 +390,32 @@ exports.downloadFlightManifest = async (req, res, next) => {
 	try {
 		let manifest = await services.manifestService.getManifest(req.params.id);
 		let packages = await services.packageService.cloneManifestAndOriginal(req.params.id);
-
+		let cubePackages = await services.packageService.getPackagesByObject({packageType : "Cube"})
 		let rows = packages.map((pkg) => {
+			let consignee = {
+				name: String(
+					pkg.customerId && [pkg.customerId.firstName, pkg.customerId.lastName].filter(Boolean).join(' '),
+				),
+			};
+			let shipper = {
+				name: String(pkg.shipperId && pkg.shipperId.name),
+				address: String(pkg.shipperId && pkg.shipperId.address)
+			};
+
+ 			for(let cube of cubePackages){
+				if(String(cube.awbId) == String(pkg.awbId._id)){
+					consignee.name = "Nine to Five Import Export"
+					consignee.address = ''
+					shipper.name = "Nine to Five Import Export"
+					shipper.address = ''
+				}
+			}
 			return {
 				id: pkg.id,
 				awb: pkg.awbId.awbId,
 				weight: services.packageService.getPackageWeightInLBS(pkg),
-				consignee: {
-					name: String(
-						pkg.customerId && [pkg.customerId.firstName, pkg.customerId.lastName].filter(Boolean).join(' '),
-					),
-				},
-				shipper: {
-					name: String(pkg.shipperId && pkg.shipperId.name),
-					address: String(pkg.shipperId && pkg.shipperId.address),
-				},
+				consignee: consignee,
+				shipper: shipper
 			};
 		});
 		let image = await lblPdfGen.generateBarcode(manifest.id)
@@ -342,11 +427,14 @@ exports.downloadFlightManifest = async (req, res, next) => {
 			flightNumber: manifest.planeId.tailNumber,
 			rows,
 		});
-		let stream = await flightManifest.generate();
-		res.type('pdf');
-		res.attachment(`${manifest.id}-FM.pdf`);
-		stream.pipe(res);
-		stream.end();
+		// let stream = await flightManifest.generate();
+		// res.type('pdf');
+		// res.attachment(`${manifest.id}-FM.pdf`);
+		// stream.pipe(res);
+		// stream.end();
+		awbPdfGen.getPdfArray(flightManifest,manifest.id,packages).then((pdfArray)=>{
+			res.zip(pdfArray)
+		})
 	} catch (error) {
 		next(error);
 	}
@@ -521,7 +609,8 @@ exports.downloadDeliveryReport = async (req, res, next) => {
 				awb: pkg.awbId.id,
 				weight: services.packageService.getPackageWeightInLBS(pkg),
 				pmb: pkg.customerId && pkg.customerId.pmb,
-				description: pkg.description
+				description: pkg.description,
+				awbId : pkg.awbId.awbId
 			};
 		});
 
@@ -530,6 +619,8 @@ exports.downloadDeliveryReport = async (req, res, next) => {
 			deliveryDate: delivery.delivery_date,
 			vehicleNo: delivery.vehicleId.registration,
 			rows,
+			location : delivery.locationId.name,
+			deliveryNum : delivery.deliveryNum
 		});
 		let stream = await deliveryReport.generate();
 		res.type('pdf');

@@ -11,9 +11,13 @@ Number.prototype.formatMoney = function (c, d, t) {
 function closeAddPackage(){  
   $('.mfp-close').trigger("click");
 }
+let noTrackingId = ""
 $('select#originBarcode option').each(function(index,option){
   let text = option.text
- if(text === "No Tracking") option.selected = true; 
+ if(text === "No tracking") {
+   option.selected = true; 
+   noTrackingId = option.value
+ }
 })
 function refreshBarcode(){  
   $.ajax({
@@ -24,7 +28,7 @@ function refreshBarcode(){
         var barcodeId = (response.barcode)?response.barcode._id:'';        
         $('#originBarcode').val(barcodeId).trigger('change');
       }else{
-        $('#originBarcode').val(barcodeId).trigger('change');
+        // $('#originBarcode').val(barcodeId).trigger('change');
       }
     }
   })
@@ -38,6 +42,7 @@ if (Array.isArray(window.invoices) && window.invoices.length) {
   AWBInvoices.addInvoceRow() 
 }
 
+var AWBAdditionalInvoices = [],invoiceIdArray = []
 
 var pickup = $('select.awb-deliveryMethod').children("option:selected").val();
 if(pickup == '1') $('.hideDriver').hide()
@@ -116,6 +121,11 @@ $(function () {
     width: '100%',
     placeholder: "Select a package type"
   })
+  $('#originBarcode').select2({
+    theme: 'bootstrap',
+    width: '100%',
+    placeholder: "Select a package type"
+  })
   $('#packageCalculation').select2({
     theme: 'bootstrap',
     width: '100%',
@@ -126,6 +136,11 @@ $(function () {
     theme: 'bootstrap',
     width: '100%',
     placeholder: "Select a Driver"
+  })
+  $('form[name="add-additional-invoices-form"] select').select2({
+    theme: 'bootstrap',
+    width: '100%',
+    minimumResultsForSearch: -1
   })
 
   $('form[name="add-purchase-order-item-form"] select').select2({
@@ -150,6 +165,58 @@ $(function () {
 
     AWBPO.addItem(item);
     
+    $(this).closest('.modal').modal('hide');
+  });
+
+
+  $('form[name="add-additional-invoices-form"]').submit(function (event) {
+    event.preventDefault();
+    let item = extractFormData(this), flag=0;
+    item.fileName = $(this)
+      .find('[name="additionalInvoices"] option:selected')
+      .data('name');
+    item.filePath = $(this)
+      .find('[name="additionalInvoices"] option:selected')
+      .data('path');
+    item.pmb = $(this)
+      .find('[name="additionalInvoices"] option:selected')
+      .data('pmb');
+    item.courierNo = $(this)
+      .find('[name="additionalInvoices"] option:selected')
+      .data('courier');
+
+    item._id = item.additionalInvoices
+
+    for(let id of invoiceIdArray){
+      if(String(id) == String(item._id)){
+        flag = 1
+        break
+      }
+    }
+    if(flag == 0){
+      $('#additionalInvoices-list').append(`  <div class="card" data-record="${item.additionalInvoices}">
+      <div class="card-header">
+        Additional Invoice
+        <button type="button"  class="close" data-id="${item.additionalInvoices}" onclick="removeInvoice(this)">
+              <span aria-hidden="true" class="float-right">×</span>
+        </button>
+      </div>
+      <div class="card-body">
+        <div>
+          <b>Courier No</b> : <span style="word-break: break-all" class="float-right">${item.courierNo}</span>
+        </div>
+        <div>
+          <b>File Name</b> : <span style="word-break: break-all" class="float-right">${item.fileName}</span>
+        </div>
+        <div>
+          <b>PMB</b> : <span style="word-break: break-all" class="float-right">${item.pmb}</span>
+        </div>
+      </div>
+      </div>
+    `)
+      AWBAdditionalInvoices.push(item);
+      invoiceIdArray.push(item._id)
+    }
     $(this).closest('.modal').modal('hide');
   });
 
@@ -192,7 +259,14 @@ $(function () {
         $('#description').val("");
         $('#weight').val("");
         $('#packageType').val("BOX");
+        $('#select2-packageType-container').text('BOX');
         $('#packageCalculation').val("lbs");
+        $('#select2-packageCalculation-container').text('lbs');        
+        $("#express"). prop("checked", false);
+        $('#originBarcode').val(noTrackingId);
+        
+        $('#select2-originBarcode-container').text('No tracking');
+        $('#originBarcode').val($('#originBarcode').val());
         $('#W').val("");
         $('#H').val("");
         $('#L').val("");
@@ -220,6 +294,8 @@ $(function () {
     let pkg = extractFormData(this);
    // console.log(pkg);
    // console.log(awbPackages);
+   if(pkg.express == "on") pkg.express = true;
+    else pkg.express = false
     let isNew=false;
     if (!pkg.id) {
       pkg.id = Date.now().toString();
@@ -294,6 +370,7 @@ $(function () {
     if (deletedPurchaseOrders && deletedPurchaseOrders.length) {
       purchaseOrder = [...purchaseOrder, ...deletedPurchaseOrders];
     }
+    awbInfo.additionalInvoices = AWBAdditionalInvoices
 
     awbInfo.purchaseOrder = JSON.stringify(purchaseOrder);
 
@@ -305,7 +382,9 @@ $(function () {
         if (result.fileName) {
           invoice.filename = result.fileName;
         }
-
+        if(result.name){
+          invoice.name = result.name
+        }
         awbInfo.invoices.push(invoice);
       });
     });
@@ -497,6 +576,11 @@ $(function () {
       // A bit hacky way to detect newly added packages, pkg.id == Date.now() for new package for 
       // some reason
       // console.error('pkg', pkg);
+      let check = 1
+      pkg.dimensions.split('x').forEach(data =>{
+        check = check * data
+      })
+      pkg.volumetricWeight = (check/166);
 
       let isNew = pkg.id > 1e9
       let rowNode = packageTable.row
@@ -505,6 +589,7 @@ $(function () {
           pkg.description,
           pkg.dimensions,
           Number(pkg.weight).toFixed(2) + ` ${pkg.packageCalculation || 'kg'}`,
+          Number(pkg.volumetricWeight).toFixed(2) + ` 'vlbs'`,
           pkg.lastStatusText ? pkg.lastStatusText : '',
           [
             `<a class="btn btn-link btn-primary btn-edit-pkg p-1" title="Edit" data-id="${pkg.id}" href="#add-package-popup"><i class="fa fa-pen"></i></a>`,
@@ -534,7 +619,13 @@ $(function () {
             $('#description').val(pkg.description);
             $('#weight').val(pkg.weight);
             $('#packageType').val(pkg.packageType || 'BOX');
+            $('#select2-packageType-container').text(pkg.packageType || 'BOX');
+            $('#originBarcode').val(pkg.originBarcode || 'No tracking');
+            console.log("pkg.originBarcode",pkg.originBarcode,$('#originBarcode option:selected').text())
+            $('#select2-originBarcode-container').text($('#originBarcode option:selected').text());
+            $("#express"). prop("checked", pkg.express);
             $('#packageCalculation').val(pkg.packageCalculation||'lbs');
+            $('#select2-packageCalculation-container').text(pkg.packageCalculation || 'lbs');
             var dims = pkg.dimensions.toLowerCase().split('x');
             $("#W").val(dims[0])
             $("#H").val(dims[1])
@@ -603,3 +694,19 @@ $(function() {
     printJS(pdfPath);
   });
 });
+
+function removeInvoice(str){
+  var id = $(str).data('id');
+  for(var i=0;i<AWBAdditionalInvoices.length;i++){
+    if(id == AWBAdditionalInvoices[i].additionalInvoices){
+      AWBAdditionalInvoices.splice(i,1)
+      invoiceIdArray.forEach((itemId,index) => {
+        if(String(id) == String(itemId)){
+          invoiceIdArray.splice(index,1)
+        }
+      })
+      $('div[data-record="' + id + '"]').remove()
+      break
+    }
+  }
+}

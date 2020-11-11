@@ -16,6 +16,14 @@ const Customer = require('../models/customer');
 const CustomerChild = require('../models/customerChild');
 
 class CustomerChildService {
+
+  constructor() {
+    this.services = {};
+}
+
+setServiceInstances(services) {
+    this.services = services;
+}
   createCustomer(customer) {
     return new Promise(async (resolve, reject) => {
       if (customer.email) {
@@ -122,9 +130,82 @@ class CustomerChildService {
       }
     })
   }
-  getCustomers(object) {
+  getCustomers(req,searchData) {
+    if(req && req.query){
+      var daterange = req.query.daterange?req.query.daterange:'';
+      if(daterange){
+        var date_arr = daterange.split('-');
+        var startDate = (date_arr[0]).trim();      
+        var stdate = new Date(startDate);
+        stdate.setDate(stdate.getDate() +1);
+
+        var endDate = (date_arr[1]).trim();
+        var endate = new Date(endDate);
+        endate.setDate(endate.getDate() +1);     
+        searchData.createdAt = {"$gte":stdate, "$lte": endate};
+      }
+
+      if(!req.query.daterange && !req.query.clear){
+        var endate = new Date();      
+        endate.setDate(endate.getDate()+1);
+        var stdate = new Date();
+        stdate.setDate(stdate.getDate() -21);      
+        searchData.createdAt = {"$gte":stdate, "$lte": endate};
+      }
+      if(req.query.clear){
+        var endate = new Date();      
+        endate.setDate(endate.getDate()+1);
+        var stdate = new Date();
+        stdate.setDate(stdate.getDate() -14);      
+        searchData.createdAt = {"$gte":stdate, "$lte": endate};
+      }
+    }
     return new Promise((resolve, reject) => {
-      CustomerChild.find(object)
+      CustomerChild.find(searchData)
+      .populate('parentCustomer')
+      .exec((err, customers) => {
+        if (err) {
+          resolve([]);
+        } else {
+          resolve(customers);
+        }
+      })
+    })
+  }
+  getAllCustomers(req){
+    return new Promise((resolve, reject) => {
+            
+      var searchData = {};
+      if(req && req.query){
+        var daterange = req.query.daterange?req.query.daterange:'';
+        if(daterange){
+          var date_arr = daterange.split('-');
+          var startDate = (date_arr[0]).trim();      
+          var stdate = new Date(startDate);
+          stdate.setDate(stdate.getDate() +1);
+
+          var endDate = (date_arr[1]).trim();
+          var endate = new Date(endDate);
+          endate.setDate(endate.getDate() +1);     
+          searchData.createdAt = {"$gte":stdate, "$lte": endate};
+        }
+
+        if(!req.query.daterange && !req.query.clear){
+          var endate = new Date();      
+          endate.setDate(endate.getDate()+1);
+          var stdate = new Date();
+          stdate.setDate(stdate.getDate() -21);      
+          searchData.createdAt = {"$gte":stdate, "$lte": endate};
+        }
+        if(req.query.clear){
+          var endate = new Date();      
+          endate.setDate(endate.getDate()+1);
+          var stdate = new Date();
+          stdate.setDate(stdate.getDate() -14);      
+          searchData.createdAt = {"$gte":stdate, "$lte": endate};
+        }
+      }
+      CustomerChild.find(searchData)
       .populate('parentCustomer')
       .exec((err, customers) => {
         if (err) {
@@ -349,6 +430,56 @@ class CustomerChildService {
       }
     });
   }  
+  getCustomerAwbsNoDocs(req,searchData) {
+    if(req && req.query){
+      var daterange = req.query.daterange?req.query.daterange:'';
+      if(daterange){
+        var date_arr = daterange.split('-');
+        var startDate = (date_arr[0]).trim();      
+        var stdate = new Date(startDate);
+        stdate.setDate(stdate.getDate() +1);
+
+        var endDate = (date_arr[1]).trim();
+        var endate = new Date(endDate);
+        endate.setDate(endate.getDate() +1);     
+        searchData.createdAt = {"$gte":stdate, "$lte": endate};
+      }
+
+      if(!req.query.daterange && !req.query.clear){
+        var endate = new Date();      
+        endate.setDate(endate.getDate()+1);
+        var stdate = new Date();
+        stdate.setDate(stdate.getDate() -21);      
+        searchData.createdAt = {"$gte":stdate, "$lte": endate};
+      }
+      if(req.query.clear){
+        var endate = new Date();      
+        endate.setDate(endate.getDate()+1);
+        var stdate = new Date();
+        stdate.setDate(stdate.getDate() -14);      
+        searchData.createdAt = {"$gte":stdate, "$lte": endate};
+      }
+    }
+    return new Promise((resolve, reject) => {
+        CustomerChild.find(searchData)
+            .populate('parentCustomer')
+            .exec(async (err, awbData) => {
+                if (err) {
+                    resolve([]);
+                } else {
+                    let responseArray = []
+                    // for(let data of awbData){
+                    //     let packagesResult = await this.services.packageService.get_Packages_update({ customerId:data._id});
+                    //     responseArray.push(...packagesResult)
+                    // }
+                    let customerPackagesResult = await this.services.packageService.get_Packages_update({ customerId:searchData.createdBy});
+                    responseArray.push(...customerPackagesResult)
+
+                    resolve(responseArray);
+                }
+            });
+    });
+  }
 }
 
 module.exports = CustomerChildService;

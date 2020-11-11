@@ -23,9 +23,9 @@ $('#confirm-delete-manifest').find('#btn-rm').click(function () {
   });
 })
 
-$('.manifest-table').DataTable({
-  pageLength: 10,
-})
+// $('.manifest-table').DataTable({
+//   pageLength: 10,
+// })
 
 $(function() {
   let manifestChangeStatusForm = $('#change-manifest-status-form');
@@ -109,3 +109,30 @@ $(function() {
       }
     });
 })
+
+$(document).on('click', '.applyBtn', function() {
+  if($('#filter').val() == "Manifests")
+    window.location = "/warehouse/fll/manifest/list?daterange="+$('.daterange').val();
+  else
+    window.location = "/warehouse/nas/manifest/incoming?daterange="+$('.daterange').val();
+})
+ $(document).on('click', '.cancelBtn', function() {
+  if($('#filter').val() == "Manifests")
+    window.location = "/warehouse/fll/manifest/list?clear=1";
+  else
+    window.location = "/warehouse/nas/manifest/incoming?clear=1";
+})
+$(document).ready(function() {
+  setTimeout(()=>{
+		if($('#clear').val() ){
+		  $('#clear').val('1');
+		  var endate = new Date();      
+		  endate.setDate(endate.getDate());
+		  var stdate = new Date();
+		  stdate.setDate(stdate.getDate() -14);      
+		  var dateRange = (stdate.getMonth() + 1)+ '/'+stdate.getDate()+'/'+stdate.getFullYear()+' - '+
+		  (endate.getMonth() + 1)+ '/'+endate.getDate()+'/'+endate.getFullYear()      
+		  $('.daterange').val(dateRange)
+		}	   
+  },100) 
+})  

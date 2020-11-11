@@ -84,6 +84,7 @@ var services = {
 
 packageService.setServiceInstances(services);
 awbService.setServiceInstances(services);
+customerChildService.setServiceInstances(services);
 deliveryService.setServiceInstances(services);
 PriceLabelService.setServiceInstances(services);
 AwbPriceLabelService.setServiceInstances(services);

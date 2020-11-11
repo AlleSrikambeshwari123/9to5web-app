@@ -2,7 +2,7 @@
 <div class='gutters'>
   <div class='col-xl-12 col-lg-6 col-md-12 col-sm-12'>
     <div class='card card-with-nav'>
-      <div class="card-header">
+      <!-- <div class="card-header">
         <div class="row row-nav-line">
           <ul class="nav nav-tabs nav-line nav-color-primary" id="awb-list-tab" role="tablist">
             <li class="nav-item"> <a class="nav-link active show" data-toggle="tab" href="#awb-list" role="tab"
@@ -11,15 +11,16 @@
                 aria-selected="false">No Docs Packages Scanned</a> </li>
           </ul>
         </div>
-      </div>
+      </div> -->
+      <div id="myLoader"><img src="/img/preloader.gif"></div>
       <div class="card-body daterangepickerbody">
         <div class="tab-content m-4" id="awb-list-tabContent">
-          <div class="tab-pane fade show active" id="awb-list" role="tabpanel" aria-labelledby="awb-list-tab">
+          <!-- <div class="tab-pane fade show active" id="awb-list" role="tabpanel" aria-labelledby="awb-list-tab">
             <div class="table-responsive">
               <table id='awb-table' class='display no-docs-table table table-striped table-hover dateRangeFilterTable dataTable'>
                 <thead>
                     <tr>
-                        <!-- <th><input id="checkall" type="checkbox" class="package-select-all" /></th> -->
+                        <!-- <th><input id="checkall" type="checkbox" class="package-select-all" /></th> --
                         <th>Customer Name</th>
                         <th>OrignalScanDate</th>
                         <th>AWB</th>
@@ -36,7 +37,7 @@
                         <th>AirwareBillDate</th>
                         <th>ActualFlight</th>
                         <th></th>
-                        <!-- <th></th> -->
+                        <!-- <th></th> --
                       </tr>
                     </thead>
                     <tbody>
@@ -46,7 +47,7 @@
                           <tr data-record="<%= pkg._id %>">
                             <!-- <td>
                               <input type="checkbox" name="package-select" class="package-select" />
-                            </td> -->
+                            </td> --
                             <% if (pkg['customerId']) { %>
                               <td><%= (pkg['customerId'].lastName ? 
                                 `${pkg['customerId'].firstName} ${pkg['customerId'].lastName}` : 
@@ -74,7 +75,7 @@
                                     <td class="lastStatusText_field"><%= pkg.lastStatusText %></td>
                                     <td><%= pkg.awbCreatedAt %></td>
                                     <td><%= pkg.actualFlight %></td>
-                                    <!-- <td><a href="../pkg-label/download/<%=pkg._id%>"><i class="fa fa-download"></i></a></td> -->
+                                    <!-- <td><a href="../pkg-label/download/<%=pkg._id%>"><i class="fa fa-download"></i></a></td> --
                                     <td class="text-center">
                                       <a href="../pkg-label/download/<%=pkg._id%>"><i class="fa fa-download"></i></a>
                                       <a
@@ -91,10 +92,11 @@
                               </tbody>
                             </table>
                           </div>
-                        </div>
+                        </div> -->
                         <!-- Nodocs -->
-                        <div class="tab-pane fade" id="awb-no-docs" role="tabpanel" aria-labelledby="awb-no-docs-tab">
+                        <!-- <div class="tab-pane fade" id="awb-no-docs" role="tabpanel" aria-labelledby="awb-no-docs-tab"> -->
                           <div class="table-responsive">
+                            <input type="hidden" name="clear" id="clear" value="<%=clear%>">
                             <table id='no-docs-table' class='display no-docs-table table table-striped table-hover dateRangeFilterTable dataTable'>
                               <thead>
                                 <tr>
@@ -105,9 +107,10 @@
                         <th>Original Tracking No</th>
                         <th>Package No</th>
                         <th>Aging</th>
-                        <th>Aging $</th>
+                        <th>Storage Fees</th>
                         <th>Description</th>
                         <th>Zone</th>
+                        <th>Location</th>
                         <th>Type</th>
                         <th>Weight</th>
                         <th>Number of Pieces</th>
@@ -134,7 +137,8 @@
                             <% } else { %>
                               <td> - </td>
                               <% } %>
-                              <td><%= helpers.formatDate(pkg.OrignalBarcodeDate) %></td>
+                              <td><a href="/warehouse/pkg-label-excel/download/<%=pkg._id%>"> <%= helpers.formatDate(pkg.OrignalBarcodeDate) %></a></td>
+                              
                         <td><a class="text-decoration-none" href="../../nas/awb/manage/<%=pkg.awbId._id%>/preview"><b><%= pkg.express ? '*': '' %></b><%= pkg.awbId.awbId %> </a></td>
                         <td><%= pkg.originBarcode ? pkg.originBarcode.barcode: ''%></td>
                         <td><%= pkg.packageNumber ? pkg.packageNumber : ''%></td>
@@ -147,6 +151,7 @@
                       <% } else { %>
                         <td> - </td>
                         <% } %> 
+                        <td><%= (pkg.location) ? pkg.location : '' %></td>
                         <td><%= pkg.packageType %></td>
                         <td><%= pkg.weight%></td>
                         <td><%= (pkg.pieces || pkg.pieces > -1) ? pkg.pieces : ''%></td>
@@ -170,7 +175,7 @@
                   </tbody>
                 </table>
               </div>
-          </div>
+          <!-- </div> -->
         </div>
       </div>
     </div>
@@ -199,6 +204,8 @@ style="display: none;">
   </div>
 </div>
 </div>
-
+<script>
+  var pageUrl = page ? page: '';
+</script>
 <% block('scripts').append('<script src="/js/utils.js"></script>')%>
 <% block('scripts').append('<script src="/js/warehouse/awb/no-docs-packages.js"></script>')%>

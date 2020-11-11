@@ -115,7 +115,13 @@ class LBLGeneration {
         this.awb.customer.pmb = 9000;
         company = this.companies.nineTofive;
       } else company = this.companies.postBoxes;
-      this.GernerateAWBLabel(0,pkg, company)
+      let pkgIndex = 0
+      this.awb.packages.forEach((data,index) =>{
+        if(data._id.toString() == pkg._id.toString()){
+          pkgIndex = index+1
+        }
+      })
+      this.GernerateAWBLabel(pkgIndex,pkg, company)
         .then((result) => {
           console.log(result);
           resolve(result);
@@ -324,7 +330,7 @@ class LBLGeneration {
       if ((this.awb.invoices || []).length === 0) {
         noDocs = '***';
       }
-
+      let shipperName = this.awb.shipper ? this.awb.shipper.name :''
       var notes = '';
       if (this.awb.hazmat && this.awb.hazmat.description) {
         notes = this.awb.hazmat.description;
@@ -436,7 +442,7 @@ class LBLGeneration {
                           margin: [1, 1],
                           stack: [
                             { text: 'SHIPPER', fontSize: 7, bold: true },
-                            { margin: [0, 5], text: this.awb.shipper.name, fontSize: 10, bold: true },
+                            { margin: [0, 5], text: shipperName, fontSize: 10, bold: true },
                           ],
                           border: [false, false, false, true],
                         }, //logo for lbl
@@ -564,7 +570,10 @@ class LBLGeneration {
             };
             var filestream;
             var pdfDoc = printer.createPdfKitDocument(docDefinition);
-            var filename = '/pkg.' + pkg.id +'.'+ key + '.pdf';
+            var ext = '.pdf'
+            if(pkg.ext == "excel")
+              ext = '.xls'
+            var filename = '/pkg.' + pkg.id +'.'+ key + ext;
             var filepath = global.uploadRoot + filename;
             pdfDoc.pipe((filestream = fs.createWriteStream(filepath)));
             pdfDoc.end();
@@ -584,7 +593,7 @@ class LBLGeneration {
     var dimensionparts = dimensions.split('x');
     var numerator = 1;
     dimensionparts.forEach((part) => (numerator *= Number(part.trim())));
-    var dimWeight = numerator / 139;
+    var dimWeight = numerator / 166;
     return Number(dimWeight).formatMoney(2, '.', ',');
   }
   generateShiperCosigneeTable(awb) {

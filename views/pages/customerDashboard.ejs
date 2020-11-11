@@ -21,7 +21,9 @@
       <div class="card-header d-flex align-items-left align-items-md-center flex-column flex-md-row">
         <div class="card-title"><%= title %></div>
       </div>
+      <div id="myLoader"><img src="/img/preloader.gif"></div>
       <div class="card-body daterangepickerbody">
+          <input type="hidden" name="clear" id="clear" value="<%=clear%>">
         <div class="table-responsive p-4">
           <table id="package-table"
             class="display dateRangeFilterTable table table-striped table-hover dataTable package-table">
@@ -238,4 +240,4 @@
   </div>
 </div>
 <% block('scripts').append('<script src="/js/utils.js"></script>')%>
-<% block('scripts').append('<script src="/js/warehouse/package/list-all.js"></script>')%>
+<% block('scripts').append('<script src="/js/customer/home/list.js"></script>')%>

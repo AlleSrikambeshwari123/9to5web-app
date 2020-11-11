@@ -20,7 +20,7 @@ const PKG_STATUS = {
     1: 'Received in FLL',
     2: 'Loaded on AirCraft',
     3: 'In Transit',
-    4: 'Recieved in NAS',
+    4: 'In Warehouse Nassuau',
     5: 'Received By Customer',
     6: 'Delivered',
     7: 'No Invoice Present',
@@ -202,7 +202,7 @@ class PackageService {
         })
     }
 
-    // 4: 'Recieved in NAS',
+    // 4: 'In Warehouse Nassuau',
     async receivePackageToFlight(packageIds, userId) {
         try {
             let error = []
@@ -328,7 +328,58 @@ class PackageService {
                 if (item.lastStatusText == PKG_STATUS[1]) obj.received_fill += 1;
                 if (item.lastStatusText == PKG_STATUS[2]) obj.loaded_craft += 1;
                 if (item.lastStatusText == PKG_STATUS[3]) obj.in_transit += 1;
-                if (item.lastStatusText == PKG_STATUS[4]) obj.received_nas += 1;
+                if (item.lastStatusText == PKG_STATUS[4] || item.lastStatusText == 'Recieved in NAS') obj.received_nas += 1;
+                if (item.lastStatusText == PKG_STATUS[5]) obj.ready_pd += 1;
+                if (item.lastStatusText == PKG_STATUS[6]) obj.delivered += 1;
+                if (item.lastStatusText == PKG_STATUS[7]) obj.no_invoice += 1;
+                if (item.lastStatusText == PKG_STATUS[8]) obj.assigned_to_cube += 1;
+                if (item.lastStatusText == PKG_STATUS[9]) obj.delivered_to_store += 1;
+            })
+
+            resolve(obj)
+        })
+    }
+    getPackageStatusFilterDate(query){
+        return new Promise(async(resolve, reject) => {
+            var searchData = {};
+            if(query && query.daterange && query.type == "packageStatus"){
+                var daterange = query.daterange;
+                var date_arr = daterange.split('-');
+                var startDate = (date_arr[0]).trim();      
+                var stdate = new Date(startDate);
+                stdate.setDate(stdate.getDate() );
+            
+                var endDate = (date_arr[1]).trim();
+                var endate = new Date(endDate);
+                endate.setDate(endate.getDate() +1);     
+                searchData.createdAt = {"$gte":stdate, "$lte": endate};             
+            }else if(query && query.daterange && !query.type ){
+              var endate = new Date();      
+              endate.setDate(endate.getDate()+1);
+              var stdate = new Date();
+              stdate.setDate(stdate.getDate() -21);      
+              searchData.createdAt = {"$gte":stdate, "$lte": endate};
+            }
+            let packages = await Package.find(searchData)
+            let obj = {
+                created: 0,
+                received_fill: 0,
+                loaded_craft: 0,
+                in_transit: 0,
+                received_nas: 0,
+                ready_pd: 0,
+                delivered: 0,
+                no_invoice: 0,
+                assigned_to_cube: 0,
+                delivered_to_store: 0
+            };
+
+            packages.map((item) => {
+                if (!item.lastStatusText) obj.created += 1;
+                if (item.lastStatusText == PKG_STATUS[1]) obj.received_fill += 1;
+                if (item.lastStatusText == PKG_STATUS[2]) obj.loaded_craft += 1;
+                if (item.lastStatusText == PKG_STATUS[3]) obj.in_transit += 1;
+                if (item.lastStatusText == PKG_STATUS[4] || item.lastStatusText == 'Recieved in NAS') obj.received_nas += 1;
                 if (item.lastStatusText == PKG_STATUS[5]) obj.ready_pd += 1;
                 if (item.lastStatusText == PKG_STATUS[6]) obj.delivered += 1;
                 if (item.lastStatusText == PKG_STATUS[7]) obj.no_invoice += 1;
@@ -385,7 +436,11 @@ class PackageService {
                         let obj = final_obj[date];
                         obj["received_fill"] = obj["received_fill"] + (lastStatusData.status == PKG_STATUS[1] ? 1 : 0)
                         obj["loaded_craft"] = obj["loaded_craft"] + (lastStatusData.status == PKG_STATUS[2] ? 1 : 0)
-                        obj["received_nas"] = obj["received_nas"] + (lastStatusData.status == PKG_STATUS[4] ? 1 : 0)
+                        let flag =0
+                        if(lastStatusData.status == PKG_STATUS[4] || lastStatusData.status == 'Recieved in NAS'){
+                            flag = 1
+                        }
+                        obj["received_nas"] = obj["received_nas"] + flag
                         obj["ready_pd"] = obj["ready_pd"] + (lastStatusData.status == PKG_STATUS[5] ? 1 : 0)
                         obj["delivered"] = obj["delivered"] + (lastStatusData.status == PKG_STATUS[6] ? 1 : 0)
                     });
@@ -480,12 +535,59 @@ class PackageService {
                 });
         });
     }
+    getAllPackagesUpdated(req){        
+        return new Promise((resolve, reject) => {
+            var searchData = {};
+            if(req && req.query){
+                var daterange = req.query.daterange?req.query.daterange:'';
+                if(daterange){
+                  var date_arr = daterange.split('-');
+                  var startDate = (date_arr[0]).trim();      
+                  var stdate = new Date(startDate);
+                  stdate.setDate(stdate.getDate() );
+          
+                  var endDate = (date_arr[1]).trim();
+                  var endate = new Date(endDate);
+                  endate.setDate(endate.getDate() +1);     
+                  searchData.createdAt = {"$gte":stdate, "$lte": endate};
+                }
+          
+                if(!req.query.daterange && !req.query.clear){
+                  var endate = new Date();      
+                  endate.setDate(endate.getDate()+1);
+                  var stdate = new Date();
+                  stdate.setDate(stdate.getDate() -21);      
+                  searchData.createdAt = {"$gte":stdate, "$lte": endate};
+                }
+                if(req.query.clear){
+                  var endate = new Date();      
+                  endate.setDate(endate.getDate()+1);
+                  var stdate = new Date();
+                  stdate.setDate(stdate.getDate() -14);      
+                  searchData.createdAt = {"$gte":stdate, "$lte": endate};
+                }
+              }   
+            Package.find(searchData)
+                .populate('awbId')
+                .populate('originBarcode')
+                .populate('customerId')
+                .populate('zoneId')
+                .exec((err, result) => {
+                    if (err) {
+                        resolve([]);
+                    } else {
+                        resolve(result);
+                    }
+                });
+        });
+    }
     get_Packages_update(object) {
         return new Promise((resolve, reject) => {
             Package.find(object)
                 .populate('awbId')
                 .populate('originBarcode')
                 .populate('customerId')
+                .populate('shipperId')
                 .populate('zoneId')
                 .exec((err, result) => {
                     if (err) {
@@ -516,14 +618,37 @@ class PackageService {
         });
     }
 
-    getPackageWithFilter(filter, query) {
+    getPackageWithFilter(filter, query) {        
         return new Promise(async(resolve, reject) => {
             let nineToPackages = [],
                 postBox = [],
                 noDocs = [];
+            var daterange = query.daterange?query.daterange:'';
+            var type = query.type?query.type:'';
+            
+            var searchData = {};
+            if(daterange && type){
+                console.log(query);
+                var date_arr = daterange.split('-');
+                  var startDate = (date_arr[0]).trim();      
+                  var stdate = new Date(startDate);
+                  stdate.setDate(stdate.getDate() );
+          
+                  var endDate = (date_arr[1]).trim();
+                  var endate = new Date(endDate);
+                  endate.setDate(endate.getDate() +1);     
+                  var searchDataType = {createdAt: {"$gte":stdate, "$lte": endate}}; 
+            }
+                var endate = new Date();      
+                endate.setDate(endate.getDate()+1);
+                var stdate = new Date();
+                stdate.setDate(stdate.getDate() -21);      
+                searchData.createdAt = {"$gte":stdate, "$lte": endate};
+            
+            console.log("searchData>>>>>>>>>>>>>>>>",searchData)
             if (filter === 'all') {
-                let packages = await Package.find({}).populate(["awbId", "customerId", "zoneId"])
-
+                let packages = await Package.find(searchData).populate(["awbId", "customerId", "zoneId"])
+                
                 let result = await Promise.all(packages.map(async(pkg) => {
                     let statuses = await PackageStatus.find({ packageId: pkg._id }) || [];
                     if (statuses.length > 0) {
@@ -542,7 +667,38 @@ class PackageService {
                         }
                     }
                 }))
+                
+                if(type){
+                        if(type == "postbox"){
+                            postBox = [];
+                        }
+                        if(type == "noDocs"){
+                            noDocs = [];
+                        }
+                        if(type == "nineToPackages"){
+                            nineToPackages = [];
+                        }
 
+                    let packages = await Package.find(searchDataType).populate(["awbId", "customerId", "zoneId"])
+                   
+                    let resultType = await Promise.all(packages.map(async(pkg) => {
+                        let statuses = await PackageStatus.find({ packageId: pkg._id }) || [];
+                        if (statuses.length > 0) {
+                            let packageStatus = statuses[statuses.length - 1];
+                            if (pkg.customerId && pkg.customerId.pmb != "9000" && type=="postbox" ) {
+                                postBox.push({ _id: pkg.id, last_status: packageStatus.status, awb: "AWB" + pkg.awbId.awbId, customer_email: pkg.customerId ? pkg.customerId.email : '', zone: pkg.zoneId ? pkg.zoneId.name : '',createdAt:pkg.createdAt })
+                            }
+                            if (pkg.awbId && pkg.awbId.invoices && pkg.awbId.invoices.length == 0 &&  type=="noDocs") {
+                                noDocs.push({ _id: pkg.id, last_status: packageStatus.status, awb: "AWB" + pkg.awbId.awbId, customer_email: pkg.customerId ? pkg.customerId.email : '', zone: pkg.zoneId ? pkg.zoneId.name : '',createdAt:pkg.createdAt })
+                            }
+    
+                            if (pkg.customerId && pkg.customerId.pmb == "9000" && type == "nineToPackages") {
+                                nineToPackages.push({ _id: pkg.id, last_status: packageStatus.status, awb: "AWB" + pkg.awbId.awbId, customer_email: pkg.customerId ? pkg.customerId.email : '', zone: pkg.zoneId ? pkg.zoneId.name : '',createdAt:pkg.createdAt })
+                            }
+                        }
+                    }))
+                }
+                
                 resolve({ nineToPackages, postBox, noDocs });
 
             } else {
@@ -561,21 +717,21 @@ class PackageService {
                     dbQuery['createdBy'] = query.users;
                 }
 
-                const packages = await Package.find(dbQuery).populate("awbId").populate("customerId");
+                const packages = await Package.find(dbQuery).populate("awbId").populate("customerId").populate("zoneId");
 
                 let result = await Promise.all(packages.map(async(pkg) => {
                     let statuses = await PackageStatus.find({ packageId: pkg._id }) || [];
                     let packageStatus = statuses[statuses.length - 1];
-
-                    if (pkg.awbId.invoices.length == 0 && query.filter_for === "noDocs" && (query.package_status === packageStatus.status || query.package_status === "all")) {
-                        noDocs.push({ _id: pkg.id, last_status: packageStatus.status, awb: pkg.awbId.awbId, customer_email: pkg.customerId.email,createdAt:pkg.createdAt })
+                    packageStatus = packageStatus ? packageStatus : {status:''}
+                    if (pkg.customerId && pkg.awbId.invoices.length == 0 && query.filter_for === "noDocs" && (query.package_status === packageStatus.status || query.package_status === "all")) {
+                        noDocs.push({ _id: pkg.id, last_status: packageStatus.status, awb: pkg.awbId.awbId, customer_email: pkg.customerId.email, zone: pkg.zoneId ? pkg.zoneId.name : '', createdAt:pkg.createdAt })
                     }
                     if (pkg.customerId && pkg.customerId.pmb == 9000 && query.filter_for === "9to5" && (query.package_status === packageStatus.status || query.package_status === "all")) {
-                        nineToPackages.push({ _id: pkg.id, last_status: packageStatus.status, awb: pkg.awbId.awbId, customer_email: pkg.customerId.email,createdAt:pkg.createdAt })
+                        nineToPackages.push({ _id: pkg.id, last_status: packageStatus.status, awb: pkg.awbId.awbId, customer_email: pkg.customerId.email, zone: pkg.zoneId ? pkg.zoneId.name : '', createdAt:pkg.createdAt })
                     }
 
                     if (pkg.customerId && pkg.customerId.pmb != 9000 && query.filter_for === "postBox" && (query.package_status === packageStatus.status || query.package_status === "all")) {
-                        postBox.push({ _id: pkg.id, last_status: packageStatus.status, awb: pkg.awbId.awbId, customer_email: pkg.customerId.email,createdAt:pkg.createdAt })
+                        postBox.push({ _id: pkg.id, last_status: packageStatus.status, awb: pkg.awbId.awbId, customer_email: pkg.customerId ? pkg.customerId.email : '',zone: pkg.zoneId ? pkg.zoneId.name : '',createdAt:pkg.createdAt })
                     }
                 }))
 
@@ -603,27 +759,77 @@ class PackageService {
         })
     }
 
+    async checkPackageStatus(awb){
+        let flag = 0,status = "Mixed",index = 10
+        for(let pkg of awb.packages){
+            for(let pack of awb.packages){
+                if(!pkg.lastStatusText){
+                    break;
+                }else{
+                    status = pkg.lastStatusText
+                }
+                if(pkg.lastStatusText != pack.lastStatusText){
+                    flag = 1
+                    status = "Mixed"
+                    break;
+                }
+            }
+            if(flag == 1) break;
+        }
+        if(status == PKG_STATUS[0]) index = 0
+        if(status == PKG_STATUS[1]) index = 1
+        if(status == PKG_STATUS[2]) index = 2
+        if(status == PKG_STATUS[3]) index = 3
+        if(status == PKG_STATUS[4]) index = 4
+        if(status == PKG_STATUS[5]) index = 5
+        if(status == PKG_STATUS[6]) index = 6
+        if(status == PKG_STATUS[7]) index = 7
+        if(status == PKG_STATUS[8]) index = 8
+        if(status == PKG_STATUS[9]) index = 9
+        
+        return {status : status,id : index }
+    }
+
     async getAllPackagesWithLastStatus() {
         let packages = await this.getAllPackages_updated();
+        let awbArray = []
         return await Promise.all(
             packages.map(async(pkg) => {
                 let status = await this.services.packageService.getPackageLastStatus(pkg._id);
                 pkg.lastStatusText = status && status.status;
+                if(pkg.lastStatusDate)
+                    pkg.lastStatusDates  = momentz(pkg.lastStatusDate).tz("America/New_York").format('dddd, MMMM Do YYYY, h:mm A')
                 if (pkg.originBarcode) {
                     let barcode = await this.getOriginBarcode(pkg.originBarcode)
                     if (barcode !== null && barcode.createdAt) {
                         pkg.OrignalBarcodeDate = barcode.createdAt;
                     }
+                    if(barcode !== null && (barcode.barcode == "No tracking" || barcode.barcode == "No Tracking")){
+                        pkg.OrignalBarcodeDate = pkg.createdAt
+                    }
                 }
                 if (pkg.awbId) {
                     let awb = await this.services.awbService.getAwb(pkg.awbId)
                     if (awb !== null && awb.createdAt) {
+                        let flag = 0
+                        awbArray.forEach(data=>{
+                            if(data.awbId == awb.awbId){
+                                data.pkgNo++
+                                flag = 1
+                                pkg.pieceNo = data.pkgNo 
+                            }
+                        })
+                        if(flag == 0){
+                            awbArray.push({awbId : awb.awbId,pkgNo : 1})
+                            pkg.pieceNo = 1
+                        }
                         pkg.awbCreatedAt = momentz(awb.createdAt).tz("America/New_York").format('dddd, MMMM Do YYYY, h:mm A');
                     }
                 }
                 if (pkg.manifestId) {
                     let actualFlight = await Manifest.findById(pkg.manifestId).populate('planeId')
                     if (actualFlight !== null && actualFlight.planeId) {
+                        pkg.manifestId = actualFlight._id
                         pkg.actualFlight = actualFlight.planeId ? actualFlight.planeId.tailNumber : ''
                     }
                 }
@@ -633,6 +839,373 @@ class PackageService {
                 return pkg;
             }),
         );
+    }
+    async getAwbNoDocsAllPackagesWithLastStatus(req) {
+        let packages = await this.getAllPackagesUpdated(req);
+        let awbArray = []
+        return await Promise.all(
+            packages.map(async(pkg) => {
+                let status = await this.services.packageService.getPackageLastStatus(pkg._id);
+                pkg.lastStatusText = status && status.status;
+                if(pkg.lastStatusDate)
+                    pkg.lastStatusDates  = momentz(pkg.lastStatusDate).tz("America/New_York").format('dddd, MMMM Do YYYY, h:mm A')
+                if (pkg.originBarcode) {
+                    let barcode = await this.getOriginBarcode(pkg.originBarcode)
+                    if (barcode !== null && barcode.createdAt) {
+                        pkg.OrignalBarcodeDate = barcode.createdAt;
+                    }
+                }
+                if (pkg.awbId) {
+                    let awb = await this.services.awbService.getAwb(pkg.awbId)
+                    if (awb !== null && awb.createdAt) {
+                        let flag = 0
+                        awbArray.forEach(data=>{
+                            if(data.awbId == awb.awbId){
+                                data.pkgNo++
+                                flag = 1
+                                pkg.pieceNo = data.pkgNo 
+                            }
+                        })
+                        if(flag == 0){
+                            awbArray.push({awbId : awb.awbId,pkgNo : 1})
+                            pkg.pieceNo = 1
+                        }
+                        pkg.awbCreatedAt = momentz(awb.createdAt).tz("America/New_York").format('dddd, MMMM Do YYYY, h:mm A');
+                    }
+                }
+                if (pkg.manifestId) {
+                    let actualFlight = await Manifest.findById(pkg.manifestId).populate('planeId')
+                    if (actualFlight !== null && actualFlight.planeId) {
+                        pkg.manifestId = actualFlight._id
+                        pkg.actualFlight = actualFlight.planeId ? actualFlight.planeId.tailNumber : ''
+                    }
+                }
+                pkg.OrignalBarcodeDate = pkg.OrignalBarcodeDate || ''
+                pkg.awbCreatedAt = pkg.awbCreatedAt || ''
+                pkg.actualFlight = pkg.actualFlight || ''
+                return pkg;
+            }),
+        );
+    }
+
+    async managePackagesData(packages) {
+        let awbArray = []
+        return await Promise.all(
+            packages.map(async(pkg) => {
+                let status = await this.services.packageService.getPackageLastStatus(pkg._id);
+                pkg.lastStatusText = status && status.status;
+                if(pkg.lastStatusDate)
+                    pkg.lastStatusDates  = momentz(pkg.lastStatusDate).tz("America/New_York").format('dddd, MMMM Do YYYY, h:mm A')
+                if (pkg.barcode ) {
+                    let barcode = await this.getOriginBarcode(pkg.barcode)
+                    if (barcode !== null && barcode.createdAt) {
+                        pkg.OrignalBarcodeDate = barcode.createdAt;
+                    }
+                    if(barcode !== null && (barcode.barcode == "No tracking" || barcode.barcode == "No Tracking")){
+                        pkg.OrignalBarcodeDate = pkg.createdAt
+                    }
+                }
+                if (pkg.awbId) {
+                    var awb =  pkg.awb ? pkg.awb : {};
+                    if (awb !== null && awb.createdAt) {
+                        let flag = 0
+                        awbArray.forEach(data=>{
+                            if(data.awbId == awb.awbId){
+                                data.pkgNo++
+                                flag = 1
+                                pkg.pieceNo = data.pkgNo 
+                            }
+                        })
+                        if(flag == 0){
+                            awbArray.push({awbId : awb.awbId,pkgNo : 1})
+                            pkg.pieceNo = 1
+                        }
+                        pkg.awbCreatedAt = momentz(awb.createdAt).tz("America/New_York").format('dddd, MMMM Do YYYY, h:mm A');
+                    }
+                }
+                if (pkg.manifestId) {
+                    let actualFlight = await Manifest.findById(pkg.manifestId).populate('planeId')
+                    if (actualFlight !== null && actualFlight.planeId) {
+                        pkg.manifestId = actualFlight._id
+                        pkg.actualFlight = actualFlight.planeId ? actualFlight.planeId.tailNumber : ''
+                    }
+                }
+                pkg.OrignalBarcodeDate = pkg.OrignalBarcodeDate || ''
+                pkg.awbCreatedAt = pkg.awbCreatedAt || ''
+                pkg.actualFlight = pkg.actualFlight || ''
+                return pkg;
+            }),
+        );
+    }
+
+    async getFllPackageWithLastStatus(req){
+        return new Promise(async (resolve, reject) => {
+            var start = req.body.start ? parseInt(req.body.start) : 0;
+            var length = req.body.length ? parseInt(req.body.length) : 10;      
+            var field = req.body['order[0][column]'] ?parseInt(req.body['order[0][column]']) : 0;
+            var columns = {
+                0: 'customer.firstName',
+                1: 'createdAt',
+                2: 'barcode.barcode',
+                3: 'description',
+                4: 'customer.pmb',
+                5: 'packageType',
+                12: 'awb.awbId'
+            } 
+            
+            var dir = req.body['order[0][dir]'] ? req.body['order[0][dir]'] : 0;
+            var sort = (dir=='asc') ? 1 : -1;
+            var sortField = columns[field];
+
+            var search = req.body['search[value]'] ? req.body['search[value]'] : ''; 
+            var searchData = {};
+            if(req.params.filter && req.params.filter == "in-manifest"){
+                searchData.manifestId = {$ne: null}
+            }
+            if(req.params.filter && req.params.filter == "in-pmb9000"){
+                searchData.manifestId = {$ne: null};
+                searchData.customerId = {$ne: null};
+                searchData.awbId = {$ne: null};
+                searchData.pmb = 9000;
+            }
+            if(req.params.filter && req.params.filter == "not-pmb9000"){
+                searchData.manifestId = {$ne: null};
+                searchData.customerId = {$ne: null};
+                searchData.awbId = {$ne: null};
+                searchData.pmb = {$ne: 9000};
+            }
+            
+            //date range
+            var daterange = req.body.daterange?req.body.daterange:'';
+            if(daterange){
+                var date_arr = daterange.split('-');
+                var startDate = (date_arr[0]).trim();      
+                var stdate = new Date(startDate);
+                stdate.setDate(stdate.getDate() +1);
+
+                var endDate = (date_arr[1]).trim();
+                var endate = new Date(endDate);
+                endate.setDate(endate.getDate() +1);     
+                searchData.createdAt = {"$gte":stdate, "$lte": endate};
+            }
+
+            if(!req.body.daterange && !req.body.clear){
+                var endate = new Date();      
+                endate.setDate(endate.getDate()+1);
+                var stdate = new Date();
+                stdate.setDate(stdate.getDate() -21);      
+                searchData.createdAt = {"$gte":stdate, "$lte": endate};
+            
+            }
+
+            if(search){
+                searchData.$or = [          
+                    {"customer.firstName":{'$regex' : search, '$options' : 'i'}},
+                    {"customer.lastName":{'$regex' : search, '$options' : 'i'}},
+                    {"awb.awbId":search},
+                    {"barcode.barcode":{'$regex' : search, '$options' : 'i'}},
+                    {"description":{'$regex' : search, '$options' : 'i'}},
+                    {"zone.name":{'$regex' : search, '$options' : 'i'}},
+                ]
+            }
+           
+            console.log(searchData);
+            var pipeLineAggregate = [
+                {
+                    $lookup:{
+                        from: "awbs",
+                        localField: "awbId",
+                        foreignField: "_id",
+                        as: "awb"
+                    }
+                },
+                {
+                    $unwind: "$awb"
+                },
+                {
+                    $lookup:{
+                        from: "barcodes",
+                        localField: "originBarcode",
+                        foreignField: "_id",
+                        as: "barcode"
+                    }
+                },                
+                {
+                    $unwind: "$barcode"
+                },
+                {
+                    $lookup:{
+                        from: "customers",
+                        localField: "customerId",
+                        foreignField: "_id",
+                        as: "customer"
+                    }
+                },
+                {$unwind: "$customer"},
+                {
+                    $lookup:{
+                        from: "zones",
+                        localField: "zoneId",
+                        foreignField: "_id",
+                        as: "zone"
+                    }
+                },
+                {
+                    $addFields:{
+                        pmb:"$customer.pmb"
+                    }
+                },
+                {
+                    $match: searchData
+                }
+            ]
+            var totalRecords = await Package.aggregate([
+                ...pipeLineAggregate,
+                ...[{$count:"total"}]
+            ]);
+            
+            if(totalRecords && totalRecords.length && totalRecords[0].total){
+                Package.aggregate([
+                    ...pipeLineAggregate,
+                    ...[
+                        {$sort:{[sortField]: sort}},
+                        {$skip: start},
+                        {$limit: length}
+                    ]
+                ]).exec((err, result) => {
+                    if(err){
+                        resolve({total: 0, packages:[]})
+                    }else{
+                        console.log(result)
+                        resolve({total: totalRecords[0].total, packages:result})
+                    }
+                })
+            }else{
+                resolve({total: 0, packages:[]})
+            }
+        }) 
+    }
+
+    async getAllFullPackagesWithLastStatus(req) {
+        return new Promise(async (resolve, reject) => {
+            var start = req.body.start ? parseInt(req.body.start) : 0;
+            var length = req.body.length ? parseInt(req.body.length) : 10;      
+            var field = req.body['order[0][column]'] ?parseInt(req.body['order[0][column]']) : 0;
+            var columns = {0:'barcode.createdAt', 1: 'createdAt', 2: 'location.name'} 
+            
+            var dir = req.body['order[0][dir]'] ? req.body['order[0][dir]'] : 0;
+            var sort = (dir=='asc') ? 1 : -1;
+            var sortField = columns[field];
+
+            var search = req.body['search[value]'] ? req.body['search[value]'] : ''; 
+            var searchData = {};
+            if(req.params.filter && req.params.filter == "in-manifest"){
+                searchData.manifestId = {$ne: null}
+            }
+            //date range
+            var daterange = req.body.daterange?req.body.daterange:'';
+            if(daterange){
+            var date_arr = daterange.split('-');
+            var startDate = (date_arr[0]).trim();      
+            var stdate = new Date(startDate);
+            stdate.setDate(stdate.getDate() +1);
+
+            var endDate = (date_arr[1]).trim();
+            var endate = new Date(endDate);
+            endate.setDate(endate.getDate() +1);     
+            searchData.barcodeDate = {"$gte":stdate, "$lte": endate}
+            }
+
+            if(!req.body.daterange && !req.body.clear){
+            var endate = new Date();      
+            endate.setDate(endate.getDate()+1);
+            var stdate = new Date();
+            stdate.setDate(stdate.getDate() -21);      
+            //searchData.createdAt = {"$gte":stdate, "$lte": endate};
+            searchData.barcodeDate =  {"$gte":stdate, "$lte": endate};
+            }
+
+            if(search){
+                searchData.$or = [          
+                    {"customer.firstName":{'$regex' : search, '$options' : 'i'}},
+                    {"awb.awbId":search},
+                    {"barcode.barcode":{'$regex' : search, '$options' : 'i'}},
+                    {"description":{'$regex' : search, '$options' : 'i'}},
+                    {"zone.name":{'$regex' : search, '$options' : 'i'}},
+                ]
+            }
+           
+            
+            var pipeLineAggregate = [
+                {
+                    $lookup:{
+                        from: "awbs",
+                        localField: "awbId",
+                        foreignField: "_id",
+                        as: "awb"
+                    }
+                },
+                {
+                    $unwind: "$awb"
+                },
+                {
+                    $lookup:{
+                        from: "barcodes",
+                        localField: "originBarcode",
+                        foreignField: "_id",
+                        as: "barcode"
+                    }
+                },                
+                {
+                    $unwind: "$barcode"
+                },
+                {
+                    $lookup:{
+                        from: "customers",
+                        localField: "customerId",
+                        foreignField: "_id",
+                        as: "customer"
+                    }
+                },
+                {
+                    $lookup:{
+                        from: "zones",
+                        localField: "zoneId",
+                        foreignField: "_id",
+                        as: "zone"
+                    }
+                },
+                {
+                    $addFields:{barcodeDate:"$barcode.createdAt"}
+                },
+                {
+                    $match: searchData
+                }
+            ]
+            var totalRecords = await Package.aggregate([
+                ...pipeLineAggregate,
+                ...[{$count:"total"}]
+            ]);
+            
+            if(totalRecords && totalRecords.length && totalRecords[0].total){
+                Package.aggregate([
+                    ...pipeLineAggregate,
+                    ...[
+                        {$sort:{[sortField]: sort}},
+                        {$skip: start},
+                        {$limit: length}
+                    ]
+                ]).exec((err, result) => {
+                    if(err){
+                        resolve({total: 0, packages:[]})
+                    }else{
+                        resolve({total: totalRecords[0].total, packages:result})
+                    }
+                })
+            }else{
+                resolve({total: 0, packages:[]})
+            }
+        })
     }
 
     addOriginBarcode(originBarcode) {
@@ -710,6 +1283,17 @@ class PackageService {
 
     getAllOriginBarcode() {
         return new Promise((resolve, reject) => {
+            Barcode.find({status : "unused"}, (err, barCodes) => {
+                if (err) {
+                    resolve([]);
+                } else {
+                    resolve(barCodes);
+                }
+            })
+        })
+    }
+    getAllOriginBarcodes() {
+        return new Promise((resolve, reject) => {
             Barcode.find({}, (err, barCodes) => {
                 if (err) {
                     resolve([]);
@@ -748,6 +1332,26 @@ class PackageService {
         });
     }
 
+    getPackageById(packageId) {
+        return new Promise((resolve, reject) => {
+            Package.findById(packageId,async (err, pkg) => {
+                if (err || pkg == null) {
+                    resolve({}) 
+                }
+                else{
+                    if(pkg[0]){
+                        pkg[0] = pkg[0].toJSON()
+                        let zoned = await Zone.findById(pkg[0].zoneId)
+                        if(zoned && zoned.name){
+                            pkg[0].zoneValue = zoned.name
+                        }
+                    }
+                    resolve(pkg);
+                } 
+            });
+        });
+    }
+
     async getAWBPackagesWithLastStatus_updated(awbId) {
         const packages = await this.getPackages_updated(awbId);
         await Promise.all(
@@ -763,6 +1367,18 @@ class PackageService {
     getPackages_updated(awbId) {
         return new Promise((resolve, reject) => {
             Package.find({ awbId: awbId }, (err, result) => {
+                if (err) {
+                    resolve([]);
+                } else {
+                    resolve(result);
+                }
+            });
+        });
+    }
+
+    getPackagesByObject(object) {
+        return new Promise((resolve, reject) => {
+            Package.find(object, (err, result) => {
                 if (err) {
                     resolve([]);
                 } else {
@@ -819,7 +1435,7 @@ class PackageService {
     }
 
     createPackage(newPackage, awbId) {
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             newPackage.awbId = awbId;
             newPackage.id = Date.now().toString();
             newPackage.trackingNo = uniqId();
@@ -829,6 +1445,12 @@ class PackageService {
             if (obarCode.length > 1) {
                 newPackage.originBarcode = newPackage.originBarcode.split(',')[1];
             }
+            let statusObject = {status : "used"}
+            let checkBarcode = await Barcode.findById(newPackage.originBarcode)
+            if(checkBarcode && checkBarcode.barcode == "No tracking"){
+                statusObject = {status : "unused"}
+            }
+            await Barcode.updateOne({_id : newPackage.originBarcode},statusObject)
             const newPackageData = new Package(newPackage);
             newPackageData.save((err, result) => {
                 if (err) {
@@ -929,9 +1551,9 @@ class PackageService {
         });
     }
 
-    getPackagesInFll_updated() {
+    getPackagesInFll_updated(req) {
         return new Promise((resolve, reject) => {
-            this.getAllPackages_updated().then((packages) => {
+            this.getAllPackagesUpdated(req).then((packages) => {
                 Promise.all(
                     packages.map((pkg) => {
                         if(pkg.customerId) {
@@ -957,6 +1579,155 @@ class PackageService {
         });
     }
 
+    getPackagesAllInFll_updated(req){
+        return new Promise(async (resolve, reject) => {
+             var start = req.body.start ? parseInt(req.body.start) : 0;
+            var length = req.body.length ? parseInt(req.body.length) : 10;      
+            var field = req.body['order[0][column]'] ?parseInt(req.body['order[0][column]']) : 0;
+            var columns = {
+                0: 'customer.firstName',
+                1: 'createdAt',
+                2: 'barcode.barcode',
+                3: 'description',
+                4: 'customer.pmb',
+                5: 'packageType',
+                6: 'aging',
+                10: "statusData.status",
+                11: 'awb.awbId'
+            } 
+
+             var dir = req.body['order[0][dir]'] ? req.body['order[0][dir]'] : 0;
+            var sort = (dir=='asc') ? 1 : -1;
+            var sortField = columns[field];
+
+             var search = req.body['search[value]'] ? req.body['search[value]'] : ''; 
+            var searchData = {};
+
+             //date range
+            var daterange = req.body.daterange?req.body.daterange:'';
+            if(daterange){
+            var date_arr = daterange.split('-');
+            var startDate = (date_arr[0]).trim();      
+            var stdate = new Date(startDate);
+            stdate.setDate(stdate.getDate() +1);
+
+             var endDate = (date_arr[1]).trim();
+            var endate = new Date(endDate);
+            endate.setDate(endate.getDate() +1);     
+            searchData.createdAt = {"$gte":stdate, "$lte": endate}
+            }
+
+             if(!req.body.daterange && !req.body.clear){
+            var endate = new Date();      
+            endate.setDate(endate.getDate()+1);
+            var stdate = new Date();
+            stdate.setDate(stdate.getDate() -21);      
+            //searchData.createdAt = {"$gte":stdate, "$lte": endate};
+            searchData.createdAt =  {"$gte":stdate, "$lte": endate};
+            }
+
+             if(search){
+                searchData.$or = [          
+                    {"customer.firstName":{'$regex' : search, '$options' : 'i'}},
+                    {"customer.pmb":{'$regex' : search, '$options' : 'i'}},
+                    {"awb.awbId":search},
+                    {"barcode.barcode":{'$regex' : search, '$options' : 'i'}},
+                    {"description":{'$regex' : search, '$options' : 'i'}},
+                    {"zone.name":{'$regex' : search, '$options' : 'i'}},
+                    {"packageType":{'$regex' : search, '$options' : 'i'}}
+                ]
+            }
+            var pipeAggregate = [
+                {
+                    $lookup: {
+                        from: "awbs",
+                        localField: "awbId",
+                        foreignField: "_id",
+                        as: "awb"
+                    }
+                },
+                {$unwind: "$awb"},
+                {
+                    $lookup: {
+                        from: "barcodes",
+                        localField: "originBarcode",
+                        foreignField: "_id",
+                        as: "barcode"
+                    }
+                },
+                {$unwind: "$barcode"},
+                {
+                    $lookup: {
+                        from: "customers",
+                        localField: "customerId",
+                        foreignField: "_id",
+                        as: "customer"
+                    }
+                },
+                {$unwind: "$customer"},
+                {
+                    $lookup: {
+                        from: "zones",
+                        localField: "zoneId",
+                        foreignField: "_id",
+                        as: "zone"
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "packagestatuses",
+                        localField: "_id",
+                        foreignField: "packageId",
+                        as: "stats"
+                    }
+                },
+                {
+                    $addFields: {
+                        statsData: { $arrayElemAt: [ "$stats", -1 ] }
+                    }
+                },
+                {
+                    $match :{
+                        $or:[
+                            {"statsData.status" : PKG_STATUS[1]},
+                            {"statsData.status": PKG_STATUS[2]}
+                        ]
+                    }
+                },
+                {
+                    $match:searchData
+                }
+            ];
+
+             var totalRecords =  await Package.aggregate([
+                ...pipeAggregate,
+                ...[
+                    {$count:"total"}
+                ]
+            ]);
+            if(totalRecords && totalRecords.length && totalRecords[0]){
+                Package.aggregate([
+                    ...pipeAggregate,
+                    ...[
+                        {$sort:{[sortField]:sort}},
+                        {$skip:start},
+                        {$limit:length}
+                    ]
+                ]).exec((err, result) => {
+                    if(err){
+                        resolve({total: 0, packages: []});
+                    }else{
+                        resolve({total: totalRecords[0].total, packages: result})
+                    }
+                })
+            }else{
+                resolve({total: 0, packages: []}); 
+            }
+
+         })
+
+     }
+
     getPackagesNoDocs() {
         return new Promise((resolve, reject) => {
             this.getAllPackagesNoDoc().then((packages) => {
@@ -979,24 +1750,160 @@ class PackageService {
         });
     }
 
-    getPackagesInNas_updated() {
+    getPackagesInNas_updated(req) {
         return new Promise((resolve, reject) => {
-            this.getAllPackages_updated().then((packages) => {
+            this.getAllPackagesUpdated(req).then((packages) => {
                 Promise.all(
                     packages.map((pkg) => {
                         return this.getPackageLastStatus_updated(pkg._id);
                     }),
-                ).then((stats) => {
+                ).then((stats) => {                    
                     let pkgs = [];
                     stats.forEach((status, i) => {
                         packages[i].lastStatusText = status.status;
-                        if (status.status == PKG_STATUS[4])
+                        if (status.status == PKG_STATUS[4] || status.status == 'Recieved in NAS')
                             pkgs.push(packages[i]);
                     });
                     resolve(pkgs);
                 });
             });
         });
+    }
+
+    getAllPackagesInNas_updated(req){
+        return new Promise(async (resolve, reject) => {
+            var start = req.body.start ? parseInt(req.body.start) : 0;
+            var length = req.body.length ? parseInt(req.body.length) : 10;      
+            var field = req.body['order[0][column]'] ?parseInt(req.body['order[0][column]']) : 0;
+            var columns = {0:'barcode.createdAt', 1: 'createdAt', 2: 'location.name'} 
+            
+            var dir = req.body['order[0][dir]'] ? req.body['order[0][dir]'] : 0;
+            var sort = (dir=='asc') ? 1 : -1;
+            var sortField = columns[field];
+
+            var search = req.body['search[value]'] ? req.body['search[value]'] : ''; 
+            var searchData = {};
+
+            //date range
+            var daterange = req.body.daterange?req.body.daterange:'';
+            if(daterange){
+            var date_arr = daterange.split('-');
+            var startDate = (date_arr[0]).trim();      
+            var stdate = new Date(startDate);
+            stdate.setDate(stdate.getDate() +1);
+
+            var endDate = (date_arr[1]).trim();
+            var endate = new Date(endDate);
+            endate.setDate(endate.getDate() +1);     
+            searchData.createdAt = {"$gte":stdate, "$lte": endate}
+            }
+
+            if(!req.body.daterange && !req.body.clear){
+            var endate = new Date();      
+            endate.setDate(endate.getDate()+1);
+            var stdate = new Date();
+            stdate.setDate(stdate.getDate() -21);      
+            //searchData.createdAt = {"$gte":stdate, "$lte": endate};
+            searchData.createdAt =  {"$gte":stdate, "$lte": endate};
+            }
+
+            if(search){
+                searchData.$or = [          
+                    {"customer.firstName":{'$regex' : search, '$options' : 'i'}},
+                    {"customer.pmb":{'$regex' : search, '$options' : 'i'}},
+                    {"awb.awbId":search},
+                    {"barcode.barcode":{'$regex' : search, '$options' : 'i'}},
+                    {"description":{'$regex' : search, '$options' : 'i'}},
+                    {"zone.name":{'$regex' : search, '$options' : 'i'}},
+                    {"packageType":{'$regex' : search, '$options' : 'i'}}
+                ]
+            }
+           var pipeAggregate = [
+               {
+                   $lookup:{
+                       from: "awbs",
+                       localField: "awbId",
+                       foreignField: "_id",
+                       as:"awb"
+                   }
+               },
+               {$unwind:"$awb"},
+               {
+                    $lookup:{
+                        from: "barcodes",
+                        localField: "originBarcode",
+                        foreignField: "_id",
+                        as:"barcode"
+                    }
+                },
+                {$unwind:"$barcode"},
+                {
+                    $lookup:{
+                        from: "customers",
+                        localField: "customerId",
+                        foreignField: "_id",
+                        as:"customer"
+                    }
+                },
+                {$unwind:"$customer"},
+                {
+                    $lookup:{
+                        from: "zones",
+                        localField: "zoneId",
+                        foreignField: "_id",
+                        as:"zone"
+                    }
+                },
+                {
+                    $lookup:{
+                        from: "packagestatuses",
+                        localField: "_id",
+                        foreignField: "packageId",
+                        as: "stats"
+                    }
+                },
+                {
+                    $addFields:{
+                        statsData: { $arrayElemAt: [ "$stats", -1 ] } 
+                    }
+                },                
+                {
+                    $match :{
+                        $or:[
+                            {"statsData.status" : PKG_STATUS[4]},
+                            {"statsData.status": "Recieved in NAS"}
+                        ]
+                    }
+                },
+                {
+                    $match:searchData
+                }
+           ] 
+           var totalRecords = await Package.aggregate([
+            ...pipeAggregate,
+            ...[{$count: "total"}]
+           ]);
+           if(totalRecords && totalRecords.length && totalRecords[0].total){
+                var packages = await Package.aggregate([
+                    ...pipeAggregate,
+                    ...[
+                        {$sort: {createdAt:1}},
+                        {$skip: start},
+                        {$limit: length}
+                    ]
+                ]).exec((err, result) => {
+                    if (err){
+                        resolve({total: 0, packages:[]});
+                    }else {
+                        resolve({total: totalRecords[0].total, packages: result});
+                    }
+                });
+            }else{
+                resolve({total: 0, packages:[]});
+            }
+           
+        })
+
     }
 
     //========== Receive Packages From Truck that arrived at Airport ==========//
@@ -1007,6 +1914,17 @@ class PackageService {
         });
     }
 
+    getPackagesByObject(object) {
+        return new Promise((resolve, reject) => {
+            Package.find(object, (err, result) => {
+                if (err) {
+                    resolve([]);
+                } else {
+                    resolve(result);
+                }
+            });
+        });
+    }
 
     //========== Load Packages to AirCraft (Add to Manifest) ==========//
     addToFlight(packageIds, manifestId, compartmentId, userId) {
@@ -1119,21 +2037,192 @@ class PackageService {
     }
 
     //======== Packages for store ========//
-    getPackagesForStores() {
+    getPackagesForStores(req) {
         return new Promise((resolve, reject) => {
-            Package.find({})
-                .populate('customerId')
-                .populate('awbId')
-                .exec((err, packages) => {
+            var searchData = {};
+            if(req && req.query){
+                var daterange = req.query.daterange?req.query.daterange:'';
+                if(daterange){
+                  var date_arr = daterange.split('-');
+                  var startDate = (date_arr[0]).trim();      
+                  var stdate = new Date(startDate);
+                  stdate.setDate(stdate.getDate() );
+          
+                  var endDate = (date_arr[1]).trim();
+                  var endate = new Date(endDate);
+                  endate.setDate(endate.getDate() +1);     
+                  searchData.createdAt = {"$gte":stdate, "$lte": endate};
+                }
+          
+                if(!req.query.daterange && !req.query.clear){
+                  var endate = new Date();      
+                  endate.setDate(endate.getDate()+1);
+                  var stdate = new Date();
+                  stdate.setDate(stdate.getDate() -21);      
+                  searchData.createdAt = {"$gte":stdate, "$lte": endate};
+                }
+                if(req.query.clear){
+                  var endate = new Date();      
+                  endate.setDate(endate.getDate()+1);
+                  var stdate = new Date();
+                  stdate.setDate(stdate.getDate() -14);      
+                  searchData.createdAt = {"$gte":stdate, "$lte": endate};
+                }
+              }  
+            Package.find(searchData)
+            .populate('customerId')
+            .populate('awbId')
+            .exec(async (err, packages) => {
+                    let packageArray = []
+                    for(let data of packages){
+                        let statusPack = await PackageStatus.find({status : PKG_STATUS[5],packageId : data._id})
+                        if(statusPack.length == 0){
+                            packageArray.push(data)
+                        }
+                    }
                     if (err) {
                         resolve([]);
                     } else {
                         
-                        resolve(packages);
+                        resolve(packageArray);
                     }
                 })
         });
     }
+
+    getPackagesForStoresList(req, customerPmb){
+        var searchData = {
+            statuspackageLength : 0,
+            $or:customerPmb           
+        }
+        var start = req.body.start ? parseInt(req.body.start) : 0;
+        var length = req.body.length ? parseInt(req.body.length) : 10;      
+        var field = req.body['order[0][column]'] ?parseInt(req.body['order[0][column]']) : 0;
+        var columns = {0:'deliveryNum', 1: 'createdAt', 2: 'user.name', 3: 'location.name', 5: 'driver', 6: 'vehicle.vehicleMake' } 
+        
+        var dir = req.body['order[0][dir]'] ? req.body['order[0][dir]'] : 0;
+        var sort = (dir=='asc') ? 1 : -1;
+        var sortField = columns[field];
+
+        var search = req.body['search[value]'] ? req.body['search[value]'] : ''; 
+
+        //date range
+        var daterange = req.body.daterange?req.body.daterange:''
+        if(daterange){
+        var date_arr = daterange.split('-');
+        var startDate = (date_arr[0]).trim();      
+        var stdate = new Date(startDate);
+        stdate.setDate(stdate.getDate() +1);
+
+        var endDate = (date_arr[1]).trim();
+        var endate = new Date(endDate);
+        endate.setDate(endate.getDate() +1);     
+        searchData.createdAt = {"$gte":stdate, "$lte": endate};
+        }
+
+        if(!req.body.daterange && !req.body.clear){
+        var endate = new Date();      
+        endate.setDate(endate.getDate()+1);
+        var stdate = new Date();
+        stdate.setDate(stdate.getDate() -21);      
+        searchData.createdAt = {"$gte":stdate, "$lte": endate};
+        }
+        if(req.body.location && req.body.location!="All"){
+            searchData.location = req.body.location;
+        }
+
+        if(search){
+        searchData.$or = [          
+            {location:{'$regex' : search, '$options' : 'i'}},
+            {trackingNo:{'$regex' : search, '$options' : 'i'}},  
+            {"customer.pmb":{'$regex' : search, '$options' : 'i'}},
+            {"customer.firstName":{'$regex' : search, '$options' : 'i'}},
+            {"customer.lastName":{'$regex' : search, '$options' : 'i'}},
+            {"awb.awbId":{'$regex' : search, '$options' : 'i'}},  
+            {description:{'$regex' : search, '$options' : 'i'}},
+            {weight:{'$regex' : search, '$options' : 'i'}}  
+        ]
+        }
+        return new Promise(async (resolve, reject) => {
+            var piplineAggregate = [
+                {
+                    $lookup:{
+                        from:"customers",
+                        localField: 'customerId',
+                        foreignField: '_id',
+                        as:"customer"
+                    }
+                },
+                {$unwind:"$customer"},
+                {
+                    $lookup:{
+                        from:"awbs",
+                        localField: 'awbId',
+                        foreignField: '_id',
+                        as:"awb"
+                    }
+                },
+                 {$unwind:"$awb"},
+                {
+                    $lookup:{
+                        from:"packagestatuses",
+                        localField: '_id',
+                        foreignField: 'packageId',
+                        as:"statuspackage"
+                    }
+                },
+                {
+                    $addFields:{
+                        statuspackage: {
+                            $filter: {
+                                input: "$statuspackage",
+                                as: "item",
+                                cond: { $eq: [ "$$item.status", PKG_STATUS[5] ] }
+                             }
+                        }
+                    }
+                },
+                
+                {
+                    $addFields:{
+                        statuspackageLength:{
+                            $size:"$statuspackage"
+                        }
+                    }
+                },
+                {
+                    $match:searchData
+                }                
+            ];
+            
+            
+            var totalRecords = await Package.aggregate([
+                ...piplineAggregate,
+                ...[{$count: "total"}]
+            ]);
+           if(totalRecords && totalRecords.length && totalRecords[0].total){
+                Package.aggregate([
+                    ...piplineAggregate,
+                    ...[
+                        {$sort: {createdAt:1}},
+                        {$skip: start},
+                        {$limit: length},
+                    ]
+                ]).exec((err,result)=>{
+                    if(err){
+                        console.log(err)
+                        resolve({total:0, packages: []})
+                    }else{
+                        resolve({total:totalRecords[0].total, packages: result})
+                    }
+                })
+            }else{
+                resolve({total:0, packages: []})
+            }
+
+        })
+    }
+
 
     //========== load Packages in cargo =============//
 
@@ -1233,7 +2322,7 @@ class PackageService {
 
     getPackage_updated(packageId, pkgStatus) {
         return new Promise(async(resolve, reject) => {
-            let pkg = await Package.findOneAndUpdate({ _id: packageId }, { lastStatusText: pkgStatus }, { new: true })
+            let pkg = await Package.findOneAndUpdate({ _id: packageId }, { lastStatusText: pkgStatus , lastStatusDate :  new Date()}, { new: true })
             if (!pkg) resolve({})
             else resolve(pkg)
         })
@@ -1284,6 +2373,22 @@ class PackageService {
             return []
         }
     }
+
+    async getPackagesWithStatus(invoice){
+        return new Promise(async (resolve, reject) => {
+            let resultArray = [] 
+                if(invoice.awbId){
+                    for(let pkg of invoice.awbId.packages){
+                        let result = await PackageStatus.findOne({ packageId:pkg._id }).populate('packageId')
+                        if(result){
+                            resultArray.push(result) 
+                        }
+                    }
+                }
+            resolve(resultArray);
+        });
+    }
+
     getPackageLastStatus(packageId) {
         return new Promise((resolve, reject) => {
             this.getPackageStatuses_updated(packageId).then((stats) => {
@@ -1295,7 +2400,7 @@ class PackageService {
 
     getPackageLastStatus_updated(packageId) {
         return new Promise((resolve, reject) => {
-            this.getPackageStatuses_updated(packageId).then((stats) => {
+            this.getPackageStatuses_updated(packageId).then((stats) => {                
                 if (stats.length == 0) resolve(PKG_STATUS[1]);
                 else resolve(stats[stats.length - 1]);
             });
@@ -1316,6 +2421,7 @@ class PackageService {
 
     //========== Customer Package ==========//
     getCustomerPackages(customerId) {
+        console.log("cus",customerId)
         return new Promise((resolve, reject) => {
             Package.find({ customerId })
                 .exec((error, packages) => {
@@ -1343,16 +2449,20 @@ class PackageService {
         });
     }
 
-    async getPopulatedCustomerPackages(customerId) {
-        let packages = await this.get_Packages_update({customerId : customerId});
+    async getPopulatedCustomerPackages(packages) {
         return await Promise.all(
             packages.map(async(pkg) => {
+                pkg = await this.get_Packages_update({_id :pkg._id});
+                console.log("pkg",pkg)
                 let status = await this.services.packageService.getPackageLastStatus(pkg._id);
                 pkg.lastStatusText = status && status.status;
                 if (pkg.originBarcode) {
-                    let barcode = await this.getOriginBarcode(pkg.originBarcode)
+                    let barcode = await this.getOriginBarcode(pkg[0].originBarcode._id)
                     if (barcode !== null && barcode.createdAt) {
                         pkg.OrignalBarcodeDate = barcode.createdAt;
+                    }
+                    if(barcode !== null && (barcode.barcode == "No tracking" || barcode.barcode == "No Tracking")){
+                        pkg.OrignalBarcodeDate = pkg.createdAt
                     }
                 }
                 if (pkg.awbId) {
@@ -1370,7 +2480,87 @@ class PackageService {
                 pkg.OrignalBarcodeDate = pkg.OrignalBarcodeDate || ''
                 pkg.awbCreatedAt = pkg.awbCreatedAt || ''
                 pkg.actualFlight = pkg.actualFlight || ''
-                return pkg;
+                return pkg[0];
+            }),
+        );
+    }
+
+    async getPackagesFilterDate(req,packages){
+        return new Promise((resolve, reject) => {
+        var searchData = {_id:{$in:packages}};
+            if(req && req.query){
+                var daterange = req.query.daterange?req.query.daterange:'';
+                if(daterange){
+                  var date_arr = daterange.split('-');
+                  var startDate = (date_arr[0]).trim();      
+                  var stdate = new Date(startDate);
+                  stdate.setDate(stdate.getDate() );
+          
+                  var endDate = (date_arr[1]).trim();
+                  var endate = new Date(endDate);
+                  endate.setDate(endate.getDate() +1);     
+                  searchData.createdAt = {"$gte":stdate, "$lte": endate};
+                }
+          
+                if(!req.query.daterange && !req.query.clear){
+                  var endate = new Date();      
+                  endate.setDate(endate.getDate()+1);
+                  var stdate = new Date();
+                  stdate.setDate(stdate.getDate() -21);      
+                  searchData.createdAt = {"$gte":stdate, "$lte": endate};
+                }
+                if(req.query.clear){
+                  var endate = new Date();      
+                  endate.setDate(endate.getDate()+1);
+                  var stdate = new Date();
+                  stdate.setDate(stdate.getDate() -14);      
+                  searchData.createdAt = {"$gte":stdate, "$lte": endate};
+                }
+              } 
+
+              Package.find(searchData).exec((err,data)=>{
+                var packageData = [];
+                for(var i=0; i<data.length; i++){
+                    packageData.push(data[i]._id)
+                }
+                resolve(packageData)
+              })
+              
+            })
+
+    }
+
+    async getPopulatedCustomerPackagesDateFilter(query,packages) {
+        return await Promise.all(
+            packages.map(async(pkg) => {                
+                pkg = await this.get_Packages_update({_id :pkg._id});               
+                let status = await this.services.packageService.getPackageLastStatus(pkg._id);
+                pkg.lastStatusText = status && status.status;
+                if (pkg.originBarcode) {
+                    let barcode = await this.getOriginBarcode(pkg[0].originBarcode._id)
+                    if (barcode !== null && barcode.createdAt) {
+                        pkg.OrignalBarcodeDate = barcode.createdAt;
+                    }
+                    if(barcode !== null && (barcode.barcode == "No tracking" || barcode.barcode == "No Tracking")){
+                        pkg.OrignalBarcodeDate = pkg.createdAt
+                    }
+                }
+                if (pkg.awbId) {
+                    let awb = await this.services.awbService.getAwb(pkg.awbId)
+                    if (awb !== null && awb.createdAt) {
+                        pkg.awbCreatedAt = momentz(awb.createdAt).tz("America/New_York").format('dddd, MMMM Do YYYY, h:mm A');
+                    }
+                }
+                if (pkg.manifestId) {
+                    let actualFlight = await Manifest.findById(pkg.manifestId).populate('planeId')
+                    if (actualFlight !== null && actualFlight.planeId) {
+                        pkg.actualFlight = actualFlight.planeId ? actualFlight.planeId.tailNumber : ''
+                    }
+                }
+                pkg.OrignalBarcodeDate = pkg.OrignalBarcodeDate || ''
+                pkg.awbCreatedAt = pkg.awbCreatedAt || ''
+                pkg.actualFlight = pkg.actualFlight || ''
+                return pkg[0];
             }),
         );
     }
@@ -1414,9 +2604,28 @@ class PackageService {
         })
     }
 
-    getDeliveryPackageDetail() {
+    getDeliveryPackageDetail(query) {
+        var searchData = { deliveryId: { $exists: true, $ne: null } };
+            if(query && query.daterange && query.type == "deliveryDetail"){
+                var daterange = query.daterange;
+                var date_arr = daterange.split('-');
+                var startDate = (date_arr[0]).trim();      
+                var stdate = new Date(startDate);
+                stdate.setDate(stdate.getDate() );
+            
+                var endDate = (date_arr[1]).trim();
+                var endate = new Date(endDate);
+                endate.setDate(endate.getDate() +1);     
+                searchData.createdAt = {"$gte":stdate, "$lte": endate};             
+            }else if(query && query.daterange && !query.type ){
+                var endate = new Date();      
+                endate.setDate(endate.getDate()+1);
+                var stdate = new Date();
+                stdate.setDate(stdate.getDate() -21);      
+                searchData.createdAt = {"$gte":stdate, "$lte": endate};
+            }
         return new Promise((resolve, reject) => {
-            Package.find({ deliveryId: { $exists: true, $ne: null } }, (err, packages) => {
+            Package.find(searchData, (err, packages) => {
                 Promise.all(
                     packages.map(async(pkg) => {
                         let result = await deliveryService.getDeliveryAndDriverInfo(pkg.deliveryId);
@@ -1454,6 +2663,25 @@ class PackageService {
                         dbQuery['status'] = query.package_status;
                     }
                 }
+            }
+           
+            if(query && query.daterange && query.type == "packageDetail"){
+                var daterange = query.daterange;
+                var date_arr = daterange.split('-');
+                var startDate = (date_arr[0]).trim();      
+                var stdate = new Date(startDate);
+                stdate.setDate(stdate.getDate() );
+            
+                var endDate = (date_arr[1]).trim();
+                var endate = new Date(endDate);
+                endate.setDate(endate.getDate() +1);     
+                dbQuery.createdAt = {"$gte":stdate, "$lte": endate};             
+            }else if(query && query.daterange && !query.type ){
+              var endate = new Date();      
+              endate.setDate(endate.getDate()+1);
+              var stdate = new Date();
+              stdate.setDate(stdate.getDate() -21);      
+              dbQuery.createdAt = {"$gte":stdate, "$lte": endate};
             }
 
             PackageStatus
@@ -1613,6 +2841,9 @@ class PackageService {
                     let barcode = await this.getOriginBarcode(pkg.originBarcode)
                     if (barcode !== null && barcode.createdAt) {
                         pkg.OrignalBarcodeDate = barcode.createdAt;
+                    }
+                    if(barcode !== null && (barcode.barcode == "No tracking" || barcode.barcode == "No Tracking")){
+                        pkg.OrignalBarcodeDate = pkg.createdAt
                     }
                 }
                 if (pkg.awbId) {

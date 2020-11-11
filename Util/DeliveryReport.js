@@ -44,6 +44,9 @@ class DeliveryReport {
   }
 
   async generate() {
+    let deliveryNum = this.data.deliveryNum
+    if(!this.data.deliveryNum)
+      deliveryNum = ''
     let definition = {
       pageSize: 'A4',
       pageMargins: 40,
@@ -68,19 +71,25 @@ class DeliveryReport {
           layout: 'noBorders',
           headerRows: 0,
           table: {
-            widths: ['20%', '40%'],
+            widths: ['20%', '30%','20%','40%'],
             body: [
               [
                 { text: 'Vehicle No #:', bold: true, margin: [0, 0, 0, 0] },
                 { text: String(this.data.vehicleNo) },
+                { text: 'Delivery Location:', bold: true, margin: [0, 0, 0, 0] },
+                { text: String(this.data.location) }
               ],
               [
                 { text: 'Delivery Date:', bold: true, margin: [0, 0, 0, 0] },
                 { text: moment(this.data.deliveryDate).format('MM/DD/YYYY') },
+                { text: 'Delivery Number:', bold: true, margin: [0, 0, 0, 0] },
+                { text: String(deliveryNum) }
               ],
               [
                 { text: 'Carrier:', bold: true, margin: [0, 0, 0, 0] },
                 { text: String(this.data.carrier) },
+                { },
+                { }
               ],
             ],
           },
@@ -100,7 +109,7 @@ class DeliveryReport {
                 { text: 'Weight (lbs)', alignment: 'center' },
               ],
               ...this.data.rows.map((item) => [
-                { text: String(item.awb) ,alignment: 'center' },
+                { text: String(item.awbId) ,alignment: 'center' },
                 { text: `PK${item.id}`, alignment: 'center' },
                 { text: item.pmb, alignment: 'center'},
                 { text: item.description, alignment: 'left'},

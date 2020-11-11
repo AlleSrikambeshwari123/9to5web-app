@@ -1,9 +1,10 @@
 var services = require('../Services/RedisDataServices');
 var utils = require('../Util/utils');
 var moment = require('moment');
+var helpers = require('../views/helpers');
 
 exports.get_delivery_list = (req, res, next) => {
-  services.deliveryService.getDeliveriesFullData().then((deliveries) => {
+  services.deliveryService.getDeliveriesFullData(req).then((deliveries) => {
     
     Promise.all([
       services.locationService.getLocations(),
@@ -33,9 +34,10 @@ exports.get_delivery_list = (req, res, next) => {
         locations: results[0],
         drivers: results[1],
         vehicles: results[2],
+        clear: req.query.clear
       })
     })
-  });
+  })
 }
 
 exports.add_new_delivery = (req, res, next) => {

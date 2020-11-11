@@ -25,3 +25,7 @@ $(function () {
     });
   })
 })
+
+$('.pilot-table').DataTable({
+  pageLength: 10
+})

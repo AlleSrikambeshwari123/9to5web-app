@@ -5,8 +5,15 @@
     <div class='col-xl-12 col-lg-6 col-md-12 col-sm-12'>
       <div class='card'>
         <div class="card-header">
-          <h4 class="card-title"><%= title %></h4>
+            <h3><%= title %>
+                <div class="pull-right">
+                  <a href="#" data-toggle="modal" data-target="#add-additional-invoices-modal" class="btn btn-info btn-round  ml-auto mr-5" >
+                    Add Additional Invoices
+                  </a>
+                </div>
+            </h3>
         </div>
+        <div id="myLoader"><img src="/img/preloader.gif"></div>
         <div class="card-body">
           <h3 class="card-title text-muted">Bill Content</h3>
           <div class="row">
@@ -83,7 +90,7 @@
               </div>
               <div class="form-group form-show-validation row">
                 <label for="awb-deliveryMethod" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Delivery or
-                  Pickup</label>
+                  <br> Pickup</label>
                 <div class="col-lg-8 col-md-8 col-sm-8">
                   <select id="awb-deliveryMethod" name="deliveryMethod" class='form-control awb-deliveryMethod' data-placeholder="Select">
                     <% [{ label: 'Delivery', value: '1' }, { label: 'Pickup', value: '2' }].forEach(option => { %>
@@ -147,7 +154,7 @@
                     <div class="custom-file-container" data-upload-id="invoice-upload-field-{CID}">
                       <label class="custom-file-container__custom-file">
                         <input type="file" class="custom-file-container__custom-file__custom-file-input" 
-                          name="invoice.file" accept="image/*" aria-label="Choose invoice to upload">
+                          name="invoice.file"  aria-label="Choose invoice to upload">
                         <span class="custom-file-container__custom-file__custom-file-control"></span>
                       </label>
                       <div class="custom-file-container__image-preview my-2"
@@ -174,6 +181,11 @@
                     </button> -->
                   </div>
                 </div>
+                <div class="col-sm-12">
+                  <div id="additionalInvoices-list">
+                    
+                  </div>
+                </div>  
               </div>
             </div>
           </div>
@@ -227,6 +239,7 @@
                     <td><strong>Description</strong></td>
                     <td class="text-center"><strong>Dimension</strong></td>
                     <td class="text-center"><strong>Weight</strong></td>
+                    <td class="text-center"><strong>Volumetric Weight</strong></td>
                     <td class="text-center"><strong>Status</strong></td>
                     <td></td>
                   </tr>
@@ -301,6 +314,13 @@
           <option value="kg">Kg</option>                    
         </select>
       </div>
+
+      <div class='form-group'>
+        <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" name="express" id="express">
+        <label class="custom-control-label" for="express">Express </label>
+        </div>
+      </div>
       
       <div class='form-group'>
         <label for="packageType">Package Type</label>
@@ -323,8 +343,8 @@
         <div class="row">
           <div class="col-lg-9 col-md-9 col-sm-9">
             <%const pbarcode = processBarcode?processBarcode.barcode:'';%> 
-            <select id="originBarcode" name="originBarcode" class='form-control' required>
-              <option></option>
+            <select id="originBarcode" name="originBarcode" class='form-control'>
+              <option ></option>
               <% barcodes.forEach(barcode => { %>
               <option value="<%=barcode.id%>" <%if( pbarcode._id== barcode.id ){%>selected=="selected"<%}%>><%=barcode.barcode%></option>
               <% }) %>
@@ -695,6 +715,38 @@
       </form>
     </div>
   </div>
+</div>
+
+
+<div  class="modal fade" id='add-additional-invoices-modal' tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog" role="document" >
+      <div class="modal-content">
+        <form name="add-additional-invoices-form">
+          <div class="modal-header">
+            <h2 class="modal-title">Add Additional Invoices</h2>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">×</span>
+            </button>
+          </div>
+          <div class="modal-body row">
+            <div class="col-md-12">
+              <div class='form-group'>
+                  <label for="Invoices">Invoices</label>
+                  <select name="additionalInvoices" class="form-control" required>
+                    <% additionalInvoices.forEach(invoice => {%>
+                      <option  value="<%= invoice._id %>" data-name="<%=invoice.fileName%>" data-path="<%=invoice.filePath%>" data-courier="<%=invoice.courierNo%>" data-pmb="<%=invoice.pmb%>"><%=invoice.fileName %> - <%=invoice.courierNo%></option>
+                    <% }) %>
+                  </select>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">Add</button>
+            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+          </div>
+        </form>
+      </div>
+    </div>
 </div>
 
 <div class="modal fade" id="add-purchase-order-item-modal" role="dialog" aria-hidden="true" style="display: none;">

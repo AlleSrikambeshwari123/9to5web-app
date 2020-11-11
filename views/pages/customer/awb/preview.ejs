@@ -1,0 +1,243 @@
+<% layout('./shared/__template')%>
+<div class="row justify-content-center mt--5">
+  <input type="hidden" data-id="<%= awb._id%>" id="awbId">
+  <div class="col-12 col-lg-10 col-xl-9">
+    <!-- <div class="row align-items-center"> -->
+      <!-- <div class="ml-auto mr-3 mb-3 mt--4"> -->
+        <!-- <a class="btn btn-danger btn-round text-white" href="/warehouse/download-pdf/pkg/<%=awb._id%>"> Download Pkgs</a>
+        <a class="btn btn-danger btn-round text-white ml-2 btn-print-pkgs" data-id="<%=awb._id%>"> Print Pkgs </a>
+        <a class="btn btn-danger btn-round text-white" href="/warehouse/download-pdf/awb/<%=awb._id%>"> Download PDF</a>
+        <a class="btn btn-danger btn-round text-white ml-2 btn-print-awb" data-toggle="modal" data-id="<%=awb._id%>"
+          data-target="#print-popup"> Print AWB </a> -->
+      <!-- </div> -->
+    <!-- </div> -->
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card card-invoice">
+          <div class="card-header">
+            <div class="invoice-header">
+              <h3 class="invoice-title">AirWay Bill</h3>
+              <div class="invoice-logo">
+                <img src="/img/logo.jpg" alt="company logo">
+              </div>
+            </div>
+            <div class="invoice-desc">
+              Airport Industrial Park, P.O. Box AP 59239<br>
+              Nassau, The Bahamas<br>
+              F: (242) 377-3587
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="separator-solid"></div>
+            <div class="row">
+              <div class="col-md-3 info-invoice">
+                <h5 class="sub">Created At</h5>
+                <p><%= awb.dateCreated%></p>
+              </div>
+              <div class="col-md-3 info-invoice">
+                <h5 class="sub">Created By</h5>
+                <p><%= awb.dateCreated%></p>
+              </div>
+              <div class="col-md-3 info-invoice">
+                <h5 class="sub">Bill ID</h5>
+                <p><%= "AWB #"+awb.createdBy %></p>
+              </div>
+              <div class="col-md-3 info-invoice">
+                <h5 class="sub">Customer</h5>
+                <p><%=helpers.getFullName(awb.customer)%></p>
+              </div>
+            </div>
+            <div class="separator-solid"></div>
+            <div class="row">
+              <div class="col-sm-7 col-md-5 mb-3 mb-md-0 transfer-to">
+                <h5 class="sub">Shipper</h5>
+                <div class="account-transfer">
+                  <div><span>Shipper Name:</span><span><%= (shipper && shipper.name) ? shipper.name : '' %></span></div>
+                  <div><span>Shipper Phone:</span><span><%= (shipper && shipper.telephone) ? shipper.telephone : '' %></span></div>
+                </div>
+              </div>
+              <div class="col-sm-7 col-md-5 mb-3 mb-md-0 transfer-to ml-auto">
+                <h5 class="sub">Carrier</h5>
+                <div class="account-transfer">
+                  <div><span>Carrier Name:</span><span><%= (carrier && carrier.name) ? carrier.name :'' %></span></div>
+                  <div><span>Carrier Phone:</span><span><%= (carrier && carrier.telephone) ? carrier.telephone : '' %></span></div>
+                </div>
+              </div>
+            </div>
+            <div class="separator-solid"></div>
+            <% awb.invoices.forEach(invoice => { %>
+            <div class="row">
+              <div class="offset-md-7 col-md-5 mb-3 mb-md-0 transfer-to">
+                <h5 class="sub">Invoice</h5>
+                <div class="account-transfer">
+                  <div><span>Invoice ID:</span><span>#<%= invoice.number %></span></div>
+                  <div>
+                    <span>Value:</span>
+                    <span>
+                      <% if (!isNaN(invoice.value)) { %>
+                        $ <%= Number(invoice.value).toFixed(2) %>
+                      <% } %>
+                    </span>
+                </div>
+                  <% if (invoice.link) { %>
+                  <div><span></span><span><a href="<%= invoice.link %>" target="_blank">Download</a></span></div>
+                  <% } %>
+
+                </div>
+              </div>
+            </div>
+            <div class="separator-solid"></div>
+            <% }) %>
+            <div class="row">
+              <div class="col-md-12">
+                <div class="invoice-detail">
+                  <div class="invoice-top">
+                    <h3 class="title"><strong>Package Summary </strong></h3>
+                  </div>
+                  <div class="invoice-item">
+                    <div class="table-responsive">
+                      <table class="table table-striped">
+                        <thead>
+                          <tr>
+                            <td><strong>S.No</strong></td>
+                            <td><strong>Tracking No</strong></td>
+                            <td class="text-center"><strong>Description</strong></td>
+                            <td class="text-center"><strong>Type</strong></td>
+                            <td class="text-center"><strong>Dimensions</strong></td>
+                            <td class="text-right"><strong>Weight</strong></td>
+                            <td class="text-right"><strong>Volumetric Weight</strong></td>
+                            <td></td>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <% var totalWeight = 0,volumetricWeight=0;
+                          awb.packages.forEach((package,pick) => {
+                            totalWeight += Number(package.weight);
+                            let check = 1
+                            package.dimensions.split('x').forEach(data =>{
+                              check = check * data
+                            })
+                            package.volumetricWeight = (check/166);
+                            volumetricWeight  = volumetricWeight +  Number(package.volumetricWeight); 
+                          %>
+                          <tr>
+                            <td>Piece#<%= pick + 1%></td>
+                            <td><%= package.trackingNo%></td>
+                            <td class="text-center"><%= package.description%></td>
+                            <td class="text-center"><%= package.packageType%></td>
+                            <td class="text-center"><%= package.dimensions%></td>
+                            <td class="text-right"><%= Number(package.weight).toFixed(2)%>
+                              <%= package.packageCalculation||'kg' %></td>
+                            <td>
+                              <%= Number(package.volumetricWeight).toFixed(2) %> vlbs</td>
+                            <td>
+                              <td class="text-center">
+                                <a
+                                    class="btn btn-link btn-primary btn-print-pkg"
+                                    data-toggle="modal"
+                                    data-id="<%=package._id%>"
+                                    data-original-title="Print Label"
+                                    data-target="#print-popup"
+                                  ><i class="fa fa-print"></i>
+                                </a>
+                              </td>
+                          </tr>
+                          <% }) %>
+                          <tr>
+                            <td class="text-left"><strong>Total Pieces</strong></td>
+                            <td class="text-center"><%= awb.packages.length%></td>
+                            <td class="text-center"><strong>Total Weight</strong></td>
+                            <td class="text-right"><%= totalWeight.toFixed(2)%> lbs</td>
+                            <td></td>
+                            <td class="text-center"><strong>Total Volumetric Weight</strong></td>
+                            <td class="text-right"><%= volumetricWeight.toFixed(2)%> vlbs</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+                <div class="separator-solid  mb-3"></div>
+              </div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <div class="row">
+              <div class="col-sm-7 col-md-5 mb-3 mb-md-0 transfer-to">
+                <h5 class="sub">HAZMAT</h5>
+                <div class="account-transfer">
+                  <div>
+                    <span>
+                      Class:
+                    </span>
+                    <span>
+                      <% if (hazmat) { %>
+                      <%= hazmat.description %>
+                      <% } %>
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-5 col-md-7 transfer-total">
+                <h5 class="sub">Total Amount</h5>
+                <div class="price">$<%= awb.invoices.reduce((acc, i) => acc + (!isNaN(i.value) ? Number(i.value) : 0) , 0).toFixed(2) %></div>
+                <% if(Number(awb.isSed) == 1) { %>
+                <span>SED Included</span>
+                <% } %>
+              </div>
+            </div>
+            <div class="separator-solid"></div>
+            <div class="row">
+              <div class="col-sm-7 col-md-5 mb-3 mb-md-0 transfer-to">
+                <h5 class="sub">Plane</h5>
+                <div class="account-transfer">
+                  <div><span>Plane :</span><span><%= (awb.planeId) ? awb.planeId.tailNumber : "" %></span></div>
+                  <div><span>Plane Type:</span><span><%=(awb.planeId) ? awb.planeId.aircraftType : "" %></span></div>
+                </div>
+              </div>
+              <div class="col-sm-7 col-md-5 mb-3 mb-md-0 transfer-to ml-auto">
+                <h5 class="sub"></h5>
+                <div class="account-transfer">
+                  <div><span>Airport From:</span><span><%= awb.airportFromId ? awb.airportFromId.name : "" %></span></div>
+                  <div><span>Airport To:</span><span><%= awb.airportFromId ? awb.airportToId.name :"" %></span></div>
+                  <div><span>Flight Date / Time:</span><span><%= helpers.formatDate(awb.shipDate) %></span></div>
+                </div>
+              </div>
+            </div>
+            <div class="separator-solid"></div>
+            <p>
+              <strong>Creator of AWB</strong>: <%= awb.createdBy %> </br>
+              <strong>Date/Time of Creation</strong>: <%= awb.dateCreated %>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="print-popup" tabindex="-1" role="dialog" aria-labelledby="print-popup" aria-hidden="true"
+  style="display: none;">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="exampleModalLabel2">Print AirWay Bill</h2>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group text-center">
+          <canvas id="pdf-preview" class="border border-dark"></canvas>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger close-del" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary print-awb print-package" id='print-awb'>Print</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<% block('scripts').append('<script src="/js/utils.js"></script>')%>
+<% block('scripts').append('<script src="/js/warehouse/awb/preview.js"></script>')%>

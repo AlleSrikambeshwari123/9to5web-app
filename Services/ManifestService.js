@@ -46,6 +46,7 @@ class ManifestService {
           manifest['id'] = manifest['_id'];
           resolve({ 
             success: true, 
+            status : manifest.status,
             message: strings.string_response_created, 
             manifest: result
           });
@@ -153,6 +154,7 @@ class ManifestService {
       .populate('airportToId')
       .populate('planeId')
       .exec((err, result) => {
+        console.log("get ma",result,err)
         if(err){
           resolve({});
         }else{
@@ -161,23 +163,270 @@ class ManifestService {
       });
     });
   }
-
-  getManifests() {
+  getAllManifests(req){
     return new Promise(async(resolve, reject) => {
-      let totalPkgWeight = 0
-      Manifest.find({})
+      var start = req.body.start ? parseInt(req.body.start) : 0;
+      var length = req.body.length ? parseInt(req.body.length) : 10;      
+      var field = req.body['order[0][column]'] ?parseInt(req.body['order[0][column]']) : 0;
+      var columns = {0:'title', 1: 'createdAt', 2: 'plane.number'} 
+      
+      var dir = req.body['order[0][dir]'] ? req.body['order[0][dir]'] : 0;
+      var sort = (dir=='asc') ? 1 : -1;
+      var sortField = columns[field];
+
+      var search = req.body['search[value]'] ? req.body['search[value]'] : ''; 
+      var searchData = {
+        $or:[
+          {stageId: manifestStages.received.id},
+          {stageId: manifestStages.verified.id}
+        ]
+      };
+
+      //date range
+      var daterange = req.body.daterange?req.body.daterange:''
+      if(daterange){
+        var date_arr = daterange.split('-');
+        var startDate = (date_arr[0]).trim();      
+        var stdate = new Date(startDate);
+        stdate.setDate(stdate.getDate() +1);
+
+        var endDate = (date_arr[1]).trim();
+        var endate = new Date(endDate);
+        endate.setDate(endate.getDate() +1);     
+        searchData.createdAt = {"$gte":stdate, "$lte": endate};
+      }
+
+      if(!req.body.daterange && !req.body.clear){
+        var endate = new Date();      
+        endate.setDate(endate.getDate()+1);
+        var stdate = new Date();
+        stdate.setDate(stdate.getDate() -21);      
+        searchData.createdAt = {"$gte":stdate, "$lte": endate};
+      }
+
+      if(search){
+        searchData.$or = [          
+          {title:{'$regex' : search, '$options' : 'i'}},
+          {"plane.number":{'$regex' : search, '$options' : 'i'}}        
+        ]
+      }
+      var pipLineAggregate = [
+        {
+          $lookup: {
+            from: "packages",
+            localField: "packages",
+            foreignField: "_id",
+            as: "packages"            
+          }
+        },
+        {
+          $lookup: {
+            from: "planes",
+            localField: "planeId",
+            foreignField: "_id",
+            as: "plane"            
+          }
+        },
+        {$unwind: "$plane"}
+      ]
+      var totalRecords = Manifest.aggregate([
+        ...pipLineAggregate,
+        ...[
+          {$count: "total"}
+        ]
+      ])
+      if(totalRecords && totalRecords.length && totalRecords[0].total){
+        Manifest.aggregate([
+          ...pipLineAggregate,
+          ...[
+            {$sort: {[sortField]: sort}},
+            {$skip: start},
+            {$limit: length}
+          ]
+        ]).exec((err, result)=>{
+          if(err){
+            resolve({total: 0, manifests : []});
+          }else{
+            resolve({total: totalRecords[0].total, manifests : result});
+          }
+        })
+      }else{
+        resolve({total: 0, manifests : []});
+      }
+        
+    })
+  }
+
+  getManifests(req) {
+    var searchData = {};
+    if(req && req.query){
+      var daterange = req.query.daterange?req.query.daterange:'';            
+      if(daterange){
+        var date_arr = daterange.split('-');
+        var startDate = (date_arr[0]).trim();      
+        var stdate = new Date(startDate);
+        stdate.setDate(stdate.getDate() +1);
+
+        var endDate = (date_arr[1]).trim();
+        var endate = new Date(endDate);
+        endate.setDate(endate.getDate() +1);     
+        searchData.createdAt = {"$gte":stdate, "$lte": endate};
+      }
+
+      if(!req.query.daterange && !req.query.clear){
+        var endate = new Date();      
+        endate.setDate(endate.getDate()+1);
+        var stdate = new Date();
+        stdate.setDate(stdate.getDate() -21);      
+        searchData.createdAt = {"$gte":stdate, "$lte": endate};
+      }
+      if(req.query.clear){
+        var endate = new Date();      
+        endate.setDate(endate.getDate()+1);
+        var stdate = new Date();
+        stdate.setDate(stdate.getDate() -14);      
+        searchData.createdAt = {"$gte":stdate, "$lte": endate};
+      }
+    }
+    return new Promise(async(resolve, reject) => {
+      let planeArray = []
+      Manifest.find(searchData)
       .populate([{path:'packages',select:'weight'},{path:'planeId'}])
       .exec((err, manifests) => {
         if (err) {
           resolve([]);
         } else {
+          
           manifests.map(cp=>{
+            let totalPkgWeight = 0
             cp.packages.map(w => totalPkgWeight+= w.weight)
-            cp._doc['available_weight'] = (cp.planeId.maximumCapacity - totalPkgWeight).toFixed(2)
+            if(totalPkgWeight == NaN || !totalPkgWeight)
+               totalPkgWeight =0
+            let planeActualCapacity = cp.planeId.maximumCapacity
+            let flag = 0;
+            planeArray.forEach(data=>{
+              if(data.id == cp.planeId._id){
+                data.availCapacity = data.availCapacity - totalPkgWeight
+                planeActualCapacity = data.availCapacity 
+                flag = 1
+              }
+            })
+            if(flag == 0){
+              planeActualCapacity = cp.planeId.maximumCapacity -totalPkgWeight
+              planeArray.push({id :cp.planeId._id,availCapacity : planeActualCapacity})
+            }
+            cp._doc['available_weight'] = (planeActualCapacity).toFixed(2)
+            cp._doc['totalManifestWeight'] = totalPkgWeight;
           })
+          console.log(manifests.length)
           resolve(manifests);
         }
       });
+    })
+  }
+
+  getAllManifests(req){
+    var start = req.body.start ? parseInt(req.body.start) : 0;
+    var length = req.body.length ? parseInt(req.body.length) : 10;
+    var field = req.body['order[0][column]'] ?parseInt(req.body['order[0][column]']) : 0;
+    var columns = {0:'plane.tailNumber', 1: 'createdAt', 2: 'stage', 3:'plane.title'} 
+    var dir = req.body['order[0][dir]'] ? req.body['order[0][dir]'] : 0;
+    var sort = (dir=='asc') ? 1 : -1;
+    var sortField = columns[field];
+    var search = req.body['search[value]'] ? req.body['search[value]'] : '';
+    var daterange = req.body.daterange?req.body.daterange:''
+
+    var searchData = {};
+
+    if(daterange){
+      var date_arr = daterange.split('-');
+      var startDate = (date_arr[0]).trim();      
+      var stdate = new Date(startDate);
+      stdate.setDate(stdate.getDate() +1);
+
+      var endDate = (date_arr[1]).trim();
+      var endate = new Date(endDate);
+      endate.setDate(endate.getDate() +1);     
+      searchData.createdAt = {"$gte":stdate, "$lte": endate};
+    }
+    if(!req.body.daterange && !req.body.clear){
+      var endate = new Date();      
+      endate.setDate(endate.getDate()+1);
+      var stdate = new Date();
+      stdate.setDate(stdate.getDate() -21);      
+      searchData.createdAt = {"$gte":stdate, "$lte": endate};
+    }
+    if(search){
+      searchData.$or = [
+      {"plane.title":{'$regex' : search, '$options' : 'i'}},        
+      {"stage":{'$regex' : search, '$options' : 'i'}},        
+      {"plane.tailNumber":{'$regex' : search, '$options' : 'i'}},
+      ]
+    }
+
+    return new Promise(async(resolve, reject) => {
+      let planeArray = []
+      var piplineAggregate = [
+        {
+            $lookup:{
+                from:"planes",
+                localField: 'planeId',
+                foreignField: '_id',
+                as:"plane"
+            }
+        },
+         {$unwind:"$plane"},
+        {
+            $match:searchData
+        }                
+    ];
+
+    var totalRecords = await Manifest.aggregate([
+      ...piplineAggregate,
+      ...[{$count: "total"}]
+    ]);
+    if(totalRecords && totalRecords.length && totalRecords[0].total){
+      Manifest.aggregate([
+        ...piplineAggregate,
+        ...[
+          {$sort: {createdAt:1}},
+          {$skip: start},
+          {$limit: length},
+        ]
+      ]).exec((err,result)=>{
+        if(err){
+            console.log(err)
+            resolve({total:0, packages: []})
+        }else{
+          result.map(cp=>{
+            let totalPkgWeight = 0
+            // if(cp.packages)
+            //   cp.packages.map(w => totalPkgWeight+= w.weight)
+            if(totalPkgWeight == NaN || !totalPkgWeight)
+               totalPkgWeight =0
+            let planeActualCapacity = cp.plane.maximumCapacity
+            let flag = 0;
+            planeArray.forEach(data=>{
+              if(data.id == cp.plane._id){
+                data.availCapacity = data.availCapacity - totalPkgWeight
+                planeActualCapacity = data.availCapacity 
+                flag = 1
+              }
+            })
+            if(flag == 0){
+              planeActualCapacity = cp.plane.maximumCapacity -totalPkgWeight
+              planeArray.push({id :cp.plane._id,availCapacity : planeActualCapacity})
+            }
+            // cp._doc['available_weight'] = (planeActualCapacity).toFixed(2)
+          })
+            resolve({total:totalRecords[0].total, manifests: result})
+        }
+      })
+    }else{
+      resolve({total:0, manifests: []})
+    }
+    
+   
     })
   }
 
@@ -193,12 +442,41 @@ class ManifestService {
     });
   }
 
-  getManifestProcessing() {
+  getManifestProcessing(req) {
+    var daterange = req.query.daterange?req.query.daterange:'';            
+    var searchData = {};
+    if(daterange){
+      var date_arr = daterange.split('-');
+      var startDate = (date_arr[0]).trim();      
+      var stdate = new Date(startDate);
+      stdate.setDate(stdate.getDate() +1);
+
+       var endDate = (date_arr[1]).trim();
+      var endate = new Date(endDate);
+      endate.setDate(endate.getDate() +1);     
+      searchData.createdAt = {"$gte":stdate, "$lte": endate};
+    }
+
+     if(!req.query.daterange && !req.query.clear){
+      var endate = new Date();      
+      endate.setDate(endate.getDate()+1);
+      var stdate = new Date();
+      stdate.setDate(stdate.getDate() -21);      
+      searchData.createdAt = {"$gte":stdate, "$lte": endate};
+    }
+    if(req.query.clear){
+      var endate = new Date();      
+      endate.setDate(endate.getDate()+1);
+      var stdate = new Date();
+      stdate.setDate(stdate.getDate() -14);      
+      searchData.createdAt = {"$gte":stdate, "$lte": endate};
+    }
+    searchData.$or = [
+      {stageId: manifestStages.received.id},
+      {stageId: manifestStages.verified.id}
+    ]
     return new Promise((resolve, reject) => {
-      Manifest.find({$or: [
-        {stageId: manifestStages.received.id},
-        {stageId: manifestStages.verified.id}
-      ]})
+      Manifest.find(searchData)
       .populate('planeId')
       .populate('customerId')
       .exec( (err, manifests) => {
@@ -218,6 +496,152 @@ class ManifestService {
         }
       });
     });
+  }
+
+  get_all_incoming_manifest(req){
+    var start = req.body.start ? parseInt(req.body.start) : 0;
+    var length = req.body.length ? parseInt(req.body.length) : 10;      
+    var field = req.body['order[0][column]'] ?parseInt(req.body['order[0][column]']) : 0;
+    var columns = {0:'title', 1: 'createdAt', 2: 'plane.number'} 
+    
+    var dir = req.body['order[0][dir]'] ? req.body['order[0][dir]'] : 0;
+    var sort = (dir=='asc') ? 1 : -1;
+    var sortField = columns[field];
+
+    var search = req.body['search[value]'] ? req.body['search[value]'] : ''; 
+    var searchData = {
+      $or:[
+        {stageId: manifestStages.received.id},
+        {stageId: manifestStages.verified.id}
+      ]
+    };
+
+    //date range
+    var daterange = req.body.daterange?req.body.daterange:''
+    if(daterange){
+      var date_arr = daterange.split('-');
+      var startDate = (date_arr[0]).trim();      
+      var stdate = new Date(startDate);
+      stdate.setDate(stdate.getDate() +1);
+
+      var endDate = (date_arr[1]).trim();
+      var endate = new Date(endDate);
+      endate.setDate(endate.getDate() +1);     
+      searchData.createdAt = {"$gte":stdate, "$lte": endate};
+    }
+
+    if(!req.body.daterange && !req.body.clear){
+      var endate = new Date();      
+      endate.setDate(endate.getDate()+1);
+      var stdate = new Date();
+      stdate.setDate(stdate.getDate() -21);      
+      searchData.createdAt = {"$gte":stdate, "$lte": endate};
+    }
+
+    if(search){
+      searchData.$or = [          
+        {title:{'$regex' : search, '$options' : 'i'}},
+        {"plane.number":{'$regex' : search, '$options' : 'i'}}        
+      ]
+    }
+   
+    return new Promise(async (resolve, reject) => {
+     var totalRecord =  await  Manifest.aggregate([
+       {
+          $match:searchData        
+        },
+        {
+          $lookup:{
+            from:"planes",
+            localField: 'planeId',
+            foreignField: '_id',
+            as:"plane"
+          }
+        },
+        {
+          $lookup:{
+            from:"customers",
+            localField: 'customerId',
+            foreignField: '_id',
+            as:"customer"
+          }
+        },
+        {
+          $lookup:{
+            from:"packages",
+            localField: '_id',
+            foreignField: 'manifestId',
+            as:"package"
+          }
+        },
+       { 
+          $addFields: {
+            packageLength: {$size: '$package'}
+          }
+        },
+        {
+          $match: {
+            packageLength: {$gt: 1}
+          }
+        },
+        {$count:"total"}
+      ]);
+      if(totalRecord && totalRecord.length && totalRecord[0].total){
+        Manifest.aggregate([
+          {
+            $match:searchData       
+          },
+          {
+            $lookup:{
+              from:"planes",
+              localField: 'planeId',
+              foreignField: '_id',
+              as:"plane"
+            }
+          },
+          {$unwind: "$plane"},
+          {
+            $lookup:{
+              from:"customers",
+              localField: 'customerId',
+              foreignField: '_id',
+              as:"customer"
+            }
+          },
+          {
+            $lookup:{
+              from:"packages",
+              localField: '_id',
+              foreignField: 'manifestId',
+              as:"package"
+            }
+          },
+          { 
+            $addFields: {
+              packageLength: {$size: '$package'}
+            }
+          },
+          {
+            $match: {
+              packageLength: {$gt: 1}
+            }
+          },
+          {
+            $sort : { [sortField] : sort}, 
+          },
+          {
+            $skip:start,
+          },
+          {
+            $limit:length,
+          }
+        ]).exec((err,result)=>{          
+          resolve({total:totalRecord[0].total, manifests: result});
+        })
+      }else{
+        resolve({total:0, menifests: []});
+      }
+    })
   }
 
   deleteManifest(mid) {

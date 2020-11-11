@@ -7,6 +7,7 @@ router.get('/locations/list', middleware().checkSession, locationCtrl.get_locati
 router.get('/locations/create', middleware().checkSession, locationCtrl.create_location);
 router.post('/locations/create', middleware().checkSession, locationCtrl.add_new_location);
 router.get('/locations/manage/:id/get', middleware().checkSession, locationCtrl.get_location);
+router.post('/locations/all-locations', middleware().checkSession, locationCtrl.get_all_locations);
 router.post('/locations/manage/:id/update', middleware().checkSession, locationCtrl.update_location);
 router.delete('/locations/manage/:id/delete', middleware().checkSession, locationCtrl.delete_location);
 
