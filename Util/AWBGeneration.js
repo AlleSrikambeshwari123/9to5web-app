@@ -32,6 +32,7 @@ var bwipjs = require('bwip-js')
 var moment = require('moment');
 var services = require('../Services/RedisDataServices');
 var aws = require('../Util/aws')
+var fetch = require('node-fetch')
 
 class AWBGeneration {
     constructor() {
@@ -163,7 +164,7 @@ class AWBGeneration {
         return new Promise(async (resolve,reject)=>{
             let invoiceResult = await this.invoicePipe(invoice)
             if(invoiceResult == 'Success')
-                resolve({ success: true, path: '/home/monty/Desktop/revelcorp/9to5-web/public/uploads/' + invoice.filename, name: invoice.filename })
+                resolve({ success: true, path: global.uploadRoot +'/'+ invoice.filename, name: invoice.filename })
             else
                 resolve({ success: false, message: 'File not found' })
         })
@@ -174,15 +175,15 @@ class AWBGeneration {
             try{
                 let filestream
                 let invoiceFile = await aws.getObjectReadStream(invoice.filename)
-                let path = '/home/monty/Desktop/revelcorp/9to5-web/public/uploads/' + invoice.filename
-                if(fs.existsSync(path)){
-                    invoiceFile.pipe(filestream = fs.createWriteStream(path))
-                    filestream.on('finish', async function() {
+                let path = global.uploadRoot +'/'+ invoice.filename
+                invoiceFile.pipe(filestream = fs.createWriteStream(path))
+                filestream.on('finish', async function() {
+                    if(fs.existsSync(path)){
                         resolve('Success')
-                    })
-                }else{
-                    resolve('Error')
-                }
+                    }else{
+                        resolve('Error')
+                    }
+                })
             }
             catch(error){
                 console.log("err",error)
