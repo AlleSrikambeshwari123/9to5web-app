@@ -227,9 +227,9 @@ $('#add-cube2-form').submit(function (event) {
     })
   }
   
-  // $('#cubeTable').DataTable({
-  //   pageLength: 10,
-  // });
+  $('#cubeTable').DataTable({
+    pageLength: 10,
+  });
 
   var pdfPath;
 $("#cubeTable").on("click",'.btn-print-pkg',function() {
