@@ -134,12 +134,16 @@ class AWBGeneration {
                         responses.end();
                         let awbRes = await this.getFileStream(filestream,filepath,filename)
                         pdfArray.push(awbRes)
-                        // for(let invoice of awb.invoices){
-                        //     await this.invoiceResult(invoice).then(async(arr)=>{
-                        //         console.log(arr)
-                        //         pdfArray.push(arr)
-                        //     })
-                        // }
+                        for(let invoice of awb.invoices){
+                            if(invoice.filename){
+                                await this.invoiceResult(invoice).then(async(arr)=>{
+                                    console.log('arr',arr)
+                                    if(arr.success){
+                                        pdfArray.push(arr)
+                                    }
+                                })
+                            }
+                        }
                     }
     			})
             }
@@ -157,19 +161,33 @@ class AWBGeneration {
 
      async invoiceResult(invoice) {
         return new Promise(async (resolve,reject)=>{
-            await this.invoicePipe(invoice)
-            resolve({ success: true, path: '/home/monty/Desktop/revelcorp/9to5-web/public/uploads/' + invoice.filename, name: invoice.filename })
+            let invoiceResult = await this.invoicePipe(invoice)
+            if(invoiceResult == 'Success')
+                resolve({ success: true, path: '/home/monty/Desktop/revelcorp/9to5-web/public/uploads/' + invoice.filename, name: invoice.filename })
+            else
+                resolve({ success: false, message: 'File not found' })
         })
     }
 
      async invoicePipe(invoice){
         return new Promise(async (resolve,reject)=>{
-            let filestream
-            let invoiceFile = await Promise.resolve(aws.getObjectReadStream(invoice.filename))
-            invoiceFile.pipe(filestream = fs.createWriteStream('/home/monty/Desktop/revelcorp/9to5-web/public/uploads/' + invoice.filename))
-            filestream.on('finish', async function() {
-                resolve('')
-            })
+            try{
+                let filestream
+                let invoiceFile = await aws.getObjectReadStream(invoice.filename)
+                let path = '/home/monty/Desktop/revelcorp/9to5-web/public/uploads/' + invoice.filename
+                if(fs.existsSync(path)){
+                    invoiceFile.pipe(filestream = fs.createWriteStream(path))
+                    filestream.on('finish', async function() {
+                        resolve('Success')
+                    })
+                }else{
+                    resolve('Error')
+                }
+            }
+            catch(error){
+                console.log("err",error)
+                reject(error)
+            }
         })
     }
 
