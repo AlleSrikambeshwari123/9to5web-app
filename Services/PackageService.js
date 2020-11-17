@@ -1352,6 +1352,19 @@ class PackageService {
         });
     }
 
+    getPackagesByObject(object) {
+        return new Promise((resolve, reject) => {
+            Package.find(object,async (err, pkgs) => {
+                if (err || pkgs == null) {
+                    resolve({}) 
+                }
+                else{
+                    resolve(pkgs);
+                } 
+            });
+        });
+    }
+
     async getAWBPackagesWithLastStatus_updated(awbId) {
         const packages = await this.getPackages_updated(awbId);
         await Promise.all(
@@ -1928,13 +1941,26 @@ class PackageService {
 
     //========== Load Packages to AirCraft (Add to Manifest) ==========//
     addToFlight(packageIds, manifestId, compartmentId, userId) {
-        return new Promise((resolve, reject) => {
+        return new Promise(async(resolve, reject) => {
             let packages = packageIds && packageIds.length && packageIds.split(',').filter(Boolean);
 
             if (!packages || packages.length === 0) {
                 return resolve({ success: false, message: 'Please select packages.' });
             }
+            let compartmentResult = await this.services.planeService.getCompartment(compartmentId)
+            let compartmentPackages = await this.getPackagesByObject({compartmentId : compartmentId})
 
+            let totalPkgWeight=0,totalCompWeight=0;
+            for(let pkg of packages){
+                let pkgResult = await this.getPackageById(pkg)
+                totalPkgWeight = totalPkgWeight + pkgResult.weight
+            }
+            for(let comp of compartmentPackages){
+                totalCompWeight = totalCompWeight + comp.weight
+            }
+            if(compartmentResult.weight < totalCompWeight + totalPkgWeight){
+                return resolve({ success: false, message: 'Overweight.' });
+            }
             Promise.all(
                 packages.map((packageId) => {
                     return Promise.all([
@@ -1971,7 +1997,7 @@ class PackageService {
                     if (err) {
                         resolve([])
                     } else {
-                        if (x.originalManifestId) {
+                        if (x && x.originalManifestId) {
                             if (x.clonePackages) {
                                 if (x.clonePackages.length > 0) {
                                     original = x.clonePackages
