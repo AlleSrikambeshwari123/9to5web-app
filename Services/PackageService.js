@@ -1949,13 +1949,12 @@ class PackageService {
             }
             let compartmentResult = await this.services.planeService.getCompartment(compartmentId)
             let compartmentPackages = await this.getPackagesByObject({compartmentId : compartmentId})
-
             let totalPkgWeight=0,totalCompWeight=0,flag = false;
             for(let pkg of packages){
                 let pkgResult = await this.getPackageById(pkg)
                 totalPkgWeight = totalPkgWeight + pkgResult.weight
                 for(let comp of compartmentPackages){
-                    if(comp._id == pkg){
+                    if(String(comp._id) == String(pkg)){
                         flag = true
                     }
                 }
@@ -1966,7 +1965,7 @@ class PackageService {
             for(let comp of compartmentPackages){
                 totalCompWeight = totalCompWeight + comp.weight
             }
-            if(compartmentResult.weight < totalCompWeight + totalPkgWeight){
+            if(compartmentResult && compartmentResult.weight < totalCompWeight + totalPkgWeight){
                 return resolve({ success: false, message: 'Overweight.' });
             }
             Promise.all(
