@@ -1948,7 +1948,7 @@ class PackageService {
                 return resolve({ success: false, message: 'Please select packages.' });
             }
             let compartmentResult = await this.services.planeService.getCompartment(compartmentId)
-            let compartmentPackages = await this.getPackagesByObject({compartmentId : compartmentId})
+            let compartmentPackages = await this.getPackagesByObject({manifestId : manifestId,compartmentId : compartmentId})
             let totalPkgWeight=0,totalCompWeight=0,flag = false;
             for(let pkg of packages){
                 let pkgResult = await this.getPackageById(pkg)
