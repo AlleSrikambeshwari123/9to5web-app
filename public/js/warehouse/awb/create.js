@@ -413,7 +413,7 @@ $(function () {
                   CustomsProc:  0,
                   SumOfAllCharges: 0,
                   CustomsVAT  : 0,
-                  VatMultiplier :  0,
+                  VatMultiplier :  0.12,
                   Delivery:  0,
                   Duty:  0,
                   EnvLevy:  0,

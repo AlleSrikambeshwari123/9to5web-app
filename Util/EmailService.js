@@ -228,10 +228,11 @@ async function sendNoDocsPackageEmail(pkg){
     }
     const awbId = (pkg.awbId && pkg.awbId.awbId)?pkg.awbId.awbId:'';    
     const shipperName = (pkg && pkg.shipperId &&  pkg.shipperId.name)? pkg.shipperId.name:'';
-    const description = (pkg.awbId && pkg.awbId.note)?pkg.awbId.note:'';
+    const description = pkg.description ? pkg.description : '';
     const trackingNo = pkg.trackingNo?pkg.trackingNo:'';
 
     emailBody = emailBody.replace("{{CUSTOMERNAME}}",customerName);
+    emailBody = emailBody.replace("{{AWB}}",awbId);
     emailBody = emailBody.replace("{{AWBID}}",awbId);
     emailBody = emailBody.replace("{{SHIPPERNAME}}",shipperName);
     emailBody = emailBody.replace("{{AWBDESCRIPTION}}",description);
@@ -241,8 +242,8 @@ async function sendNoDocsPackageEmail(pkg){
     
     message = { 
         to : (pkg && pkg.customerId && pkg.customerId.email)?pkg.customerId.email:'', 
-        from : 'info@postboxesetc.com ',
-        subject: `Package Update`,
+        from : 'invoice@postboxesetc.com',
+        subject: `Invoice needed AWB # `+ awbId,
         html:emailBody
     }; 
     var result = pkg && pkg.customerId && pkg.customerId.email ? await sendGrid.send(message):'Email Not Found';
@@ -262,7 +263,7 @@ async function sendStorePackageEmail(pkg){
     }
     const awbId = (pkg.awbId && pkg.awbId.awbId)?pkg.awbId.awbId:'';    
     const shipperName = (pkg && pkg.shipperId &&  pkg.shipperId.name)? pkg.shipperId.name:'';
-    const description = (pkg.awbId && pkg.awbId.note)?pkg.awbId.note:'';
+    const description = pkg.description ? pkg.description : '';
     const trackingNo = pkg.trackingNo?pkg.trackingNo:'';
     const totalPrice = pkg.totalPrice?pkg.totalPrice:0;
 
@@ -276,7 +277,7 @@ async function sendStorePackageEmail(pkg){
     message = { 
         to : (pkg && pkg.customerId && pkg.customerId.email)?pkg.customerId.email:'', 
         from : 'info@postboxesetc.com ',
-        subject: `Package Update`,
+        subject: `Your order is at the store`,
         html:emailBody
     }; 
     var result = pkg && pkg.customerId && pkg.customerId.email ? await sendGrid.send(message): 'Email Not Found';

@@ -87,7 +87,7 @@ class AwbPriceLabelService {
     result.Brokerage = result.Brokerage ? result.Brokerage.toFixed(2) : 0
     result.CustomsProc = result.CustomsProc ? result.CustomsProc.toFixed(2) : 0 
     result.CustomsVAT = result.CustomsVAT ? result.CustomsVAT.toFixed(2) : 0 
-    result.VatMultiplier = result.VatMultiplier ? result.VatMultiplier.toFixed(2) : 0
+    result.VatMultiplier = result.VatMultiplier ? result.VatMultiplier.toFixed(2) : 0.12
     result.Delivery =  result.Delivery ? result.Delivery.toFixed(2): 0 
     result.Duty =  result.Duty ? result.Duty.toFixed(2) : 0
     result.EnvLevy = result.EnvLevy ? result.EnvLevy.toFixed(2) : 0
@@ -102,6 +102,9 @@ class AwbPriceLabelService {
     result.TotalVolumetricWeight = result.TotalVolumetricWeight ? result.TotalVolumetricWeight.toFixed(2) : 0
     result.totalPrice = result.totalPrice ? result.totalPrice.toFixed(2) : 0
     result.Storage = result.Storage ? result.Storage.toFixed(2) : 0 
+
+    result.CustomsVAT = (Number(result.OverrideInvoiceValue) + Number(result.Freight) + Number(result.Duty)+ Number(result.CustomsProc)+Number(result.EnvLevy)) * Number(result.VatMultiplier)
+    result.ServiceVat = (Number(result.NoDocs) + Number(result.Insurance) + Number(result.Storage) + Number(result.Brokerage) +Number(result.Express) + Number(result.Delivery) ) * Number(result.VatMultiplier)
     
     let sum = Number(result.CustomsVAT) + Number(result.ServiceVat) + Number(result.Freight) + Number(result.Duty)+ Number(result.CustomsProc)+Number(result.EnvLevy) +Number(result.NoDocs) +
     Number(result.Insurance) + Number(result.Storage) + Number(result.Brokerage) +Number(result.Express) + Number(result.Delivery) + Number(result.Hazmat) + Number(result.Pickup) + Number(result.Sed)

@@ -217,10 +217,57 @@ class AwbService {
                     let awbPriceLabel = await PriceLabel.findOne({awbId:res._id}) ;
 
                     if(awbPriceLabel != null){
+
+                      let totalweightVal = 0,totalVolumetricWeight =0;
+                      if(res.packages){
+                        for (var i = 0; i < res.packages.length; i++) {
+                          var weight = res.packages[i].weight;
+                          if (res.packages[i].packageCalculation == 'kg' || res.packages[i].packageCalculation == 'Kg') {
+                            weight = 2.20462 * res.packages[i].weight;
+                          }
+                          totalweightVal = totalweightVal + weight;
+                          let check = 1;
+                          res.packages[i].dimensions.split('x').forEach(data =>{
+                            check = check * data
+                          })
+                          let volumetricWeight = (check/166);
+                          totalVolumetricWeight = totalVolumetricWeight + volumetricWeight;
+                        }
+                        awbPriceLabel.TotalWeightValue = totalweightVal
+                        awbPriceLabel.TotalVolumetricWeight = totalVolumetricWeight
+                        awbPriceLabel.Express = awbPriceLabel.Express ? awbPriceLabel.Express.toFixed(2) : 0
+
+                        if(awbPriceLabel.Express >0){
+                          awbPriceLabel.Express = 35
+                          if(awbPriceLabel.TotalWeightValue >= 12 && awbPriceLabel.TotalVolumetricWeight >=12 ){
+                            if(awbPriceLabel.TotalWeightValue > awbPriceLabel.TotalVolumetricWeight){
+                              awbPriceLabel.Freight = awbPriceLabel.TotalWeightValue * 3
+                              if(awbPriceLabel.Freight > 35) 
+                                awbPriceLabel.Express = awbPriceLabel.Freight
+                            }
+                            else{
+                              awbPriceLabel.Freight = awbPriceLabel.TotalVolumetricWeight * 3
+                              if(awbPriceLabel.Freight > 35) 
+                                awbPriceLabel.Express = awbPriceLabel.Freight
+                            }
+                          }else{
+                            awbPriceLabel.Freight =  35
+                          }
+                        }else{
+                          if(awbPriceLabel.TotalWeightValue >= 2 && awbPriceLabel.TotalVolumetricWeight >=2 ){
+                            if(awbPriceLabel.TotalWeightValue > awbPriceLabel.TotalVolumetricWeight)
+                              awbPriceLabel.Freight = awbPriceLabel.TotalWeightValue * 1.55
+                            else
+                              awbPriceLabel.Freight = awbPriceLabel.TotalVolumetricWeight * 1.55
+                          }else{
+                            awbPriceLabel.Freight =  3.10
+                          }
+                        }
+                      }
   
                       awbPriceLabel.Brokerage = awbPriceLabel.Brokerage ? awbPriceLabel.Brokerage.toFixed(2) : 0
                       awbPriceLabel.CustomsProc = awbPriceLabel.CustomsProc ? awbPriceLabel.CustomsProc.toFixed(2) : 0 
-                      awbPriceLabel.CustomsVAT = awbPriceLabel.CustomsVAT ? awbPriceLabel.CustomsVAT.toFixed(2) : 0 
+                      awbPriceLabel.VatMultiplier = awbPriceLabel.VatMultiplier ? awbPriceLabel.VatMultiplier.toFixed(2) : 0.12 
                       awbPriceLabel.Delivery =  awbPriceLabel.Delivery ? awbPriceLabel.Delivery.toFixed(2): 0 
                       awbPriceLabel.Duty =  awbPriceLabel.Duty ? awbPriceLabel.Duty.toFixed(2) : 0
                       awbPriceLabel.EnvLevy = awbPriceLabel.EnvLevy ? awbPriceLabel.EnvLevy.toFixed(2) : 0
@@ -231,12 +278,14 @@ class AwbService {
                       awbPriceLabel.NoDocs = awbPriceLabel.NoDocs ? awbPriceLabel.NoDocs.toFixed(2) : 0
                       awbPriceLabel.Pickup = awbPriceLabel.Pickup ? awbPriceLabel.Pickup.toFixed(2)  : 0
                       awbPriceLabel.Sed = awbPriceLabel.Sed ? awbPriceLabel.Sed.toFixed(2) : 0
-                      awbPriceLabel.ServiceVat = awbPriceLabel.ServiceVat ? awbPriceLabel.ServiceVat.toFixed(2) : 0 
                       awbPriceLabel.Storage = awbPriceLabel.Storage ? awbPriceLabel.Storage.toFixed(2) : 0 
                       
+                      awbPriceLabel.CustomsVAT = (Number(awbPriceLabel.OverrideInvoiceValue) + Number(awbPriceLabel.Freight) + Number(awbPriceLabel.Duty)+ Number(awbPriceLabel.CustomsProc)+Number(awbPriceLabel.EnvLevy)) * Number(awbPriceLabel.VatMultiplier)
+                      awbPriceLabel.ServiceVat = (Number(awbPriceLabel.NoDocs) + Number(awbPriceLabel.Insurance) + Number(awbPriceLabel.Storage) + Number(awbPriceLabel.Brokerage) +Number(awbPriceLabel.Express) + Number(awbPriceLabel.Delivery) ) * Number(awbPriceLabel.VatMultiplier)
+
                       awbPriceLabel.SumOfAllCharges = Number(awbPriceLabel.CustomsVAT) + Number(awbPriceLabel.ServiceVat) + Number(awbPriceLabel.Freight) + Number(awbPriceLabel.Duty)+ Number(awbPriceLabel.CustomsProc)+Number(awbPriceLabel.EnvLevy) +Number(awbPriceLabel.NoDocs) +
                       Number(awbPriceLabel.Insurance) + Number(awbPriceLabel.Storage) + Number(awbPriceLabel.Brokerage) +Number(awbPriceLabel.Express) + Number(awbPriceLabel.Delivery) + Number(awbPriceLabel.Hazmat) + Number(awbPriceLabel.Pickup)  + Number(awbPriceLabel.Sed)
-           
+                      console.log("awbPriceLabel.SumOfAllCharges ",awbPriceLabel.SumOfAllCharges )
                       res['awbPriceLabel'] = awbPriceLabel.SumOfAllCharges ? awbPriceLabel.SumOfAllCharges.toFixed(2) : 0;
                     }
                     res['customer'] = res['customerId'];
@@ -1257,7 +1306,7 @@ class AwbService {
             result.Brokerage = result.Brokerage ? result.Brokerage.toFixed(2) : 0
             result.CustomsProc = result.CustomsProc ? result.CustomsProc.toFixed(2) : 0 
             result.CustomsVAT = result.CustomsVAT ? result.CustomsVAT.toFixed(2) : 0 
-            result.VatMultiplier = result.VatMultiplier ? result.VatMultiplier.toFixed(2) : 0
+            result.VatMultiplier = result.VatMultiplier ? result.VatMultiplier.toFixed(2) : 0.12
             result.Delivery =  result.Delivery ? result.Delivery.toFixed(2): 0 
             result.Duty =  result.Duty ? result.Duty.toFixed(2) : 0
             result.EnvLevy = result.EnvLevy ? result.EnvLevy.toFixed(2) : 0
@@ -1274,6 +1323,9 @@ class AwbService {
             result.NoOfInvoice = result.NoOfInvoice ?result.NoOfInvoice.toFixed(2) : 0
             result.totalPrice = result.totalPrice ? result.totalPrice.toFixed(2) : 0
             result.Storage = result.Storage ? result.Storage.toFixed(2) : 0 
+            
+            result.CustomsVAT = (Number(result.OverrideInvoiceValue) + Number(result.Freight) + Number(result.Duty)+ Number(result.CustomsProc)+Number(result.EnvLevy)) * Number(result.VatMultiplier)
+            result.ServiceVat = (Number(result.NoDocs) + Number(result.Insurance) + Number(result.Storage) + Number(result.Brokerage) +Number(result.Express) + Number(result.Delivery) ) * Number(result.VatMultiplier)
             
             result.SumOfAllCharges = Number(result.CustomsVAT) + Number(result.ServiceVat) + Number(result.Freight) + Number(result.Duty)+ Number(result.CustomsProc)+Number(result.EnvLevy) +Number(result.NoDocs) +
             Number(result.Insurance) + Number(result.Storage) + Number(result.Brokerage) +Number(result.Express) + Number(result.Delivery) + Number(result.Hazmat) + Number(result.Pickup)  + Number(result.Sed)

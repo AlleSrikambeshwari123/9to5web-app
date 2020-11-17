@@ -98,7 +98,7 @@ class AllPackagesOnAwb {
                     { margin: [1, 2], text: 'BUILDING 6W,', fontSize: 9 },
                     { margin: [1, 2], text: 'FORT LAUDERDALE,', fontSize: 9 },
                     { margin: [1, 2], text: 'FLORIDA, 33309', fontSize: 9 },
-                    { margin: [1, 2], text: 'UNITED STATES ', fontSize: 9 },
+                    { margin: [1, 2], text: '(954)958-9970 ', fontSize: 9 },
                   ],
                 },
               ],
@@ -329,9 +329,10 @@ class AllPackagesOnAwb {
         this.noDocs = '***';
       }
 
-      if (this.awb.hazmat && this.awb.hazmat.description) {
-        this.notes = this.awb.hazmat.description;
-      }
+      // if (this.awb.hazmat && this.awb.hazmat.description) {
+      //   this.notes = this.awb.hazmat.description;
+      // }
+      this.notes = this.awb.note ? this.awb.note : ''; 
       let definition = {
         pageSize: {
             width: 288.0,
