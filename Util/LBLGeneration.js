@@ -331,10 +331,11 @@ class LBLGeneration {
         noDocs = '***';
       }
       let shipperName = this.awb.shipper ? this.awb.shipper.name :''
-      var notes = '';
-      if (this.awb.hazmat && this.awb.hazmat.description) {
-        notes = this.awb.hazmat.description;
-      }
+      // var notes = '';
+      // if (this.awb.hazmat && this.awb.hazmat.description) {
+      //   notes = this.awb.hazmat.description;
+      // }
+      var notes = this.awb.note ? this.awb.note :'';
       this.generateBarcode(pkg.trackingNo)
         .then((png) => {
           try {
@@ -367,10 +368,10 @@ class LBLGeneration {
                           border: [false, false, false, true],
                           stack: [
                             { margin: [1, 5], text: company.name, fontSize: 10, bold: true },
-                            { margin: [1, 2], text: '1811 51st Street', fontSize: 9 },
-                            { margin: [1, 2], text: 'Hanger 42 D', fontSize: 9 },
-                            { margin: [1, 2], text: 'Fort Lauderdale, FL 33309 ', fontSize: 9 },
-                            { margin: [1, 2], text: 'UNITED STATES ', fontSize: 9 },
+                            { margin: [1, 2], text: '2801 NW 55th Court', fontSize: 9 },
+                            { margin: [1, 2], text: 'Building 6W', fontSize: 9 },
+                            { margin: [1, 2], text: 'Fort Lauderdale, Fl. 33309 ', fontSize: 9 },
+                            { margin: [1, 2], text: '(954)958-9970 ', fontSize: 9 },
                           ],
                         },
                       ],

@@ -344,7 +344,7 @@ $('#UpdatePriceLabelPackage').on('click', function (event) {
     CustomsProc: $('#CustomsProc').val() == "" ? 0 : $('#CustomsProc').val(),
     SumOfAllCharges: $('#sum-of-charges').val() == "" ? 0 : $('#sum-of-charges').val(),
     CustomsVAT: $('#CustomsVAT').val() == "" ? 0 :$('#CustomsVAT').val(),
-    VatMultiplier : $('#VatMultiplier').val() == "" ? 0 : $('#VatMultiplier').val(),
+    VatMultiplier : $('#VatMultiplier').val() == "" ? 0.12 : $('#VatMultiplier').val(),
     Delivery: $('#Delivery').val() == "" ? 0 : $('#Delivery').val(),
     Duty: $('#Duty').val() == "" ? 0 : $('#Duty').val(),
     EnvLevy: $('#EnvLevy').val() == "" ? 0 : $('#EnvLevy').val(),
