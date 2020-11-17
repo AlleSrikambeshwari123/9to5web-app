@@ -2995,12 +2995,13 @@ class PackageService {
             const awbId = pkgData.awbId._id;
             const awbData = await Awb.findOne({_id:awbId}).populate('invoices');
             const invoices = awbData.invoices?awbData.invoices:[];
-            var totalPrice = 0;
-            for(let i=0;i<invoices.length;i++){
-                totalPrice = totalPrice+invoices[i].value;
-            }
-            pkgData.totalPrice = totalPrice;
-            console.log(totalPrice,'>>>>>>>>>>>>>>>>');
+            // var totalPrice = 0;
+            // for(let i=0;i<invoices.length;i++){
+            //     totalPrice = totalPrice+invoices[i].value;
+            // }
+            let pricelabelResult = await  this.services.AwbPriceLabelService.getPriceLabel(awbId);
+            pkgData.totalPrice = pricelabelResult.SumOfAllCharges;
+            console.log(pkgData.totalPrice,'>>>>>>>>>>>>>>>>');
             await emailService.sendStorePackageEmail(pkgData);
             await Awb.updateOne({_id:(pkgData.awbId._id).toString()},{eamil_delivered_store:true});
             return true;
@@ -3019,12 +3020,13 @@ class PackageService {
             const awbId = pkgData.awbId._id;
             const awbData = await Awb.findOne({_id:awbId}).populate('invoices');
             const invoices = awbData.invoices?awbData.invoices:[];
-            var totalPrice = 0;
-            for(let i=0;i<invoices.length;i++){
-                totalPrice = totalPrice+invoices[i].value;
-            }
-            pkgData.totalPrice = totalPrice;
-            console.log(totalPrice,'>>>>>>>>>>>>>>>>');
+            // var totalPrice = 0;
+            // for(let i=0;i<invoices.length;i++){
+            //     totalPrice = totalPrice+invoices[i].value;
+            // }
+            let pricelabelResult = await  this.services.AwbPriceLabelService.getPriceLabel(awbId);
+            pkgData.totalPrice = pricelabelResult.SumOfAllCharges;
+            console.log(pkgData.totalPrice,'>>>>>>>>>>>>>>>>');
             await emailService.sendStorePackageEmail(pkgData);
             await Package.updateOne({_id:pkgId},{emailAgingStore:true});
             return true;
