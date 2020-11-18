@@ -16,6 +16,14 @@ const Compartment = require('../models/compartment')
 let ObjectId = require('mongodb').ObjectID;
 
 class PlaneService {
+  constructor() {
+    this.services = {};
+  }
+
+  setServiceInstances(services) {
+      this.services = services;
+  }
+
   addPlane(plane) {
     return new Promise((resolve, reject) => {
       // let date = new Date()
@@ -224,12 +232,13 @@ class PlaneService {
   getCompartmentsManifest(planeId,manifestId) {
     return new Promise(async (resolve, reject) => {
       let compartments = await Compartment.find({ planeId: ObjectId(planeId) }).populate([{path:'packages',select:'weight compartmentId manifestId'},{path : 'planeId'}])
-      let loadedManifestWeight =0,planeWeight
+      let manifestResult = await this.services.packageService.cloneManifestAndOriginal(manifestId)
+      let loadedManifestWeight =0,planeWeight =0;
       compartments.map(cp=>{
         let totalPkgWeight = 0,totalCompartmentWeight =0;
-        for(let pkg of cp.packages){
+        for(let pkg of manifestResult){
           if(manifestId){
-            if(pkg.manifestId == manifestId && String(pkg.compartmentId) == String(cp._id)){
+            if(pkg.compartmentId && String(pkg.compartmentId._id) == String(cp._id)){
               totalCompartmentWeight+=pkg.weight
             }
           }

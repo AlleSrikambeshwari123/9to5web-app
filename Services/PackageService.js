@@ -138,7 +138,7 @@ class PackageService {
     }
 
     // Add Packages To Manifest 2: 'Loaded on AirCraft',
-    async addPackagesToManifests(packageIds, manifestId, userId) {
+    async addPackagesToManifests(packageIds, manifestId, userId, compartmentId) {
         try {
             let error = []
             let totalPkgWeight = 0
@@ -146,6 +146,19 @@ class PackageService {
             let packages = packageIds && packageIds.length && packageIds.split(',').filter(Boolean);
             const cv = await Manifest.findById(manifestId).populate([{ path: 'packages', select: 'weight' }, { path: 'planeId', select: 'maximumCapacity' }]).
             select('packages planeId')
+            let compartmentPackages = await this.getPackagesByObject({manifestId : manifestId,compartmentId : compartmentId})
+            let flag = false;   
+            for(let pkg of packages){
+                for(let comp of compartmentPackages){
+                    if(String(comp._id) == String(pkg)){
+                        flag = true
+                    }
+                }
+            }
+            if(flag){
+                return { success: false, message: 'This package is already there in this compartment.' };
+            }
+           
             cv.packages.map(w => totalPkgWeight += w.weight)
             const pkgs = await Promise.all(packages.map(async pkgId => {
                 const pk = await Package.findById(pkgId).select('weight')
@@ -158,7 +171,7 @@ class PackageService {
             await Promise.all(packages.map(async packageId => {
                 // check packageId Exists
                 if (await Package.findById(packageId)) {
-                    this.updatePackage(packageId, { manifestId: manifestId });
+                    this.updatePackage(packageId, { manifestId: manifestId,compartmentId:compartmentId });
                     const status = await this.updatePackageStatus(packageId, 2, userId);
                     if (!status.success) error.push(status.message)
                 } else {
@@ -1352,6 +1365,19 @@ class PackageService {
         });
     }
 
+    getPackagesByObject(object) {
+        return new Promise((resolve, reject) => {
+            Package.find(object,async (err, pkgs) => {
+                if (err || pkgs == null) {
+                    resolve({}) 
+                }
+                else{
+                    resolve(pkgs);
+                } 
+            });
+        });
+    }
+
     async getAWBPackagesWithLastStatus_updated(awbId) {
         const packages = await this.getPackages_updated(awbId);
         await Promise.all(
@@ -1928,13 +1954,33 @@ class PackageService {
 
     //========== Load Packages to AirCraft (Add to Manifest) ==========//
     addToFlight(packageIds, manifestId, compartmentId, userId) {
-        return new Promise((resolve, reject) => {
+        return new Promise(async(resolve, reject) => {
             let packages = packageIds && packageIds.length && packageIds.split(',').filter(Boolean);
 
             if (!packages || packages.length === 0) {
                 return resolve({ success: false, message: 'Please select packages.' });
             }
-
+            let compartmentResult = await this.services.planeService.getCompartment(compartmentId)
+            let compartmentPackages = await this.getPackagesByObject({manifestId : manifestId,compartmentId : compartmentId})
+            let totalPkgWeight=0,totalCompWeight=0,flag = false;
+            for(let pkg of packages){
+                let pkgResult = await this.getPackageById(pkg)
+                totalPkgWeight = totalPkgWeight + pkgResult.weight
+                for(let comp of compartmentPackages){
+                    if(String(comp._id) == String(pkg)){
+                        flag = true
+                    }
+                }
+            }
+            if(flag == true){
+                return resolve({ success: false, message: 'This package is already there in this compartment.' });
+            }
+            for(let comp of compartmentPackages){
+                totalCompWeight = totalCompWeight + comp.weight
+            }
+            if(compartmentResult && compartmentResult.weight < totalCompWeight + totalPkgWeight){
+                return resolve({ success: false, message: 'Overweight.' });
+            }
             Promise.all(
                 packages.map((packageId) => {
                     return Promise.all([
@@ -1971,7 +2017,7 @@ class PackageService {
                     if (err) {
                         resolve([])
                     } else {
-                        if (x.originalManifestId) {
+                        if (x && x.originalManifestId) {
                             if (x.clonePackages) {
                                 if (x.clonePackages.length > 0) {
                                     original = x.clonePackages

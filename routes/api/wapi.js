@@ -331,10 +331,11 @@ router.post('/add-packages-to-compartment', passport.authenticate('jwt', { sessi
 router.post('/add-packages-to-manifests', passport.authenticate('jwt', { session: false }), (req, res, next) => {
   let packageIds = req.body.packageIds;
   let manifestId = req.body.manifestId;
+  let compartmentId = req.body.compartmentId;
   var userId =  req.body.userId;
   const {valid,errors} = checkEmpty({packageIds:packageIds,manifestId :manifestId,userId:userId})
   if(!valid) return res.send({success:false,message:errors})
-  services.packageService.addPackagesToManifests(packageIds,manifestId, userId).then((result) => {
+  services.packageService.addPackagesToManifests(packageIds,manifestId, userId,compartmentId).then((result) => {
     res.send(result)
   })
 })

@@ -4,6 +4,7 @@ var moment = require('moment');
 const strings = require('../Res/strings');
 const Manifest = require('../models/manifest');
 const Package = require('../models/package')
+const Coompartment = require('../models/compartment')
 const manifestStages = {
   open: {
     id: 1,
@@ -33,10 +34,13 @@ class ManifestService {
   }
 
   createManifest(manifest) {
-    return new Promise((resolve, reject) => {
+    return new Promise(async(resolve, reject) => {
       manifest['title'] = moment(manifest.shipDate, "MMM DD,YYYY").format('MMDDYY')+"/"+manifest.time;
       manifest['stageId'] = manifestStages.open.id;
       manifest['stage'] = manifestStages.open.title;
+      let plane = await Coompartment.findOne({planeId : manifest.planeId})
+      if(!plane)
+        return resolve({success: false,message : "No compartments found for this plane."})
 
       let objManifest = new Manifest(manifest);
       objManifest.save(async (err, result) => {
