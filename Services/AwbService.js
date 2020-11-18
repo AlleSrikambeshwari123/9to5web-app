@@ -1332,6 +1332,7 @@ class AwbService {
         
             result.SumOfAllCharges = result.SumOfAllCharges ? result.SumOfAllCharges.toFixed(2) : 0
             result.Insurance = 0
+            result.TotalInvoiceValue = totalInvoice
             if(result.OverrideInvoiceValue){
               if(result.OverrideInvoiceValue > 0)
                 result.TotalInvoiceValue = result.OverrideInvoiceValue 
@@ -1339,13 +1340,13 @@ class AwbService {
                 result.TotalInvoiceValue = totalInvoice 
                 result.OverrideInvoiceValue = result.TotalInvoiceValue
               }
-              if(result.OverrideInvoiceValue >= 100)
-                  result.Insurance = result.OverrideInvoiceValue * 0.015
-
-              result.Insurance = result.Insurance ? result.Insurance.toFixed(2) : 0 
             }else{
               result.OverrideInvoiceValue = result.TotalInvoiceValue 
             }
+            if(result.OverrideInvoiceValue >= 100)
+              result.Insurance = result.OverrideInvoiceValue * 0.015
+
+            result.Insurance = result.Insurance ? result.Insurance.toFixed(2) : 0 
           }
           resolve(result)
         })
