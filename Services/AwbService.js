@@ -1335,8 +1335,10 @@ class AwbService {
             if(result.OverrideInvoiceValue){
               if(result.OverrideInvoiceValue > 0)
                 result.TotalInvoiceValue = result.OverrideInvoiceValue 
-              else
+              else{
                 result.TotalInvoiceValue = totalInvoice 
+                result.OverrideInvoiceValue = result.TotalInvoiceValue
+              }
               if(result.OverrideInvoiceValue >= 100)
                   result.Insurance = result.OverrideInvoiceValue * 0.015
 
