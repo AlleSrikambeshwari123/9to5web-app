@@ -1959,7 +1959,7 @@ class PackageService {
                     }
                 }
             }
-            if(flag){
+            if(flag == true){
                 return resolve({ success: false, message: 'This package is already there in this compartment.' });
             }
             for(let comp of compartmentPackages){
