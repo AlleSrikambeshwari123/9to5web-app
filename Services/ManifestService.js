@@ -40,7 +40,8 @@ class ManifestService {
       manifest['stage'] = manifestStages.open.title;
       let plane = await Coompartment.findOne({planeId : manifest.planeId})
       if(!plane)
-        resolve({success: false,message : "No compartments found for this plane."})
+        return resolve({success: false,message : "No compartments found for this plane."})
+
       let objManifest = new Manifest(manifest);
       objManifest.save(async (err, result) => {
         if (err) {
