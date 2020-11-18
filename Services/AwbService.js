@@ -1341,6 +1341,8 @@ class AwbService {
                   result.Insurance = result.OverrideInvoiceValue * 0.015
 
               result.Insurance = result.Insurance ? result.Insurance.toFixed(2) : 0 
+            }else{
+              result.OverrideInvoiceValue = result.TotalInvoiceValue 
             }
           }
           resolve(result)
