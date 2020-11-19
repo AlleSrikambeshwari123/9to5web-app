@@ -286,6 +286,19 @@ class AwbService {
                       awbPriceLabel.Sed = awbPriceLabel.Sed ? awbPriceLabel.Sed.toFixed(2) : 0
                       awbPriceLabel.Storage = awbPriceLabel.Storage ? awbPriceLabel.Storage.toFixed(2) : 0 
                       
+                      awbPriceLabel.Insurance = 0
+    
+                      if(awbPriceLabel.OverrideInvoiceValue){
+                        if(awbPriceLabel.OverrideInvoiceValue > 0)
+                          awbPriceLabel.OverrideInvoiceValue = awbPriceLabel.OverrideInvoiceValue 
+                        else
+                          awbPriceLabel.OverrideInvoiceValue = awbPriceLabel.TotalInvoiceValue 
+                      }else{
+                        awbPriceLabel.OverrideInvoiceValue = awbPriceLabel.TotalInvoiceValue 
+                      }
+                      if(awbPriceLabel.OverrideInvoiceValue >= 100)
+                        awbPriceLabel.Insurance = awbPriceLabel.OverrideInvoiceValue * 0.015
+
                       awbPriceLabel.CustomsVAT = (Number(awbPriceLabel.OverrideInvoiceValue) + Number(awbPriceLabel.Freight) + Number(awbPriceLabel.Duty)+ Number(awbPriceLabel.CustomsProc)+Number(awbPriceLabel.EnvLevy)) * Number(awbPriceLabel.VatMultiplier)
                       awbPriceLabel.ServiceVat = (Number(awbPriceLabel.NoDocs) + Number(awbPriceLabel.Insurance) + Number(awbPriceLabel.Storage) + Number(awbPriceLabel.Brokerage) +Number(awbPriceLabel.Express) + Number(awbPriceLabel.Delivery) ) * Number(awbPriceLabel.VatMultiplier)
 
