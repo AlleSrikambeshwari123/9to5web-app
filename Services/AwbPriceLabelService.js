@@ -60,22 +60,18 @@ class AwbPriceLabelService {
     
     if(result.Express >0){
       result.Express = 35
-      if(result.TotalWeightValue >= 12 && result.TotalVolumetricWeight >=12 ){
+      if(result.TotalWeightValue >= 12 || result.TotalVolumetricWeight >=12 ){
         if(result.TotalWeightValue > result.TotalVolumetricWeight){
           result.Freight = result.TotalWeightValue * 3
-          if(result.Freight > 35) 
-            result.Express = result.Freight
         }
         else{
           result.Freight = result.TotalVolumetricWeight * 3
-          if(result.Freight > 35) 
-            result.Express = result.Freight
         }
       }else{
         result.Freight =  35
       }
     }else{
-      if(result.TotalWeightValue >= 2 && result.TotalVolumetricWeight >=2 ){
+      if(result.TotalWeightValue >= 2 || result.TotalVolumetricWeight >=2 ){
         if(result.TotalWeightValue > result.TotalVolumetricWeight)
           result.Freight = result.TotalWeightValue * 1.55
         else
@@ -177,22 +173,18 @@ class AwbPriceLabelService {
     //   }
       if(priceLabel.Express >0){
         priceLabel.Express = 35
-        if(priceLabel.TotalWeightValue >= 12 && priceLabel.TotalVolumetricWeight >=12 ){
+        if(priceLabel.TotalWeightValue >= 12 || priceLabel.TotalVolumetricWeight >=12 ){
           if(priceLabel.TotalWeightValue > priceLabel.TotalVolumetricWeight){
             priceLabel.Freight = priceLabel.TotalWeightValue * 3
-            if(priceLabel.Freight > 35) 
-              priceLabel.Express = priceLabel.Freight
           }
           else{
             priceLabel.Freight = priceLabel.TotalVolumetricWeight * 3
-            if(priceLabel.Freight > 35) 
-              priceLabel.Express = priceLabel.Freight
           }
         }else{
           priceLabel.Freight =  35
         }
       }else{
-        if(priceLabel.TotalWeightValue >= 2 && priceLabel.TotalVolumetricWeight >=2 ){
+        if(priceLabel.TotalWeightValue >= 2 || priceLabel.TotalVolumetricWeight >=2 ){
           if(priceLabel.TotalWeightValue > priceLabel.TotalVolumetricWeight)
             priceLabel.Freight = priceLabel.TotalWeightValue * 1.55
           else

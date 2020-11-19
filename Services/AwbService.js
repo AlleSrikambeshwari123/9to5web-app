@@ -245,22 +245,18 @@ class AwbService {
 
                         if(awbPriceLabel.Express >0){
                           awbPriceLabel.Express = 35
-                          if(awbPriceLabel.TotalWeightValue >= 12 && awbPriceLabel.TotalVolumetricWeight >=12 ){
+                          if(awbPriceLabel.TotalWeightValue >= 12 || awbPriceLabel.TotalVolumetricWeight >=12 ){
                             if(awbPriceLabel.TotalWeightValue > awbPriceLabel.TotalVolumetricWeight){
                               awbPriceLabel.Freight = awbPriceLabel.TotalWeightValue * 3
-                              if(awbPriceLabel.Freight > 35) 
-                                awbPriceLabel.Express = awbPriceLabel.Freight
                             }
                             else{
                               awbPriceLabel.Freight = awbPriceLabel.TotalVolumetricWeight * 3
-                              if(awbPriceLabel.Freight > 35) 
-                                awbPriceLabel.Express = awbPriceLabel.Freight
                             }
                           }else{
                             awbPriceLabel.Freight =  35
                           }
                         }else{
-                          if(awbPriceLabel.TotalWeightValue >= 2 && awbPriceLabel.TotalVolumetricWeight >=2 ){
+                          if(awbPriceLabel.TotalWeightValue >= 2 || awbPriceLabel.TotalVolumetricWeight >=2 ){
                             if(awbPriceLabel.TotalWeightValue > awbPriceLabel.TotalVolumetricWeight)
                               awbPriceLabel.Freight = awbPriceLabel.TotalWeightValue * 1.55
                             else
@@ -1295,22 +1291,18 @@ class AwbService {
           
               if(result.Express >0){
                 result.Express = 35
-                if(result.TotalWeightValue >= 12 && result.TotalVolumetricWeight >=12 ){
+                if(result.TotalWeightValue >= 12 || result.TotalVolumetricWeight >=12 ){
                   if(result.TotalWeightValue > result.TotalVolumetricWeight){
                     result.Freight = result.TotalWeightValue * 3
-                    if(result.Freight > 35) 
-                      result.Express = result.Freight
                   }
                   else{
                     result.Freight = result.TotalVolumetricWeight * 3
-                    if(result.Freight > 35) 
-                      result.Express = result.Freight
                   }
                 }else{
                   result.Freight =  35
                 }
               }else{
-                if(result.TotalWeightValue >= 2 && result.TotalVolumetricWeight >=2 ){
+                if(result.TotalWeightValue >= 2 || result.TotalVolumetricWeight >=2 ){
                   if(result.TotalWeightValue > result.TotalVolumetricWeight)
                     result.Freight = result.TotalWeightValue * 1.55
                   else
