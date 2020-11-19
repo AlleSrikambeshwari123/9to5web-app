@@ -265,8 +265,8 @@ function pricelabelcommon(ServiceVat, NoDocsVal, InsuranceVal, SedVal, ExpressVa
   $('#Express').click(function () {
     if ($(this).prop('checked') == true) {
       ExpressVal = 35;
-      if($('#Freight').val() > 35) 
-        ExpressVal = $('#Freight').val();
+      // if($('#Freight').val() > 35) 
+      //   ExpressVal = $('#Freight').val();
       $('#ExpressVal').val(ExpressVal);
     } else if ($(this).prop('checked') == false) {
       $('#ExpressVal').val('');
