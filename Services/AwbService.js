@@ -1333,14 +1333,7 @@ class AwbService {
             result.NoOfInvoice = result.NoOfInvoice ?result.NoOfInvoice.toFixed(2) : 0
             result.totalPrice = result.totalPrice ? result.totalPrice.toFixed(2) : 0
             result.Storage = result.Storage ? result.Storage.toFixed(2) : 0 
-            
-            result.CustomsVAT = (Number(result.OverrideInvoiceValue) + Number(result.Freight) + Number(result.Duty)+ Number(result.CustomsProc)+Number(result.EnvLevy)) * Number(result.VatMultiplier)
-            result.ServiceVat = (Number(result.NoDocs) + Number(result.Insurance) + Number(result.Storage) + Number(result.Brokerage) +Number(result.Express) + Number(result.Delivery) ) * Number(result.VatMultiplier)
-            
-            result.SumOfAllCharges = Number(result.CustomsVAT) + Number(result.ServiceVat) + Number(result.Freight) + Number(result.Duty)+ Number(result.CustomsProc)+Number(result.EnvLevy) +Number(result.NoDocs) +
-            Number(result.Insurance) + Number(result.Storage) + Number(result.Brokerage) +Number(result.Express) + Number(result.Delivery) + Number(result.Hazmat) + Number(result.Pickup)  + Number(result.Sed)
-        
-            result.SumOfAllCharges = result.SumOfAllCharges ? result.SumOfAllCharges.toFixed(2) : 0
+
             result.Insurance = 0
             result.TotalInvoiceValue = totalInvoice
             if(result.OverrideInvoiceValue){
@@ -1355,6 +1348,15 @@ class AwbService {
             }
             if(result.OverrideInvoiceValue >= 100)
               result.Insurance = result.OverrideInvoiceValue * 0.015
+            
+            result.CustomsVAT = (Number(result.OverrideInvoiceValue) + Number(result.Freight) + Number(result.Duty)+ Number(result.CustomsProc)+Number(result.EnvLevy)) * Number(result.VatMultiplier)
+            result.ServiceVat = (Number(result.NoDocs) + Number(result.Insurance) + Number(result.Storage) + Number(result.Brokerage) +Number(result.Express) + Number(result.Delivery) ) * Number(result.VatMultiplier)
+            
+            result.SumOfAllCharges = Number(result.CustomsVAT) + Number(result.ServiceVat) + Number(result.Freight) + Number(result.Duty)+ Number(result.CustomsProc)+Number(result.EnvLevy) +Number(result.NoDocs) +
+            Number(result.Insurance) + Number(result.Storage) + Number(result.Brokerage) +Number(result.Express) + Number(result.Delivery) + Number(result.Hazmat) + Number(result.Pickup)  + Number(result.Sed)
+        
+            result.SumOfAllCharges = result.SumOfAllCharges ? result.SumOfAllCharges.toFixed(2) : 0
+
               result.Insurance = result.Insurance ? result.Insurance.toFixed(2) : 0 
               result.CustomsVAT = result.CustomsVAT ? result.CustomsVAT.toFixed(2) : 0 
               result.ServiceVat = result.ServiceVat ? result.ServiceVat.toFixed(2) : 0 
