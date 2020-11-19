@@ -130,7 +130,7 @@ class AwbService {
                     resolve({ success: false });
                 } else {
                     this.updateAwbStatus(result, 2, userId);
-                    resolve({ success: true });
+                    resolve({ success: true ,id:id });
                 }
             });
         });

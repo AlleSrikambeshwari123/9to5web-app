@@ -134,10 +134,14 @@ class AwbPriceLabelService {
       result.Insurance = result.OverrideInvoiceValue * 0.015
       
     result.Insurance = result.Insurance ? result.Insurance.toFixed(2) : 0 
+    result.CustomsVAT = result.CustomsVAT ? result.CustomsVAT.toFixed(2) : 0 
+    result.ServiceVat = result.ServiceVat ? result.ServiceVat.toFixed(2) : 0 
 
     let total =  Number(result.Brokerage) + Number(result.CustomsProc) + Number(result.SumOfAllCharges) + Number(result.CustomsVAT) + Number(result.Delivery) + Number(result.Duty) + Number(result.EnvLevy) + Number(result.Freight) + Number(result.Hazmat) + Number(result.Pickup) + Number(result.NoDocs) + Number(result.Insurance) + Number(result.Sed) + Number(result.Express) + Number(result.ServiceVat)+ Number(result.Storage)
     result.TotalWet = total
 
+    result.TotalWet = result.TotalWet ? result.TotalWet.toFixed(2) : 0
+    result.Express = result.Express ? result.Express.toFixed(2) : 0
     return result
   }
 

@@ -408,36 +408,64 @@ $(function () {
             }).then((res) => {
               if (response.success == true) {
                 window.location.href = 'manage/' + response.awb.id + '/preview';
-                data = {
-                  Brokerage:  0,
-                  CustomsProc:  0,
-                  SumOfAllCharges: 0,
-                  CustomsVAT  : 0,
-                  VatMultiplier :  0.12,
-                  Delivery:  0,
-                  Duty:  0,
-                  EnvLevy:  0,
-                  Freight:  0,
-                  Hazmat:  0,
-                  Pickup:  0,
-                  ServiceVat: 0,
-                  Storage:  0,
-                  NoDocs:  0,
-                  Insurance:  0,
-                  Sed:  0,
-                  Express:  0,
-                  OverrideInvoiceValue:  0,
-                  TotalInvoiceValue: 0,
-                  NoOfInvoice: 0,
-                  TotalWeightValue: 0,
-                  TotalVolumetricWeight : 0,
-                  TotalWet: 0,
-                };
-                $.ajax({
-                  url: '/warehouse/pricelabels/' + response.awb.id,
-                  type: 'post',
-                  data: data,
-                });
+                  let priceExpress = 0,totalweightVal = 0,totalVolumetricWeight=0,totalInvoice=0;
+                  if(awbPackages.length >0){
+                    for(var i=0;i<awbPackages.length;i++){
+                      if(awbPackages[i]){
+                      var weight = awbPackages[i].weight;
+                      if (awbPackages[i].packageCalculation == 'kg' || awbPackages[i].packageCalculation == 'Kg') {
+                        weight = 2.20462 * awbPackages[i].weight;
+                      }
+                      totalweightVal = totalweightVal + Number(weight);
+                      let check = 1;
+                      awbPackages[i].dimensions.split('x').forEach(data =>{
+                        check = check * data
+                      })
+                      let volumetricWeight = (check/166);
+                      totalVolumetricWeight = totalVolumetricWeight + volumetricWeight;
+                      }
+                      if(awbPackages[i].express){
+                        priceExpress = 1
+                      }
+                    }
+                  }
+                  if(awbInfo.invoices.length > 0){
+                    awbInfo.invoices.forEach(inv =>{
+                      if(inv && inv.value){
+                        totalInvoice = totalInvoice + Number(inv.value)
+                      }
+                    })
+                  }
+                  let priceData = {
+                    Brokerage:  0,
+                    CustomsProc:  0,
+                    SumOfAllCharges: 0,
+                    CustomsVAT  : 0,
+                    VatMultiplier :  0.12,
+                    Delivery:  0,
+                    Duty:  0,
+                    EnvLevy:  0,
+                    Freight:  0,
+                    Hazmat:  0,
+                    Pickup:  0,
+                    ServiceVat: 0,
+                    Storage:  0,
+                    NoDocs:  0,
+                    Insurance:  0,
+                    Sed:  0,
+                    Express:  priceExpress,
+                    OverrideInvoiceValue:  0,
+                    TotalInvoiceValue: totalInvoice,
+                    NoOfInvoice: awbInfo.invoices.length,
+                    TotalWeightValue: totalweightVal,
+                    TotalVolumetricWeight : totalVolumetricWeight,
+                    TotalWet: 0,
+                  };
+                  $.ajax({
+                    url: '/warehouse/pricelabels/' + response.awb.id,
+                    type: 'post',
+                    data: priceData,
+                  });
               }
             });
           },
