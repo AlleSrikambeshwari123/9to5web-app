@@ -217,7 +217,13 @@ class AwbService {
                     let awbPriceLabel = await PriceLabel.findOne({awbId:res._id}) ;
 
                     if(awbPriceLabel != null){
-
+                      const invoices =(res && res.invoices)?res.invoices:[];
+                      var totalInvoice = 0;
+                      for(let i=0;i<invoices.length;i++){
+                        totalInvoice=totalInvoice+invoices[i].value;
+                      }
+                      awbPriceLabel.TotalInvoiceValue = totalInvoice
+                      awbPriceLabel.NoOfInvoice = invoices.length
                       let totalweightVal = 0,totalVolumetricWeight =0;
                       if(res.packages){
                         for (var i = 0; i < res.packages.length; i++) {
@@ -287,6 +293,10 @@ class AwbService {
                       Number(awbPriceLabel.Insurance) + Number(awbPriceLabel.Storage) + Number(awbPriceLabel.Brokerage) +Number(awbPriceLabel.Express) + Number(awbPriceLabel.Delivery) + Number(awbPriceLabel.Hazmat) + Number(awbPriceLabel.Pickup)  + Number(awbPriceLabel.Sed)
                       console.log("awbPriceLabel.SumOfAllCharges ",awbPriceLabel.SumOfAllCharges )
                       res['awbPriceLabel'] = awbPriceLabel.SumOfAllCharges ? awbPriceLabel.SumOfAllCharges.toFixed(2) : 0;
+                      
+                      let total =  Number(awbPriceLabel.Brokerage) + Number(awbPriceLabel.CustomsProc) + Number(awbPriceLabel.SumOfAllCharges) + Number(awbPriceLabel.CustomsVAT) + Number(awbPriceLabel.Delivery) + Number(awbPriceLabel.Duty) + Number(awbPriceLabel.EnvLevy) + Number(awbPriceLabel.Freight) + Number(awbPriceLabel.Hazmat) + Number(awbPriceLabel.Pickup) + Number(awbPriceLabel.NoDocs) + Number(awbPriceLabel.Insurance) + Number(awbPriceLabel.Sed) + Number(awbPriceLabel.Express) + Number(awbPriceLabel.ServiceVat)+ Number(awbPriceLabel.Storage)
+                      awbPriceLabel.TotalWet = total
+
                     }
                     res['customer'] = res['customerId'];
                     return res;
@@ -1299,7 +1309,7 @@ class AwbService {
             }
 
             result.totalPrice = totalInvoice;
-            result.noOfInvoices = invoices.length
+            result.NoOfInvoice = invoices.length
             result.awbId = awbData;
 
           
@@ -1345,8 +1355,14 @@ class AwbService {
             }
             if(result.OverrideInvoiceValue >= 100)
               result.Insurance = result.OverrideInvoiceValue * 0.015
-
-            result.Insurance = result.Insurance ? result.Insurance.toFixed(2) : 0 
+              result.Insurance = result.Insurance ? result.Insurance.toFixed(2) : 0 
+              result.CustomsVAT = result.CustomsVAT ? result.CustomsVAT.toFixed(2) : 0 
+              result.ServiceVat = result.ServiceVat ? result.ServiceVat.toFixed(2) : 0 
+              result.TotalInvoiceValue = result.TotalInvoiceValue ? result.TotalInvoiceValue.toFixed(2) : 0
+              result.OverrideInvoiceValue = result.OverrideInvoiceValue ? result.OverrideInvoiceValue.toFixed(2) : 0
+              
+              let total =  Number(result.Brokerage) + Number(result.CustomsProc) + Number(result.SumOfAllCharges) + Number(result.CustomsVAT) + Number(result.Delivery) + Number(result.Duty) + Number(result.EnvLevy) + Number(result.Freight) + Number(result.Hazmat) + Number(result.Pickup) + Number(result.NoDocs) + Number(result.Insurance) + Number(result.Sed) + Number(result.Express) + Number(result.ServiceVat)+ Number(result.Storage)
+              result.TotalWet = total
           }
           resolve(result)
         })

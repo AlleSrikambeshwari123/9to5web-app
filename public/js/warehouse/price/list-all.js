@@ -183,6 +183,7 @@ function packagePriceLabel(response) {
   $("#total-value-invoice").val(response.TotalInvoiceValue ? response.TotalInvoiceValue.toFixed(2) : 0)
   $("#override-value-invoice").val(response.OverrideInvoiceValue ? response.OverrideInvoiceValue.toFixed(2) : 0)
   $("#total_weight_value").val(response.TotalWeightValue ? response.TotalWeightValue.toFixed(2) : 0)
+  $('#TotalWet').val(response.TotalWet ? response.TotalWet.toFixed(2) : 0)
   let Freight = (1.55 * pkg.weight).toFixed(2);
   if (pkg.company == "Post Boxes") {
     let fw = pkg.weight * 3;
@@ -224,11 +225,11 @@ function tval(ServiceVat, NoDocsVal, InsuranceVal, SedVal, ExpressVal) {
   } else {
     $('#serviceVatSpan').text(((total * 7.5) / 100).toFixed(2));
   }
-  if (Number($('#TotalWet').val()) > 0) {
-    $('#totalWetSpan').text($('#TotalWet').val());
-  } else {
-    $('#totalWetSpan').text((total + Number($('#ServiceVat').val())).toFixed(2));
-  }
+  // if (Number($('#TotalWet').val()) > 0) {
+    // $('#totalWetSpan').text($('#TotalWet').val());
+  // } else {
+  //   $('#totalWetSpan').text((total + Number($('#ServiceVat').val())).toFixed(2));
+  // }
 
   // $('#TotalWet').val((total + Number($('#ServiceVat').val())).toFixed(2));
 }
@@ -327,11 +328,11 @@ $('#pricelabel-table').on('click', '.btn-edit-pricelabel', function () {
 $('#UpdatePriceLabelPackage').on('click', function (event) {
   event.preventDefault();
   var id = $('#setIdPriceLabel').val()
-  if (Number($('#TotalWet').val()) > 0) {
+  // if (Number($('#TotalWet').val()) > 0) {
     TotalWet = $('#TotalWet').val() == "" ? 0 : $('#TotalWet').val();
-  } else {
-    TotalWet = $('#totalWetSpan').text() == "" ? 0 : $('#totalWetSpan').text();
-  }
+  // } else {
+  //   TotalWet = $('#totalWetSpan').text() == "" ? 0 : $('#totalWetSpan').text();
+  // }
   
   if (ServiceVat > 0) {
     ServiceVat = ServiceVat == "" ? 0 : ServiceVat;
