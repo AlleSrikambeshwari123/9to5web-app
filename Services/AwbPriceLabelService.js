@@ -103,15 +103,6 @@ class AwbPriceLabelService {
     result.totalPrice = result.totalPrice ? result.totalPrice.toFixed(2) : 0
     result.Storage = result.Storage ? result.Storage.toFixed(2) : 0 
 
-    result.CustomsVAT = (Number(result.OverrideInvoiceValue) + Number(result.Freight) + Number(result.Duty)+ Number(result.CustomsProc)+Number(result.EnvLevy)) * Number(result.VatMultiplier)
-    result.ServiceVat = (Number(result.NoDocs) + Number(result.Insurance) + Number(result.Storage) + Number(result.Brokerage) +Number(result.Express) + Number(result.Delivery) ) * Number(result.VatMultiplier)
-    
-    let sum = Number(result.CustomsVAT) + Number(result.ServiceVat) + Number(result.Freight) + Number(result.Duty)+ Number(result.CustomsProc)+Number(result.EnvLevy) +Number(result.NoDocs) +
-    Number(result.Insurance) + Number(result.Storage) + Number(result.Brokerage) +Number(result.Express) + Number(result.Delivery) + Number(result.Hazmat) + Number(result.Pickup) + Number(result.Sed)
-    result.SumOfAllCharges = sum
-
-    result.SumOfAllCharges = result.SumOfAllCharges ? result.SumOfAllCharges.toFixed(2) : 0
-    
     let totalinvoiceVal = 0;
     if (pkg.invoices) {
       pkg.invoices.map((inv) => (totalinvoiceVal += inv.value));
@@ -132,8 +123,26 @@ class AwbPriceLabelService {
     }
     if(result.OverrideInvoiceValue >= 100)
       result.Insurance = result.OverrideInvoiceValue * 0.015
+
+    result.CustomsVAT = (Number(result.OverrideInvoiceValue) + Number(result.Freight) + Number(result.Duty)+ Number(result.CustomsProc)+Number(result.EnvLevy)) * Number(result.VatMultiplier)
+    result.ServiceVat = (Number(result.NoDocs) + Number(result.Insurance) + Number(result.Storage) + Number(result.Brokerage) +Number(result.Express) + Number(result.Delivery) ) * Number(result.VatMultiplier)
+    
+    let sum = Number(result.CustomsVAT) + Number(result.ServiceVat) + Number(result.Freight) + Number(result.Duty)+ Number(result.CustomsProc)+Number(result.EnvLevy) +Number(result.NoDocs) +
+    Number(result.Insurance) + Number(result.Storage) + Number(result.Brokerage) +Number(result.Express) + Number(result.Delivery) + Number(result.Hazmat) + Number(result.Pickup) + Number(result.Sed)
+    result.SumOfAllCharges = sum
+
+    result.SumOfAllCharges = result.SumOfAllCharges ? result.SumOfAllCharges.toFixed(2) : 0
+  
       
     result.Insurance = result.Insurance ? result.Insurance.toFixed(2) : 0 
+    result.CustomsVAT = result.CustomsVAT ? result.CustomsVAT.toFixed(2) : 0 
+    result.ServiceVat = result.ServiceVat ? result.ServiceVat.toFixed(2) : 0 
+
+    let total =  Number(result.Brokerage) + Number(result.CustomsProc) + Number(result.SumOfAllCharges) + Number(result.CustomsVAT) + Number(result.Delivery) + Number(result.Duty) + Number(result.EnvLevy) + Number(result.Freight) + Number(result.Hazmat) + Number(result.Pickup) + Number(result.NoDocs) + Number(result.Insurance) + Number(result.Sed) + Number(result.Express) + Number(result.ServiceVat)+ Number(result.Storage)
+    result.TotalWet = total
+
+    result.TotalWet = result.TotalWet ? result.TotalWet.toFixed(2) : 0
+    result.Express = result.Express ? result.Express.toFixed(2) : 0
     return result
   }
 
@@ -202,6 +211,9 @@ class AwbPriceLabelService {
       priceLabel.SumOfAllCharges = Number(priceLabel.CustomsVAT) + Number(priceLabel.ServiceVat) + Number(priceLabel.Freight) + Number(priceLabel.Duty)+ Number(priceLabel.CustomsProc)+Number(priceLabel.EnvLevy) +Number(priceLabel.NoDocs) +
        Number(priceLabel.Insurance) + Number(priceLabel.Storage) + Number(priceLabel.Brokerage) +Number(priceLabel.Express) + Number(priceLabel.Delivery) + Number(priceLabel.Hazmat) + Number(priceLabel.Pickup)  + Number(priceLabel.Sed)
      
+       let total =  Number(priceLabel.Brokerage) + Number(priceLabel.CustomsProc) + Number(priceLabel.SumOfAllCharges) + Number(priceLabel.CustomsVAT) + Number(priceLabel.Delivery) + Number(priceLabel.Duty) + Number(priceLabel.EnvLevy) + Number(priceLabel.Freight) + Number(priceLabel.Hazmat) + Number(priceLabel.Pickup) + Number(priceLabel.NoDocs) + Number(priceLabel.Insurance) + Number(priceLabel.Sed) + Number(priceLabel.Express) + Number(priceLabel.ServiceVat)+ Number(priceLabel.Storage)
+       priceLabel.TotalWet = total
+
       PriceLabel.findOneAndUpdate(
         { awbId: id }, 
         priceLabel,
