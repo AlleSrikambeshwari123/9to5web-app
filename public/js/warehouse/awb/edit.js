@@ -435,32 +435,14 @@ $(function () {
                   })
                 }
                 let priceData = {
-                  Brokerage:  0,
-                  CustomsProc:  0,
-                  SumOfAllCharges: 0,
-                  CustomsVAT  : 0,
-                  VatMultiplier :  0.12,
-                  Delivery:  0,
-                  Duty:  0,
-                  EnvLevy:  0,
-                  Freight:  0,
-                  Hazmat:  0,
-                  Pickup:  0,
-                  ServiceVat: 0,
-                  Storage:  0,
-                  NoDocs:  0,
-                  Insurance:  0,
-                  Sed:  0,
                   Express:  priceExpress,
-                  OverrideInvoiceValue:  0,
                   TotalInvoiceValue: totalInvoice,
                   NoOfInvoice: awbInfo.invoices.length,
                   TotalWeightValue: totalweightVal,
                   TotalVolumetricWeight : totalVolumetricWeight,
-                  TotalWet: 0,
                 };
                 $.ajax({
-                  url: '/warehouse/pricelabels/' + response.id,
+                  url: '/warehouse/pricelabels/edit/' + response.id,
                   type: 'post',
                   data: priceData,
                 });

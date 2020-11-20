@@ -195,6 +195,85 @@ class AwbPriceLabelService {
           priceLabel.Freight =  3.10
         }
       }
+      priceLabel.Insurance = 0
+      if(priceLabel.OverrideInvoiceValue >= 100)
+        priceLabel.Insurance = priceLabel.OverrideInvoiceValue * 0.015
+
+      priceLabel.CustomsVAT = (Number(priceLabel.OverrideInvoiceValue) + Number(priceLabel.Freight) + Number(priceLabel.Duty)+ Number(priceLabel.CustomsProc)+Number(priceLabel.EnvLevy)) * Number(priceLabel.VatMultiplier)
+      priceLabel.ServiceVat = (Number(priceLabel.Insurance) + Number(priceLabel.Storage) + Number(priceLabel.Brokerage) +Number(priceLabel.Express) + Number(priceLabel.Delivery) ) * Number(priceLabel.VatMultiplier)
+     
+      priceLabel.SumOfAllCharges = Number(priceLabel.CustomsVAT) + Number(priceLabel.ServiceVat) + Number(priceLabel.Freight) + Number(priceLabel.Duty)+ Number(priceLabel.CustomsProc)+Number(priceLabel.EnvLevy) +Number(priceLabel.NoDocs) +
+       Number(priceLabel.Insurance) + Number(priceLabel.Storage) + Number(priceLabel.Brokerage) +Number(priceLabel.Express) + Number(priceLabel.Delivery) + Number(priceLabel.Hazmat) + Number(priceLabel.Pickup)  + Number(priceLabel.Sed)
+     
+       let total =  Number(priceLabel.Brokerage) + Number(priceLabel.CustomsProc) + Number(priceLabel.SumOfAllCharges) + Number(priceLabel.CustomsVAT) + Number(priceLabel.Delivery) + Number(priceLabel.Duty) + Number(priceLabel.EnvLevy) + Number(priceLabel.Freight) + Number(priceLabel.Hazmat) + Number(priceLabel.Pickup) + Number(priceLabel.NoDocs) + Number(priceLabel.Insurance) + Number(priceLabel.Sed) + Number(priceLabel.Express) + Number(priceLabel.ServiceVat)+ Number(priceLabel.Storage)
+       priceLabel.TotalWet = total
+
+      PriceLabel.findOneAndUpdate(
+        { awbId: id }, 
+        priceLabel,
+        {upsert:true,new:true},
+        async (err, result) => {
+          if (err) {
+              console.log(err)
+            resolve({ success: false, message: strings.string_response_error });
+          } else {
+            let awb = await Awb.findById(id)
+            let total_weight = 0
+            if(awb.packages.length == 0){
+              resolve({ success: true, message: strings.string_response_updated ,totalWeight : 0.00});
+            }else{
+              awb.packages.forEach(async (data,index)=>{
+                let pack = await Package.findById(data)
+                total_weight = total_weight + pack.weight 
+                if(index == awb.packages.length-1){
+                  resolve({ success: true, message: strings.string_response_updated ,totalWeight : total_weight.toFixed(2)});
+                }
+              })
+            }
+          }
+        }
+      )
+    });
+  }
+
+
+  editPriceLabel(priceLabel,id) {
+    return new Promise(async (resolve, reject) => {
+    //   const PriceLabelData = await this.getPriceLabel(priceLabel.id);
+    //   if (!(PriceLabelData && PriceLabelData._id)) {
+    //     return resolve({success: false, message: strings.string_not_found_location});
+    //   }
+
+      let priceResult = await PriceLabel.findOne({awbId: id});
+      priceResult.Express = priceLabel.Express
+      priceResult.TotalInvoiceValue = priceLabel.TotalInvoiceValue
+      priceResult.NoOfInvoice = priceLabel.NoOfInvoice
+      priceResult.TotalWeightValue = priceLabel.TotalWeightValue
+      priceResult.TotalVolumetricWeight = pricelLabel.TotalVolumetricWeight
+
+      if(priceLabel.Express >0){
+        priceLabel.Express = 35
+        if(priceLabel.TotalWeightValue >= 12 || priceLabel.TotalVolumetricWeight >=12 ){
+          if(priceLabel.TotalWeightValue > priceLabel.TotalVolumetricWeight){
+            priceLabel.Freight = priceLabel.TotalWeightValue * 3
+          }
+          else{
+            priceLabel.Freight = priceLabel.TotalVolumetricWeight * 3
+          }
+        }else{
+          priceLabel.Freight =  35
+        }
+      }else{
+        priceLabel.Express = 0
+        if(priceLabel.TotalWeightValue >= 2 || priceLabel.TotalVolumetricWeight >=2 ){
+          if(priceLabel.TotalWeightValue > priceLabel.TotalVolumetricWeight)
+            priceLabel.Freight = priceLabel.TotalWeightValue * 1.55
+          else
+            priceLabel.Freight = priceLabel.TotalVolumetricWeight * 1.55
+        }else{
+          priceLabel.Freight =  3.10
+        }
+      }
 
       if(priceLabel.OverrideInvoiceValue >= 100)
         priceLabel.Insurance = priceLabel.OverrideInvoiceValue * 0.015
