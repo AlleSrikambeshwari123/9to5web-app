@@ -256,6 +256,7 @@ class AwbService {
                             awbPriceLabel.Freight =  35
                           }
                         }else{
+                          awbPriceLabel.Express = 0
                           if(awbPriceLabel.TotalWeightValue >= 2 || awbPriceLabel.TotalVolumetricWeight >=2 ){
                             if(awbPriceLabel.TotalWeightValue > awbPriceLabel.TotalVolumetricWeight)
                               awbPriceLabel.Freight = awbPriceLabel.TotalWeightValue * 1.55
@@ -296,7 +297,7 @@ class AwbService {
                         awbPriceLabel.Insurance = awbPriceLabel.OverrideInvoiceValue * 0.015
 
                       awbPriceLabel.CustomsVAT = (Number(awbPriceLabel.OverrideInvoiceValue) + Number(awbPriceLabel.Freight) + Number(awbPriceLabel.Duty)+ Number(awbPriceLabel.CustomsProc)+Number(awbPriceLabel.EnvLevy)) * Number(awbPriceLabel.VatMultiplier)
-                      awbPriceLabel.ServiceVat = (Number(awbPriceLabel.NoDocs) + Number(awbPriceLabel.Insurance) + Number(awbPriceLabel.Storage) + Number(awbPriceLabel.Brokerage) +Number(awbPriceLabel.Express) + Number(awbPriceLabel.Delivery) ) * Number(awbPriceLabel.VatMultiplier)
+                      awbPriceLabel.ServiceVat = (Number(awbPriceLabel.Insurance) + Number(awbPriceLabel.Storage) + Number(awbPriceLabel.Brokerage) +Number(awbPriceLabel.Express) + Number(awbPriceLabel.Delivery) ) * Number(awbPriceLabel.VatMultiplier)
 
                       awbPriceLabel.SumOfAllCharges = Number(awbPriceLabel.CustomsVAT) + Number(awbPriceLabel.ServiceVat) + Number(awbPriceLabel.Freight) + Number(awbPriceLabel.Duty)+ Number(awbPriceLabel.CustomsProc)+Number(awbPriceLabel.EnvLevy) +Number(awbPriceLabel.NoDocs) +
                       Number(awbPriceLabel.Insurance) + Number(awbPriceLabel.Storage) + Number(awbPriceLabel.Brokerage) +Number(awbPriceLabel.Express) + Number(awbPriceLabel.Delivery) + Number(awbPriceLabel.Hazmat) + Number(awbPriceLabel.Pickup)  + Number(awbPriceLabel.Sed)
@@ -1302,6 +1303,7 @@ class AwbService {
                   result.Freight =  35
                 }
               }else{
+                result.Express = 0
                 if(result.TotalWeightValue >= 2 || result.TotalVolumetricWeight >=2 ){
                   if(result.TotalWeightValue > result.TotalVolumetricWeight)
                     result.Freight = result.TotalWeightValue * 1.55
@@ -1355,7 +1357,7 @@ class AwbService {
               result.Insurance = result.OverrideInvoiceValue * 0.015
             
             result.CustomsVAT = (Number(result.OverrideInvoiceValue) + Number(result.Freight) + Number(result.Duty)+ Number(result.CustomsProc)+Number(result.EnvLevy)) * Number(result.VatMultiplier)
-            result.ServiceVat = (Number(result.NoDocs) + Number(result.Insurance) + Number(result.Storage) + Number(result.Brokerage) +Number(result.Express) + Number(result.Delivery) ) * Number(result.VatMultiplier)
+            result.ServiceVat = (Number(result.Insurance) + Number(result.Storage) + Number(result.Brokerage) +Number(result.Express) + Number(result.Delivery) ) * Number(result.VatMultiplier)
             
             result.SumOfAllCharges = Number(result.CustomsVAT) + Number(result.ServiceVat) + Number(result.Freight) + Number(result.Duty)+ Number(result.CustomsProc)+Number(result.EnvLevy) +Number(result.NoDocs) +
             Number(result.Insurance) + Number(result.Storage) + Number(result.Brokerage) +Number(result.Express) + Number(result.Delivery) + Number(result.Hazmat) + Number(result.Pickup)  + Number(result.Sed)
