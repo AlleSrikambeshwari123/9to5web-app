@@ -106,7 +106,7 @@ class AwbPriceLabelService {
       result.NoOfInvoice = pkg.invoices.length
     }
     result.TotalInvoiceValue = totalinvoiceVal
-    result.NoOfInvoice = result.NoOfInvoice ?result.NoOfInvoice.toFixed(2) : 0
+    result.NoOfInvoice = result.NoOfInvoice ?result.NoOfInvoice : 0
     result.TotalInvoiceValue = result.TotalInvoiceValue ? result.TotalInvoiceValue.toFixed(2) : 0
     result.Insurance = 0
     

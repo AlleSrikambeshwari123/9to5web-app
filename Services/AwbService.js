@@ -1337,7 +1337,7 @@ class AwbService {
             result.TotalInvoiceValue = result.TotalInvoiceValue ? result.TotalInvoiceValue.toFixed(2) : 0
             result.TotalWeightValue = result.TotalWeightValue ? result.TotalWeightValue.toFixed(2) : 0
             result.TotalVolumetricWeight = result.TotalVolumetricWeight ? result.TotalVolumetricWeight.toFixed(2) : 0
-            result.NoOfInvoice = result.NoOfInvoice ?result.NoOfInvoice.toFixed(2) : 0
+            result.NoOfInvoice = result.NoOfInvoice ?result.NoOfInvoice : 0
             result.totalPrice = result.totalPrice ? result.totalPrice.toFixed(2) : 0
             result.Storage = result.Storage ? result.Storage.toFixed(2) : 0 
 
