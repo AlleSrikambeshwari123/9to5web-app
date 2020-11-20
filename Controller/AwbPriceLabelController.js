@@ -129,6 +129,11 @@ exports.add_pricelabel_awb = (req,res) =>{
   })
 }
 
+exports.edit_pricelabel_awb = (req,res) =>{
+  services.AwbPriceLabelService.editPriceLabel(req.body,req.params.id).then((result)=>{
+    res.send(result)
+  })
+}
 ////////////////////////////////////////////////////////////////
 
 

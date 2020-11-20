@@ -11,6 +11,7 @@ router.post('/price/all-list', middleware().checkSession, priceCtrl.get_all_awb_
 router.get('/pricelabels/:id', middleware().checkSession, priceCtrl.get_pricelabel_awb);
 router.get('/pricelabels-package/:id', middleware().checkSession, priceCtrl.get_awb_pricelabel);
 router.post('/pricelabels/:id', middleware().checkSession, priceCtrl.add_pricelabel_awb);
+router.post('/pricelabels/edit/:id', middleware().checkSession, priceCtrl.edit_pricelabel_awb);
 
 
 router.get('/price-label/download/:id', middleware().checkSession, printerCtrl.download_pdf_pricelabel);
