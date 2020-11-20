@@ -184,6 +184,7 @@ class AwbPriceLabelService {
           priceLabel.Freight =  35
         }
       }else{
+        priceLabel.Express = 0
         if(priceLabel.TotalWeightValue >= 2 || priceLabel.TotalVolumetricWeight >=2 ){
           if(priceLabel.TotalWeightValue > priceLabel.TotalVolumetricWeight)
             priceLabel.Freight = priceLabel.TotalWeightValue * 1.55
