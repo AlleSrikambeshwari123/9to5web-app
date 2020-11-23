@@ -285,10 +285,10 @@ class UserService {
   createUser(user) {
     return new Promise(async (resolve, reject) => {
       const oldUser = await this.getUser(user.username);
-
+      let index = await User.syncIndexes()
       // Checking If username is already present 
       if (oldUser && oldUser.username && oldUser.username.toLowerCase() === user.username.toLowerCase()) {
-        resolve({ success: false, message: strings.string_user_exist });
+        return resolve({ success: false, message: strings.string_user_exist });
       }
 
       user.roles = user.roles.split(',');
@@ -309,6 +309,10 @@ class UserService {
       const userData = await this.getUser(user.username);
       if (!(userData && userData._id)) {
         return resolve({ success: false, message: strings.string_not_found_user });
+      }
+      if(user.password){
+        const password = bcrypt.hashSync(user.password, 10);
+        user.password  = password 
       }
 
       User.findOneAndUpdate(

@@ -19,16 +19,15 @@ router.post('/login', (req, res, next) => {
       var cuser = authresult.user;
       req.session.userId = cuser._id
       const roles = cuser.roles.map((data) => data.type);
-      
-      if (roles.indexOf(role_admin) > -1) {
+      // if (roles.indexOf(role_admin) > -1) {
         res.send({ success: true, role: roles, url: '/dashboard' });
-      } else if (roles.indexOf(role_whfl) > -1) {
-        res.send({ success: true, role: roles, url: '/warehouse/fll-new-package' });
-      } else if (roles.indexOf(role_whnas) > -1) {
-        res.send({ success: true, role: roles, url: 'warehouse/nas-no-docs' });
-      } else if (roles.indexOf(role_store) > -1) {
-        res.send({ success: true, role: roles, url: 'warehouse/store-packages' })
-      }
+      // } else if (roles.indexOf(role_whfl) > -1) {
+      //   res.send({ success: true, role: roles, url: '/warehouse/fll-new-package' });
+      // } else if (roles.indexOf(role_whnas) > -1) {
+      //   res.send({ success: true, role: roles, url: 'warehouse/nas-no-docs' });
+      // } else if (roles.indexOf(role_store) > -1) {
+      //   res.send({ success: true, role: roles, url: 'warehouse/store-packages' })
+      // }
     } else {
       res.send({ 
         success: false, 

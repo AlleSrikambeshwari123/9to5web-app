@@ -58,9 +58,10 @@ $('.btn-print-pkgs').click(function () {
     url: '/warehouse/print-pdf/pkg/' + id,
     type: 'get',
     success: function(response) {
-      // console.log('reser',response)
+      console.log('reser',response)
       if (response.success) {
         pdfPath = '/util/pdf' + response.filename;
+        console.log("pdf",pdfPath)
         printJS(pdfPath)
         $('.btn-print-pkgs').text('Print Pkgs')
       } else {

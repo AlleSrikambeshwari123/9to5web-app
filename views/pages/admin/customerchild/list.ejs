@@ -10,10 +10,11 @@
       <div class="card-body daterangepickerbody">
         <input type="hidden" name="clear" id="clear" value="<%=clear%>">
         <div class="table-responsive">
-          <table id="customerTable" class="display table dataTable dateRangeFilterTable table-striped table-hover">
+          <table id="customerTable" class="display table dataTable table-striped table-hover">
             <thead>
               <tr>
                 <th>Parent Customer</th>
+                <th>Parent Place Of Work</th>
                 <th>Date Created</th>
                 <th>Name</th>
                 <th>Email</th>
@@ -24,6 +25,7 @@
               <% customers.forEach(function(customer){%>
               <tr data-record="<%= customer.id %>">
                 <td><%=helpers.getFullName(customer.parentCustomer)%></td>
+                <td><%=customer.parentCustomer.placeOfWork%></td>
                 <td><%=helpers.formatDate(customer.createdAt)%></td>
                 <td><%=helpers.getFullName(customer)%></td>
                 <td><%=customer.email%></td>

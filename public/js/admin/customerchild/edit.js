@@ -8,13 +8,20 @@ $(function () {
     let formData = $(this).serializeArray();
     let data = {};
     let email = $(this).find('#email').val();
+    let password = $(this).find('#password').val();
+    let confirmPassword = $(this).find('#confirmPassword').val();
     $.each(formData, function (_, record) {
       data[record.name] = record.value
     })
-
-    if (email && email.trim() && !validateEmail(email)) {
+    if (password != confirmPassword) {
+      showNotify('Failed', "Password doesn't match", 'fa fa-info', 'danger');
+    } else if (email && email.trim() && !validateEmail(email)) {
       showNotify('Failed', "Invalid Email", 'fa fa-info', 'danger');
     } else {
+      if(password == ''){
+        delete data.password
+        delete data.confirm_password
+      }
       $.ajax({
         url: formUrl,
         type: 'post',
