@@ -288,7 +288,7 @@ class UserService {
       let index = await User.syncIndexes()
       // Checking If username is already present 
       if (oldUser && oldUser.username && oldUser.username.toLowerCase() === user.username.toLowerCase()) {
-        resolve({ success: false, message: strings.string_user_exist });
+        return resolve({ success: false, message: strings.string_user_exist });
       }
 
       user.roles = user.roles.split(',');
