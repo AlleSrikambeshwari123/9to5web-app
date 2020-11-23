@@ -51,3 +51,7 @@ $(document).ready(function() {
 	},100)
 
 })
+
+var awbTable = $('#customerTable').DataTable({
+  pageLength: 10,
+})
