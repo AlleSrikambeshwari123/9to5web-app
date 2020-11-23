@@ -62,7 +62,7 @@ $('.btn-print-pkgs').click(function () {
       if (response.success) {
         pdfPath = '/util/pdf' + response.filename;
         console.log("pdf",pdfPath)
-        printJS(pdfPath)
+        printJS("https://9to5-qa.sprocket.solutions"+pdfPath)
         $('.btn-print-pkgs').text('Print Pkgs')
       } else {
         $('.btn-print-pkgs').text('Print Pkgs')
