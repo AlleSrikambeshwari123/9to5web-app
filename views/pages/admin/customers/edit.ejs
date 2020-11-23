@@ -24,7 +24,7 @@
           <div class="form-group form-show-validation row">
             <label for="firstName" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">First Name</label>
             <div class="col-lg-4 col-md-9 col-sm-8">
-              <input type="text" class="form-control" id="firstName" name="firstName" placeholder="First Name" required
+              <input type="text" class="form-control" id="firstName" name="firstName" placeholder="First Name"
                 value="<%=customer.firstName%>">
             </div>
           </div>
@@ -64,7 +64,7 @@
           <div class="form-group form-show-validation row">
             <label for="location" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Select Location</label>
             <div class="col-lg-4 col-md-9 col-sm-8">
-              <select id="location" name="location" class="form-control">
+              <select id="location" name="location" class="form-control" required>
                 <% locations.forEach(location => { %>
                 <option value='<%=location._id%>' <% if(customer.location._id.toString() == location._id.toString()) { %> selected <% } %>>
                   <%=location.name%></option>
