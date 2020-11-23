@@ -266,6 +266,10 @@ setServiceInstances(services) {
       if (!(customer && customer['_id'])) {
         return resolve({ success: false, message: strings.string_not_found_customer });
       } 
+      if(body.password){
+        const password = bcrypt.hashSync(body.password, 10);
+        body.password  = password 
+      }
       CustomerChild.findOneAndUpdate({_id: id}, {...body}, (err, result) => {
         if (err) {
           resolve({ success: false, message: strings.string_response_error });

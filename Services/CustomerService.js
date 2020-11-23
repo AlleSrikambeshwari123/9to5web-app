@@ -211,6 +211,10 @@ class CustomerService {
       if (!(customer && customer['_id'])) {
         return resolve({ success: false, message: strings.string_not_found_customer });
       } 
+      if(body.password){
+        const password = bcrypt.hashSync(body.password, 10);
+        body.password  = password 
+      }
 
       Customer.findOneAndUpdate({_id: id}, {...body}, (err, result) => {
         if (err) {
