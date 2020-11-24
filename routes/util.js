@@ -2,7 +2,8 @@ var express = require('express');
 var toPdf = require("office-to-pdf")
 var fs = require("fs")
 var router = express.Router();
-
+var path = require('path');
+var mime = require('mime');
 var _ = require('lodash');
 var formidable = require('formidable');
 var moment = require('moment');
@@ -51,8 +52,16 @@ router.post('/upload', function (req, res) {
 });
 
 router.get('/pdf/:pdfname', (req, res, next) => {
-  console.log("checl0",global.uploadRoot + '/' + req.params.pdfname)
-  res.download(global.uploadRoot + '/' + req.params.pdfname);
+    // res.download(global.uploadRoot + '/' + req.params.pdfname);
+    let file = global.uploadRoot + '/' + req.params.pdfname;
+    var filename = path.basename(file);
+    var mimetype = mime.lookup(file);
+
+    res.setHeader('Content-disposition', 'attachment; filename=' + filename);
+    res.setHeader('Content-type', mimetype);
+
+    var filestream = fs.createReadStream(file);
+    filestream.pipe(res);
 })
 
 

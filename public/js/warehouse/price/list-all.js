@@ -43,16 +43,17 @@ $('#pricelabel-table').on('click', '.btn-print-pkg', function () {
     success: function (response) {
       if (response.success) {
         pdfPath = '/util/pdf' + response.filename;
-        pdfjsLib.getDocument({ url: pdfPath }).promise.then((pdfData) => {
-          pdfData.getPage(1).then((page) => {
-            var canvas = $('#pdf-preview')[0];
-            var canvasContext = canvas.getContext('2d');
-            const viewport = page.getViewport({ scale: 1 });
-            canvas.height = 214;
-            canvas.width = 280;
-            page.render({ canvasContext, viewport });
-          });
-        });
+        printJS(pdfPath)
+        // pdfjsLib.getDocument({ url: pdfPath }).promise.then((pdfData) => {
+        //   pdfData.getPage(1).then((page) => {
+        //     var canvas = $('#pdf-preview')[0];
+        //     var canvasContext = canvas.getContext('2d');
+        //     const viewport = page.getViewport({ scale: 1 });
+        //     canvas.height = 214;
+        //     canvas.width = 280;
+        //     page.render({ canvasContext, viewport });
+        //   });
+        // });
       } else {
         setTimeout(function(){$('.close-del').trigger('click');}, 1000);
             swal({
