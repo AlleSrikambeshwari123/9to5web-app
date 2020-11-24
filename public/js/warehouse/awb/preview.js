@@ -63,7 +63,7 @@ $('.btn-print-pkgs').click(function () {
     success: function(response) {
       console.log('reser',response)
       if (response.success) {
-        pdfPath = window.location.origin + '/util/pdf' + response.filename;
+        pdfPath = '/util/pdf' + response.filename;
         console.log("pdf",pdfPath)
         printJS(pdfPath)
         $('.btn-print-pkgs').text('Print Pkgs')

@@ -729,6 +729,30 @@ $(function() {
     });
   });
 
+  $('.btn-print-pkgs').click(function () {
+    let id = $(this).data('id');
+    $('.btn-print-pkgs').text('Loading...')
+    $.ajax({
+      url: '/warehouse/print-pdf/pkg/' + id,
+      type: 'get',
+      success: function(response) {
+        if (response.success) {
+          pdfPath = window.location.origin + '/util/pdf' + response.filename;
+          printJS(pdfPath)
+          $('.btn-print-pkgs').text('Print Pkgs')
+        } else {
+          $('.btn-print-pkgs').text('Print Pkgs')
+          $('.close-del').trigger('click');
+          swal({
+            title: 'Failed',
+            text: response.message,
+            type: 'error',
+          });
+        }
+      },
+    });
+  });
+
   $('.print-package').click(function() {
     $('.close-del').trigger('click');
     printJS(pdfPath);
