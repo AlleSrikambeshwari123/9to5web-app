@@ -54,6 +54,8 @@ router.get('/pdf/:pdfname', (req, res, next) => {
   console.log("checl0",global.uploadRoot + '/' + req.params.pdfname)
   res.download(global.uploadRoot + '/' + req.params.pdfname,req.params.pdfname,(err)=>{
     console.log("err",err)
+    if(err)
+      return err
   });
 })
 
