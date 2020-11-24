@@ -95,7 +95,8 @@ class UserService {
   }
   getRoles() {
     return new Promise(function (resolve, reject) {
-      Role.find({}, (err, result) => {
+      var roles = ['Admin', 'Warehouse FLL', 'Warehouse NAS', 'Custom Agent']
+      Role.find({type:{$in:roles}}).exec((err, result) => {
         if (err) {
           resolve([]);
         } else {
