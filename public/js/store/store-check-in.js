@@ -34,6 +34,7 @@ $(function () {
       }
     });
   });*/
+  var albanyPackageTable = $('#albonyList-table').DataTable();
   
  
 // #column3_search is a <input type="text"> element
@@ -48,9 +49,9 @@ $('#locationId-cableBeach').on( 'change', function () {
   }
 } );
 
-$('#albonyList-table').on( 'change', function () {
+$('#locationId-albony').on( 'change', function () {
   if(this.value != "All"){
-    packageTable
+    albanyPackageTable
           .columns( 0 )
           .search( this.value )
           .draw();
