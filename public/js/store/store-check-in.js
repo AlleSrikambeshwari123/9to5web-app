@@ -6,7 +6,7 @@ $('.changeLocation').select2({
 
 $(function () {
   let initialPackages = JSON.parse($('.packages').val());
-  //var packageTable = $('#cableBeachList-table').DataTable();
+  var packageTable = $('#cableBeachList-table').DataTable();
 
   /*$('#locationId-cableBeach').change(function () {
     var locationId = $(this).val();

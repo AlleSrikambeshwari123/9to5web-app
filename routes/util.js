@@ -52,17 +52,16 @@ router.post('/upload', function (req, res) {
 });
 
 router.get('/pdf/:pdfname', (req, res, next) => {
-  // res.download(global.uploadRoot + '/' + req.params.pdfname);
-  let file = global.uploadRoot + '/' + req.params.pdfname;
-  console.log("checl0",file)
-  var filename = path.basename(file);
-  var mimetype = mime.lookup(file);
+    // res.download(global.uploadRoot + '/' + req.params.pdfname);
+    let file = global.uploadRoot + '/' + req.params.pdfname;
+    var filename = path.basename(file);
+    var mimetype = mime.lookup(file);
 
-  res.setHeader('Content-disposition', 'attachment; filename=' + filename);
-  res.setHeader('Content-type', mimetype);
+    res.setHeader('Content-disposition', 'attachment; filename=' + filename);
+    res.setHeader('Content-type', mimetype);
 
-  var filestream = fs.createReadStream(file);
-  filestream.pipe(res);
+    var filestream = fs.createReadStream(file);
+    filestream.pipe(res);
 })
 
 

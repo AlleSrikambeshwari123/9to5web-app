@@ -23,6 +23,10 @@ $('#confirm-delete-manifest').find('#btn-rm').click(function () {
   });
 })
 
+$('.btn-manifest-status').click(function(){
+  id = $(this).data('id');
+  $('#ManifestIdStatus').val(id)
+})
 // $('.manifest-table').DataTable({
 //   pageLength: 10,
 // })
