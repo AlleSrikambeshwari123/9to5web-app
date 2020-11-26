@@ -191,13 +191,13 @@ class AWBGeneration {
                 }
             }
             if(pdfdata && pdfdata.length>1){
-                merge(pdfdata, path.resolve(process.cwd(), `public/uploads/${datetime}-ACM.pdf`), function (err) {
+                merge(pdfdata, path.resolve(process.cwd(), `public/uploads/${datetime}-FM.pdf`), function (err) {
                     if(err){
                         console.log(err);
                     }
                     console.log(pdfdata);
                     console.log('Successfully merged!')
-                    resolve(path.resolve(process.cwd(), `public/uploads//${datetime}-ACM.pdf`))
+                    resolve(path.resolve(process.cwd(), `public/uploads//${datetime}-FM.pdf`))
                 })
             }else{
                 resolve(pdfdata[0]);
@@ -213,6 +213,7 @@ class AWBGeneration {
                   fs.writeFileSync(abPath, pdfBuffer)
                   resolve( abPath)
                 }, (err) => {
+                  reject(err)
                   console.log(err)
                 }
               )
