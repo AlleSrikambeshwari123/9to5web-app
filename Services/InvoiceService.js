@@ -123,14 +123,21 @@ class InvoiceService {
                 //     console.log("err",err)
                 //   }
                 // )
-                var wordBuffer = fs.readFileSync(`airCaroDownload/${singleInvoice.awbId}_${singleInvoice._id}_${datetime}_invoice.${ext}`)
-                toPdf(wordBuffer).then(
-                  (pdfBuffer) => {
-                    fs.writeFileSync(`airCaroDownload/${singleInvoice.awbId}_${singleInvoice._id}_${datetime}_invoice.pdf`, pdfBuffer)
-                  }, (err) => {
-                    console.log("err",err)
-                  }
-                )
+                // let wordBuffer = fs.readFileSync(`airCaroDownload/${singleInvoice.awbId}_${singleInvoice._id}_${datetime}_invoice.${ext}`)
+                // toPdf(wordBuffer).then(
+                //   (pdfBuffer) => {
+                //     fs.writeFileSync(`airCaroDownload/${singleInvoice.awbId}_${singleInvoice._id}_${datetime}_invoice.pdf`, pdfBuffer)
+                //   }, (err) => {
+                //     console.log("err",err)
+                //   }
+                // )
+                // var abPath = `airCaroDownload/${singleInvoice.awbId}_${singleInvoice._id}_${datetime}_invoice.pdf`
+                // let pPath =  await this.convertexceptImagetopdf(filepath, abPath);
+                if(ext != 'pdf'){
+                  let filepath = `airCaroDownload/${singleInvoice.awbId}_${singleInvoice._id}_${datetime}_invoice.${ext}`
+                  var abPath = path.resolve(process.cwd(), `airCaroDownload/${singleInvoice.awbId}_${singleInvoice._id}_${datetime}_invoice.pdf`)
+                  let pPath =  await this.convertexceptImagetopdf(filepath, abPath);
+                }                  
               }
               if (fs.existsSync(`airCaroDownload/${singleInvoice.awbId}_${singleInvoice._id}_${datetime}_invoice.pdf`)){
                 resultArrayFiles.push({
@@ -157,6 +164,20 @@ class InvoiceService {
       });
     })
   }
+
+  async convertexceptImagetopdf(filePath, abPath){
+    return new Promise(async (resolve,reject)=>{
+        var wordBuffer = fs.readFileSync(filePath)
+        toPdf(wordBuffer).then(
+            (pdfBuffer) => {
+              fs.writeFileSync(abPath, pdfBuffer)
+              resolve( abPath)
+            }, (err) => {
+              console.log(err)
+            }
+          )
+    })
+}
 
   async getInvoices(req) {
     var searchData = {};
