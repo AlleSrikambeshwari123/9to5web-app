@@ -13,5 +13,9 @@ services:
       - NODEMAIL_BASEURL
     ports:
       - '3000:3100'
+    volumes:
+      - "/opt/docker-mounts/9to5-web/public/uploads:/usr/src/app/public/uploads"
+      - "/opt/docker-mounts/9to5-web/airCaroDownload:/usr/src/app/airCaroDownload"
+      - "/opt/docker-mounts/9to5-web:/usr/src/app/Templates"
+      - "/opt/docker-mounts/9to5-web/public/manifest_files:/usr/src/app/public/manifest_files"
     restart: unless-stopped
-
