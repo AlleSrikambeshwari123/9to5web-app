@@ -168,17 +168,21 @@ class AWBGeneration {
                 var fileName = filearr[0];
                 var ext = filepath.split('.').pop();
                 if(ext == 'jpeg' || ext == 'png' || ext == 'jpg' || ext == 'gif'){
-                    await imagesToPdf([filepath], path.resolve(process.cwd(), `airCaroDownload/${fileName}_${datetime}_invoice.pdf`));
-                    if (fs.existsSync(`airCaroDownload/${fileName}_${datetime}_invoice.pdf`)) {
-                    pdfdata.push(path.resolve(process.cwd(), `airCaroDownload/${fileName}_${datetime}_invoice.pdf`))
+                    if (fs.existsSync(filepath)){
+                        await imagesToPdf([filepath], path.resolve(process.cwd(), `airCaroDownload/${fileName}_${datetime}_invoice.pdf`));
+                        if (fs.existsSync(`airCaroDownload/${fileName}_${datetime}_invoice.pdf`)) {
+                            pdfdata.push(path.resolve(process.cwd(), `airCaroDownload/${fileName}_${datetime}_invoice.pdf`))
+                        }
                     }
                 }else{
                     if(ext == 'pdf'){
                         pdfdata.push(filepath) 
                     }else{
-                        var abPath = path.resolve(process.cwd(), `airCaroDownload/${fileName}_${datetime}_invoice.pdf`)
-                        let pPath =  await this.convertexceptImagetopdf(filepath, abPath);
-                        pdfdata.push(pPath);
+                        if (fs.existsSync(filepath)){
+                            var abPath = path.resolve(process.cwd(), `airCaroDownload/${fileName}_${datetime}_invoice.pdf`)
+                            let pPath =  await this.convertexceptImagetopdf(filepath, abPath);
+                            pdfdata.push(pPath);
+                        }
                         // await toPdf([filepath], path.resolve(process.cwd(), `airCaroDownload/${fileName}_${datetime}_invoice.pdf`));
                         // if (fs.existsSync(`airCaroDownload/${fileName}_${datetime}_invoice.pdf`)) {
                         // pdfdata.push(path.resolve(process.cwd(), `airCaroDownload/${fileName}_${datetime}_invoice.pdf`))
