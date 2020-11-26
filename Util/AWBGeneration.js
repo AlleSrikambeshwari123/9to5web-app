@@ -104,6 +104,58 @@ class AWBGeneration {
         })
     }
 
+    async getPdfArrayAirCargo(flightManifest,manifestId,packages){
+        return new Promise(async(resolve,reject)=>{
+            let pdfArray = []
+            let pdfDoc = await flightManifest.generateAwb();
+
+             var filestream;
+            var filename = '/'+manifestId +'-FM'+ '.pdf';
+            var filepath = global.uploadRoot + filename;
+            pdfDoc.pipe((filestream = fs.createWriteStream(filepath)));
+            pdfDoc.end();
+            let obj = await this.getFileStream(filestream,filepath,filename)
+            pdfArray.push(obj);
+
+             let awbArray = []
+            for(let pkg of packages){
+                await services.printService.getAWBDataForAllRelatedEntities(pkg.awbId._id).then(async(awb) => {
+                    let priceLabelAwb  =  await services.AwbPriceLabelService.getPriceLabel(awb._id)
+                    let flag = 0
+                    for(let arr of awbArray){
+                        if(String(arr) == String(awb._id))
+                            flag = 1
+                    }
+                    if(flag == 0){
+                        awbArray.push(awb._id)
+                        if(priceLabelAwb){
+                            awb.express = priceLabelAwb.Express
+                        }
+                        let responses = await this.generateAWbPrint(awb)
+                        let filestream;
+                        let filename = '/'+awb._id +'-AWB'+ '.pdf';
+                        let filepath = global.uploadRoot + filename;
+                        responses.pipe((filestream = fs.createWriteStream(filepath)));
+                        responses.end();
+                        let awbRes = await this.getFileStream(filestream,filepath,filename)
+                        pdfArray.push(awbRes)
+                        for(let invoice of awb.invoices){
+                            if(invoice.filename){
+                                await this.invoiceResult(invoice).then(async(arr)=>{
+                                    console.log('arr',arr)
+                                    if(arr.success){
+                                        pdfArray.push(arr)
+                                    }
+                                })
+                            }
+                        }
+                    }
+    			})
+            }
+            resolve(pdfArray)
+        })
+    }
+
     async getPdfArray(flightManifest,manifestId,packages){
         return new Promise(async(resolve,reject)=>{
             let pdfArray = []

@@ -268,14 +268,18 @@ exports.downloadAirCargoManifest = async (req, res, next) => {
 			awbsArray: awbsArray,
 			invoicesArray: invoicesArray
 		});
-		let result = await airCargoManifest.generate();
-		if(result.id){
-			res.type('pdf');
-			res.attachment(`${result.id}-ACM.pdf`);
-			result.stream.pipe(res);
-			result.stream.end();
-		}else
-			res.download(result);
+		awbPdfGen.getPdfArrayAirCargo(airCargoManifest,manifest.id,packages).then((pdfArray)=>{
+			res.zip(pdfArray)
+		})
+		
+		// let result = await airCargoManifest.generate();
+		// if(result.id){
+		// 	res.type('pdf');
+		// 	res.attachment(`${result.id}-ACM.pdf`);
+		// 	result.stream.pipe(res);
+		// 	result.stream.end();
+		// }else
+		// 	res.download(result);
 	} catch (error) {
 		next(error);
 	}
