@@ -5,7 +5,7 @@ let awsLib = require('../Util/aws');
 var path = require('path');
 var fs = require('fs');
 const imagesToPdf = require("images-to-pdf")
-
+var toPdf = require("office-to-pdf")
 
 // let client = require('./dataContext').redisClient;
 const Invoice = require('../models/invoice');
@@ -103,13 +103,47 @@ class InvoiceService {
           Promise.all(result.map(async (singleInvoice) => {
             if(singleInvoice.filename) {
               let fileBuffer = await awsLib.getObjectData(singleInvoice.filename);
-              await fs.writeFileSync(path.resolve(process.cwd(), `airCaroDownload/${singleInvoice.awbId}_${singleInvoice._id}_${datetime}_invoice.png`), fileBuffer.Body);
-              await imagesToPdf([path.resolve(process.cwd(), `airCaroDownload/${singleInvoice.awbId}_${singleInvoice._id}_${datetime}_invoice.png`)], path.resolve(process.cwd(), `airCaroDownload/${singleInvoice.awbId}_${singleInvoice._id}_${datetime}_invoice.pdf`))
-              resultArrayFiles.push({
-                filePath : path.resolve(process.cwd(), `airCaroDownload/${singleInvoice.awbId}_${singleInvoice._id}_${datetime}_invoice.pdf`),
-                isFile : true,
-                awbId: singleInvoice.awbId
-              });
+              let ext = singleInvoice.name.split('.')[singleInvoice.name.split('.').length-1]
+              await fs.writeFileSync(path.resolve(process.cwd(), `airCaroDownload/${singleInvoice.awbId}_${singleInvoice._id}_${datetime}_invoice.${ext}`), fileBuffer.Body);
+              if(ext == 'jpeg' || ext == 'png' || ext == 'jpg' || ext == 'gif'){
+                console.log("image",ext)
+                await imagesToPdf([path.resolve(process.cwd(), `airCaroDownload/${singleInvoice.awbId}_${singleInvoice._id}_${datetime}_invoice.${ext}`)], path.resolve(process.cwd(), `airCaroDownload/${singleInvoice.awbId}_${singleInvoice._id}_${datetime}_invoice.pdf`)).then(
+                  (pdfBuffer) => {
+                    console.log("ed",pdfBuffer)
+                  }, (err) => {
+                    console.log("err",err)
+                  }
+                )
+              }else{
+
+                // await toPdf([path.resolve(process.cwd(), `airCaroDownload/${singleInvoice.awbId}_${singleInvoice._id}_${datetime}_invoice.${ext}`)], path.resolve(process.cwd(), `airCaroDownload/${singleInvoice.awbId}_${singleInvoice._id}_${datetime}_invoice.pdf`)).then(
+                //   (pdfBuffer) => {
+                //     console.log("pd",pdfBuffer)
+                //   }, (err) => {
+                //     console.log("err",err)
+                //   }
+                // )
+                var wordBuffer = fs.readFileSync(`airCaroDownload/${singleInvoice.awbId}_${singleInvoice._id}_${datetime}_invoice.${ext}`)
+                toPdf(wordBuffer).then(
+                  (pdfBuffer) => {
+                    fs.writeFileSync(`airCaroDownload/${singleInvoice.awbId}_${singleInvoice._id}_${datetime}_invoice.pdf`, pdfBuffer)
+                  }, (err) => {
+                    console.log("err",err)
+                  }
+                )
+              }
+              if (fs.existsSync(`airCaroDownload/${singleInvoice.awbId}_${singleInvoice._id}_${datetime}_invoice.pdf`)){
+                resultArrayFiles.push({
+                  filePath : path.resolve(process.cwd(), `airCaroDownload/${singleInvoice.awbId}_${singleInvoice._id}_${datetime}_invoice.pdf`),
+                  isFile : true,
+                  awbId: singleInvoice.awbId
+                });
+              }else{
+                resultArrayFiles.push({
+                  isFile : false,
+                  awbId: singleInvoice.awbId
+                })
+              }
             } else {
               resultArrayFiles.push({
                 isFile : false,

@@ -178,7 +178,7 @@ class AWBGeneration {
                     }else{
                         var abPath = path.resolve(process.cwd(), `airCaroDownload/${fileName}_${datetime}_invoice.pdf`)
                         let pPath =  await this.convertexceptImagetopdf(filepath, abPath);
-                        pdfdata.push(pPath)
+                        pdfdata.push(pPath);
                         // await toPdf([filepath], path.resolve(process.cwd(), `airCaroDownload/${fileName}_${datetime}_invoice.pdf`));
                         // if (fs.existsSync(`airCaroDownload/${fileName}_${datetime}_invoice.pdf`)) {
                         // pdfdata.push(path.resolve(process.cwd(), `airCaroDownload/${fileName}_${datetime}_invoice.pdf`))
