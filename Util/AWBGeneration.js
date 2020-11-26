@@ -33,6 +33,10 @@ var moment = require('moment');
 var services = require('../Services/RedisDataServices');
 var aws = require('../Util/aws')
 var fetch = require('node-fetch')
+var toPdf = require("office-to-pdf");
+const imagesToPdf = require("images-to-pdf");
+var path = require('path');
+const merge = require('easy-pdf-merge');
 
 class AWBGeneration {
     constructor() {
@@ -149,6 +153,65 @@ class AWBGeneration {
     			})
             }
             resolve(pdfArray)
+        })
+    }
+
+    async convertinsinglepdf(pdfArray){
+        let datetime = (new Date()).getTime();
+        return new Promise(async (resolve,reject)=>{
+            var pdfdata = [];
+            for(let i=0; i< pdfArray.length; i++){
+                var pdf = pdfArray[i];
+                var filepath  = pdf.path;
+                var fileName = filepath.substring(filepath.lastIndexOf('/')+1);
+                var filearr = fileName.split('.');
+                var fileName = filearr[0];
+                var ext = filepath.split('.').pop();
+                if(ext == 'jpeg' || ext == 'png' || ext == 'jpg' || ext == 'gif'){
+                    await imagesToPdf([filepath], path.resolve(process.cwd(), `airCaroDownload/${fileName}_${datetime}_invoice.pdf`));
+                    if (fs.existsSync(`airCaroDownload/${fileName}_${datetime}_invoice.pdf`)) {
+                    pdfdata.push(path.resolve(process.cwd(), `airCaroDownload/${fileName}_${datetime}_invoice.pdf`))
+                    }
+                }else{
+                    if(ext == 'pdf'){
+                        pdfdata.push(filepath) 
+                    }else{
+                        var abPath = path.resolve(process.cwd(), `airCaroDownload/${fileName}_${datetime}_invoice.pdf`)
+                        let pPath =  await this.convertexceptImagetopdf(filepath, abPath);
+                        pdfdata.push(pPath)
+                        // await toPdf([filepath], path.resolve(process.cwd(), `airCaroDownload/${fileName}_${datetime}_invoice.pdf`));
+                        // if (fs.existsSync(`airCaroDownload/${fileName}_${datetime}_invoice.pdf`)) {
+                        // pdfdata.push(path.resolve(process.cwd(), `airCaroDownload/${fileName}_${datetime}_invoice.pdf`))
+                        // }
+                    }
+                }
+            }
+            if(pdfdata && pdfdata.length>1){
+                merge(pdfdata, path.resolve(process.cwd(), `airCaroDownload/${datetime}-ACM.pdf`), function (err) {
+                    if(err){
+                        console.log(err);
+                    }
+                    console.log(pdfdata);
+                    console.log('Successfully merged!')
+                    resolve(path.resolve(process.cwd(), `airCaroDownload/${datetime}-ACM.pdf`))
+                })
+            }else{
+                resolve(pdfdata[0]);
+            }
+        }) 
+    }
+
+    async convertexceptImagetopdf(filePath, abPath){
+        return new Promise(async (resolve,reject)=>{
+            var wordBuffer = fs.readFileSync(filePath)
+            toPdf(wordBuffer).then(
+                (pdfBuffer) => {
+                  fs.writeFileSync(abPath, pdfBuffer)
+                  resolve( abPath)
+                }, (err) => {
+                  console.log(err)
+                }
+              )
         })
     }
 
@@ -448,6 +511,7 @@ class AWBGeneration {
     generateFooter(currentPage, pageCount) {
         return { text: "Page No: " + currentPage.toString() + '/' + pageCount, alignment: 'right', margin: [50, 10] }
     }
+
 
 }
 

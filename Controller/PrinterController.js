@@ -19,8 +19,8 @@ const Awb = require('../models/awb');
 //var cubeService = require("../Services/CubeService")
 var AllPackagesOnAwb = require('../Util/PrintAllPackages');
 var fs = require('fs');
-const merge = require('easy-pdf-merge');
-var path = require('path');
+
+
 
 
 exports.send_print_awb = (req, res, next) => {
@@ -436,7 +436,11 @@ exports.downloadFlightManifest = async (req, res, next) => {
 		// stream.end();
 		
 		awbPdfGen.getPdfArray(flightManifest,manifest.id,packages).then((pdfArray)=>{
-			res.zip(pdfArray)
+			awbPdfGen.convertinsinglepdf(pdfArray).then((allpdf)=>{
+				console.log(allpdf);
+				res.download(allpdf)
+			})
+				
 			// var pdf = [];
 			// for(var i=0;i<pdfArray.length;i++){
 			// 	var pathPdf = pdfArray[i].path;
