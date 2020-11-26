@@ -19,6 +19,8 @@ const Awb = require('../models/awb');
 //var cubeService = require("../Services/CubeService")
 var AllPackagesOnAwb = require('../Util/PrintAllPackages');
 var fs = require('fs');
+const merge = require('easy-pdf-merge');
+var path = require('path');
 
 
 exports.send_print_awb = (req, res, next) => {
@@ -432,8 +434,32 @@ exports.downloadFlightManifest = async (req, res, next) => {
 		// res.attachment(`${manifest.id}-FM.pdf`);
 		// stream.pipe(res);
 		// stream.end();
+		
 		awbPdfGen.getPdfArray(flightManifest,manifest.id,packages).then((pdfArray)=>{
 			res.zip(pdfArray)
+			// var pdf = [];
+			// for(var i=0;i<pdfArray.length;i++){
+			// 	var pathPdf = pdfArray[i].path;
+			// 	var ext = pathPdf.split('.').pop();
+			// 	if(ext =="pdf"){
+			// 		pdf.push(pathPdf)
+			// 	}
+			// }
+		
+			// if(pdf && pdf.length>1){
+			// 	merge(pdf, path.resolve(process.cwd(), `airCaroDownload/${manifest.id}-ACM.pdf`), function (err) {
+			// 		if (err) {
+			// 			return console.log(err)
+			// 		}
+			// 		console.log('Successfully merged!')
+					
+			// 		res.download(path.resolve(process.cwd(), `airCaroDownload/${manifest.id}-ACM.pdf`))
+			// 		//res.zip(pdfArray)
+			// 	});
+			// }else{
+			// 	res.download(pdf[0])
+			// }
+			
 		})
 	} catch (error) {
 		next(error);

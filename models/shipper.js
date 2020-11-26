@@ -33,7 +33,7 @@ const shipperSchema = new mongoose.Schema({
     type: String
   },
   zipcode: {
-    type: Number
+    type: String
   },
   tax: {
     type: String
