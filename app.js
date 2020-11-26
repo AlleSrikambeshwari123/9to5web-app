@@ -99,7 +99,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-let sessionExpireDuration = 15 * 60 * 1000; // 15 min
+let sessionExpireDuration = 180 * 60 * 1000; // 180 min
 
 app.use(session({
   cookieName: 'session',

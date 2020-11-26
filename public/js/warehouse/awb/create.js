@@ -377,6 +377,8 @@ $(function () {
     else awbInfo.fll_pickup = false
     if(awbInfo.invoicecheck == "on") awbInfo.invoicecheck = true;
     else awbInfo.invoicecheck = false
+
+    let flag = 0;
     let promises = AWBInvoices.getInvoices().map(({ file, ...invoice }) => {
       if (!invoice.number && !invoice.value && !invoice.id) {
         return;
@@ -388,11 +390,23 @@ $(function () {
         if(result.name){
           invoice.name = result.name
         }
-        awbInfo.invoices.push(invoice);
+        if(result.message){
+          flag = 1
+        }else
+          awbInfo.invoices.push(invoice);
+      }).catch(err=>{
+        console.log("err",err)
       });
     });
     Promise.all(promises)
       .then(() => {
+        if(flag == 1){
+          swal({
+            title:'Failed',
+            text: "You cannot upload excel, csv or html type of files",
+            type: 'error',
+          })
+        }else{
         $.ajax({
           url: 'create',
           type: 'post',
@@ -470,6 +484,7 @@ $(function () {
             });
           },
         });
+        }
       })
       .catch((error) => {
         console.log(error);

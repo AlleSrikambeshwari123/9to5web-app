@@ -21,6 +21,8 @@ var AllPackagesOnAwb = require('../Util/PrintAllPackages');
 var fs = require('fs');
 
 
+
+
 exports.send_print_awb = (req, res, next) => {
 	var username = res.user.username;
 	var awb = req.params.awb;
@@ -252,8 +254,8 @@ exports.downloadAirCargoManifest = async (req, res, next) => {
 
 		let awbsArray = await Promise.all(awbIds.map((id) => services.printService.getAWBDataForAllRelatedEntities(id)));
 
-		let invoicesArray = await services.invoiceService.getInvoiceFilesByAWBs(awbIds);
-
+		// let invoicesArray = await services.invoiceService.getInvoiceFilesByAWBs(awbIds);
+		let invoicesArray = []
 		let airCargoManifest = new AirCargoManifest({
 			_id: req.params.id,
 			owner: 'Nine To Five Import Export LLC',
@@ -266,14 +268,19 @@ exports.downloadAirCargoManifest = async (req, res, next) => {
 			awbsArray: awbsArray,
 			invoicesArray: invoicesArray
 		});
-		let result = await airCargoManifest.generate();
-		if(result.id){
-			res.type('pdf');
-			res.attachment(`${result.id}-ACM.pdf`);
-			result.stream.pipe(res);
-			result.stream.end();
-		}else
-			res.download(result);
+		let datetime = (new Date()).getTime();
+		awbPdfGen.getPdfArrayAirCargo(airCargoManifest,manifest.id,packages).then((pdfArray)=>{
+			res.zip(pdfArray,`${req.params.id}_${datetime}-ACM.zip`)
+		})
+		
+		// let result = await airCargoManifest.generate();
+		// if(result.id){
+		// 	res.type('pdf');
+		// 	res.attachment(`${result.id}-ACM.pdf`);
+		// 	result.stream.pipe(res);
+		// 	result.stream.end();
+		// }else
+		// 	res.download(result);
 	} catch (error) {
 		next(error);
 	}
@@ -432,8 +439,40 @@ exports.downloadFlightManifest = async (req, res, next) => {
 		// res.attachment(`${manifest.id}-FM.pdf`);
 		// stream.pipe(res);
 		// stream.end();
+		
+		let datetime = (new Date()).getTime();
 		awbPdfGen.getPdfArray(flightManifest,manifest.id,packages).then((pdfArray)=>{
-			res.zip(pdfArray)
+			// awbPdfGen.convertinsinglepdf(pdfArray).then((allpdf)=>{
+			// 	console.log(allpdf);
+			// 	res.download(allpdf)
+			// })
+
+			res.zip(pdfArray,`${req.params.id}_${datetime}-FM.zip`)
+
+				
+			// var pdf = [];
+			// for(var i=0;i<pdfArray.length;i++){
+			// 	var pathPdf = pdfArray[i].path;
+			// 	var ext = pathPdf.split('.').pop();
+			// 	if(ext =="pdf"){
+			// 		pdf.push(pathPdf)
+			// 	}
+			// }
+		
+			// if(pdf && pdf.length>1){
+			// 	merge(pdf, path.resolve(process.cwd(), `airCaroDownload/${manifest.id}-ACM.pdf`), function (err) {
+			// 		if (err) {
+			// 			return console.log(err)
+			// 		}
+			// 		console.log('Successfully merged!')
+					
+			// 		res.download(path.resolve(process.cwd(), `airCaroDownload/${manifest.id}-ACM.pdf`))
+			// 		//res.zip(pdfArray)
+			// 	});
+			// }else{
+			// 	res.download(pdf[0])
+			// }
+			
 		})
 	} catch (error) {
 		next(error);

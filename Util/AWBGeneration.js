@@ -33,6 +33,10 @@ var moment = require('moment');
 var services = require('../Services/RedisDataServices');
 var aws = require('../Util/aws')
 var fetch = require('node-fetch')
+var toPdf = require("office-to-pdf");
+const imagesToPdf = require("images-to-pdf");
+var path = require('path');
+const merge = require('easy-pdf-merge');
 
 class AWBGeneration {
     constructor() {
@@ -100,6 +104,58 @@ class AWBGeneration {
         })
     }
 
+    async getPdfArrayAirCargo(flightManifest,manifestId,packages){
+        return new Promise(async(resolve,reject)=>{
+            let pdfArray = []
+            let pdfDoc = await flightManifest.generateAwb();
+
+             var filestream;
+            var filename = '/'+manifestId +'-ACM'+ '.pdf';
+            var filepath = global.uploadRoot + filename;
+            pdfDoc.pipe((filestream = fs.createWriteStream(filepath)));
+            pdfDoc.end();
+            let obj = await this.getFileStream(filestream,filepath,filename)
+            pdfArray.push(obj);
+
+             let awbArray = []
+            for(let pkg of packages){
+                await services.printService.getAWBDataForAllRelatedEntities(pkg.awbId._id).then(async(awb) => {
+                    let priceLabelAwb  =  await services.AwbPriceLabelService.getPriceLabel(awb._id)
+                    let flag = 0
+                    for(let arr of awbArray){
+                        if(String(arr) == String(awb._id))
+                            flag = 1
+                    }
+                    if(flag == 0){
+                        awbArray.push(awb._id)
+                        if(priceLabelAwb){
+                            awb.express = priceLabelAwb.Express
+                        }
+                        let responses = await this.generateAWbPrint(awb)
+                        let filestream;
+                        let filename = '/'+awb._id +'-AWB'+ '.pdf';
+                        let filepath = global.uploadRoot + filename;
+                        responses.pipe((filestream = fs.createWriteStream(filepath)));
+                        responses.end();
+                        let awbRes = await this.getFileStream(filestream,filepath,filename)
+                        pdfArray.push(awbRes)
+                        // for(let invoice of awb.invoices){
+                        //     if(invoice.filename){
+                        //         await this.invoiceResult(invoice).then(async(arr)=>{
+                        //             console.log('arr',arr)
+                        //             if(arr.success){
+                        //                 pdfArray.push(arr)
+                        //             }
+                        //         })
+                        //     }
+                        // }
+                    }
+    			})
+            }
+            resolve(pdfArray)
+        })
+    }
+
     async getPdfArray(flightManifest,manifestId,packages){
         return new Promise(async(resolve,reject)=>{
             let pdfArray = []
@@ -149,6 +205,70 @@ class AWBGeneration {
     			})
             }
             resolve(pdfArray)
+        })
+    }
+
+    async convertinsinglepdf(pdfArray){
+        let datetime = (new Date()).getTime();
+        return new Promise(async (resolve,reject)=>{
+            var pdfdata = [];
+            for(let i=0; i< pdfArray.length; i++){
+                var pdf = pdfArray[i];
+                var filepath  = pdf.path;
+                var fileName = filepath.substring(filepath.lastIndexOf('/')+1);
+                var filearr = fileName.split('.');
+                var fileName = filearr[0];
+                var ext = filepath.split('.').pop();
+                if(ext == 'jpeg' || ext == 'png' || ext == 'jpg' || ext == 'gif'){
+                    if (fs.existsSync(filepath)){
+                        await imagesToPdf([filepath], path.resolve(process.cwd(), `airCaroDownload/${fileName}_${datetime}_invoice.pdf`));
+                        if (fs.existsSync(`airCaroDownload/${fileName}_${datetime}_invoice.pdf`)) {
+                            pdfdata.push(path.resolve(process.cwd(), `airCaroDownload/${fileName}_${datetime}_invoice.pdf`))
+                        }
+                    }
+                }else{
+                    if(ext == 'pdf'){
+                        pdfdata.push(filepath) 
+                    }else{
+                        if (fs.existsSync(filepath)){
+                            var abPath = path.resolve(process.cwd(), `airCaroDownload/${fileName}_${datetime}_invoice.pdf`)
+                            let pPath =  await this.convertexceptImagetopdf(filepath, abPath);
+                            pdfdata.push(pPath);
+                        }
+                        // await toPdf([filepath], path.resolve(process.cwd(), `airCaroDownload/${fileName}_${datetime}_invoice.pdf`));
+                        // if (fs.existsSync(`airCaroDownload/${fileName}_${datetime}_invoice.pdf`)) {
+                        // pdfdata.push(path.resolve(process.cwd(), `airCaroDownload/${fileName}_${datetime}_invoice.pdf`))
+                        // }
+                    }
+                }
+            }
+            if(pdfdata && pdfdata.length>1){
+                merge(pdfdata, path.resolve(process.cwd(), `public/uploads/${datetime}-FM.pdf`), function (err) {
+                    if(err){
+                        console.log(err);
+                    }
+                    console.log(pdfdata);
+                    console.log('Successfully merged!')
+                    resolve(path.resolve(process.cwd(), `public/uploads//${datetime}-FM.pdf`))
+                })
+            }else{
+                resolve(pdfdata[0]);
+            }
+        }) 
+    }
+
+    async convertexceptImagetopdf(filePath, abPath){
+        return new Promise(async (resolve,reject)=>{
+            var wordBuffer = fs.readFileSync(filePath)
+            toPdf(wordBuffer).then(
+                (pdfBuffer) => {
+                  fs.writeFileSync(abPath, pdfBuffer)
+                  resolve( abPath)
+                }, (err) => {
+                  resolve(err)
+                  console.log(err)
+                }
+              )
         })
     }
 
@@ -448,6 +568,7 @@ class AWBGeneration {
     generateFooter(currentPage, pageCount) {
         return { text: "Page No: " + currentPage.toString() + '/' + pageCount, alignment: 'right', margin: [50, 10] }
     }
+
 
 }
 
