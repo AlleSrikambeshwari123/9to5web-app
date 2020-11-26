@@ -101,7 +101,7 @@ class InvoiceService {
         } else {
           if(result.length == 0) resolve([])
           Promise.all(result.map(async (singleInvoice) => {
-            if(singleInvoice.filename) {
+            if(singleInvoice.filename && singleInvoice.name) {
               let fileBuffer = await awsLib.getObjectData(singleInvoice.filename);
               let ext = singleInvoice.name.split('.')[singleInvoice.name.split('.').length-1]
               await fs.writeFileSync(path.resolve(process.cwd(), `airCaroDownload/${singleInvoice.awbId}_${singleInvoice._id}_${datetime}_invoice.${ext}`), fileBuffer.Body);
