@@ -254,8 +254,8 @@ exports.downloadAirCargoManifest = async (req, res, next) => {
 
 		let awbsArray = await Promise.all(awbIds.map((id) => services.printService.getAWBDataForAllRelatedEntities(id)));
 
-		let invoicesArray = await services.invoiceService.getInvoiceFilesByAWBs(awbIds);
-
+		// let invoicesArray = await services.invoiceService.getInvoiceFilesByAWBs(awbIds);
+		let invoicesArray = []
 		let airCargoManifest = new AirCargoManifest({
 			_id: req.params.id,
 			owner: 'Nine To Five Import Export LLC',
@@ -268,8 +268,9 @@ exports.downloadAirCargoManifest = async (req, res, next) => {
 			awbsArray: awbsArray,
 			invoicesArray: invoicesArray
 		});
+		let datetime = (new Date()).getTime();
 		awbPdfGen.getPdfArrayAirCargo(airCargoManifest,manifest.id,packages).then((pdfArray)=>{
-			res.zip(pdfArray)
+			res.zip(pdfArray,`${req.params.id}_${datetime}-ACM.zip`)
 		})
 		
 		// let result = await airCargoManifest.generate();
@@ -439,11 +440,15 @@ exports.downloadFlightManifest = async (req, res, next) => {
 		// stream.pipe(res);
 		// stream.end();
 		
+		let datetime = (new Date()).getTime();
 		awbPdfGen.getPdfArray(flightManifest,manifest.id,packages).then((pdfArray)=>{
-			awbPdfGen.convertinsinglepdf(pdfArray).then((allpdf)=>{
-				console.log(allpdf);
-				res.download(allpdf)
-			})
+			// awbPdfGen.convertinsinglepdf(pdfArray).then((allpdf)=>{
+			// 	console.log(allpdf);
+			// 	res.download(allpdf)
+			// })
+
+			res.zip(pdfArray,`${req.params.id}_${datetime}-FM.zip`)
+
 				
 			// var pdf = [];
 			// for(var i=0;i<pdfArray.length;i++){
