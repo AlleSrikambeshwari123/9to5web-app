@@ -110,7 +110,7 @@ class AWBGeneration {
             let pdfDoc = await flightManifest.generateAwb();
 
              var filestream;
-            var filename = '/'+manifestId +'-FM'+ '.pdf';
+            var filename = '/'+manifestId +'-ACM'+ '.pdf';
             var filepath = global.uploadRoot + filename;
             pdfDoc.pipe((filestream = fs.createWriteStream(filepath)));
             pdfDoc.end();
