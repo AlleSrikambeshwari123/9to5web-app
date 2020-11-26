@@ -59,3 +59,16 @@ document.onreadystatechange = function() {
         "#myLoader").style.display = "none"; 
   } 
 };
+
+function downloadFile(url){
+  document.getElementById('myLoader').style.display='';
+  frame = document.createElement("iframe");
+  frame.onload = function(){   
+      document.getElementById('myLoader').style.display='none';
+  }
+  frame.src=url;
+  setTimeout(function(){
+    document.getElementById('myLoader').style.display='none';
+  },1000)
+  document.body.appendChild(frame);
+}
