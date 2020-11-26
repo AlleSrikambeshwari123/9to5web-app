@@ -436,28 +436,29 @@ exports.downloadFlightManifest = async (req, res, next) => {
 		// stream.end();
 		
 		awbPdfGen.getPdfArray(flightManifest,manifest.id,packages).then((pdfArray)=>{
-			var pdf = [];
-			for(var i=0;i<pdfArray.length;i++){
-				var pathPdf = pdfArray[i].path;
-				var ext = pathPdf.split('.').pop();
-				if(ext =="pdf"){
-					pdf.push(pathPdf)
-				}
-			}
-			console.log(pdf);
-			if(pdf && pdf.length>1){
-				merge(pdf, path.resolve(process.cwd(), `airCaroDownload/${manifest.id}-ACM.pdf`), function (err) {
-					if (err) {
-						return console.log(err)
-					}
-					console.log('Successfully merged!')
+			res.zip(pdfArray)
+			// var pdf = [];
+			// for(var i=0;i<pdfArray.length;i++){
+			// 	var pathPdf = pdfArray[i].path;
+			// 	var ext = pathPdf.split('.').pop();
+			// 	if(ext =="pdf"){
+			// 		pdf.push(pathPdf)
+			// 	}
+			// }
+		
+			// if(pdf && pdf.length>1){
+			// 	merge(pdf, path.resolve(process.cwd(), `airCaroDownload/${manifest.id}-ACM.pdf`), function (err) {
+			// 		if (err) {
+			// 			return console.log(err)
+			// 		}
+			// 		console.log('Successfully merged!')
 					
-					res.download(path.resolve(process.cwd(), `airCaroDownload/${manifest.id}-ACM.pdf`))
-					//res.zip(pdfArray)
-				});
-			}else{
-				res.download(pdf[0])
-			}
+			// 		res.download(path.resolve(process.cwd(), `airCaroDownload/${manifest.id}-ACM.pdf`))
+			// 		//res.zip(pdfArray)
+			// 	});
+			// }else{
+			// 	res.download(pdf[0])
+			// }
 			
 		})
 	} catch (error) {
