@@ -377,7 +377,7 @@ class AirCargoManifest {
         if(this.data.awbsArray.length == 0){
             var docs = printer.createPdfKitDocument(definition);
             let acmPdf = path.resolve(process.cwd(), `airCaroDownload/${this.data._id}-ACM.pdf`)
-            merge([mainFilePath, mainFilePath], path.resolve(process.cwd(), `airCaroDownload/${this.data._id}-ACM.pdf`), async(err) => {
+            merge([mainFilePath, mainFilePath], path.resolve(process.cwd(), `airCaroDownload/${this.data._id}-ACM-${datetime}.pdf`), async(err) => {
                 if (err) {
                     return console.log(err)
                 }

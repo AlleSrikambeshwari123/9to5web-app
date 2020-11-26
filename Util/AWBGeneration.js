@@ -213,6 +213,7 @@ class AWBGeneration {
                   fs.writeFileSync(abPath, pdfBuffer)
                   resolve( abPath)
                 }, (err) => {
+                  reject(err)
                   console.log(err)
                 }
               )

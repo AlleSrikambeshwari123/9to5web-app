@@ -173,7 +173,8 @@ class InvoiceService {
               fs.writeFileSync(abPath, pdfBuffer)
               resolve( abPath)
             }, (err) => {
-              console.log(err)
+              reject(err)
+              console.log("err",err)
             }
           )
     })
