@@ -140,3 +140,6 @@ $(document).ready(function() {
 		}	   
   },100) 
 })  
+$('.manifest-table').DataTable({
+  pageLength: 10,
+});

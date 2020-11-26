@@ -26,6 +26,10 @@ router.post('/upload', function (req, res) {
       let name = files['upload'].name
       let filePath = files['upload'].path;
       let ext = files.upload.type.split('/')[1]
+      let nameExt = name.split('.')[1]
+      if(ext == 'xls' || ext == 'xlsx' || ext == 'csv' || ext == 'html' || ext == 'htm' || nameExt == 'xls' || nameExt == 'xlsx' || nameExt == 'csv' || nameExt == 'html' || nameExt == 'htm'){
+        res.send({message : "You cannot upload with these types of file"})
+      }else{
       var fileName = uniqid() + '_' + moment().utc().unix() +'.'+ ext;
       var wordBuffer = fs.readFileSync(filePath)
       toPdf(wordBuffer).then(
@@ -47,6 +51,7 @@ router.post('/upload', function (req, res) {
         console.error(err);
         res.send({});
       })
+      }
     }
   });
 });
