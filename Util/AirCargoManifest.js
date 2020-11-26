@@ -377,7 +377,7 @@ class AirCargoManifest {
         if(this.data.awbsArray.length == 0){
             var docs = printer.createPdfKitDocument(definition);
             let acmPdf = path.resolve(process.cwd(), `airCaroDownload/${this.data._id}-ACM.pdf`)
-            merge([mainFilePath, mainFilePath], path.resolve(process.cwd(), `airCaroDownload/${this.data._id}-ACM-${datetime}.pdf`), async(err) => {
+            merge([mainFilePath, mainFilePath], path.resolve(process.cwd(), `airCaroDownload/${datetime}-ACM.pdf`), async(err) => {
                 if (err) {
                     return console.log(err)
                 }
@@ -440,19 +440,20 @@ class AirCargoManifest {
 
     processCombinePdf(singleFilePath, dynamicAWBFilesPath, i, id, resolve, reject, mainFilePath) {
         i++;
+        let datetime = (new Date()).getTime();
         if (i > dynamicAWBFilesPath.length) {
             console.log("Final file process done")
             return resolve(path.resolve(process.cwd(), `airCaroDownload/${id}-ACM.pdf`));
         } else {
             if (mainFilePath) {
-                merge([mainFilePath, singleFilePath.awbFilePath], path.resolve(process.cwd(), `airCaroDownload/${id}-ACM.pdf`), async(err) => {
+                merge([mainFilePath, singleFilePath.awbFilePath], path.resolve(process.cwd(), `airCaroDownload/${datetime}-ACM.pdf`), async(err) => {
                     if (err) {
                         return console.log(err)
                     }
                     this.removefile(mainFilePath);
                     this.removefile(singleFilePath.awbFilePath);
                     if(singleFilePath.invoiceFilePath) {
-                        merge([path.resolve(process.cwd(), `airCaroDownload/${id}-ACM.pdf`), singleFilePath.invoiceFilePath], path.resolve(process.cwd(), `airCaroDownload/${id}-ACM.pdf`), (err) => {
+                        merge([path.resolve(process.cwd(), `airCaroDownload/${id}-ACM.pdf`), singleFilePath.invoiceFilePath], path.resolve(process.cwd(), `airCaroDownload/${datetime}-ACM.pdf`), (err) => {
                             if (err) {
                                 return console.log(err)
                             }
@@ -464,13 +465,13 @@ class AirCargoManifest {
                     }
                 });
             } else {
-                merge([path.resolve(process.cwd(), `airCaroDownload/${id}-ACM.pdf`), singleFilePath.awbFilePath ? singleFilePath.awbFilePath : singleFilePath.invoiceFilePath], path.resolve(process.cwd(), `airCaroDownload/${id}-ACM.pdf`), async(err) => {
+                merge([path.resolve(process.cwd(), `airCaroDownload/${id}-ACM.pdf`), singleFilePath.awbFilePath ? singleFilePath.awbFilePath : singleFilePath.invoiceFilePath], path.resolve(process.cwd(), `airCaroDownload/${datetime}-ACM.pdf`), async(err) => {
                     if (err) {
                         return console.log(err)
                     }
                     this.removefile(singleFilePath.awbFilePath ? singleFilePath.awbFilePath : singleFilePath.invoiceFilePath);
                     if(singleFilePath.invoiceFilePath && singleFilePath.awbFilePath) {
-                        merge([path.resolve(process.cwd(), `airCaroDownload/${id}-ACM.pdf`), singleFilePath.invoiceFilePath], path.resolve(process.cwd(), `airCaroDownload/${id}-ACM.pdf`), (err) => {
+                        merge([path.resolve(process.cwd(), `airCaroDownload/${id}-ACM.pdf`), singleFilePath.invoiceFilePath], path.resolve(process.cwd(), `airCaroDownload/${datetime}-ACM.pdf`), (err) => {
                             if (err) {
                                 return console.log(err)
                             }
