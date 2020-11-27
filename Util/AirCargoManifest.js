@@ -763,7 +763,6 @@ class AirCargoManifest {
             for(var i=0;i<dynamicAWBFilesPath.length;i++){
                 mainArray.push(dynamicAWBFilesPath[i].awbFilePath)
             }
-            console.log("=============",mainArray,"==================")
             var idm = this.data._id;
             merge(mainArray, path.resolve(process.cwd(), `airCaroDownload/${this.data._id}-ACM.pdf`), function (err) {
                 if(err){

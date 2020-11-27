@@ -21,11 +21,15 @@
                     <div class="btn-group custom-btn-group float-right" role="group">
                         <a  href="/api/printer/download-pdf/manifest/<%=manifest.id%>/air-cargo-manifest?type=duplicate"
                             class="btn btn-primary btn-sm"  onclick="downloadFile('/api/printer/download-pdf/manifest/<%=manifest.id%>/flight-manifest', 'air-cargo-manifest')">
-                            Duplicate Air Cargo Manifest &nbsp;&nbsp;<i class="fa fa-download"></i>
+                            Merge Air Cargo Manifest &nbsp;&nbsp;<i class="fa fa-download"></i>
                         </a>
                         <a  href="/api/printer/download-pdf/manifest/<%=manifest.id%>/air-cargo-manifest"
                             class="btn btn-primary btn-sm"  onclick="downloadFile('/api/printer/download-pdf/manifest/<%=manifest.id%>/flight-manifest', 'air-cargo-manifest')">
                             Air Cargo Manifest &nbsp;&nbsp;<i class="fa fa-download"></i>
+                        </a>
+                        <a href="/api/printer/download-pdf/manifest/<%=manifest.id%>/flight-manifest?type=duplicate"
+                            class="btn btn-primary btn-sm" onclick="downloadFile('/api/printer/download-pdf/manifest/<%=manifest.id%>/flight-manifest', 'flight-manifest')">
+                            Merge Flight Manifest &nbsp;&nbsp;<i class="fa fa-download"></i>
                         </a>
                         <a href="/api/printer/download-pdf/manifest/<%=manifest.id%>/flight-manifest"
                             class="btn btn-primary btn-sm" onclick="downloadFile('/api/printer/download-pdf/manifest/<%=manifest.id%>/flight-manifest', 'flight-manifest')">
