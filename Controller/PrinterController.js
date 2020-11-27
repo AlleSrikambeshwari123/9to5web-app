@@ -265,8 +265,8 @@ exports.downloadAirCargoManifest = async (req, res, next) => {
 			portOfLading: String(airportFrom && airportFrom.name),
 			portOfOnlading: String(airportTo && airportTo.name),
 			rows: Object.values(packagesByAWB),
-			awbsArray: awbsArray,
-			invoicesArray: invoicesArray
+			awbsArray: awbsArray
+			//invoicesArray: invoicesArray
 		});
 		let datetime = (new Date()).getTime();
 		console.log(req.query.type,">>>>>>>>>>>>>>>>>>>>")
