@@ -446,7 +446,7 @@ exports.downloadFlightManifest = async (req, res, next) => {
 			// 	console.log(allpdf);
 			// 	res.download(allpdf)
 			// })
-
+			
 			res.zip(pdfArray,`${req.params.id}_${datetime}-FM.zip`)
 
 				

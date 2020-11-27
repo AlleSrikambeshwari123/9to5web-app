@@ -60,16 +60,19 @@ document.onreadystatechange = function() {
   } 
 };
 
-function downloadFile(blob){  
+function downloadFile(blob, type){  
   $.ajax({
     url:blob,
-    type:'GET',    
+    type:'GET',   
     beforeSend: function(){ 
   
       document.getElementById('myLoader').style.display='';
     },
-    success: function(){
-      document.getElementById('myLoader').style.display='none';
+    success: function(response){
+      
+      if(response.length>0){
+        document.getElementById('myLoader').style.display='none';
+      }      
     },
     error: function(){
     }
