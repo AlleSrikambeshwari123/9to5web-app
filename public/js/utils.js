@@ -63,7 +63,7 @@ document.onreadystatechange = function() {
 function downloadFile(blob){  
   $.ajax({
     url:blob,
-    type:'POST',    
+    type:'GET',    
     beforeSend: function(){ 
   
       document.getElementById('myLoader').style.display='';
