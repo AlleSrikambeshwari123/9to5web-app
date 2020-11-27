@@ -23,12 +23,12 @@ class CustomerService {
           return resolve({ success: false, message: 'Account already exists' });
         } 
       }
-      if (customer.pmb) {
-        const customerData = await this.getCustomer({pmb : customer.pmb});
-        if (customerData && customerData['_id']) {
-          return resolve({ success: false, message: 'This PMB already exists.' });
-        } 
-      }
+      // if (customer.pmb) {
+      //   const customerData = await this.getCustomer({pmb : customer.pmb});
+      //   if (customerData && customerData['_id']) {
+      //     return resolve({ success: false, message: 'This PMB already exists.' });
+      //   } 
+      // }
       const customerData = new Customer(customer);
       customerData.save((err, customer) => {
         if (err) {
@@ -220,12 +220,12 @@ class CustomerService {
         const password = bcrypt.hashSync(body.password, 10);
         body.password  = password 
       }
-      if (body.pmb) {
-        const customerData = await this.getCustomer({pmb : body.pmb});
-        if (customerData && customerData['_id'] && String(customerData['_id']) != String(body.id)) {
-          return resolve({ success: false, message: 'This PMB already exists.' });
-        } 
-      }
+      // if (body.pmb) {
+      //   const customerData = await this.getCustomer({pmb : body.pmb});
+      //   if (customerData && customerData['_id'] && String(customerData['_id']) != String(body.id)) {
+      //     return resolve({ success: false, message: 'This PMB already exists.' });
+      //   } 
+      // }
       Customer.findOneAndUpdate({_id: id}, {...body}, (err, result) => {
         if (err) {
           resolve({ success: false, message: strings.string_response_error });
