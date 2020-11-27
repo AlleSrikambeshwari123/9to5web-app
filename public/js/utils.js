@@ -69,10 +69,7 @@ function downloadFile(blob, type){
       document.getElementById('myLoader').style.display='';
     },
     success: function(response){
-      
-      if(response.length>0){
-        document.getElementById('myLoader').style.display='none';
-      }      
+        document.getElementById('myLoader').style.display='none';            
     },
     error: function(){
     }
