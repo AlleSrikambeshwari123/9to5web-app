@@ -1352,11 +1352,11 @@ class PackageService {
                     resolve({}) 
                 }
                 else{
-                    if(pkg[0]){
-                        pkg[0] = pkg[0].toJSON()
-                        let zoned = await Zone.findById(pkg[0].zoneId)
+                    if(pkg){
+                        pkg = pkg.toJSON()
+                        let zoned = await Zone.findById(pkg.zoneId)
                         if(zoned && zoned.name){
-                            pkg[0].zoneValue = zoned.name
+                            pkg.zoneValue = zoned.name
                         }
                     }
                     resolve(pkg);
