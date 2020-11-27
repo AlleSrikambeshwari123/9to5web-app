@@ -19,28 +19,28 @@
             <div class="card-header">
                 <div class="pull-right">
                     <div class="btn-group custom-btn-group float-right" role="group">
-                        <a href="/api/printer/download-pdf/manifest/<%=manifest.id%>/air-cargo-manifest"
-                            class="btn btn-primary btn-sm" target="_blank">
+                        <a  href="/api/printer/download-pdf/manifest/<%=manifest.id%>/air-cargo-manifest"
+                            class="btn btn-primary btn-sm download-spinner" >
                             Air Cargo Manifest &nbsp;&nbsp;<i class="fa fa-download"></i>
                         </a>
                         <a href="/api/printer/download-pdf/manifest/<%=manifest.id%>/flight-manifest"
-                            class="btn btn-primary btn-sm">
+                            class="btn btn-primary btn-sm download-spinner" >
                             Flight Manifest &nbsp;&nbsp;<i class="fa fa-download"></i>
                         </a>
                         <a href="/api/printer/download-pdf/manifest/<%=manifest.id%>/flight-load-sheet"
-                            class="btn btn-primary btn-sm">
+                            class="btn btn-primary btn-sm" onclick="downloadFile('/api/printer/download-pdf/manifest/<%=manifest.id%>/flight-load-sheet')" >
                             Flight Load Sheet &nbsp;&nbsp;<i class="fa fa-download"></i>
                         </a>
                         </a>
-                        <a href="/api/printer/download-pdf/manifest/<%=manifest.id%>/us-customs"
-                            class="btn btn-primary btn-sm">
+                        <a onclick="downloadFile('/api/printer/download-pdf/manifest/<%=manifest.id%>/us-customs')" 
+                            class="btn btn-primary btn-sm " href="/api/printer/download-pdf/manifest/<%=manifest.id%>/us-customs">
                             US Customs &nbsp;&nbsp;<i class="fa fa-download"></i>
                         </a>
                     </div>
                 </div>
                 <h4 class="card-title">
                     <%=title%>
-                </h4>
+                </h4>                
             </div>
             <div id="myLoader"><img src="/img/preloader.gif"></div>
             <div class="card-body">
