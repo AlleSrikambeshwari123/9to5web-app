@@ -711,11 +711,11 @@ class AirCargoManifest {
         await Promise.all(
             this.data.awbsArray.map(async(awb, ind) => {
                 let invoiceFilePath = [];
-                this.data.invoicesArray.map((singleInvoice) => {
-                    if((singleInvoice.awbId).toString() == (awb._id).toString() && singleInvoice.isFile) {
-                        invoiceFilePath.push(singleInvoice.filePath);
-                    }
-                })
+                // this.data.invoicesArray.map((singleInvoice) => {
+                //     if((singleInvoice.awbId).toString() == (awb._id).toString() && singleInvoice.isFile) {
+                //         invoiceFilePath.push(singleInvoice.filePath);
+                //     }
+                // })
 
                 
                 if(invoiceFilePath.length === 0) {
