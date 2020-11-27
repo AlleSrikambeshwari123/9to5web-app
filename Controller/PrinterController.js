@@ -265,22 +265,25 @@ exports.downloadAirCargoManifest = async (req, res, next) => {
 			portOfLading: String(airportFrom && airportFrom.name),
 			portOfOnlading: String(airportTo && airportTo.name),
 			rows: Object.values(packagesByAWB),
-			awbsArray: awbsArray,
-			invoicesArray: invoicesArray
+			awbsArray: awbsArray
+			//invoicesArray: invoicesArray
 		});
 		let datetime = (new Date()).getTime();
-		awbPdfGen.getPdfArrayAirCargo(airCargoManifest,manifest.id,packages).then((pdfArray)=>{
-			res.zip(pdfArray,`${req.params.id}_${datetime}-ACM.zip`)
-		})
 		
-		// let result = await airCargoManifest.generate();
-		// if(result.id){
-		// 	res.type('pdf');
-		// 	res.attachment(`${result.id}-ACM.pdf`);
-		// 	result.stream.pipe(res);
-		// 	result.stream.end();
-		// }else
-		// 	res.download(result);
+		if(req.query.type != "duplicate"){
+			awbPdfGen.getPdfArrayAirCargo(airCargoManifest,manifest.id,packages).then((pdfArray)=>{
+				res.zip(pdfArray,`${req.params.id}_${datetime}-ACM.zip`)
+			})
+		}else{		
+		let result = await airCargoManifest.generate();
+		if(result.id){
+			res.type('pdf');
+			res.attachment(`${result.id}-ACM.pdf`);
+			result.stream.pipe(res);
+			result.stream.end();
+		}else
+			res.download(result);
+		}
 	} catch (error) {
 		next(error);
 	}
@@ -442,12 +445,14 @@ exports.downloadFlightManifest = async (req, res, next) => {
 		
 		let datetime = (new Date()).getTime();
 		awbPdfGen.getPdfArray(flightManifest,manifest.id,packages).then((pdfArray)=>{
-			// awbPdfGen.convertinsinglepdf(pdfArray).then((allpdf)=>{
-			// 	console.log(allpdf);
-			// 	res.download(allpdf)
-			// })
-
-			res.zip(pdfArray,`${req.params.id}_${datetime}-FM.zip`)
+			if(req.query.type == "duplicate"){
+				awbPdfGen.convertinsinglepdf(pdfArray).then((allpdf)=>{
+					console.log(allpdf);
+					res.download(allpdf)
+				})
+			}else{			
+				res.zip(pdfArray,`${req.params.id}_${datetime}-FM.zip`)
+			}
 
 				
 			// var pdf = [];

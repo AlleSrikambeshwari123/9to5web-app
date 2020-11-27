@@ -60,15 +60,34 @@ document.onreadystatechange = function() {
   } 
 };
 
-function downloadFile(url){
-  document.getElementById('myLoader').style.display='';
-  frame = document.createElement("iframe");
-  frame.onload = function(){   
-      document.getElementById('myLoader').style.display='none';
-  }
-  frame.src=url;
-  setTimeout(function(){
+function downloadFileD(blob, type){  
+  $.ajax({
+    url:blob,
+    type:'GET',   
+    beforeSend: function(){ 
+  
+      document.getElementById('myLoader').style.display='';
+    },
+    success: function(response){
+        document.getElementById('myLoader').style.display='none';            
+    },
+    error: function(){
+    }
+  });
+}
+function downloadFile(blob, type){
+
+}
+
+$(function(){$('.download-spinner').click(function() { ShowDownloadMessage(); }); })
+
+function ShowDownloadMessage()
+{  
+     document.getElementById('myLoader').style.display='';
+     window.addEventListener('focus', HideDownloadMessage, false);
+}
+
+function HideDownloadMessage(){
+    window.removeEventListener('focus', HideDownloadMessage, false);                   
     document.getElementById('myLoader').style.display='none';
-  },1000)
-  document.body.appendChild(frame);
 }
