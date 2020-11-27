@@ -60,7 +60,7 @@ document.onreadystatechange = function() {
   } 
 };
 
-function downloadFile(blob, type){  
+function downloadFileD(blob, type){  
   $.ajax({
     url:blob,
     type:'GET',   
@@ -74,6 +74,9 @@ function downloadFile(blob, type){
     error: function(){
     }
   });
+}
+function downloadFile(blob, type){
+
 }
 
 $(function(){$('.download-spinner').click(function() { ShowDownloadMessage(); }); })

@@ -269,7 +269,7 @@ exports.downloadAirCargoManifest = async (req, res, next) => {
 			//invoicesArray: invoicesArray
 		});
 		let datetime = (new Date()).getTime();
-		console.log(req.query.type,">>>>>>>>>>>>>>>>>>>>")
+		
 		if(req.query.type != "duplicate"){
 			awbPdfGen.getPdfArrayAirCargo(airCargoManifest,manifest.id,packages).then((pdfArray)=>{
 				res.zip(pdfArray,`${req.params.id}_${datetime}-ACM.zip`)
@@ -445,12 +445,14 @@ exports.downloadFlightManifest = async (req, res, next) => {
 		
 		let datetime = (new Date()).getTime();
 		awbPdfGen.getPdfArray(flightManifest,manifest.id,packages).then((pdfArray)=>{
-			// awbPdfGen.convertinsinglepdf(pdfArray).then((allpdf)=>{
-			// 	console.log(allpdf);
-			// 	res.download(allpdf)
-			// })
-			
-			res.zip(pdfArray,`${req.params.id}_${datetime}-FM.zip`)
+			if(req.query.type == "duplicate"){
+				awbPdfGen.convertinsinglepdf(pdfArray).then((allpdf)=>{
+					console.log(allpdf);
+					res.download(allpdf)
+				})
+			}else{			
+				res.zip(pdfArray,`${req.params.id}_${datetime}-FM.zip`)
+			}
 
 				
 			// var pdf = [];
