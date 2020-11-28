@@ -102,7 +102,7 @@ class PackageService {
     }
 
     //2: 'Loaded on AirCraft',
-    async addPackagesToCompartment(packageIds, compartmentId, userId) {
+    async addPackagesToCompartment(packageIds, compartmentId, userId,manifestId) {
         try {
             let error = []
             let totalPkgWeight = 0
@@ -110,10 +110,15 @@ class PackageService {
             let packages = packageIds && packageIds.length && packageIds.split(',').filter(Boolean);
             const cv = await Compartment.findById(compartmentId).populate({ path: 'packages', select: 'weight' }).
             select('packages weight')
-            cv.packages.map(w => totalPkgWeight += w.weight)
+            let compartmentPackages = await this.getPackagesByObject({manifestId : manifestId,compartmentId : compartmentId})
+            compartmentPackages.map(w => totalPkgWeight += w.weight)
             const pkgs = await Promise.all(packages.map(async pkgId => {
-                const pk = await Package.findById(pkgId).select('weight')
-                return upcomingWeight += pk.weight
+                for(let p of compartmentPackages){
+                    if(String(p._id) != String(pkgId)){
+                        const pk = await Package.findById(pkgId).select('weight')
+                        return upcomingWeight += pk.weight
+                    }
+                }
             }))
             if (totalPkgWeight + pkgs[0] > cv.weight) {
                 return { success: false, message: `Total Packages Weight ${totalPkgWeight+pkgs[0]} Should be less than Compartment Capacity ${cv.weight}` }
@@ -159,10 +164,14 @@ class PackageService {
                 return { success: false, message: 'This package is already there in this compartment.' };
             }
            
-            cv.packages.map(w => totalPkgWeight += w.weight)
+            compartmentPackages.map(w => totalPkgWeight += w.weight)
             const pkgs = await Promise.all(packages.map(async pkgId => {
-                const pk = await Package.findById(pkgId).select('weight')
-                return upcomingWeight += pk.weight
+                for(let p of compartmentPackages){
+                    if(String(p._id) != String(pkgId)){
+                        const pk = await Package.findById(pkgId).select('weight')
+                        return upcomingWeight += pk.weight
+                    }
+                }
             }))
             if (totalPkgWeight + pkgs[0] > cv.planeId.maximumCapacity) {
                 return { success: false, message: `Total Packages Weight ${totalPkgWeight+pkgs[0]} Should be less than Plane Capacity ${cv.planeId.maximumCapacity}` }
@@ -171,7 +180,7 @@ class PackageService {
             await Promise.all(packages.map(async packageId => {
                 // check packageId Exists
                 if (await Package.findById(packageId)) {
-                    this.updatePackage(packageId, { manifestId: manifestId,compartmentId:compartmentId });
+                    this.updatePackage(packageId, { manifestId: manifestId});
                     const status = await this.updatePackageStatus(packageId, 2, userId);
                     if (!status.success) error.push(status.message)
                 } else {
@@ -1365,18 +1374,18 @@ class PackageService {
         });
     }
 
-    getPackagesByObject(object) {
-        return new Promise((resolve, reject) => {
-            Package.find(object,async (err, pkgs) => {
-                if (err || pkgs == null) {
-                    resolve({}) 
-                }
-                else{
-                    resolve(pkgs);
-                } 
-            });
-        });
-    }
+    // getPackagesByObject(object) {
+    //     return new Promise((resolve, reject) => {
+    //         Package.find(object,async (err, pkgs) => {
+    //             if (err || pkgs == null) {
+    //                 resolve([]) 
+    //             }
+    //             else{
+    //                 resolve(pkgs);
+    //             } 
+    //         });
+    //     });
+    // }
 
     async getAWBPackagesWithLastStatus_updated(awbId) {
         const packages = await this.getPackages_updated(awbId);
