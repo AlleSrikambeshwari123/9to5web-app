@@ -172,7 +172,7 @@ class PackageService {
             await Promise.all(packages.map(async packageId => {
                 // check packageId Exists
                 if (await Package.findById(packageId)) {
-                    this.updatePackage(packageId, { manifestId: manifestId,compartmentId:compartmentId });
+                    this.updatePackage(packageId, { manifestId: manifestId});
                     const status = await this.updatePackageStatus(packageId, 2, userId);
                     if (!status.success) error.push(status.message)
                 } else {
