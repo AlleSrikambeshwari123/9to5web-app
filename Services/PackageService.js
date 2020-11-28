@@ -164,7 +164,7 @@ class PackageService {
                 return { success: false, message: 'This package is already there in this compartment.' };
             }
            
-            cv.packages.map(w => totalPkgWeight += w.weight)
+            compartmentPackages.map(w => totalPkgWeight += w.weight)
             const pkgs = await Promise.all(packages.map(async pkgId => {
                 for(let p of compartmentPackages){
                     if(String(p._id) != String(pkgId)){
