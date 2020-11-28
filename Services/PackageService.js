@@ -102,7 +102,7 @@ class PackageService {
     }
 
     //2: 'Loaded on AirCraft',
-    async addPackagesToCompartment(packageIds, compartmentId, userId) {
+    async addPackagesToCompartment(packageIds, compartmentId, userId,manifestId) {
         try {
             let error = []
             let totalPkgWeight = 0
@@ -110,7 +110,8 @@ class PackageService {
             let packages = packageIds && packageIds.length && packageIds.split(',').filter(Boolean);
             const cv = await Compartment.findById(compartmentId).populate({ path: 'packages', select: 'weight' }).
             select('packages weight')
-            cv.packages.map(w => totalPkgWeight += w.weight)
+            let compartmentPackages = await this.getPackagesByObject({manifestId : manifestId,compartmentId : compartmentId})
+            compartmentPackages.map(w => totalPkgWeight += w.weight)
             const pkgs = await Promise.all(packages.map(async pkgId => {
                 const pk = await Package.findById(pkgId).select('weight')
                 return upcomingWeight += pk.weight

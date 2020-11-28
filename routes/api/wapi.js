@@ -320,9 +320,10 @@ router.post('/add-packages-to-compartment', passport.authenticate('jwt', { sessi
   let packageIds = req.body.packageIds;
   let compartmentId = req.body.compartmentId;
   var userId =  req.body.userId;
-  const {valid,errors} = checkEmpty({packageIds:packageIds,compartmentId :compartmentId,userId:userId})
+  let manifestId = req.body.manifestId;
+  const {valid,errors} = checkEmpty({packageIds:packageIds,manifestId :manifestId,compartmentId :compartmentId,userId:userId})
   if(!valid) return res.send({success:false,message:errors})
-  services.packageService.addPackagesToCompartment(packageIds,compartmentId, userId).then((result) => {
+  services.packageService.addPackagesToCompartment(packageIds,compartmentId, userId,manifestId).then((result) => {
     res.send(result)
   })
 })
