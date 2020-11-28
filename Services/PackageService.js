@@ -166,8 +166,12 @@ class PackageService {
            
             cv.packages.map(w => totalPkgWeight += w.weight)
             const pkgs = await Promise.all(packages.map(async pkgId => {
-                const pk = await Package.findById(pkgId).select('weight')
-                return upcomingWeight += pk.weight
+                for(let p of compartmentPackages){
+                    if(String(p._id) != String(pkgId)){
+                        const pk = await Package.findById(pkgId).select('weight')
+                        return upcomingWeight += pk.weight
+                    }
+                }
             }))
             if (totalPkgWeight + pkgs[0] > cv.planeId.maximumCapacity) {
                 return { success: false, message: `Total Packages Weight ${totalPkgWeight+pkgs[0]} Should be less than Plane Capacity ${cv.planeId.maximumCapacity}` }
