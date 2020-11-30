@@ -4,6 +4,8 @@ var packageTable = $('#packageTable').DataTable({
   pageLength: 5,
 })
 
+$('#lbs-data-entry').html($("#lsweight").html())
+$('#vlbs-data-entry').html($("#vlsweight").html())
 var selected_manifestId;
 $('.btn-send').click(function () {
   selected_manifestId = $(this).data('id');
