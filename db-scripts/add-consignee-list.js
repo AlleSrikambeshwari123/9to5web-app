@@ -14,7 +14,7 @@ const csv = require('csvtojson');
 createConnection()
       .then(async() => {
         let company = await Company.findOne({name : "Post Boxes"})
-        let location = await Location.findOne({name : "CABLE BEACH"})
+        let location = await Location.findOne({name : "CABLE BEACH SHOPPING CENTER"})
         let user = await User.findOne({email : "admin@company.com"})
         let consigneeArray = [];
         return csv().fromFile("./DB_Seed/CableBeachConsignee.csv").then(jsonObj => {
@@ -58,7 +58,7 @@ createConnection()
       })
       .then(async() => {
         let company = await Company.findOne({name : "Post Boxes"})
-        let location = await Location.findOne({name : "ALBANY"})
+        let location = await Location.findOne({name : "ALBANY SOUTH OCEAN"})
         let user = await User.findOne({email : "admin@company.com"})
         let consigneeArray = []
         return csv().fromFile("./DB_Seed/AlbanyConsignee.csv").then(jsonObj => {
