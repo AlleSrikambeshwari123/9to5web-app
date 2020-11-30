@@ -83,7 +83,7 @@ exports.delete_plane = (req, res, next) => {
 exports.get_plane_detail = (req, res, next) => {
   services.planeService.getPlane(req.params.id).then(plane => {
     Promise.all([
-      services.pilotService.getPilotsWarehouse(plane.warehouse),
+      services.pilotService.getPilots(),
       services.airlineService.getAllAirlines().catch(() => []),
     ]).then(([pilots, airlines]) => {
       res.render('pages/fleet/plane/edit', {
