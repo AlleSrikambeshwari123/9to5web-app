@@ -121,8 +121,8 @@ class AwbPriceLabelService {
     if(result.OverrideInvoiceValue >= 100)
       result.Insurance = result.OverrideInvoiceValue * 0.015
 
-    result.CustomsVAT = (Number(result.OverrideInvoiceValue) + Number(result.Freight) + Number(result.Duty)+ Number(result.CustomsProc)+Number(result.EnvLevy)) * Number(result.VatMultiplier)
-    result.ServiceVat = (Number(result.NoDocs) + Number(result.Insurance) + Number(result.Storage) + Number(result.Brokerage) +Number(result.Express) + Number(result.Delivery) ) * Number(result.VatMultiplier)
+    result.CustomsVAT = (Number(result.OverrideInvoiceValue) + Number(result.Duty)+ Number(result.CustomsProc)+Number(result.EnvLevy)) * Number(result.VatMultiplier)
+    result.ServiceVat = (Number(result.Freight) + Number(result.NoDocs) + Number(result.Insurance) + Number(result.Storage) + Number(result.Brokerage) +Number(result.Express) + Number(result.Delivery) ) * Number(result.VatMultiplier)
     
     let sum = Number(result.CustomsVAT) + Number(result.ServiceVat) + Number(result.Freight) + Number(result.Duty)+ Number(result.CustomsProc)+Number(result.EnvLevy) +Number(result.NoDocs) +
     Number(result.Insurance) + Number(result.Storage) + Number(result.Brokerage) +Number(result.Express) + Number(result.Delivery) + Number(result.Hazmat) + Number(result.Pickup) + Number(result.Sed)
@@ -199,8 +199,8 @@ class AwbPriceLabelService {
       if(priceLabel.OverrideInvoiceValue >= 100)
         priceLabel.Insurance = priceLabel.OverrideInvoiceValue * 0.015
 
-      priceLabel.CustomsVAT = (Number(priceLabel.OverrideInvoiceValue) + Number(priceLabel.Freight) + Number(priceLabel.Duty)+ Number(priceLabel.CustomsProc)+Number(priceLabel.EnvLevy)) * Number(priceLabel.VatMultiplier)
-      priceLabel.ServiceVat = (Number(priceLabel.NoDocs) + Number(priceLabel.Insurance) + Number(priceLabel.Storage) + Number(priceLabel.Brokerage) +Number(priceLabel.Express) + Number(priceLabel.Delivery) ) * Number(priceLabel.VatMultiplier)
+      priceLabel.CustomsVAT = (Number(priceLabel.OverrideInvoiceValue) + Number(priceLabel.Duty)+ Number(priceLabel.CustomsProc)+Number(priceLabel.EnvLevy)) * Number(priceLabel.VatMultiplier)
+      priceLabel.ServiceVat = (Number(priceLabel.Freight) + Number(priceLabel.NoDocs) + Number(priceLabel.Insurance) + Number(priceLabel.Storage) + Number(priceLabel.Brokerage) +Number(priceLabel.Express) + Number(priceLabel.Delivery) ) * Number(priceLabel.VatMultiplier)
      
       priceLabel.SumOfAllCharges = Number(priceLabel.CustomsVAT) + Number(priceLabel.ServiceVat) + Number(priceLabel.Freight) + Number(priceLabel.Duty)+ Number(priceLabel.CustomsProc)+Number(priceLabel.EnvLevy) +Number(priceLabel.NoDocs) +
        Number(priceLabel.Insurance) + Number(priceLabel.Storage) + Number(priceLabel.Brokerage) +Number(priceLabel.Express) + Number(priceLabel.Delivery) + Number(priceLabel.Hazmat) + Number(priceLabel.Pickup)  + Number(priceLabel.Sed)
@@ -278,8 +278,8 @@ class AwbPriceLabelService {
       if(priceLabel.OverrideInvoiceValue >= 100)
         priceLabel.Insurance = priceLabel.OverrideInvoiceValue * 0.015
 
-      priceLabel.CustomsVAT = (Number(priceLabel.OverrideInvoiceValue) + Number(priceLabel.Freight) + Number(priceLabel.Duty)+ Number(priceLabel.CustomsProc)+Number(priceLabel.EnvLevy)) * Number(priceLabel.VatMultiplier)
-      priceLabel.ServiceVat = (Number(priceLabel.NoDocs) + Number(priceLabel.Insurance) + Number(priceLabel.Storage) + Number(priceLabel.Brokerage) +Number(priceLabel.Express) + Number(priceLabel.Delivery) ) * Number(priceLabel.VatMultiplier)
+      priceLabel.CustomsVAT = (Number(priceLabel.OverrideInvoiceValue) + Number(priceLabel.Duty)+ Number(priceLabel.CustomsProc)+Number(priceLabel.EnvLevy)) * Number(priceLabel.VatMultiplier)
+      priceLabel.ServiceVat = (Number(priceLabel.Freight) + Number(priceLabel.NoDocs) + Number(priceLabel.Insurance) + Number(priceLabel.Storage) + Number(priceLabel.Brokerage) +Number(priceLabel.Express) + Number(priceLabel.Delivery) ) * Number(priceLabel.VatMultiplier)
      
       priceLabel.SumOfAllCharges = Number(priceLabel.CustomsVAT) + Number(priceLabel.ServiceVat) + Number(priceLabel.Freight) + Number(priceLabel.Duty)+ Number(priceLabel.CustomsProc)+Number(priceLabel.EnvLevy) +Number(priceLabel.NoDocs) +
        Number(priceLabel.Insurance) + Number(priceLabel.Storage) + Number(priceLabel.Brokerage) +Number(priceLabel.Express) + Number(priceLabel.Delivery) + Number(priceLabel.Hazmat) + Number(priceLabel.Pickup)  + Number(priceLabel.Sed)
