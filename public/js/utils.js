@@ -83,7 +83,8 @@ $(function(){$('.download-spinner').click(function() { ShowDownloadMessage(); })
 
 function ShowDownloadMessage()
 {  
-     document.getElementById('myLoader').style.display='';
+     //document.getElementById('myLoader').style.display='';
+     swal("", "Please wait while we generate your file. This may take a few minutes.");
      window.addEventListener('focus', HideDownloadMessage, false);
 }
 
