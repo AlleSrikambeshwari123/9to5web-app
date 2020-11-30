@@ -39,7 +39,6 @@ customerSchemaChild.pre("save", function(next) {
   if (!this.isModified("password")) {
     return next();
   }
-  console.log("nect",this.password)
   this.password = bcrypt.hashSync(this.password, 10);
   next();
 });

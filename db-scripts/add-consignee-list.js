@@ -128,14 +128,21 @@ createConnection()
         })
     })
     .then(async (subCustomers) => {
-        for (let cust of subCustomers) {
-            const customerResult = new CustomerChild(cust);
-            await customerResult.save((err) => {
-                if (err) {
-                    console.log("Customer name : " + cust.firstName + " " + cust.lastName + " not created. Create-customer error:",err)
-                }
-            })
-        }
+        let count = 0
+        return new Promise(async(resolve,reject) =>{
+            for (let cust of subCustomers) {
+                const customerResult = new CustomerChild(cust);
+                await customerResult.save((err) => {
+                    if (err) {
+                        console.log("Customer name : " + cust.firstName + " " + cust.lastName + " not created. Create-customer error:",err)
+                    }
+                    if(count == subCustomers.length-1){
+                        return resolve()
+                    }
+                    count++
+                })
+            }
+        })
     })
   .then(() => {
     console.log('Consignees and sub consignees added successfully!!');
