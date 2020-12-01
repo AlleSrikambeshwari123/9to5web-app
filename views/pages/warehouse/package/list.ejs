@@ -21,6 +21,7 @@
                                     <th>Description</th>
                                     <th>PMB#</th>
                                     <th>Type</th>
+                                    <th>Cube Name</th>
                                     <th>Aging</th>
                                     <th>Aging $</th>
                                     <th>Weight</th>
@@ -64,6 +65,9 @@
                                                     
                                                     <td>
                                                         <%= pkg.packageType %>
+                                                    </td>
+                                                    <td>
+                                                        <%= pkg.cubeName ? pkg.cubeName : '' %>
                                                     </td>
                                                     <td>
                                                         <%= pkg.aging ? pkg.aging:'' %>
