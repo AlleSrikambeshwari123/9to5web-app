@@ -17,13 +17,20 @@ router.post('/authenticate', (req, res, next) => {
     res.send(result);
   })
 })
-router.post('/rm-package-from-flight', passport.authenticate('jwt', { session: false }),(req, res, next) => {
-  var body = req.body;
-  var action = {
-    mid: body.mid,
-    barcode: body.barCode
-  }
-  services.packageService.removeFromFlight(action).then(result => {
+router.post('/rm-package-from-flight', passport.authenticate('jwt', { session: false }), (req, res, next) => {
+  // var body = req.body;
+  // var action = {
+  //   mid: body.mid,
+  //   barcode: body.barCode
+  // }
+  let packageIds = req.body.packageIds;
+  let manifestId = req.body.manifestId;
+  let compartmentId = req.body.compartmentId;
+  var userId =  req.body.userId;
+  const {valid,errors} = checkEmpty({packageIds:packageIds,manifestId :manifestId,userId:userId,compartmentId:compartmentId})
+  if(!valid) return res.send({success:false,message:errors})
+
+  services.packageService.removeFromFlight(req.body).then(result => {
     res.send(result);
   })
 })

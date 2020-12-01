@@ -25,7 +25,8 @@ const PKG_STATUS = {
     6: 'Delivered',
     7: 'No Invoice Present',
     8: 'Assigned to cube',
-    9: 'Delivered to Store'
+    9: 'Delivered to Store',
+    10: 'Removed from Flight FLL'
 };
 
 const Package = require('../models/package');
@@ -153,16 +154,16 @@ class PackageService {
             const cv = await Manifest.findById(manifestId).populate([{ path: 'packages', select: 'weight' }, { path: 'planeId', select: 'maximumCapacity' }]).
             select('packages planeId')
             let compartmentPackages = await this.getPackagesByObject({manifestId : manifestId,compartmentId : compartmentId})
-            let flag = false;   
-            for(let pkg of packages){
+            
+            let repeatedPackages = []
+            let allPackages = [...packages]
+            for(let i=0;i<allPackages.length;i++){
                 for(let comp of compartmentPackages){
-                    if(String(comp._id) == String(pkg)){
-                        flag = true
+                    if(String(comp._id) == String(allPackages[i])){
+                        packages.splice(i,1)
+                        repeatedPackages.push(allPackages[i])
                     }
                 }
-            }
-            if(flag){
-                return { success: false, message: 'This package is already there in this compartment.' };
             }
            
             compartmentPackages.map(w => totalPkgWeight += w.weight)
@@ -189,7 +190,36 @@ class PackageService {
                 }
             }))
             if (error.length > 0) return { success: false, message: error }
-            return { success: true, message: strings.string_response_loaded, status: PKG_STATUS[2] }
+            
+            if(repeatedPackages.length > 0)
+                return { success: true, message: 'These packages are already there in this compartment.Do you want to delete them?', status: PKG_STATUS[2] , repeatedPackages : repeatedPackages}
+            else
+                return { success: true, message: strings.string_response_loaded, status: PKG_STATUS[2] }
+        } catch (error) {
+            return { success: false, message: strings.string_response_error }
+        }
+    }
+
+    async removeFromFlight(object){
+        try{
+            let error = []
+            let packages = object.packageIds && object.packageIds.length && object.packageIds.split(',').filter(Boolean);
+            await Promise.all(packages.map(async packageId => {
+                await Manifest.updateOne({ _id: object.manifestId }, { $pull: { packages: packageId } })
+                await Compartment.updateOne({ _id: object.compartmentId }, { $pull: { packages: packageId } })
+                // check packageId Exists
+                if (await Package.findById(packageId)) {
+                    await Package.updateOne({_id : packageId}, {$unset :{ manifestId: 1,compartmentId : 1}});
+                    const status = await this.updatePackageStatus(packageId, 10, object.userId);
+                    if (!status.success) error.push(status.message)
+
+                } else {
+                    error.push(`Package ${packageId} doesn't Exist`)
+                }
+            }))
+            if (error.length > 0) return { success: false, message: error }
+
+            return { success: true, message: strings.string_response_loaded, status: PKG_STATUS[10] }
         } catch (error) {
             return { success: false, message: strings.string_response_error }
         }
