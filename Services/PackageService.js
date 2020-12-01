@@ -37,6 +37,7 @@ const PackageStatus = require('../models/packageStatus');
 const Customer = require('../models/customer');
 const Awb = require('../models/awb');
 const Zone = require('../models/zone')
+const Cube = require('../models/cube')
 const ProcessPackage = require('../models/processPkg')
 const DeliveryService = require('./DeliveryService');
 const deliveryService = new DeliveryService();
@@ -877,6 +878,11 @@ class PackageService {
                         pkg.OrignalBarcodeDate = barcode.createdAt;
                     }
                 }
+                pkg.cubeName = ''
+                let cubePackage = await Cube.findOne({cubepackageId : pkg._id})
+                if(cubePackage){
+                    pkg.cubeName = cubePackage.name
+                }
                 if (pkg.awbId) {
                     let awb = await this.services.awbService.getAwb(pkg.awbId)
                     if (awb !== null && awb.createdAt) {
@@ -1601,13 +1607,19 @@ class PackageService {
                         }
                         return this.getPackageLastStatus_updated(pkg._id);
                     }),
-                ).then((stats) => {
+                ).then(async (stats) => {
                     let pkgs = [];
-                    stats.forEach((status, i) => {
-                        packages[i].lastStatusText = status.status;
-                        if (status.status == PKG_STATUS[1] || status.status == PKG_STATUS[2])
+                    // stats.forEach(async(status, i) => {
+                    for(let i=0;i<stats.length;i++){
+                        packages[i].cubeName = ''
+                        let cubePackage = await Cube.findOne({cubepackageId : packages[i]._id})
+                        if(cubePackage){
+                            packages[i].cubeName = cubePackage.name
+                        }
+                        packages[i].lastStatusText = stats[i].status;
+                        if (stats[i].status == PKG_STATUS[1] || stats[i].status == PKG_STATUS[2])
                             pkgs.push(packages[i]);
-                    });
+                    };
                     resolve(pkgs);
                 });
             });
@@ -1792,13 +1804,26 @@ class PackageService {
                     packages.map((pkg) => {
                         return this.getPackageLastStatus_updated(pkg._id);
                     }),
-                ).then((stats) => {                    
+                ).then(async(stats) => {                    
                     let pkgs = [];
-                    stats.forEach((status, i) => {
-                        packages[i].lastStatusText = status.status;
-                        if (status.status == PKG_STATUS[4] || status.status == 'Recieved in NAS')
+                    // stats.forEach((status, i) => {
+                        // packages[i].lastStatusText = status.status;
+                        // if (status.status == PKG_STATUS[4] || status.status == 'Recieved in NAS')
+                        //     pkgs.push(packages[i]);
+                    // });
+
+                    for(let i=0;i<stats.length;i++){
+                        packages[i].cubeName = ''
+                        let cubePackage = await Cube.findOne({cubepackageId : packages[i]._id})
+                        if(cubePackage){
+                            packages[i].cubeName = cubePackage.name
+                        }
+                        packages[i].lastStatusText = stats[i].status;
+                        if (stats[i].status == PKG_STATUS[4] || stats[i].status == 'Recieved in NAS')
                             pkgs.push(packages[i]);
-                    });
+
+                    };
+
                     resolve(pkgs);
                 });
             });
