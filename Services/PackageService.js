@@ -192,7 +192,7 @@ class PackageService {
             if (error.length > 0) return { success: false, message: error }
             
             if(repeatedPackages.length > 0)
-                return { success: true, message: 'These packages are already there in this compartment.Do you want to delete them?', status: PKG_STATUS[2] , repeatedPackages : repeatedPackages}
+                return { success: true, message: 'These packages are already there in this compartment.Do you want to delete them?', status: PKG_STATUS[2] , repeatedPackages : repeatedPackages.join(',')}
             else
                 return { success: true, message: strings.string_response_loaded, status: PKG_STATUS[2] }
         } catch (error) {
