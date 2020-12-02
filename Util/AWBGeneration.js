@@ -214,31 +214,33 @@ class AWBGeneration {
             var pdfdata = [];
             for(let i=0; i< pdfArray.length; i++){
                 var pdf = pdfArray[i];
-                var filepath  = pdf.path;
-                var fileName = filepath.substring(filepath.lastIndexOf('/')+1);
-                var filearr = fileName.split('.');
-                var fileName = filearr[0];
-                var ext = filepath.split('.').pop();
-                if(ext == 'jpeg' || ext == 'png' || ext == 'jpg' || ext == 'gif'){
-                    if (fs.existsSync(filepath)){
-                        await imagesToPdf([filepath], path.resolve(process.cwd(), `airCaroDownload/${fileName}_${datetime}_invoice.pdf`));
-                        if (fs.existsSync(`airCaroDownload/${fileName}_${datetime}_invoice.pdf`)) {
-                            pdfdata.push(path.resolve(process.cwd(), `airCaroDownload/${fileName}_${datetime}_invoice.pdf`))
-                        }
-                    }
-                }else{
-                    if(ext == 'pdf'){
-                        pdfdata.push(filepath) 
-                    }else{
+                if(!pdfArray[i].type){
+                    var filepath  = pdf.path;
+                    var fileName = filepath.substring(filepath.lastIndexOf('/')+1);
+                    var filearr = fileName.split('.');
+                    var fileName = filearr[0];
+                    var ext = filepath.split('.').pop();
+                    if(ext == 'jpeg' || ext == 'png' || ext == 'jpg' || ext == 'gif'){
                         if (fs.existsSync(filepath)){
-                            var abPath = path.resolve(process.cwd(), `airCaroDownload/${fileName}_${datetime}_invoice.pdf`)
-                            let pPath =  await this.convertexceptImagetopdf(filepath, abPath);
-                            pdfdata.push(pPath);
+                            await imagesToPdf([filepath], path.resolve(process.cwd(), `airCaroDownload/${fileName}_${datetime}_invoice.pdf`));
+                            if (fs.existsSync(`airCaroDownload/${fileName}_${datetime}_invoice.pdf`)) {
+                                pdfdata.push(path.resolve(process.cwd(), `airCaroDownload/${fileName}_${datetime}_invoice.pdf`))
+                            }
                         }
-                        // await toPdf([filepath], path.resolve(process.cwd(), `airCaroDownload/${fileName}_${datetime}_invoice.pdf`));
-                        // if (fs.existsSync(`airCaroDownload/${fileName}_${datetime}_invoice.pdf`)) {
-                        // pdfdata.push(path.resolve(process.cwd(), `airCaroDownload/${fileName}_${datetime}_invoice.pdf`))
-                        // }
+                    }else{
+                        if(ext == 'pdf'){
+                            pdfdata.push(filepath) 
+                        }else{
+                            if (fs.existsSync(filepath)){
+                                var abPath = path.resolve(process.cwd(), `airCaroDownload/${fileName}_${datetime}_invoice.pdf`)
+                                let pPath =  await this.convertexceptImagetopdf(filepath, abPath);
+                                pdfdata.push(pPath);
+                            }
+                            // await toPdf([filepath], path.resolve(process.cwd(), `airCaroDownload/${fileName}_${datetime}_invoice.pdf`));
+                            // if (fs.existsSync(`airCaroDownload/${fileName}_${datetime}_invoice.pdf`)) {
+                            // pdfdata.push(path.resolve(process.cwd(), `airCaroDownload/${fileName}_${datetime}_invoice.pdf`))
+                            // }
+                        }
                     }
                 }
             }
@@ -284,7 +286,7 @@ class AWBGeneration {
         return new Promise(async (resolve,reject)=>{
             let invoiceResult = await this.invoicePipe(invoice)
             if(invoiceResult == 'Success')
-                resolve({ success: true, path: global.uploadRoot +'/'+ invoice.filename, name: invoice.filename })
+                resolve({ success: true, path: global.uploadRoot +'/'+ invoice.filename, name: invoice.filename, type: 'INVOICE' })
             else
                 resolve({ success: false, message: 'File not found' })
         })

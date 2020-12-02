@@ -254,8 +254,8 @@ exports.downloadAirCargoManifest = async (req, res, next) => {
 
 		let awbsArray = await Promise.all(awbIds.map((id) => services.printService.getAWBDataForAllRelatedEntities(id)));
 
-		// let invoicesArray = await services.invoiceService.getInvoiceFilesByAWBs(awbIds);
-		let invoicesArray = []
+		let invoicesArray = await services.invoiceService.getInvoiceFilesByAWBs(awbIds);
+		//let invoicesArray = []
 		let airCargoManifest = new AirCargoManifest({
 			_id: req.params.id,
 			owner: 'Nine To Five Import Export LLC',
@@ -265,8 +265,8 @@ exports.downloadAirCargoManifest = async (req, res, next) => {
 			portOfLading: String(airportFrom && airportFrom.name),
 			portOfOnlading: String(airportTo && airportTo.name),
 			rows: Object.values(packagesByAWB),
-			awbsArray: awbsArray
-			//invoicesArray: invoicesArray
+			awbsArray: awbsArray,
+			invoicesArray: invoicesArray
 		});
 		let datetime = (new Date()).getTime();
 		
