@@ -711,11 +711,11 @@ class AirCargoManifest {
         await Promise.all(
             this.data.awbsArray.map(async(awb, ind) => {
                 let invoiceFilePath = [];
-                // this.data.invoicesArray.map((singleInvoice) => {
-                //     if((singleInvoice.awbId).toString() == (awb._id).toString() && singleInvoice.isFile) {
-                //         invoiceFilePath.push(singleInvoice.filePath);
-                //     }
-                // })
+                this.data.invoicesArray.map((singleInvoice) => {
+                    if((singleInvoice.awbId).toString() == (awb._id).toString() && singleInvoice.isFile) {
+                        invoiceFilePath.push(singleInvoice.filePath);
+                    }
+                })
 
                 
                 if(invoiceFilePath.length === 0) {
@@ -761,7 +761,14 @@ class AirCargoManifest {
                 mainArray.push(mainFilePath) 
             }
             for(var i=0;i<dynamicAWBFilesPath.length;i++){
-                mainArray.push(dynamicAWBFilesPath[i].awbFilePath)
+                if(dynamicAWBFilesPath[i].awbFilePath){
+                    mainArray.push(dynamicAWBFilesPath[i].awbFilePath)
+                }
+            }
+            for(var i=0;i<dynamicAWBFilesPath.length;i++){
+                if(dynamicAWBFilesPath[i].invoiceFilePath){
+                    mainArray.push(dynamicAWBFilesPath[i].invoiceFilePath)
+                }
             }
             var idm = this.data._id;
             merge(mainArray, path.resolve(process.cwd(), `airCaroDownload/${this.data._id}-ACM.pdf`), function (err) {
