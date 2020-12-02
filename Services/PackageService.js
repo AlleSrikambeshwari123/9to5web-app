@@ -150,20 +150,24 @@ class PackageService {
             let error = []
             let totalPkgWeight = 0
             let upcomingWeight = 0
-            let packages = packageIds && packageIds.length && packageIds.split(',').filter(Boolean);
+            let allPackages = packageIds && packageIds.length && packageIds.split(',').filter(Boolean);
             const cv = await Manifest.findById(manifestId).populate([{ path: 'packages', select: 'weight' }, { path: 'planeId', select: 'maximumCapacity' }]).
             select('packages planeId')
             let compartmentPackages = await this.getPackagesByObject({manifestId : manifestId,compartmentId : compartmentId})
             
-            let repeatedPackages = []
-            let allPackages = [...packages]
+            let repeatedPackages = [],packages = [];
+            let repeatedPackagesTrackingNo =[]
             for(let i=0;i<allPackages.length;i++){
+                let flag = false
                 for(let comp of compartmentPackages){
                     if(String(comp._id) == String(allPackages[i])){
-                        packages.splice(i,1)
+                        flag = true
+                        repeatedPackagesTrackingNo.push(comp.trackingNo)
                         repeatedPackages.push(allPackages[i])
                     }
                 }
+                if(!flag)
+                    packages.push(allPackages[i])
             }
            
             compartmentPackages.map(w => totalPkgWeight += w.weight)
@@ -192,7 +196,7 @@ class PackageService {
             if (error.length > 0) return { success: false, message: error }
             
             if(repeatedPackages.length > 0)
-                return { success: true, message: 'These packages are already there in this compartment.Do you want to delete them?', status: PKG_STATUS[2] , repeatedPackages : repeatedPackages.join(',')}
+                return { success: true, message: `These packages are already there in this compartment : ${repeatedPackagesTrackingNo.join(',')} .Do you want to delete them?`, status: PKG_STATUS[2] , repeatedPackages : repeatedPackages.join(','),newPackages : packages.join(',')}
             else
                 return { success: true, message: strings.string_response_loaded, status: PKG_STATUS[2] }
         } catch (error) {
