@@ -199,6 +199,7 @@ var endate = new Date();
       }
     })
   }
+  setTimeout(function(){
   $.ajax({
     url: '/api/warehouse/get_packages_data/all?daterange=<%=dateRangeDefault%>',
     dataType: "json",
@@ -210,6 +211,7 @@ var endate = new Date();
       deliveryData(data[3])
     }
   })
+},1000);
   //date range picker
   $(document).ready(function() {
     $('#daterange-awbStatus').on('apply.daterangepicker', function (ev, picker) {
