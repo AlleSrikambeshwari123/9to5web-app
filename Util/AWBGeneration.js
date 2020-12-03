@@ -286,7 +286,7 @@ class AWBGeneration {
         return new Promise(async (resolve,reject)=>{
             let invoiceResult = await this.invoicePipe(invoice)
             if(invoiceResult == 'Success')
-                resolve({ success: true, path: global.uploadRoot +'/'+ invoice.filename, name: invoice.filename, type: 'INVOICE' })
+                resolve({ success: true, path: global.uploadRoot +'/'+ invoice.filename, name: invoice.filename, type:'INVOICE' })
             else
                 resolve({ success: false, message: 'File not found' })
         })
