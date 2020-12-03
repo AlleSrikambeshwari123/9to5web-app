@@ -17,9 +17,9 @@
           <table id="cubeTable" class="display table dataTable table-striped table-hover">
             <thead>
               <tr>
-                <th>ID</th>
                 <th>Created At</th>
                 <th>Name</th>
+                <th>Cube Awb Id</th>
                 <th>AWB No</th>
                 <th>Detail</th>                
                 <th></th>
@@ -28,9 +28,9 @@
             <tbody>
               <% cubes.forEach(function(cube){ %>
               <tr data-record="<%= cube.id %>">
-                <td><%= cube.id %></td>
                 <td><%=helpers.formatDate(cube.createdAt)%></td> 
                 <td><strong><%=cube.name%></strong></td> 
+                <td> C<%=cube.cubeAwbId ? cube.cubeAwbId.cubeAwbNo : '' %></td>
                 <% let cube2link = cube.cubeAwbId ? cube.cubeAwbId.id : ''
                 if(cube2link == '') cube2link = '#' 
                 else cube2link = '/warehouse/cube/awbDetail/'+cube2link

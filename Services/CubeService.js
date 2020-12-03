@@ -262,14 +262,21 @@ class CubeService {
   }
 
   assignPackage(id, updatedCubeData){
-    return new Promise((resolve, reject) => {     
-      Cube.updateOne({_id: id}, updatedCubeData, (err, result) => {
-        if (err) {
-          resolve({ success: false, message: strings.string_response_error });
-        } else {
-          resolve({ success: true, message: strings.string_response_updated });
-        }
-      });
+    return new Promise(async (resolve, reject) => { 
+      await Cube.findOneAndUpdate({_id: id},{$push :{packages: updatedCubeData.packages}})
+      delete updatedCubeData.packages
+      if(updatedCubeData.cubepackageId){
+        Cube.updateOne({_id: id}, updatedCubeData, (err, result) => {
+          if (err) {
+            resolve({ success: false, message: strings.string_response_error });
+          } else {
+            resolve({ success: true, message: strings.string_response_updated });
+          }
+        });
+      }    
+      else{
+        resolve({ success: true, message: strings.string_response_updated });
+      }
     })
   }
 
