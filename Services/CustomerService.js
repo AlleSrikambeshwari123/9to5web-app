@@ -149,7 +149,7 @@ class CustomerService {
           var endate = new Date();      
           endate.setDate(endate.getDate()+1);
           var stdate = new Date();
-          stdate.setDate(stdate.getDate() -21);      
+          stdate.setDate(stdate.getDate() -7);      
           searchData.createdAt = {"$gte":stdate, "$lte": endate};
         }
         if(req.query.clear){
