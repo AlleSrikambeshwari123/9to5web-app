@@ -414,7 +414,7 @@ class PackageService {
               var endate = new Date();      
               endate.setDate(endate.getDate()+1);
               var stdate = new Date();
-              stdate.setDate(stdate.getDate() -21);      
+              stdate.setDate(stdate.getDate() -7);      
               searchData.createdAt = {"$gte":stdate, "$lte": endate};
             }
             let packages = await Package.find(searchData)
@@ -2735,7 +2735,7 @@ class PackageService {
                 var endate = new Date();      
                 endate.setDate(endate.getDate()+1);
                 var stdate = new Date();
-                stdate.setDate(stdate.getDate() -21);      
+                stdate.setDate(stdate.getDate() -7);      
                 searchData.createdAt = {"$gte":stdate, "$lte": endate};
             }
         return new Promise((resolve, reject) => {
@@ -2794,7 +2794,7 @@ class PackageService {
               var endate = new Date();      
               endate.setDate(endate.getDate()+1);
               var stdate = new Date();
-              stdate.setDate(stdate.getDate() -21);      
+              stdate.setDate(stdate.getDate() -7);      
               dbQuery.createdAt = {"$gte":stdate, "$lte": endate};
             }
 
