@@ -85,9 +85,7 @@ $(document).ready(function() {
       var dateRange = (stdate.getMonth() + 1)+ '/'+stdate.getDate()+'/'+stdate.getFullYear()+' - '+
       (endate.getMonth() + 1)+ '/'+endate.getDate()+'/'+endate.getFullYear()      
       $('.daterange').val(dateRange)
-    }
-
-   
+    }   
   },1000)
   $('.noDocsTable').DataTable( {
     "processing": true,
@@ -221,3 +219,7 @@ $(document).ready(function() {
 	},100)
 
 })
+function pagereload(str){
+  localStorage.clear()
+  window.location ="/warehouse/fll/awb/list?type="+str
+}
