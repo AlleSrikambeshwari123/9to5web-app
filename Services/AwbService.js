@@ -245,7 +245,7 @@ class AwbService {
 
                         if(awbPriceLabel.Express >0){
                           awbPriceLabel.Express = 35
-                          if(awbPriceLabel.TotalWeightValue >= 12 || awbPriceLabel.TotalVolumetricWeight >=12 ){
+                          if(awbPriceLabel.TotalWeightValue >= 2 || awbPriceLabel.TotalVolumetricWeight >= 2 ){
                             if(awbPriceLabel.TotalWeightValue > awbPriceLabel.TotalVolumetricWeight){
                               awbPriceLabel.Freight = awbPriceLabel.TotalWeightValue * 3
                             }
@@ -253,7 +253,7 @@ class AwbService {
                               awbPriceLabel.Freight = awbPriceLabel.TotalVolumetricWeight * 3
                             }
                           }else{
-                            awbPriceLabel.Freight =  35
+                            awbPriceLabel.Freight =  6
                           }
                         }else{
                           awbPriceLabel.Express = 0
@@ -1292,7 +1292,7 @@ class AwbService {
           
               if(result.Express >0){
                 result.Express = 35
-                if(result.TotalWeightValue >= 12 || result.TotalVolumetricWeight >=12 ){
+                if(result.TotalWeightValue >= 2 || result.TotalVolumetricWeight >= 2 ){
                   if(result.TotalWeightValue > result.TotalVolumetricWeight){
                     result.Freight = result.TotalWeightValue * 3
                   }
@@ -1300,7 +1300,7 @@ class AwbService {
                     result.Freight = result.TotalVolumetricWeight * 3
                   }
                 }else{
-                  result.Freight =  35
+                  result.Freight =  6
                 }
               }else{
                 result.Express = 0
