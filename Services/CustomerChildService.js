@@ -192,9 +192,9 @@ setServiceInstances(services) {
 
         if(!req.query.daterange && !req.query.clear){
           var endate = new Date();      
-          endate.setDate(endate.getDate()+1);
+          endate.setDate(endate.getDate());
           var stdate = new Date();
-          stdate.setDate(stdate.getDate() -strings.default_days_table?strings.default_days_table:3);      
+          stdate.setDate(stdate.getDate() - parseInt(strings.default_days_table));      
           searchData.createdAt = {"$gte":stdate, "$lte": endate};
         }
         if(req.query.clear){

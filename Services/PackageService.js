@@ -412,9 +412,9 @@ class PackageService {
                 searchData.createdAt = {"$gte":stdate, "$lte": endate};             
             }else if(query && query.daterange && !query.type ){
               var endate = new Date();      
-              endate.setDate(endate.getDate()+1);
+              endate.setDate(endate.getDate());
               var stdate = new Date();
-              stdate.setDate(stdate.getDate() - strings.default_days_table?strings.default_days_table:3);      
+              stdate.setDate(stdate.getDate() - parseInt(strings.default_days_table));      
               searchData.createdAt = {"$gte":stdate, "$lte": endate};
             }
             let packages = await Package.find(searchData)
@@ -611,9 +611,9 @@ class PackageService {
           
                 if(!req.query.daterange && !req.query.clear){
                   var endate = new Date();      
-                  endate.setDate(endate.getDate()+1);
+                  endate.setDate(endate.getDate());
                   var stdate = new Date();
-                  stdate.setDate(stdate.getDate() - strings.default_days_table?strings.default_days_table:3);      
+                  stdate.setDate(stdate.getDate() - parseInt(strings.default_days_table));      
                   searchData.createdAt = {"$gte":stdate, "$lte": endate};
                 }
                 if(req.query.clear){
@@ -697,9 +697,9 @@ class PackageService {
                   var searchDataType = {createdAt: {"$gte":stdate, "$lte": endate}}; 
             }
                 var endate = new Date();      
-                endate.setDate(endate.getDate()+1);
+                endate.setDate(endate.getDate());
                 var stdate = new Date();
-                stdate.setDate(stdate.getDate() - strings.default_days_table?strings.default_days_table:3);      
+                stdate.setDate(stdate.getDate() - parseInt(strings.default_days_table));      
                 searchData.createdAt = {"$gte":stdate, "$lte": endate};
             
             console.log("searchData>>>>>>>>>>>>>>>>",searchData)
@@ -1053,9 +1053,9 @@ class PackageService {
 
             if(!req.body.daterange && !req.body.clear){
                 var endate = new Date();      
-                endate.setDate(endate.getDate()+1);
+                endate.setDate(endate.getDate());
                 var stdate = new Date();
-                stdate.setDate(stdate.getDate() -strings.default_days_table?strings.default_days_table:3);      
+                stdate.setDate(stdate.getDate() - parseInt(strings.default_days_table));      
                 searchData.createdAt = {"$gte":stdate, "$lte": endate};
             
             }
@@ -1180,9 +1180,9 @@ class PackageService {
 
             if(!req.body.daterange && !req.body.clear){
             var endate = new Date();      
-            endate.setDate(endate.getDate()+1);
+            endate.setDate(endate.getDate());
             var stdate = new Date();
-            stdate.setDate(stdate.getDate() - strings.default_days_table?strings.default_days_table:3);      
+            stdate.setDate(stdate.getDate() - parseInt(strings.default_days_table));      
             //searchData.createdAt = {"$gte":stdate, "$lte": endate};
             searchData.barcodeDate =  {"$gte":stdate, "$lte": endate};
             }
@@ -1700,9 +1700,9 @@ class PackageService {
 
              if(!req.body.daterange && !req.body.clear){
             var endate = new Date();      
-            endate.setDate(endate.getDate()+1);
+            endate.setDate(endate.getDate());
             var stdate = new Date();
-            stdate.setDate(stdate.getDate() - strings.default_days_table?strings.default_days_table:3);      
+            stdate.setDate(stdate.getDate() - parseInt(strings.default_days_table));      
             //searchData.createdAt = {"$gte":stdate, "$lte": endate};
             searchData.createdAt =  {"$gte":stdate, "$lte": endate};
             }
@@ -1894,9 +1894,9 @@ class PackageService {
 
             if(!req.body.daterange && !req.body.clear){
             var endate = new Date();      
-            endate.setDate(endate.getDate()+1);
+            endate.setDate(endate.getDate());
             var stdate = new Date();
-            stdate.setDate(stdate.getDate() - strings.default_days_table?strings.default_days_table:3);      
+            stdate.setDate(stdate.getDate() - parseInt(strings.default_days_table));      
             //searchData.createdAt = {"$gte":stdate, "$lte": endate};
             searchData.createdAt =  {"$gte":stdate, "$lte": endate};
             }
@@ -2170,9 +2170,9 @@ class PackageService {
           
                 if(!req.query.daterange && !req.query.clear){
                   var endate = new Date();      
-                  endate.setDate(endate.getDate()+1);
+                  endate.setDate(endate.getDate());
                   var stdate = new Date();
-                  stdate.setDate(stdate.getDate() - strings.default_days_table?strings.default_days_table:3);      
+                  stdate.setDate(stdate.getDate() - parseInt(strings.default_days_table));      
                   searchData.createdAt = {"$gte":stdate, "$lte": endate};
                 }
                 if(req.query.clear){
@@ -2236,9 +2236,9 @@ class PackageService {
 
         if(!req.body.daterange && !req.body.clear){
         var endate = new Date();      
-        endate.setDate(endate.getDate()+1);
+        endate.setDate(endate.getDate());
         var stdate = new Date();
-        stdate.setDate(stdate.getDate() - strings.default_days_table?strings.default_days_table:3);      
+        stdate.setDate(stdate.getDate() - parseInt(strings.default_days_table));      
         searchData.createdAt = {"$gte":stdate, "$lte": endate};
         }
         if(req.body.location && req.body.location!="All"){
@@ -2618,9 +2618,9 @@ class PackageService {
           
                 if(!req.query.daterange && !req.query.clear){
                   var endate = new Date();      
-                  endate.setDate(endate.getDate()+1);
+                  endate.setDate(endate.getDate());
                   var stdate = new Date();
-                  stdate.setDate(stdate.getDate() - strings.default_days_table?strings.default_days_table:3);      
+                  stdate.setDate(stdate.getDate() - parseInt(strings.default_days_table));      
                   searchData.createdAt = {"$gte":stdate, "$lte": endate};
                 }
                 if(req.query.clear){
@@ -2733,9 +2733,9 @@ class PackageService {
                 searchData.createdAt = {"$gte":stdate, "$lte": endate};             
             }else if(query && query.daterange && !query.type ){
                 var endate = new Date();      
-                endate.setDate(endate.getDate()+1);
+                endate.setDate(endate.getDate());
                 var stdate = new Date();
-                stdate.setDate(stdate.getDate() - strings.default_days_table?strings.default_days_table:3);      
+                stdate.setDate(stdate.getDate() - parseInt(strings.default_days_table));      
                 searchData.createdAt = {"$gte":stdate, "$lte": endate};
             }
         return new Promise((resolve, reject) => {
@@ -2792,9 +2792,9 @@ class PackageService {
                 dbQuery.createdAt = {"$gte":stdate, "$lte": endate};             
             }else if(query && query.daterange && !query.type ){
               var endate = new Date();      
-              endate.setDate(endate.getDate()+1);
+              endate.setDate(endate.getDate());
               var stdate = new Date();
-              stdate.setDate(stdate.getDate() - strings.default_days_table?strings.default_days_table:3);      
+              stdate.setDate(stdate.getDate() - parseInt(strings.default_days_table));      
               dbQuery.createdAt = {"$gte":stdate, "$lte": endate};
             }
 
