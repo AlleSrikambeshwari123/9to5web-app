@@ -231,6 +231,18 @@ class AwbService {
                
           searchData.createdAt = {"$gte":stdate, "$lte": endate};
         }
+        if(req.query.type){
+          if(req.query.type == 'nodocs')
+            searchData.invoices = []
+          else if(req.query.type == 'pendingawb')
+            searchData.packages = []
+          else if(req.query.type == 'awbpackage')
+            searchData.fll_pickup = true
+          else
+            searchData.packages = {$gt : []}         
+        }else{
+          searchData.packages = {$gt : []}
+        }
       }
         return new Promise((resolve, reject) => {
             Awb.find(searchData)

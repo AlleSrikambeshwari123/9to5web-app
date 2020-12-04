@@ -397,7 +397,8 @@ exports.get_awb_list = (req, res, next) => {
       title: "AirWay Bills",
       user: res.user,
       awbs: awbs,
-      clear:req.query.clear
+      clear:req.query.clear,
+      type:req.query.type
     })
    })
 };

@@ -61,9 +61,9 @@ var awbTable = $('#awb-table').DataTable({
 var nodocsTable = $('#no-docs-table').DataTable({
   pageLength: 10,
 })
-// var pendingtable = $('#pending-awb-table').DataTable({
-//   pageLength: 10,
-// })
+var pendingtable = $('#pending-awb-table').DataTable({
+  pageLength: 10,
+})
 // var pickuptable = $('#pickup-awb-table').DataTable({
 //   pageLength: 10,
 // })
@@ -85,9 +85,7 @@ $(document).ready(function() {
       var dateRange = (stdate.getMonth() + 1)+ '/'+stdate.getDate()+'/'+stdate.getFullYear()+' - '+
       (endate.getMonth() + 1)+ '/'+endate.getDate()+'/'+endate.getFullYear()      
       $('.daterange').val(dateRange)
-    }
-
-   
+    }   
   },1000)
   $('.noDocsTable').DataTable( {
     "processing": true,
@@ -149,7 +147,7 @@ $(document).ready(function() {
     if(flagStatus == 0)
       window.location = "/warehouse/fll/awb/no-docs?daterange="+$('.daterange').val();
     else if(flagStatus == 1)
-      window.location = "/warehouse/fll/awb/list?daterange="+$('.daterange').val();
+      window.location = "/warehouse/fll/awb/list?daterange="+$('.daterange').val()+"&type="+type;
 
   });	    
   
@@ -157,7 +155,7 @@ $(document).ready(function() {
     if(flagStatus == 0)
       window.location = "/warehouse/fll/awb/no-docs?clear=1";
     else if(flagStatus == 1)
-      window.location = "/warehouse/fll/awb/list?clear=1";
+      window.location = "/warehouse/fll/awb/list?clear=1&type="+type;
   });
 });
 let pdfPath
@@ -221,3 +219,7 @@ $(document).ready(function() {
 	},100)
 
 })
+function pagereload(str){
+  localStorage.clear()
+  window.location ="/warehouse/fll/awb/list?type="+str
+}
