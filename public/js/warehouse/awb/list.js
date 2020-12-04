@@ -61,9 +61,9 @@ var awbTable = $('#awb-table').DataTable({
 var nodocsTable = $('#no-docs-table').DataTable({
   pageLength: 10,
 })
-// var pendingtable = $('#pending-awb-table').DataTable({
-//   pageLength: 10,
-// })
+var pendingtable = $('#pending-awb-table').DataTable({
+  pageLength: 10,
+})
 // var pickuptable = $('#pickup-awb-table').DataTable({
 //   pageLength: 10,
 // })
