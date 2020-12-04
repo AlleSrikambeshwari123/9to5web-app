@@ -6,6 +6,7 @@ var path = require('path');
 var fs = require('fs');
 const imagesToPdf = require("images-to-pdf")
 var toPdf = require("office-to-pdf")
+const strings = require('../Res/strings');
 
 // let client = require('./dataContext').redisClient;
 const Invoice = require('../models/invoice');
@@ -201,7 +202,7 @@ class InvoiceService {
         var endate = new Date();      
         endate.setDate(endate.getDate()+1);
         var stdate = new Date();
-        stdate.setDate(stdate.getDate() -7);      
+        stdate.setDate(stdate.getDate() -strings.default_days_table?strings.default_days_table:3);      
         searchData.createdAt = {"$gte":stdate, "$lte": endate};
       }
       if(req.query.clear){
@@ -243,7 +244,7 @@ class InvoiceService {
         var endate = new Date();      
         endate.setDate(endate.getDate()+1);
         var stdate = new Date();
-        stdate.setDate(stdate.getDate() -21);      
+        stdate.setDate(stdate.getDate() -strings.default_days_table?strings.default_days_table:3);      
         searchData.createdAt = {"$gte":stdate, "$lte": endate};
       }
       if(req.query.clear){
@@ -296,7 +297,7 @@ class InvoiceService {
       var endate = new Date();      
       endate.setDate(endate.getDate()+1);
       var stdate = new Date();
-      stdate.setDate(stdate.getDate() -21);      
+      stdate.setDate(stdate.getDate() -strings.default_days_table?strings.default_days_table:3);      
       searchData.createdAt = {"$gte":stdate, "$lte": endate};
     }
 
@@ -376,7 +377,7 @@ class InvoiceService {
         var endate = new Date();      
         endate.setDate(endate.getDate()+1);
         var stdate = new Date();
-        stdate.setDate(stdate.getDate() -7);      
+        stdate.setDate(stdate.getDate() -strings.default_days_table?parseInt(strings.default_days_table):3);      
         searchData.createdAt = {"$gte":stdate, "$lte": endate};
       }
       if(req.query.clear){
@@ -457,7 +458,7 @@ class InvoiceService {
       var endate = new Date();      
       endate.setDate(endate.getDate()+1);
       var stdate = new Date();
-      stdate.setDate(stdate.getDate() -21);      
+      stdate.setDate(stdate.getDate() -strings.default_days_table?strings.default_days_table:3);      
       searchData.createdAt = {"$gte":stdate, "$lte": endate};
     }
 

@@ -1,6 +1,7 @@
 // Keys
 exports.user_auth_key = "9-5 Import";
-
+//default days
+exports.default_days_table = 3;
 // Roles
 exports.role_admin = "Admin";
 exports.role_warehouse_fl = "Warehouse FLL";

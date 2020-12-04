@@ -194,7 +194,7 @@ setServiceInstances(services) {
           var endate = new Date();      
           endate.setDate(endate.getDate()+1);
           var stdate = new Date();
-          stdate.setDate(stdate.getDate() -7);      
+          stdate.setDate(stdate.getDate() -strings.default_days_table?strings.default_days_table:3);      
           searchData.createdAt = {"$gte":stdate, "$lte": endate};
         }
         if(req.query.clear){
