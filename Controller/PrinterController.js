@@ -254,8 +254,7 @@ exports.downloadAirCargoManifest = async (req, res, next) => {
 
 		let awbsArray = await Promise.all(awbIds.map((id) => services.printService.getAWBDataForAllRelatedEntities(id)));
 
-		 let invoicesArray = await services.invoiceService.getInvoiceFilesByAWBs(awbIds);
-		 console.log(invoicesArray)
+		let invoicesArray = await services.invoiceService.getInvoiceFilesByAWBs(awbIds);
 		//let invoicesArray = []
 		let airCargoManifest = new AirCargoManifest({
 			_id: req.params.id,

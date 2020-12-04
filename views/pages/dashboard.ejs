@@ -363,7 +363,7 @@ var endate = new Date();
       }
     })
   }
-  //setTimeout(function(){
+  setTimeout(function(){
     var daterangeval = $('#daterange-postbox').val();
     if($("#typeTable").val()){
       daterangeval = '<%=query.daterange? query.daterange : ""%>';
@@ -383,7 +383,7 @@ var endate = new Date();
         usersData(users);
       }
     })
- // },1000);
+  },1000);
 
   $(document).ready(function() {
     setTimeout(()=>{
