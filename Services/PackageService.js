@@ -408,13 +408,25 @@ class PackageService {
             
                 var endDate = (date_arr[1]).trim();
                 var endate = new Date(endDate);
-                endate.setDate(endate.getDate() +1);     
+                endate.setDate(endate.getDate() +1); 
+                
+                stdate = new Date(stdate.setUTCHours(0,0,0,0));
+                stdate = stdate.toISOString();
+                endate = new Date(endate.setUTCHours(23,59,59,0));
+                endate = endate.toISOString(); 
+                     
                 searchData.createdAt = {"$gte":stdate, "$lte": endate};             
             }else if(query && query.daterange && !query.type ){
               var endate = new Date();      
               endate.setDate(endate.getDate());
               var stdate = new Date();
-              stdate.setDate(stdate.getDate() - parseInt(strings.default_days_table));      
+              stdate.setDate(stdate.getDate() - parseInt(strings.default_days_table)); 
+              
+              stdate = new Date(stdate.setUTCHours(0,0,0,0));
+              stdate = stdate.toISOString();
+              endate = new Date(endate.setUTCHours(23,59,59,0));
+              endate = endate.toISOString(); 
+                    
               searchData.createdAt = {"$gte":stdate, "$lte": endate};
             }
             let packages = await Package.find(searchData)
@@ -605,7 +617,13 @@ class PackageService {
           
                   var endDate = (date_arr[1]).trim();
                   var endate = new Date(endDate);
-                  endate.setDate(endate.getDate() +1);     
+                  endate.setDate(endate.getDate() +1); 
+                  
+                stdate = new Date(stdate.setUTCHours(0,0,0,0));
+                stdate = stdate.toISOString();
+                endate = new Date(endate.setUTCHours(23,59,59,0));
+                endate = endate.toISOString(); 
+                     
                   searchData.createdAt = {"$gte":stdate, "$lte": endate};
                 }
           
@@ -613,14 +631,26 @@ class PackageService {
                   var endate = new Date();      
                   endate.setDate(endate.getDate());
                   var stdate = new Date();
-                  stdate.setDate(stdate.getDate() - parseInt(strings.default_days_table));      
+                  stdate.setDate(stdate.getDate() - parseInt(strings.default_days_table));
+                  
+                stdate = new Date(stdate.setUTCHours(0,0,0,0));
+                stdate = stdate.toISOString();
+                endate = new Date(endate.setUTCHours(23,59,59,0));
+                endate = endate.toISOString(); 
+                       
                   searchData.createdAt = {"$gte":stdate, "$lte": endate};
                 }
                 if(req.query.clear){
                   var endate = new Date();      
                   endate.setDate(endate.getDate()+1);
                   var stdate = new Date();
-                  stdate.setDate(stdate.getDate() -14);      
+                  stdate.setDate(stdate.getDate() -14); 
+                  
+                stdate = new Date(stdate.setUTCHours(0,0,0,0));
+                stdate = stdate.toISOString();
+                endate = new Date(endate.setUTCHours(23,59,59,0));
+                endate = endate.toISOString(); 
+                      
                   searchData.createdAt = {"$gte":stdate, "$lte": endate};
                 }
               }   
@@ -693,13 +723,25 @@ class PackageService {
           
                   var endDate = (date_arr[1]).trim();
                   var endate = new Date(endDate);
-                  endate.setDate(endate.getDate() +1);     
+                  endate.setDate(endate.getDate() +1);  
+                  
+                stdate = new Date(stdate.setUTCHours(0,0,0,0));
+                stdate = stdate.toISOString();
+                endate = new Date(endate.setUTCHours(23,59,59,0));
+                endate = endate.toISOString(); 
+                    
                   var searchDataType = {createdAt: {"$gte":stdate, "$lte": endate}}; 
             }
                 var endate = new Date();      
                 endate.setDate(endate.getDate());
                 var stdate = new Date();
-                stdate.setDate(stdate.getDate() - parseInt(strings.default_days_table));      
+                stdate.setDate(stdate.getDate() - parseInt(strings.default_days_table));
+                
+                stdate = new Date(stdate.setUTCHours(0,0,0,0));
+                stdate = stdate.toISOString();
+                endate = new Date(endate.setUTCHours(23,59,59,0));
+                endate = endate.toISOString(); 
+                       
                 searchData.createdAt = {"$gte":stdate, "$lte": endate};
             
             console.log("searchData>>>>>>>>>>>>>>>>",searchData)
@@ -1047,7 +1089,13 @@ class PackageService {
 
                 var endDate = (date_arr[1]).trim();
                 var endate = new Date(endDate);
-                endate.setDate(endate.getDate() +1);     
+                endate.setDate(endate.getDate() +1);   
+                
+                stdate = new Date(stdate.setUTCHours(0,0,0,0));
+                stdate = stdate.toISOString();
+                endate = new Date(endate.setUTCHours(23,59,59,0));
+                endate = endate.toISOString(); 
+                   
                 searchData.createdAt = {"$gte":stdate, "$lte": endate};
             }
 
@@ -1055,7 +1103,13 @@ class PackageService {
                 var endate = new Date();      
                 endate.setDate(endate.getDate());
                 var stdate = new Date();
-                stdate.setDate(stdate.getDate() - parseInt(strings.default_days_table));      
+                stdate.setDate(stdate.getDate() - parseInt(strings.default_days_table));   
+                
+                stdate = new Date(stdate.setUTCHours(0,0,0,0));
+                stdate = stdate.toISOString();
+                endate = new Date(endate.setUTCHours(23,59,59,0));
+                endate = endate.toISOString(); 
+                    
                 searchData.createdAt = {"$gte":stdate, "$lte": endate};
             
             }
@@ -1174,7 +1228,13 @@ class PackageService {
 
             var endDate = (date_arr[1]).trim();
             var endate = new Date(endDate);
-            endate.setDate(endate.getDate() +1);     
+            endate.setDate(endate.getDate() +1); 
+            
+            stdate = new Date(stdate.setUTCHours(0,0,0,0));
+            stdate = stdate.toISOString();
+            endate = new Date(endate.setUTCHours(23,59,59,0));
+            endate = endate.toISOString(); 
+                 
             searchData.barcodeDate = {"$gte":stdate, "$lte": endate}
             }
 
@@ -1184,6 +1244,12 @@ class PackageService {
             var stdate = new Date();
             stdate.setDate(stdate.getDate() - parseInt(strings.default_days_table));      
             //searchData.createdAt = {"$gte":stdate, "$lte": endate};
+
+            stdate = new Date(stdate.setUTCHours(0,0,0,0));
+            stdate = stdate.toISOString();
+            endate = new Date(endate.setUTCHours(23,59,59,0));
+            endate = endate.toISOString(); 
+             
             searchData.barcodeDate =  {"$gte":stdate, "$lte": endate};
             }
 
@@ -1694,7 +1760,13 @@ class PackageService {
 
              var endDate = (date_arr[1]).trim();
             var endate = new Date(endDate);
-            endate.setDate(endate.getDate() +1);     
+            endate.setDate(endate.getDate() +1);  
+            
+            stdate = new Date(stdate.setUTCHours(0,0,0,0));
+            stdate = stdate.toISOString();
+            endate = new Date(endate.setUTCHours(23,59,59,0));
+            endate = endate.toISOString(); 
+                
             searchData.createdAt = {"$gte":stdate, "$lte": endate}
             }
 
@@ -1704,6 +1776,12 @@ class PackageService {
             var stdate = new Date();
             stdate.setDate(stdate.getDate() - parseInt(strings.default_days_table));      
             //searchData.createdAt = {"$gte":stdate, "$lte": endate};
+
+            stdate = new Date(stdate.setUTCHours(0,0,0,0));
+            stdate = stdate.toISOString();
+            endate = new Date(endate.setUTCHours(23,59,59,0));
+            endate = endate.toISOString(); 
+             
             searchData.createdAt =  {"$gte":stdate, "$lte": endate};
             }
 
@@ -1888,7 +1966,13 @@ class PackageService {
 
             var endDate = (date_arr[1]).trim();
             var endate = new Date(endDate);
-            endate.setDate(endate.getDate() +1);     
+            endate.setDate(endate.getDate() +1);    
+            
+            stdate = new Date(stdate.setUTCHours(0,0,0,0));
+            stdate = stdate.toISOString();
+            endate = new Date(endate.setUTCHours(23,59,59,0));
+            endate = endate.toISOString(); 
+              
             searchData.createdAt = {"$gte":stdate, "$lte": endate}
             }
 
@@ -1898,6 +1982,12 @@ class PackageService {
             var stdate = new Date();
             stdate.setDate(stdate.getDate() - parseInt(strings.default_days_table));      
             //searchData.createdAt = {"$gte":stdate, "$lte": endate};
+
+            stdate = new Date(stdate.setUTCHours(0,0,0,0));
+            stdate = stdate.toISOString();
+            endate = new Date(endate.setUTCHours(23,59,59,0));
+            endate = endate.toISOString(); 
+             
             searchData.createdAt =  {"$gte":stdate, "$lte": endate};
             }
 
@@ -2164,7 +2254,13 @@ class PackageService {
           
                   var endDate = (date_arr[1]).trim();
                   var endate = new Date(endDate);
-                  endate.setDate(endate.getDate() +1);     
+                  endate.setDate(endate.getDate() +1);  
+                  
+                stdate = new Date(stdate.setUTCHours(0,0,0,0));
+                stdate = stdate.toISOString();
+                endate = new Date(endate.setUTCHours(23,59,59,0));
+                endate = endate.toISOString(); 
+                    
                   searchData.createdAt = {"$gte":stdate, "$lte": endate};
                 }
           
@@ -2172,14 +2268,26 @@ class PackageService {
                   var endate = new Date();      
                   endate.setDate(endate.getDate());
                   var stdate = new Date();
-                  stdate.setDate(stdate.getDate() - parseInt(strings.default_days_table));      
+                  stdate.setDate(stdate.getDate() - parseInt(strings.default_days_table));
+                  
+                stdate = new Date(stdate.setUTCHours(0,0,0,0));
+                stdate = stdate.toISOString();
+                endate = new Date(endate.setUTCHours(23,59,59,0));
+                endate = endate.toISOString(); 
+                       
                   searchData.createdAt = {"$gte":stdate, "$lte": endate};
                 }
                 if(req.query.clear){
                   var endate = new Date();      
                   endate.setDate(endate.getDate()+1);
                   var stdate = new Date();
-                  stdate.setDate(stdate.getDate() -14);      
+                  stdate.setDate(stdate.getDate() -14);  
+                  
+                stdate = new Date(stdate.setUTCHours(0,0,0,0));
+                stdate = stdate.toISOString();
+                endate = new Date(endate.setUTCHours(23,59,59,0));
+                endate = endate.toISOString(); 
+                     
                   searchData.createdAt = {"$gte":stdate, "$lte": endate};
                 }
               }  
@@ -2230,7 +2338,13 @@ class PackageService {
 
         var endDate = (date_arr[1]).trim();
         var endate = new Date(endDate);
-        endate.setDate(endate.getDate() +1);     
+        endate.setDate(endate.getDate() +1);  
+        
+        stdate = new Date(stdate.setUTCHours(0,0,0,0));
+        stdate = stdate.toISOString();
+        endate = new Date(endate.setUTCHours(23,59,59,0));
+        endate = endate.toISOString(); 
+            
         searchData.createdAt = {"$gte":stdate, "$lte": endate};
         }
 
@@ -2238,7 +2352,13 @@ class PackageService {
         var endate = new Date();      
         endate.setDate(endate.getDate());
         var stdate = new Date();
-        stdate.setDate(stdate.getDate() - parseInt(strings.default_days_table));      
+        stdate.setDate(stdate.getDate() - parseInt(strings.default_days_table)); 
+        
+        stdate = new Date(stdate.setUTCHours(0,0,0,0));
+        stdate = stdate.toISOString();
+        endate = new Date(endate.setUTCHours(23,59,59,0));
+        endate = endate.toISOString(); 
+              
         searchData.createdAt = {"$gte":stdate, "$lte": endate};
         }
         if(req.body.location && req.body.location!="All"){
@@ -2612,7 +2732,13 @@ class PackageService {
           
                   var endDate = (date_arr[1]).trim();
                   var endate = new Date(endDate);
-                  endate.setDate(endate.getDate() +1);     
+                  endate.setDate(endate.getDate() +1);  
+                  
+                stdate = new Date(stdate.setUTCHours(0,0,0,0));
+                stdate = stdate.toISOString();
+                endate = new Date(endate.setUTCHours(23,59,59,0));
+                endate = endate.toISOString(); 
+                    
                   searchData.createdAt = {"$gte":stdate, "$lte": endate};
                 }
           
@@ -2620,14 +2746,26 @@ class PackageService {
                   var endate = new Date();      
                   endate.setDate(endate.getDate());
                   var stdate = new Date();
-                  stdate.setDate(stdate.getDate() - parseInt(strings.default_days_table));      
+                  stdate.setDate(stdate.getDate() - parseInt(strings.default_days_table));  
+                  
+                stdate = new Date(stdate.setUTCHours(0,0,0,0));
+                stdate = stdate.toISOString();
+                endate = new Date(endate.setUTCHours(23,59,59,0));
+                endate = endate.toISOString(); 
+                     
                   searchData.createdAt = {"$gte":stdate, "$lte": endate};
                 }
                 if(req.query.clear){
                   var endate = new Date();      
                   endate.setDate(endate.getDate()+1);
                   var stdate = new Date();
-                  stdate.setDate(stdate.getDate() -14);      
+                  stdate.setDate(stdate.getDate() -14); 
+                  
+                stdate = new Date(stdate.setUTCHours(0,0,0,0));
+                stdate = stdate.toISOString();
+                endate = new Date(endate.setUTCHours(23,59,59,0));
+                endate = endate.toISOString(); 
+                      
                   searchData.createdAt = {"$gte":stdate, "$lte": endate};
                 }
               } 
@@ -2729,13 +2867,25 @@ class PackageService {
             
                 var endDate = (date_arr[1]).trim();
                 var endate = new Date(endDate);
-                endate.setDate(endate.getDate() +1);     
+                endate.setDate(endate.getDate() +1);  
+                
+                stdate = new Date(stdate.setUTCHours(0,0,0,0));
+                stdate = stdate.toISOString();
+                endate = new Date(endate.setUTCHours(23,59,59,0));
+                endate = endate.toISOString(); 
+                    
                 searchData.createdAt = {"$gte":stdate, "$lte": endate};             
             }else if(query && query.daterange && !query.type ){
                 var endate = new Date();      
                 endate.setDate(endate.getDate());
                 var stdate = new Date();
-                stdate.setDate(stdate.getDate() - parseInt(strings.default_days_table));      
+                stdate.setDate(stdate.getDate() - parseInt(strings.default_days_table)); 
+                
+                stdate = new Date(stdate.setUTCHours(0,0,0,0));
+                stdate = stdate.toISOString();
+                endate = new Date(endate.setUTCHours(23,59,59,0));
+                endate = endate.toISOString(); 
+                      
                 searchData.createdAt = {"$gte":stdate, "$lte": endate};
             }
         return new Promise((resolve, reject) => {
@@ -2788,13 +2938,25 @@ class PackageService {
             
                 var endDate = (date_arr[1]).trim();
                 var endate = new Date(endDate);
-                endate.setDate(endate.getDate() +1);     
+                endate.setDate(endate.getDate() +1);  
+                
+                stdate = new Date(stdate.setUTCHours(0,0,0,0));
+                stdate = stdate.toISOString();
+                endate = new Date(endate.setUTCHours(23,59,59,0));
+                endate = endate.toISOString(); 
+                    
                 dbQuery.createdAt = {"$gte":stdate, "$lte": endate};             
             }else if(query && query.daterange && !query.type ){
               var endate = new Date();      
               endate.setDate(endate.getDate());
               var stdate = new Date();
-              stdate.setDate(stdate.getDate() - parseInt(strings.default_days_table));      
+              stdate.setDate(stdate.getDate() - parseInt(strings.default_days_table));  
+              
+              stdate = new Date(stdate.setUTCHours(0,0,0,0));
+              stdate = stdate.toISOString();
+              endate = new Date(endate.setUTCHours(23,59,59,0));
+              endate = endate.toISOString(); 
+                   
               dbQuery.createdAt = {"$gte":stdate, "$lte": endate};
             }
 
