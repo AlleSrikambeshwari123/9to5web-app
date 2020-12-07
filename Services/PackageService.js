@@ -3400,6 +3400,69 @@ class PackageService {
        }) 
 
     }
+    get_overview_fll(req){        
+        return new Promise((resolve, reject) => {
+            var searchData = {};
+            if(req && req.query){
+                var daterange = req.query.daterange?req.query.daterange:'';
+                if(daterange){
+                  var date_arr = daterange.split('-');
+                  var startDate = (date_arr[0]).trim();      
+                  var stdate = new Date(startDate);
+                  stdate.setDate(stdate.getDate() );
+          
+                  var endDate = (date_arr[1]).trim();
+                  var endate = new Date(endDate);
+                  endate.setDate(endate.getDate() +1); 
+                  
+                stdate = new Date(stdate.setUTCHours(0,0,0,0));
+                stdate = stdate.toISOString();
+                endate = new Date(endate.setUTCHours(23,59,59,0));
+                endate = endate.toISOString(); 
+                     
+                  searchData.createdAt = {"$gte":stdate, "$lte": endate};
+                }
+          
+                if(!req.query.daterange && !req.query.clear){
+                  var endate = new Date();      
+                  endate.setDate(endate.getDate());
+                  var stdate = new Date();
+                  stdate.setDate(stdate.getDate() - parseInt(strings.default_days_table));
+                  
+                stdate = new Date(stdate.setUTCHours(0,0,0,0));
+                stdate = stdate.toISOString();
+                endate = new Date(endate.setUTCHours(23,59,59,0));
+                endate = endate.toISOString(); 
+                       
+                  searchData.createdAt = {"$gte":stdate, "$lte": endate};
+                }
+                if(req.query.clear){
+                  var endate = new Date();      
+                  endate.setDate(endate.getDate()+1);
+                  var stdate = new Date();
+                  stdate.setDate(stdate.getDate() -14); 
+                  
+                stdate = new Date(stdate.setUTCHours(0,0,0,0));
+                stdate = stdate.toISOString();
+                endate = new Date(endate.setUTCHours(23,59,59,0));
+                endate = endate.toISOString(); 
+                      
+                  searchData.createdAt = {"$gte":stdate, "$lte": endate};
+                }
+              }   
+            Package.find(searchData)
+                .populate('awbId')
+                .populate('originBarcode')
+                .populate('customerId')
+                .exec((err, result) => {
+                    if (err) {
+                        resolve([]);
+                    } else {
+                        resolve(result);
+                    }
+                });
+        });
+    }
    /* End Sending EMail for Nodocs and Delivered */
 }
 

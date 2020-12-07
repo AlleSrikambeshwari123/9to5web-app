@@ -1,0 +1,61 @@
+<% layout('./shared/__template')%>
+    <div class='gutters'>
+        <div class="col-xl-12 col-lg-6 col-md-12 col-sm-12">
+            <div class="card">
+                <div class="card-header d-flex align-items-left align-items-md-center flex-column flex-md-row">
+                    <div class="card-title">
+                        <%= title %>
+                    </div>
+                    <!-- <a href='create' class='btn btn-primary btn-round float-right ml-md-auto'>Add User</a> -->
+                </div>
+                <div id="myLoader"><img src="/img/preloader.gif"></div>
+                <div class="card-body daterangepickerbody">
+                    <input type="hidden" name="clear" id="clear" value="<%=clear%>">
+                    <div class="table-responsive">
+                        <table id="overviewfll-table" class="display table table-striped table-hover  dataTable package-table">
+                            <thead>
+                                <tr>
+                                    <th>PMB#</th>
+                                    <th>Customer First Name</th>
+                                    <th>Customer Last Name</th>
+                                    <th> Original Tracking Number</th>
+                                    <th>AWB</th>
+                                    
+                                                   
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% packages.forEach(function(pkg){ %>
+                                    <tr data-record="<%= pkg.id %>">                                        
+                                        <td>
+                                            <%=(pkg.customerId && pkg.customerId.pmb) ? pkg.customerId.pmb : ''%>
+                                        </td> 
+                                        <td>
+                                            <%=(pkg.customerId && pkg.customerId.firstName) ? pkg.customerId.firstName : ''%>
+                                        </td>
+                                        <td>
+                                            <%=(pkg.customerId && pkg.customerId.lastName) ? pkg.customerId.lastName : ''%>
+                                        </td>
+                                        <td>
+                                            <%= (pkg.originBarcode && pkg.originBarcode.barcode) ? pkg.originBarcode.barcode : ''%>
+                                        </td>
+                                        <td>
+                                            <%= (pkg.awbId && pkg.awbId.awbId) ? pkg.awbId.awbId : '--' %>
+                                        </td>                                                    
+                                    </tr>
+                                <%})%>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <script> 
+        var pageUrl = "<%=page ? page :''%>";
+    </script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.2.0/sweetalert2.all.min.js"></script> -->
+    <% block('scripts').append('<script src="/js/utils.js"></script>')%>
+        <% block('scripts').append('<script src="/js/warehouse/overviewfll/list.js"></script>')%>
