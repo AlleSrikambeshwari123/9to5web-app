@@ -660,6 +660,7 @@ class PackageService {
                 .populate('customerId')
                 .populate('zoneId')
                 .populate('shipperId')
+                .populate('cubeId')
                 .exec((err, result) => {
                     if (err) {
                         resolve([]);

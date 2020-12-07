@@ -72,6 +72,7 @@
               <th>Customer Name</th>
               <th>AWB</th>
               <th>Shipper</th>
+              <th>Cube</th>
               <th>Original Tracking No</th>
               <th>Package No</th>
               <th>Description</th>
@@ -107,6 +108,7 @@
                   <% } %>
               <td><a class="text-decoration-none" href="/warehouse/nas/awb/manage/<%=pkg.awbId ? pkg.awbId._id: '#'%>/preview"><b><%= pkg.express ? '*': '' %></b><%= pkg.awbId.awbId %> </a></td>
               <td><%=(pkg.shipperId && pkg.shipperId.name)?pkg.shipperId.name:''%></td>
+              <td><%=(pkg.cubeId && pkg.cubeId.name)?pkg.cubeId.name:'--'%></td>
               <td><%= pkg.originBarcode ? pkg.originBarcode.barcode: ''%></td>
               <td><%= pkg.packageNumber ? pkg.packageNumber : ''%></td>
               <td><%= pkg.description %></td>
