@@ -71,6 +71,7 @@
               <th>OrignalScanDate</th>
               <th>Customer Name</th>
               <th>AWB</th>
+              <th>Shipper</th>
               <th>Original Tracking No</th>
               <th>Package No</th>
               <th>Description</th>
@@ -90,6 +91,7 @@
           </thead>  
           <tbody>
             <% packages.forEach(function(pkg){ %>
+              
             <tr data-record="<%= pkg._id %>">
               <td>
                 <input type="checkbox" name="package-select" class="package-select" />
@@ -104,6 +106,7 @@
                   <td> - </td>
                   <% } %>
               <td><a class="text-decoration-none" href="/warehouse/nas/awb/manage/<%=pkg.awbId ? pkg.awbId._id: '#'%>/preview"><b><%= pkg.express ? '*': '' %></b><%= pkg.awbId.awbId %> </a></td>
+              <td><%=(pkg.shipperId && pkg.shipperId.name)?pkg.shipperId.name:''%></td>
               <td><%= pkg.originBarcode ? pkg.originBarcode.barcode: ''%></td>
               <td><%= pkg.packageNumber ? pkg.packageNumber : ''%></td>
               <td><%= pkg.description %></td>

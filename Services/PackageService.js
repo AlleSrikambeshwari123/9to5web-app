@@ -659,6 +659,7 @@ class PackageService {
                 .populate('originBarcode')
                 .populate('customerId')
                 .populate('zoneId')
+                .populate('shipperId')
                 .exec((err, result) => {
                     if (err) {
                         resolve([]);
