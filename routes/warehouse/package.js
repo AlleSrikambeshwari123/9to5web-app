@@ -22,5 +22,6 @@ router.post('/nas/package/all-list', middleware().checkSession, packageCtrl.get_
 router.get('/nas/package/aging', middleware().checkSession, packageCtrl.get_nas_package_aging);
 router.post('/nas/package/all-aging', middleware().checkSession, packageCtrl.get_all_nas_package_aging);
 router.get('/fll/package/no-docs', middleware().checkSession, packageCtrl.get_package_no_docs);
+router.get('/fll/package/overviewfll/list', middleware().checkSession, packageCtrl.get_overview_fll);
 
 module.exports = router;

@@ -28,4 +28,7 @@ router.get('/download-pdf/delivery-report/:id', printerController.downloadDelive
 router.get('/download-pdf/cube/:id', printerController.downloadCubePdf);
 router.get('/pdf/generate/cube/:id', printerController.generate_cube_pdf);
 
+router.get('/pdf/generate/awb-purchase-order/:id', printerController.generate_awb_purchase_order_pdf);
+router.get('/api/printer/pdf/generate/cubedetail/:id', printerController.generate_cude_detail_pdf)
+
 module.exports = router;

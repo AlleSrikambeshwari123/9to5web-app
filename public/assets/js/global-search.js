@@ -169,7 +169,7 @@ $(function () {
       //autoUpdateInput: false,
       locale: { cancelLabel: 'Clear' },
       opens: 'center',
-      startDate: localStorage.dateRangePickerStartDate ? moment(localStorage.dateRangePickerStartDate) : moment().startOf('hour').subtract(7, 'days'),
+      startDate: localStorage.dateRangePickerStartDate ? moment(localStorage.dateRangePickerStartDate) : moment().startOf('hour').subtract(3, 'days'),
       endDate: localStorage.dateRangePickerEndDate ? moment(localStorage.dateRangePickerEndDate) : moment(),
     }, function (start, end, label) {
       $(dtTable.table().node()).data('startDate', start);

@@ -1,18 +1,34 @@
 <% layout('./shared/__template')%>
+<%
+var nodocsawb =[];
+var pendingawb = [];
+var awbpackage = [];
+var airwaybill = [];
+if(type=="nodocs"){
+   nodocsawb = awbs;
+}else if(type=="pendingawb"){
+   pendingawb = awbs;
+}else if(type=="awbpackage"){
+   awbpackage = awbs;
+}else{
+   airwaybill = awbs;
+}
+%>
+
 <div class='gutters'>
   <div class='col-xl-12 col-lg-6 col-md-12 col-sm-12'>
     <div class='card card-with-nav'>
       <div class="card-header">
         <div class="row row-nav-line">
           <ul class="nav nav-tabs nav-line nav-color-primary" id="awb-list-tab" role="tablist">
-            <li class="nav-item"> <a class="nav-link active show" data-toggle="tab" href="#awb-list" role="tab"
-                aria-selected="true">AirWay Bills</a> </li>
-            <li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#awb-no-docs" role="tab"
-                aria-selected="false">No Docs</a> </li>
-            <li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#awb-no-packages" role="tab"
-                aria-selected="false">Pending Awb</a> </li>
-            <li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#awb-pickups" role="tab"
-                aria-selected="false">Awb Pickups</a> </li>
+            <li class="nav-item"> <a class="nav-link <%if(type =="airwaybill" || !type){%>active show<%}%>" data-toggle="tab" href="#awb-list" role="tab"
+                aria-selected="true" onclick="pagereload('airwaybill')">AirWay Bills</a> </li>
+            <li class="nav-item"> <a class="nav-link <%if(type =="nodocs"){%>active show<%}%>" data-toggle="tab" href="#awb-no-docs" role="tab"
+                aria-selected="false" onclick="pagereload('nodocs')">No Docs</a> </li>
+            <li class="nav-item"> <a class="nav-link <%if(type =="pendingawb"){%>active show<%}%>" data-toggle="tab" href="#awb-no-packages" role="tab"
+                aria-selected="false" onclick="pagereload('pendingawb')">Pending Awb</a> </li>
+            <li class="nav-item"> <a class="nav-link <%if(type =="awbpackage"){%>active show<%}%>" data-toggle="tab" href="#awb-pickups" role="tab"
+                aria-selected="false" onclick="pagereload('awbpackage')">Awb Pickups</a> </li>
           </ul>
         </div>
       </div>
@@ -20,9 +36,9 @@
       <div class="card-body daterangepickerbody">
         <div class="tab-content m-4" id="awb-list-tabContent">
           <input type="hidden" name="clear" id="clear" value="<%=clear%>">
-          <div class="tab-pane fade show active" id="awb-list" role="tabpanel" aria-labelledby="awb-list-tab">
+          <div class="tab-pane fade <%if(type =="airwaybill" || !type){%>active show<%}%>" id="awb-list" role="tabpanel" aria-labelledby="awb-list-tab">
             <div class="table-responsive">
-              <table id='awb-table' class='display table table-striped table-hover dateRangeFilterTable dataTable'>
+              <table id='awb-table' class='display table table-striped table-hover  dataTable'>
                 <thead>
                   <tr>
                     <th>PMB</th>
@@ -40,8 +56,9 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <% awbs.forEach(function(awb){
-                    if(awb.packages.length > 0){ %>
+                  <% 
+                  airwaybill.forEach(function(awb){
+                  %>
                   <tr data-record="<%= awb._id %>">
                     <td><%=(awb.customer && awb.customer.pmb)?awb.customer.pmb:'' %></td>
                     <td><%=helpers.formatDate(awb.createdAt)%></td>
@@ -68,15 +85,15 @@
                         data-target="#print-popup"> <i class="fa fa-print"></i> </a>
                     </td>
                   </tr>
-                  <%}})%>
+                  <%})%>
                 </tbody>
               </table>
             </div>
           </div>
           <!-- Nodocs -->
-          <div class="tab-pane fade" id="awb-no-docs" role="tabpanel" aria-labelledby="awb-no-docs-tab">
+          <div class="tab-pane fade <%if(type =="nodocs"){%>active show<%}%>" id="awb-no-docs" role="tabpanel" aria-labelledby="awb-no-docs-tab">
             <div class="table-responsive">
-              <table id='no-docs-table' class='display table table-striped table-hover dateRangeFilterTable dataTable'>
+              <table id='no-docs-table' class='display table table-striped table-hover  dataTable'>
                 <thead>
                   <tr>
                     <th>PMB</th>
@@ -93,8 +110,8 @@
                 </thead>
                 <tbody>
                   <% 
-                  awbs.forEach(function(awb){
-                    if(!awb.invoice) {
+                  
+                    nodocsawb.forEach(function(awb){
                   %>
                   <tr data-record="<%= awb._id %>">
                     <td><%= awb.customer && awb.customer.pmb %></td>
@@ -115,16 +132,16 @@
                         data-target="#print-popup"> <i class="fa fa-print"></i> </a>
                     </td>
                   </tr>
-                  <% }}) %>
+                  <% }) %>
                 </tbody>
               </table>
             </div>
           </div>
           <!-- End Nodocs -->
           <!-- Pending Awbs -->
-          <div class="tab-pane fade" id="awb-no-packages" role="tabpanel" aria-labelledby="awb-no-packages-tab">
+          <div class="tab-pane fade <%if(type =="pendingawb"){%>active show<%}%>" id="awb-no-packages" role="tabpanel" aria-labelledby="awb-no-packages-tab">
             <div class="table-responsive">
-                <table id='pending-awb-table' class='display table table-striped table-hover dateRangeFilterTable dataTable'>
+                <table id='pending-awb-table' class='display table table-striped table-hover  dataTable'>
                 <thead>
                   <tr>
                     <th>PMB</th>
@@ -142,8 +159,9 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <% awbs.forEach(function(awb){
-                    if(awb.packages.length === 0) {
+                  <%
+                 
+                    pendingawb.forEach(function(awb){
                       %>
                   <tr data-record="<%= awb._id %>">
                     <td><%=awb.customer.pmb %></td>
@@ -171,16 +189,16 @@
                         data-target="#print-popup"> <i class="fa fa-print"></i> </a>
                     </td>
                   </tr>
-                  <%}})%>
+                  <%})%>
                 </tbody>
               </table>
             </div>
           </div>
           <!-- End Pending Awbs -->
           <!-- Pickups Awbs -->
-          <div class="tab-pane fade" id="awb-pickups" role="tabpanel" aria-labelledby="awb-pickups-tab">
+          <div class="tab-pane fade <%if(type =="awbpackage"){%>active show<%}%>" id="awb-pickups" role="tabpanel" aria-labelledby="awb-pickups-tab">
             <div class="table-responsive">
-                <table id='pickup-awb-table' class='display table table-striped table-hover dateRangeFilterTable dataTable'>
+                <table id='pickup-awb-table' class='display table table-striped table-hover  dataTable'>
                 <thead>
                   <tr>
                     <th>PMB</th>
@@ -198,8 +216,9 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <% awbs.forEach(function(awb){
-                    if(awb.fll_pickup) {
+                  <% 
+                 
+                    awbpackage.forEach(function(awb){
                       %>
                   <tr data-record="<%= awb._id %>">
                     <td><%=awb.customer.pmb %></td>
@@ -227,7 +246,7 @@
                         data-target="#print-popup"> <i class="fa fa-print"></i> </a>
                     </td>
                   </tr>
-                  <%}})%>
+                  <%})%>
                 </tbody>
               </table>
             </div>
@@ -303,5 +322,8 @@
     </div>
   </div>
 </div>
+<script>
+  var type = "<%=type%>";  
+  </script>
 <% block('scripts').append('<script src="/js/utils.js"></script>')%>
 <% block('scripts').append('<script src="/js/warehouse/awb/list.js"></script>')%>

@@ -7,6 +7,8 @@ const strings = require('../Res/strings');
 // const USER_PRINTER_PREFIX = "wh:printer:";
 
 const Awb = require('../models/awb');
+const User = require('../models/user');
+const Cube = require('../models/cube');
 
 class PrintService {
 	// addPrinter(printer) {
@@ -86,6 +88,50 @@ class PrintService {
 				});
 		});
 	}
+	getAWBDataForPurchaseOrderRelatedEntitie(id) {
+		return new Promise((resolve, reject) => {
+			Awb.findOne({ _id: id })
+				.populate('packages')
+				.populate('purchaseOrders')
+				.populate('createdBy')
+				.exec(async(err, result) => {
+					var purchaseOrders = result.purchaseOrders?result.purchaseOrders:[];
+					
+					for(var i=0;i<purchaseOrders.length;i++){
+						var userDetail = await User.findOne(purchaseOrders[i].createdBy);
+						purchaseOrders[i].createdBy = userDetail;
+					}
+					
+						result.weightAwb = 0;
+						result.volumetricWeight = 0;
+						result.packages.forEach(packag=>{
+						  let check = 1
+						  packag.dimensions.split('x').forEach(data =>{
+							check = check * data
+						  })
+						  result.weightAwb = result.weightAwb + packag.weight;
+						  result.volumetricWeight = result.volumetricWeight+(check/166);
+						})
+						//result.volumetricWeight = volumetricWeight;
+						//result.weight = weightAwb
+					  
+					result.no_of_pieces = result.packages?(result.packages).length:[];
+					result.purchaseOrders = purchaseOrders;
+					resolve(result);
+				});
+		});
+	}
+	getCubeDetailEntitie(id){
+		return new Promise((resolve, reject) => {
+			Awb.findOne({ _id: id })
+				.populate('purchaseOrders')
+				.populate('createdBy')
+				.exec((err, result) => {
+					resolve(result);
+				});
+		});
+	}
+
 }
 
 module.exports = PrintService;

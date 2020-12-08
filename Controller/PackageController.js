@@ -584,3 +584,16 @@ exports.get_awb_packages = (req, res, next) => {
         res.send(packages);
     });
 };
+
+exports.get_overview_fll = (req, res, next)=>{
+    services.packageService.get_overview_fll(req).then((packages) => {
+        res.render('pages/warehouse/overviewfll/list', {
+            page: req.originalUrl,
+            title: "Overview FLL",
+            user: res.user,
+            filterURL: '',
+            packages: packages,
+            clear: req.query.clear
+        })
+    })
+}
