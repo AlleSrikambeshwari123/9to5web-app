@@ -8,7 +8,7 @@ const MONGO_PASSWORD = process.env.MONGO_PASSWORD;
 
 let MONGO_URL;
 if (MONGO_HOST === 'localhost') {
-  MONGO_URL = `mongodb://${MONGO_HOST}:50001,${MONGO_HOST}:50002/${MONGO_DBNAME}?replicaSet=d&readPreference=secondary`;
+  MONGO_URL = `mongodb://${MONGO_HOST}:50001,${MONGO_HOST}:50002,${MONGO_HOST}:50003/${MONGO_DBNAME}?replicaSet=d&readPreference=secondaryPreferred`;
   // MONGO_URL = `mongodb://${MONGO_HOST}/${MONGO_DBNAME}`;
 } else {
   MONGO_URL = `mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOST}/${MONGO_DBNAME}`;
@@ -19,7 +19,7 @@ const MONGOOSE_OPTIONS = {
   useCreateIndex: true,
   useUnifiedTopology: true,
   useFindAndModify:false,
-  readPreference : 'secondary'
+  readPreference : 'secondaryPreferred'
 };
 
 const connectMongo = (cb) => {
