@@ -229,8 +229,8 @@ async function sendNoDocsPackageEmail(pkg){
     const awbId = (pkg.awbId && pkg.awbId.awbId)?pkg.awbId.awbId:'';    
     const shipperName = (pkg && pkg.shipperId &&  pkg.shipperId.name)? pkg.shipperId.name:'';
     const description = pkg.description ? pkg.description : '';
-    const trackingNo = pkg.trackingNo?pkg.trackingNo:'';
-
+    // const trackingNo = pkg.trackingNo?pkg.trackingNo:'';
+    const trackingNo = pkg.originBarcode.barcode
     emailBody = emailBody.replace("{{CUSTOMERNAME}}",customerName);
     emailBody = emailBody.replace("{{AWB}}",awbId);
     emailBody = emailBody.replace("{{AWBID}}",awbId);
@@ -264,7 +264,8 @@ async function sendStorePackageEmail(pkg){
     const awbId = (pkg.awbId && pkg.awbId.awbId)?pkg.awbId.awbId:'';    
     const shipperName = (pkg && pkg.shipperId &&  pkg.shipperId.name)? pkg.shipperId.name:'';
     const description = pkg.description ? pkg.description : '';
-    const trackingNo = pkg.trackingNo?pkg.trackingNo:'';
+    // const trackingNo = pkg.trackingNo?pkg.trackingNo:'';
+    const trackingNo = pkg.originBarcode.barcode
     const totalPrice = pkg.totalPrice?pkg.totalPrice:0;
 
     emailBody = emailBody.replace("{{TOTALPRICE}}",totalPrice);
