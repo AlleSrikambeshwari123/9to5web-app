@@ -2,22 +2,28 @@
 const mongoose = require('mongoose');
 
 const MONGO_HOST = process.env.MONGO_HOST;
+const MONGO_HOST2 = process.env.MONGO_HOST2;
 const MONGO_DBNAME = process.env.MONGO_DBNAME;
 const MONGO_USERNAME = process.env.MONGO_USERNAME;
 const MONGO_PASSWORD = process.env.MONGO_PASSWORD;
+const MONGO_PORT = process.env.MONGO_PORT
+const MONGO_PORT2 = process.env.MONGO_PORT2
+const REPLICA_SET = process.env.REPLICA_SET
 
 let MONGO_URL;
 if (MONGO_HOST === 'localhost') {
-  MONGO_URL = `mongodb://${MONGO_HOST}/${MONGO_DBNAME}`;
+  MONGO_URL = `mongodb://${MONGO_HOST}:${MONGO_PORT},${MONGO_HOST2}:${MONGO_PORT2}/${MONGO_DBNAME}?replicaSet=${REPLICA_SET}&readPreference=secondaryPreferred`;
+  // MONGO_URL = `mongodb://${MONGO_HOST}/${MONGO_DBNAME}`;
 } else {
-  MONGO_URL = `mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOST}/${MONGO_DBNAME}`;
+  MONGO_URL = `mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOST}:${MONGO_PORT},${MONGO_HOST2}:${MONGO_PORT2}/${MONGO_DBNAME}?replicaSet=${REPLICA_SET}&readPreference=secondaryPreferred`;
 }
 
 const MONGOOSE_OPTIONS = {
   useNewUrlParser: true,
   useCreateIndex: true,
   useUnifiedTopology: true,
-  useFindAndModify:false
+  useFindAndModify:false,
+  readPreference : 'secondaryPreferred'
 };
 
 const connectMongo = (cb) => {
