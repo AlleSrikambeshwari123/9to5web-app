@@ -60,7 +60,7 @@ class AWBGeneration {
                             margin: [0, 10],
                             table: {
                                 headerRows: 2,
-                                widths: ["*", "*", "*", "*", "*", "*"],
+                                widths: ["*", "*", "*", 80, "*", "*"],
                                 body: await this.generatePackagesTable()
                             }
                         }
