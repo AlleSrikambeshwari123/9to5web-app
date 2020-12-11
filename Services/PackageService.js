@@ -3239,6 +3239,7 @@ class PackageService {
         const pkgData = await Package.findOne({_id:pkgId})
         .populate('customerId')
         .populate('shipperId')
+        .populate('originBarcode')
         .populate('awbId');
         if(pkgData && pkgData.awbId &&  !pkgData.awbId.eamil_incoice){
             await emailService.sendNoDocsPackageEmail(pkgData);
@@ -3253,6 +3254,7 @@ class PackageService {
         const pkgData = await Package.findOne({_id:pkgId})
         .populate('customerId')
         .populate('shipperId')
+        .populate('originBarcode')
         .populate('awbId');
         if(pkgData && pkgData.awbId &&  !pkgData.emailAging){
             await emailService.sendNoDocsPackageEmail(pkgData);
@@ -3267,6 +3269,7 @@ class PackageService {
         let pkgData = await Package.findOne({_id:pkgId})
         .populate('customerId')
         .populate('shipperId')
+        .populate('originBarcode')
         .populate('awbId');
         pkgData = JSON.parse(JSON.stringify(pkgData));
         if(pkgData && pkgData.awbId &&  !pkgData.awbId.eamil_delivered_store){
@@ -3292,6 +3295,7 @@ class PackageService {
         let pkgData = await Package.findOne({_id:pkgId})
         .populate('customerId')
         .populate('shipperId')
+        .populate('originBarcode')
         .populate('awbId');
         pkgData = JSON.parse(JSON.stringify(pkgData));
         if(pkgData && pkgData.awbId &&  !pkgData.emailAgingStore){

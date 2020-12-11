@@ -60,7 +60,7 @@ class AWBGeneration {
                             margin: [0, 10],
                             table: {
                                 headerRows: 2,
-                                widths: ["*", "*", "*", "*", "*", "*"],
+                                widths: ["*", "*", "*", 80, "*", "*"],
                                 body: await this.generatePackagesTable()
                             }
                         }
@@ -515,6 +515,7 @@ class AWBGeneration {
             }
         ]
     }
+    
     generateShiperCosigneeTable(awb) {
         // In DB some shippers have zip field instead of zipcode
         let shipperZipcode,shipperName,awbShipperAddress,awbShipperCity,awbShipperState;
@@ -569,6 +570,157 @@ class AWBGeneration {
     }
     generateFooter(currentPage, pageCount) {
         return { text: "Page No: " + currentPage.toString() + '/' + pageCount, alignment: 'right', margin: [50, 10] }
+    }
+
+    generatePurchaseOrder(awb) {
+        this.awb = awb;
+        return new Promise((resolve, reject) => {
+            this.generateBarcode(awb._id).then(async png => {
+
+                var docDefinition = {
+                    footer: this.generateFooter,
+                    content: [{
+                            columns: this.generatePurchaseOrderHeader(png)
+                        },                        
+                        {
+                            layout: 'lightHorizontallines',
+                            margin: [0, 10],
+                            table: {
+                                headerRows: 1,
+                                widths: ["*", "*", "*", "*", "*", '*'],
+                                body: await this.generatePurchaseOrderTable()
+                            }
+                        }
+                    ],
+                    styles: {
+                        header: {
+                            fontSize: 18,
+                            bold: true,
+                            margin: [0, 0, 0, 10]
+                        },
+                        subheader: {
+                            fontSize: 16,
+                            bold: true,
+                            margin: [0, 10, 0, 5]
+                        },
+                        tableExample: {
+                            margin: [0, 5, 0, 15]
+                        },
+                        tableHeader: {
+                            bold: true,
+                            fontSize: 13,
+                            color: 'black',
+                            fillColor: "#cccccc"
+                        }
+                    },
+                    defaultStyle: {
+                        font: 'Helvetica',
+                        fontSize: 11
+                    },
+                };
+                var filestream;
+                var filename = '/awb.' + awb.id + '.pdf';
+                var filepath = global.uploadRoot + filename;
+                var pdfDoc = printer.createPdfKitDocument(docDefinition);
+                pdfDoc.pipe(filestream = fs.createWriteStream(filepath));
+                pdfDoc.end();
+                filestream.on('finish', async function() {
+                    resolve({ filename: filename, path: filepath })
+                })
+            })
+        })
+    }
+    async generatePurchaseOrderTable(){
+        let body = [
+            [{ text: "Date", fillColor: "#cccccc" },
+                { text: "Description", fillColor: "#cccccc" },
+                { text: "Payment Method", fillColor: "#cccccc" },
+                { text: "Amount", fillColor: "#cccccc" },
+                { text: "Created By", fillColor: "#cccccc" },
+                { text: "Invited By", fillColor: "#cccccc" }
+            ],           
+        ]
+        var purchaseOrders = this.awb.purchaseOrders ? this.awb.purchaseOrders : [];
+        if(purchaseOrders && purchaseOrders.length>0){
+            for(var i=0; i< purchaseOrders.length; i++){
+                body.push([
+                    { text: moment(purchaseOrders[i].createdAt).format("MMM/D/YYYY"),bold: false},
+                    { text: purchaseOrders[i].serviceTypeText ,bold: false},
+                    { text: purchaseOrders[i].paidTypeText ,bold: false},
+                    { text: '$'+(purchaseOrders[i].amount).toFixed(2) ,bold: false},
+                    { text: purchaseOrders[i].createdBy.username ,bold: false},
+                    { text: purchaseOrders[i].source ,bold: false}
+                ]) 
+            }
+        }        
+        return body;
+    }
+    generatePurchaseOrderHeader(png) {
+        return [{
+                width: '*',
+                stack: [
+                    { text: 'Nine To Five Import Export \n', fontSize: 15, bold: true },
+                    { text: '2801 NW 55th Court \r\n', fontSize: 10, margin: [0, 5, 5, 0] },
+                    { text: 'Building 6W\r\n', fontSize: 10, margin: [0, 0] },
+                    { text: 'Ft Lauderdale, FL 33309\r\n', fontSize: 10, margin: [0, 0] },
+                    { text: 'UNITED STATES \r\n', fontSize: 10, margin: [0, 0] },
+                    { text: 'Tel: 954-958-9970, Fax:954-958-9071', fontSize: 10, margin: [0, 5, 5, 0] }
+                ]
+            },
+            {
+                width: '*',
+                stack: [
+                    { text: 'Purchase Order:', fontSize: 11, margin: [10, 5],  bold: true },
+                    //{ image: 'data:image/jpeg;base64,' + png.toString('base64'), margin: [15, 1], width: 150, alignment: "right" },
+                    {
+                        columns: [{
+                                width: '*',
+                                margin: [10, 5],
+                                stack: [
+                                    { text: 'Airway Bill No:', bold: true, fontSize: 9 },
+                                    //{ margin: [0, 5], text: 'Received Date/Time:', bold: false, fontSize: 9 },
+                                    { margin: [0, 3], text: 'Created By:', bold: false, fontSize: 9 },
+                                   
+                                ]
+                            },
+                            {
+                                width: '*',
+                                margin: [0, 5],
+                                stack: [
+                                    { margin: [-3, 0], text: "AWB" + this.awb.awbId, bold: true, fontSize: 11 },
+                                    //{ margin: [-1, 5], text: moment(this.awb.createdAt).format("MM/DD/YYYY hh:mm A"), bold: false, fontSize: 9 },
+                                    { margin: [-1, 0], text: (this.awb.createdBy && this.awb.createdBy.username) || '', bold: false, fontSize: 9 }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        columns: [{
+                                width: '*',
+                                margin: [10, 5],
+                                stack: [
+                                    { text: 'No Of Pieces:', bold: true, fontSize: 9 },
+                                    //{ margin: [0, 5], text: 'Received Date/Time:', bold: false, fontSize: 9 },
+                                    { margin: [0, 3], text: 'Total Weight (lbs):', bold: true, fontSize: 9 },
+                                    { margin: [-1, 3], text: 'Total Weight (vlbs):', bold: true, fontSize: 9 },
+                                   
+                                ]
+                            },
+                            {
+                                width: '*',
+                                margin: [0, 5],
+                                stack: [
+                                    { margin: [-3, 0], text: this.awb.no_of_pieces, bold: false, fontSize: 9 },
+                                    //{ margin: [-1, 5], text: moment(this.awb.createdAt).format("MM/DD/YYYY hh:mm A"), bold: false, fontSize: 9 },
+                                    { margin: [-1, 3], text: (this.awb.weightAwb).toFixed(2), bold: false, fontSize: 9 },
+                                    { margin: [-1, 3], text: (this.awb.volumetricWeight).toFixed(2), bold: false, fontSize: 9 }
+                                ]
+                            }
+                        ]
+                    }
+                ],
+            }
+        ]
     }
 
 

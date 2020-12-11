@@ -676,7 +676,23 @@ exports.downloadDeliveryReport = async (req, res, next) => {
 	}
 };
 
+exports.generate_awb_purchase_order_pdf = async(req, res, next)=>{
+	let id = req.params.id;
+	services.printService.getAWBDataForPurchaseOrderRelatedEntitie(id).then(async(awb) => {		
+		awbPdfGen.generatePurchaseOrder(awb).then(result => {
+			res.download(result.path);
+		})
+	})
+}
 
+exports.generate_cude_detail_pdf = async(req, res, next)=>{
+	let id = req.params.id;
+	services.printService.getCubeDetailEntitie(id).then(async(awb) => {		
+		// awbPdfGen.generatePurchaseOrder(awb).then(result => {
+		// 	res.download(result.path);
+		// })
+	})
+}
 
 
 

@@ -307,6 +307,9 @@ $(function () {
     if(isNew===true){
       if(parseInt(pkg.copy)>1){
         for(var i=0;i<parseInt(pkg.copy);i++){
+          var clonedObj = Object.assign({}, pkg);
+          clonedObj.id = Date.now().toString()+'_'+i;
+          awbPackages.push(clonedObj);
           awbPackages.push(pkg);
         }
       }else{
