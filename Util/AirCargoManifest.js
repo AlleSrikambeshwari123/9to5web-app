@@ -763,7 +763,7 @@ class AirCargoManifest {
             for(var i=0;i<dynamicAWBFilesPath.length;i++){
                 if(dynamicAWBFilesPath[i].awbFilePath && dynamicAWBFilesPath[i].invoiceFilePath){
                     mainArray.push(dynamicAWBFilesPath[i].awbFilePath)                
-                    mainArray.push(dynamicAWBFilesPath[i].invoiceFilePath)
+                    //mainArray.push(dynamicAWBFilesPath[i].invoiceFilePath)
                 }
             }
            /* for(var i=0;i<dynamicAWBFilesPath.length;i++){
