@@ -760,8 +760,7 @@ class AirCargoManifest {
             if(mainFilePath){
                 mainArray.push(mainFilePath) 
             }
-            for(var i=0;i<dynamicAWBFilesPath.length;i++){
-                //
+            for(var i=0;i<dynamicAWBFilesPath.length;i++){                
                 if(dynamicAWBFilesPath[i].awbFilePath && dynamicAWBFilesPath[i].invoiceFilePath){
                     mainArray.push(dynamicAWBFilesPath[i].awbFilePath)                
                     mainArray.push(dynamicAWBFilesPath[i].invoiceFilePath)

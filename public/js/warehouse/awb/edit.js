@@ -119,17 +119,20 @@ $(function () {
   $('#packageType').select2({
     theme: 'bootstrap',
     width: '100%',
-    placeholder: "Select a package type"
+    placeholder: "Select a package type",
+    dropdownParent: $("#packageSelect")
   })
   $('#originBarcode').select2({
     theme: 'bootstrap',
     width: '100%',
-    placeholder: "Select a package type"
+    placeholder: "Select a package type",
+    dropdownParent: $("#trackingSelect")
   })
   $('#packageCalculation').select2({
     theme: 'bootstrap',
     width: '100%',
-    placeholder: "Select a package calculation"
+    placeholder: "Select a package calculation",
+    dropdownParent: $("#calculationSelect")
   })
   
   $('#driver').select2({
@@ -310,7 +313,7 @@ $(function () {
           var clonedObj = Object.assign({}, pkg);
           clonedObj.id = Date.now().toString()+'_'+i;
           awbPackages.push(clonedObj);
-          awbPackages.push(pkg);
+          //awbPackages.push(pkg);
         }
       }else{
         awbPackages.push(pkg);
