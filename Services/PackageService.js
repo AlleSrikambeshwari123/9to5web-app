@@ -1509,7 +1509,7 @@ class PackageService {
 
     getPackages_updated(awbId) {
         return new Promise((resolve, reject) => {
-            Package.find({ awbId: awbId }, (err, result) => {
+            Package.find({ awbId: awbId },null, {sort: {trackingNo: 1}}, (err, result) => {
                 if (err) {
                     resolve([]);
                 } else {
