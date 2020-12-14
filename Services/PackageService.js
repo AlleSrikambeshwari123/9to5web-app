@@ -1580,7 +1580,7 @@ class PackageService {
     createPackage(newPackage, awbId) {
         return new Promise(async (resolve, reject) => {
             newPackage.awbId = awbId;
-            newPackage.id = Date.now().toString();
+            newPackage.id = newPackage.id?newPackage.id:Date.now().toString();
             newPackage.trackingNo = uniqId();
             // Here as per the frontend logic, we're getting the 
             // values like 43322211,398749844904894
