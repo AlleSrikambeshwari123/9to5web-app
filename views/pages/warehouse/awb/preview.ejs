@@ -1,9 +1,10 @@
 <% layout('./shared/__template')%>
 <div class="row justify-content-center mt--5">
   <input type="hidden" data-id="<%= awb._id%>" id="awbId">
-  <div class="col-12 col-lg-10 col-xl-9">
+  <div class="col-12 col-lg-10 col-xl-10">
     <div class="row align-items-center">
       <div class="ml-auto mr-3 mb-3 mt--4">
+        <a class="btn btn-danger btn-round text-white ml-2 btn-print-po" data-id="<%=awb._id%>"> Print P.O </a>
         <a class="btn btn-danger btn-round text-white" href="/warehouse/fll/awb/create"> Create AWB</a>
         <a class="btn btn-danger btn-round text-white" href="/warehouse/download-pdf/pkg/<%=awb._id%>"> Download Pkgs</a>
         <a class="btn btn-danger btn-round text-white ml-2 btn-print-pkgs" data-id="<%=awb._id%>"> Print Pkgs </a>
