@@ -680,7 +680,11 @@ exports.generate_awb_purchase_order_pdf = async(req, res, next)=>{
 	let id = req.params.id;
 	services.printService.getAWBDataForPurchaseOrderRelatedEntitie(id).then(async(awb) => {		
 		awbPdfGen.generatePurchaseOrder(awb).then(result => {
-			res.download(result.path);
+			if(req.query.type =="file"){
+				res.send({success:true, filepath: result.filename})
+			}else{
+				res.download(result.path);
+			}			
 		})
 	})
 }

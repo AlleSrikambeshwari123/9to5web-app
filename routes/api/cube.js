@@ -72,8 +72,9 @@ router.post('/assign-packages/:id',passport.authenticate('jwt', { session: false
       packageDetail.packageType = "Cube";    
       const updateDetail = {packages:package};
       if(cubeData.cubepackageId==null){
-        const cubepackageId = await services.cubeService.createPackage(cubeData, packageDetail);  
-        updateDetail.cubepackageId = cubepackageId;
+        // const cubepackageId = await services.cubeService.createPackage(cubeData, packageDetail);  
+        await services.packageService.updatePackage(packageDetail._id, {packageType : 'Cube'});  
+        updateDetail.cubepackageId = packageDetail._id;
       }
       services.cubeService.assignPackage(req.params.id, updateDetail).then(async result => {
         await services.cubeService.updatePackageCubeId(pid, req.params.id);
@@ -113,8 +114,9 @@ router.post('/web/assign-packages/:id',middleware().checkSession, async (req,res
       packageDetail.packageType = "Cube";    
       const updateDetail = {packages:package};
       if(cubeData.cubepackageId==null){
-        const cubepackageId = await services.cubeService.createPackage(cubeData, packageDetail);  
-        updateDetail.cubepackageId = cubepackageId;
+        // const cubepackageId = await services.cubeService.createPackage(cubeData, packageDetail);  
+        await services.packageService.updatePackage(packageDetail._id, {packageType : 'Cube'});  
+        updateDetail.cubepackageId = packageDetail._id;
       }
       services.cubeService.assignPackage(req.params.id, updateDetail).then(async result => {
         await services.cubeService.updatePackageCubeId(pid, req.params.id);
