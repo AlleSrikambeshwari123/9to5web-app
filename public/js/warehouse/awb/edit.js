@@ -119,17 +119,20 @@ $(function () {
   $('#packageType').select2({
     theme: 'bootstrap',
     width: '100%',
-    placeholder: "Select a package type"
+    placeholder: "Select a package type",
+    dropdownParent: $("#packageSelect")
   })
   $('#originBarcode').select2({
     theme: 'bootstrap',
     width: '100%',
-    placeholder: "Select a package type"
+    placeholder: "Select a package type",
+    dropdownParent: $("#trackingSelect")
   })
   $('#packageCalculation').select2({
     theme: 'bootstrap',
     width: '100%',
-    placeholder: "Select a package calculation"
+    placeholder: "Select a package calculation",
+    dropdownParent: $("#calculationSelect")
   })
   
   $('#driver').select2({
