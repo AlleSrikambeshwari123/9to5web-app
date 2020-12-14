@@ -764,7 +764,7 @@ class AirCargoManifest {
                 //
                 if(dynamicAWBFilesPath[i].awbFilePath && dynamicAWBFilesPath[i].invoiceFilePath){
                     mainArray.push(dynamicAWBFilesPath[i].awbFilePath)                
-                    //mainArray.push(dynamicAWBFilesPath[i].invoiceFilePath)
+                    mainArray.push(dynamicAWBFilesPath[i].invoiceFilePath)
                 }
             }
            /* for(var i=0;i<dynamicAWBFilesPath.length;i++){
@@ -773,14 +773,18 @@ class AirCargoManifest {
                 }
             }*/
             var idm = this.data._id;
-            merge(mainArray, path.resolve(process.cwd(), `airCaroDownload/${this.data._id}-ACM.pdf`), function (err) {
-                if(err){
-                    console.log(err);
-                }
-                console.log(mainArray);
-                console.log('Successfully merged!')
-                resolve(path.resolve(process.cwd(), `airCaroDownload/${idm}-ACM.pdf`))
-            })
+            if(mainArray && mainArray.length > 0){
+                merge(mainArray, path.resolve(process.cwd(), `airCaroDownload/${this.data._id}-ACM.pdf`), function (err) {
+                    if(err){
+                        console.log(err);
+                    }
+                    console.log(mainArray);
+                    console.log('Successfully merged!')
+                    resolve(path.resolve(process.cwd(), `airCaroDownload/${idm}-ACM.pdf`))
+                })
+            }else{
+                resolve(path.resolve(process.cwd(), `airCaroDownload/${this.data._id}-ACM.pdf`))
+            }
             //return resolve(dynamicAWBFilesPath);
             //this.processCombinePdf(dynamicAWBFilesPath[0], dynamicAWBFilesPath, 0, this.data._id, resolve, reject, mainFilePath);
         })
