@@ -773,7 +773,7 @@ class AirCargoManifest {
                 }
             }*/
             var idm = this.data._id;
-            if(mainArray && mainArray.length > 0){
+            if(mainArray && mainArray.length > 1){
                 merge(mainArray, path.resolve(process.cwd(), `airCaroDownload/${this.data._id}-ACM.pdf`), function (err) {
                     if(err){
                         console.log(err);
@@ -783,7 +783,7 @@ class AirCargoManifest {
                     resolve(path.resolve(process.cwd(), `airCaroDownload/${idm}-ACM.pdf`))
                 })
             }else{
-                resolve(path.resolve(process.cwd(), `airCaroDownload/${this.data._id}-ACM.pdf`))
+                resolve(mainFilePath)
             }
             //return resolve(dynamicAWBFilesPath);
             //this.processCombinePdf(dynamicAWBFilesPath[0], dynamicAWBFilesPath, 0, this.data._id, resolve, reject, mainFilePath);
