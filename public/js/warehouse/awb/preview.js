@@ -104,3 +104,29 @@ $('.print-package').click(function() {
   $('.close-del').trigger('click');
   printJS(pdfPath);
 });
+
+$('.btn-print-po').click(function () {
+  let id = $(this).data('id');
+  $('.btn-print-po').text('Loading...')
+  $.ajax({
+    url: '/api/printer/pdf/generate/awb-purchase-order/' + id +'?type=file',
+    type: 'get',
+    success: function(response) {
+      console.log('reser',response)
+      if (response.success) {
+        pdfPath = '/uploads/'+response.filepath;
+        console.log("pdf",pdfPath)
+        printJS(pdfPath)
+        $('.btn-print-po').text('Print P.O')
+      } else {
+        $('.btn-print-po').text('Print P.O')
+        $('.close-del').trigger('click');
+        swal({
+          title: 'Failed',
+          text: response.message,
+          type: 'error',
+        });
+      }
+    },
+  });
+});
