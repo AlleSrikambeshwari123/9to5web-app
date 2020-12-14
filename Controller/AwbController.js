@@ -174,6 +174,7 @@ exports.create_awb = (req, res, next) => {
 
 exports.add_new_awb = async (req, res, next) => {
   let {invoices, ...awb} = req.body;
+  
   let packages = JSON.parse(awb.packages);
   let purchaseOrders = JSON.parse(awb.purchaseOrder);
   
@@ -201,6 +202,7 @@ exports.add_new_awb = async (req, res, next) => {
     pkg.createdBy = req['userId'];
     packagesIds.push(pkg['_id']);
   });
+ // return res.json(packages);
   // Creating Packages
   await services.packageService.createPackages(awbId, packages);
 

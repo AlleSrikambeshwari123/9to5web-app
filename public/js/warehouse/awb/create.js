@@ -332,7 +332,10 @@ $(function () {
     if(isNew===true){
       if(parseInt(pkg.copy)>1){
         for(var i=0;i<parseInt(pkg.copy);i++){
-          awbPackages.push(pkg);
+          var clonedObj = Object.assign({}, pkg);
+          clonedObj.id = Date.now().toString()+i;
+          awbPackages.push(clonedObj);
+          //awbPackages.push(pkg);
         }
       }else{
         awbPackages.push(pkg);
@@ -864,10 +867,22 @@ $(function () {
     });
 
     $("#rmPackage").click(function () {
-      var id = $(this).data('id');
-      awbPackages = awbPackages.filter(package => package.id != id);
+      const deletedPackages = [];
+      var id = $(this).attr("data-id");
+       console.log(this,);
+      // awbPackages = awbPackages.filter(package => package.id != id);
+      awbPackages = awbPackages.filter((package) => {
+        if (package.id != id) {
+          return true;
+        } else {
+          deletedPackages.push({_id: package._id, deleted: true});
+          return false;
+        }
+      });
+      console.log(awbPackages);
       displayPackages();
       $(".close-del").trigger('click');
+     
     });
   }
 });

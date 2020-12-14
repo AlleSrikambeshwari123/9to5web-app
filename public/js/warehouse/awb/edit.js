@@ -313,7 +313,7 @@ $(function () {
           var clonedObj = Object.assign({}, pkg);
           clonedObj.id = Date.now().toString()+'_'+i;
           awbPackages.push(clonedObj);
-          awbPackages.push(pkg);
+          //awbPackages.push(pkg);
         }
       }else{
         awbPackages.push(pkg);
