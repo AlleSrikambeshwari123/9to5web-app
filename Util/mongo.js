@@ -12,7 +12,7 @@ const REPLICA_SET = process.env.REPLICA_SET
 
 let MONGO_URL;
 if (MONGO_HOST === 'localhost') {
-  MONGO_URL = `mongodb://${MONGO_HOST}:${MONGO_PORT},${MONGO_HOST2}:${MONGO_PORT2}/${MONGO_DBNAME}?replicaSet=${REPLICA_SET}&readPreference=secondaryPreferred`;
+  MONGO_URL = `mongodb://${MONGO_HOST}:${MONGO_PORT},${MONGO_HOST2}:${MONGO_PORT2}/${MONGO_DBNAME}?replicaSet=${REPLICA_SET}&readPreference=nearest`;
   // MONGO_URL = `mongodb://${MONGO_HOST}/${MONGO_DBNAME}`;
 } else {
   MONGO_URL = `mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOST}:${MONGO_PORT},${MONGO_HOST2}:${MONGO_PORT2}/${MONGO_DBNAME}?replicaSet=${REPLICA_SET}&readPreference=secondaryPreferred`;
