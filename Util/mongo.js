@@ -15,7 +15,7 @@ if (MONGO_HOST === 'localhost') {
   MONGO_URL = `mongodb://${MONGO_HOST}:${MONGO_PORT},${MONGO_HOST2}:${MONGO_PORT2}/${MONGO_DBNAME}?replicaSet=${REPLICA_SET}&readPreference=nearest`;
   // MONGO_URL = `mongodb://${MONGO_HOST}/${MONGO_DBNAME}`;
 } else {
-  MONGO_URL = `mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOST}:${MONGO_PORT},${MONGO_HOST2}:${MONGO_PORT2}/${MONGO_DBNAME}?replicaSet=${REPLICA_SET}&readPreference=secondaryPreferred`;
+  MONGO_URL = `mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOST}:${MONGO_PORT},${MONGO_HOST2}:${MONGO_PORT2}/${MONGO_DBNAME}?replicaSet=${REPLICA_SET}&readPreference=nearest`;
 }
 
 const MONGOOSE_OPTIONS = {
@@ -23,7 +23,7 @@ const MONGOOSE_OPTIONS = {
   useCreateIndex: true,
   useUnifiedTopology: true,
   useFindAndModify:false,
-  readPreference : 'secondaryPreferred'
+  readPreference : 'nearest'
 };
 
 const connectMongo = (cb) => {
