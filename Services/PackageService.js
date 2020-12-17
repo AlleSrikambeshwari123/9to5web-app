@@ -2610,6 +2610,8 @@ class PackageService {
                 pkg = pkg.toJSON()
                 if(pkg.status == 'Assigned to cube'){
                     pkg.cubeDetail = pkg.packageId.cubeId
+                    let cubeStatusResult = await PackageStatus.findOne({ packageId : pkg.cubeDetail.cubepackageId }).sort({ updatedAt: -1 })
+                    pkg.cubeDetail.status = cubeStatusResult.status 
                 }
                 responsePkg.push(pkg)
             }
