@@ -734,3 +734,16 @@ $(document).ready(function() {
 	},100)
 
 })
+
+function nextPageData(){
+  urlPage = urlPage+'?1=1';
+  if(daterange){
+    urlPage = urlPage+"&daterange="+daterange;
+  }
+   start = parseInt(start)+500;
+  urlPage = urlPage+'&start='+start;
+  window.location = urlPage;
+}
+function clearPageData(){  
+  window.location = urlPage;
+}
