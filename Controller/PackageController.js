@@ -20,7 +20,8 @@ exports.get_package_list = (req, res, next) => {
                 filterURL: '',
                 buttonName: 'Add to Manifest',
                 packages: pkgs,
-                clear: req.query.clear
+                clear: req.query.clear,
+                query: req.query
             });
         })
 
