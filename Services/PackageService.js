@@ -2749,17 +2749,17 @@ class PackageService {
     async getPackageInfo(userId) {
         try {
             let packagesList =  await PackageStatus.find({ updatedBy: userId }).populate({ path: "packageId", populate: [{ path: "awbId" },{path : 'cubeId'}] }).sort({ updatedAt: -1 })
-            // let responsePkg = []
-            // for(let pkg of packagesList){
-            //     pkg = pkg.toJSON()
-            //     if(pkg.status == 'Assigned to cube'){
-            //         pkg.cubeDetail = pkg.packageId.cubeId
-            //         let cubeStatusResult = await PackageStatus.findOne({ packageId : pkg.cubeDetail.cubepackageId }).sort({ updatedAt: -1 })
-            //         pkg.cubeDetail.status = cubeStatusResult.status 
-            //     }
-            //     responsePkg.push(pkg)
-            // }
-            return packagesList
+            let responsePkg = []
+            for(let pkg of packagesList){
+                pkg = pkg.toJSON()
+                if(pkg.status == 'Assigned to cube'){
+                    pkg.cubeDetail = pkg.packageId.cubeId
+                    let cubeStatusResult = await PackageStatus.findOne({ packageId : pkg.cubeDetail.cubepackageId }).sort({ updatedAt: -1 })
+                    pkg.cubeDetail.status = cubeStatusResult.status 
+                }
+                responsePkg.push(pkg)
+            }
+            return responsePkg
         } catch (error) {
             return []
         }
