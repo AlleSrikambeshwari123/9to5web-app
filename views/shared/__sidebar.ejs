@@ -247,6 +247,28 @@
 						</ul>
 					</div>
 				</li>
+				<!-- Snapshot -->
+				<li class="nav-item <% if (page.includes('/snapshot/')) { %> active <% } %>">
+					<a data-toggle="collapse" href="#snapshot">
+						<i class="fas fa-table"></i>
+						<p>Snapshot</p>
+						<span class="caret"></span>
+					</a>
+					<div class="collapse" id="snapshot">
+						<ul class="nav nav-collapse">
+							<li <% if (page && page.endsWith && page.endsWith('/snapshot/awb/list')) { %> class="active" <% } %>>
+								<a href="/warehouse/snapshot/awb/list">
+									<span class="sub-item">Awb List</span>
+								</a>
+							</li>
+							<li <% if (page && page.endsWith && page.endsWith('/snapshot/package/list')) { %> class="active" <% } %>>
+								<a href="/warehouse/snapshot/package/list">
+									<span class="sub-item">Package List</span>
+								</a>
+							</li>
+						</ul>
+					</div>
+				</li>
 				<!-- Fleet -->
 				<% if (user.roles[0].type != "Custom Agent") { %>
 				<li class="nav-item <% if (page.includes('/fleet/')) { %> active <% } %>">

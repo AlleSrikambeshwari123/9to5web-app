@@ -405,6 +405,64 @@ exports.get_awb_list = (req, res, next) => {
    })
 };
 
+exports.get_awb_snapshot = (req, res, next) => {
+  if(req.query.clear){
+    req.query.daterange = '';
+  } 
+
+  services.awbService.getAwbsFullSnapshot(req,{_id : req.params.id}).then(awbs => {
+    let awbResponse = []
+    for(let awb of awbs){
+      awb = awb.toJSON()
+      let weightAwb = 0;
+      awb.volumetricWeight = 0;
+      awb.packages.forEach(package=>{
+        let check = 1
+        package.dimensions.split('x').forEach(data =>{
+          check = check * data
+        })
+        weightAwb = weightAwb + package.weight;
+        awb.volumetricWeight = (check/166);
+      })
+      awb.weight = weightAwb
+      awbResponse.push(awb)
+    }
+   // return res.json(awbs);
+   res.send(awbResponse)
+   })
+};
+
+exports.get_awb_list_snapshot = (req, res, next) => {
+  if(req.query.clear){
+    req.query.daterange = '';
+  } 
+
+  services.awbService.getAwbsFullSnapshot(req,{}).then(awbs => {
+    // for(let awb of awbs){
+    //   let weightAwb = 0;
+    //   awb.volumetricWeight = 0;
+    //   awb.packages.forEach(package=>{
+    //     let check = 1
+    //     package.dimensions.split('x').forEach(data =>{
+    //       check = check * data
+    //     })
+    //     weightAwb = weightAwb + package.weight;
+    //     awb.volumetricWeight = (check/166);
+    //   })
+    //   awb.weight = weightAwb
+    // }
+   // return res.json(awbs);
+    res.render('pages/warehouse/snapshot/awb/list', {
+      page: req.originalUrl,
+      title: "AirWay Bills",
+      user: res.user,
+      awbs: awbs,
+      clear:req.query.clear,
+      type:req.query.type
+    })
+   })
+};
+
 checkCondition = (awb,status) =>{
   if(status == 1)
     return (awb.packages.length > 0)
