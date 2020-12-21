@@ -968,7 +968,12 @@ class PackageService {
         if(status == PKG_STATUS[5]) index = 5
         if(status == PKG_STATUS[6]) index = 6
         if(status == PKG_STATUS[7]) index = 7
-        if(status == PKG_STATUS[8]) index = 8
+        if(status == PKG_STATUS[8]){
+            let cubePackage = awb.packages[0].cubeId.cubepackageId
+            let cubeStatuses = await PackageStatus.find({ packageId: cubePackage }).sort({ updatedAt: -1 })
+            status = cubeStatuses[0].status
+            index = 8
+        }
         if(status == PKG_STATUS[9]) index = 9
         
         return {status : status,id : index }

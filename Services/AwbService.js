@@ -1255,7 +1255,7 @@ class AwbService {
             .populate('shipper')
             .populate('carrier')
             .populate('hazmat')
-            .populate('packages')
+            .populate({path :'packages',populate : 'cubeId'})
             .populate('purchaseOrders')
             .populate('invoices')
             .populate('driver')
