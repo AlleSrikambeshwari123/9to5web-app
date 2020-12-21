@@ -71,6 +71,26 @@ const awbSchema = new mongoose.Schema({
     type:Boolean,
     default:false
   },
+  //add for searching purpose
+  customerFirstName:{
+    type: String
+  },
+  customerLastName:{
+    type: String
+  },
+  customerFullName:{
+    type: String
+  },
+  shipperName:{
+    type: String
+  },
+  pmb:{
+    type:Number
+  },
+  pmbString:{
+    type:String
+  }, 
+  //end searching
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',

@@ -291,3 +291,11 @@ exports.get_all_incoming_manifest = (req, res, next) => {
     res.json(dataTable);
   })
 }
+
+exports.deletePackage = (req, res, next)=>{
+  var manifestId = req.params.id;
+  var packageId = req.params.packageid;
+  services.manifestService.deletePackage(manifestId, packageId).then(result => {
+    res.json(result);
+  })
+}
