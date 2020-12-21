@@ -9,13 +9,15 @@ const MONGO_PASSWORD = process.env.MONGO_PASSWORD;
 const MONGO_PORT = process.env.MONGO_PORT
 const MONGO_PORT2 = process.env.MONGO_PORT2
 const REPLICA_SET = process.env.REPLICA_SET
+const MONGO_HOST3 = process.env.MONGO_HOST3;
+const MONGO_PORT3 = process.env.MONGO_PORT3
 
 let MONGO_URL;
 if (MONGO_HOST === 'localhost') {
   MONGO_URL = `mongodb://${MONGO_HOST}:${MONGO_PORT},${MONGO_HOST2}:${MONGO_PORT2}/${MONGO_DBNAME}?replicaSet=${REPLICA_SET}&readPreference=nearest`;
   // MONGO_URL = `mongodb://${MONGO_HOST}/${MONGO_DBNAME}`;
 } else {
-  MONGO_URL = `mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOST}:${MONGO_PORT},${MONGO_HOST2}:${MONGO_PORT2}/${MONGO_DBNAME}?replicaSet=${REPLICA_SET}&readPreference=nearest`;
+  MONGO_URL = `mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOST}:${MONGO_PORT},${MONGO_HOST2}:${MONGO_PORT2},${MONGO_HOST3}:${MONGO_PORT3}/${MONGO_DBNAME}?replicaSet=${REPLICA_SET}&readPreference=nearest`;
 }
 
 const MONGOOSE_OPTIONS = {

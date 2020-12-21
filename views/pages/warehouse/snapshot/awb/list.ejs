@@ -1,0 +1,189 @@
+<% layout('./shared/__template')%>
+<%
+var nodocsawb =[];
+var pendingawb = [];
+var awbpackage = [];
+var airwaybill = [];
+if(type=="nodocs"){
+   nodocsawb = awbs;
+}else if(type=="pendingawb"){
+   pendingawb = awbs;
+}else if(type=="awbpackage"){
+   awbpackage = awbs;
+}else{
+   airwaybill = awbs;
+}
+%>
+
+<div class='gutters'>
+  <div class='col-xl-12 col-lg-6 col-md-12 col-sm-12'>
+    <div class='card card-with-nav'>
+      <div class="card-header">
+        <div class="row row-nav-line">
+          <ul class="nav nav-tabs nav-line nav-color-primary" id="awb-list-tab" role="tablist">
+            <li class="nav-item"> <a class="nav-link <%if(type =="airwaybill" || !type){%>active show<%}%>" data-toggle="tab" href="#awb-list" role="tab"
+                aria-selected="true" onclick="pagereload('airwaybill')">AirWay Bills</a> </li>
+            <!-- <li class="nav-item"> <a class="nav-link <%if(type =="nodocs"){%>active show<%}%>" data-toggle="tab" href="#awb-no-docs" role="tab"
+                aria-selected="false" onclick="pagereload('nodocs')">No Docs</a> </li>
+            <li class="nav-item"> <a class="nav-link <%if(type =="pendingawb"){%>active show<%}%>" data-toggle="tab" href="#awb-no-packages" role="tab"
+                aria-selected="false" onclick="pagereload('pendingawb')">Pending Awb</a> </li>
+            <li class="nav-item"> <a class="nav-link <%if(type =="awbpackage"){%>active show<%}%>" data-toggle="tab" href="#awb-pickups" role="tab"
+                aria-selected="false" onclick="pagereload('awbpackage')">Awb Pickups</a> </li> -->
+          </ul>
+        </div>
+      </div>
+      <div id="myLoader"><img src="/img/preloader.gif"></div>
+      <div class="card-body daterangepickerbody">
+        <div class="tab-content m-4" id="awb-list-tabContent">
+          <input type="hidden" name="clear" id="clear" value="<%=clear%>">
+                <div class="tab-pane fade <%if(type =="airwaybill" || !type){%>active show<%}%>" id="awb-list" role="tabpanel" aria-labelledby="awb-list-tab">
+            <div class="table-responsive">
+              <table id='awb-table' class='display table table-striped table-hover  dataTable'>
+                <thead>
+                  <tr>
+                    <th>Date Received</th>
+                    <th>AWB Number</th>
+                    <th>Fll Pickup</th>
+                    <th>Invoice Count</th>
+                    <th>Package Count</th>
+                    <th>View more</th>
+                    <th></th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% 
+                  airwaybill.forEach(function(awb){
+                  %>
+                  <tr data-record=" <%= awb._id %>">
+                  <td><%=helpers.formatDate(awb.createdAt)%></td>
+                  <td><a href="/warehouse/fll/awb/manage/<%=awb._id%>/preview"><%=awb.awbId%></a></td>
+                  <td><%=(awb.fll_pickup && awb.fll_pickup) ? awb.fll_pickup : '' %></td>
+                  <td><%=awb.invoices && awb.invoices.length > 0 ? 'yes-doc' : 'no-doc' %></td>
+                  <td><%=awb.packages ? awb.packages.length : 'no-pkg' %></td>
+                  <td>
+                    <button class="btn btn-primary btn-view-more-awb btn-round float-right ml-md-auto"
+                      data-toggle="modal" data-original-title="View More Packages" data-id="<%=awb._id%>"
+                      data-target="#more-awb-details">View</button>
+                  </td>
+                  <!-- <td><% if(awb.invoice) { %>
+                      <a class="btn btn-link btn-primary btn-invoice" data-id="<%=awb.invoice%>" data-toggle="tooltip"
+                        data-original-title="Invoice Attached"> <i class="fa fa-paperclip"></i> </a>
+                      <% } %>
+                    </td> -->
+                  <td class="text-center">
+                    <a href='/warehouse/fll/awb/manage/<%=awb._id%>/get' class="btn btn-link btn-primary px-1"
+                      data-toggle="tooltip" data-original-title="Edit"> <i class="fa fa-pen"></i> </a>
+                    <!-- temporary commenting the code -->
+                    <!-- <a class="btn btn-link btn-danger btn-rm-awb p-1" data-toggle="modal" data-id="<%=awb._id%>"
+                        data-target="#confirm-delete-awb"> <i class="fa fa-trash"></i> </a> -->
+                  </td>
+                  <td>
+                    <a class="btn btn-link btn-primary btn-print-awb p-1" data-id="<%=awb._id%>"
+                      data-target="#print-popup"> <i class="fa fa-print"></i> </a>
+                  </td>
+                  </tr>
+                  <%})%>
+                  </tbody>
+                  </table>
+                </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="modal fade" id="more-awb-details" role="dialog" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">More details</h2>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row gutters">
+          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12" id="details-awb">
+
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger close-del" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="confirm-delete-awb" tabindex="-1" role="dialog" aria-labelledby="confirm-del-title"
+  aria-hidden="true" style="display: none;">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="confirm-del-title">Confirmation Required</h2>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <input type='hidden' id='pkg-tracking' />
+        Are you sure you want to delete this AirWay Bill?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-danger rm-awb" id='rm-awb'>Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="shipManifest" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2"
+  aria-hidden="true" style="display: none;">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="exampleModalLabel2">Ship Manifest</h2>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <label>Enter AWB #</label>
+        <input type='text' class='form-control awb'>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary close-del" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-success ship-manifest" id='ship-manifest'>Ship Manifest</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="print-popup" tabindex="-1" role="dialog" aria-labelledby="print-popup" aria-hidden="true"
+  style="display: none;">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="exampleModalLabel2">Print AirWay Bill</h2>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group text-center">
+          <canvas id="pdf-preview" class="border border-dark"></canvas>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger close-del" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary print-awb" id='print-awb'>Print</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  var type = "<%=type%>";  
+</script>
+<% block('scripts').append('<script src="/js/utils.js"></script>')%>
+<% block('scripts').append('<script src="/js/warehouse/snapshot/awb/list.js"></script>')%>

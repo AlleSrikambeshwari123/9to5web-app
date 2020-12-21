@@ -670,6 +670,89 @@ class PackageService {
                 });
         });
     }
+
+    getAllSnapshotPackagesUpdated(req,searchData){      
+        return new Promise((resolve, reject) => {
+            // var searchData = {};
+            if(req && req.query && !searchData._id){
+                var daterange = req.query.daterange?req.query.daterange:'';
+                if(daterange){
+                  var date_arr = daterange.split('-');
+                  var startDate = (date_arr[0]).trim();      
+                  var stdate = new Date(startDate);
+                  stdate.setDate(stdate.getDate() );
+          
+                  var endDate = (date_arr[1]).trim();
+                  var endate = new Date(endDate);
+                  endate.setDate(endate.getDate() +1); 
+                  
+                stdate = new Date(stdate.setUTCHours(0,0,0,0));
+                stdate = stdate.toISOString();
+                endate = new Date(endate.setUTCHours(23,59,59,0));
+                endate = endate.toISOString(); 
+                     
+                  searchData.createdAt = {"$gte":stdate, "$lte": endate};
+                }
+          
+                if(!req.query.daterange && !req.query.clear){
+                  var endate = new Date();      
+                  endate.setDate(endate.getDate());
+                  var stdate = new Date();
+                  stdate.setDate(stdate.getDate() - parseInt(strings.default_days_table));
+                  
+                stdate = new Date(stdate.setUTCHours(0,0,0,0));
+                stdate = stdate.toISOString();
+                endate = new Date(endate.setUTCHours(23,59,59,0));
+                endate = endate.toISOString(); 
+                       
+                  searchData.createdAt = {"$gte":stdate, "$lte": endate};
+                }
+                if(req.query.clear){
+                  var endate = new Date();      
+                  endate.setDate(endate.getDate()+1);
+                  var stdate = new Date();
+                  stdate.setDate(stdate.getDate() -14); 
+                  
+                stdate = new Date(stdate.setUTCHours(0,0,0,0));
+                stdate = stdate.toISOString();
+                endate = new Date(endate.setUTCHours(23,59,59,0));
+                endate = endate.toISOString(); 
+                      
+                  searchData.createdAt = {"$gte":stdate, "$lte": endate};
+                }
+              }   
+            if(searchData._id){
+                Package.find(searchData)
+                .populate({path : 'awbId',populate : 'driver'})
+                .populate('originBarcode')
+                .populate('customerId')
+                .populate('zoneId')
+                .populate('shipperId')
+                .populate('carrierId')
+                .populate('cubeId')
+                .populate('manifestId')
+                .exec((err, result) => {
+                    if (err) {
+                        resolve([]);
+                    } else {
+                        console.log("packg",result)
+                        resolve(result);
+                    }
+                });
+            }else{
+                console.log("check all list")
+                Package.find(searchData)
+                .exec((err, result) => {
+                    if (err) {
+                        resolve([]);
+                    } else {
+                        resolve(result);
+                    }
+                });
+            }
+        });
+    }
+
     get_Packages_update(object) {
         return new Promise((resolve, reject) => {
             Package.find(object)
@@ -986,6 +1069,60 @@ class PackageService {
                         pkg.actualFlight = actualFlight.planeId ? actualFlight.planeId.tailNumber : ''
                     }
                 }
+                pkg.OrignalBarcodeDate = pkg.OrignalBarcodeDate || ''
+                pkg.awbCreatedAt = pkg.awbCreatedAt || ''
+                pkg.actualFlight = pkg.actualFlight || ''
+                return pkg;
+            }),
+        );
+    }
+
+    async getAwbSnapshotPackageWithLastStatus(req) {
+        let packages = await this.getAllSnapshotPackagesUpdated(req,{_id : req.params.id});
+        let awbArray = []
+        console.log("packa",packages.length)
+        return await Promise.all(
+            packages.map(async(pkg) => {
+                let status = await this.services.packageService.getPackageLastStatus(pkg._id);
+                pkg.lastStatusText = status && status.status;
+                if(pkg.lastStatusDate)
+                    pkg.lastStatusDates  = momentz(pkg.lastStatusDate).tz("America/New_York").format('dddd, MMMM Do YYYY, h:mm A')
+                if (pkg.originBarcode) {
+                    let barcode = await this.getOriginBarcode(pkg.originBarcode)
+                    if (barcode !== null && barcode.createdAt) {
+                        pkg.OrignalBarcodeDate = barcode.createdAt;
+                    }
+                }
+                pkg.cubeName = ''
+                let cubePackage = await Cube.findOne({cubepackageId : pkg._id})
+                if(cubePackage){
+                    pkg.cubeName = cubePackage.name
+                }
+                if (pkg.awbId) {
+                    let awb = await this.services.awbService.getAwb(pkg.awbId)
+                    if (awb !== null && awb.createdAt) {
+                        let flag = 0
+                        awbArray.forEach(data=>{
+                            if(data.awbId == awb.awbId){
+                                data.pkgNo++
+                                flag = 1
+                                pkg.pieceNo = data.pkgNo 
+                            }
+                        })
+                        if(flag == 0){
+                            awbArray.push({awbId : awb.awbId,pkgNo : 1})
+                            pkg.pieceNo = 1
+                        }
+                        pkg.awbCreatedAt = momentz(awb.createdAt).tz("America/New_York").format('dddd, MMMM Do YYYY, h:mm A');
+                    }
+                }
+                // if (pkg.manifestId) {
+                //     let actualFlight = await Manifest.findById(pkg.manifestId).populate('planeId')
+                //     if (actualFlight !== null && actualFlight.planeId) {
+                //         pkg.manifestId = actualFlight._id
+                //         pkg.actualFlight = actualFlight.planeId ? actualFlight.planeId.tailNumber : ''
+                //     }
+                // }
                 pkg.OrignalBarcodeDate = pkg.OrignalBarcodeDate || ''
                 pkg.awbCreatedAt = pkg.awbCreatedAt || ''
                 pkg.actualFlight = pkg.actualFlight || ''
@@ -2605,17 +2742,17 @@ class PackageService {
     async getPackageInfo(userId) {
         try {
             let packagesList =  await PackageStatus.find({ updatedBy: userId }).populate({ path: "packageId", populate: [{ path: "awbId" },{path : 'cubeId'}] }).sort({ updatedAt: -1 })
-            let responsePkg = []
-            for(let pkg of packagesList){
-                pkg = pkg.toJSON()
-                if(pkg.status == 'Assigned to cube'){
-                    pkg.cubeDetail = pkg.packageId.cubeId
-                    let cubeStatusResult = await PackageStatus.findOne({ packageId : pkg.cubeDetail.cubepackageId }).sort({ updatedAt: -1 })
-                    pkg.cubeDetail.status = cubeStatusResult.status 
-                }
-                responsePkg.push(pkg)
-            }
-            return responsePkg
+            // let responsePkg = []
+            // for(let pkg of packagesList){
+            //     pkg = pkg.toJSON()
+            //     if(pkg.status == 'Assigned to cube'){
+            //         pkg.cubeDetail = pkg.packageId.cubeId
+            //         let cubeStatusResult = await PackageStatus.findOne({ packageId : pkg.cubeDetail.cubepackageId }).sort({ updatedAt: -1 })
+            //         pkg.cubeDetail.status = cubeStatusResult.status 
+            //     }
+            //     responsePkg.push(pkg)
+            // }
+            return packagesList
         } catch (error) {
             return []
         }
