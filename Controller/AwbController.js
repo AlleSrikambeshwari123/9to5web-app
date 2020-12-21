@@ -239,6 +239,10 @@ exports.add_new_awb = async (req, res, next) => {
   awb['updatedBy'] = req['userId'];
 
   services.awbService.createAwb(awb).then(async result => {
+    var pack = result.awbData.packages;
+    for(var i=0; i< pack.length;i++){
+      await services.packageService.updatePackageOtherDetail(pack[i]);
+    }
     res.send(result);
   })
   .catch((error) => {
@@ -343,8 +347,13 @@ exports.update_awb = async (req, res, next) => {
   // Updating awb
   services.awbService.updateAwb(awbId, awb, req['userId'])
   .then(async (result) => {
+    
     // Updating or creating invoices, purchaseOrders and packages
     await Promise.all(promises.map((promise) => promise()));
+    var pack = result.awbData.packages;
+    for(var i=0; i< pack.length;i++){
+      await services.packageService.updatePackageOtherDetail(pack[i]);
+    }
     res.send(result);
   })
   .catch((err) => {

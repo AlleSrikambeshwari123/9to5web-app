@@ -129,6 +129,38 @@ const packageSchema = new mongoose.Schema({
   isConsolidated: {
     type: String
   },
+  //add for searching purpose
+  awbIdNumber:{
+    type: Number
+  },
+  awbIdString:{
+    type: String
+  },  
+  barcode:{
+    type: String
+  },
+  customerFirstName:{
+    type: String
+  },
+  customerLastName:{
+    type: String
+  },
+  customerFullName:{
+    type: String
+  },
+  pmb:{
+    type:Number
+  },
+  pmbString:{
+    type:String
+  },
+  shipperName:{
+    type: String
+  },
+  storeLocation:{
+    type: String
+  },
+  //end searching
   createdBy: {
     type: mongoose.Schema.Types.ObjectId, 
     ref: 'User', 
