@@ -695,6 +695,7 @@ class PackageService {
                 }
           
                 if(!req.query.daterange && !req.query.clear){
+
                   var endate = new Date();      
                   endate.setDate(endate.getDate());
                   var stdate = new Date();
@@ -706,6 +707,7 @@ class PackageService {
                 endate = endate.toISOString(); 
                        
                   searchData.createdAt = {"$gte":stdate, "$lte": endate};
+
                 }
                 if(req.query.clear){
                   var endate = new Date();      
@@ -1030,7 +1032,7 @@ class PackageService {
         );
     }
     async getAwbNoDocsAllPackagesWithLastStatus(req) {
-        let packages = await this.getAllPackagesUpdated(req);
+        let packages = await this.getAllPackagesUpdatedLimit(req);
         let awbArray = []
         return await Promise.all(
             packages.map(async(pkg) => {
