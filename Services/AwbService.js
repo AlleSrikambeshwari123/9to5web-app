@@ -44,19 +44,49 @@ class AwbService {
                 delete awb.driver;
             }
             const newAwb = new Awb(awb);
-            newAwb.save((err, result) => {
+            newAwb.save((err, result) => {              
                 if (err) {
                     console.log("<==== Error While Creating Awb ====> ", err);
                     resolve({ success: false, message: strings.string_response_error });
                 } else {
                     this.updateAwbStatus(result, 1, awb['createdBy']);
+                    this.updateAwbOtherDetail(result['_id']);
                     awb['id'] = result['_id'];
-                    resolve({ success: true, message: strings.string_response_created, awb: awb });
+                    resolve({ success: true, message: strings.string_response_created, awb: awb, awbData:result });
                 }
             });
         });
     }
 
+    async updateAwbOtherDetail(awbId){
+      return new Promise((resolve, reject) => {
+        Awb.findById(awbId)
+            .populate('customerId')
+            .populate('shipper')
+            .exec(async (err,result) => {               
+              if(err){
+                console.log(err)
+                resolve({ success: false, message: strings.string_response_error });
+              }else{
+              if(result.customerId && result.shipper){
+                var customer = result.customerId;
+                var shipper = result.shipper;
+                var updateData =  {
+                    customerFirstName:customer.firstName,
+                    customerLastName : customer.lastName,
+                    customerFullName : customer.firstName + (customer.lastName?' '+ customer.lastName: ''),
+                    shipperName : shipper.name,
+                    pmb:customer.pmb,
+                    pmbString: customer.pmb                    
+                }    
+                  console.log("updateData>>>>>>>>>>>>>>>>>>>>",updateData) 
+                var update = await Awb.updateOne({_id:awbId},updateData);
+                resolve(update)
+              }
+            }
+            })
+      })
+    }
     async updateAwbStatus(awb, action, userId) {
         return new Promise((resolve, reject) => {
             const awbstatus = {
@@ -137,12 +167,14 @@ class AwbService {
             if (awb.hasOwnProperty && awb.hasOwnProperty('hazmat') && !awb['hazmat']) {
                 delete awb.hazmat;
             }
-            Awb.findOneAndUpdate({ _id: id }, {...awb }, (err, result) => {
+            Awb.findOneAndUpdate({ _id: id }, {...awb }, async(err, result) => {
                 if (err) {
                     resolve({ success: false });
                 } else {
+                  var awbData = await Awb.findOne({_id:id});
                     this.updateAwbStatus(result, 2, userId);
-                    resolve({ success: true ,id:id });
+                    this.updateAwbOtherDetail(result['_id']);
+                    resolve({ success: true ,id:id, awbData: awbData});
                 }
             });
         });
