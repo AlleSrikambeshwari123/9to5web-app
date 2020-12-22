@@ -8,7 +8,8 @@ const awbSchema = new mongoose.Schema({
   awbId: {
     type: Number,
     // default: 0, 
-    unique: true
+    unique: true,
+    index:true
   },
   customerId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -71,6 +72,36 @@ const awbSchema = new mongoose.Schema({
     type:Boolean,
     default:false
   },
+  //add for searching purpose
+  customerFirstName:{
+    type: String,
+    index:true
+  },
+  customerLastName:{
+    type: String,
+    index:true
+  },
+  customerFullName:{
+    type: String,
+    index:true
+  },
+  shipperName:{
+    type: String,
+    index:true
+  },
+  pmb:{
+    type:Number,
+    index:true
+  },
+  pmbString:{
+    type:String,
+    index:true
+  },
+  awbIdString: {
+    type: String,
+    index:true
+  }, 
+  //end searching
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
