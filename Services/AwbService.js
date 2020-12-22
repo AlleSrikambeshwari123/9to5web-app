@@ -461,7 +461,13 @@ class AwbService {
 
     getAwbsFullSnapshot(req,searchData) {
       // var searchData = {};
-      if(req && req.query && !searchData._id){
+      if(req && req.query && req.query.search_type && req.query.search_text){
+        var searchcolmn = {AWBNUMBER:"awbIdString", CONSIGNEE : "customerFullName",SHIPPER : "shipperName"}
+        var sColumn = searchcolmn[req.query.search_type];
+        searchData[sColumn] = {'$regex' : req.query.search_text , '$options' : 'i'};
+        console.log("seac",searchData)
+      } 
+      else if(req && req.query && !searchData._id){
 
           var daterange = req.query.daterange?req.query.daterange:'';      
           if(daterange){
@@ -521,22 +527,11 @@ class AwbService {
       }
         return new Promise((resolve, reject) => {
           if(!searchData._id){
-
             Awb.find(searchData)
-                // .populate('customerId')
-                // .populate('shipper')
-                // .populate('carrier')
-                // .populate('hazmat')
-                // .populate('packages')
-                // .populate('purchaseOrders')
-                // .populate('invoices')
-                // .populate('driver')
                 .exec(async (err, result) => {
                   Promise.all(result.map(async res =>{
                     return res;
                   })).then(()=> resolve(result))
-                 
-                   
                 });
           }else{
             Awb.find(searchData)

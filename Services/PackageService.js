@@ -674,7 +674,12 @@ class PackageService {
     getAllSnapshotPackagesUpdated(req,searchData){      
         return new Promise((resolve, reject) => {
             // var searchData = {};
-            if(req && req.query && !searchData._id){
+            if(req && req.query && req.query.search_type && req.query.search_text){
+                var searchcolmn = {AWBNUMBER:"awbIdString", CONSIGNEE : "customerFullName",SHIPPER : "shipperName",BARCODE : "barcode"}
+                var sColumn = searchcolmn[req.query.search_type];
+                searchData[sColumn] = {'$regex' : req.query.search_text , '$options' : 'i'};
+              } 
+            else if(req && req.query && !searchData._id){
                 var daterange = req.query.daterange?req.query.daterange:'';
                 if(daterange){
                   var date_arr = daterange.split('-');
@@ -728,7 +733,7 @@ class PackageService {
                 .populate({path : 'awbId',populate : 'driver'})
                 .populate('originBarcode')
                 .populate('customerId')
-                .populate('zoneId')
+                .populate({path : 'zoneId',populate : {path : 'location',populate : 'company'}})
                 .populate('shipperId')
                 .populate('carrierId')
                 .populate('cubeId')

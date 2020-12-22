@@ -15,6 +15,18 @@ if(type=="nodocs"){
 }
 %>
 
+<%
+var endate = new Date();      
+    endate.setDate(endate.getDate());
+    var stdate = new Date();
+    stdate.setDate(stdate.getDate() -1);      
+    var dateRangeDefault = (stdate.getMonth() + 1)+ '/'+stdate.getDate()+'/'+stdate.getFullYear()+' - '+
+    (endate.getMonth() + 1)+ '/'+endate.getDate()+'/'+endate.getFullYear(); 
+    if(query.clear){
+        dateRangeDefault = '';
+    }
+%>
+
 <div class='gutters'>
   <div class='col-xl-12 col-lg-6 col-md-12 col-sm-12'>
     <div class='card card-with-nav'>
@@ -34,15 +46,32 @@ if(type=="nodocs"){
       </div>
       <div id="myLoader"><img src="/img/preloader.gif"></div>
       <div class="card-body daterangepickerbody">
-        <div class="tab-content m-4" id="awb-list-tabContent">
           <input type="hidden" name="clear" id="clear" value="<%=clear%>">
+          <input type="hidden" id="daterange" value="<%=daterange%>">
+          <input type="hidden" id="page" value="<%=page%>">
+
+           <div class="col-xs-12 col-sm-12 float-right">
+              <select name="search_type" id="search_type"  class="form-control" style="width: 30%; float: left;">
+                  <option value="">Select </option>
+                  <option value="AWBNUMBER" <%if(query.search_type=='AWBNUMBER'){%>selected<%}%>>AWB # </option>
+                  <option value="CONSIGNEE" <%if(query.search_type=='CONSIGNEE'){%>selected<%}%>>Consignee </option>
+                  <option value="SHIPPER" <%if(query.search_type=='SHIPPER'){%>selected<%}%>>Shipper </option>
+              </select>
+              <input type="text" name="search_text" id="search_text" class="form-control" value="<%=query.search_text%>" style="width: 30%; float: left;margin-left: 1%;"">
+              <input type="submit" value="Filter" class="btn btn-primary" style="margin-left: 1%;" onclick="searchDataFilter()">
+          </div>
+        <div class="tab-content m-4" id="awb-list-tabContent">
+          <!-- <input type="hidden" name="clear" id="clear" value="<%=clear%>"> -->
                 <div class="tab-pane fade <%if(type =="airwaybill" || !type){%>active show<%}%>" id="awb-list" role="tabpanel" aria-labelledby="awb-list-tab">
-            <div class="table-responsive">
+            <div class="table-responsive p-4">
               <table id='awb-table' class='display table table-striped table-hover  dataTable'>
                 <thead>
                   <tr>
                     <th>Date Received</th>
                     <th>AWB Number</th>
+                    <th>PMB</th>
+                    <th>Consignee</th>
+                    <th>Shipper</th>
                     <th>Fll Pickup</th>
                     <th>Invoice Count</th>
                     <th>Package Count</th>
@@ -58,6 +87,9 @@ if(type=="nodocs"){
                   <tr data-record=" <%= awb._id %>">
                   <td><%=helpers.formatDate(awb.createdAt)%></td>
                   <td><a href="/warehouse/fll/awb/manage/<%=awb._id%>/preview"><%=awb.awbId%></a></td>
+                  <td><%=awb.pmb %></td>
+                  <td><%=awb.customerFullName %></td>
+                  <td><%=awb.shipperName %></td>
                   <td><%=(awb.fll_pickup && awb.fll_pickup) ? awb.fll_pickup : '' %></td>
                   <td><%=awb.invoices && awb.invoices.length > 0 ? 'yes-doc' : 'no-doc' %></td>
                   <td><%=awb.packages ? awb.packages.length : 'no-pkg' %></td>
@@ -184,6 +216,7 @@ if(type=="nodocs"){
 </div>
 <script>
   var type = "<%=type%>";  
+  var daterange = "<%=query.daterange ? query.daterange :dateRangeDefault%>";
 </script>
 <% block('scripts').append('<script src="/js/utils.js"></script>')%>
 <% block('scripts').append('<script src="/js/warehouse/snapshot/awb/list.js"></script>')%>
