@@ -57,6 +57,85 @@ class AwbService {
             });
         });
     }
+    async updatePackageOtherDetail(packageId){
+      return new Promise((resolve, reject) => {
+       Package.findById(packageId)
+              .populate('awbId')
+              .populate('customerId')
+              .populate('shipperId')
+              .populate('originBarcode')
+              .exec(async (err, result) => {
+                  if(err){
+                      console.log(err)
+                      resolve({ success: false, message: strings.string_response_error });
+                  }else{
+
+                      var updateData =  {
+                          awbIdNumber:result.awbId.awbId,
+                          awbIdString:result.awbId.awbId                        
+                      }
+                      if(result.originBarcode && result.originBarcode.barcode){
+                          updateData.barcode = result.originBarcode.barcode;
+                      }
+                      if(result.customerId){
+                          var customer = result.customerId
+                          updateData.customerFirstName = customer.firstName;
+                          updateData.customerLastName = customer.lastName;
+                          updateData.customerFullName = customer.firstName + (customer.lastName?''+ customer.lastName: '');  
+                          
+                          if(customer && customer.pmb){
+                              updateData.pmb = customer.pmb;
+                              updateData.pmbString = customer.pmb;
+                              var pmb =  customer.pmb;
+                              if((pmb > 0 && pmb <= 1999) || (pmb >= 4000 && pmb <= 4999)) {
+                                  updateData.storeLocation = 'CABLEBEACH';
+                              }
+                              else if((pmb >= 3000 && pmb <= 3999)){
+                                  updateData. storeLocation = 'ALBANY';
+                              }else{
+                                  updateData. storeLocation = '';
+                              }                                                                           
+                          }
+                      }
+                      if(result.shipperId && result.shipperId.name){
+                          updateData.shipperName = result.shipperId.name;
+                      }
+                      var update = await Package.updateOne({_id:packageId}, updateData);
+                      resolve(update);
+                  }
+              })
+          })
+  }
+  async updateAwbOtherDetail(awbId){
+    return new Promise((resolve, reject) => {
+      Awb.findById(awbId)
+          .populate('customerId')
+          .populate('shipper')
+          .exec(async (err,result) => {               
+            if(err){
+              console.log(err)
+              resolve({ success: false, message: strings.string_response_error });
+            }else{
+            if(result.customerId && result.shipper){
+              var customer = result.customerId;
+              var shipper = result.shipper;
+              var updateData =  {
+                  customerFirstName:customer.firstName,
+                  customerLastName : customer.lastName,
+                  customerFullName : customer.firstName + (customer.lastName?' '+ customer.lastName: ''),
+                  shipperName : shipper.name,
+                  pmb:customer.pmb,
+                  pmbString: customer.pmb,
+                  awbIdString: result.awbId?result.awbId : ''                   
+              }    
+                console.log("updateData>>>>>>>>>>>>>>>>>>>>",updateData) 
+              var update = await Awb.updateOne({_id:awbId},updateData);
+              resolve(update)
+            }
+          }
+          })
+    })
+  }
 
     async updateAwbOtherDetail(awbId){
       return new Promise((resolve, reject) => {
@@ -172,10 +251,10 @@ class AwbService {
                 if (err) {
                     resolve({ success: false });
                 } else {
-                  var awbData = await Awb.findOne({_id:id});
+                    var awbData = await Awb.findOne({_id:id});
                     this.updateAwbStatus(result, 2, userId);
                     this.updateAwbOtherDetail(result['_id']);
-                    resolve({ success: true ,id:id, awbData: awbData});
+                    resolve({ success: true ,id:id, awbData: awbData });
                 }
             });
         });
@@ -412,7 +491,13 @@ class AwbService {
 
     getAwbsFullSnapshot(req,searchData) {
       // var searchData = {};
-      if(req && req.query && !searchData._id){
+      if(req && req.query && req.query.search_type && req.query.search_text){
+        var searchcolmn = {AWBNUMBER:"awbIdString", CONSIGNEE : "customerFullName",SHIPPER : "shipperName"}
+        var sColumn = searchcolmn[req.query.search_type];
+        searchData[sColumn] = {'$regex' : req.query.search_text , '$options' : 'i'};
+        console.log("seac",searchData)
+      } 
+      else if(req && req.query && !searchData._id){
 
           var daterange = req.query.daterange?req.query.daterange:'';      
           if(daterange){
@@ -472,22 +557,11 @@ class AwbService {
       }
         return new Promise((resolve, reject) => {
           if(!searchData._id){
-
             Awb.find(searchData)
-                // .populate('customerId')
-                // .populate('shipper')
-                // .populate('carrier')
-                // .populate('hazmat')
-                // .populate('packages')
-                // .populate('purchaseOrders')
-                // .populate('invoices')
-                // .populate('driver')
                 .exec(async (err, result) => {
                   Promise.all(result.map(async res =>{
                     return res;
                   })).then(()=> resolve(result))
-                 
-                   
                 });
           }else{
             Awb.find(searchData)
