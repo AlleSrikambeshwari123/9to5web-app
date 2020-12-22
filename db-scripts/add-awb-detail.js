@@ -31,7 +31,8 @@ createConnection()
                     customerFullName : customer.firstName + (customer.lastName?' '+ customer.lastName: ''),
                     shipperName : shipper.name,
                     pmb:customer.pmb,
-                    pmbString: customer.pmb                    
+                    pmbString: customer.pmb,
+                    awbIdString: awb.awbId?awb.awbId:''                   
                 }       
                 var update = await Awb.updateOne({_id:awb._id},updateData);
             }

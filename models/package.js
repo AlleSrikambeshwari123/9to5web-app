@@ -5,7 +5,8 @@ const mongoose = require('mongoose');
 const packageSchema = new mongoose.Schema({
   description: {
     type: String,
-    required: true
+    required: true,
+    index:true
   },
   trackingNo: {
     type: String
@@ -131,31 +132,40 @@ const packageSchema = new mongoose.Schema({
   },
   //add for searching purpose
   awbIdNumber:{
-    type: Number
+    type: Number,
+    index:true
   },
   awbIdString:{
-    type: String
+    type: String,
+    index:true
   },  
   barcode:{
-    type: String
+    type: String,
+    index:true
   },
   customerFirstName:{
-    type: String
+    type: String,
+    index:true
   },
   customerLastName:{
-    type: String
+    type: String,
+    index:true
   },
   customerFullName:{
-    type: String
+    type: String,
+    index:true
   },
   pmb:{
-    type:Number
+    type:Number,
+    index:true
   },
   pmbString:{
-    type:String
+    type:String,
+    index:true
   },
   shipperName:{
-    type: String
+    type: String,
+    index:true
   },
   storeLocation:{
     type: String
@@ -169,5 +179,6 @@ const packageSchema = new mongoose.Schema({
 }, {
   timestamps: true
 });
+
 
 module.exports = mongoose.model('Package', packageSchema);

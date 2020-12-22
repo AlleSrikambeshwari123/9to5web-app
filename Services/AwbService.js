@@ -77,7 +77,8 @@ class AwbService {
                     customerFullName : customer.firstName + (customer.lastName?' '+ customer.lastName: ''),
                     shipperName : shipper.name,
                     pmb:customer.pmb,
-                    pmbString: customer.pmb                    
+                    pmbString: customer.pmb,
+                    awbIdString: result.awbId?result.awbId : ''                   
                 }    
                   console.log("updateData>>>>>>>>>>>>>>>>>>>>",updateData) 
                 var update = await Awb.updateOne({_id:awbId},updateData);
