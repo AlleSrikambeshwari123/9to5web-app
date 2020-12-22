@@ -28,6 +28,36 @@ exports.get_package_list = (req, res, next) => {
     });
 };
 
+exports.get_package_detail = (req, res, next)=>{    
+    services.packageService.getAwbSnapshotPackageWithLastStatus(req).then((packages) => {
+        return Promise.all(
+            packages.map(async(pkg, i) => {
+                let awb = await services.printService.getAWBDataForPackagesRelatedEntitie(pkg.awbId._id);
+                let location = {};
+                if(pkg.zoneId && pkg.zoneId.location){
+                 location = await services.packageService.getLocationDetail(pkg.zoneId.location);
+                }
+                packages[i].pieces = awb.packages ? awb.packages.length : 0
+                packages[i].packageNumber = "PK00" + packages[i].id;
+                packages[i].locationData = location
+                return pkg
+            })
+        ).then(pkgs => {            
+            res.render('pages/warehouse/package/package-detail', {
+                page: req.originalUrl,
+                user: res.user,
+                title: 'Package Detail',
+                filterURL: '',
+                buttonName: 'Add to Manifest',
+                packages: pkgs,
+                clear: req.query.clear,
+                query: req.query
+            });
+        })
+
+    });
+}
+
 exports.get_package_snapshot = (req, res, next) => {
     services.packageService.getAwbSnapshotPackageWithLastStatus(req).then((packages) => {
         return Promise.all(

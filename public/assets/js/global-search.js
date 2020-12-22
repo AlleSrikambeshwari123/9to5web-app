@@ -34,23 +34,18 @@ $(function () {
 
     if (response && response.length) {
       response.forEach((data) => {
-        if (inputField === 'Package') {
-          id = data.trackingNo;
-          awbId = data.awbId
-        } else if (inputField === 'Original') {
-          id = data.trackingNo;
-          barcode = data.originBarcode ? data.originBarcode.barcode : ''
-          awbId = data.awbId
-        } else if (inputField === 'Customer') {
+         id = data.trackingNo;
+          var customerFullName = data.customerFullName?data.customerFullName:'';
+          var trackingNo = data.trackingNo?data.trackingNo:'';
+          var barcode = data.barcode?data.barcode:''; 
+          var awbIdNumber =  data.awbIdNumber?data.awbIdNumber:'';
+          if (inputField === 'Customer') {
           id = data.firstName;
           customerId = data._id
         }
-        else {
-          id = data.awbId;
-          awbId = data._id
-        }
-        if (inputField === 'Original') {
-          $('#global-search-table-data').dataTable().fnAddData([id + '<span class="font-weight-bold text-right text-primary ml-3">' + barcode + '</span>', `<a id="global-search-collection-details" href="javascript: void(0)" data-id=${data._id}>Show Details</a>`]);
+        
+        if(inputField =="Package" || inputField =="Customer" || inputField =="Original" || inputField =="Awb"){
+          $('#global-search-table-data').dataTable().fnAddData([customerFullName , '<span class="font-weight-bold text-right text-primary ml-3">' + barcode + '</span>', trackingNo, awbIdNumber, `<a id="global-search-collection-details" href="javascript: void(0)" data-id=${data._id}>Show Details</a>`])
         } else {
           $('#global-search-table-data').dataTable().fnAddData([id, `<a id="global-search-collection-details" href="javascript: void(0)" data-id=${data._id}>Show Details</a>`]);
         }
@@ -76,14 +71,14 @@ $(function () {
 
     // Resetting the selected values
     reset();
+    document.location.href = `/warehouse/package/${id}`;
 
-
-    if (selectedOption === 'Customer') {
-      document.location.href = `/admin/customers/manage/${customerId}/get`;
-    }
-    else {
-      document.location.href = `/warehouse/fll/awb/manage/${awbId}/get`;
-    }
+    // if (selectedOption === 'Customer') {
+    //   document.location.href = `/admin/customers/manage/${customerId}/get`;
+    // }
+    // else {
+    //   document.location.href = `/warehouse/fll/awb/manage/${awbId}/get`;
+    // }
 
     $('#global-search-data-modal').modal('hide');
   });
@@ -95,11 +90,11 @@ $(function () {
     if (selectedVal === 'Package') {
       targetElement.attr("placeholder", "Search Packages by description...");
     } else if (selectedVal === 'Customer') {
-      targetElement.attr("placeholder", "Search Customer by email...");
+      targetElement.attr("placeholder", "Search Packages by customer name...");
     } else if (selectedVal === 'Original') {
-      targetElement.attr("placeholder", "Search Packages by Original Tracking No.");
+      targetElement.attr("placeholder", "Search Packages by Original Barcode.");
     } else if (selectedVal === 'Awb') {
-      targetElement.attr("placeholder", "Search AWB by AWB number...");
+      targetElement.attr("placeholder", "Search Packages by AWB number...");
     } else {
       targetElement.attr("placeholder", "Search...");
     }

@@ -3288,7 +3288,7 @@ class PackageService {
     }
 
     // This method is used when we're performing the global search 
-    getGlobalSearchData(bodyData) {
+    getGlobalSearchDataOld(bodyData) {
         return new Promise(async (resolve, reject) => {
             let { selectedOption, inputField } = bodyData;
             if (!selectedOption || selectedOption === 'default' || !(inputField && inputField.trim())) {
@@ -3338,6 +3338,34 @@ class PackageService {
                     }
                 });
             }
+        })
+    }
+
+    getGlobalSearchData(bodyData) {
+        return new Promise(async (resolve, reject) => {
+            let { selectedOption, inputField } = bodyData;
+            if (!selectedOption || selectedOption === 'default' || !(inputField && inputField.trim())) {
+                return resolve({ success: false, message: strings.string_global_search_error });
+            }
+           // inputField = inputField.trim();
+            var search = { customerFullName: { $regex: inputField, $options: 'i' } };
+            if (selectedOption === "Package"){
+               search =  { description: { $regex: inputField, $options: 'i' } }
+            }
+            if (selectedOption === "Original") {
+                search =  { barcode: { $regex: inputField, $options: 'i' } }
+            }
+            if (selectedOption === "Awb") {
+                search =  { awbIdString: { $regex: inputField, $options: 'i' } }
+            }
+            console.log(search)
+            Package.find(search, 'id customerFullName barcode awbIdNumber trackingNo', (err, packages) => {
+                if (err) {
+                    resolve([]);
+                } else {
+                    resolve(packages);
+                }
+            })
         })
     }
     getProcessOriginBarcode(user) {
@@ -3726,6 +3754,13 @@ class PackageService {
                     }
                 });
         });
+    }
+    async getLocationDetail(id){
+        return new Promise(async (resolve,reject)=>{
+            console.log({_id:id})
+            let location = await Location.findOne({_id:id.toString()}).populate('company');
+            resolve(location);
+        }) 
     }
    /* End Sending EMail for Nodocs and Delivered */
 }
