@@ -733,7 +733,7 @@ class PackageService {
                 .populate({path : 'awbId',populate : 'driver'})
                 .populate('originBarcode')
                 .populate('customerId')
-                .populate('zoneId')
+                .populate({path : 'zoneId',populate : {path : 'location',populate : 'company'}})
                 .populate('shipperId')
                 .populate('carrierId')
                 .populate('cubeId')
