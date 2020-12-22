@@ -975,7 +975,12 @@ class PackageService {
         if(status == PKG_STATUS[5]) index = 5
         if(status == PKG_STATUS[6]) index = 6
         if(status == PKG_STATUS[7]) index = 7
-        if(status == PKG_STATUS[8]) index = 8
+        if(status == PKG_STATUS[8]){
+            let cubePackage = awb.packages[0].cubeId.cubepackageId
+            let cubeStatuses = await PackageStatus.find({ packageId: cubePackage }).sort({ updatedAt: -1 })
+            status = cubeStatuses[0].status
+            index = 8
+        }
         if(status == PKG_STATUS[9]) index = 9
         
         return {status : status,id : index }
@@ -1739,18 +1744,69 @@ class PackageService {
             }
             await Barcode.updateOne({_id : newPackage.originBarcode},statusObject)
             const newPackageData = new Package(newPackage);
-            newPackageData.save((err, result) => {
+            newPackageData.save(async (err, result) => {
                 if (err) {
                     console.log(err);
                     resolve({ success: false, message: strings.string_response_error });
                 } else {
-                    this.removeProcessPackage(newPackage.originBarcode, newPackage.createdBy)
-                    this.updatePackageStatus(result['_id'], 1, newPackage.createdBy)
+                     this.removeProcessPackage(newPackage.originBarcode, newPackage.createdBy)
+                     this.updatePackageStatus(result['_id'], 1, newPackage.createdBy);
+                    // this.updatePackageOtherDetail(result['_id']);
                     resolve({ success: true });
                 }
             });
         });
     }
+    async updatePackageOtherDetail(packageId){
+        return new Promise((resolve, reject) => {
+         Package.findById(packageId)
+                .populate('awbId')
+                .populate('customerId')
+                .populate('shipperId')
+                .populate('originBarcode')
+                .exec(async (err, result) => {
+                    if(err){
+                        console.log(err)
+                        resolve({ success: false, message: strings.string_response_error });
+                    }else{
+
+                        var updateData =  {
+                            awbIdNumber:result.awbId.awbId,
+                            awbIdString:result.awbId.awbId                        
+                        }
+                        if(result.originBarcode && result.originBarcode.barcode){
+                            updateData.barcode = result.originBarcode.barcode;
+                        }
+                        if(result.customerId){
+                            var customer = result.customerId
+                            updateData.customerFirstName = customer.firstName;
+                            updateData.customerLastName = customer.lastName;
+                            updateData.customerFullName = customer.firstName + (customer.lastName?''+ customer.lastName: '');  
+                            
+                            if(customer && customer.pmb){
+                                updateData.pmb = customer.pmb;
+                                updateData.pmbString = customer.pmb;
+                                var pmb =  customer.pmb;
+                                if((pmb > 0 && pmb <= 1999) || (pmb >= 4000 && pmb <= 4999)) {
+                                    updateData.storeLocation = 'CABLEBEACH';
+                                }
+                                else if((pmb >= 3000 && pmb <= 3999)){
+                                    updateData. storeLocation = 'ALBANY';
+                                }else{
+                                    updateData. storeLocation = '';
+                                }                                                                           
+                            }
+                        }
+                        if(result.shipperId && result.shipperId.name){
+                            updateData.shipperName = result.shipperId.name;
+                        }
+                        var update = await Package.updateOne({_id:packageId}, updateData);
+                        resolve(update);
+                    }
+                })
+            })
+    }
+
     async updatePackageOtherDetail(packageId){
         return new Promise((resolve, reject) => {
          Package.findById(packageId)
@@ -2798,17 +2854,17 @@ class PackageService {
     async getPackageInfo(userId) {
         try {
             let packagesList =  await PackageStatus.find({ updatedBy: userId }).populate({ path: "packageId", populate: [{ path: "awbId" },{path : 'cubeId'}] }).sort({ updatedAt: -1 })
-            // let responsePkg = []
-            // for(let pkg of packagesList){
-            //     pkg = pkg.toJSON()
-            //     if(pkg.status == 'Assigned to cube'){
-            //         pkg.cubeDetail = pkg.packageId.cubeId
-            //         let cubeStatusResult = await PackageStatus.findOne({ packageId : pkg.cubeDetail.cubepackageId }).sort({ updatedAt: -1 })
-            //         pkg.cubeDetail.status = cubeStatusResult.status 
-            //     }
-            //     responsePkg.push(pkg)
-            // }
-            return packagesList
+            let responsePkg = []
+            for(let pkg of packagesList){
+                pkg = pkg.toJSON()
+                if(pkg.status == 'Assigned to cube'){
+                    pkg.cubeDetail = pkg.packageId.cubeId
+                    let cubeStatusResult = await PackageStatus.findOne({ packageId : pkg.cubeDetail.cubepackageId }).sort({ updatedAt: -1 })
+                    pkg.cubeDetail.status = cubeStatusResult.status 
+                }
+                responsePkg.push(pkg)
+            }
+            return responsePkg
         } catch (error) {
             return []
         }

@@ -445,7 +445,7 @@ class CubeService {
     })
   }
 
-  async CubeAwbDtail(id){
+  async deletePackage(id){
     return new Promise((resolve, reject) => {   
       CubeAwb.findOne({_id:id}).populate('createdBy').exec(async (err, cube) => {        
         resolve(cube); 
@@ -551,6 +551,21 @@ class CubeService {
         
       })    
     })
+  }
+  deletePackage(cubeId, packageId){
+    console.log(cubeId,packageId)
+    return new Promise((resolve, reject) => {
+      Cube.updateOne({_id: cubeId}, {$pull: { packages:  packageId}}, (err, result) => {
+        Package.updateOne({_id: cubeId}, {cubeId: null}, (err, result) => {
+        if (err) {
+          console.log(err)
+          resolve({ success: false, message: err });
+        } else {
+          resolve({ success: true, message: strings.string_response_removed });
+        }
+      })
+      })
+    });
   }
 
 }
