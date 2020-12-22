@@ -5,7 +5,8 @@ const mongoose = require('mongoose');
 const packageSchema = new mongoose.Schema({
   description: {
     type: String,
-    required: true
+    required: true,
+    index:true
   },
   trackingNo: {
     type: String
@@ -129,6 +130,47 @@ const packageSchema = new mongoose.Schema({
   isConsolidated: {
     type: String
   },
+  //add for searching purpose
+  awbIdNumber:{
+    type: Number,
+    index:true
+  },
+  awbIdString:{
+    type: String,
+    index:true
+  },  
+  barcode:{
+    type: String,
+    index:true
+  },
+  customerFirstName:{
+    type: String,
+    index:true
+  },
+  customerLastName:{
+    type: String,
+    index:true
+  },
+  customerFullName:{
+    type: String,
+    index:true
+  },
+  pmb:{
+    type:Number,
+    index:true
+  },
+  pmbString:{
+    type:String,
+    index:true
+  },
+  shipperName:{
+    type: String,
+    index:true
+  },
+  storeLocation:{
+    type: String
+  },
+  //end searching
   createdBy: {
     type: mongoose.Schema.Types.ObjectId, 
     ref: 'User', 
