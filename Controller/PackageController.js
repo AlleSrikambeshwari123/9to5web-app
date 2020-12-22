@@ -63,7 +63,9 @@ exports.get_package_list_snapshot = (req, res, next) => {
                 filterURL: '',
                 buttonName: 'Add to Manifest',
                 packages: pkgs,
-                clear: req.query.clear
+                clear: req.query.clear,
+                daterange:req.query.daterange?req.query.daterange:'',
+                query:req.query
             });
         })
 

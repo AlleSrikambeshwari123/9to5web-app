@@ -466,7 +466,9 @@ exports.get_awb_list_snapshot = (req, res, next) => {
       user: res.user,
       awbs: awbs,
       clear:req.query.clear,
-      type:req.query.type
+      type:req.query.type,
+      daterange:req.query.daterange?req.query.daterange:'',
+      query:req.query
     })
    })
 };
