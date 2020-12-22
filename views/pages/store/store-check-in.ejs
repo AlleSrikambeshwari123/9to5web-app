@@ -103,6 +103,7 @@
 						<th>Volumetric Weight</th>
 					</tr>
 				</thead>
+				<%=JSON.stringify(packages[0])%>
 				<tbody>
 					<input class="packages" value="<%=JSON.stringify(packages)%>" hidden/>
 					<% packages.forEach(function(pkg){
