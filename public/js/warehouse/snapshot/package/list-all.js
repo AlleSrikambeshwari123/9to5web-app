@@ -26,10 +26,17 @@ $(document).on('click', '.btn-view-more-package', function () {
     success: function (response) {
       console.log("respon", response)
       response.forEach((data, i) => {
-        let carrierName  = data.carrierId ? data.carrierId.name : '-',zoneName =data.zoneId ? data.zoneId.name : '-',driverName ='-' ,manifestTitle = data.manifestId  ?  data.manifestId.title : '-',cubeName = data.cubeId?data.cubeId.name : '-'
+        let carrierName  = data.carrierId ? data.carrierId.name : '-',zoneName =data.zoneId ? data.zoneId.name : '-',driverName ='-' ,manifestTitle = data.manifestId  ?  data.manifestId.title : '-',cubeName = data.cubeId?data.cubeId.name : '-',locationName = '-',companyName = '-';
         if(data.awbId && data.awbId.driver){
           driverName =  (data.awbId.driver.firstName + " " + data.awbId.driver.lastName) 
         }
+        if(data.zoneId && data.zoneId.location && data.zoneId.location.name){
+          locationName = data.zoneId.location.name
+          if(data.zoneId.location.company && data.zoneId.location.company.name){
+            companyName = data.zoneId.location.company.name;
+          }
+        }
+        console.log("zone",zoneName,companyName,locationName)
         let pmbNo = data.customerId.pmb, location = '-'
         if((pmbNo > 0 && pmbNo <= 1999) || (pmbNo >= 4000 && pmbNo <= 4999)) {
             location = "Cabel Beach"
@@ -39,7 +46,7 @@ $(document).on('click', '.btn-view-more-package', function () {
             location = "9to5"          
         }
         console.log("loc",location)
-        $('#details-package').html('  <div class="row"><div class="form-group form-show-validation row" style="width:100%"><label class="col-lg-6 col-md-6 col-sm-4 ">Carrier</label><div class="col-lg-6 col-md-6 col-sm-6">'+ carrierName +'</div></div></div>        <div class="row"><div class="form-group form-show-validation row" style="width:100%"><label class="col-lg-6 col-md-6 col-sm-4 ">AWB packages count </label><div class="col-lg-6 col-md-6 col-sm-6">'+data.awbId.packages.length +'</div></div></div> <div class="row"><div class="form-group form-show-validation row" style="width:100%"><label class="col-lg-6 col-md-6 col-sm-4 ">Zone</label><div class="col-lg-6 col-md-6 col-sm-6">'+zoneName+'</div></div></div> <div class="row"><div class="form-group form-show-validation row" style="width:100%"><label class="col-lg-6 col-md-6 col-sm-4 ">Manifest Title</label><div class="col-lg-6 col-md-6 col-sm-6">'+ manifestTitle +'</div></div></div><div class="row"><div class="form-group form-show-validation row" style="width:100%"><label class="col-lg-6 col-md-6 col-sm-4 ">Driver</label><div class="col-lg-6 col-md-6 col-sm-6">'+driverName +'</div></div></div>      <div class="row"><div class="form-group form-show-validation row" style="width:100%"><label class="col-lg-6 col-md-6 col-sm-4 ">Cube</label><div class="col-lg-6 col-md-6 col-sm-6">'+cubeName+'</div></div></div> ')
+        $('#details-package').html('  <div class="row"><div class="form-group form-show-validation row" style="width:100%"><label class="col-lg-6 col-md-6 col-sm-4 ">Carrier</label><div class="col-lg-6 col-md-6 col-sm-6">'+ carrierName +'</div></div></div>        <div class="row"><div class="form-group form-show-validation row" style="width:100%"><label class="col-lg-6 col-md-6 col-sm-4 ">AWB packages count </label><div class="col-lg-6 col-md-6 col-sm-6">'+data.awbId.packages.length +'</div></div></div> <div class="row"><div class="form-group form-show-validation row" style="width:100%"><label class="col-lg-6 col-md-6 col-sm-4 ">Zone</label><div class="col-lg-6 col-md-6 col-sm-6">'+zoneName+'</div></div></div> <div class="row"><div class="form-group form-show-validation row" style="width:100%"><label class="col-lg-6 col-md-6 col-sm-4 ">Manifest Title</label><div class="col-lg-6 col-md-6 col-sm-6">'+ manifestTitle +'</div></div></div><div class="row"><div class="form-group form-show-validation row" style="width:100%"><label class="col-lg-6 col-md-6 col-sm-4 ">Driver</label><div class="col-lg-6 col-md-6 col-sm-6">'+driverName +'</div></div></div>      <div class="row"><div class="form-group form-show-validation row" style="width:100%"><label class="col-lg-6 col-md-6 col-sm-4 ">Cube</label><div class="col-lg-6 col-md-6 col-sm-6">'+cubeName+'</div></div></div> <div class="row"><div class="form-group form-show-validation row" style="width:100%"><label class="col-lg-6 col-md-6 col-sm-4 ">Location</label><div class="col-lg-6 col-md-6 col-sm-6">'+ locationName +'</div></div></div>  <div class="row"><div class="form-group form-show-validation row" style="width:100%"><label class="col-lg-6 col-md-6 col-sm-4 ">Company</label><div class="col-lg-6 col-md-6 col-sm-6">'+ companyName +'</div></div></div>')
         
         
        
