@@ -1,0 +1,139 @@
+<% layout('./shared/__template')%>
+<%var package = packages[0]%>
+<form id="saveFrom" method="POST" action='update'>
+  <div class="row gutters">
+    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+      <div class="card">
+        <div class="card-header">
+          <h4 class="card-title"><%= title%></h4>
+        </div>
+        <div class="card-body">
+          <div class="form-group form-show-validation row">
+            <label for="username" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">PMB:
+              <span class="required-label"></span></label>
+            <div class="col-lg-3 col-md-3 col-sm-4 mt-sm-2" >
+                <%=package.pmb? package.pmb: ''%>
+            </div>
+          </div>
+          <div class="form-group form-show-validation row">
+            <label for="username" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Consignee:
+              <span class="required-label"></span></label>
+            <div class="col-lg-3 col-md-3 col-sm-4 mt-sm-2" >
+                <%=package.customerFullName? package.customerFullName: ''%>
+            </div>
+          </div>
+          <div class="form-group form-show-validation row">
+            <label for="username" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Shipper:
+              <span class="required-label"></span></label>
+            <div class="col-lg-3 col-md-3 col-sm-4 mt-sm-2" >
+                <%=package.shipperName? package.shipperName: ''%>
+            </div>
+          </div>
+          <div class="form-group form-show-validation row">
+            <label for="username" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Carrier:
+              <span class="required-label"></span></label>
+            <div class="col-lg-3 col-md-3 col-sm-4 mt-sm-2" >
+                <%=(package.carrierId && package.carrierId.name)? package.carrierId.name: ''%>
+            </div>
+          </div>
+          <div class="form-group form-show-validation row">
+            <label for="username" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">AWB No:
+              <span class="required-label"></span></label>
+            <div class="col-lg-3 col-md-3 col-sm-4 mt-sm-2" >
+                <%=(package.awbIdNumber)? package.awbIdNumber: ''%>
+            </div>
+          </div>
+
+          <div class="form-group form-show-validation row">
+            <label for="username" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">AWB packages count:
+              <span class="required-label"></span></label>
+            <div class="col-lg-3 col-md-3 col-sm-4 mt-sm-2" >
+                <%=(package.pieces )? package.pieces: ''%>
+            </div>
+          </div>
+          <div class="form-group form-show-validation row">
+            <label for="username" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Zone:
+              <span class="required-label"></span></label>
+            <div class="col-lg-3 col-md-3 col-sm-4 mt-sm-2" >
+                <%=(package.zoneId && package.zoneId.name)? package.zoneId.name: ''%>
+            </div>
+          </div>
+          <div class="form-group form-show-validation row">
+            <label for="username" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Location:
+              <span class="required-label"></span></label>
+            <div class="col-lg-3 col-md-3 col-sm-4 mt-sm-2" >
+                <%=(package.locationData && package.locationData.name)? package.locationData.name: ''%>
+            </div>
+          </div>
+          <div class="form-group form-show-validation row">
+            <label for="username" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Company:
+              <span class="required-label"></span></label>
+            <div class="col-lg-3 col-md-3 col-sm-4 mt-sm-2" >
+                <%=(package.locationData && package.locationData.company && package.locationData.company.name)? package.locationData.company.name: ''%>
+            </div>
+          </div>
+          <div class="form-group form-show-validation row">
+            <label for="username" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Manifest Title:
+              <span class="required-label"></span></label>
+            <div class="col-lg-3 col-md-3 col-sm-4 mt-sm-2" >
+                <%=(package.manifestId && package.manifestId.title)? package.manifestId.title: ''%>
+            </div>
+          </div>
+          <div class="form-group form-show-validation row">
+            <label for="username" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Driver:
+              <span class="required-label"></span></label>
+            <div class="col-lg-3 col-md-3 col-sm-4 mt-sm-2" >
+                <%
+                    var driverFName = (package.awbId && package.awbId.driver && package.awbId.driver.firstName)?package.awbId.driver.firstName:'';
+                    var driverLName = (package.awbId && package.awbId.driver && package.awbId.driver.lastName)?package.awbId.driver.lastName:'';
+                %>
+                <%=(driverFName + " " + driverLName) %>
+            </div>
+          </div>
+          <div class="form-group form-show-validation row">
+            <label for="username" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Cube:
+              <span class="required-label"></span></label>
+            <div class="col-lg-3 col-md-3 col-sm-4 mt-sm-2" >
+                <%=(package.cubeId && package.cubeId.name)? package.cubeId.name: ''%>
+            </div>
+          </div>
+          <div class="form-group form-show-validation row">
+            <label for="username" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Original Barcode:
+              <span class="required-label"></span></label>
+            <div class="col-lg-3 col-md-3 col-sm-4 mt-sm-2" >
+                <%=(package.barcode)? package.barcode: ''%>
+            </div>
+          </div>
+          <div class="form-group form-show-validation row">
+            <label for="username" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Package Number:
+              <span class="required-label"></span></label>
+            <div class="col-lg-3 col-md-3 col-sm-4 mt-sm-2" >
+                <%=(package.packageNumber)? package.packageNumber: ''%>
+            </div>
+          </div>
+          <%
+          let pmbNo = ((package.customerId && package.customerId.pmb)?package.customerId.pmb:''), location = '-'
+        if((pmbNo > 0 && pmbNo <= 1999) || (pmbNo >= 4000 && pmbNo <= 4999)) {
+            location = "Cabel Beach"
+        }else if((pmbNo >= 3000 && pmbNo <= 3999)){
+            location = "Albany"
+        }else {
+            location = "9to5"          
+        }
+          %>
+          <div class="form-group form-show-validation row">
+            <label for="username" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Store:
+              <span class="required-label"></span></label>
+            <div class="col-lg-3 col-md-3 col-sm-4 mt-sm-2" >
+                <%=location%>
+            </div>
+          </div>
+          
+          
+        </div>
+        
+      </div>
+    </div>
+  </div>
+</form>
+
