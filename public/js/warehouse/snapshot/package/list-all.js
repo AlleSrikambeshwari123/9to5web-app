@@ -7,6 +7,7 @@ let packageTable = $('.package-table').DataTable({
       targets: 0,
     },
   ],
+  searching : false,
   select: {
     style: 'multi',
     selector: 'td:first-child input[type="checkbox"]',
@@ -25,10 +26,7 @@ $(document).on('click', '.btn-view-more-package', function () {
     success: function (response) {
       console.log("respon", response)
       response.forEach((data, i) => {
-        let customerName = '-',shipperName = data.shipperId ? data.shipperId.name : '-',carrierName  = data.carrierId ? data.carrierId.name : '-',zoneName =data.zoneId ? data.zoneId.name : '-',driverName ='-' ,manifestTitle = data.manifestId  ?  data.manifestId.title : '-',cubeName = data.cubeId?data.cubeId.name : '-',originalBarcode = (data.originBarcode && data.originBarcode) ? data.originBarcode.barcode : '-'
-        if(data.customerId){
-          customerName = data.customerId.firstName +" " + data.customerId.lastName
-        }
+        let carrierName  = data.carrierId ? data.carrierId.name : '-',zoneName =data.zoneId ? data.zoneId.name : '-',driverName ='-' ,manifestTitle = data.manifestId  ?  data.manifestId.title : '-',cubeName = data.cubeId?data.cubeId.name : '-'
         if(data.awbId && data.awbId.driver){
           driverName =  (data.awbId.driver.firstName + " " + data.awbId.driver.lastName) 
         }
@@ -41,7 +39,7 @@ $(document).on('click', '.btn-view-more-package', function () {
             location = "9to5"          
         }
         console.log("loc",location)
-        $('#details-package').html('  <div class="row"><div class="form-group form-show-validation row" style="width:100%"><label class="col-lg-6 col-md-6 col-sm-4 ">PMB</label><div class="col-lg-6 col-md-6 col-sm-6">' + pmbNo + '</div></div></div><div class="row"><div class="form-group form-show-validation row" style="width:100%"><label class="col-lg-6 col-md-6 col-sm-4 ">Consignee</label><div class="col-lg-6 col-md-6 col-sm-6">'+customerName + '</div></div></div><div class="row"><div class="form-group form-show-validation row" style="width:100%"><label class="col-lg-6 col-md-6 col-sm-4 ">Shipper</label><div class="col-lg-6 col-md-6 col-sm-6">'+shipperName +'</div></div></div><div class="row"><div class="form-group form-show-validation row" style="width:100%"><label class="col-lg-6 col-md-6 col-sm-4 ">Carrier</label><div class="col-lg-6 col-md-6 col-sm-6">'+ carrierName +'</div></div></div><div class="row"><div class="form-group form-show-validation row" style="width:100%"><label class="col-lg-6 col-md-6 col-sm-4 ">AWB No</label><div class="col-lg-6 col-md-6 col-sm-6">'+data.awbId.awbId  +'</div></div></div>        <div class="row"><div class="form-group form-show-validation row" style="width:100%"><label class="col-lg-6 col-md-6 col-sm-4 ">AWB packages count </label><div class="col-lg-6 col-md-6 col-sm-6">'+data.awbId.packages.length +'</div></div></div> <div class="row"><div class="form-group form-show-validation row" style="width:100%"><label class="col-lg-6 col-md-6 col-sm-4 ">Zone</label><div class="col-lg-6 col-md-6 col-sm-6">'+zoneName+'</div></div></div> <div class="row"><div class="form-group form-show-validation row" style="width:100%"><label class="col-lg-6 col-md-6 col-sm-4 ">Manifest Title</label><div class="col-lg-6 col-md-6 col-sm-6">'+ manifestTitle +'</div></div></div><div class="row"><div class="form-group form-show-validation row" style="width:100%"><label class="col-lg-6 col-md-6 col-sm-4 ">Driver</label><div class="col-lg-6 col-md-6 col-sm-6">'+driverName +'</div></div></div>      <div class="row"><div class="form-group form-show-validation row" style="width:100%"><label class="col-lg-6 col-md-6 col-sm-4 ">Cube</label><div class="col-lg-6 col-md-6 col-sm-6">'+cubeName+'</div></div></div> <div class="row"><div class="form-group form-show-validation row" style="width:100%"><label class="col-lg-6 col-md-6 col-sm-4 ">Original Barcode</label><div class="col-lg-6 col-md-6 col-sm-6">'+originalBarcode+'</div></div></div>    <div class="row"><div class="form-group form-show-validation row" style="width:100%"><label class="col-lg-6 col-md-6 col-sm-4 ">Store</label><div class="col-lg-6 col-md-6 col-sm-6">' + location + '</div></div></div>')
+        $('#details-package').html('  <div class="row"><div class="form-group form-show-validation row" style="width:100%"><label class="col-lg-6 col-md-6 col-sm-4 ">Carrier</label><div class="col-lg-6 col-md-6 col-sm-6">'+ carrierName +'</div></div></div>        <div class="row"><div class="form-group form-show-validation row" style="width:100%"><label class="col-lg-6 col-md-6 col-sm-4 ">AWB packages count </label><div class="col-lg-6 col-md-6 col-sm-6">'+data.awbId.packages.length +'</div></div></div> <div class="row"><div class="form-group form-show-validation row" style="width:100%"><label class="col-lg-6 col-md-6 col-sm-4 ">Zone</label><div class="col-lg-6 col-md-6 col-sm-6">'+zoneName+'</div></div></div> <div class="row"><div class="form-group form-show-validation row" style="width:100%"><label class="col-lg-6 col-md-6 col-sm-4 ">Manifest Title</label><div class="col-lg-6 col-md-6 col-sm-6">'+ manifestTitle +'</div></div></div><div class="row"><div class="form-group form-show-validation row" style="width:100%"><label class="col-lg-6 col-md-6 col-sm-4 ">Driver</label><div class="col-lg-6 col-md-6 col-sm-6">'+driverName +'</div></div></div>      <div class="row"><div class="form-group form-show-validation row" style="width:100%"><label class="col-lg-6 col-md-6 col-sm-4 ">Cube</label><div class="col-lg-6 col-md-6 col-sm-6">'+cubeName+'</div></div></div> ')
         
         
        
@@ -768,8 +766,22 @@ $(document).ready(function () {
       stdate.setDate(stdate.getDate() - 14);
       var dateRange = (stdate.getMonth() + 1) + '/' + stdate.getDate() + '/' + stdate.getFullYear() + ' - ' +
         (endate.getMonth() + 1) + '/' + endate.getDate() + '/' + endate.getFullYear()
+      localStorage.clear()
       $('.daterange').val(dateRange)
     }
   }, 100)
 
 })
+
+function searchDataFilter(){
+  var search_type = $("#search_type").val();
+  var search_text = $("#search_text").val();  
+  var pageUrl =$("#page").val();
+  var pageArr =  pageUrl.split('?');
+  var urlPage = (pageArr && pageArr.length) ? pageArr[0] : '';
+  urlPage = urlPage+'?1=1'
+  if(search_type && search_text){
+    urlPage =  urlPage+"&search_type="+search_type+'&search_text='+search_text;
+  }
+   window.location = urlPage;
+}

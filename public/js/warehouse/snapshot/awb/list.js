@@ -60,13 +60,8 @@ $(document).on('click', '.btn-view-more-awb', function () {
     success: function (response) {
       console.log("respon", response)
       response.forEach((data, i) => {
-        let customerName = '-',shipperName = data.shipper ? data.shipper.name : '-',carrierName  = data.carrier ? data.carrier.name : '-',driverName =data.driver ? data.driver.name :'-';
-        if(data.customerId){
-          customerName = data.customerId.firstName +" " + data.customerId.lastName
-        }
-        $('#details-awb').html('  <div class="row"><div class="form-group form-show-validation row" style="width:100%"><label class="col-lg-6 col-md-6 col-sm-4 ">PMB</label><div class="col-lg-6 col-md-6 col-sm-6">' + data.customerId.pmb + '</div></div></div><div class="row"><div class="form-group form-show-validation row" style="width:100%"><label class="col-lg-6 col-md-6 col-sm-4 ">Consignee</label><div class="col-lg-6 col-md-6 col-sm-6">'+customerName + '</div></div></div><div class="row"><div class="form-group form-show-validation row" style="width:100%"><label class="col-lg-6 col-md-6 col-sm-4 ">Shipper</label><div class="col-lg-6 col-md-6 col-sm-6">'+shipperName +'</div></div></div><div class="row"><div class="form-group form-show-validation row" style="width:100%"><label class="col-lg-6 col-md-6 col-sm-4 ">Carrier</label><div class="col-lg-6 col-md-6 col-sm-6">'+ carrierName +'</div></div></div>         <div class="row"><div class="form-group form-show-validation row" style="width:100%"><label class="col-lg-6 col-md-6 col-sm-4 ">AWB Weight </label><div class="col-lg-6 col-md-6 col-sm-6">'+data.weight.toFixed(2) +' lbs</div></div></div> <div class="row"><div class="form-group form-show-validation row" style="width:100%"><label class="col-lg-6 col-md-6 col-sm-4 ">Volumetric Weight</label><div class="col-lg-6 col-md-6 col-sm-6">'+data.volumetricWeight.toFixed(2)+' vlbs</div></div></div> <div class="row"><div class="form-group form-show-validation row" style="width:100%"><label class="col-lg-6 col-md-6 col-sm-4 ">Driver</label><div class="col-lg-6 col-md-6 col-sm-6">'+driverName +'</div></div></div> ')
-        
-        
+        let carrierName  = data.carrier ? data.carrier.name : '-',driverName =data.driver ? data.driver.name :'-';
+        $('#details-awb').html('  <div class="row"><div class="form-group form-show-validation row" style="width:100%"><label class="col-lg-6 col-md-6 col-sm-4 ">Carrier</label><div class="col-lg-6 col-md-6 col-sm-6">'+ carrierName +'</div></div></div>         <div class="row"><div class="form-group form-show-validation row" style="width:100%"><label class="col-lg-6 col-md-6 col-sm-4 ">AWB Weight </label><div class="col-lg-6 col-md-6 col-sm-6">'+data.weight.toFixed(2) +' lbs</div></div></div> <div class="row"><div class="form-group form-show-validation row" style="width:100%"><label class="col-lg-6 col-md-6 col-sm-4 ">Volumetric Weight</label><div class="col-lg-6 col-md-6 col-sm-6">'+data.volumetricWeight.toFixed(2)+' vlbs</div></div></div> <div class="row"><div class="form-group form-show-validation row" style="width:100%"><label class="col-lg-6 col-md-6 col-sm-4 ">Driver</label><div class="col-lg-6 col-md-6 col-sm-6">'+driverName +'</div></div></div> ')
        
         if (response.length == 0) {
           $('#details-awb').html('No data available');
@@ -87,6 +82,7 @@ $('.print-awb').click(function () {
 
 var awbTable = $('#awb-table').DataTable({
   pageLength: 10,
+  searching : false,
 })
 var nodocsTable = $('#no-docs-table').DataTable({
   pageLength: 10,
@@ -213,6 +209,7 @@ $(document).on('click', '.applyBtn', function() {
 })
 var pickuptable = $('#pickup-awb-table').DataTable({
   pageLength: 10,
+  searching : false,
 })
 
 var pageUrl = pageUrl ? pageUrl : '';
@@ -243,7 +240,8 @@ $(document).ready(function() {
 		  var stdate = new Date();
 		  stdate.setDate(stdate.getDate() -14);      
 		  var dateRange = (stdate.getMonth() + 1)+ '/'+stdate.getDate()+'/'+stdate.getFullYear()+' - '+
-		  (endate.getMonth() + 1)+ '/'+endate.getDate()+'/'+endate.getFullYear()      
+      (endate.getMonth() + 1)+ '/'+endate.getDate()+'/'+endate.getFullYear()      
+      localStorage.clear()
 		  $('.daterange').val(dateRange)
 		}	   
 	},100)
@@ -252,4 +250,17 @@ $(document).ready(function() {
 function pagereload(str){
   localStorage.clear()
   window.location ="/warehouse/snapshot/awb/list?type="+str
+}
+
+function searchDataFilter(){
+  var search_type = $("#search_type").val();
+  var search_text = $("#search_text").val();  
+  var pageUrl =$("#page").val();
+  var pageArr =  pageUrl.split('?');
+  var urlPage = (pageArr && pageArr.length) ? pageArr[0] : '';
+  urlPage = urlPage+'?1=1'
+  if(search_type && search_text){
+    urlPage =  urlPage+"&search_type="+search_type+'&search_text='+search_text;
+  }
+   window.location = urlPage;
 }

@@ -1,4 +1,17 @@
 <% layout('./shared/__template')%>
+
+<%
+var endate = new Date();      
+    endate.setDate(endate.getDate());
+    var stdate = new Date();
+    stdate.setDate(stdate.getDate() -1);      
+    var dateRangeDefault = (stdate.getMonth() + 1)+ '/'+stdate.getDate()+'/'+stdate.getFullYear()+' - '+
+    (endate.getMonth() + 1)+ '/'+endate.getDate()+'/'+endate.getFullYear(); 
+    if(query.clear){
+        dateRangeDefault = '';
+    }
+%>
+
 <style>
   table.dataTable tbody>tr.selected,
   table.dataTable tbody>tr>.selected {
@@ -46,6 +59,20 @@
       <div id="myLoader"><img src="/img/preloader.gif"></div>
       <div class="card-body daterangepickerbody">
         <input type="hidden" name="clear" id="clear" value="<%=clear%>">
+        <input type="hidden" id="daterange" value="<%=daterange%>">
+        <input type="hidden" id="page" value="<%=page%>">
+
+         <div class="d-flex col-xs-8 col-sm-8 float-right  py-4 pb-4">
+            <select name="search_type" id="search_type"  class="form-control" style="width: 30%; float: left;">
+                <option value="">Select </option>
+                <option value="AWBNUMBER" <%if(query.search_type=='AWBNUMBER'){%>selected<%}%>>AWB # </option>
+                <option value="CONSIGNEE" <%if(query.search_type=='CONSIGNEE'){%>selected<%}%>>Consignee </option>
+                <option value="SHIPPER" <%if(query.search_type=='SHIPPER'){%>selected<%}%>>Shipper </option>
+                <option value="BARCODE" <%if(query.search_type=='BARCODE'){%>selected<%}%>>Original Barcode </option>
+            </select>
+            <input type="text" name="search_text" id="search_text" class="form-control" value="<%=query.search_text%>" style="width: 30%; float: left;margin-left: 1%;"">
+            <input type="submit" value="Filter" class="btn btn-primary" style="margin-left: 1%;" onclick="searchDataFilter()">
+        </div>
         <div class="table-responsive p-4">
           <table id="package-table" class="display  table table-striped table-hover dataTable package-table">
             <thead>
@@ -53,6 +80,12 @@
                 <th><input id="checkall" type="checkbox" class="package-select-all" /></th>
                 <th>Created Date</th>
                 <th>Tracking No</th>
+                <th>PMB</th>
+                <th>Consignee</th>
+                <th>AWB #</th>
+                <th>Shipper</th>
+                <th>Store</th>
+                <th>Original Barcode</th>
                 <th>Description</th>
                 <th>Status</th>
                 <th>Location</th>
@@ -77,6 +110,13 @@
                 </td>
                 <td><%= helpers.formatDate(pkg.createdAt) %></td>
                 <td><%=(pkg.trackingNo)?pkg.trackingNo:''%></td>
+                <td><%= pkg.pmb %></td>
+                <td><%= pkg.customerFullName %></td>
+                <td><%= pkg.awbIdNumber %></td>
+                <td><%= pkg.shipperName %></td>
+                <td><%= pkg.storeLocation ?pkg.storeLocation : '9to5' %></td>
+                <td><%= pkg.barcode %></td>
+
                 <td><%= pkg.description %></td>
                 <td><%= pkg.lastStatusText %></td>
                 <td><%= pkg.location %></td>
@@ -294,6 +334,7 @@
 </div>
 <script>
   var pageUrl = "<%=page ? page :''%>";
+  var daterange = "<%=query.daterange ? query.daterange :dateRangeDefault%>";
 </script>
 <% block('scripts').append('<script src="/js/utils.js"></script>')%>
 <% block('scripts').append('<script src="/js/warehouse/snapshot/package/list-all.js"></script>')%>
