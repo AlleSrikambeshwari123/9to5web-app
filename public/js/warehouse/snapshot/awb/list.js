@@ -82,7 +82,6 @@ $('.print-awb').click(function () {
 
 var awbTable = $('#awb-table').DataTable({
   pageLength: 10,
-  searching : false,
 })
 var nodocsTable = $('#no-docs-table').DataTable({
   pageLength: 10,
@@ -209,7 +208,6 @@ $(document).on('click', '.applyBtn', function() {
 })
 var pickuptable = $('#pickup-awb-table').DataTable({
   pageLength: 10,
-  searching : false,
 })
 
 var pageUrl = pageUrl ? pageUrl : '';
@@ -261,6 +259,9 @@ function searchDataFilter(){
   urlPage = urlPage+'?1=1'
   if(search_type && search_text){
     urlPage =  urlPage+"&search_type="+search_type+'&search_text='+search_text;
+  }
+  if($("#type").val()){
+    urlPage = urlPage+'&type='+$("#type").val();
   }
    window.location = urlPage;
 }

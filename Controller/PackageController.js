@@ -74,7 +74,11 @@ exports.get_package_snapshot = (req, res, next) => {
     });
 };
 
-exports.get_package_list_snapshot = (req, res, next) => {
+exports.get_package_list_snapshot = async (req, res, next) => {
+    let title = 'All Packages'
+    if(req.query.type == 'customer')
+        title = 'Customer Package List'
+    let customers = await services.customerService.getCustomers()
     services.packageService.getAllSnapshotPackagesUpdated(req,{}).then((packages) => {
         return Promise.all(
             packages.map(async(pkg, i) => {
@@ -89,10 +93,11 @@ exports.get_package_list_snapshot = (req, res, next) => {
             res.render('pages/warehouse/snapshot/package/list-all', {
                 page: req.originalUrl,
                 user: res.user,
-                title: 'All Packages',
+                title: title,
                 filterURL: '',
                 buttonName: 'Add to Manifest',
                 packages: pkgs,
+                customers : customers,
                 clear: req.query.clear,
                 daterange:req.query.daterange?req.query.daterange:'',
                 query:req.query

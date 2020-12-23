@@ -7,7 +7,6 @@ let packageTable = $('.package-table').DataTable({
       targets: 0,
     },
   ],
-  searching : false,
   select: {
     style: 'multi',
     selector: 'td:first-child input[type="checkbox"]',
@@ -17,6 +16,12 @@ let packageTable = $('.package-table').DataTable({
 $('#package-table').on('draw.dt', function () {
   unSelectAll();
 });
+
+$('#customerId').select2({
+  theme: 'bootstrap',
+  width: '30%',
+  placeholder: "Select a customer"
+})
 
 $(document).on('click', '.btn-view-more-package', function () {
   var id = $(this).data('id');
@@ -777,12 +782,13 @@ $(document).ready(function () {
       $('.daterange').val(dateRange)
     }
   }, 100)
-
+  $("#customerId").val($("#customer").val()).trigger("change")
 })
 
 function searchDataFilter(){
   var search_type = $("#search_type").val();
   var search_text = $("#search_text").val();  
+  var customerId = $("#customerId").val();
   var pageUrl =$("#page").val();
   var pageArr =  pageUrl.split('?');
   var urlPage = (pageArr && pageArr.length) ? pageArr[0] : '';
@@ -790,5 +796,9 @@ function searchDataFilter(){
   if(search_type && search_text){
     urlPage =  urlPage+"&search_type="+search_type+'&search_text='+search_text;
   }
+  if(customerId){
+    urlPage =  urlPage+"&customerId="+customerId;
+  }
+
    window.location = urlPage;
 }

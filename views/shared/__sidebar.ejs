@@ -256,14 +256,34 @@
 					</a>
 					<div class="collapse" id="snapshot">
 						<ul class="nav nav-collapse">
-							<li <% if (page && page.endsWith && page.endsWith('/snapshot/awb/list')) { %> class="active" <% } %>>
-								<a href="/warehouse/snapshot/awb/list">
+							<li <% if (page && page.endsWith && page.endsWith('/snapshot/awb/list?type=airwaybill')) { %> class="active" <% } %>>
+								<a href="/warehouse/snapshot/awb/list?type=airwaybill">
 									<span class="sub-item">Awb List</span>
+								</a>
+							</li>
+							<li <% if (page && page.endsWith && page.endsWith('/snapshot/awb/list?type=nodocs')) { %> class="active" <% } %>>
+								<a href="/warehouse/snapshot/awb/list?type=nodocs">
+									<span class="sub-item">No docs Awb List</span>
+								</a>
+							</li>
+							<li <% if (page && page.endsWith && page.endsWith('/snapshot/awb/list?type=pendingawb')) { %> class="active" <% } %>>
+								<a href="/warehouse/snapshot/awb/list?type=pendingawb">
+									<span class="sub-item">Pending Awb List</span>
+								</a>
+							</li>
+							<li <% if (page && page.endsWith && page.endsWith('/snapshot/awb/list?type=awbpackage')) { %> class="active" <% } %>>
+								<a href="/warehouse/snapshot/awb/list?type=awbpackage">
+									<span class="sub-item">Awb Pickups List</span>
 								</a>
 							</li>
 							<li <% if (page && page.endsWith && page.endsWith('/snapshot/package/list')) { %> class="active" <% } %>>
 								<a href="/warehouse/snapshot/package/list">
 									<span class="sub-item">Package List</span>
+								</a>
+							</li>
+							<li <% if (page && page.endsWith && page.endsWith('/snapshot/package/list')) { %> class="active" <% } %>>
+								<a href="/warehouse/snapshot/package/list?customerId=load">
+									<span class="sub-item">Customer Package List</span>
 								</a>
 							</li>
 						</ul>

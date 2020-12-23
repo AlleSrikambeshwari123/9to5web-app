@@ -57,12 +57,14 @@ var endate = new Date();
         </div>
       </div>
       <div id="myLoader"><img src="/img/preloader.gif"></div>
-      <div class="card-body daterangepickerbody">
+      <div class="card-body    <% if (!query.customerId) { %> daterangepickerbody <% } %>">
         <input type="hidden" name="clear" id="clear" value="<%=clear%>">
         <input type="hidden" id="daterange" value="<%=daterange%>">
         <input type="hidden" id="page" value="<%=page%>">
+        <input type="hidden" id="customer" value="<%=query.customerId%>">
 
          <div class="col-xs-12 col-sm-12 float-right">
+          <% if (!query.customerId) { %>
             <select name="search_type" id="search_type"  class="form-control" style="width: 30%; float: left;">
                 <option value="">Select </option>
                 <option value="AWBNUMBER" <%if(query.search_type=='AWBNUMBER'){%>selected<%}%>>AWB # </option>
@@ -72,6 +74,24 @@ var endate = new Date();
             </select>
             <input type="text" name="search_text" id="search_text" class="form-control" value="<%=query.search_text%>" style="width: 30%; float: left;margin-left: 1%;"">
             <input type="submit" value="Filter" class="btn btn-primary" style="margin-left: 1%;" onclick="searchDataFilter()">
+            
+          <% }else{%>
+            <div class="col-lg-8 col-md-8 col-sm-8 row">
+
+            <select id="customerId" name="customerId" class='form-control' value="<%=query.customerId && query.customerId != 'load' ? query.customerId  : ''%>" style="width: 30%; float: left;">
+              <option></option>
+              <% customers.forEach(customer => { %>
+              <option value="<%=customer.id%>">
+                <%= customer.pmb + ' / ' + customer.firstName + ' ' + customer.lastName%>
+              </option>
+              <% }) %>
+            </select>
+            <div class="input-group-append">
+                <input type="submit" value="Filter" class="btn btn-primary" style="margin-left: 10%;" onclick="searchDataFilter()">
+            </div>
+            </div>
+            <% } %>
+
         </div>
         <div class="table-responsive p-4">
           <table id="package-table" class="display  table table-striped table-hover dataTable package-table">
@@ -90,6 +110,8 @@ var endate = new Date();
                 <th>Status</th>
                 <!-- <th>Location</th> -->
                 <th>Package Type</th>
+                <th>Zone</th>
+                <th>Carrier</th>
                 <th>Weight</th>
                 <th>Volumetric Weight</th>
                 <th>Express</th>
@@ -121,6 +143,8 @@ var endate = new Date();
                 <td><%= pkg.lastStatusText %></td>
                 <!-- <td><%= pkg.location %></td> -->
                 <td><%= pkg.packageType %></td>
+                <td><%=pkg.zoneName?pkg.zoneName:'' %></td>
+                <td><%=pkg.carrierName?pkg.carrierName:'' %></td>
                 <td><%= pkg.weight %></td>
                 <td><%= pkg.volumetricWeight.toFixed(2) %></td>
                 <td><%= pkg.express %></td>

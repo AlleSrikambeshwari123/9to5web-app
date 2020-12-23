@@ -111,6 +111,7 @@ class AwbService {
       Awb.findById(awbId)
           .populate('customerId')
           .populate('shipper')
+          .populate('carrier')
           .exec(async (err,result) => {               
             if(err){
               console.log(err)
@@ -126,7 +127,8 @@ class AwbService {
                   shipperName : shipper.name,
                   pmb:customer.pmb,
                   pmbString: customer.pmb,
-                  awbIdString: result.awbId?result.awbId : ''                   
+                  awbIdString: result.awbId?result.awbId : '',
+                  carrierName: (result.carrier && result.carrier.name)? result.carrier.name : ''                  
               }    
                 console.log("updateData>>>>>>>>>>>>>>>>>>>>",updateData) 
               var update = await Awb.updateOne({_id:awbId},updateData);
@@ -512,19 +514,22 @@ class AwbService {
                
           searchData.createdAt = {"$gte":stdate, "$lte": endate};
         }
-        if(req.query.type){
-          if(req.query.type == 'nodocs')
-            searchData.invoices = []
-          else if(req.query.type == 'pendingawb')
-            searchData.packages = []
-          else if(req.query.type == 'awbpackage')
-            searchData.fll_pickup = true
-          else
-            searchData.packages = {$gt : []}         
-        }else{
-          searchData.packages = {$gt : []}
-        }
       }
+      if(!searchData._id){
+          if(req.query.type){
+            if(req.query.type == 'nodocs')
+              searchData.invoices = []
+            else if(req.query.type == 'pendingawb')
+              searchData.packages = []
+            else if(req.query.type == 'awbpackage')
+              searchData.fll_pickup = true
+            else
+              searchData.packages = {$gt : []}         
+          }else{
+            searchData.packages = {$gt : []}
+          }
+      }
+      console.log("sear",searchData)
         return new Promise((resolve, reject) => {
           if(!searchData._id){
             Awb.find(searchData)
