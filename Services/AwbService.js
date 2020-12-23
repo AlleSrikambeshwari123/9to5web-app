@@ -513,6 +513,7 @@ class AwbService {
           searchData.createdAt = {"$gte":stdate, "$lte": endate};
         }
       }
+      if(!searchData._id){
           if(req.query.type){
             if(req.query.type == 'nodocs')
               searchData.invoices = []
@@ -525,6 +526,7 @@ class AwbService {
           }else{
             searchData.packages = {$gt : []}
           }
+      }
       console.log("sear",searchData)
         return new Promise((resolve, reject) => {
           if(!searchData._id){

@@ -256,7 +256,7 @@
 					</a>
 					<div class="collapse" id="snapshot">
 						<ul class="nav nav-collapse">
-							<li <% if (page && page.endsWith && page.endsWith('/snapshot/awb/list?type=awb')) { %> class="active" <% } %>>
+							<li <% if (page && page.endsWith && page.endsWith('/snapshot/awb/list?type=airwaybill')) { %> class="active" <% } %>>
 								<a href="/warehouse/snapshot/awb/list?type=airwaybill">
 									<span class="sub-item">Awb List</span>
 								</a>
@@ -279,6 +279,11 @@
 							<li <% if (page && page.endsWith && page.endsWith('/snapshot/package/list')) { %> class="active" <% } %>>
 								<a href="/warehouse/snapshot/package/list">
 									<span class="sub-item">Package List</span>
+								</a>
+							</li>
+							<li <% if (page && page.endsWith && page.endsWith('/snapshot/package/list')) { %> class="active" <% } %>>
+								<a href="/warehouse/snapshot/package/list?customerId=load">
+									<span class="sub-item">Customer Package List</span>
 								</a>
 							</li>
 						</ul>
