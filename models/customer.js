@@ -65,6 +65,15 @@ const customerSchema = new mongoose.Schema({
     type:String
     //unique:true
   },
+  package:[{
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'Package'    
+  }],
+  awb:[{
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'Awb'    
+  }],
+  
   createdBy: {
     type: mongoose.Schema.Types.ObjectId, 
     ref: 'User', 
