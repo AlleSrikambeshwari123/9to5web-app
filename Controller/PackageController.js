@@ -29,7 +29,7 @@ exports.get_package_list = (req, res, next) => {
 };
 
 exports.get_package_detail = (req, res, next)=>{    
-    services.packageService.getAwbSnapshotPackageWithLastStatus(req).then((packages) => {
+    services.packageService.getPackageDetail(req.params.id).then((packages) => {
         return Promise.all(
             packages.map(async(pkg, i) => {
                 let awb = await services.printService.getAWBDataForPackagesRelatedEntitie(pkg.awbId._id);

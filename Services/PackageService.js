@@ -671,6 +671,27 @@ class PackageService {
         });
     }
 
+    getPackageDetail(id){
+        return new Promise((resolve, reject) => {
+            Package.find({_id:id})
+            .populate({path : 'awbId',populate : 'driver'})
+            .populate('originBarcode')
+            .populate('customerId')
+            .populate('zoneId')
+            .populate('shipperId')
+            .populate('carrierId')
+            .populate('cubeId')
+            .populate('manifestId')
+            .exec((err, result) => {
+                if (err) {
+                    resolve([]);
+                } else {                   
+                    resolve(result);
+                }
+            }); 
+        }) 
+    }
+
     getAllSnapshotPackagesUpdated(req,searchData){      
         return new Promise((resolve, reject) => {
             // var searchData = {};
@@ -728,6 +749,7 @@ class PackageService {
                   searchData.createdAt = {"$gte":stdate, "$lte": endate};
                 }
               }   
+              
             if(searchData._id){
                 Package.find(searchData)
                 .populate({path : 'awbId',populate : 'driver'})
