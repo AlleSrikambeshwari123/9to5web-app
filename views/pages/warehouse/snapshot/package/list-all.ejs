@@ -110,6 +110,8 @@ var endate = new Date();
                 <th>Status</th>
                 <!-- <th>Location</th> -->
                 <th>Package Type</th>
+                <th>Zone</th>
+                <th>Carrier</th>
                 <th>Weight</th>
                 <th>Volumetric Weight</th>
                 <th>Express</th>
@@ -141,6 +143,8 @@ var endate = new Date();
                 <td><%= pkg.lastStatusText %></td>
                 <!-- <td><%= pkg.location %></td> -->
                 <td><%= pkg.packageType %></td>
+                <td><%=pkg.zoneName?pkg.zoneName:'' %></td>
+                <td><%=pkg.carrierName?pkg.carrierName:'' %></td>
                 <td><%= pkg.weight %></td>
                 <td><%= pkg.volumetricWeight.toFixed(2) %></td>
                 <td><%= pkg.express %></td>

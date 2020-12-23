@@ -111,6 +111,7 @@ class AwbService {
       Awb.findById(awbId)
           .populate('customerId')
           .populate('shipper')
+          .populate('carrier')
           .exec(async (err,result) => {               
             if(err){
               console.log(err)
@@ -126,7 +127,8 @@ class AwbService {
                   shipperName : shipper.name,
                   pmb:customer.pmb,
                   pmbString: customer.pmb,
-                  awbIdString: result.awbId?result.awbId : ''                   
+                  awbIdString: result.awbId?result.awbId : '',
+                  carrierName: (result.carrier && result.carrier.name)? result.carrier.name : ''                  
               }    
                 console.log("updateData>>>>>>>>>>>>>>>>>>>>",updateData) 
               var update = await Awb.updateOne({_id:awbId},updateData);

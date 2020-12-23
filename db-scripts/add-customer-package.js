@@ -11,7 +11,6 @@ const Customer = require('../models/customer');
 createConnection()
   .then(() => {
     return Package.aggregate([
-      {$match:{awbId:{$ne:null}}},
       {
         $group:{
           _id:"$customerId", 
@@ -28,7 +27,8 @@ createConnection()
       })
   }).then(async(data) => {
     for(let customer of data){
-      await Customer.findByIdAndUpdate({_id:customer._id}, {package:customer.package});
+      var packIds = [...new Set(customer.package)]
+      await Customer.findByIdAndUpdate({_id:customer._id}, {package:packIds});
     }
     return true;
   }).then(() => {

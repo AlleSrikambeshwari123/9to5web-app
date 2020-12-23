@@ -100,7 +100,10 @@ const awbSchema = new mongoose.Schema({
   awbIdString: {
     type: String,
     index:true
-  }, 
+  },
+  carrierName:{
+    type: String
+  },
   //end searching
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,

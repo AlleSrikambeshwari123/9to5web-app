@@ -122,7 +122,7 @@ exports.get_awb_detail = (req, res, next) => {
   })
 };
 
-exports.create_awb = (req, res, next) => {  
+exports.create_awb = (req, res, next) => { 
   Promise.all([
     services.customerService.getCustomers(),
     services.hazmatService.getHazmats(),
@@ -243,6 +243,7 @@ exports.add_new_awb = async (req, res, next) => {
     for(var i=0; i< pack.length;i++){
       await services.packageService.updatePackageOtherDetail(pack[i]);
     }
+    await services.packageService.updateAwbPackageOnCustomer(awb.customerId);
     res.send(result);
   })
   .catch((error) => {
@@ -353,6 +354,7 @@ exports.update_awb = async (req, res, next) => {
     for(var i=0; i< pack.length;i++){
       await services.packageService.updatePackageOtherDetail(pack[i]);
     }
+    await services.packageService.updateAwbPackageOnCustomer(awb.customerId);
     res.send(result);
   })
   .catch((err) => {
