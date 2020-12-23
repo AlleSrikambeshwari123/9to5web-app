@@ -444,7 +444,19 @@ exports.get_awb_list_snapshot = (req, res, next) => {
   if(req.query.clear){
     req.query.daterange = '';
   } 
-
+  console.log("type",req.query)
+  if(req.query.type){
+    if(req.query.type == 'nodocs')
+      title = "No Docs Awb"
+    else if(req.query.type == 'pendingawb')
+      title = "Pending Awb"
+    else if(req.query.type == 'awbpackage')
+      title = "Awb Pickups"
+    else
+      title = "AirWay Bills"   
+  }else{
+    title = "AirWay Bills"
+  }
   services.awbService.getAwbsFullSnapshot(req,{}).then(awbs => {
     // for(let awb of awbs){
     //   let weightAwb = 0;
@@ -460,9 +472,10 @@ exports.get_awb_list_snapshot = (req, res, next) => {
     //   awb.weight = weightAwb
     // }
    // return res.json(awbs);
+   console.log("awbs",awbs.length)
     res.render('pages/warehouse/snapshot/awb/list', {
       page: req.originalUrl,
-      title: "AirWay Bills",
+      title: title,
       user: res.user,
       awbs: awbs,
       clear:req.query.clear,
