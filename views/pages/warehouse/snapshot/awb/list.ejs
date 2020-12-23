@@ -34,7 +34,7 @@ var endate = new Date();
         <div class="row row-nav-line">
           <ul class="nav nav-tabs nav-line nav-color-primary" id="awb-list-tab" role="tablist">
             <li class="nav-item"> <a class="nav-link <%if(type =="airwaybill" || !type){%>active show<%}%>" data-toggle="tab" href="#awb-list" role="tab"
-                aria-selected="true" onclick="pagereload('airwaybill')">AirWay Bills</a> </li>
+                aria-selected="true" onclick="pagereload('airwaybill')"><%= title %></a> </li>
             <!-- <li class="nav-item"> <a class="nav-link <%if(type =="nodocs"){%>active show<%}%>" data-toggle="tab" href="#awb-no-docs" role="tab"
                 aria-selected="false" onclick="pagereload('nodocs')">No Docs</a> </li>
             <li class="nav-item"> <a class="nav-link <%if(type =="pendingawb"){%>active show<%}%>" data-toggle="tab" href="#awb-no-packages" role="tab"
@@ -49,7 +49,7 @@ var endate = new Date();
           <input type="hidden" name="clear" id="clear" value="<%=clear%>">
           <input type="hidden" id="daterange" value="<%=daterange%>">
           <input type="hidden" id="page" value="<%=page%>">
-
+          <input type="hidden" id="type" value="<%=query.type%>">
            <div class="col-xs-12 col-sm-12 float-right">
               <select name="search_type" id="search_type"  class="form-control" style="width: 30%; float: left;">
                   <option value="">Select </option>
@@ -60,9 +60,8 @@ var endate = new Date();
               <input type="text" name="search_text" id="search_text" class="form-control" value="<%=query.search_text%>" style="width: 30%; float: left;margin-left: 1%;"">
               <input type="submit" value="Filter" class="btn btn-primary" style="margin-left: 1%;" onclick="searchDataFilter()">
           </div>
-        <div class="tab-content m-4" id="awb-list-tabContent">
-          <!-- <input type="hidden" name="clear" id="clear" value="<%=clear%>"> -->
-                <div class="tab-pane fade <%if(type =="airwaybill" || !type){%>active show<%}%>" id="awb-list" role="tabpanel" aria-labelledby="awb-list-tab">
+        <!-- <div class="tab-content m-4" id="awb-list-tabContent">
+                <div class="tab-pane fade"  id="awb-list" role="tabpanel" aria-labelledby="awb-list-tab"> -->
             <div class="table-responsive p-4">
               <table id='awb-table' class='display table table-striped table-hover  dataTable'>
                 <thead>
@@ -73,7 +72,7 @@ var endate = new Date();
                     <th>Consignee</th>
                     <th>Shipper</th>
                     <th>Fll Pickup</th>
-                    <th>Invoice Count</th>
+                    <th>Carrier</th>
                     <th>Package Count</th>
                     <th>View more</th>
                     <th></th>
@@ -82,7 +81,7 @@ var endate = new Date();
                 </thead>
                 <tbody>
                   <% 
-                  airwaybill.forEach(function(awb){
+                  awbs.forEach(function(awb){
                   %>
                   <tr data-record=" <%= awb._id %>">
                   <td><%=helpers.formatDate(awb.createdAt)%></td>
@@ -91,6 +90,7 @@ var endate = new Date();
                   <td><%=awb.customerFullName %></td>
                   <td><%=awb.shipperName %></td>
                   <td><%=(awb.fll_pickup && awb.fll_pickup) ? awb.fll_pickup : '' %></td>
+                  <td><%=awb.carrierName?awb.carrierName:'' %></td>
                   <td><%=awb.invoices && awb.invoices.length > 0 ? 'yes-doc' : 'no-doc' %></td>
                   <td><%=awb.packages ? awb.packages.length : 'no-pkg' %></td>
                   <td>
@@ -118,8 +118,8 @@ var endate = new Date();
                   <%})%>
                   </tbody>
                   </table>
-                </div>
-        </div>
+                <!-- </div>
+        </div> -->
       </div>
     </div>
   </div>

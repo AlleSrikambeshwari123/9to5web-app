@@ -170,6 +170,12 @@ const packageSchema = new mongoose.Schema({
   storeLocation:{
     type: String
   },
+  zoneName:{
+    type: String
+  },
+  carrierName:{
+    type: String
+  },
   //end searching
   createdBy: {
     type: mongoose.Schema.Types.ObjectId, 
