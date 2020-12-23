@@ -25,7 +25,8 @@ createConnection()
       })
   }).then(async(data) => {
     for(let customer of data){
-      await Customer.findByIdAndUpdate({_id:customer._id}, {awb:customer.awb});
+      var awbIds = [...new Set(customer.awb)]
+      await Customer.findByIdAndUpdate({_id: customer._id}, {awb: awbIds});
     }
     return true;
   }).then(() => {

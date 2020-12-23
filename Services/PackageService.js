@@ -1780,6 +1780,8 @@ class PackageService {
                 .populate('customerId')
                 .populate('shipperId')
                 .populate('originBarcode')
+                .populate('zoneId')
+                .populate('carrierId')
                 .exec(async (err, result) => {
                     if(err){
                         console.log(err)
@@ -1789,6 +1791,12 @@ class PackageService {
                         var updateData =  {
                             awbIdNumber:result.awbId.awbId,
                             awbIdString:result.awbId.awbId                        
+                        }
+                        if(result && result.zoneId && result.zoneId.name){
+                            updateData.zoneName = result.zoneId.name;
+                        }
+                        if(result && result.carrierId && result.carrierId.name){
+                            updateData.carrierName = result.carrierId.name;
                         }
                         if(result.originBarcode && result.originBarcode.barcode){
                             updateData.barcode = result.originBarcode.barcode;
@@ -3727,6 +3735,27 @@ class PackageService {
             let location = await Location.findOne({_id:id.toString()}).populate('company');
             resolve(location);
         }) 
+    }
+    async updateAwbPackageOnCustomer(customerId){
+        return new Promise(async (resolve,reject)=>{           
+            var packages = await Package.aggregate([
+                {$match:{customerId:mongoose.mongo.ObjectId(customerId), awbId:{$ne:null}}},
+                {$group:{_id:"$customerId",package:{$push:"$_id"}}}
+              ]);
+            var awbs = await Awb.aggregate([
+                {$match:{customerId:mongoose.mongo.ObjectId(customerId)}},
+                {$group:{_id:"$customerId",awb:{$push:"$_id"}}}
+              ]);
+              if(packages && packages.length && packages[0].package){
+                let uniquePackage = [...new Set(packages[0].package)];
+                await Customer.findByIdAndUpdate({_id:customerId}, {package:uniquePackage});
+              }
+              if(awbs && awbs.length && awbs[0].awb){
+                let uniqueAwb = [...new Set(awbs[0].awb)];
+                await Customer.findByIdAndUpdate({_id:customerId}, {awb:uniqueAwb});
+              }
+              resolve(customerId);
+        })
     }
    /* End Sending EMail for Nodocs and Delivered */
 }

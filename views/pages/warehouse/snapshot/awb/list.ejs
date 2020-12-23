@@ -73,7 +73,7 @@ var endate = new Date();
                     <th>Consignee</th>
                     <th>Shipper</th>
                     <th>Fll Pickup</th>
-                    <th>Invoice Count</th>
+                    <th>Carrier</th>
                     <th>Package Count</th>
                     <th>View more</th>
                     <th></th>
@@ -91,6 +91,7 @@ var endate = new Date();
                   <td><%=awb.customerFullName %></td>
                   <td><%=awb.shipperName %></td>
                   <td><%=(awb.fll_pickup && awb.fll_pickup) ? awb.fll_pickup : '' %></td>
+                  <td><%=awb.carrierName?awb.carrierName:'' %></td>
                   <td><%=awb.invoices && awb.invoices.length > 0 ? 'yes-doc' : 'no-doc' %></td>
                   <td><%=awb.packages ? awb.packages.length : 'no-pkg' %></td>
                   <td>

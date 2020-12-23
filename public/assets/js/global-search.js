@@ -76,7 +76,7 @@ $(function () {
 
     // Resetting the selected values
     reset();
-    document.location.href = `/warehouse/package/${id}`;
+    document.location.href = `/warehouse/package/package-detail/${id}`;
 
     // if (selectedOption === 'Customer') {
     //   document.location.href = `/admin/customers/manage/${customerId}/get`;
