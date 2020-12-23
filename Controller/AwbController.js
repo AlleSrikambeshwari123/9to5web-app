@@ -448,6 +448,7 @@ exports.get_awb_list_snapshot = (req, res, next) => {
     req.query.daterange = '';
   } 
   console.log("type",req.query)
+  let title = "AirWay Bills"
   if(req.query.type){
     if(req.query.type == 'nodocs')
       title = "No Docs Awb"
@@ -457,8 +458,6 @@ exports.get_awb_list_snapshot = (req, res, next) => {
       title = "Awb Pickups"
     else
       title = "AirWay Bills"   
-  }else{
-    title = "AirWay Bills"
   }
   services.awbService.getAwbsFullSnapshot(req,{}).then(awbs => {
     // for(let awb of awbs){

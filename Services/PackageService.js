@@ -42,6 +42,7 @@ const Cube = require('../models/cube')
 const ProcessPackage = require('../models/processPkg')
 const DeliveryService = require('./DeliveryService');
 const deliveryService = new DeliveryService();
+var ObjectId = require('mongoose').Types.ObjectId;
 
 function createDocument(tPackage) {
     var packageDocument = {
@@ -693,9 +694,17 @@ class PackageService {
     }
 
     getAllSnapshotPackagesUpdated(req,searchData){      
-        return new Promise((resolve, reject) => {
+        return new Promise(async(resolve, reject) => {
             // var searchData = {};
-            if(req && req.query && req.query.search_type && req.query.search_text){
+            if(req && req.query && req.query.customerId){
+                if(ObjectId.isValid(req.query.customerId)){
+                    let customerResult = await Customer.findById(req.query.customerId) 
+                    if(customerResult && customerResult.package){
+                        searchData['_id'] =  { $in : customerResult.package}
+                    }
+                }
+            }
+            else if(req && req.query && req.query.search_type && req.query.search_text){
                 var searchcolmn = {AWBNUMBER:"awbIdString", CONSIGNEE : "customerFullName",SHIPPER : "shipperName",BARCODE : "barcode"}
                 var sColumn = searchcolmn[req.query.search_type];
                 searchData[sColumn] = {'$regex' : req.query.search_text , '$options' : 'i'};
@@ -749,7 +758,7 @@ class PackageService {
                   searchData.createdAt = {"$gte":stdate, "$lte": endate};
                 }
               }   
-              
+              console.log("search ---",searchData)
             if(searchData._id){
                 Package.find(searchData)
                 .populate({path : 'awbId',populate : 'driver'})
@@ -769,15 +778,19 @@ class PackageService {
                     }
                 });
             }else{
-                console.log("check all list")
-                Package.find(searchData)
-                .exec((err, result) => {
-                    if (err) {
-                        resolve([]);
-                    } else {
-                        resolve(result);
-                    }
-                });
+                if(req && req.query && req.query.customerId == 'load'){
+                    resolve([])
+                }else{
+                    console.log("check all list")
+                    Package.find(searchData)
+                    .exec((err, result) => {
+                        if (err) {
+                            resolve([]);
+                        } else {
+                            resolve(result);
+                        }
+                    });
+                }
             }
         });
     }
@@ -1059,7 +1072,7 @@ class PackageService {
         );
     }
     async getAwbNoDocsAllPackagesWithLastStatus(req) {
-        let packages = await this.getAllPackagesUpdatedLimit(req);
+        let packages = await this.getAllPackagesUpdated(req);
         let awbArray = []
         return await Promise.all(
             packages.map(async(pkg) => {
