@@ -514,19 +514,20 @@ class AwbService {
                
           searchData.createdAt = {"$gte":stdate, "$lte": endate};
         }
-        if(req.query.type){
-          if(req.query.type == 'nodocs')
-            searchData.invoices = []
-          else if(req.query.type == 'pendingawb')
-            searchData.packages = []
-          else if(req.query.type == 'awbpackage')
-            searchData.fll_pickup = true
-          else
-            searchData.packages = {$gt : []}         
-        }else{
-          searchData.packages = {$gt : []}
-        }
       }
+          if(req.query.type){
+            if(req.query.type == 'nodocs')
+              searchData.invoices = []
+            else if(req.query.type == 'pendingawb')
+              searchData.packages = []
+            else if(req.query.type == 'awbpackage')
+              searchData.fll_pickup = true
+            else
+              searchData.packages = {$gt : []}         
+          }else{
+            searchData.packages = {$gt : []}
+          }
+      console.log("sear",searchData)
         return new Promise((resolve, reject) => {
           if(!searchData._id){
             Awb.find(searchData)
