@@ -759,7 +759,7 @@ class PackageService {
                 }
               }   
               console.log("search ---",searchData)
-            if(searchData._id){
+            if(searchData._id && !req.query.customerId){
                 Package.find(searchData)
                 .populate({path : 'awbId',populate : 'driver'})
                 .populate('originBarcode')
