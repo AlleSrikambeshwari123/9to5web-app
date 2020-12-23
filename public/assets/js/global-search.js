@@ -19,10 +19,14 @@ $(function () {
       url: '/global-search',
       type: 'post',
       data: { selectedOption, inputField },
+      beforeSend: function() {
+        $("#myLoader").show();
+     },
       success: function (response) {
         showDataInModal(response, selectedOption);
       },
       error: function () {
+        $("#myLoader").hide();
         showNotify('Failed', response.message, 'fa fa-info', 'danger');
       }
     })
@@ -46,7 +50,9 @@ $(function () {
         
         if(inputField =="Package" || inputField =="Customer" || inputField =="Original" || inputField =="Awb"){
           $('#global-search-table-data').dataTable().fnAddData([customerFullName , '<span class="font-weight-bold text-right text-primary ml-3">' + barcode + '</span>', trackingNo, awbIdNumber, `<a id="global-search-collection-details" href="javascript: void(0)" data-id=${data._id}>Show Details</a>`])
+          $("#myLoader").hide();
         } else {
+          $("#myLoader").hide();
           $('#global-search-table-data').dataTable().fnAddData([id, `<a id="global-search-collection-details" href="javascript: void(0)" data-id=${data._id}>Show Details</a>`]);
         }
       })
