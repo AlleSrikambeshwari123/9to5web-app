@@ -2914,6 +2914,7 @@ class PackageService {
             if(packageResult && packageResult.zoneId){
                 let zoneResult = await Zone.findById(packageResult.zoneId)
                 if(zoneResult && zoneResult.location){
+                    await Package.findOneAndUpdate({_id : packageId},{$unset: {zoneId: 1 }})
                     await Location.findByIdAndUpdate({_id : zoneResult.location},{ $pull: { packages: packageId }})
                 }else{
                     return
