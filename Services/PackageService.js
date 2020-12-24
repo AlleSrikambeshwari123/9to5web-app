@@ -1544,10 +1544,13 @@ class PackageService {
     }
 
     addOriginBarcode(originBarcode) {
+        if(originBarcode.barcode){
+            originBarcode.barcode = originBarcode.barcode.trim()
+        }
         return new Promise(async(resolve, reject) => {
             await Barcode.findOne(originBarcode, (err, res) => {
                 if (res === null || res === undefined) {
-                    const barcode = new Barcode(originBarcode);
+                    const barcode = new Barcode(originBarcode.trim());
                     barcode.save((err, result) => {
                         if (err) {
                             return resolve({
