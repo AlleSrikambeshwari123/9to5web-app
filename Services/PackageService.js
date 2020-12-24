@@ -2830,7 +2830,7 @@ class PackageService {
             if(error.length > 0){
                 return
             }
-            let packageResult = await Package.findById(packageId)
+            let packageResult = await Package.findOneAndUpdate({_id : packageId},{$unset: {zoneId: 1 }})
             if(packageResult && packageResult.zoneId){
                 let zoneResult = await Zone.findById(packageResult.zoneId)
                 if(zoneResult && zoneResult.location){
