@@ -328,7 +328,7 @@ async function sendStorePackageEmail(pkg){
     emailBody = emailBody.replace("{{TRACKINGNUMBER}}",trackingNo);
     emailBody = emailBody.replace("{{AWBNUMBER}}",awbId);
     message = { 
-        to : (pkg && pkg.customerId && pkg.customerId.email)?pkg.customerId.email:'', 
+        to : (pkg && pkg.customerId && pkg.customerId.email)?pkg.customerId.email:'kim@postboxesetc.com', 
         from : 'info@postboxesetc.com ',
         subject: `Your order is at the store`,
         html:emailBody
