@@ -290,6 +290,9 @@ class PackageService {
                 packageIds.map(async(packageId) => {
                     const status = await this.updatePackageStatus(packageId, 5, username);
                     if (!status.success) error.push(status.message)
+                    else{
+                        this.removePackageFromLocation(packageId,error)
+                    }
                     return status
                 }),
             ).then((result) => {
@@ -313,13 +316,14 @@ class PackageService {
                         });
                         const status = await this.updatePackageStatus(packageId, 7, data.userId);
                         if (!status.success) error.push(status.message)
+                        else{
+                            await this.updateZoneAndLocation(data.zoneId, packageIds)
+                        }
                         //email                        
                         this.sendNoDocsPackageData(packageId);
                         return status
                     },
                     // this.updateAwbPackages(data.awbId,packageIds),
-                    this.updateZone(data.zoneId, packageIds)
-
                 )
             )
             if (error.length > 0) return { success: false, message: error }
@@ -338,8 +342,9 @@ class PackageService {
         return new Promise((resolve, reject) => {
             Promise.all(
                 packageIds.map(async(packageId) => {
+                        let locationResult = await Location.findById(data.location)
                         this.updatePackage(packageId, {
-                            location: data.location,
+                            location: locationResult.name,
                             companyId: data.companyId,
                             zoneId: data.zoneId,
                             agingStore:1
@@ -352,10 +357,12 @@ class PackageService {
                             const status = await this.updatePackageStatus(packageId, 9, username);                       
                             this.sendStorePackageData(packageId);
                             if (!status.success) error.push(status.message)
+                            else{
+                                await this.updateZoneAndLocation(data.zoneId, packageIds,error)
+                            }
                             return status
                         }
                     },
-                    this.updateZone(data.zoneId, packageIds)
                 ),
             ).then((result) => {
                 if (error.length > 0) return resolve({ success: false, error_message: error })
@@ -696,7 +703,19 @@ class PackageService {
     getAllSnapshotPackagesUpdated(req,searchData){      
         return new Promise(async(resolve, reject) => {
             // var searchData = {};
-            if(req && req.query && req.query.customerId){
+            if(req && req.query && req.query.locationId){
+                if(ObjectId.isValid(req.query.locationId)){
+                    let zoneResult = await Zone.find({location : req.query.locationId}) 
+                    let zoneArray = []
+                    for(let zone of zoneResult){
+                        if(zone && zone._id){
+                            zoneArray.push(zone._id)
+                        }
+                    }
+                    searchData['zoneId'] = {$in : zoneArray}
+                }
+            }
+            else if(req && req.query && req.query.customerId){
                 if(ObjectId.isValid(req.query.customerId)){
                     let customerResult = await Customer.findById(req.query.customerId) 
                     if(customerResult && customerResult.package){
@@ -759,7 +778,7 @@ class PackageService {
                 }
               }   
               console.log("search ---",searchData)
-            if(searchData._id && !req.query.customerId){
+            if(searchData._id && !req.query.customerId && !req.query.locationId){
                 Package.find(searchData)
                 .populate({path : 'awbId',populate : 'driver'})
                 .populate('originBarcode')
@@ -778,7 +797,7 @@ class PackageService {
                     }
                 });
             }else{
-                if(req && req.query && req.query.customerId == 'load'){
+                if(req && req.query && (req.query.customerId == 'load' || req.query.locationId == 'load')){
                     resolve([])
                 }else{
                     console.log("check all list")
@@ -2855,10 +2874,16 @@ class PackageService {
         }
     }
 
-    //========= Update Zone On Package Delivered ======//
-    async updateZone(id, pkgs) {
+    //========= Update Zone On Package and location Delivered ======//
+    async updateZoneAndLocation(id, pkgs) {
         try {
-            return await Zone.findByIdAndUpdate({ _id: id }, { $push: { packages: pkgs } })
+            await Zone.findByIdAndUpdate({ _id: id }, { $push: { packages: pkgs } })
+            let zoneResult = await Zone.findById(id)
+            if(zoneResult && zoneResult.location){
+                await Location.findByIdAndUpdate({_id : zoneResult.location},{ $push: { packages: pkgs }})
+            }else{
+                return
+            }
         } catch (error) {
             console.error('updateZone', error)
         }
@@ -2878,6 +2903,27 @@ class PackageService {
             if (!pkg) resolve({})
             else resolve(pkg)
         })
+    }
+
+    async removePackageFromLocation(packageId,error){
+        try {
+            if(error.length > 0){
+                return
+            }
+            let packageResult = await Package.findById(packageId)
+            if(packageResult && packageResult.zoneId){
+                let zoneResult = await Zone.findById(packageResult.zoneId)
+                if(zoneResult && zoneResult.location){
+                    await Location.findByIdAndUpdate({_id : zoneResult.location},{ $pull: { packages: packageId }})
+                }else{
+                    return
+                }
+            }else{
+                return
+            }
+        } catch (error) {
+            console.error('removePacage from location', error)
+        }
     }
 
     //========== Package Status ==========//

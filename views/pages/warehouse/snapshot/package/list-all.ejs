@@ -33,6 +33,8 @@ var endate = new Date();
     <div class="card">
       <div class="card-header d-flex align-items-left align-items-md-center flex-column flex-md-row">
         <div class="card-title"><%= title %></div>
+        <% if(!query.customerId && !query.locationId) {%>
+        
         <div class="d-flex align-items-right float-right ml-md-auto">
           <button id="add-to-cube-button" data-toggle="modal" data-target="#add-to-cube-modal"
             class="btn btn-primary btn-round float-right mr-2 ml-md-auto">
@@ -55,27 +57,19 @@ var endate = new Date();
           </button>
           <% } %>
         </div>
+        <% } %>              
       </div>
       <div id="myLoader"><img src="/img/preloader.gif"></div>
-      <div class="card-body    <% if (!query.customerId) { %> daterangepickerbody <% } %>">
+      <div class="card-body    <% if (!query.customerId && !query.locationId) { %> daterangepickerbody <% } %>">
         <input type="hidden" name="clear" id="clear" value="<%=clear%>">
         <input type="hidden" id="daterange" value="<%=daterange%>">
         <input type="hidden" id="page" value="<%=page%>">
         <input type="hidden" id="customer" value="<%=query.customerId%>">
+        <input type="hidden" id="location" value="<%=query.locationId%>">
 
          <div class="col-xs-12 col-sm-12 float-right">
-          <% if (!query.customerId) { %>
-            <select name="search_type" id="search_type"  class="form-control" style="width: 30%; float: left;">
-                <option value="">Select </option>
-                <option value="AWBNUMBER" <%if(query.search_type=='AWBNUMBER'){%>selected<%}%>>AWB # </option>
-                <option value="CONSIGNEE" <%if(query.search_type=='CONSIGNEE'){%>selected<%}%>>Consignee </option>
-                <option value="SHIPPER" <%if(query.search_type=='SHIPPER'){%>selected<%}%>>Shipper </option>
-                <option value="BARCODE" <%if(query.search_type=='BARCODE'){%>selected<%}%>>Original Barcode </option>
-            </select>
-            <input type="text" name="search_text" id="search_text" class="form-control" value="<%=query.search_text%>" style="width: 30%; float: left;margin-left: 1%;"">
-            <input type="submit" value="Filter" class="btn btn-primary" style="margin-left: 1%;" onclick="searchDataFilter()">
-            
-          <% }else{%>
+     
+          <% if(query.customerId) {%>
             <div class="col-lg-8 col-md-8 col-sm-8 row">
 
             <select id="customerId" name="customerId" class='form-control' value="<%=query.customerId && query.customerId != 'load' ? query.customerId  : ''%>" style="width: 30%; float: left;">
@@ -90,14 +84,42 @@ var endate = new Date();
                 <input type="submit" value="Filter" class="btn btn-primary" style="margin-left: 10%;" onclick="searchDataFilter()">
             </div>
             </div>
-            <% } %>
+            <% } else if(query.locationId) {%>
+              <div class="col-lg-8 col-md-8 col-sm-8 row">
+  
+              <select id="locationsId" name="locationId" class='form-control' value="<%=query.locationId && query.locationId != 'load' ? query.locationId  : ''%>" style="width: 30%; float: left;">
+                <option></option>
+                <% locations.forEach(location => { %>
+                <option value="<%=location.id%>">
+                  <%= location.name%>
+                </option>
+                <% }) %>
+              </select>
+              <div class="input-group-append">
+                  <input type="submit" value="Filter" class="btn btn-primary" style="margin-left: 10%;" onclick="searchDataFilter()">
+              </div>
+              </div>
+            <% } else { %>
+              <select name="search_type" id="search_type"  class="form-control" style="width: 30%; float: left;">
+                  <option value="">Select </option>
+                  <option value="AWBNUMBER" <%if(query.search_type=='AWBNUMBER'){%>selected<%}%>>AWB # </option>
+                  <option value="CONSIGNEE" <%if(query.search_type=='CONSIGNEE'){%>selected<%}%>>Consignee </option>
+                  <option value="SHIPPER" <%if(query.search_type=='SHIPPER'){%>selected<%}%>>Shipper </option>
+                  <option value="BARCODE" <%if(query.search_type=='BARCODE'){%>selected<%}%>>Original Barcode </option>
+              </select>
+              <input type="text" name="search_text" id="search_text" class="form-control" value="<%=query.search_text%>" style="width: 30%; float: left;margin-left: 1%;"">
+              <input type="submit" value="Filter" class="btn btn-primary" style="margin-left: 1%;" onclick="searchDataFilter()">
+            <% } %>              
 
         </div>
         <div class="table-responsive p-4">
           <table id="package-table" class="display  table table-striped table-hover dataTable package-table">
             <thead>
               <tr>
+                <% if(!query.customerId && !query.locationId){ %>              
                 <th><input id="checkall" type="checkbox" class="package-select-all" /></th>
+                <% } %>              
+
                 <th>Created Date</th>
                 <th>Tracking No</th>
                 <th>PMB</th>
@@ -127,9 +149,11 @@ var endate = new Date();
               <% packages.forEach(function(pkg){ %>
 
               <tr data-record="<%= pkg._id %>">
+                <% if(!query.customerId && !query.locationId) {%>              
                 <td>
                   <input type="checkbox" name="package-select" class="package-select" />
                 </td>
+                <% } %>              
                 <td><%= helpers.formatDate(pkg.createdAt) %></td>
                 <td><%=(pkg.trackingNo)?pkg.trackingNo:''%></td>
                 <td><%= pkg.pmb %></td>
