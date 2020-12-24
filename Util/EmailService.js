@@ -109,12 +109,22 @@ async function sendNoDocsEmail(awb){
     
     emailBody = emailBody.replace("{{AWB}}",awb.awb.id)
     emailBody = emailBody.replace("{{PACKAGES}}",generatePackages(awb))
-    message = {
-        to : "kim@postboxesetc.com", 
-        from : 'nodocsnas@postboxesetc.com ',
-        subject: `Invoice required AWB No(${awb.awb.id})`,
-        html:emailBody
-    }; 
+    if(awb.awb.customer.email){
+        message = {
+            to : awb.awb.customer.email, 
+            from : 'nodocsnas@postboxesetc.com ',
+            subject: `Invoice required AWB No(${awb.awb.id})`,
+            html:emailBody
+        };
+    }else{
+        message = {
+            to : "kim@postboxesetc.com", 
+            from : 'nodocsnas@postboxesetc.com ',
+            subject: `Invoice required AWB No(${awb.awb.id})`,
+            html:emailBody
+        };
+    }
+     
     var result = await sendGrid.send(message);
 
     return result; 
@@ -128,12 +138,22 @@ async function sendNoDocsFl(awb){
     
     emailBody = emailBody.replace("{{AWB}}",awb.awb.id)
     emailBody = emailBody.replace("{{PACKAGES}}",generatePackages(awb))
-    message = { 
-        to : "kim@postboxesetc.com", 
-        from : 'nodocsnas@postboxesetc.com ',
-        subject: `Invoice required AWB No(${awb.awb.id})`,
-        html:emailBody
-    }; 
+    if(awb.awb.customer.email){
+        message = { 
+            to : awb.awb.customer.email, 
+            from : 'nodocsnas@postboxesetc.com ',
+            subject: `Invoice required AWB No(${awb.awb.id})`,
+            html:emailBody
+        };
+    }else{
+        message = { 
+            to : "kim@postboxesetc.com", 
+            from : 'nodocsnas@postboxesetc.com ',
+            subject: `Invoice required AWB No(${awb.awb.id})`,
+            html:emailBody
+        };
+    }
+     
     var result = await sendGrid.send(message);
 
     return result; 
@@ -149,12 +169,22 @@ async function sendAtStoreEmail(store,pkg){
     emailBody = emailBody.replace("{{AWB}}",pkg.awb.id)
     
     emailBody = emailBody.replace("{{PACKAGES}}",generatePackage(pkg))
-    message = { 
-        to : "kim@postboxesetc.com", 
-        from : 'info@postboxesetc.com ',
-        subject: `Package is at Postboxes Etc. ${store}`,
-        html:emailBody
-    }; 
+    if(pkg.awb.customer.email){
+        message = { 
+            to : pkg.awb.customer.email, 
+            from : 'info@postboxesetc.com ',
+            subject: `Package is at Postboxes Etc. ${store}`,
+            html:emailBody
+        };
+    }else{
+        message = { 
+            to : "kim@postboxesetc.com", 
+            from : 'info@postboxesetc.com ',
+            subject: `Package is at Postboxes Etc. ${store}`,
+            html:emailBody
+        };
+    }
+     
     var result = await sendGrid.send(message);
 
     return result; 
@@ -205,12 +235,22 @@ async function sendAgingEmail(pkg){
     emailBody = emailBody.replace("{{AWB}}",awbId)
     
     // emailBody = emailBody.replace("{{PACKAGES}}",generatePackage(pkg))
-    message = { 
-        to : "kim@postboxesetc.com", 
-        from : 'info@postboxesetc.com ',
-        subject: `Aging Started`,
-        html:emailBody
-    }; 
+    if(emailTo){
+        message = { 
+            to : emailTo, 
+            from : 'info@postboxesetc.com ',
+            subject: `Aging Started`,
+            html:emailBody
+        };
+    }else{
+        message = { 
+            to : "kim@postboxesetc.com", 
+            from : 'info@postboxesetc.com ',
+            subject: `Aging Started`,
+            html:emailBody
+        };
+    }
+     
     var result = await sendGrid.send(message);
 
     return result; 
