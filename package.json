@@ -14,6 +14,7 @@
     "add-status-barcodes": "node db-scripts/add-status-barcodes.js",
     "add-consignee-list": "node db-scripts/add-consignee-list.js",
     "create-default-barcodes": "node db-scripts/add-default-barcodes.js",
+    "add-location-packages": "node db-scripts/add-location-packages.js",
     "db-seed": "npm run create-default-roles && npm run create-default-companies && npm run create-default-user && npm run create-default-location && npm run create-default-barcodes",
     "ui": "browser-sync start --proxy=localhost:8000 --files='**/*.css, **/*.ejs, **/*.js,**/*.js' --ignore=node_modules --reload-delay 10 --no-ui --no-notify"
   },

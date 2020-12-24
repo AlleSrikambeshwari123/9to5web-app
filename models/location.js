@@ -11,6 +11,10 @@ const locationSchema = new mongoose.Schema({
   phone: {
     type: String
   },
+  packages:[{
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'Package',
+  }], 
   address: {
     type: String
   },

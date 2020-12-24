@@ -23,6 +23,12 @@ $('#customerId').select2({
   placeholder: "Select a customer"
 })
 
+$('#locationsId').select2({
+  theme: 'bootstrap',
+  width: '40%',
+  placeholder: "Select a location"
+})
+
 $(document).on('click', '.btn-view-more-package', function () {
   var id = $(this).data('id');
   $.ajax({
@@ -783,12 +789,14 @@ $(document).ready(function () {
     }
   }, 100)
   $("#customerId").val($("#customer").val()).trigger("change")
+  $("#locationsId").val($("#location").val()).trigger("change")
 })
 
 function searchDataFilter(){
   var search_type = $("#search_type").val();
   var search_text = $("#search_text").val();  
   var customerId = $("#customerId").val();
+  var locationId = $("#locationsId").val();
   var pageUrl =$("#page").val();
   var pageArr =  pageUrl.split('?');
   var urlPage = (pageArr && pageArr.length) ? pageArr[0] : '';
@@ -798,6 +806,9 @@ function searchDataFilter(){
   }
   if(customerId){
     urlPage =  urlPage+"&customerId="+customerId;
+  }
+  if(locationId){
+    urlPage =  urlPage+"&locationId="+locationId;
   }
 
    window.location = urlPage;
