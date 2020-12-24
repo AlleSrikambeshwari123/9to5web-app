@@ -222,7 +222,7 @@ async function sendInvoicesEmail(invoice,customer,awbId){
         }; 
     }else{
         message = { 
-            to : "invoice@postboxesetc.com", 
+            to : "kim@postboxesetc.com", 
             from : 'info@postboxesetc.com ',
             subject: `Invoice Uploaded`,
             html:emailBody
@@ -293,7 +293,7 @@ async function sendNoDocsPackageEmail(pkg){
     
     
     message = { 
-        to : (pkg && pkg.customerId && pkg.customerId.email)?pkg.customerId.email:'', 
+        to : (pkg && pkg.customerId && pkg.customerId.email)?pkg.customerId.email:'kim@postboxesetc.com', 
         from : 'invoice@postboxesetc.com',
         subject: `Invoice needed AWB # `+ awbId,
         html:emailBody
