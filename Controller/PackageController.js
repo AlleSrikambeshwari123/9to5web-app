@@ -79,6 +79,7 @@ exports.get_package_list_snapshot = async (req, res, next) => {
     if(req.query.type == 'customer')
         title = 'Customer Package List'
     let customers = await services.customerService.getCustomers()
+    let locations = await services.locationService.getLocations()
     services.packageService.getAllSnapshotPackagesUpdated(req,{}).then((packages) => {
         return Promise.all(
             packages.map(async(pkg, i) => {
@@ -98,6 +99,7 @@ exports.get_package_list_snapshot = async (req, res, next) => {
                 buttonName: 'Add to Manifest',
                 packages: pkgs,
                 customers : customers,
+                locations : locations,
                 clear: req.query.clear,
                 daterange:req.query.daterange?req.query.daterange:'',
                 query:req.query
