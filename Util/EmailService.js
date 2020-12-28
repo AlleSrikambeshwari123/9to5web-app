@@ -1,5 +1,15 @@
-const sendGrid = require('@sendgrid/mail'); 
-sendGrid.setApiKey("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");
+require('dotenv').config();
+var nodemailer = require('nodemailer');
+const transport = nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port: process.env.SMTP_PORT,
+    tls: { ciphers: 'SSLv3' },
+    auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASSWORD
+    }
+    });
+
 var path = require('path'); 
 var fs = require('fs');
 var moment = require('moment'); 
@@ -109,13 +119,23 @@ async function sendNoDocsEmail(awb){
     
     emailBody = emailBody.replace("{{AWB}}",awb.awb.id)
     emailBody = emailBody.replace("{{PACKAGES}}",generatePackages(awb))
-    message = {
-        to : "kim@postboxesetc.com", 
-        from : 'nodocsnas@postboxesetc.com ',
-        subject: `Invoice required AWB No(${awb.awb.id})`,
-        html:emailBody
-    }; 
-    var result = await sendGrid.send(message);
+    if(awb.awb.customer.email){
+        message = {
+            to : awb.awb.customer.email, 
+            from : 'nodocsnas@postboxesetc.com ',
+            subject: `Invoice required AWB No(${awb.awb.id})`,
+            html:emailBody
+        };
+    }else{
+        message = {
+            to : "kim@postboxesetc.com", 
+            from : 'nodocsnas@postboxesetc.com ',
+            subject: `Invoice required AWB No(${awb.awb.id})`,
+            html:emailBody
+        };
+    }
+     
+    var result = await transport.sendMail(message);
 
     return result; 
     
@@ -128,13 +148,23 @@ async function sendNoDocsFl(awb){
     
     emailBody = emailBody.replace("{{AWB}}",awb.awb.id)
     emailBody = emailBody.replace("{{PACKAGES}}",generatePackages(awb))
-    message = { 
-        to : "kim@postboxesetc.com", 
-        from : 'nodocsnas@postboxesetc.com ',
-        subject: `Invoice required AWB No(${awb.awb.id})`,
-        html:emailBody
-    }; 
-    var result = await sendGrid.send(message);
+    if(awb.awb.customer.email){
+        message = { 
+            to : awb.awb.customer.email, 
+            from : 'nodocsnas@postboxesetc.com ',
+            subject: `Invoice required AWB No(${awb.awb.id})`,
+            html:emailBody
+        };
+    }else{
+        message = { 
+            to : "kim@postboxesetc.com", 
+            from : 'nodocsnas@postboxesetc.com ',
+            subject: `Invoice required AWB No(${awb.awb.id})`,
+            html:emailBody
+        };
+    }
+     
+    var result = await transport.sendMail(message);
 
     return result; 
 }
@@ -149,13 +179,23 @@ async function sendAtStoreEmail(store,pkg){
     emailBody = emailBody.replace("{{AWB}}",pkg.awb.id)
     
     emailBody = emailBody.replace("{{PACKAGES}}",generatePackage(pkg))
-    message = { 
-        to : "kim@postboxesetc.com", 
-        from : 'info@postboxesetc.com ',
-        subject: `Package is at Postboxes Etc. ${store}`,
-        html:emailBody
-    }; 
-    var result = await sendGrid.send(message);
+    if(pkg.awb.customer.email){
+        message = { 
+            to : pkg.awb.customer.email, 
+            from : 'info@postboxesetc.com ',
+            subject: `Package is at Postboxes Etc. ${store}`,
+            html:emailBody
+        };
+    }else{
+        message = { 
+            to : "kim@postboxesetc.com", 
+            from : 'info@postboxesetc.com ',
+            subject: `Package is at Postboxes Etc. ${store}`,
+            html:emailBody
+        };
+    }
+     
+    var result = await transport.sendMail(message);
 
     return result; 
 }
@@ -172,13 +212,23 @@ async function sendInvoicesEmail(invoice,customer,awbId){
     emailBody = emailBody.replace("{{AWBID}}",awbId)
     emailBody = emailBody.replace("{{PMB}}",invoice.pmb)
     emailBody = emailBody.replace("{{TRACKINGID}}",invoice.courierNo)
-    message = { 
-        to : "invoice@postboxesetc.com", 
-        from : 'info@postboxesetc.com ',
-        subject: `Invoice Uploaded`,
-        html:emailBody
-    }; 
-    var result = await sendGrid.send(message);
+    if(customer.email){
+        message = { 
+            to : customer.email, 
+            from : 'info@postboxesetc.com ',
+            subject: `Invoice Uploaded`,
+            html:emailBody
+        }; 
+    }else{
+        message = { 
+            to : "kim@postboxesetc.com", 
+            from : 'info@postboxesetc.com ',
+            subject: `Invoice Uploaded`,
+            html:emailBody
+        };
+    }
+    
+    var result = await transport.sendMail(message);
 
      return result; 
 }
@@ -206,12 +256,13 @@ async function sendAgingEmail(pkg){
     
     // emailBody = emailBody.replace("{{PACKAGES}}",generatePackage(pkg))
     message = { 
-        to : "kim@postboxesetc.com", 
+        to : emailTo, 
         from : 'info@postboxesetc.com ',
         subject: `Aging Started`,
         html:emailBody
-    }; 
-    var result = await sendGrid.send(message);
+    };
+        
+    var result = await transport.sendMail(message);
 
     return result; 
 }
@@ -241,12 +292,12 @@ async function sendNoDocsPackageEmail(pkg){
     
     
     message = { 
-        to : (pkg && pkg.customerId && pkg.customerId.email)?pkg.customerId.email:'', 
+        to : (pkg && pkg.customerId && pkg.customerId.email)?pkg.customerId.email:'kim@postboxesetc.com', 
         from : 'invoice@postboxesetc.com',
         subject: `Invoice needed AWB # `+ awbId,
         html:emailBody
     }; 
-    var result = pkg && pkg.customerId && pkg.customerId.email ? await sendGrid.send(message):'Email Not Found';
+    var result = pkg && pkg.customerId && pkg.customerId.email ? await transport.sendMail(message):'Email Not Found';
 
     return result; 
 }
@@ -276,12 +327,12 @@ async function sendStorePackageEmail(pkg){
     emailBody = emailBody.replace("{{TRACKINGNUMBER}}",trackingNo);
     emailBody = emailBody.replace("{{AWBNUMBER}}",awbId);
     message = { 
-        to : (pkg && pkg.customerId && pkg.customerId.email)?pkg.customerId.email:'', 
+        to : (pkg && pkg.customerId && pkg.customerId.email)?pkg.customerId.email:'kim@postboxesetc.com', 
         from : 'info@postboxesetc.com ',
         subject: `Your order is at the store`,
         html:emailBody
     }; 
-    var result = pkg && pkg.customerId && pkg.customerId.email ? await sendGrid.send(message): 'Email Not Found';
+    var result = pkg && pkg.customerId && pkg.customerId.email ? await transport.sendMail(message): 'Email Not Found';
 
     return result; 
 }
