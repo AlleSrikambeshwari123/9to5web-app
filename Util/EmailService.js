@@ -3,7 +3,6 @@ var nodemailer = require('nodemailer');
 const transport = nodemailer.createTransport({
     host: process.env.SMTP_HOST,
     port: process.env.SMTP_PORT,
-    secure: true,
     tls: { ciphers: 'SSLv3' },
     auth: {
         user: process.env.SMTP_USER,
