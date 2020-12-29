@@ -63,7 +63,7 @@ createConnection()
         var awbData = await Awb.findOne({_id:item.awbId});        
         records.push(
               {
-               awbid: awbData.awbId,
+               awbid: awbData.awbId?awbData.awbId:'-',
                employeeName: data[i].User[0].username,
                status:data[i].action,
                date:helpers.formatDate(data[i].createdAt)
