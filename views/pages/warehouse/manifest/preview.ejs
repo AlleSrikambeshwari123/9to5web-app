@@ -127,6 +127,7 @@
                                     <td><strong>Volumetric Weight</strong></td>
                                     <td><strong>Dimension</strong></td>
                                     <td><strong>Number Of Pieces #</strong></td>
+                                    <td><strong>Action #</strong></td>
                                 </tr>
                             </thead>
                             <tbody>
@@ -166,6 +167,9 @@
                                     </td>
                                     <td>
                                         <%= package.pieces %>
+                                    </td>
+                                    <td>
+                                        <a class="btn btn-link btn-danger btn-rm-pkg p-1" title="Delete" data-id="<%=package._id%>" data-toggle="modal" data-target="#confirmPkgDel"><i class="fa fa-trash"></i></a>
                                     </td>
                                 </tr>
                                 <% }) %>

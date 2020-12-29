@@ -363,7 +363,8 @@ $(function () {
     $("#save_awb").trigger('click');
   })
   $("#add-awb-form").submit(function (event) {
-    $('#createAwb').prop('disabled',true)
+    document.querySelector("#myLoader").style.display = "block"; 
+    // $('#createAwb').prop('disabled',true)
     event.preventDefault();
     var awbInfo = $(this)
       .serializeArray()
