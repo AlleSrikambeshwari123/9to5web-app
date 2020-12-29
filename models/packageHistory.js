@@ -75,7 +75,7 @@ const packageHistorySchema = new mongoose.Schema({
   },
   awbId: {
     type: mongoose.Schema.Types.ObjectId, 
-    ref: 'Awb', 
+    ref: 'AwbHistory', 
     required: true 
   },
   customerId: {
