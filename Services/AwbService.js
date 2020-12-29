@@ -14,6 +14,7 @@ const Manifest = require('../models/manifest');
 const Plane = require('../models/plane');
 const User = require('../models/user');
 const PriceLabel = require('../models/pricelabel');
+const ReportCsv = require('../models/reportcsv');
 
 const DELIVERY_METHODS = {
     DELIVERY: 1,
@@ -197,24 +198,26 @@ class AwbService {
     async getAwbStatuses(query) {
         return new Promise((resolve, reject) => {
           var searchData = {};
-            if(query && query.daterange && query.type == "awbStatus"){
+            if(query && query.daterange ){
+             
                 var daterange = query.daterange;
                 var date_arr = daterange.split('-');
-                var startDate = (date_arr[0]).trim();      
+                var startDate = (date_arr[0]).trim(); 
+                     
                 var stdate = new Date(startDate);
-                stdate.setDate(stdate.getDate() );
-            
+                stdate.setDate(stdate.getDate() +1);
+                
                 var endDate = (date_arr[1]).trim();
                 var endate = new Date(endDate);
                 endate.setDate(endate.getDate() +1);
 
-                stdate = new Date(stdate.setUTCHours(0,0,0,0));
+                stdate = new Date(stdate.setUTCHours(0,0,0,1));
                 stdate = stdate.toISOString();
                 endate = new Date(endate.setUTCHours(23,59,59,0));
                 endate = endate.toISOString(); 
 
                 searchData.createdAt = {"$gte":stdate, "$lte": endate};             
-            }else if(query && query.daterange && !query.type ){
+            }else if(!query.clear ){
               var endate = new Date();      
               endate.setDate(endate.getDate());
               var stdate = new Date();
@@ -226,14 +229,15 @@ class AwbService {
               endate = endate.toISOString(); 
                    
               searchData.createdAt = {"$gte":stdate, "$lte": endate};
-            }
+            }   
+            console.log(searchData)         
             AwbStatus.find(searchData, (err, result) => {
                 if (err) {
                     resolve([]);
                 } else {
                     resolve(result);
                 }
-            }).populate('User');
+            }).populate('User').populate('awbId');
         });
     }
 
@@ -1804,6 +1808,50 @@ class AwbService {
     //     }
     //   })
     // })
+  }
+  getAllReport(query){
+    return new Promise((resolve, reject) => {
+      var searchData = {};
+        if(query && query.daterange ){
+         
+            var daterange = query.daterange;
+            var date_arr = daterange.split('-');
+            var startDate = (date_arr[0]).trim(); 
+                 
+            var stdate = new Date(startDate);
+            stdate.setDate(stdate.getDate() +1);
+            
+            var endDate = (date_arr[1]).trim();
+            var endate = new Date(endDate);
+            endate.setDate(endate.getDate() +1);
+
+            stdate = new Date(stdate.setUTCHours(0,0,0,1));
+            stdate = stdate.toISOString();
+            endate = new Date(endate.setUTCHours(23,59,59,0));
+            endate = endate.toISOString(); 
+
+            searchData.createdAt = {"$gte":stdate, "$lte": endate};             
+        }else if(!query.clear ){
+          var endate = new Date();      
+          endate.setDate(endate.getDate());
+          var stdate = new Date();
+          stdate.setDate(stdate.getDate() - parseInt(strings.default_days_table));  
+          
+          stdate = new Date(stdate.setUTCHours(0,0,0,0));
+          stdate = stdate.toISOString();
+          endate = new Date(endate.setUTCHours(23,59,59,0));
+          endate = endate.toISOString(); 
+               
+          searchData.createdAt = {"$gte":stdate, "$lte": endate};
+        }            
+        ReportCsv.find(searchData).populate('userId').sort({createdAt: -1}).exec((err, result) => {
+            if (err) {
+                resolve([]);
+            } else {
+                resolve(result);
+            }
+        });
+    });
   }
   async getAwbHistoryPriceLabel(awbId) {    
     return new Promise((resolve, reject) => { 

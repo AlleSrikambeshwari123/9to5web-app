@@ -157,7 +157,7 @@ $(function () {
   $(document).ready(function () {
     $('#daterange-postbox').daterangepicker({});
     $('#daterange-nineToPackages').daterangepicker({});
-    $('#daterange-noDocs').daterangepicker({});
+    $('#daterange-noDocs').daterangepicker({autoApply:true});
     $('#daterange-user').daterangepicker({});
 
     //report

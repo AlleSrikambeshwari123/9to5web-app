@@ -1,0 +1,50 @@
+<% layout('./shared/__template')%>
+<%
+var typeData = {ALLAWBSTATUS:"All Awb Status"}
+%>
+<div class='gutters'>
+  <div class="col-xl-12 col-lg-6 col-md-12 col-sm-12">
+    <div class="card">
+      <div class="card-header d-flex align-items-left align-items-md-center flex-column flex-md-row">
+        <div class="card-title"><%=title%></div>
+        <!--<a href='create' class='btn btn-primary btn-round float-right ml-md-auto'>Add User</a>-->
+      </div>
+      <div id="myLoader"><img src="/img/preloader.gif"></div>
+      <div class="card-body daterangepickerbody">
+        <input type="hidden" name="clear" id="clear" value="<%=clear%>">
+        
+        <div class="table-responsive">
+        <table class="display table table-striped allawb table-hover dataTable ">
+          <thead>
+            <tr>
+              <th>Report Type</th>
+              <th>Date Range</th>
+              <th>user Name</th>
+              <th>Action</th>
+              <th>Date</th>             
+            </tr>
+          </thead>
+          
+          <tbody>
+            <% allreport.forEach(function(report){%>
+            <tr data-record="<%= report._id %>">
+              <td><%=typeData[report.reportType]%></td>
+              <td><%=report.dateRange%></td>
+              <td><%=report.userId.username%></td>
+              <td><a href="/reportcsv/<%=report.fileName%>">Download</a></td>
+              
+              <td><%=helpers.formatDate(report.createdAt)%></td>
+            </tr>
+            <%})%>
+          </tbody>
+        </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+    var daterange = "<%=query.daterange%>"
+</script>
+<% block('scripts').append('<script src="/js/utils.js"></script>')%>
+<% block('scripts').append('<script src="/js/reports/allawb.js"></script>')%></div>
