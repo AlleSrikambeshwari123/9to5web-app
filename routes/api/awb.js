@@ -33,7 +33,8 @@ router.get('/list-awb/:id',passport.authenticate('jwt', { session: false }), asy
             flag = 1
         }else{
             const result = await services.customerChildService.getCustomer({_id: customerId})
-            awbData = await services.awbService.getAwbsFullCustomer(result.parentCustomer.id);
+            if(result && result.parentCustomer && result.parentCustomer.id )
+                awbData = await services.awbService.getAwbsFullCustomer(result.parentCustomer.id);
         }
         let awbResponse = await services.awbService.getAwbPriceAndStatus(awbData,queryStatus)
         return res.send(awbResponse);
@@ -110,7 +111,7 @@ router.post('/store-invoice',passport.authenticate('jwt', { session: false }), u
 router.get('/awb-price/:id',passport.authenticate('jwt', { session: false }), async(req, res, next) => {
     try{ 
         const awbId = mongoose.Types.ObjectId(req.params.id);
-        const priceLabelData = await services.awbService.getAwbPriceLabel(awbId);
+        const priceLabelData = await services.awbService.getAwbHistoryPriceLabel(awbId);
         res.json(priceLabelData);
     }catch(err){
         console.log(err)
