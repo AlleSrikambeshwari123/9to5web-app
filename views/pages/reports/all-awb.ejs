@@ -36,7 +36,7 @@ var endate = new Date();
           <tbody>
             <% allawb.forEach(function(awb){%>
             <tr data-record="<%= awb._id %>">
-              <td><%=awb.awbId.awbId%></td>
+              <td><%=(awb.awbId && awb.awbId.awbId)?awb.awbId.awbId:''%></td>
               <td><%=awb.User.username%></td>
               <td><%=awb.action%></td>
               <td><%=helpers.formatDate(awb.createdAt)%></td>
