@@ -156,3 +156,9 @@ exports.delete_cube = (req, res, next) => {
     res.send(result);
   })
 }
+
+exports.deletePackage = (req, res, next) => {
+  services.cubeService.deletePackage(req.params.id, req.params.packageid).then(result => {
+    res.json(result);
+  })
+}

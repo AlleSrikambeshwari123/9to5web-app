@@ -2,7 +2,7 @@
 
 const mongoose = require('mongoose');
 
-const packageSchema = new mongoose.Schema({
+const packageHistorySchema = new mongoose.Schema({
   description: {
     type: String,
     required: true,
@@ -75,7 +75,7 @@ const packageSchema = new mongoose.Schema({
   },
   awbId: {
     type: mongoose.Schema.Types.ObjectId, 
-    ref: 'Awb', 
+    ref: 'AwbHistory', 
     required: true 
   },
   customerId: {
@@ -186,5 +186,4 @@ const packageSchema = new mongoose.Schema({
   timestamps: true
 });
 
-
-module.exports = mongoose.model('Package', packageSchema);
+module.exports = mongoose.model('PackageHistory', packageHistorySchema);
