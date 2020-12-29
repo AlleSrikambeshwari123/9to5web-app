@@ -1294,6 +1294,40 @@ class AwbService {
         });
     }
 
+    getFullAwbHistory(id) {
+      let awb;
+      let packages;
+      let invoices;
+      return new Promise((resolve, reject) => {
+          Promise.all([
+              this.getAwbHistory(id),
+              this.services.packageService.getPackagesHistory(id),
+              this.services.invoiceService.getInvoicesByAWB(id)
+          ]).then((results) => {
+              awb = results[0];
+              packages = results[1];
+              console.log("results[1]", results[1])
+              invoices = results[2]
+              Promise.all([
+                  this.services.customerService.getCustomer(awb.customerId),
+                  this.services.shipperService.getShipper(awb.shipper),
+                  this.services.carrierService.getCarrier(awb.carrier),
+                  this.services.hazmatService.getHazmat(awb.hazmat),
+              ]).then((otherInfos) => {
+                  console.log("@@@", packages)
+                  // awb.packages = packages;
+                  awb.invoices = invoices;
+                  awb.customerId = otherInfos[0];
+                  delete awb.customerId.password;
+                  awb.shipper = otherInfos[1];
+                  awb.carrier = otherInfos[2];
+                  awb.hazmat = otherInfos[3];
+                  resolve(this.renameKey(awb, 'customerId', 'customer'));
+              });
+          });
+      });
+  }
+
     createPurchaseOrders(awbId, purchaseOrders) {
         return new Promise((resolve, reject) => {
             Promise.all(
@@ -1381,7 +1415,7 @@ class AwbService {
       }
       getAwbsFullCustomer(id) {
         return new Promise((resolve, reject) => {
-          Awb.find({customerId:id})
+          AwbHistory.find({customerId:id})
             .populate('customerId')
             .populate('shipper')
             .populate('carrier')

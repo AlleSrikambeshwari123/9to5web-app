@@ -544,7 +544,7 @@ class PackageService {
 
     getPackageByTrackingId(trackingNo) {
         return new Promise((resolve, reject) => {
-            Package.find({ trackingNo })
+            PackageHistory.find({ trackingNo })
                 .populate(['customerId', 'shipperId', 'carrierId', 'awbId', 'hazmatId', 'createdBy', 'manifestId', 'compartmentId', 'deliveryId'])
                 .exec((err, result) => {
                     if (err) {
@@ -1711,6 +1711,26 @@ class PackageService {
         });
     }
 
+    getPackageHistoryById(packageId) {
+        return new Promise((resolve, reject) => {
+            PackageHistory.findById(packageId,async (err, pkg) => {
+                if (err || pkg == null) {
+                    resolve({}) 
+                }
+                else{
+                    if(pkg){
+                        pkg = pkg.toJSON()
+                        let zoned = await Zone.findById(pkg.zoneId)
+                        if(zoned && zoned.name){
+                            pkg.zoneValue = zoned.name
+                        }
+                    }
+                    resolve(pkg);
+                } 
+            });
+        })
+    }
+
     // getPackagesByObject(object) {
     //     return new Promise((resolve, reject) => {
     //         Package.find(object,async (err, pkgs) => {
@@ -1764,6 +1784,15 @@ class PackageService {
     getPackages(awbId) {
         return new Promise((resolve, reject) => {
             Awb.find({ _id: awbId }, (err, response) => {
+                if (err || response == null) resolve([])
+                else { resolve(response) }
+            })
+        });
+    }
+
+    getPackagesHistory(awbId) {
+        return new Promise((resolve, reject) => {
+            PackageHistory.find({ _id: awbId }, (err, response) => {
                 if (err || response == null) resolve([])
                 else { resolve(response) }
             })
@@ -3009,6 +3038,13 @@ class PackageService {
             //     }
             //     responsePkg.push(pkg)
             // }
+            for(let pkg of packagesList){
+                if(!pkg.packageId){
+                    let packageIdResult = await PackageStatus.findById(pkg._id)
+                    pkg.packageId = await PackageHistory.findById(packageIdResult.packageId).populate([{ path: "awbId" },{path : 'cubeId'}])
+                }
+            }
+
             return packagesList
         } catch (error) {
             return []

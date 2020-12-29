@@ -36,7 +36,7 @@ const awbHistorySchema = new mongoose.Schema({
   },
   packages: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Package'
+    ref: 'PackageHistory'
   }],
   purchaseOrders: [{
     type: mongoose.Schema.Types.ObjectId,
