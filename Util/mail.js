@@ -33,6 +33,7 @@ exports.sendEmail = (toEmail, subject, html) => {
   })
 };
 
+
 exports.send = (filePath, mailData) => {
   filePath = path.join(`${appRoot}/public/emails/`, filePath);
   console.log(filePath);
