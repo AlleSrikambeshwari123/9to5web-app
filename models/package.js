@@ -186,4 +186,5 @@ const packageSchema = new mongoose.Schema({
   timestamps: true
 });
 
+
 module.exports = mongoose.model('Package', packageSchema);

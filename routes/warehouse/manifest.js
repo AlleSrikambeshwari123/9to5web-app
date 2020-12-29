@@ -23,5 +23,6 @@ router.get('/nas/manifest/incoming', middleware().checkSession, manifestCtrl.get
 router.post('/nas/manifest/all-incoming', middleware().checkSession, manifestCtrl.get_all_incoming_manifest)
 router.get('/nas/manifest/manage/:id/get', middleware().checkSession, manifestCtrl.get_manifest_detail);
 router.get('/fll/manifest/manage/:id/receive', middleware().checkSession, manifestCtrl.receive_manifest);
+router.get('/fll/manifest/manage/:id/delete-package/:packageid', middleware().checkSession, manifestCtrl.deletePackage);
 
 module.exports = router;
