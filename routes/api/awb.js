@@ -88,7 +88,7 @@ router.post('/store-invoice',passport.authenticate('jwt', { session: false }), u
             if(req.body.awbId){
                 invoiceObject.awbId = req.body.awbId 
                 let customer = await services.customerService.getCustomer({_id : invoiceObject.customerId})
-                let awb = await services.awbService.getAwbHistory(req.body.awbId)
+                let awb = await services.awbService.getAwb(req.body.awbId)
                 await emailService.sendInvoicesEmail(invoiceObject,customer,awb.awbId);
                 awbData = await services.awbService.storeInvoiceFile(invoiceObject);
             }else{
