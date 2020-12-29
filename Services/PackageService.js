@@ -30,6 +30,7 @@ const PKG_STATUS = {
 };
 
 const Package = require('../models/package');
+const PackageHistory = require('../models/packageHistory');
 const Location = require('../models/location');
 const Compartment = require('../models/compartment');
 const Manifest = require('../models/manifest');
@@ -295,8 +296,9 @@ class PackageService {
                     }
                     return status
                 }),
-            ).then((result) => {
+            ).then(async (result) => {
                 if (error.length > 0) return resolve({ success: false, message: error })
+                await this.removePackagesAndAwb(packageIds)
                 resolve({ success: true, message: strings.string_response_received, status: PKG_STATUS[5] });
             });
         });
@@ -1827,9 +1829,12 @@ class PackageService {
                     console.log(err);
                     resolve({ success: false, message: strings.string_response_error });
                 } else {
-                     this.removeProcessPackage(newPackage.originBarcode, newPackage.createdBy)
-                     this.updatePackageStatus(result['_id'], 1, newPackage.createdBy);
-                    // this.updatePackageOtherDetail(result['_id']);
+                    let resp = result.toJSON()
+                    newPackage['_id'] = resp._id
+                    const newPackageHistoryData = new PackageHistory(resp);
+                    await newPackageHistoryData.save()
+                    this.removeProcessPackage(newPackage.originBarcode, newPackage.createdBy)
+                    this.updatePackageStatus(result['_id'], 1, newPackage.createdBy)
                     resolve({ success: true });
                 }
             });
@@ -1887,6 +1892,7 @@ class PackageService {
                             updateData.shipperName = result.shipperId.name;
                         }
                         var update = await Package.updateOne({_id:packageId}, updateData);
+                        var updatePackageHistory = await PackageHistory.updateOne({_id:packageId}, updateData);
                         resolve(update);
                     }
                 })
@@ -1960,10 +1966,11 @@ class PackageService {
 
     updatePackage_updated(id, pkg) {
         return new Promise(async(resolve, reject) => {
-            Package.findOneAndUpdate({ _id: id }, pkg, (err, result) => {
+            Package.findOneAndUpdate({ _id: id }, pkg, async (err, result) => {
                 if (err) {
                     resolve({ success: false, message: strings.string_response_error });
                 } else {
+                    await PackageHistory.findOneAndUpdate({ _id: id }, pkg)
                     resolve({ success: true });
                 }
             })
@@ -1984,10 +1991,11 @@ class PackageService {
 
     removePackage_updated(id) {
         return new Promise((resolve, reject) => {
-            Package.deleteOne({ _id: id }, (err, result) => {
+            Package.deleteOne({ _id: id },async (err, result) => {
                 if (err) {
                     resolve({ success: false, message: strings.string_response_error });
                 } else {
+                    await PackageHistory.deleteOne({_id: id})
                     resolve(result);
                 }
             });
@@ -2899,7 +2907,9 @@ class PackageService {
 
     getPackage_updated(packageId, pkgStatus) {
         return new Promise(async(resolve, reject) => {
-            let pkg = await Package.findOneAndUpdate({ _id: packageId }, { lastStatusText: pkgStatus , lastStatusDate :  new Date()}, { new: true })
+            let lastDate =  new Date()
+            let pkg = await Package.findOneAndUpdate({ _id: packageId }, { lastStatusText: pkgStatus , lastStatusDate :  lastDate}, { new: true })
+            let pkgHistoryUpdated = await PackageHistory.findOneAndUpdate({ _id: packageId }, { lastStatusText: pkgStatus , lastStatusDate :  lastDate}, { new: true })
             if (!pkg) resolve({})
             else resolve(pkg)
         })
@@ -2915,6 +2925,7 @@ class PackageService {
                 let zoneResult = await Zone.findById(packageResult.zoneId)
                 if(zoneResult && zoneResult.location){
                     await Package.findOneAndUpdate({_id : packageId},{$unset: {zoneId: 1 }})
+                    await PackageHistory.findOneAndUpdate({_id : packageId},{$unset: {zoneId: 1 }})
                     await Location.findByIdAndUpdate({_id : zoneResult.location},{ $pull: { packages: packageId }})
                 }else{
                     return
@@ -2924,6 +2935,26 @@ class PackageService {
             }
         } catch (error) {
             console.error('removePacage from location', error)
+        }
+    }
+
+    async removePackagesAndAwb(packageIds){
+        let awbIds = []
+        for(let pkgId of packageIds){
+            let packageResult =await Package.findById(pkgId).populate({path : 'awbId', populate : 'packages'})
+            awbIds.push(packageResult.awbId)
+        }
+        for(let awbId of awbIds){
+            let flag = 0 
+            for(let pkg of awbId.packages){
+                if(pkg.lastStatusText != "Received By Customer"){
+                    flag =1
+                }
+            }
+            if(flag == 0){
+                await Package.deleteMany({awbId : awbId})
+                await Awb.deleteOne({_id : awbId})
+            }
         }
     }
 
@@ -3033,7 +3064,7 @@ class PackageService {
     getCustomerPackages(customerId) {
         console.log("cus",customerId)
         return new Promise((resolve, reject) => {
-            Package.find({ customerId })
+            PackageHistory.find({ customerId })
                 .exec((error, packages) => {
                     if (error || packages.length == 0) {
                         resolve({

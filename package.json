@@ -21,6 +21,9 @@
     "add-package-zone-carrier":"node db-scripts/add-package-zone-carrier.js",
     "create-default-barcodes": "node db-scripts/add-default-barcodes.js",
     "add-location-packages": "node db-scripts/add-location-packages.js",
+    "add-packagesHistory": "node db-scripts/add-packagesHistory.js",
+    "add-awbHistory": "node db-scripts/add-awbHistory.js",
+    "remove-checkout-pkgs-awbs": "node db-scripts/remove-checkout-pkgs-awbs.js",
     "db-seed": "npm run create-default-roles && npm run create-default-companies && npm run create-default-user && npm run create-default-location && npm run create-default-barcodes",
     "ui": "browser-sync start --proxy=localhost:8000 --files='**/*.css, **/*.ejs, **/*.js,**/*.js' --ignore=node_modules --reload-delay 10 --no-ui --no-notify"
   },

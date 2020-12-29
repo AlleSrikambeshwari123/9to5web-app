@@ -3,6 +3,7 @@ var moment = require('moment');
 var strings = require('../Res/strings');
 
 const Awb = require('../models/awb');
+const AwbHistory = require('../models/awbHistory');
 const StoreInvoice = require('../models/storeInvoice');
 const AdditionalInvoice = require('../models/additionalInvoice');
 const AwbStatus = require('../models/awbStatus');
@@ -44,11 +45,14 @@ class AwbService {
                 delete awb.driver;
             }
             const newAwb = new Awb(awb);
-            newAwb.save((err, result) => {              
+            newAwb.save(async(err, result) => {
                 if (err) {
                     console.log("<==== Error While Creating Awb ====> ", err);
                     resolve({ success: false, message: strings.string_response_error });
                 } else {
+                  let resp = result.toJSON()
+                    const newAwbHistory = new AwbHistory(resp);
+                    await newAwbHistory.save()
                     this.updateAwbStatus(result, 1, awb['createdBy']);
                     this.updateAwbOtherDetail(result['_id']);
                     awb['id'] = result['_id'];
@@ -132,6 +136,7 @@ class AwbService {
               }    
                 console.log("updateData>>>>>>>>>>>>>>>>>>>>",updateData) 
               var update = await Awb.updateOne({_id:awbId},updateData);
+              var updateAwbHistory = await AwbHistory.updateOne({_id:awbId},updateData);
               resolve(update)
             }
           }
@@ -253,6 +258,7 @@ class AwbService {
                 if (err) {
                     resolve({ success: false });
                 } else {
+                    await AwbHistory.findOneAndUpdate({ _id: id },{...awb })
                     var awbData = await Awb.findOne({_id:id});
                     this.updateAwbStatus(result, 2, userId);
                     this.updateAwbOtherDetail(result['_id']);
@@ -297,6 +303,19 @@ class AwbService {
                 });
         });
     }
+
+    getAwbHistory(id) {
+      return new Promise((resolve, reject) => {
+          AwbHistory.findOne({ _id: id })
+              .exec((err, result) => {
+                  if (err) {
+                      resolve({});
+                  } else {
+                      resolve(result);
+                  }
+              });
+      });
+  }
 
     getAwbsFull(req) {
       var searchData = {};
@@ -1475,7 +1494,7 @@ class AwbService {
 
     async getAwbsNoInvoiceCustomer(id) {
       return new Promise((resolve, reject) => {
-        Awb.find({ invoices: { $eq: [] }, customerId:id })
+        AwbHistory.find({ invoices: { $eq: [] }, customerId:id })
           .populate('customerId')
           .populate('shipper')
           .populate('carrier')
@@ -1562,7 +1581,7 @@ class AwbService {
       awb.totalPrice = "Not Priced"
       let priceLabel = await this.getAwbPriceLabel(awb._id)
       awb.pricing = priceLabel
-      if(!priceLabel.TotalWeightValue){
+      if(priceLabel && !priceLabel.TotalWeightValue){
         let totalweightVal =0
         if(awb.packages){
             for (var i = 0; i < awb.packages.length; i++) {
