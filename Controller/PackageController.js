@@ -67,7 +67,7 @@ exports.get_package_snapshot = (req, res, next) => {
                 packages[i].packageNumber = "PK00" + packages[i].id;
                 return pkg
             })
-        ).then(pkgs => {            
+        ).then(pkgs => {                    
             res.send(pkgs)
         })
 
