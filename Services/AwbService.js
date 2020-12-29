@@ -1494,7 +1494,7 @@ class AwbService {
 
     async getAwbsNoInvoiceCustomer(id) {
       return new Promise((resolve, reject) => {
-        AwbHistory.find({ invoices: { $eq: [] }, customerId:id })
+        Awb.find({ invoices: { $eq: [] }, customerId:id })
           .populate('customerId')
           .populate('shipper')
           .populate('carrier')
