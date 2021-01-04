@@ -1532,7 +1532,7 @@ class AwbService {
 
     async getAwbsNoInvoiceCustomer(id) {
       return new Promise((resolve, reject) => {
-        Awb.find({ invoices: { $eq: [] }, customerId:id })
+        Awb.find({customerId:id })
           .populate('customerId')
           .populate('shipper')
           .populate('carrier')
@@ -1544,6 +1544,7 @@ class AwbService {
             } else {
               let awbResponse = []
               for(let data of awbData){
+          		data = data.toJSON()
                 let storeInvoices = await StoreInvoice.find({awbId :data._id})
                 if(storeInvoices.length == 0){
                   data['customer'] = data['customerId'];
@@ -1554,8 +1555,13 @@ class AwbService {
                     data['weight'] = weight;
                   }
                   data['dateCreated'] = moment(data['createdAt']).format('MMM DD, YYYY');
+		              data.invoices = []
+                  data.invoice_attach = false
                   awbResponse.push(data)
-                }
+                }else{
+		              data.invoice_attach = true
+                  awbResponse.push(data)
+            	  }
               }
               resolve(awbResponse);
             }
