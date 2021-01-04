@@ -587,7 +587,7 @@ class AWBGeneration {
                             margin: [0, 10],
                             table: {
                                 headerRows: 1,
-                                widths: ["*", "*", "*", "*", "*", '*'],
+                                widths: [65, 100, 80, 50, 90, 60],
                                 body: await this.generatePurchaseOrderTable()
                             }
                         }
@@ -641,8 +641,10 @@ class AWBGeneration {
             ],           
         ]
         var purchaseOrders = this.awb.purchaseOrders ? this.awb.purchaseOrders : [];
+        var totalPO = 0;
         if(purchaseOrders && purchaseOrders.length>0){
             for(var i=0; i< purchaseOrders.length; i++){
+                totalPO = totalPO+ parseFloat(purchaseOrders[i].amount);
                 body.push([
                     { text: moment(purchaseOrders[i].createdAt).format("MMM/D/YYYY"),bold: false},
                     { text: purchaseOrders[i].serviceTypeText ,bold: false},
@@ -652,6 +654,14 @@ class AWBGeneration {
                     { text: purchaseOrders[i].source ,bold: false}
                 ]) 
             }
+            body.push([
+                {text:''},
+                {text:''},
+                {text:'Total: ',bold: true, align: 'right',},
+                { text: '$'+(totalPO).toFixed(2) ,bold: false},
+                {text:''},
+                {text:''},
+            ])
         }        
         return body;
     }
