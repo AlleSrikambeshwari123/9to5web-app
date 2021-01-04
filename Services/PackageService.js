@@ -1713,7 +1713,9 @@ class PackageService {
 
     getPackageHistoryById(packageId) {
         return new Promise((resolve, reject) => {
-            PackageHistory.findById(packageId,async (err, pkg) => {
+            PackageHistory.findById(packageId)
+            .populate('originBarcode')
+            .exec(async (err, pkg) => {
                 if (err || pkg == null) {
                     resolve({}) 
                 }
