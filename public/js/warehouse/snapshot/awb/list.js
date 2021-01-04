@@ -83,7 +83,7 @@ $('.print-awb').click(function () {
 var awbTable = $('#awb-table').DataTable({
   pageLength: 10,
   dom: 'Bfrtip',
-  buttons: [ 'csv', 'pdf']
+  buttons: [ 'pdf']
 })
 var nodocsTable = $('#no-docs-table').DataTable({
   pageLength: 10,

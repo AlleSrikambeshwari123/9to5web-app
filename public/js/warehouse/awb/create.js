@@ -826,7 +826,7 @@ $(function () {
         pkg.description,
         pkg.dimensions,
         Number(pkg.weight).toFixed(2) + ` ${pkg.packageCalculation||'lbs'}`,
-        `<a class="btn btn-link btn-primary btn-edit-pkg p-1" title="Edit" data-id="${pkg.id}" href="#add-package-popup">
+        `<a class="btn btn-link btn-primary btn-edit-pkg p-1" title="Edit" data-id="${pkg.id}" href="#add-package-popup" data-backdrop="static">
           <i class="fa fa-pen"></i> </a>
         <a class="btn btn-link btn-danger btn-rm-pkg p-1" title="Delete" data-id="${pkg.id}" data-toggle='modal' data-target='#confirmPkgDel'>
           <i class="fa fa-trash"></i> </a>`

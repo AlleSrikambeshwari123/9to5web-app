@@ -108,7 +108,7 @@ exports.signup_customer = (req, res, next) => {
 
 exports.add_new_customer = (req, res, next) => {
   // req.body['createdBy'] = req['userId'];
-  req.body['createdBy'] = "5ea9202aa056fb0a07ef9b8b";
+  req.body['createdBy'] = "5ea9202aa056fb0a07ef9b8b";  
   services.customerService.createCustomer(req.body).then(result => {
     res.send(result);
   }).catch(err=>{

@@ -778,7 +778,10 @@ class PackageService {
                       
                   searchData.createdAt = {"$gte":stdate, "$lte": endate};
                 }
-              }   
+              }  
+              if(req && req.query && req.query.nodocs){
+                searchData['lastStatusText'] =  "No Invoice Present"
+              } 
               console.log("search ---",searchData)
             if(searchData._id && !req.query.customerId && !req.query.locationId){
                 Package.find(searchData)
@@ -803,6 +806,9 @@ class PackageService {
                     resolve([])
                 }else{
                     console.log("check all list")
+                    if(req && req.query && req.query.nodocs){
+                        searchData['lastStatusText'] =  "No Invoice Present"
+                      }
                     Package.find(searchData)
                     .exec((err, result) => {
                         if (err) {
@@ -3542,7 +3548,7 @@ class PackageService {
                 search =  { awbIdString: { $regex: inputField, $options: 'i' } }
             }
             console.log(search)
-            Package.find(search, 'id customerFullName barcode awbIdNumber trackingNo', (err, packages) => {
+            Package.find(search, 'id awbId customerFullName barcode awbIdNumber trackingNo', (err, packages) => {
                 if (err) {
                     resolve([]);
                 } else {

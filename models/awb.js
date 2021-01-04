@@ -105,6 +105,10 @@ const awbSchema = new mongoose.Schema({
     type: String
   },
   //end searching
+  po_number:{
+      type: Number,
+      unique: true
+  },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -123,6 +127,11 @@ awbSchema.plugin(autoIncrement.plugin, {
   model: 'awbSchema', 
   field: 'awbId', 
   startAt: 100000
+});
+awbSchema.plugin(autoIncrement.plugin, {
+  model: 'awbSchema', 
+  field: 'po_number', 
+  startAt: 1000
 });
 
 module.exports = mongoose.model('Awb', awbSchema);

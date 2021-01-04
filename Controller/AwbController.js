@@ -79,7 +79,8 @@ exports.get_awb_detail = (req, res, next) => {
     services.packageService.getProcessOriginBarcode(res.user),
     services.packageService.getAllOriginBarcodes(),
     services.driverService.getDrivers(),
-    services.invoiceService.getAdditionalInvoices()
+    services.invoiceService.getAdditionalInvoices(),
+    services.locationService.getCompanies(),
   ]).then(([
     customers,
     hazmats,
@@ -95,7 +96,8 @@ exports.get_awb_detail = (req, res, next) => {
     processBarcode,
     barcodes,
     drivers,
-    additionalInvoices
+    additionalInvoices,
+    companies
   ]) => {
     awb['customer'] = awb['customerId'];
     res.render('pages/warehouse/awb/edit', {
@@ -117,7 +119,8 @@ exports.get_awb_detail = (req, res, next) => {
       processBarcode,
       barcodes,
       drivers,
-      additionalInvoices
+      additionalInvoices,
+      companies
     });
   })
 };

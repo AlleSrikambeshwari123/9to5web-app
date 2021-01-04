@@ -69,13 +69,13 @@
               <td><%= pkg.weight%></td>
               <td class="lastStatusText_field"><%= pkg.lastStatusText %></td>
               <td><a href="../../warehouse/nas/awb/manage/<%=pkg.awbId._id%>/preview"> <%= pkg.awbId.awbId %> </a></td>
-              <td><a class="btn btn-link btn-primary btn-edit-pricelabel" data-toggle="modal" data-id="<%=pkg._id%>"
+              <td><a class="btn btn-link btn-primary btn-edit-pricelabel" data-backdrop="static" data-toggle="modal" data-id="<%=pkg._id%>"
                   data-original-title="Add Price" data-target="#pricelabel-popup"><i class="fa fa-edit"></i></a>
               </td>
               <% let ifNotPriceLabel = 'ifNotPriceLabel'+ pkg._id %>
               <td><a class="<%= ifNotPriceLabel %>" href="../price-label/download/<%=pkg._id%>"><i class="fa fa-download ifNotPriceLabel"></i></a></td>
               <td>
-                <a class="btn btn-link btn-primary btn-print-pkg <%= ifNotPriceLabel %>" data-toggle="modal" data-id="<%=pkg._id%>"
+                <a class="btn btn-link btn-primary btn-print-pkg <%= ifNotPriceLabel %>" data-backdrop="static" data-toggle="modal" data-id="<%=pkg._id%>"
                   data-original-title="Print Label" data-target="#print-pricelabel-popup"><i class="fa fa-print ifNotPriceLabel"></i>
                 </a>
               </td>
