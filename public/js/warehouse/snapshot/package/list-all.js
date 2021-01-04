@@ -1,6 +1,8 @@
 
 let packageTable = $('.package-table').DataTable({
   pageLength: 10,
+  dom: 'Bfrtip',
+  buttons: [  'pdf'],
   columnDefs: [
     {
       orderable: false,
@@ -766,10 +768,16 @@ if (urlPage == "/warehouse/snapshot/package/list") {
 if (pageUrl.split('/')[2] == "customer") {
   redirectUrl = window.location.pathname;
 }
+if(nodoc){
+  $(document).on('click', '.applyBtn', function () {
+    window.location = redirectUrl + "?nodocs=load&&daterange=" + $('.daterange').val();
+  })
+}else{
 
 $(document).on('click', '.applyBtn', function () {
   window.location = redirectUrl + "?daterange=" + $('.daterange').val();
 })
+}
 
 $(document).on('click', '.cancelBtn', function () {
   window.location = redirectUrl + "?clear=1";
@@ -798,6 +806,7 @@ function searchDataFilter(){
   var search_text = $("#search_text").val();  
   var customerId = $("#customerId").val();
   var locationId = $("#locationsId").val();
+  
   var pageUrl =$("#page").val();
   var pageArr =  pageUrl.split('?');
   var urlPage = (pageArr && pageArr.length) ? pageArr[0] : '';
@@ -807,6 +816,9 @@ function searchDataFilter(){
   }
   if(customerId){
     urlPage =  urlPage+"&customerId="+customerId;
+  }
+  if(nodoc){
+    urlPage =  urlPage+"&nodocs=load";
   }
   if(locationId){
     urlPage =  urlPage+"&locationId="+locationId;

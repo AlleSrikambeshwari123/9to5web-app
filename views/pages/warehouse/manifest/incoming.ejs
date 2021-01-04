@@ -44,7 +44,7 @@
                 <a href='manage/<%=manifest.id%>/get' class="btn btn-link btn-primary px-3" data-toggle="tooltip"
                   data-original-title="View Details"> <i class="fa fa-eye"></i> </a>
                 <% if(manifest.stageId == 1) { %>
-                <a class="btn btn-link btn-danger btn-rm-manifest px-3" data-toggle="modal" data-id="<%=manifest.id%>"
+                <a class="btn btn-link btn-danger btn-rm-manifest px-3" data-backdrop="static" data-toggle="modal" data-id="<%=manifest.id%>"
                   data-original-title="Delete" data-target="#confirm-delete-manifest"> <i class="fa fa-trash"></i> </a>
                 <% } %>
               </td>

@@ -293,6 +293,11 @@
 									<span class="sub-item">Location Packages</span>
 								</a>
 							</li>
+							<li <% if (page && page.endsWith && page.endsWith('/snapshot/package/list?nodocs=load')) { %> class="active" <% } %>>
+								<a href="/warehouse/snapshot/package/list?nodocs=load">
+									<span class="sub-item">NoDocs Packages</span>
+								</a>
+							</li>
 						</ul>
 					</div>
 				</li>

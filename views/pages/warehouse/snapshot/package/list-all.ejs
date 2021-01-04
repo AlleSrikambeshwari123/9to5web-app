@@ -36,22 +36,22 @@ var endate = new Date();
         <% if(!query.customerId && !query.locationId) {%>
         
         <div class="d-flex align-items-right float-right ml-md-auto">
-          <button id="add-to-cube-button" data-toggle="modal" data-target="#add-to-cube-modal"
+          <button id="add-to-cube-button" data-toggle="modal" data-backdrop="static" data-target="#add-to-cube-modal"
             class="btn btn-primary btn-round float-right mr-2 ml-md-auto">
             Add to Cube
           </button>
-          <button id="add-to-nodoc-button" data-toggle="modal" data-target="#add-to-nodoc-modal"
+          <button id="add-to-nodoc-button" data-toggle="modal" data-backdrop="static" data-target="#add-to-nodoc-modal"
             class="btn btn-primary btn-round float-right mr-2 ml-md-auto">
             Add to NoDoc
           </button>
           <% if (buttonName === 'Add to Delivery') { %>
-          <button id="add-to-delivery-button" data-toggle="modal" data-target="#add-to-delivery-modal"
+          <button id="add-to-delivery-button" data-toggle="modal" data-backdrop="static" data-target="#add-to-delivery-modal"
             class="btn btn-primary btn-round float-right ml-md-auto">
             Add to Delivery
           </button>
           <% } %>
           <% if (buttonName === 'Add to Manifest') { %>
-          <button id="add-to-manifest-button" data-toggle="modal" data-target="#add-to-manifest-modal"
+          <button id="add-to-manifest-button" data-toggle="modal" data-backdrop="static" data-target="#add-to-manifest-modal"
             class="btn btn-primary btn-round float-right ml-md-auto">
             Add to Manifest
           </button>
@@ -146,8 +146,9 @@ var endate = new Date();
               </tr>
             </thead>
             <tbody>
+             
               <% packages.forEach(function(pkg){ %>
-
+                
               <tr data-record="<%= pkg._id %>">
                 <% if(!query.customerId && !query.locationId) {%>              
                 <td>
@@ -176,7 +177,7 @@ var endate = new Date();
                 <td><%= pkg.agingdollar %></td>
                 <td>
                   <button class="btn btn-primary btn-view-more-package btn-round float-right ml-md-auto"
-                    data-toggle="modal" data-original-title="View More Packages" data-id="<%=pkg._id%>"
+                    data-toggle="modal" data-backdrop="static" data-original-title="View More Packages" data-id="<%=pkg._id%>"
                     data-target="#more-package-details">View</button>
                 </td>
                 <td class="text-center">
@@ -383,6 +384,7 @@ var endate = new Date();
 <script>
   var pageUrl = "<%=page ? page :''%>";
   var daterange = "<%=query.daterange ? query.daterange :dateRangeDefault%>";
+  var nodoc = "<%=query.nodocs?query.nodocs:''%>";
 </script>
 <% block('scripts').append('<script src="/js/utils.js"></script>')%>
 <% block('scripts').append('<script src="/js/warehouse/snapshot/package/list-all.js"></script>')%>

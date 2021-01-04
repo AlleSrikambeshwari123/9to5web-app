@@ -49,12 +49,15 @@ $(function () {
         }
         
         if(inputField =="Package" || inputField =="Customer" || inputField =="Original" || inputField =="Awb"){
-          $('#global-search-table-data').dataTable().fnAddData([customerFullName , '<span class="font-weight-bold text-right text-primary ml-3">' + barcode + '</span>', trackingNo, awbIdNumber, `<a id="global-search-collection-details" href="javascript: void(0)" data-id=${data._id}>Show Details</a>`])
+          $('#global-search-table-data').dataTable().fnAddData([customerFullName , '<span class="font-weight-bold text-right text-primary ml-3">' + barcode + '</span>', trackingNo,`<a href="/warehouse/fll/awb/manage/${data.awbId}/preview">${awbIdNumber}</a>` , `<a id="global-search-collection-details" href="javascript: void(0)" data-id=${data._id}>Show Details</a>`])
           $("#myLoader").hide();
         } else {
+          $("#myLoader").hide();
           $('#global-search-table-data').dataTable().fnAddData([id, `<a id="global-search-collection-details" href="javascript: void(0)" data-id=${data._id}>Show Details</a>`]);
         }
       })
+    }else{
+      $("#myLoader").hide();
     }
 
     $('#global-search-data-modal').modal('show');

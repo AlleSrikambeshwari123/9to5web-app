@@ -52,9 +52,9 @@
                                     </div>
                                     <div class='form-group'>
                                         <label>Consignee <span class='text-info title customerName'></span> <br /><a
-                                                href="#" class=" " data-target='#findCustomer'
+                                                href="#" class=" " data-backdrop="static" data-target='#findCustomer'
                                                 data-toggle='modal'>Assign Box(9-5) or PB</a> | <a
-                                                href="javascript:void(0)" data-toggle="modal"
+                                                href="javascript:void(0)" data-backdrop="static" data-toggle="modal"
                                                 data-target="#addCustomer">Add New Consignee</a></label>
                                         <input type='text' class='form-control skybox' id="customerName" name='pmb'
                                             required readonly value='<%=awb.customer.name%>' />
@@ -62,7 +62,7 @@
                                             value="<%=awb.customer.id%>" />
                                     </div>
                                     <div class='form-group'>
-                                        <label>Shipper <a href='#' data-target="#findshipper" data-toggle="modal">Add
+                                        <label>Shipper <a href='#' data-backdrop="static" data-target="#findshipper" data-toggle="modal">Add
                                                 New Shipper</a></label><br />
                                         <select id="pick-shipper" class='form-control' style='width:90%;'>
                                             <option>Select Shipper</option>
@@ -82,7 +82,7 @@
                                         
 
                                          <div class='form-group'>
-                                            <label>Carrier </label><a href='#' data-target="#findcarrier" data-toggle="modal">Add New Carrier</a>
+                                            <label>Carrier </label><a href='#' data-backdrop="static" data-target="#findcarrier" data-toggle="modal">Add New Carrier</a>
                                             <!-- <input type='text' class='form-control carrier' id='carrier' name='carrier' value="<%=awb.carrier%>"
                                             /> -->
                                             <select id="pick-carrier" class='form-control' style='width:90%;'>
@@ -137,12 +137,12 @@
                                         <label> Value</label>
                                         <input type='text' class='form-control awbValue' id='value' name='value'
                                             required value="<%=awb.value%>" />
-                                        <a id='show-sed' data-toggle="modal" data-target="#alertSEDPOPUP"></a>
+                                        <a id='show-sed' data-backdrop="static" data-toggle="modal" data-target="#alertSEDPOPUP"></a>
                                         <input type='hidden' value="0" id='sedRequired' />
                                     </div>
 
                                     <div class='form-group'>
-                                        <a href="javascript:void(0)" data-toggle="modal" data-target="#addPO"> ADD
+                                        <a href="javascript:void(0)" data-backdrop="static" data-toggle="modal" data-target="#addPO"> ADD
                                             Purchase Order </a>
 
 
