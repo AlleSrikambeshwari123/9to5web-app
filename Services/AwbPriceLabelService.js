@@ -82,14 +82,14 @@ class AwbPriceLabelService {
       }
     }
 
-    // if(result.OverrideFreight){
-    //   if(result.OverrideFreight > 0)
-    //     result.OverrideFreight = result.OverrideFreight 
-    //   else
-    //     result.OverrideFreight = result.Freight 
-    // }else{
-    //   result.OverrideFreight = result.Freight 
-    // }
+    if(result.OverrideFreight){
+      if(result.OverrideFreight > 0)
+        result.OverrideFreight = result.OverrideFreight 
+      else
+        result.OverrideFreight = result.Freight 
+    }else{
+      result.OverrideFreight = result.Freight 
+    }
 
     result.Brokerage = result.Brokerage ? result.Brokerage.toFixed(2) : 0
     result.CustomsProc = result.CustomsProc ? result.CustomsProc.toFixed(2) : 0 
@@ -140,14 +140,14 @@ class AwbPriceLabelService {
 
     result.SumOfAllCharges = result.SumOfAllCharges ? result.SumOfAllCharges.toFixed(2) : 0
   
-    // if(result.OverrideInsurance){
-    //   if(result.OverrideInsurance > 0)
-    //     result.OverrideInsurance = result.OverrideInsurance 
-    //   else
-    //     result.OverrideInsurance = result.Insurance 
-    // }else{
-    //   result.OverrideInsurance = result.Insurance 
-    // }
+    if(result.OverrideInsurance){
+      if(result.OverrideInsurance > 0)
+        result.OverrideInsurance = result.OverrideInsurance 
+      else
+        result.OverrideInsurance = result.Insurance 
+    }else{
+      result.OverrideInsurance = result.Insurance 
+    }
       
     result.Insurance = result.Insurance ? result.Insurance.toFixed(2) : 0 
     result.CustomsVAT = result.CustomsVAT ? result.CustomsVAT.toFixed(2) : 0 
@@ -214,28 +214,28 @@ class AwbPriceLabelService {
         }
       }
 
-      // if(priceLabel.OverrideFreight){
-      //   if(priceLabel.OverrideFreight > 0)
-      //     priceLabel.OverrideFreight = priceLabel.OverrideFreight 
-      //   else
-      //     priceLabel.OverrideFreight = priceLabel.Freight 
-      // }else{
-      //   priceLabel.OverrideFreight = priceLabel.Freight 
-      // }
+      if(priceLabel.OverrideFreight){
+        if(priceLabel.OverrideFreight > 0)
+          priceLabel.OverrideFreight = priceLabel.OverrideFreight 
+        else
+          priceLabel.OverrideFreight = priceLabel.Freight 
+      }else{
+        priceLabel.OverrideFreight = priceLabel.Freight 
+      }
 
       priceLabel.Insurance = 0
       if(priceLabel.OverrideInvoiceValue >= 100)
         priceLabel.Insurance = priceLabel.OverrideInvoiceValue * 0.015
 
          
-      // if(priceLabel.OverrideInsurance){
-      //   if(priceLabel.OverrideInsurance > 0)
-      //     priceLabel.OverrideInsurance = priceLabel.OverrideInsurance 
-      //   else
-      //     priceLabel.OverrideInsurance = priceLabel.Insurance 
-      // }else{
-      //   priceLabel.OverrideInsurance = priceLabel.Insurance 
-      // }
+      if(priceLabel.OverrideInsurance){
+        if(priceLabel.OverrideInsurance > 0)
+          priceLabel.OverrideInsurance = priceLabel.OverrideInsurance 
+        else
+          priceLabel.OverrideInsurance = priceLabel.Insurance 
+      }else{
+        priceLabel.OverrideInsurance = priceLabel.Insurance 
+      }
 
       priceLabel.CustomsVAT = (Number(priceLabel.OverrideInvoiceValue) + Number(priceLabel.Duty)+ Number(priceLabel.CustomsProc)+Number(priceLabel.EnvLevy)) * Number(priceLabel.VatMultiplier)
       priceLabel.ServiceVat = (Number(priceLabel.Freight) + Number(priceLabel.NoDocs) + Number(priceLabel.Insurance) + Number(priceLabel.Storage) + Number(priceLabel.Brokerage) +Number(priceLabel.Express) + Number(priceLabel.Delivery) ) * Number(priceLabel.VatMultiplier)
@@ -313,28 +313,28 @@ class AwbPriceLabelService {
         }
       }
 
-      // if(priceLabel.OverrideFreight){
-      //   if(priceLabel.OverrideFreight > 0)
-      //     priceLabel.OverrideFreight = priceLabel.OverrideFreight 
-      //   else
-      //     priceLabel.OverrideFreight = priceLabel.Freight 
-      // }else{
-      //   priceLabel.OverrideFreight = priceLabel.Freight 
-      // }
+      if(priceLabel.OverrideFreight){
+        if(priceLabel.OverrideFreight > 0)
+          priceLabel.OverrideFreight = priceLabel.OverrideFreight 
+        else
+          priceLabel.OverrideFreight = priceLabel.Freight 
+      }else{
+        priceLabel.OverrideFreight = priceLabel.Freight 
+      }
 
       priceLabel.Insurance = 0
       if(priceLabel.OverrideInvoiceValue >= 100)
         priceLabel.Insurance = priceLabel.OverrideInvoiceValue * 0.015
 
          
-      // if(priceLabel.OverrideInsurance){
-      //   if(priceLabel.OverrideInsurance > 0)
-      //     priceLabel.OverrideInsurance = priceLabel.OverrideInsurance 
-      //   else
-      //     priceLabel.OverrideInsurance = priceLabel.Insurance 
-      // }else{
-      //   priceLabel.OverrideInsurance = priceLabel.Insurance 
-      // }
+      if(priceLabel.OverrideInsurance){
+        if(priceLabel.OverrideInsurance > 0)
+          priceLabel.OverrideInsurance = priceLabel.OverrideInsurance 
+        else
+          priceLabel.OverrideInsurance = priceLabel.Insurance 
+      }else{
+        priceLabel.OverrideInsurance = priceLabel.Insurance 
+      }
 
       priceLabel.CustomsVAT = (Number(priceLabel.OverrideInvoiceValue) + Number(priceLabel.Duty)+ Number(priceLabel.CustomsProc)+Number(priceLabel.EnvLevy)) * Number(priceLabel.VatMultiplier)
       priceLabel.ServiceVat = (Number(priceLabel.Freight) + Number(priceLabel.NoDocs) + Number(priceLabel.Insurance) + Number(priceLabel.Storage) + Number(priceLabel.Brokerage) +Number(priceLabel.Express) + Number(priceLabel.Delivery) ) * Number(priceLabel.VatMultiplier)

@@ -60,6 +60,9 @@ var customerLoginRouter = require('./routes/customer/login')
 var customerSignupRouter = require('./routes/customer/signup')
 var customerchildRouter = require('./routes/customer/customerchild');
 
+//reports
+var reportRouter = require('./routes/reports/report');
+
 // API
 var apiPrinterRouter = require('./routes/api/printer');
 var apiWarehouseRouter = require('./routes/api/wapi');
@@ -131,6 +134,7 @@ app.use('/fleet', fleetVehicleRouter, fleetDriverRouter, fleetPilotRouter, fleet
 app.use('/store', storeRouter);
 app.use('/util', util);
 app.use('/customer', customerLoginRouter,customerSignupRouter,customerchildRouter);
+app.use('/reports', reportRouter)
 
 app.use('/api/printer', apiPrinterRouter);
 app.use('/api/warehouse', apiWarehouseRouter);

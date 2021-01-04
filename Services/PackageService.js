@@ -30,6 +30,7 @@ const PKG_STATUS = {
 };
 
 const Package = require('../models/package');
+const PackageHistory = require('../models/packageHistory');
 const Location = require('../models/location');
 const Compartment = require('../models/compartment');
 const Manifest = require('../models/manifest');
@@ -295,8 +296,9 @@ class PackageService {
                     }
                     return status
                 }),
-            ).then((result) => {
+            ).then(async (result) => {
                 if (error.length > 0) return resolve({ success: false, message: error })
+                await this.removePackagesAndAwb(packageIds)
                 resolve({ success: true, message: strings.string_response_received, status: PKG_STATUS[5] });
             });
         });
@@ -542,7 +544,7 @@ class PackageService {
 
     getPackageByTrackingId(trackingNo) {
         return new Promise((resolve, reject) => {
-            Package.find({ trackingNo })
+            PackageHistory.find({ trackingNo })
                 .populate(['customerId', 'shipperId', 'carrierId', 'awbId', 'hazmatId', 'createdBy', 'manifestId', 'compartmentId', 'deliveryId'])
                 .exec((err, result) => {
                     if (err) {
@@ -1035,7 +1037,12 @@ class PackageService {
         if(status == PKG_STATUS[5]) index = 5
         if(status == PKG_STATUS[6]) index = 6
         if(status == PKG_STATUS[7]) index = 7
-        if(status == PKG_STATUS[8]) index = 8
+        if(status == PKG_STATUS[8]){
+            let cubePackage = awb.packages[0].cubeId.cubepackageId
+            let cubeStatuses = await PackageStatus.find({ packageId: cubePackage }).sort({ updatedAt: -1 })
+            status = cubeStatuses[0].status
+            index = 8
+        }
         if(status == PKG_STATUS[9]) index = 9
         
         return {status : status,id : index }
@@ -1142,6 +1149,27 @@ class PackageService {
                 return pkg;
             }),
         );
+    }
+
+    getPackageDetail(id){
+        return new Promise((resolve, reject) => {
+            Package.find({_id:id})
+            .populate({path : 'awbId',populate : 'driver'})
+            .populate('originBarcode')
+            .populate('customerId')
+            .populate('zoneId')
+            .populate('shipperId')
+            .populate('carrierId')
+            .populate('cubeId')
+            .populate('manifestId')
+            .exec((err, result) => {
+                if (err) {
+                    resolve([]);
+                } else {                   
+                    resolve(result);
+                }
+            }); 
+        }) 
     }
 
     async getAwbSnapshotPackageWithLastStatus(req) {
@@ -1543,10 +1571,13 @@ class PackageService {
     }
 
     addOriginBarcode(originBarcode) {
+        if(originBarcode.barcode){
+            originBarcode.barcode = originBarcode.barcode.trim()
+        }
         return new Promise(async(resolve, reject) => {
             await Barcode.findOne(originBarcode, (err, res) => {
                 if (res === null || res === undefined) {
-                    const barcode = new Barcode(originBarcode);
+                    const barcode = new Barcode(originBarcode.trim());
                     barcode.save((err, result) => {
                         if (err) {
                             return resolve({
@@ -1686,6 +1717,28 @@ class PackageService {
         });
     }
 
+    getPackageHistoryById(packageId) {
+        return new Promise((resolve, reject) => {
+            PackageHistory.findById(packageId)
+            .populate('originBarcode')
+            .exec(async (err, pkg) => {
+                if (err || pkg == null) {
+                    resolve({}) 
+                }
+                else{
+                    if(pkg){
+                        pkg = pkg.toJSON()
+                        let zoned = await Zone.findById(pkg.zoneId)
+                        if(zoned && zoned.name){
+                            pkg.zoneValue = zoned.name
+                        }
+                    }
+                    resolve(pkg);
+                } 
+            });
+        })
+    }
+
     // getPackagesByObject(object) {
     //     return new Promise((resolve, reject) => {
     //         Package.find(object,async (err, pkgs) => {
@@ -1739,6 +1792,15 @@ class PackageService {
     getPackages(awbId) {
         return new Promise((resolve, reject) => {
             Awb.find({ _id: awbId }, (err, response) => {
+                if (err || response == null) resolve([])
+                else { resolve(response) }
+            })
+        });
+    }
+
+    getPackagesHistory(awbId) {
+        return new Promise((resolve, reject) => {
+            PackageHistory.find({ _id: awbId }, (err, response) => {
                 if (err || response == null) resolve([])
                 else { resolve(response) }
             })
@@ -1799,11 +1861,15 @@ class PackageService {
             }
             await Barcode.updateOne({_id : newPackage.originBarcode},statusObject)
             const newPackageData = new Package(newPackage);
-            newPackageData.save((err, result) => {
+            newPackageData.save(async (err, result) => {
                 if (err) {
                     console.log(err);
                     resolve({ success: false, message: strings.string_response_error });
                 } else {
+                    let resp = result.toJSON()
+                    newPackage['_id'] = resp._id
+                    const newPackageHistoryData = new PackageHistory(resp);
+                    await newPackageHistoryData.save()
                     this.removeProcessPackage(newPackage.originBarcode, newPackage.createdBy)
                     this.updatePackageStatus(result['_id'], 1, newPackage.createdBy)
                     resolve({ success: true });
@@ -1863,6 +1929,57 @@ class PackageService {
                             updateData.shipperName = result.shipperId.name;
                         }
                         var update = await Package.updateOne({_id:packageId}, updateData);
+                        var updatePackageHistory = await PackageHistory.updateOne({_id:packageId}, updateData);
+                        resolve(update);
+                    }
+                })
+            })
+    }
+
+    async updatePackageOtherDetail(packageId){
+        return new Promise((resolve, reject) => {
+         Package.findById(packageId)
+                .populate('awbId')
+                .populate('customerId')
+                .populate('shipperId')
+                .populate('originBarcode')
+                .exec(async (err, result) => {
+                    if(err){
+                        console.log(err)
+                        resolve({ success: false, message: strings.string_response_error });
+                    }else{
+
+                        var updateData =  {
+                            awbIdNumber:result.awbId.awbId,
+                            awbIdString:result.awbId.awbId                        
+                        }
+                        if(result.originBarcode && result.originBarcode.barcode){
+                            updateData.barcode = result.originBarcode.barcode;
+                        }
+                        if(result.customerId){
+                            var customer = result.customerId
+                            updateData.customerFirstName = customer.firstName;
+                            updateData.customerLastName = customer.lastName;
+                            updateData.customerFullName = customer.firstName + (customer.lastName?''+ customer.lastName: '');  
+                            
+                            if(customer && customer.pmb){
+                                updateData.pmb = customer.pmb;
+                                updateData.pmbString = customer.pmb;
+                                var pmb =  customer.pmb;
+                                if((pmb > 0 && pmb <= 1999) || (pmb >= 4000 && pmb <= 4999)) {
+                                    updateData.storeLocation = 'CABLEBEACH';
+                                }
+                                else if((pmb >= 3000 && pmb <= 3999)){
+                                    updateData. storeLocation = 'ALBANY';
+                                }else{
+                                    updateData. storeLocation = '';
+                                }                                                                           
+                            }
+                        }
+                        if(result.shipperId && result.shipperId.name){
+                            updateData.shipperName = result.shipperId.name;
+                        }
+                        var update = await Package.updateOne({_id:packageId}, updateData);
                         resolve(update);
                     }
                 })
@@ -1886,10 +2003,11 @@ class PackageService {
 
     updatePackage_updated(id, pkg) {
         return new Promise(async(resolve, reject) => {
-            Package.findOneAndUpdate({ _id: id }, pkg, (err, result) => {
+            Package.findOneAndUpdate({ _id: id }, pkg, async (err, result) => {
                 if (err) {
                     resolve({ success: false, message: strings.string_response_error });
                 } else {
+                    await PackageHistory.findOneAndUpdate({ _id: id }, pkg)
                     resolve({ success: true });
                 }
             })
@@ -1910,10 +2028,11 @@ class PackageService {
 
     removePackage_updated(id) {
         return new Promise((resolve, reject) => {
-            Package.deleteOne({ _id: id }, (err, result) => {
+            Package.deleteOne({ _id: id },async (err, result) => {
                 if (err) {
                     resolve({ success: false, message: strings.string_response_error });
                 } else {
+                    await PackageHistory.deleteOne({_id: id})
                     resolve(result);
                 }
             });
@@ -2825,7 +2944,9 @@ class PackageService {
 
     getPackage_updated(packageId, pkgStatus) {
         return new Promise(async(resolve, reject) => {
-            let pkg = await Package.findOneAndUpdate({ _id: packageId }, { lastStatusText: pkgStatus , lastStatusDate :  new Date()}, { new: true })
+            let lastDate =  new Date()
+            let pkg = await Package.findOneAndUpdate({ _id: packageId }, { lastStatusText: pkgStatus , lastStatusDate :  lastDate}, { new: true })
+            let pkgHistoryUpdated = await PackageHistory.findOneAndUpdate({ _id: packageId }, { lastStatusText: pkgStatus , lastStatusDate :  lastDate}, { new: true })
             if (!pkg) resolve({})
             else resolve(pkg)
         })
@@ -2841,6 +2962,7 @@ class PackageService {
                 let zoneResult = await Zone.findById(packageResult.zoneId)
                 if(zoneResult && zoneResult.location){
                     await Package.findOneAndUpdate({_id : packageId},{$unset: {zoneId: 1 }})
+                    await PackageHistory.findOneAndUpdate({_id : packageId},{$unset: {zoneId: 1 }})
                     await Location.findByIdAndUpdate({_id : zoneResult.location},{ $pull: { packages: packageId }})
                 }else{
                     return
@@ -2850,6 +2972,26 @@ class PackageService {
             }
         } catch (error) {
             console.error('removePacage from location', error)
+        }
+    }
+
+    async removePackagesAndAwb(packageIds){
+        let awbIds = []
+        for(let pkgId of packageIds){
+            let packageResult =await Package.findById(pkgId).populate({path : 'awbId', populate : 'packages'})
+            awbIds.push(packageResult.awbId)
+        }
+        for(let awbId of awbIds){
+            let flag = 0 
+            for(let pkg of awbId.packages){
+                if(pkg.lastStatusText != "Received By Customer"){
+                    flag =1
+                }
+            }
+            if(flag == 0){
+                await Package.deleteMany({awbId : awbId})
+                await Awb.deleteOne({_id : awbId})
+            }
         }
     }
 
@@ -2904,6 +3046,13 @@ class PackageService {
             //     }
             //     responsePkg.push(pkg)
             // }
+            for(let pkg of packagesList){
+                if(!pkg.packageId){
+                    let packageIdResult = await PackageStatus.findById(pkg._id)
+                    pkg.packageId = await PackageHistory.findById(packageIdResult.packageId).populate([{ path: "awbId" },{path : 'cubeId'}])
+                }
+            }
+
             return packagesList
         } catch (error) {
             return []
@@ -2959,7 +3108,7 @@ class PackageService {
     getCustomerPackages(customerId) {
         console.log("cus",customerId)
         return new Promise((resolve, reject) => {
-            Package.find({ customerId })
+            PackageHistory.find({ customerId })
                 .exec((error, packages) => {
                     if (error || packages.length == 0) {
                         resolve({

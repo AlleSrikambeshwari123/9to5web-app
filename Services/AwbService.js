@@ -3,6 +3,7 @@ var moment = require('moment');
 var strings = require('../Res/strings');
 
 const Awb = require('../models/awb');
+const AwbHistory = require('../models/awbHistory');
 const StoreInvoice = require('../models/storeInvoice');
 const AdditionalInvoice = require('../models/additionalInvoice');
 const AwbStatus = require('../models/awbStatus');
@@ -13,6 +14,7 @@ const Manifest = require('../models/manifest');
 const Plane = require('../models/plane');
 const User = require('../models/user');
 const PriceLabel = require('../models/pricelabel');
+const ReportCsv = require('../models/reportcsv');
 
 const DELIVERY_METHODS = {
     DELIVERY: 1,
@@ -44,11 +46,14 @@ class AwbService {
                 delete awb.driver;
             }
             const newAwb = new Awb(awb);
-            newAwb.save((err, result) => {
+            newAwb.save(async(err, result) => {
                 if (err) {
                     console.log("<==== Error While Creating Awb ====> ", err);
                     resolve({ success: false, message: strings.string_response_error });
                 } else {
+                  let resp = result.toJSON()
+                    const newAwbHistory = new AwbHistory(resp);
+                    await newAwbHistory.save()
                     this.updateAwbStatus(result, 1, awb['createdBy']);
                     this.updateAwbOtherDetail(result['_id']);
                     awb['id'] = result['_id'];
@@ -132,6 +137,7 @@ class AwbService {
               }    
                 console.log("updateData>>>>>>>>>>>>>>>>>>>>",updateData) 
               var update = await Awb.updateOne({_id:awbId},updateData);
+              var updateAwbHistory = await AwbHistory.updateOne({_id:awbId},updateData);
               resolve(update)
             }
           }
@@ -139,6 +145,36 @@ class AwbService {
     })
   }
 
+    async updateAwbOtherDetail(awbId){
+      return new Promise((resolve, reject) => {
+        Awb.findById(awbId)
+            .populate('customerId')
+            .populate('shipper')
+            .exec(async (err,result) => {               
+              if(err){
+                console.log(err)
+                resolve({ success: false, message: strings.string_response_error });
+              }else{
+              if(result.customerId && result.shipper){
+                var customer = result.customerId;
+                var shipper = result.shipper;
+                var updateData =  {
+                    customerFirstName:customer.firstName,
+                    customerLastName : customer.lastName,
+                    customerFullName : customer.firstName + (customer.lastName?' '+ customer.lastName: ''),
+                    shipperName : shipper.name,
+                    pmb:customer.pmb,
+                    pmbString: customer.pmb,
+                    awbIdString: result.awbId?result.awbId : ''                   
+                }    
+                  console.log("updateData>>>>>>>>>>>>>>>>>>>>",updateData) 
+                var update = await Awb.updateOne({_id:awbId},updateData);
+                resolve(update)
+              }
+            }
+            })
+      })
+    }
     async updateAwbStatus(awb, action, userId) {
         return new Promise((resolve, reject) => {
             const awbstatus = {
@@ -162,24 +198,26 @@ class AwbService {
     async getAwbStatuses(query) {
         return new Promise((resolve, reject) => {
           var searchData = {};
-            if(query && query.daterange && query.type == "awbStatus"){
+            if(query && query.daterange ){
+             
                 var daterange = query.daterange;
                 var date_arr = daterange.split('-');
-                var startDate = (date_arr[0]).trim();      
+                var startDate = (date_arr[0]).trim(); 
+                     
                 var stdate = new Date(startDate);
-                stdate.setDate(stdate.getDate() );
-            
+                stdate.setDate(stdate.getDate() +1);
+                
                 var endDate = (date_arr[1]).trim();
                 var endate = new Date(endDate);
                 endate.setDate(endate.getDate() +1);
 
-                stdate = new Date(stdate.setUTCHours(0,0,0,0));
+                stdate = new Date(stdate.setUTCHours(0,0,0,1));
                 stdate = stdate.toISOString();
                 endate = new Date(endate.setUTCHours(23,59,59,0));
                 endate = endate.toISOString(); 
 
                 searchData.createdAt = {"$gte":stdate, "$lte": endate};             
-            }else if(query && query.daterange && !query.type ){
+            }else if(!query.clear ){
               var endate = new Date();      
               endate.setDate(endate.getDate());
               var stdate = new Date();
@@ -191,14 +229,15 @@ class AwbService {
               endate = endate.toISOString(); 
                    
               searchData.createdAt = {"$gte":stdate, "$lte": endate};
-            }
+            }   
+            console.log(searchData)         
             AwbStatus.find(searchData, (err, result) => {
                 if (err) {
                     resolve([]);
                 } else {
                     resolve(result);
                 }
-            }).populate('User');
+            }).populate('User').populate('awbId');
         });
     }
 
@@ -223,6 +262,7 @@ class AwbService {
                 if (err) {
                     resolve({ success: false });
                 } else {
+                    await AwbHistory.findOneAndUpdate({ _id: id },{...awb })
                     var awbData = await Awb.findOne({_id:id});
                     this.updateAwbStatus(result, 2, userId);
                     this.updateAwbOtherDetail(result['_id']);
@@ -267,6 +307,19 @@ class AwbService {
                 });
         });
     }
+
+    getAwbHistory(id) {
+      return new Promise((resolve, reject) => {
+          AwbHistory.findOne({ _id: id })
+              .exec((err, result) => {
+                  if (err) {
+                      resolve({});
+                  } else {
+                      resolve(result);
+                  }
+              });
+      });
+  }
 
     getAwbsFull(req) {
       var searchData = {};
@@ -394,14 +447,14 @@ class AwbService {
                         }
                       }
 
-                      // if(awbPriceLabel.OverrideFreight){
-                      //   if(awbPriceLabel.OverrideFreight > 0)
-                      //     awbPriceLabel.OverrideFreight = awbPriceLabel.OverrideFreight 
-                      //   else
-                      //     awbPriceLabel.OverrideFreight = awbPriceLabel.Freight 
-                      // }else{
-                      //   awbPriceLabel.OverrideFreight = awbPriceLabel.Freight 
-                      // }
+                      if(awbPriceLabel.OverrideFreight){
+                        if(awbPriceLabel.OverrideFreight > 0)
+                          awbPriceLabel.OverrideFreight = awbPriceLabel.OverrideFreight 
+                        else
+                          awbPriceLabel.OverrideFreight = awbPriceLabel.Freight 
+                      }else{
+                        awbPriceLabel.OverrideFreight = awbPriceLabel.Freight 
+                      }
   
                       awbPriceLabel.Brokerage = awbPriceLabel.Brokerage ? awbPriceLabel.Brokerage.toFixed(2) : 0
                       awbPriceLabel.CustomsProc = awbPriceLabel.CustomsProc ? awbPriceLabel.CustomsProc.toFixed(2) : 0 
@@ -431,14 +484,14 @@ class AwbService {
                       if(awbPriceLabel.OverrideInvoiceValue >= 100)
                         awbPriceLabel.Insurance = awbPriceLabel.OverrideInvoiceValue * 0.015
 
-                      // if(awbPriceLabel.OverrideInsurance){
-                      //   if(awbPriceLabel.OverrideInsurance > 0)
-                      //     awbPriceLabel.OverrideInsurance = awbPriceLabel.OverrideInsurance 
-                      //   else
-                      //     awbPriceLabel.OverrideInsurance = awbPriceLabel.Insurance 
-                      // }else{
-                      //   awbPriceLabel.OverrideInsurance = awbPriceLabel.Insurance 
-                      // }
+                      if(awbPriceLabel.OverrideInsurance){
+                        if(awbPriceLabel.OverrideInsurance > 0)
+                          awbPriceLabel.OverrideInsurance = awbPriceLabel.OverrideInsurance 
+                        else
+                          awbPriceLabel.OverrideInsurance = awbPriceLabel.Insurance 
+                      }else{
+                        awbPriceLabel.OverrideInsurance = awbPriceLabel.Insurance 
+                      }
 
                       awbPriceLabel.CustomsVAT = (Number(awbPriceLabel.OverrideInvoiceValue) + Number(awbPriceLabel.Duty)+ Number(awbPriceLabel.CustomsProc)+Number(awbPriceLabel.EnvLevy)) * Number(awbPriceLabel.VatMultiplier)
                       awbPriceLabel.ServiceVat = (Number(awbPriceLabel.Freight) + Number(awbPriceLabel.NoDocs) + Number(awbPriceLabel.Insurance) + Number(awbPriceLabel.Storage) + Number(awbPriceLabel.Brokerage) +Number(awbPriceLabel.Express) + Number(awbPriceLabel.Delivery) ) * Number(awbPriceLabel.VatMultiplier)
@@ -1245,6 +1298,40 @@ class AwbService {
         });
     }
 
+    getFullAwbHistory(id) {
+      let awb;
+      let packages;
+      let invoices;
+      return new Promise((resolve, reject) => {
+          Promise.all([
+              this.getAwbHistory(id),
+              this.services.packageService.getPackagesHistory(id),
+              this.services.invoiceService.getInvoicesByAWB(id)
+          ]).then((results) => {
+              awb = results[0];
+              packages = results[1];
+              console.log("results[1]", results[1])
+              invoices = results[2]
+              Promise.all([
+                  this.services.customerService.getCustomer(awb.customerId),
+                  this.services.shipperService.getShipper(awb.shipper),
+                  this.services.carrierService.getCarrier(awb.carrier),
+                  this.services.hazmatService.getHazmat(awb.hazmat),
+              ]).then((otherInfos) => {
+                  console.log("@@@", packages)
+                  // awb.packages = packages;
+                  awb.invoices = invoices;
+                  awb.customerId = otherInfos[0];
+                  delete awb.customerId.password;
+                  awb.shipper = otherInfos[1];
+                  awb.carrier = otherInfos[2];
+                  awb.hazmat = otherInfos[3];
+                  resolve(this.renameKey(awb, 'customerId', 'customer'));
+              });
+          });
+      });
+  }
+
     createPurchaseOrders(awbId, purchaseOrders) {
         return new Promise((resolve, reject) => {
             Promise.all(
@@ -1332,12 +1419,12 @@ class AwbService {
       }
       getAwbsFullCustomer(id) {
         return new Promise((resolve, reject) => {
-          Awb.find({customerId:id})
+          AwbHistory.find({customerId:id})
             .populate('customerId')
             .populate('shipper')
             .populate('carrier')
             .populate('hazmat')
-            .populate('packages')
+            .populate({path :'packages',populate : 'cubeId'})
             .populate('purchaseOrders')
             .populate('invoices')
             .populate('driver')
@@ -1445,7 +1532,7 @@ class AwbService {
 
     async getAwbsNoInvoiceCustomer(id) {
       return new Promise((resolve, reject) => {
-        Awb.find({ invoices: { $eq: [] }, customerId:id })
+        Awb.find({customerId:id })
           .populate('customerId')
           .populate('shipper')
           .populate('carrier')
@@ -1457,6 +1544,7 @@ class AwbService {
             } else {
               let awbResponse = []
               for(let data of awbData){
+          		data = data.toJSON()
                 let storeInvoices = await StoreInvoice.find({awbId :data._id})
                 if(storeInvoices.length == 0){
                   data['customer'] = data['customerId'];
@@ -1467,8 +1555,13 @@ class AwbService {
                     data['weight'] = weight;
                   }
                   data['dateCreated'] = moment(data['createdAt']).format('MMM DD, YYYY');
+		              data.invoices = []
+                  data.invoice_attach = false
                   awbResponse.push(data)
-                }
+                }else{
+		              data.invoice_attach = true
+                  awbResponse.push(data)
+            	  }
               }
               resolve(awbResponse);
             }
@@ -1532,7 +1625,7 @@ class AwbService {
       awb.totalPrice = "Not Priced"
       let priceLabel = await this.getAwbPriceLabel(awb._id)
       awb.pricing = priceLabel
-      if(!priceLabel.TotalWeightValue){
+      if(priceLabel && !priceLabel.TotalWeightValue){
         let totalweightVal =0
         if(awb.packages){
             for (var i = 0; i < awb.packages.length; i++) {
@@ -1580,7 +1673,7 @@ class AwbService {
               totalInvoice=totalInvoice+invoices[i].value;
             }
             let totalweightVal =0,totalVolumetricWeight =0;
-            if(awbData.packages){
+            if(awbData && awbData.packages){
               for (var i = 0; i < awbData.packages.length; i++) {
                 var weight = awbData.packages[i].weight;
                 if (awbData.packages[i].packageCalculation == 'kg' || awbData.packages[i].packageCalculation == 'Kg') {
@@ -1623,14 +1716,14 @@ class AwbService {
               }
             }
 
-            // if(result.OverrideFreight){
-            //   if(result.OverrideFreight > 0)
-            //     result.OverrideFreight = result.OverrideFreight 
-            //   else
-            //     result.OverrideFreight = result.Freight 
-            // }else{
-            //   result.OverrideFreight = result.Freight 
-            // }        
+            if(result.OverrideFreight){
+              if(result.OverrideFreight > 0)
+                result.OverrideFreight = result.OverrideFreight 
+              else
+                result.OverrideFreight = result.Freight 
+            }else{
+              result.OverrideFreight = result.Freight 
+            }        
 
             result.totalPrice = totalInvoice;
             result.NoOfInvoice = invoices.length
@@ -1673,14 +1766,14 @@ class AwbService {
             if(result.OverrideInvoiceValue >= 100)
               result.Insurance = result.OverrideInvoiceValue * 0.015
 
-            // if(result.OverrideInsurance){
-            //   if(result.OverrideInsurance > 0)
-            //     result.OverrideInsurance = result.OverrideInsurance 
-            //   else
-            //     result.OverrideInsurance = result.Insurance 
-            // }else{
-            //   result.OverrideInsurance = result.Insurance 
-            // }
+            if(result.OverrideInsurance){
+              if(result.OverrideInsurance > 0)
+                result.OverrideInsurance = result.OverrideInsurance 
+              else
+                result.OverrideInsurance = result.Insurance 
+            }else{
+              result.OverrideInsurance = result.Insurance 
+            }
             
             result.CustomsVAT = (Number(result.OverrideInvoiceValue) + Number(result.Duty)+ Number(result.CustomsProc)+Number(result.EnvLevy)) * Number(result.VatMultiplier)
             result.ServiceVat = (Number(result.Freight) + Number(result.NoDocs) + Number(result.Insurance) + Number(result.Storage) + Number(result.Brokerage) +Number(result.Express) + Number(result.Delivery) ) * Number(result.VatMultiplier)
@@ -1721,6 +1814,201 @@ class AwbService {
     //     }
     //   })
     // })
+  }
+  getAllReport(query){
+    return new Promise((resolve, reject) => {
+      var searchData = {};
+        if(query && query.daterange ){
+         
+            var daterange = query.daterange;
+            var date_arr = daterange.split('-');
+            var startDate = (date_arr[0]).trim(); 
+                 
+            var stdate = new Date(startDate);
+            stdate.setDate(stdate.getDate() +1);
+            
+            var endDate = (date_arr[1]).trim();
+            var endate = new Date(endDate);
+            endate.setDate(endate.getDate() +1);
+
+            stdate = new Date(stdate.setUTCHours(0,0,0,1));
+            stdate = stdate.toISOString();
+            endate = new Date(endate.setUTCHours(23,59,59,0));
+            endate = endate.toISOString(); 
+
+            searchData.createdAt = {"$gte":stdate, "$lte": endate};             
+        }else if(!query.clear ){
+          var endate = new Date();      
+          endate.setDate(endate.getDate());
+          var stdate = new Date();
+          stdate.setDate(stdate.getDate() - parseInt(strings.default_days_table));  
+          
+          stdate = new Date(stdate.setUTCHours(0,0,0,0));
+          stdate = stdate.toISOString();
+          endate = new Date(endate.setUTCHours(23,59,59,0));
+          endate = endate.toISOString(); 
+               
+          searchData.createdAt = {"$gte":stdate, "$lte": endate};
+        }            
+        ReportCsv.find(searchData).populate('userId').sort({createdAt: -1}).exec((err, result) => {
+            if (err) {
+                resolve([]);
+            } else {
+                resolve(result);
+            }
+        });
+    });
+  }
+  async getAwbHistoryPriceLabel(awbId) {    
+    return new Promise((resolve, reject) => { 
+      PriceLabel.findOne({awbId:awbId}).exec((err, result) => {
+        if(result){
+          result = JSON.parse(JSON.stringify(result))
+          AwbHistory.findOne({_id:awbId})
+        //.populate('customerId')
+        //.populate('shipper')
+        //.populate('carrier')
+        //.populate('hazmat')
+        .populate('packages')
+        //.populate('purchaseOrders')
+        .populate('invoices')
+        //.populate('driver')
+        .exec((err, awbData) => {
+          if(result && result.awbId){
+            
+            const invoices =(awbData && awbData.invoices)?awbData.invoices:[];
+            var totalInvoice = 0;
+            for(let i=0;i<invoices.length;i++){
+              totalInvoice=totalInvoice+invoices[i].value;
+            }
+            let totalweightVal =0,totalVolumetricWeight =0;
+            if(awbData && awbData.packages){
+              for (var i = 0; i < awbData.packages.length; i++) {
+                var weight = awbData.packages[i].weight;
+                if (awbData.packages[i].packageCalculation == 'kg' || awbData.packages[i].packageCalculation == 'Kg') {
+                  weight = 2.20462 * awbData.packages[i].weight;
+                }
+                totalweightVal = totalweightVal + weight;
+                let check = 1;
+                awbData.packages[i].dimensions.split('x').forEach(data =>{
+                  check = check * data
+                })
+                let volumetricWeight = (check/166);
+                totalVolumetricWeight = totalVolumetricWeight + volumetricWeight;
+              }
+              result.TotalWeightValue = totalweightVal
+              result.TotalVolumetricWeight = totalVolumetricWeight
+              result.Express = result.Express ? result.Express.toFixed(2) : 0
+          
+              if(result.Express >0){
+                result.Express = 35
+                if(result.TotalWeightValue >= 2 || result.TotalVolumetricWeight >= 2 ){
+                  if(result.TotalWeightValue > result.TotalVolumetricWeight){
+                    result.Freight = result.TotalWeightValue * 3
+                  }
+                  else{
+                    result.Freight = result.TotalVolumetricWeight * 3
+                  }
+                }else{
+                  result.Freight =  6
+                }
+              }else{
+                result.Express = 0
+                if(result.TotalWeightValue >= 2 || result.TotalVolumetricWeight >=2 ){
+                  if(result.TotalWeightValue > result.TotalVolumetricWeight)
+                    result.Freight = result.TotalWeightValue * 1.55
+                  else
+                    result.Freight = result.TotalVolumetricWeight * 1.55
+                }else{
+                  result.Freight =  3.10
+                }
+              }
+            }
+
+            if(result.OverrideFreight){
+              if(result.OverrideFreight > 0)
+                result.OverrideFreight = result.OverrideFreight 
+              else
+                result.OverrideFreight = result.Freight 
+            }else{
+              result.OverrideFreight = result.Freight 
+            }        
+
+            result.totalPrice = totalInvoice;
+            result.NoOfInvoice = invoices.length
+            result.awbId = awbData;
+
+          
+            result.Brokerage = result.Brokerage ? result.Brokerage.toFixed(2) : 0
+            result.CustomsProc = result.CustomsProc ? result.CustomsProc.toFixed(2) : 0 
+            result.CustomsVAT = result.CustomsVAT ? result.CustomsVAT.toFixed(2) : 0 
+            result.VatMultiplier = result.VatMultiplier ? result.VatMultiplier.toFixed(2) : 0.12
+            result.Delivery =  result.Delivery ? result.Delivery.toFixed(2): 0 
+            result.Duty =  result.Duty ? result.Duty.toFixed(2) : 0
+            result.EnvLevy = result.EnvLevy ? result.EnvLevy.toFixed(2) : 0
+            result.Freight = result.Freight ? result.Freight.toFixed(2) : 0
+            result.Hazmat = result.Hazmat ? result.Hazmat.toFixed(2) : 0
+            result.NoDocs = result.NoDocs ? result.NoDocs.toFixed(2) : 0
+            result.Pickup = result.Pickup ? result.Pickup.toFixed(2)  : 0
+            result.Sed = result.Sed ? result.Sed.toFixed(2) : 0
+            result.ServiceVat = result.ServiceVat ? result.ServiceVat.toFixed(2) : 0 
+            result.TotalWet = result.TotalWet ?result.TotalWet.toFixed(2) : 0
+            result.TotalInvoiceValue = result.TotalInvoiceValue ? result.TotalInvoiceValue.toFixed(2) : 0
+            result.TotalWeightValue = result.TotalWeightValue ? result.TotalWeightValue.toFixed(2) : 0
+            result.TotalVolumetricWeight = result.TotalVolumetricWeight ? result.TotalVolumetricWeight.toFixed(2) : 0
+            result.NoOfInvoice = result.NoOfInvoice ?result.NoOfInvoice : 0
+            result.totalPrice = result.totalPrice ? result.totalPrice.toFixed(2) : 0
+            result.Storage = result.Storage ? result.Storage.toFixed(2) : 0 
+
+            result.Insurance = 0
+            result.TotalInvoiceValue = totalInvoice
+            if(result.OverrideInvoiceValue){
+              if(result.OverrideInvoiceValue > 0)
+                result.TotalInvoiceValue = result.OverrideInvoiceValue 
+              else{
+                result.TotalInvoiceValue = totalInvoice 
+                result.OverrideInvoiceValue = result.TotalInvoiceValue
+              }
+            }else{
+              result.OverrideInvoiceValue = result.TotalInvoiceValue 
+            }
+            if(result.OverrideInvoiceValue >= 100)
+              result.Insurance = result.OverrideInvoiceValue * 0.015
+
+            if(result.OverrideInsurance){
+              if(result.OverrideInsurance > 0)
+                result.OverrideInsurance = result.OverrideInsurance 
+              else
+                result.OverrideInsurance = result.Insurance 
+            }else{
+              result.OverrideInsurance = result.Insurance 
+            }
+            
+            result.CustomsVAT = (Number(result.OverrideInvoiceValue) + Number(result.Duty)+ Number(result.CustomsProc)+Number(result.EnvLevy)) * Number(result.VatMultiplier)
+            result.ServiceVat = (Number(result.Freight) + Number(result.NoDocs) + Number(result.Insurance) + Number(result.Storage) + Number(result.Brokerage) +Number(result.Express) + Number(result.Delivery) ) * Number(result.VatMultiplier)
+            
+            result.SumOfAllCharges = Number(result.CustomsVAT) + Number(result.ServiceVat) + Number(result.Freight) + Number(result.Duty)+ Number(result.CustomsProc)+Number(result.EnvLevy) +Number(result.NoDocs) +
+            Number(result.Insurance) + Number(result.Storage) + Number(result.Brokerage) +Number(result.Express) + Number(result.Delivery) + Number(result.Hazmat) + Number(result.Pickup)  + Number(result.Sed)
+        
+            result.SumOfAllCharges = result.SumOfAllCharges ? result.SumOfAllCharges.toFixed(2) : 0
+
+              result.Insurance = result.Insurance ? result.Insurance.toFixed(2) : 0 
+              result.CustomsVAT = result.CustomsVAT ? result.CustomsVAT.toFixed(2) : 0 
+              result.ServiceVat = result.ServiceVat ? result.ServiceVat.toFixed(2) : 0 
+              result.TotalInvoiceValue = result.TotalInvoiceValue ? result.TotalInvoiceValue.toFixed(2) : 0
+              result.OverrideInvoiceValue = result.OverrideInvoiceValue ? result.OverrideInvoiceValue.toFixed(2) : 0
+              
+              let total =  Number(result.Brokerage) + Number(result.CustomsProc) + Number(result.SumOfAllCharges) + Number(result.CustomsVAT) + Number(result.Delivery) + Number(result.Duty) + Number(result.EnvLevy) + Number(result.Freight) + Number(result.Hazmat) + Number(result.Pickup) + Number(result.NoDocs) + Number(result.Insurance) + Number(result.Sed) + Number(result.Express) + Number(result.ServiceVat)+ Number(result.Storage)
+              result.TotalWet = total
+          }
+          resolve(result)
+        })
+      }else{
+          resolve({ success: false, message: "Price Label Does not Exist For this AWB."});
+      }
+      })
+    })    
+
   }
 }
 

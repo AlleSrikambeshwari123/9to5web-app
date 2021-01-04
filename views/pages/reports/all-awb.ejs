@@ -1,0 +1,56 @@
+<% layout('./shared/__template')%>
+<%
+var endate = new Date();      
+        endate.setDate(endate.getDate());
+        var stdate = new Date();
+        stdate.setDate(stdate.getDate() -3);      
+        var dateRangeDefault = (stdate.getMonth() + 1)+ '/'+stdate.getDate()+'/'+stdate.getFullYear()+' - '+
+        (endate.getMonth() + 1)+ '/'+endate.getDate()+'/'+endate.getFullYear(); 
+%>
+<div class='gutters'>
+  <div class="col-xl-12 col-lg-6 col-md-12 col-sm-12">
+    <div class="card">
+      <div class="card-header d-flex align-items-left align-items-md-center flex-column flex-md-row">
+        <div class="card-title">All Awb Status</div>
+        <!--<a href='create' class='btn btn-primary btn-round float-right ml-md-auto'>Add User</a>-->
+      </div>
+      <div id="myLoader"><img src="/img/preloader.gif"></div>
+      <div class="card-body daterangepickerbody">
+        <input type="hidden" name="clear" id="clear" value="<%=clear%>">
+        
+      <div class="col-xs-12 col-sm-12 float-right">        
+        <input type="text" class="form-control form-control-sm" name="" id="daterange-noDocs" class="form-control" style="width: 30%; float: left;margin-left: 1%; height: 40px !important;" value="<%=(query.daterange && query.type=='noDocs')? query.daterange: dateRangeDefault%>"  placeholder="Select dates" style="width: 30%; float: left;margin-left: 1%;"">        
+        <input type="button" value="Create Csv" class="btn btn-primary" style="float: left;margin-left: 1%"  onclick="generate_report()">
+    </div>
+        <div class="table-responsive">
+        <table class="display table table-striped allawb table-hover dataTable ">
+          <thead>
+            <tr>
+              <th>AWB Id</th>
+              <th>Emplyee Name</th>
+              <th>Action</th>
+              <th>Date</th>             
+            </tr>
+          </thead>
+          
+          <tbody>
+            <% allawb.forEach(function(awb){%>
+            <tr data-record="<%= awb._id %>">
+              <td><%=(awb.awbId && awb.awbId.awbId)?awb.awbId.awbId:''%></td>
+              <td><%=awb.User.username%></td>
+              <td><%=awb.action%></td>
+              <td><%=helpers.formatDate(awb.createdAt)%></td>
+            </tr>
+            <%})%>
+          </tbody>
+        </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+    var daterange = "<%=query.daterange%>"
+</script>
+<% block('scripts').append('<script src="/js/utils.js"></script>')%>
+<% block('scripts').append('<script src="/js/reports/allawb.js"></script>')%>

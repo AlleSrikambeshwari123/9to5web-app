@@ -351,6 +351,7 @@ exports.update_awb = async (req, res, next) => {
   // Updating awb
   services.awbService.updateAwb(awbId, awb, req['userId'])
   .then(async (result) => {
+    
     // Updating or creating invoices, purchaseOrders and packages
     await Promise.all(promises.map((promise) => promise()));
     var pack = result.awbData.packages;

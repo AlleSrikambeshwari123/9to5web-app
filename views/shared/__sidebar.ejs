@@ -37,6 +37,28 @@
 						<p>Reports </p>
 					</a>
 				</li>
+				<li class="nav-item <% if (page.includes('/fleet/')) { %> active <% } %>">
+					<a data-toggle="collapse" href="#reports">
+						<i class="fa fa-file"></i>
+						<p>Reports</p>
+						<span class="caret"></span>
+					</a>
+					<div class="collapse <% if (page.includes('/reports/all-awb/status')) { %> show <% } %>" id="reports">
+						<ul class="nav nav-collapse">
+							<li <% if (page.includes('/reports/all-awb/status')) { %> class="active" <% } %>>
+								<a href="/reports/all-awb/status">
+									<span class="sub-item">All Awb Status</span>
+								</a>
+							</li>
+							<li <% if (page.includes('/reports/all-report/download')) { %> class="active" <% } %>>
+								<a href="/reports/all-report/download">
+									<span class="sub-item">My Report</span>
+								</a>
+							</li>
+							
+						</ul>
+					</div>
+				</li>
 				<% } %>
 				<% if (user.roles[0].type == "Customers") { %>
 				<li class="nav-item <% if (page.includes('/dashboard')) { %> active <% } %>">

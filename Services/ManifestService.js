@@ -750,6 +750,21 @@ class ManifestService {
     }
     return manifestStages.open;
   }
+
+  deletePackage(manifestId, packageId){
+    return new Promise((resolve, reject) => {
+      Manifest.updateOne({_id: manifestId}, {$pull: { packages:  packageId}}, (err, result) => {
+        Package.updateOne({_id: packageId}, {manifestId: null}, (err, result) => {
+        if (err) {
+          console.log(err)
+          resolve({ success: false, message: err });
+        } else {
+          resolve({ success: true, message: strings.string_response_removed });
+        }
+      })
+      })
+    });
+  }
 }
 
 //========== DB Structure ==========//

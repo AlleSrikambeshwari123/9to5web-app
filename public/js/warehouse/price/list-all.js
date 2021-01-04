@@ -140,6 +140,8 @@ function pricelLabelCheck(response) {
   $("#no_of_invoice").val((pkg.invoices).length.toFixed(2))
   $("#total-value-invoice").val(response.TotalInvoiceValue.toFixed(2))
   $("#override-value-invoice").val(response.OverrideInvoiceValue.toFixed(2))
+  $("#override-freight").val(response.OverrideFreight.toFixed(2))
+  $("#override-insurance").val(response.OverrideInsurance.toFixed(2))
   $("#total_weight_value").val(response.TotalWeightValue.toFixed(2))
   if (response.NoDocs > 0) $('#NoDocs').prop('checked', true)
   if (response.Insurance > 0) $('#Insurance').prop('checked', true)
@@ -178,13 +180,15 @@ function packagePriceLabel(response) {
 
     //pkg.packages.map((pkge) => (totalweightVal += pkge.weight));
   // }
-  $('#sum-of-charges').val(response.SumOfAllCharges ? response.SumOfAllCharges.toFixed(2) : 0)
+  $('#sum-of-charges').val(response.SumOfAllCharges ? response.SumOfAllCharges : 0)
   $("#VatMultiplier").val(VatMultiplier)
   $("#no_of_invoice").val((pkg.invoices).length)
-  $("#total-value-invoice").val(response.TotalInvoiceValue ? response.TotalInvoiceValue.toFixed(2) : 0)
-  $("#override-value-invoice").val(response.OverrideInvoiceValue ? response.OverrideInvoiceValue.toFixed(2) : 0)
-  $("#total_weight_value").val(response.TotalWeightValue ? response.TotalWeightValue.toFixed(2) : 0)
-  $('#TotalWet').val(response.TotalWet ? response.TotalWet.toFixed(2) : 0)
+  $("#total-value-invoice").val(response.TotalInvoiceValue ? response.TotalInvoiceValue : 0)
+  $("#override-value-invoice").val(response.OverrideInvoiceValue ? response.OverrideInvoiceValue : 0)
+  $("#override-freight").val(response.OverrideFreight ? response.OverrideFreight : 0)
+  $("#override-insurance").val(response.OverrideInsurance ? response.OverrideInsurance : 0)
+  $("#total_weight_value").val(response.TotalWeightValue ? response.TotalWeightValue : 0)
+  $('#TotalWet').val(response.TotalWet ? response.TotalWet : 0)
   let Freight = (1.55 * pkg.weight).toFixed(2);
   if (pkg.company == "Post Boxes") {
     let fw = pkg.weight * 3;
@@ -302,6 +306,8 @@ $('#pricelabel-table').on('click', '.btn-edit-pricelabel', function () {
     $('#TotalWet').val(''),
     $('#total-value-invoice').html(''),
     $("#override-value-invoice").val('')
+    $("#override-freight").val('')
+    $("#override-insurance").val('')
 
     $.ajax({
       url: '/warehouse/pricelabels/' + id,
@@ -360,6 +366,8 @@ $('#UpdatePriceLabelPackage').on('click', function (event) {
     Sed: $('#SedVal').val() == "" ? 0 : $('#SedVal').val(),
     Express: $('#ExpressVal').val() == "" ? 0 : $('#ExpressVal').val(),
     OverrideInvoiceValue:  $('#override-value-invoice').val() == "" ? 0 : $('#override-value-invoice').val(),
+    OverrideFreight:  $('#override-freight').val() == "" ? 0 : $('#override-freight').val(),
+    OverrideInsurance:  $('#override-insurance').val() == "" ? 0 : $('#override-insurance').val(),
     TotalInvoiceValue: $("#total-value-invoice").val() == "" ? 0 : $("#total-value-invoice").val(),
     NoOfInvoice: $("#no_of_invoice").val() == "" ? 0 : $("#no_of_invoice").val(),
     TotalWeightValue: $("#total_weight_value").val() == "" ? 0 : $("#total_weight_value").val(),
