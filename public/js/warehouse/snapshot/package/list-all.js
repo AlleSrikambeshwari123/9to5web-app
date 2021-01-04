@@ -12,9 +12,7 @@ let packageTable = $('.package-table').DataTable({
   select: {
     style: 'multi',
     selector: 'td:first-child input[type="checkbox"]',
-  },
-  dom: 'Bfrtip',
-  buttons: [ 'csv', 'pdf']
+  },  
 });
 
 $('#package-table').on('draw.dt', function () {
