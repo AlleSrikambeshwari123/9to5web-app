@@ -351,12 +351,17 @@ class PackageService {
                             zoneId: data.zoneId,
                             agingStore:1
                         });
-                        const validateStore = await this.validateStorePackage(data.zoneId,packageId)
+                        const validateStore = await this.validateStorePackage(data.location,packageId)
                         if(query.override == undefined){
                             if(!validateStore.success) error.push(validateStore.message)
                         }
                         if(validateStore.success || query.override !== undefined){
-                            const status = await this.updatePackageStatus(packageId, 9, username);                       
+                            let status
+                            if(validateStore.location == 'Warehouse'){
+                                status = await this.updatePackageStatus(packageId, 4, username);                       
+                            }else{
+                                status = await this.updatePackageStatus(packageId, 9, username);                       
+                            }
                             this.sendStorePackageData(packageId);
                             if (!status.success) error.push(status.message)
                             else{
@@ -3810,19 +3815,19 @@ class PackageService {
                  let pmb = pkgData.customerId.pmb
                  let locationName = location.name.toUpperCase()
                  if(pmb >0 && pmb <=1999  || pmb >= 4000 && pmb <=5999){
-                     if(locationName === 'CABLE BEACH'){
+                     if(locationName.indexOf('CABLE BEACH') >=0){
                          resolve({ success: true, message: `Package is OK` })
                      }else{
                          resolve({ success: false, message: `The following package ${pkgId} belongs to Post Boxes Cable Beach with AWB:${awb.awbId}.Would you like to change it?` })
                      }
                  }else if (pmb >= 3000 && pmb <=3999){
-                     if(locationName === 'ALBANY'){
+                     if(locationName.indexOf('ALBANY') >=0){
                          resolve({ success: true, message: `Package is OK` })
                      }else{
                          resolve({ success: false, message: `The following package ${pkgId} belongs to Post Boxes Albany with AWB:${awb.awbId}.Would you like to change it?` })
                      }
                  }else if (pmb >= 9000 && pmb <=10000){
-                     if(locationName === '9TO5' || locationName ==='9to5'){
+                     if(locationName.indexOf('9TO5') >=0 || locationName.indexOf('9to5') >=0 || locationName.indexOf('NINE TO FIVE') >=0 || locationName.indexOf('WAREHOUSE') >=0){
                          resolve({ success: true, message: `Package is OK` })
                      }else{
                          resolve({ success: false, message: `The following package ${pkgId} belongs to 9 to 5 with AWB:${awb.awbId}.Would you like to change it?` })
@@ -3839,10 +3844,12 @@ class PackageService {
         }) 
      }
 
-    async validateStorePackage(zoneId,pkgId){
+    async validateStorePackage(locationId,pkgId){
        return new Promise(async (resolve,reject)=>{
-           let zone = await Zone.findOne({_id:zoneId})
-           if(zone){  
+        //    let zone = await Zone.findOne({_id:zoneId})
+            let location = await Location.findOne({_id:locationId})
+        
+           if(location){  
             let pkgData = await Package.findOne({_id:pkgId})
             .populate('customerId')
             .populate('shipperId')
@@ -3851,21 +3858,22 @@ class PackageService {
             if(pkgData.customerId && pkgData.customerId.pmb){
                 let awb = await this.services.awbService.getAwb(pkgData.awbId)
                 let pmb = pkgData.customerId.pmb
+                let locationName = location.name.toUpperCase()
                 if(pmb >0 && pmb <=1999  || pmb >= 4000 && pmb <=5999){
-                    if(zone.name === 'CABLE BEACH'){
-                        resolve({ success: true, message: `Package is OK` })
+                    if(locationName.indexOf('CABLE BEACH') >=0){
+                        resolve({ success: true, message: `Package is OK`, location : 'Cable Beach' })
                     }else{
                         resolve({ success: false, message: `The following package ${pkgId} belongs to Post Boxes Cable Beach with AWB:${awb.awbId} .Would you like to change it?` })
                     }
                 }else if (pmb >= 3000 && pmb <=3999){
-                    if(zone.name === 'ALBANY'){
-                        resolve({ success: true, message: `Package is OK` })
+                    if(locationName.indexOf('ALBANY') >=0){
+                        resolve({ success: true, message: `Package is OK`, location : 'Albany' })
                     }else{
                         resolve({ success: false, message: `The following package ${pkgId} belongs to Post Boxes Albany with AWB:${awb.awbId} .Would you like to change it?` })
                     }
                 }else if (pmb >= 9000 && pmb <=10000){
-                    if(zone.name === '9TO5' || zone.name ==='9to5'){
-                        resolve({ success: true, message: `Package is OK` })
+                    if(locationName.indexOf('9TO5') >=0 || locationName.indexOf('9to5') >=0 || locationName.indexOf('NINE TO FIVE') >=0 || locationName.indexOf('WAREHOUSE') >=0 ){
+                        resolve({ success: true, message: `Package is OK`, location : 'Warehouse' })
                     }else{
                         resolve({ success: false, message: `The following package ${pkgId} belongs to 9 to 5 with AWB:${awb.awbId} .Would you like to change it?` })
                     }
