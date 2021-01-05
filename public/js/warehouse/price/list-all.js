@@ -142,6 +142,7 @@ function pricelLabelCheck(response) {
   $("#override-value-invoice").val(response.OverrideInvoiceValue.toFixed(2))
   $("#override-freight").val(response.OverrideFreight.toFixed(2))
   $("#override-insurance").val(response.OverrideInsurance.toFixed(2))
+  $("#ProofOfPurchase").val(response.ProofOfPurchase.toFixed(2))
   $("#total_weight_value").val(response.TotalWeightValue.toFixed(2))
   if (response.NoDocs > 0) $('#NoDocs').prop('checked', true)
   if (response.Insurance > 0) $('#Insurance').prop('checked', true)
@@ -187,6 +188,7 @@ function packagePriceLabel(response) {
   $("#override-value-invoice").val(response.OverrideInvoiceValue ? response.OverrideInvoiceValue : 0)
   $("#override-freight").val(response.OverrideFreight ? response.OverrideFreight : 0)
   $("#override-insurance").val(response.OverrideInsurance ? response.OverrideInsurance : 0)
+  $("#ProofOfPurchase").val(response.ProofOfPurchase ? response.ProofOfPurchase : 0)
   $("#total_weight_value").val(response.TotalWeightValue ? response.TotalWeightValue : 0)
   $('#TotalWet').val(response.TotalWet ? response.TotalWet : 0)
   let Freight = (1.55 * pkg.weight).toFixed(2);
@@ -308,6 +310,7 @@ $('#pricelabel-table').on('click', '.btn-edit-pricelabel', function () {
     $("#override-value-invoice").val('')
     $("#override-freight").val('')
     $("#override-insurance").val('')
+    $("#ProofOfPurchase").val('')
 
     $.ajax({
       url: '/warehouse/pricelabels/' + id,
@@ -368,6 +371,7 @@ $('#UpdatePriceLabelPackage').on('click', function (event) {
     OverrideInvoiceValue:  $('#override-value-invoice').val() == "" ? 0 : $('#override-value-invoice').val(),
     OverrideFreight:  $('#override-freight').val() == "" ? 0 : $('#override-freight').val(),
     OverrideInsurance:  $('#override-insurance').val() == "" ? 0 : $('#override-insurance').val(),
+    ProofOfPurchase:  $('#ProofOfPurchase').val() == "" ? 0 : $('#ProofOfPurchase').val(),
     TotalInvoiceValue: $("#total-value-invoice").val() == "" ? 0 : $("#total-value-invoice").val(),
     NoOfInvoice: $("#no_of_invoice").val() == "" ? 0 : $("#no_of_invoice").val(),
     TotalWeightValue: $("#total_weight_value").val() == "" ? 0 : $("#total_weight_value").val(),

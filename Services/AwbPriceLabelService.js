@@ -2,6 +2,7 @@ const strings = require('../Res/strings');
 const PriceLabel = require('../models/pricelabel');
 const Package = require('../models/package');
 const Awb = require('../models/awb');
+const PurchaseOrder = require('../models/purchaseOrder');
 const services = require('../Services/RedisDataServices')
 class AwbPriceLabelService {
   constructor() {
@@ -36,7 +37,7 @@ class AwbPriceLabelService {
       });
     })
   }
-  calculations(result,pkg){
+  async calculations(result,pkg){
     var totalweightVal = 0,totalVolumetricWeight=0;
     if (pkg.packages) {
       const pa = pkg.packages;
@@ -131,15 +132,6 @@ class AwbPriceLabelService {
     if(result.OverrideInvoiceValue >= 100)
       result.Insurance = result.OverrideInvoiceValue * 0.015
 
-    result.CustomsVAT = (Number(result.OverrideInvoiceValue) + Number(result.Duty)+ Number(result.CustomsProc)+Number(result.EnvLevy)) * Number(result.VatMultiplier)
-    result.ServiceVat = (Number(result.Freight) + Number(result.NoDocs) + Number(result.Insurance) + Number(result.Storage) + Number(result.Brokerage) +Number(result.Express) + Number(result.Delivery) ) * Number(result.VatMultiplier)
-    
-    let sum = Number(result.CustomsVAT) + Number(result.ServiceVat) + Number(result.Freight) + Number(result.Duty)+ Number(result.CustomsProc)+Number(result.EnvLevy) +Number(result.NoDocs) +
-    Number(result.Insurance) + Number(result.Storage) + Number(result.Brokerage) +Number(result.Express) + Number(result.Delivery) + Number(result.Hazmat) + Number(result.Pickup) + Number(result.Sed)
-    result.SumOfAllCharges = sum
-
-    result.SumOfAllCharges = result.SumOfAllCharges ? result.SumOfAllCharges.toFixed(2) : 0
-  
     if(result.OverrideInsurance){
       if(result.OverrideInsurance > 0)
         result.OverrideInsurance = result.OverrideInsurance 
@@ -148,17 +140,44 @@ class AwbPriceLabelService {
     }else{
       result.OverrideInsurance = result.Insurance 
     }
-      
+
+    result.CustomsVAT = (Number(result.OverrideInvoiceValue) + Number(result.Duty)+ Number(result.CustomsProc)+Number(result.EnvLevy)) * Number(result.VatMultiplier)
+    result.ServiceVat = (Number(result.OverrideFreight) + Number(result.NoDocs) + Number(result.OverrideInsurance) + Number(result.Storage) + Number(result.Brokerage) +Number(result.Express) + Number(result.Delivery) ) * Number(result.VatMultiplier)
+    
+    result.ProofOfPurchase = await this.calculateServiceTypeVariable('Proof Of Purchase',pkg._id)
+    result.Sed = await this.calculateServiceTypeVariable('Sed',pkg._id)
+    result.Pickup = await this.calculateServiceTypeVariable('Pickup',pkg._id)
+    result.Hazmat = await this.calculateServiceTypeVariable('Hazmat',pkg._id)
+
+    let sum = Number(result.CustomsVAT) + Number(result.ServiceVat) + Number(result.OverrideFreight) + Number(result.Duty)+ Number(result.CustomsProc)+Number(result.EnvLevy) +Number(result.NoDocs) +
+    Number(result.OverrideInsurance) + Number(result.Storage) + Number(result.Brokerage) +Number(result.Express) + Number(result.Delivery) + Number(result.Hazmat) + Number(result.Pickup) + Number(result.Sed) + Number (result.ProofOfPurchase)
+
+    result.SumOfAllCharges = sum
+    result.SumOfAllCharges = result.SumOfAllCharges ? result.SumOfAllCharges.toFixed(2) : 0
+
     result.Insurance = result.Insurance ? result.Insurance.toFixed(2) : 0 
+    result.OverrideInsurance = result.OverrideInsurance ? result.OverrideInsurance.toFixed(2) : 0 
+    result.OverrideFreight = result.OverrideFreight ? result.OverrideFreight.toFixed(2) : 0 
     result.CustomsVAT = result.CustomsVAT ? result.CustomsVAT.toFixed(2) : 0 
     result.ServiceVat = result.ServiceVat ? result.ServiceVat.toFixed(2) : 0 
 
-    let total =  Number(result.Brokerage) + Number(result.CustomsProc) + Number(result.SumOfAllCharges) + Number(result.CustomsVAT) + Number(result.Delivery) + Number(result.Duty) + Number(result.EnvLevy) + Number(result.Freight) + Number(result.Hazmat) + Number(result.Pickup) + Number(result.NoDocs) + Number(result.Insurance) + Number(result.Sed) + Number(result.Express) + Number(result.ServiceVat)+ Number(result.Storage)
+    let total =  Number(result.Brokerage) + Number(result.CustomsProc) + Number(result.SumOfAllCharges) + Number(result.CustomsVAT) + Number(result.Delivery) + Number(result.Duty) + Number(result.EnvLevy) + Number(result.OverrideFreight) + Number(result.Hazmat) + Number(result.Pickup) + Number(result.NoDocs) + Number(result.OverrideInsurance) + Number(result.Sed) + Number(result.Express) + Number(result.ServiceVat)+ Number(result.Storage)
     result.TotalWet = total
 
     result.TotalWet = result.TotalWet ? result.TotalWet.toFixed(2) : 0
     result.Express = result.Express ? result.Express.toFixed(2) : 0
     return result
+  }
+
+  async calculateServiceTypeVariable(type,awbId){
+    let typeSum = 0
+    let purchaseOrderResult = await PurchaseOrder.find({awbId : awbId}).populate('serviceTypeId')
+    for(let po of purchaseOrderResult){
+      if(po.serviceTypeId.type == type){
+        typeSum = typeSum + po.serviceTypeId.amount 
+      }
+    }
+    return typeSum
   }
 
   getAwbPriceLabel(id) {
@@ -238,12 +257,17 @@ class AwbPriceLabelService {
       }
 
       priceLabel.CustomsVAT = (Number(priceLabel.OverrideInvoiceValue) + Number(priceLabel.Duty)+ Number(priceLabel.CustomsProc)+Number(priceLabel.EnvLevy)) * Number(priceLabel.VatMultiplier)
-      priceLabel.ServiceVat = (Number(priceLabel.Freight) + Number(priceLabel.NoDocs) + Number(priceLabel.Insurance) + Number(priceLabel.Storage) + Number(priceLabel.Brokerage) +Number(priceLabel.Express) + Number(priceLabel.Delivery) ) * Number(priceLabel.VatMultiplier)
+      priceLabel.ServiceVat = (Number(priceLabel.OverrideFreight) + Number(priceLabel.NoDocs) + Number(priceLabel.OverrideInsurance) + Number(priceLabel.Storage) + Number(priceLabel.Brokerage) +Number(priceLabel.Express) + Number(priceLabel.Delivery) ) * Number(priceLabel.VatMultiplier)
      
-      priceLabel.SumOfAllCharges = Number(priceLabel.CustomsVAT) + Number(priceLabel.ServiceVat) + Number(priceLabel.Freight) + Number(priceLabel.Duty)+ Number(priceLabel.CustomsProc)+Number(priceLabel.EnvLevy) +Number(priceLabel.NoDocs) +
-       Number(priceLabel.Insurance) + Number(priceLabel.Storage) + Number(priceLabel.Brokerage) +Number(priceLabel.Express) + Number(priceLabel.Delivery) + Number(priceLabel.Hazmat) + Number(priceLabel.Pickup)  + Number(priceLabel.Sed)
+      priceLabel.ProofOfPurchase = await this.calculateServiceTypeVariable('Proof Of Purchase',id)
+      priceLabel.Sed = await this.calculateServiceTypeVariable('Sed',id)
+      priceLabel.Pickup = await this.calculateServiceTypeVariable('Pickup',id)
+      priceLabel.Hazmat = await this.calculateServiceTypeVariable('Hazmat',id)  
      
-       let total =  Number(priceLabel.Brokerage) + Number(priceLabel.CustomsProc) + Number(priceLabel.SumOfAllCharges) + Number(priceLabel.CustomsVAT) + Number(priceLabel.Delivery) + Number(priceLabel.Duty) + Number(priceLabel.EnvLevy) + Number(priceLabel.Freight) + Number(priceLabel.Hazmat) + Number(priceLabel.Pickup) + Number(priceLabel.NoDocs) + Number(priceLabel.Insurance) + Number(priceLabel.Sed) + Number(priceLabel.Express) + Number(priceLabel.ServiceVat)+ Number(priceLabel.Storage)
+      priceLabel.SumOfAllCharges = Number(priceLabel.CustomsVAT) + Number(priceLabel.ServiceVat) + Number(priceLabel.OverrideFreight) + Number(priceLabel.Duty)+ Number(priceLabel.CustomsProc)+Number(priceLabel.EnvLevy) +Number(priceLabel.NoDocs) +
+       Number(priceLabel.OverrideInsurance) + Number(priceLabel.Storage) + Number(priceLabel.Brokerage) +Number(priceLabel.Express) + Number(priceLabel.Delivery) + Number(priceLabel.Hazmat) + Number(priceLabel.Pickup)  + Number(priceLabel.Sed) + Number(priceLabel.ProofOfPurchase)
+     
+       let total =  Number(priceLabel.Brokerage) + Number(priceLabel.CustomsProc) + Number(priceLabel.SumOfAllCharges) + Number(priceLabel.CustomsVAT) + Number(priceLabel.Delivery) + Number(priceLabel.Duty) + Number(priceLabel.EnvLevy) + Number(priceLabel.OverrideFreight) + Number(priceLabel.Hazmat) + Number(priceLabel.Pickup) + Number(priceLabel.NoDocs) + Number(priceLabel.OverrideInsurance) + Number(priceLabel.Sed) + Number(priceLabel.Express) + Number(priceLabel.ServiceVat)+ Number(priceLabel.Storage)
        priceLabel.TotalWet = total
 
       PriceLabel.findOneAndUpdate(
@@ -337,12 +361,17 @@ class AwbPriceLabelService {
       }
 
       priceLabel.CustomsVAT = (Number(priceLabel.OverrideInvoiceValue) + Number(priceLabel.Duty)+ Number(priceLabel.CustomsProc)+Number(priceLabel.EnvLevy)) * Number(priceLabel.VatMultiplier)
-      priceLabel.ServiceVat = (Number(priceLabel.Freight) + Number(priceLabel.NoDocs) + Number(priceLabel.Insurance) + Number(priceLabel.Storage) + Number(priceLabel.Brokerage) +Number(priceLabel.Express) + Number(priceLabel.Delivery) ) * Number(priceLabel.VatMultiplier)
+      priceLabel.ServiceVat = (Number(priceLabel.OverrideFreight) + Number(priceLabel.NoDocs) + Number(priceLabel.OverrideInsurance) + Number(priceLabel.Storage) + Number(priceLabel.Brokerage) +Number(priceLabel.Express) + Number(priceLabel.Delivery) ) * Number(priceLabel.VatMultiplier)
      
-      priceLabel.SumOfAllCharges = Number(priceLabel.CustomsVAT) + Number(priceLabel.ServiceVat) + Number(priceLabel.Freight) + Number(priceLabel.Duty)+ Number(priceLabel.CustomsProc)+Number(priceLabel.EnvLevy) +Number(priceLabel.NoDocs) +
-       Number(priceLabel.Insurance) + Number(priceLabel.Storage) + Number(priceLabel.Brokerage) +Number(priceLabel.Express) + Number(priceLabel.Delivery) + Number(priceLabel.Hazmat) + Number(priceLabel.Pickup)  + Number(priceLabel.Sed)
+      priceLabel.ProofOfPurchase = await this.calculateServiceTypeVariable('Proof Of Purchase',id)
+      priceLabel.Sed = await this.calculateServiceTypeVariable('Sed',id)
+      priceLabel.Pickup = await this.calculateServiceTypeVariable('Pickup',id)
+      priceLabel.Hazmat = await this.calculateServiceTypeVariable('Hazmat',id)  
      
-       let total =  Number(priceLabel.Brokerage) + Number(priceLabel.CustomsProc) + Number(priceLabel.SumOfAllCharges) + Number(priceLabel.CustomsVAT) + Number(priceLabel.Delivery) + Number(priceLabel.Duty) + Number(priceLabel.EnvLevy) + Number(priceLabel.Freight) + Number(priceLabel.Hazmat) + Number(priceLabel.Pickup) + Number(priceLabel.NoDocs) + Number(priceLabel.Insurance) + Number(priceLabel.Sed) + Number(priceLabel.Express) + Number(priceLabel.ServiceVat)+ Number(priceLabel.Storage)
+      priceLabel.SumOfAllCharges = Number(priceLabel.CustomsVAT) + Number(priceLabel.ServiceVat) + Number(priceLabel.OverrideFreight) + Number(priceLabel.Duty)+ Number(priceLabel.CustomsProc)+Number(priceLabel.EnvLevy) +Number(priceLabel.NoDocs) +
+       Number(priceLabel.OverrideInsurance) + Number(priceLabel.Storage) + Number(priceLabel.Brokerage) +Number(priceLabel.Express) + Number(priceLabel.Delivery) + Number(priceLabel.Hazmat) + Number(priceLabel.Pickup)  + Number(priceLabel.Sed) + Number(priceLabel.ProofOfPurchase)
+     
+       let total =  Number(priceLabel.Brokerage) + Number(priceLabel.CustomsProc) + Number(priceLabel.SumOfAllCharges) + Number(priceLabel.CustomsVAT) + Number(priceLabel.Delivery) + Number(priceLabel.Duty) + Number(priceLabel.EnvLevy) + Number(priceLabel.OverrideFreight) + Number(priceLabel.Hazmat) + Number(priceLabel.Pickup) + Number(priceLabel.NoDocs) + Number(priceLabel.OverrideInsurance) + Number(priceLabel.Sed) + Number(priceLabel.Express) + Number(priceLabel.ServiceVat)+ Number(priceLabel.Storage)
        priceLabel.TotalWet = total
 
       PriceLabel.findOneAndUpdate(

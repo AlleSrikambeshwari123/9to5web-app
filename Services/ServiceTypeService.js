@@ -45,7 +45,7 @@ class ServiceTypeService {
   }
   updateServiceType(id, body) {
     return new Promise((resolve, reject) => {
-      ServiceType.findOneAndUpdate({_id: id}, {name: body.name, amount: body.amount}, (err, result) => {
+      ServiceType.findOneAndUpdate({_id: id}, {name: body.name, amount: body.amount,type : body.type}, (err, result) => {
         if (err) {
           resolve({ success: false, message: strings.string_response_error });
         } else {
