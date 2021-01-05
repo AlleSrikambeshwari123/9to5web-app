@@ -652,8 +652,8 @@ $(function () {
           pkg.lastStatusText ? pkg.lastStatusText : '',
           [
             `<a class="btn btn-link btn-primary btn-edit-pkg p-1" title="Edit" data-id="${pkg.id}" href="#add-package-popup"><i class="fa fa-pen"></i></a>`,
-            `<a class="btn btn-link btn-danger btn-rm-pkg p-1" title="Delete" data-id="${pkg.id}" data-toggle='modal' data-target='#confirmPkgDel'><i class="fa fa-trash"></i></a>`,
-            !isNew && `<a class="btn btn-link btn-primary p-1 btn-print-pkg" data-toggle="modal" data-id="${pkg.id}" data-original-title="Print Label" data-target="#print-popup"> <i class="fa fa-print"></i> </a>`,
+            `<a class="btn btn-link btn-danger btn-rm-pkg p-1" title="Delete" data-id="${pkg.id}" data-toggle='modal' data-backdrop="static" data-target='#confirmPkgDel'><i class="fa fa-trash"></i></a>`,
+            !isNew && `<a class="btn btn-link btn-primary p-1 btn-print-pkg" data-toggle="modal" data-backdrop="static" data-id="${pkg.id}" data-original-title="Print Label" data-target="#print-popup"> <i class="fa fa-print"></i> </a>`,
           ].filter(Boolean).join('\n'),
         ])
         .draw(false)
@@ -690,7 +690,8 @@ $(function () {
             $("#H").val(dims[1])
             $("#L").val(dims[2])
           }
-        }
+        },
+        closeOnBgClick: false
       })
     })
    
