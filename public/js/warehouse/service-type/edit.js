@@ -1,6 +1,11 @@
 $("#cancelForm").click(function () {
   window.history.back();
 });
+$('#type').select2({
+  theme: 'bootstrap',
+  width: '100%',
+  placeholder: "Select a Service Type"
+})
 $("#add-service-type-form").submit(function (event) {
   event.preventDefault(event);
   let formUrl = $(this).attr('action');

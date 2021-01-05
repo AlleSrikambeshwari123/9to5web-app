@@ -21,6 +21,18 @@
               <input type="number" onkeydown="return event.keyCode !== 69" min="0" class="form-control" id="amount" name="amount" placeholder="Amount">
             </div>
           </div>
+          <div class="form-group form-show-validation row">
+            <label for="service-type" class="col-lg-3 col-md-3 col-sm-4 mt-sm-2 text-right">Service Type</label>
+            <div class="col-lg-4 col-md-9 col-sm-8">
+              <select id="type" name="type" class='form-control' style='width:90%;'>
+                <option></option>
+                <option value="Hazmat">Hazmat</option>
+                <option value="Sed">Sed</option>
+                <option value="Proof Of Purchase">Proof Of Purchase</option>
+                <option value="Pickup">Pickup</option>
+              </select>
+            </div>
+          </div>
         </div>
         <div class="card-action">
           <button type="submit" class="btn btn-primary">Create</button>

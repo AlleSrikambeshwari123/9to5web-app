@@ -27,6 +27,7 @@ const PriceLabelSchema = new mongoose.Schema(
     Insurance: { type: Number,default:0 },
     OverrideInsurance: { type: Number,default:0 },
     NoDocs: { type: Number,default:0 },
+    ProofOfPurchase: { type: Number,default:0 },
     Pickup: { type: Number,default:0 },
     Sed: { type: Number,default:0 },
     ServiceVat: { type: Number,default:0 },
