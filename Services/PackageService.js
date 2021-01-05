@@ -787,25 +787,45 @@ class PackageService {
               if(req && req.query && req.query.nodocs){
                 searchData['lastStatusText'] =  "No Invoice Present"
               } 
-              console.log("search ---",searchData)
+              
             if(searchData._id && !req.query.customerId && !req.query.locationId){
-                Package.find(searchData)
-                .populate({path : 'awbId',populate : 'driver'})
-                .populate('originBarcode')
-                .populate('customerId')
-                .populate({path : 'zoneId',populate : {path : 'location',populate : 'company'}})
-                .populate('shipperId')
-                .populate('carrierId')
-                .populate('cubeId')
-                .populate('manifestId')
-                .exec((err, result) => {
-                    if (err) {
-                        resolve([]);
-                    } else {
-                        console.log("packg",result)
-                        resolve(result);
-                    }
-                });
+                if(req && req.query && req.query.search_collection == "HISTORY"){
+                    PackageHistory.find(searchData)
+                    .populate({path : 'awbId',populate : 'driver'})
+                    .populate('originBarcode')
+                    .populate('customerId')
+                    .populate({path : 'zoneId',populate : {path : 'location',populate : 'company'}})
+                    .populate('shipperId')
+                    .populate('carrierId')
+                    .populate('cubeId')
+                    .populate('manifestId')
+                    .exec((err, result) => {
+                        if (err) {
+                            resolve([]);
+                        } else {
+                            console.log("packg",result)
+                            resolve(result);
+                        }
+                    });
+                }else{
+                    Package.find(searchData)
+                    .populate({path : 'awbId',populate : 'driver'})
+                    .populate('originBarcode')
+                    .populate('customerId')
+                    .populate({path : 'zoneId',populate : {path : 'location',populate : 'company'}})
+                    .populate('shipperId')
+                    .populate('carrierId')
+                    .populate('cubeId')
+                    .populate('manifestId')
+                    .exec((err, result) => {
+                        if (err) {
+                            resolve([]);
+                        } else {
+                            console.log("packg",result)
+                            resolve(result);
+                        }
+                    });
+                }
             }else{
                 if(req && req.query && (req.query.customerId == 'load' || req.query.locationId == 'load')){
                     resolve([])
@@ -814,14 +834,25 @@ class PackageService {
                     if(req && req.query && req.query.nodocs){
                         searchData['lastStatusText'] =  "No Invoice Present"
                       }
-                    Package.find(searchData)
-                    .exec((err, result) => {
-                        if (err) {
-                            resolve([]);
-                        } else {
-                            resolve(result);
-                        }
-                    });
+                    if(req && req.query && req.query.search_collection == "HISTORY"){  
+                        PackageHistory.find(searchData)
+                        .exec((err, result) => {
+                            if (err) {
+                                resolve([]);
+                            } else {
+                                resolve(result);
+                            }
+                        });
+                    }else{
+                        Package.find(searchData)
+                        .exec((err, result) => {
+                            if (err) {
+                                resolve([]);
+                            } else {
+                                resolve(result);
+                            }
+                        });
+                    }
                 }
             }
         });

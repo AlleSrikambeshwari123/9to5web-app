@@ -60,6 +60,12 @@ var endate = new Date();
         <% } %>              
       </div>
       <div id="myLoader"><img src="/img/preloader.gif"></div>
+      <div style="padding: 15px 0 0 35px;">
+        <select name="search_collection" id="search_collection"  class="form-control" style="width: 33%; float: left;">
+          <option value="ACTIVE" <%if(query.search_collection=="ACTIVE"){%>selected<%}%>>Active</option>
+          <option value="HISTORY" <%if(query.search_collection=="HISTORY"){%>selected<%}%>>History </option>          
+        </select>
+      </div>
       <div class="card-body    <% if (!query.customerId && !query.locationId) { %> daterangepickerbody <% } %>">
         <input type="hidden" name="clear" id="clear" value="<%=clear%>">
         <input type="hidden" id="daterange" value="<%=daterange%>">
