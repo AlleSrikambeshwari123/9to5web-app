@@ -1,8 +1,8 @@
 
 let packageTable = $('.package-table').DataTable({
   pageLength: 10,
-  dom: 'Bfrtip',
-  buttons: [  'pdf'],
+ // dom: 'Bfrtip',
+  //buttons: [  'pdf'],
   columnDefs: [
     {
       orderable: false,

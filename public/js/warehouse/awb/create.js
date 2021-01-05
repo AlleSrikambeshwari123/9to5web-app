@@ -206,6 +206,7 @@ $(function () {
         $(".hidden-div").css("display", "none");
       }
     },
+    closeOnBgClick: false
 
   });
 
@@ -669,7 +670,7 @@ $(function () {
         $('#po_note').val(response.note);
         for (var i = 0; i < (Object.keys(response).length-4)/2;  i++ ) {
           if(response['serviceTypes['+i+'][charge]'] !== 'empty'){
-            $('#charge-table-body').append('<tr data-record="' + i + '" > <td class="charge">'+response['serviceTypes['+i+'][charge]']+'</td><td class="amount">$'+response['serviceTypes['+i+'][amount]']+'</td><td> <a class="btn btn-link rm-service-type-edit p-1" data-id="'+awbpoId+'" data-ids="'+i+'" data-toggle="modal" data-target="#confirm-delete-awb"> <i class="fa fa-trash"></i> </a> </td></tr>');
+            $('#charge-table-body').append('<tr data-record="' + i + '" > <td class="charge">'+response['serviceTypes['+i+'][charge]']+'</td><td class="amount">$'+response['serviceTypes['+i+'][amount]']+'</td><td> <a class="btn btn-link rm-service-type-edit p-1" data-id="'+awbpoId+'" data-ids="'+i+'" data-toggle="modal" data-backdrop="static" data-target="#confirm-delete-awb"> <i class="fa fa-trash"></i> </a> </td></tr>');
           }
         }
 
@@ -712,7 +713,7 @@ $(function () {
                       arrayType = arrayType + '<option value="<%=i%>">'+response.awbpoupd['serviceTypes['+i+'][charge]'] +' / ' +response.awbpoupd['serviceTypes['+i+'][amount]'] +'</option>'
                     }
                   }
-                  $('#awbpoTableBody').append('<tr value="'+response.awbpoupd.id+'" role="row" class="even"><td class="sorting_1">'+data.source+'</td><td>'+data.paidType+'</td><td>'+data.note+'</td><td>'+arrayType+'</td><td><a class="editpo" href="" data-toggle="modal" data-edit-id="3" data-target="#add-purchase-order-popup"><i class="fas fa-pen"> </i></a></td></tr>');
+                  $('#awbpoTableBody').append('<tr value="'+response.awbpoupd.id+'" role="row" class="even"><td class="sorting_1">'+data.source+'</td><td>'+data.paidType+'</td><td>'+data.note+'</td><td>'+arrayType+'</td><td><a class="editpo" href="" data-toggle="modal" data-backdrop="static" data-edit-id="3" data-target="#add-purchase-order-popup"><i class="fas fa-pen"> </i></a></td></tr>');
                 }
               })
               .catch((err) => console.log(' err update awb po'))
@@ -828,7 +829,7 @@ $(function () {
         Number(pkg.weight).toFixed(2) + ` ${pkg.packageCalculation||'lbs'}`,
         `<a class="btn btn-link btn-primary btn-edit-pkg p-1" title="Edit" data-id="${pkg.id}" href="#add-package-popup" data-backdrop="static">
           <i class="fa fa-pen"></i> </a>
-        <a class="btn btn-link btn-danger btn-rm-pkg p-1" title="Delete" data-id="${pkg.id}" data-toggle='modal' data-target='#confirmPkgDel'>
+        <a class="btn btn-link btn-danger btn-rm-pkg p-1" title="Delete" data-id="${pkg.id}" data-toggle='modal' data-backdrop="static" data-target='#confirmPkgDel'>
           <i class="fa fa-trash"></i> </a>`
       ]).draw(false).node();
       $(rowNode).find('td').eq(1).addClass('text-center');
@@ -859,7 +860,8 @@ $(function () {
             $("#H").val(dims[1])
             $("#L").val(dims[2])
           }
-        }
+        },
+        closeOnBgClick: false
       })
     })
 

@@ -169,7 +169,7 @@
                                         <%= package.pieces %>
                                     </td>
                                     <td>
-                                        <a class="btn btn-link btn-danger btn-rm-pkg p-1" title="Delete" data-id="<%=package._id%>" data-toggle="modal" data-target="#confirmPkgDel"><i class="fa fa-trash"></i></a>
+                                        <a class="btn btn-link btn-danger btn-rm-pkg p-1" title="Delete" data-id="<%=package._id%>" data-toggle="modal" data-backdrop="static" data-target="#confirmPkgDel"><i class="fa fa-trash"></i></a>
                                     </td>
                                 </tr>
                                 <% }) %>
@@ -190,10 +190,10 @@
             </div>
             <div class="card-action">
                 <% if (Number(manifest.stageId) == 1) { %>
-                <a data-target="#shipManifest" data-toggle='modal' data-id="<%= manifest.id %>"
+                <a data-target="#shipManifest" data-toggle='modal' data-backdrop='static' data-id="<%= manifest.id %>"
                     class='btn btn-round btn-primary ml-md-auto float-right text-white btn-send'>Send Flight</a>
                 <% } else if (Number(manifest.stageId) == 3) { %>
-                <a data-target="#receiveManifest" data-toggle='modal' data-id="<%= manifest.id %>"
+                <a data-target="#receiveManifest" data-toggle='modal' data-backdrop='static' data-id="<%= manifest.id %>"
                     class='btn btn-round btn-primary ml-md-auto float-right text-white btn-receive'>Receive Flight</a>
                 <% } %>
             </div>

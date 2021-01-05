@@ -14,12 +14,12 @@ $(function () {
                 url = 'packages'
             }
             if (tableBody.length == 0) {
-                table.append(`<tbody id="data-listing"><tr> <td>${manifest.title} </td> <td>${manifest.stage} </td> <td>${moment(manifest.dateCreated, "YYYY-MM-DD").format("dddd, LL")} </td> <td>${manifest.createdBy} </td> <td><a href='/warehouse/${url}/${manifest.mid}' class='btn btn-sm btn-primary'>Manage</a> <button class='btn btn-danger btn-sm rm-manifest-launch' data-id='${manifest.mid}' data-target='#rm-manifest-modal' data-toggle='modal'>Delete</button> </td> </tr></tbody>`);
+                table.append(`<tbody id="data-listing"><tr> <td>${manifest.title} </td> <td>${manifest.stage} </td> <td>${moment(manifest.dateCreated, "YYYY-MM-DD").format("dddd, LL")} </td> <td>${manifest.createdBy} </td> <td><a href='/warehouse/${url}/${manifest.mid}' class='btn btn-sm btn-primary'>Manage</a> <button class='btn btn-danger btn-sm rm-manifest-launch' data-id='${manifest.mid}' data-target='#rm-manifest-modal' data-toggle='modal' data-backdrop="static">Delete</button> </td> </tr></tbody>`);
 
 
             } else {
 
-                $(tableBody).prepend(`<tr> <td><strong>${manifest.title}</strong> </td> <td>${manifest.stage} </td> <td>${moment(manifest.dateCreated, "YYYY-MM-DD").format("dddd, LL")} </td> <td>${manifest.createdBy} </td> <td><a href='/warehouse/${url}/${manifest.mid}' class='btn btn-sm btn-primary'>Manage</a> <button class='btn btn-danger btn-sm rm-manifest-launch' data-id='${manifest.mid}' data-target='#rm-manifest-modal' data-toggle='modal'>Delete</button> </td> </tr>`);
+                $(tableBody).prepend(`<tr> <td><strong>${manifest.title}</strong> </td> <td>${manifest.stage} </td> <td>${moment(manifest.dateCreated, "YYYY-MM-DD").format("dddd, LL")} </td> <td>${manifest.createdBy} </td> <td><a href='/warehouse/${url}/${manifest.mid}' class='btn btn-sm btn-primary'>Manage</a> <button class='btn btn-danger btn-sm rm-manifest-launch' data-id='${manifest.mid}' data-target='#rm-manifest-modal' data-toggle='modal' data-backdrop="static">Delete</button> </td> </tr>`);
             }
             setupUpDelete();
         }, 100)

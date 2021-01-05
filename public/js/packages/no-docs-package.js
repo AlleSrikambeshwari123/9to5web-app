@@ -570,7 +570,7 @@ $(function () {
                 data: null,
                 render: function (data, type, row, meta) {
                     // console.log(data);
-                    return `<a href='javascript:void(0)' data-id='${data.id}' class='view-awb-details' data-toggle='modal' data-target='#awb-details'> ${data.id} </a>`;
+                    return `<a href='javascript:void(0)' data-id='${data.id}' class='view-awb-details' data-toggle='modal' data-backdrop="static" data-target='#awb-details'> ${data.id} </a>`;
                 }
             },
             {
@@ -620,7 +620,7 @@ $(function () {
                 data: null,
                 render: function (data, type, row, meta) {
                     // console.log(data);
-                    return `<a href='/warehouse/fll-new-package/${data.id}' style='color:gray'><i class='fas fa-pencil-alt edit'  data-id='${data.id}' title='Edit' style='cursor:pointer;'></i></a> <i title='Delete' data-type='${ctype}' data-toggle='modal' data-target='#confirmPkgDel' class='fas fa-trash rm' data-id='${data.id}' style='cursor:pointer;'></i>`;
+                    return `<a href='/warehouse/fll-new-package/${data.id}' style='color:gray'><i class='fas fa-pencil-alt edit'  data-id='${data.id}' title='Edit' style='cursor:pointer;'></i></a> <i title='Delete' data-type='${ctype}' data-toggle='modal' data-backdrop="static" data-target='#confirmPkgDel' class='fas fa-trash rm' data-id='${data.id}' style='cursor:pointer;'></i>`;
                 }
             },
 

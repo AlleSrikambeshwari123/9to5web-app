@@ -88,7 +88,7 @@ $(function(){
                 data: null,
                 render: function (data, type, row, meta) {
                     // console.log(data);
-                    return ` <a href='/warehouse/delivery-detail/${data.id}'> <i class='fas fa-folder-open edit' title='View this Delivery' data-id='${data.id}' title='Edit' style='cursor:pointer;'></i> </a> <a href='javascript:void(0)' data-target='#close-delivery' data-toggle='modal' > <i title='Close this Delivery' style='padding-left:10px;' class="fas fa-check-circle"></i></a>`;
+                    return ` <a href='/warehouse/delivery-detail/${data.id}'> <i class='fas fa-folder-open edit' title='View this Delivery' data-id='${data.id}' title='Edit' style='cursor:pointer;'></i> </a> <a href='javascript:void(0)' data-target='#close-delivery' data-toggle='modal' data-backdrop="static"> <i title='Close this Delivery' style='padding-left:10px;' class="fas fa-check-circle"></i></a>`;
                 }
             },
 

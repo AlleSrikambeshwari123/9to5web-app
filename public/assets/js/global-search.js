@@ -60,7 +60,7 @@ $(function () {
       $("#myLoader").hide();
     }
 
-    $('#global-search-data-modal').modal('show');
+    $('#global-search-data-modal').modal({backdrop: 'static', keyboard: false});
   }
 
   $("#global-search-close-button").click(function () {
