@@ -173,8 +173,13 @@ $(document).ready(function() {
   $(document).on('click', '.applyBtn', function() {
     if(flagStatus == 0)
       window.location = "/warehouse/fll/awb/no-docs?daterange="+$('.daterange').val();
-    else if(flagStatus == 1)
-      window.location = "/warehouse/snapshot/awb/list?daterange="+$('.daterange').val()+"&type="+type;
+    else if(flagStatus == 1){
+      var url = "/warehouse/snapshot/awb/list?daterange="+$('.daterange').val()+"&type="+type;
+      if($('#search_collection').val()){
+        url = url+'&search_collection='+$('#search_collection').val();
+      }
+    }
+    window.location = url;
 
   });	    
   
@@ -264,6 +269,9 @@ function searchDataFilter(){
   }
   if($("#type").val()){
     urlPage = urlPage+'&type='+$("#type").val();
+  }
+  if($("#search_collection").val()){
+    urlPage = urlPage+'&search_collection='+$("#search_collection").val();
   }
    window.location = urlPage;
 }

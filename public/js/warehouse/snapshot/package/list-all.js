@@ -770,12 +770,20 @@ if (pageUrl.split('/')[2] == "customer") {
 }
 if(nodoc){
   $(document).on('click', '.applyBtn', function () {
-    window.location = redirectUrl + "?nodocs=load&&daterange=" + $('.daterange').val();
+    var urlLocation = redirectUrl + "?nodocs=load&&daterange=" + $('.daterange').val();
+    if($('#search_collection').val()){
+      urlLocation = urlLocation+'&search_collection='+$('#search_collection').val();
+    }
+    window.location = urlLocation;
   })
 }else{
 
 $(document).on('click', '.applyBtn', function () {
-  window.location = redirectUrl + "?daterange=" + $('.daterange').val();
+  var urlLocation = redirectUrl + "?daterange=" + $('.daterange').val();
+  if($('#search_collection').val()){
+    urlLocation = urlLocation+'&search_collection='+$('#search_collection').val();
+  }
+  window.location = urlLocation;
 })
 }
 
@@ -822,6 +830,9 @@ function searchDataFilter(){
   }
   if(locationId){
     urlPage =  urlPage+"&locationId="+locationId;
+  }
+  if($("#search_collection").val()){
+    urlPage = urlPage+'&search_collection='+$("#search_collection").val();
   }
 
    window.location = urlPage;

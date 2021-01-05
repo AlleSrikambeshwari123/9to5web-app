@@ -584,29 +584,60 @@ class AwbService {
       }
       console.log("sear",searchData)
         return new Promise((resolve, reject) => {
+          var collec = "Awb";
+          if(req.query.search_collection == "HISTORY"){
+            collec = "AwbHistory";
+          }
           if(!searchData._id){
-            Awb.find(searchData)
-                .exec(async (err, result) => {
-                  Promise.all(result.map(async res =>{
-                    return res;
-                  })).then(()=> resolve(result))
-                });
+            if(req.query.search_collection == "HISTORY"){
+              AwbHistory.find(searchData)
+                  .exec(async (err, result) => {
+                    Promise.all(result.map(async res =>{
+                      return res;
+                    })).then(()=> resolve(result))
+              });
+            }else{           
+              Awb.find(searchData)
+                  .exec(async (err, result) => {
+                    Promise.all(result.map(async res =>{
+                      return res;
+                    })).then(()=> resolve(result))
+              });
+            }            
           }else{
-            Awb.find(searchData)
-                .populate('customerId')
-                .populate('shipper')
-                .populate('carrier')
-                .populate('hazmat')
-                .populate('packages')
-                .populate('purchaseOrders')
-                .populate('invoices')
-                .populate('driver')
-                .exec(async (err, result) => {
-                  Promise.all(result.map(async res =>{
-                    res['customer'] = res['customerId'];
-                    return res;
-                  })).then(()=> resolve(result))
-                })
+            if(req.query.search_collection == "HISTORY"){
+              AwbHistory.find(searchData)
+                  .populate('customerId')
+                  .populate('shipper')
+                  .populate('carrier')
+                  .populate('hazmat')
+                  .populate('packages')
+                  .populate('purchaseOrders')
+                  .populate('invoices')
+                  .populate('driver')
+                  .exec(async (err, result) => {
+                    Promise.all(result.map(async res =>{
+                      res['customer'] = res['customerId'];
+                      return res;
+                    })).then(()=> resolve(result))
+                  })
+            }else{
+              Awb.find(searchData)
+              .populate('customerId')
+              .populate('shipper')
+              .populate('carrier')
+              .populate('hazmat')
+              .populate('packages')
+              .populate('purchaseOrders')
+              .populate('invoices')
+              .populate('driver')
+              .exec(async (err, result) => {
+                Promise.all(result.map(async res =>{
+                  res['customer'] = res['customerId'];
+                  return res;
+                })).then(()=> resolve(result))
+              })
+            }
           }
 
         });
