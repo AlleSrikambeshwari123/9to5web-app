@@ -80,60 +80,56 @@ var endate = new Date();
       <div class="card-header">
         <div class="row">
           <div class="card-title pd-18 col-md-2">Package Detail</div>
-          <div class="card-tools  pd-18 col-md-10">
-            <form method="post" onsubmit="filterData(event)">
-              <div class="row">
-                <div class="col-md-3">
-                  <div class="row">
-                    <span class="col-md-5 pt-10" style="margin-top: 8px;">By User</span>
-                    <div class="col-md-7">
-                      <select class="form-control" name="users">
-                        <option value='all'>All</option>
-                        <%users.forEach(function(user){ %>
-                        <option value="<%=user._id%>"><%=user.username%></option>
-                        <%})%>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-4">
-                  <div class="row">
-                    <span class="col-md-5 pt-10" style="margin-top: 8px;">Package Status</span>
-                    <div class="col-md-7">
-                      <select class="form-control" name="package_status">
-                        <option value='all'>All</option>
-                        <%Object.keys(package_status).map(function(st){ %>
-                        <option value="<%=package_status[st]%>"><%=package_status[st]%></option>
-                        <%})%>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-                <input type="hidden" name="filter_for" value="all_package_table" />
-                <div class="col-md-3""> 
-                <div class=" row">
-                  <label class="col-md-5 pt-10" style="margin-top: 8px;">Created At</label>
-                  <input type="text" class="filter-date form-control col-md-7" name="filter_date" />
-                </div>
-              </div>
-              <div class="col-md-2 pl-10">
-                <input type="submit" value="Filter" class="btn btn-primary" />
-              </div>
-          </div>
-          </form>
-        </div>
+          
       </div>
     </div>
     <div class="card-body daterangepickerbody-1">
-      <div class="d-flex w-100 d-inline-block py-4 col-xs-10 col-sm-4 float-left ">
+      <div class="d-flex w-100 d-inline-block py-4 col-xs-10 col-sm-4">
         <label class="w-10-rem align-text-bottom">Select Dates : </label>
         <input type="text" class="form-control form-control-sm" name="" id="daterange-package-detail" value="<%=dateRangeDefault%>"  placeholder="Select dates"/>
       </div>
+      <div class="card-tools  pd-18 col-md-10">
+        <form method="post" onsubmit="filterData(event)">
+          <div class="row">
+            <div class="col-md-3">
+              <div class="row">
+                <span class="col-md-5 pt-10" style="margin-top: 8px;">By User</span>
+                <div class="col-md-7">
+                  <select class="form-control" name="users">
+                    <option value='all'>All</option>
+                    <%users.forEach(function(user){ %>
+                    <option value="<%=user._id%>"><%=user.username%></option>
+                    <%})%>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="row">
+                <span class="col-md-5 pt-10" style="margin-top: 8px;">Package Status</span>
+                <div class="col-md-7">
+                  <select class="form-control" name="package_status">
+                    <option value='all'>All</option>
+                    <%Object.keys(package_status).map(function(st){ %>
+                    <option value="<%=package_status[st]%>"><%=package_status[st]%></option>
+                    <%})%>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <input type="hidden" name="filter_for" value="all_package_table" />
+            
+          <div class="col-md-2 pl-10">
+            <input type="submit" value="Filter" class="btn btn-primary" />
+          </div>
+      </div>
+      </form>
+    </div>
       <div class="table-responsive ">
       <table id="all_package_table" class=" display table table-striped table-hover dataTable ">
         <thead>
           <tr>
-            <th>PackageId</th>
+            <th>Original Barcode </th>
             <th>Status</th>
             <th>User</th>
             <th>Date</th>
@@ -165,7 +161,7 @@ var endate = new Date();
         <table id="delivery_table" class=" display table table-striped table-hover dataTable ">
           <thead>
             <tr>
-              <th>PackageId</th>
+              <th>Original Barcode </th>
               <th>Driver Name</th>
               <th>Date</th>
               <th>Status</th>
@@ -359,7 +355,7 @@ var endate = new Date();
   function allPackages(data) {
     let result = data.map((row) => {
       if (row !== null) {
-        return `<tr><td>` + row.packageId + `</td>
+        return `<tr><td>` + row.barcode  + `</td>
           <td>` + row.status + `</td>
           <td>` + row.user.firstName + " " + row.user.lastName + `</td>
           <td>` + moment(row.updatedAt).format('MMM DD, YYYY') +
@@ -381,11 +377,17 @@ var endate = new Date();
   function deliveryData(data) {
     let result = data.map((row) => {
       if (row !== null) {
-        return `<tr><td>` + row.packageId + `</td>
-          <td>` + row.driverName + `</td>
-          <td>` + row.date + `</td>
-          <td>` + row.status + `</td>
-          <td>` + row.location +
+        var driverName = '';
+        if(row.deliveryId && row.deliveryId.driverId ){
+          var driverData = row.deliveryId.driverId;
+          driverName = (driverData.firstName?driverData.firstName:'') + (driverData.lastName?' '+driverData.lastName:'')
+        }
+        var dat = moment(row.delivery_date).format("DD MMM, YYYY | hh:mm")
+        return `<tr><td>` + row.barcode + `</td>
+          <td>` + driverName + `</td>
+          <td>` + dat + `</td>
+          <td>` + row.lastStatusText + `</td>
+          <td>` + (row.storeLocation?row.storeLocation:'-') +
           `</td></tr>`;
       }
     })

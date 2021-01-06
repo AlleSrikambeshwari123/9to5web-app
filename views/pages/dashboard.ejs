@@ -86,66 +86,63 @@ var endate = new Date();
     <div class="card full-height">
       <div class="card-header">
         <div class="row">
-          <div class="card-title pd-18 col-md-2 ">Post Boxes Etc Packages</div>
-          <div class="card-tools  pd-18 col-md-10">
-            <form method="post" onsubmit="filterData(event)">
-              <div class="row">
-                <div class="col-md-3">
-                  <div class="row">
-                    <span class="col-md-5 pt-10" style="margin-top: 8px;">By User</span>
-                    <div class="col-md-7">
-                      <select class="form-control" name="users">
-                        <option value='all'>All</option>
-                        <%users.forEach(function(user){ %>
-                        <option value="<%=user._id%>"><%=user.username%></option>
-                        <%})%>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-4">
-                  <div class="row">
-
-                    <span class="col-md-5 pt-10" style="margin-top: 8px;">Package Status</span>
-                    <div class="col-md-7">
-                      <select class="form-control" name="package_status">
-                        <option value='all'>All</option>
-                        <%Object.keys(package_status).map(function(st){ %>
-                        <option value="<%=package_status[st]%>"><%=package_status[st]%></option>
-                        <%})%>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-                <input type="hidden" name="filter_for" value="postBox" />
-                <div class="col-md-3">
-                  <div class="row">
-                    <label class="col-md-5 pt-10" style="margin-top: 8px;">Created At</label>
-                    <input type="text" class="filter-date form-control col-md-7" name="filter_date" />
-                  </div>
-                </div>
-                <div class="col-md-2 pl-10">
-                  <input type="submit" value="Filter" class="btn btn-primary" />
-                </div>
-              </div>
-            </form>
-          </div>
+          <div class="card-title pd-18 col-md-12 ">Post Boxes Etc Packages</div>          
         </div>
       </div>
       <div class="card-body">
-        <div class="d-flex w-100 d-inline-block py-4 col-xs-10 col-sm-4 float-left ">
+        <div class="d-flex w-100 d-inline-block py-4 col-xs-10 col-sm-4">          
           <label class="w-10-rem align-text-bottom">Select Dates : </label>
           <input type="text" class="form-control form-control-sm" name="" id="daterange-postbox" value="<%=(query.daterange && query.type=='postbox')? query.daterange: dateRangeDefault%>"  placeholder="Select dates"/>
         </div>
+        <div class="card-tools  pd-18 col-md-12">
+          <form method="post" onsubmit="filterData(event)">
+            <div class="row">
+              <div class="col-md-3">
+                <div class="row">
+                  <span class="col-md-5 pt-10" style="margin-top: 8px;">By User</span>
+                  <div class="col-md-7">
+                    <select class="form-control" name="users">
+                      <option value='all'>All</option>
+                      <%users.forEach(function(user){ %>
+                      <option value="<%=user._id%>"><%=user.username%></option>
+                      <%})%>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="row">
+
+                  <span class="col-md-5 pt-10" style="margin-top: 8px;">Package Status</span>
+                  <div class="col-md-7">
+                    <select class="form-control" name="package_status">
+                      <option value='all'>All</option>
+                      <%Object.keys(package_status).map(function(st){ %>
+                      <option value="<%=package_status[st]%>"><%=package_status[st]%></option>
+                      <%})%>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <input type="hidden" name="filter_for" value="postBox" />
+              
+              <div class="col-md-2 pl-10">
+                <input type="submit" value="Filter" class="btn btn-primary" />
+              </div>
+            </div>
+          </form>
+        </div>
+       
         <div class="table-responsive">
           <table id="post_packages" class="display table table-striped table-hover dataTable manifest-table">
             <thead>
             <tr>
-              <th>Package ID#</th>
+              <th>Original Barcode#</th>
+              <!-- <th>Date Created</th> -->
               <th>Package Status</th>
               <th>Awb Number</th>
-              <th>Customer Email</th>
-              <th>Zone</th>
+              <th>Customer Name</th>
+              <th>Store Location</th>
             </tr>
           </thead>
           <tbody>
@@ -161,66 +158,61 @@ var endate = new Date();
     <div class="card full-height">
       <div class="card-header">
         <div class="row">
-          <div class="card-title pd-18 col-md-2 ">9to5 packages</div>
-          <div class="card-tools  pd-18 col-md-10">
-            <form method="post" onsubmit="filterData(event)">
-              <div class="row">
-                <div class="col-md-3">
-                  <div class="row">
-                    <span class="col-md-5 pt-10" style="margin-top: 8px;">By User</span>
-                    <div class="col-md-7">
-                      <select class="form-control" name="users">
-                        <option value='all'>All</option>
-                        <%users.forEach(function(user){ %>
-                        <option value="<%=user._id%>"><%=user.username%></option>
-                        <%})%>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-4">
-                  <div class="row">
-                    <span class="col-md-5 pt-10" style="margin-top: 8px;">Package Status</span>
-                    <div class="col-md-7">
-                      <select class="form-control" name="package_status">
-                        <option value='all'>All</option>
-                        <%Object.keys(package_status).map(function(st){ %>
-                        <option value="<%=package_status[st]%>"><%=package_status[st]%></option>
-                        <%})%>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-                <input type="hidden" name="filter_for" value="9to5" />
-                <div class="col-md-3"">
-                <div class=" row">
-                  <label class="col-md-5 pt-10" style="margin-top: 8px;">Created At</label>
-                  <input type="text" class="filter-date form-control col-md-7" name="filter_date" />
-                </div>
-              </div>
-              <div class="col-md-2 pl-10">
-                <input type="submit" value="Filter" class="btn btn-primary" />
-              </div>
-          </div>
-          </form>
-        </div>
+          <div class="card-title pd-18 col-md-12 ">9to5 packages</div>
+          
       </div>
     </div>
     <div class="card-body daterangepickerbody-1">
-      <div class="d-flex w-100 d-inline-block py-4 col-xs-10 col-sm-4 float-left ">
+      <div class="d-flex w-100 d-inline-block py-4 col-xs-10 col-sm-4 ">
         <label class="w-10-rem align-text-bottom">Select Dates : </label>
         <input type="text" class="form-control form-control-sm" name="" id="daterange-nineToPackages" value="<%=(query.daterange && query.type=='nineToPackages')? query.daterange: dateRangeDefault%>"  placeholder="Select dates"/>
       </div>
+      <div class="card-tools  pd-18 col-md-12">
+        <form method="post" onsubmit="filterData(event)">
+          <div class="row">
+            <div class="col-md-3">
+              <div class="row">
+                <span class="col-md-5 pt-10" style="margin-top: 8px;">By User</span>
+                <div class="col-md-7">
+                  <select class="form-control" name="users">
+                    <option value='all'>All</option>
+                    <%users.forEach(function(user){ %>
+                    <option value="<%=user._id%>"><%=user.username%></option>
+                    <%})%>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="row">
+                <span class="col-md-5 pt-10" style="margin-top: 8px;">Package Status</span>
+                <div class="col-md-7">
+                  <select class="form-control" name="package_status">
+                    <option value='all'>All</option>
+                    <%Object.keys(package_status).map(function(st){ %>
+                    <option value="<%=package_status[st]%>"><%=package_status[st]%></option>
+                    <%})%>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <input type="hidden" name="filter_for" value="9to5" />            
+          <div class="col-md-2 pl-10">
+            <input type="submit" value="Filter" class="btn btn-primary" />
+          </div>
+      </div>
+      </form>
+    </div>
       <div class="table-responsive">        
         <table id="9to5packages" class="display table table-striped table-hover dataTable manifest-table">
           <thead>
           <tr>
-            <th>Package ID#</th>
+            <th>Original Barcode#</th>
             <!-- <th>Date Created</th> -->
             <th>Package Status</th>
             <th>Awb Number</th>
-            <th>Customer Email</th>
-            <th>Zone</th>
+            <th>Customer Name</th>
+            <th>Store Location</th>
           </tr>
         </thead>
         <tbody>
@@ -236,66 +228,61 @@ var endate = new Date();
     <div class="card full-height">
       <div class="card-header">
         <div class="row">
-          <div class="card-title pd-18 col-md-2">No docs </div>
-          <div class="card-tools  pd-18 col-md-10">
-            <form method="post" onsubmit="filterData(event)">
-              <div class="row">
-                <div class="col-md-3">
-                  <div class="row">
-                    <span class="col-md-5 pt-10" style="margin-top: 8px;">By User</span>
-                    <div class="col-md-7">
-                      <select class="form-control" name="users">
-                        <option value='all'>All</option>
-                        <% users.forEach(function(user){ %>
-                        <option value="<%=user._id%>"><%=user.username%></option>
-                        <%})%>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-4">
-                  <div class="row">
-                    <span class="col-md-5 pt-10" style="margin-top: 8px;">Package Status</span>
-                    <div class="col-md-7">
-                      <select class="form-control" name="package_status">
-                        <option value='all'>All</option>
-                        <%Object.keys(package_status).map(function(st){ %>
-                        <option value="<%=package_status[st]%>"><%=package_status[st]%></option>
-                        <%})%>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-                <input type="hidden" name="filter_for" value="noDocs" />
-                <div class="col-md-3">
-                  <div class="row">
-                    <label class="col-md-5 pt-10" style="margin-top: 8px;">Created At</label>
-                    <input type="text" class="filter-date form-control col-md-7" name="filter_date" />
-                  </div>
-                </div>
-                <div class="col-md-2 pl-10">
-                  <input type="submit" value="Filter" class="btn btn-primary" />
-                </div>
-              </div>
-            </form>
-          </div>
+          <div class="card-title pd-18 col-md-12">No docs </div>
+          
         </div>
       </div>
       <div class="card-body daterangepickerbody-1">
-        <div class="d-flex w-100 d-inline-block py-4 col-xs-10 col-sm-4 float-left ">
+        <div class="d-flex w-100 d-inline-block py-4 col-xs-10 col-sm-4">
           <label class="w-10-rem align-text-bottom">Select Dates : </label>
           <input type="text" class="form-control form-control-sm" name="" id="daterange-noDocs" value="<%=(query.daterange && query.type=='noDocs')? query.daterange: dateRangeDefault%>"  placeholder="Select dates"/>
+        </div>
+        <div class="card-tools  pd-18 col-md-12">
+          <form method="post" onsubmit="filterData(event)">
+            <div class="row">
+              <div class="col-md-3">
+                <div class="row">
+                  <span class="col-md-5 pt-10" style="margin-top: 8px;">By User</span>
+                  <div class="col-md-7">
+                    <select class="form-control" name="users">
+                      <option value='all'>All</option>
+                      <% users.forEach(function(user){ %>
+                      <option value="<%=user._id%>"><%=user.username%></option>
+                      <%})%>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="row">
+                  <span class="col-md-5 pt-10" style="margin-top: 8px;">Package Status</span>
+                  <div class="col-md-7">
+                    <select class="form-control" name="package_status">
+                      <option value='all'>All</option>
+                      <%Object.keys(package_status).map(function(st){ %>
+                      <option value="<%=package_status[st]%>"><%=package_status[st]%></option>
+                      <%})%>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <input type="hidden" name="filter_for" value="noDocs" />
+              
+              <div class="col-md-2 pl-10">
+                <input type="submit" value="Filter" class="btn btn-primary" />
+              </div>
+            </div>
+          </form>
         </div>
         <div class="table-responsive">
           <table id="no_docs_packages" class="display table table-striped table-hover dataTable manifest-table">
             <thead>
             <tr>
-              <th>Package ID#</th>
-              <!-- <th>Date Created</th> -->
+              <th>Original Barcode#</th>
               <th>Package Status</th>
               <th>Awb Number</th>
-              <th>Customer Email</th>
-              <th>Zone</th>
+              <th>Customer Name</th>
+              <th>Store Location</th>
             </tr>
           </thead>
           <tbody>
@@ -487,7 +474,7 @@ function get_data_dataTable(dataTable, daterange){
   function data9to5(data) {
     let result = data.map((row) => {
       if (row !== null) {
-        return Tbody(row)
+        return TbodyData(row)
       }
     })
 
@@ -506,7 +493,7 @@ function get_data_dataTable(dataTable, daterange){
   function dataNoDocs(data) {
     let result = data.map((row) => {
       if (row !== null) {
-        return Tbody(row)
+        return TbodyData(row)
       }
     })
 
@@ -524,7 +511,7 @@ function get_data_dataTable(dataTable, daterange){
   function dataPostBox(data) {
     let result = data.map((row) => {
       if (row !== null) {
-        return Tbody(row)
+        return TbodyData(row)
       }
     })
 
@@ -562,6 +549,9 @@ function get_data_dataTable(dataTable, daterange){
 
   function Tbody(row) {
     return "<tr><td>" + row._id + "</td><td>" + row.last_status + "</td><td>" + row.awb + "</td><td>" + row.customer_email + "</td><td>" + row.zone + "</td></tr>"
+  }
+  function TbodyData(row) {
+    return "<tr><td>" + row.barcode + "</td><td>" + row.lastStatusText + "</td><td>" + row.awb + "</td><td>" + row.customerFullName + "</td><td>" + row.storeLocation + "</td></tr>"
   }
 </script>
 <% block('scripts').append('<script src="/js/utils.js"></script>')%>

@@ -40,7 +40,7 @@ createConnection()
             if(customer){
                 updateData.customerFirstName = customer.firstName;
                 updateData.customerLastName = customer.lastName;
-                updateData.customerFullName = customer.firstName + (customer.lastName?''+ customer.lastName: '');
+                updateData.customerFullName = customer.firstName + (customer.lastName?' '+ customer.lastName: '');
                  
             }
             if(customer && customer.pmb){
