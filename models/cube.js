@@ -23,7 +23,7 @@ const cubeTypeSchema = new mongoose.Schema({
   },
   cubepackageId:{
       type: mongoose.Schema.Types.ObjectId,
-      ref:'Package'
+      ref:'PackageHistory'
   }
 }, {
   timestamps: true

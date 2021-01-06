@@ -2,6 +2,7 @@ const strings = require('../Res/strings');
 const PriceLabel = require('../models/pricelabel');
 const Package = require('../models/package');
 const Awb = require('../models/awb');
+const AwbHistory = require('../models/awbHistory');
 const PurchaseOrder = require('../models/purchaseOrder');
 const services = require('../Services/RedisDataServices')
 class AwbPriceLabelService {
@@ -26,11 +27,14 @@ class AwbPriceLabelService {
          }
         ]        
     })
-      .exec((err, result) => {
+      .exec(async(err, result) => {
         if (err || result === null) {
           resolve({success:false,message:'Price Label Does not Exist For this AWB.'});
         } else {
           let pkg = result.awbId
+          if(!pkg){
+            pkg = await AwbHistory.findById(id).populate('invoices').populate('packages')
+          }
           result = this.calculations(result,pkg)
           resolve(result);
         }

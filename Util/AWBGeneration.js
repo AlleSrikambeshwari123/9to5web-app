@@ -119,7 +119,7 @@ class AWBGeneration {
 
              let awbArray = []
             for(let pkg of packages){
-                await services.printService.getAWBDataForAllRelatedEntities(pkg.awbId._id).then(async(awb) => {
+                await services.printService.getAWBHistoryDataForAllRelatedEntities(pkg.awbId._id).then(async(awb) => {
                     let priceLabelAwb  =  await services.AwbPriceLabelService.getPriceLabel(awb._id)
                     let flag = 0
                     for(let arr of awbArray){
@@ -171,7 +171,7 @@ class AWBGeneration {
 
              let awbArray = []
             for(let pkg of packages){
-                await services.printService.getAWBDataForAllRelatedEntities(pkg.awbId._id).then(async(awb) => {
+                await services.printService.getAWBHistoryDataForAllRelatedEntities(pkg.awbId._id).then(async(awb) => {
                     let priceLabelAwb  =  await services.AwbPriceLabelService.getPriceLabel(awb._id)
                     let flag = 0
                     for(let arr of awbArray){

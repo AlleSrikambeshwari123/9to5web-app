@@ -7,6 +7,7 @@ const strings = require('../Res/strings');
 // const USER_PRINTER_PREFIX = "wh:printer:";
 
 const Awb = require('../models/awb');
+const AwbHistory = require('../models/awbHistory');
 const User = require('../models/user');
 const Cube = require('../models/cube');
 
@@ -79,6 +80,26 @@ class PrintService {
 		});
 	}
 
+	getAWBHistoryDataForAllRelatedEntities(id) {
+		return new Promise((resolve, reject) => {
+			AwbHistory.findOne({ _id: id })
+				.populate('customerId')
+				.populate('shipper')
+				.populate('carrier')
+				.populate('hazmat')
+				.populate('packages')
+				.populate('purchaseOrders')
+				.populate('invoices')
+				.populate('createdBy')
+				.exec((err, result) => {
+					if (result && result.customerId) {
+						result.customer = result.customerId;
+					}
+					resolve(result);
+				});
+		});
+	}
+
 	getAWBDataForPackagesRelatedEntitie(id) {
 		return new Promise((resolve, reject) => {
 			Awb.findOne({ _id: id })
@@ -88,6 +109,17 @@ class PrintService {
 				});
 		});
 	}
+
+	getAWBHistoryDataForPackagesRelatedEntitie(id) {
+		return new Promise((resolve, reject) => {
+			AwbHistory.findOne({ _id: id })
+				.populate('packages')
+				.exec((err, result) => {
+					resolve(result);
+				});
+		});
+	}
+
 	getAWBDataForPurchaseOrderRelatedEntitie(id) {
 		return new Promise((resolve, reject) => {
 			Awb.findOne({ _id: id })
