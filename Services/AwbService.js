@@ -54,63 +54,14 @@ class AwbService {
                   let resp = result.toJSON()
                     const newAwbHistory = new AwbHistory(resp);
                     await newAwbHistory.save()
-                    this.updateAwbStatus(result, 1, awb['createdBy']);
-                    this.updateAwbOtherDetail(result['_id']);
+                    await this.updateAwbStatus(result, 1, awb['createdBy']);
+                    await this.updateAwbOtherDetail(result['_id']);
                     awb['id'] = result['_id'];
                     resolve({ success: true, message: strings.string_response_created, awb: awb, awbData:result });
                 }
             });
         });
     }
-    async updatePackageOtherDetail(packageId){
-      return new Promise((resolve, reject) => {
-       Package.findById(packageId)
-              .populate('awbId')
-              .populate('customerId')
-              .populate('shipperId')
-              .populate('originBarcode')
-              .exec(async (err, result) => {
-                  if(err){
-                      console.log(err)
-                      resolve({ success: false, message: strings.string_response_error });
-                  }else{
-
-                      var updateData =  {
-                          awbIdNumber:result.awbId.awbId,
-                          awbIdString:result.awbId.awbId                        
-                      }
-                      if(result.originBarcode && result.originBarcode.barcode){
-                          updateData.barcode = result.originBarcode.barcode;
-                      }
-                      if(result.customerId){
-                          var customer = result.customerId
-                          updateData.customerFirstName = customer.firstName;
-                          updateData.customerLastName = customer.lastName;
-                          updateData.customerFullName = customer.firstName + (customer.lastName?''+ customer.lastName: '');  
-                          
-                          if(customer && customer.pmb){
-                              updateData.pmb = customer.pmb;
-                              updateData.pmbString = customer.pmb;
-                              var pmb =  customer.pmb;
-                              if((pmb > 0 && pmb <= 1999) || (pmb >= 4000 && pmb <= 4999)) {
-                                  updateData.storeLocation = 'CABLEBEACH';
-                              }
-                              else if((pmb >= 3000 && pmb <= 3999)){
-                                  updateData. storeLocation = 'ALBANY';
-                              }else{
-                                  updateData. storeLocation = '';
-                              }                                                                           
-                          }
-                      }
-                      if(result.shipperId && result.shipperId.name){
-                          updateData.shipperName = result.shipperId.name;
-                      }
-                      var update = await Package.updateOne({_id:packageId}, updateData);
-                      resolve(update);
-                  }
-              })
-          })
-  }
   async updateAwbOtherDetail(awbId){
     return new Promise((resolve, reject) => {
       Awb.findById(awbId)
@@ -264,8 +215,8 @@ class AwbService {
                 } else {
                     await AwbHistory.findOneAndUpdate({ _id: id },{...awb })
                     var awbData = await Awb.findOne({_id:id});
-                    this.updateAwbStatus(result, 2, userId);
-                    this.updateAwbOtherDetail(result['_id']);
+                    await this.updateAwbStatus(result, 2, userId);
+                    await this.updateAwbOtherDetail(result['_id']);
                     resolve({ success: true ,id:id, awbData: awbData });
                 }
             });

@@ -445,7 +445,7 @@ class CubeService {
     })
   }
 
-  async deletePackage(id){
+  async CubeAwbDetail(id){
     return new Promise((resolve, reject) => {   
       CubeAwb.findOne({_id:id}).populate('createdBy').exec(async (err, cube) => {        
         resolve(cube); 

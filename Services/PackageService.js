@@ -1973,55 +1973,6 @@ class PackageService {
             })
     }
 
-    async updatePackageOtherDetail(packageId){
-        return new Promise((resolve, reject) => {
-         Package.findById(packageId)
-                .populate('awbId')
-                .populate('customerId')
-                .populate('shipperId')
-                .populate('originBarcode')
-                .exec(async (err, result) => {
-                    if(err){
-                        console.log(err)
-                        resolve({ success: false, message: strings.string_response_error });
-                    }else{
-
-                        var updateData =  {
-                            awbIdNumber:result.awbId.awbId,
-                            awbIdString:result.awbId.awbId                        
-                        }
-                        if(result.originBarcode && result.originBarcode.barcode){
-                            updateData.barcode = result.originBarcode.barcode;
-                        }
-                        if(result.customerId){
-                            var customer = result.customerId
-                            updateData.customerFirstName = customer.firstName;
-                            updateData.customerLastName = customer.lastName;
-                            updateData.customerFullName = customer.firstName + (customer.lastName?''+ customer.lastName: '');  
-                            
-                            if(customer && customer.pmb){
-                                updateData.pmb = customer.pmb;
-                                updateData.pmbString = customer.pmb;
-                                var pmb =  customer.pmb;
-                                if((pmb > 0 && pmb <= 1999) || (pmb >= 4000 && pmb <= 4999)) {
-                                    updateData.storeLocation = 'CABLEBEACH';
-                                }
-                                else if((pmb >= 3000 && pmb <= 3999)){
-                                    updateData. storeLocation = 'ALBANY';
-                                }else{
-                                    updateData. storeLocation = '';
-                                }                                                                           
-                            }
-                        }
-                        if(result.shipperId && result.shipperId.name){
-                            updateData.shipperName = result.shipperId.name;
-                        }
-                        var update = await Package.updateOne({_id:packageId}, updateData);
-                        resolve(update);
-                    }
-                })
-            })
-    }
 
     async removeProcessPackage(barcode, userId) {
         return await ProcessPackage.deleteOne({ barcode: barcode, userId });

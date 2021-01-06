@@ -92,7 +92,7 @@ exports.cube_detail = (req, res, next) => {
 }
 
 exports.cube_awb_detail = (req, res, next) => {
-  services.cubeService.CubeAwbDtail(req.params.id).then(cube => {  
+  services.cubeService.CubeAwbDetail(req.params.id).then(cube => {  
     res.render('pages/warehouse/cube/cubeAwb', {
       page: req.originalUrl,
       title: 'Cube Awb Detail',
