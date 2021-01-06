@@ -14,6 +14,7 @@
               <tr>
                 <!-- <th>ID</th> -->
                 <th>Name</th>
+                <th>Type</th>
                 <th>Date Created</th>
                 <th>Amount</th>
                 <th>Action</th>
@@ -23,6 +24,7 @@
               <% serviceTypes.forEach(function(serviceType){%>
               <tr data-record="<%= serviceType.id %>">
                 <td><strong><%=serviceType.name%></strong></td>
+                <td><%=serviceType.type%></td>
                 <td><%=helpers.formatDate(serviceType.createdAt)%></td>
                 <td><%=serviceType.amount%></td>
                 <td>
