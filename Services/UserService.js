@@ -190,6 +190,84 @@ class UserService {
         });
     });
   }
+  getAllUsersData(req) {
+    return new Promise((resolve, reject) => {
+      var searchData = {};
+      if(req && req.query){
+      var daterange = req.query.daterange?req.query.daterange:'';  
+          
+      
+      if(daterange){
+        var moment = require('moment');
+        var date_arr = daterange.split('-');
+        var startDate = (date_arr[0]).trim();      
+        var stdate = new Date(startDate);
+        
+        stdate.setDate(stdate.getDate() +1);
+        var endDate = (date_arr[1]).trim();
+        var endate = new Date(endDate);
+        endate.setDate(endate.getDate() +1);
+
+        stdate = new Date(stdate.setUTCHours(0,0,0,0));
+        stdate = stdate.toISOString();
+        endate = new Date(endate.setUTCHours(23,59,59,0));
+        endate = endate.toISOString();
+        //var stdate = new Date(stdate.getFullYear(), stdate.getMonth(), stdate.getDate(), 0, 0, 0);   
+        searchData.createdAt = {"$gte":stdate, "$lte": endate};
+      }
+      
+
+      if(!req.query.daterange && !req.query.clear){
+        var endate = new Date();      
+        endate.setDate(endate.getDate());
+        var stdate = new Date();
+        stdate.setDate(stdate.getDate() - parseInt(strings.default_days_table));  
+
+        stdate = new Date(stdate.setUTCHours(0,0,0,0));
+        stdate = stdate.toISOString();
+        endate = new Date(endate.setUTCHours(23,59,59,0));
+        endate = endate.toISOString();
+            
+        searchData.createdAt = {"$gte":stdate, "$lte": endate};
+      }
+      if(req.query.clear){
+        var endate = new Date();      
+        endate.setDate(endate.getDate()+1);
+        var stdate = new Date();
+        stdate.setDate(stdate.getDate() -14); 
+        
+        stdate = new Date(stdate.setUTCHours(0,0,0,0));
+        stdate = stdate.toISOString();
+        endate = new Date(endate.setUTCHours(23,59,59,0));
+        endate = endate.toISOString();
+
+        searchData.createdAt = {"$gte":stdate, "$lte": endate};
+      }
+    }
+      User.aggregate([
+        {$match:searchData},
+        {
+          $lookup:{
+            from:"awbs",
+            localField:"_id",
+            foreignField:"createdBy",
+            as:"awb"
+          }
+        },
+        {
+          $project:{
+            username:1,  
+            name:{$concat:['$firstName',' ', '$lastName']},
+            awbCount:{$size:"$awb"},
+            email:1   
+          }
+        }
+      ]).exec((err, result)=>{
+        resolve(result);
+      })
+    });
+  }
+
 
   allUsers(req){
     return new Promise(async (resolve, reject) => {

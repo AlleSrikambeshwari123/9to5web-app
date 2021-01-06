@@ -57,7 +57,7 @@ router.get('/dashboard', middleware(services.userService).checkSession, function
   })
 
   }else{
-    services.userService.getAllUsers().then( users =>
+    services.userService.getAllUsersData().then( users =>
       res.render('pages/dashboard', {
         page: req.originalUrl,
       title: "Dashboard",

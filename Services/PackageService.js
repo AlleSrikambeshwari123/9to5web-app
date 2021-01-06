@@ -1035,6 +1035,169 @@ class PackageService {
         })
     }
 
+   async getPackageWithFilterHistory(filter, query) {
+    return new Promise(async(resolve, reject) => {
+        var daterange = query.daterange?query.daterange:'';
+        var type = query.type?query.type:'';
+        
+                var searchData = {};
+                if(daterange && type){
+                    var date_arr = daterange.split('-');
+                    var startDate = (date_arr[0]).trim();      
+                    var stdate = new Date(startDate);
+                      stdate.setDate(stdate.getDate() );
+              
+                    var endDate = (date_arr[1]).trim();
+                    var endate = new Date(endDate);
+                      endate.setDate(endate.getDate() +1);  
+                      
+                    stdate = new Date(stdate.setUTCHours(0,0,0,0));
+                   // stdate = stdate.toISOString();
+                    endate = new Date(endate.setUTCHours(23,59,59,0));
+                    //endate = endate.toISOString(); 
+                        
+                    var searchDataType = {createdAt: {"$gte":stdate, "$lte": endate}}; 
+                }
+
+                var endate = new Date();      
+                endate.setDate(endate.getDate());
+                var stdate = new Date();
+                stdate.setDate(stdate.getDate() - parseInt(strings.default_days_table));
+                
+                stdate = new Date(stdate.setUTCHours(0,0,0,0));
+               // stdate = stdate.toISOString();
+                endate = new Date(endate.setUTCHours(23,59,59,0));
+                //endate = endate.toISOString();                        
+                searchData.createdAt = {"$gte":stdate, "$lte": endate};
+            if (filter === 'all') {
+                if(type == "noDocs"){           
+                    var noDocs = await this.getNodocsPackage(searchDataType);
+                }else{
+                    var noDocs = await this.getNodocsPackage(searchData);
+                }
+                if(type == "postbox"){
+                    var postBox = await this.getPostboxPackages(searchDataType);
+                }else{
+                    var postBox = await this.getPostboxPackages(searchData);
+                }
+
+                if(type == "nineToPackages"){
+                    var nineToPackages = await this.getNineToPackages(searchDataType);
+                }else{
+                    var nineToPackages = await this.getNineToPackages(searchData);
+                }
+                
+                resolve({ nineToPackages, postBox, noDocs });
+            }else{
+                let dbQuery = {};
+                if (query.users && query.users != "all") {
+                    dbQuery['createdBy'] = query.users;
+                }
+                if(query.package_status){
+                    dbQuery['lastStatusText'] = query.package_status;
+                }
+
+                if (query.filter_for === "noDocs") {
+                    var noDocs = await this.getNodocsPackage(dbQuery);
+                    resolve({ noDocs })
+                } else if (query.filter_for === "9to5") {
+                    var nineToPackages = await this.getNineToPackages(dbQuery);
+                    resolve({ nineToPackages })
+                } else if (query.filter_for === "postBox") {
+                    var postBox = await this.getPostboxPackages(dbQuery);
+                    resolve({ postBox })
+                }
+            }
+        })            
+    }
+
+    async getNodocsPackage(searchData){
+        return new Promise((resolve, reject) => {
+            searchData.customerId ={$ne:null};
+            Package.aggregate([
+                {$match:searchData},                              
+                {
+                    $lookup:{
+                        from:"awbs",
+                        localField:"awbId",
+                        foreignField:"_id",
+                        as:"awbId"
+                    }
+                },
+                {$unwind:"$awbId"},
+                {$match:{"awbId.invoices":{$gt:[]}}},
+                {
+                    $project:{
+                        barcode:1,
+                        lastStatusText:1,
+                        awb: { $concat: [ "AWB", "", "$awbIdString" ] },
+                        customerFullName: 1,
+                        storeLocation:{ $ifNull: [ "$storeLocation", "-" ]},
+                        createdAt:1    
+                }
+            }
+
+            ]).exec((err, result)=>{
+                if (err) {
+                    resolve([])
+                } else {
+                    resolve(result)
+                }
+            });
+        })
+    }
+
+    async getNineToPackages(searchData){
+        searchData.pmb = 9000
+        return new Promise((resolve, reject) => {
+            Package.aggregate([
+                {$match:searchData},
+                {
+                    $project:{
+                        barcode:1,
+                        lastStatusText:1,
+                        awb: { $concat: [ "AWB", "", "$awbIdString" ] },
+                        customerFullName: 1,
+                        storeLocation:{ $ifNull: [ "$storeLocation", "-" ]},
+                        createdAt:1  
+                    }  
+                }
+
+             ]).exec((err, result)=>{
+                if (err) {
+                    resolve([])
+                } else {
+                    resolve(result)
+                }
+            })
+        })
+    }
+    async getPostboxPackages(searchData){
+        searchData.pmb = {$ne:9000}
+        return new Promise((resolve, reject) => {
+            Package.aggregate([
+                {$match:searchData},                
+               {
+                   $project:{
+                        barcode:1,
+                        lastStatusText:1,
+                        awb: { $concat: [ "AWB", "", "$awbIdString" ] },
+                        customerFullName: 1,
+                        storeLocation:{ $ifNull: [ "$storeLocation", "-" ]},
+                        createdAt:1 
+                   }  
+               }
+
+            ]).exec((err, result)=>{
+                if (err) {
+                    resolve([])
+                } else {
+                    resolve(result)
+                }
+            })
+        })
+    }
+
 
     async getPackageStatusByPackgeId(id, status) {
         return new Promise((resolve, reject) => {
@@ -1958,7 +2121,7 @@ class PackageService {
                             var customer = result.customerId
                             updateData.customerFirstName = customer.firstName;
                             updateData.customerLastName = customer.lastName;
-                            updateData.customerFullName = customer.firstName + (customer.lastName?''+ customer.lastName: '');  
+                            updateData.customerFullName = customer.firstName + (customer.lastName?' '+ customer.lastName: '');  
                             
                             if(customer && customer.pmb){
                                 updateData.pmb = customer.pmb;
@@ -3354,21 +3517,29 @@ class PackageService {
                 searchData.createdAt = {"$gte":stdate, "$lte": endate};
             }
         return new Promise((resolve, reject) => {
-            Package.find(searchData, (err, packages) => {
-                Promise.all(
-                    packages.map(async(pkg) => {
-                        let result = await deliveryService.getDeliveryAndDriverInfo(pkg.deliveryId);
+            // Package.find(searchData, (err, packages) => {
+            //     Promise.all(
+            //         packages.map(async(pkg) => {
+            //             let result = await deliveryService.getDeliveryAndDriverInfo(pkg.deliveryId);
 
-                        return {
-                            packageId: pkg.id,
-                            status: pkg.lastStatusText,
-                            driverName: result.driverId.firstName + " " + (result.driverId.lastName ? result.driverId.lastName : ""),
-                            date: moment(result.delivery_date).format("DD MMM, YYYY | hh:mm"),
-                            location: result.locationId.address
-                        }
-                    })
-                ).then(result => resolve(result))
+            //             return {
+            //                 packageId: pkg.id,
+            //                 status: pkg.lastStatusText,
+            //                 driverName: result.driverId.firstName + " " + (result.driverId.lastName ? result.driverId.lastName : ""),
+            //                 date: moment(result.delivery_date).format("DD MMM, YYYY | hh:mm"),
+            //                 location: result.locationId.address
+            //             }
+            //         })
+            //     ).then(result => resolve(result))
+            // })
+            Package.find(searchData)
+                    .populate({path : 'deliveryId',populate : 'driverId'})
+                    .exec((err, result) => {
+                        
+                        resolve(result)
             })
+                
+            
         })
     }
 
@@ -3379,12 +3550,7 @@ class PackageService {
                 dbQuery = {}
             } else {
                 if (query.filter_for === "all_package_table") {
-                    if (query.filter_date != '') {
-                        dbQuery['updatedAt'] = {
-                            $lte: moment(query.filter_date, 'MM-DD-YYYY').endOf('day').toDate(),
-                            $gte: moment(query.filter_date, 'MM-DD-YYYY').startOf('day').toDate()
-                        }
-                    }
+                    
                     if (query.users && query.users != 'all') {
                         dbQuery['updatedBy'] = mongoose.Types.ObjectId(query.users);
                     }
@@ -3406,9 +3572,9 @@ class PackageService {
                 endate.setDate(endate.getDate() +1);  
                 
                 stdate = new Date(stdate.setUTCHours(0,0,0,0));
-                stdate = stdate.toISOString();
+                //stdate = stdate.toISOString();
                 endate = new Date(endate.setUTCHours(23,59,59,0));
-                endate = endate.toISOString(); 
+                //endate = endate.toISOString(); 
                     
                 dbQuery.createdAt = {"$gte":stdate, "$lte": endate};             
             }else if(query && query.daterange && !query.type ){
@@ -3418,13 +3584,13 @@ class PackageService {
               stdate.setDate(stdate.getDate() - parseInt(strings.default_days_table));  
               
               stdate = new Date(stdate.setUTCHours(0,0,0,0));
-              stdate = stdate.toISOString();
+              //stdate = stdate.toISOString();
               endate = new Date(endate.setUTCHours(23,59,59,0));
-              endate = endate.toISOString(); 
+              //endate = endate.toISOString(); 
                    
               dbQuery.createdAt = {"$gte":stdate, "$lte": endate};
             }
-
+            console.log(dbQuery)
             PackageStatus
                 .aggregate([
                     { $match: dbQuery },
@@ -3458,6 +3624,7 @@ class PackageService {
                     {
                         $project: {
                             _id: 0,
+                            barcode:"$package.barcode",
                             packageId: '$package.id',
                             user: {
                                 firstName: '$userId.firstName',

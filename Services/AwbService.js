@@ -117,7 +117,7 @@ class AwbService {
 
     async getAwbStatuses(query) {
         return new Promise((resolve, reject) => {
-          var searchData = {};
+          var searchData = {action:'Created'};
             if(query && query.daterange ){
              
                 var daterange = query.daterange;
@@ -149,8 +149,7 @@ class AwbService {
               endate = endate.toISOString(); 
                    
               searchData.createdAt = {"$gte":stdate, "$lte": endate};
-            }   
-            console.log(searchData)         
+            }         
             AwbStatus.find(searchData, (err, result) => {
                 if (err) {
                     resolve([]);
