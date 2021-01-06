@@ -95,37 +95,6 @@ class AwbService {
           })
     })
   }
-
-    async updateAwbOtherDetail(awbId){
-      return new Promise((resolve, reject) => {
-        Awb.findById(awbId)
-            .populate('customerId')
-            .populate('shipper')
-            .exec(async (err,result) => {               
-              if(err){
-                console.log(err)
-                resolve({ success: false, message: strings.string_response_error });
-              }else{
-              if(result.customerId && result.shipper){
-                var customer = result.customerId;
-                var shipper = result.shipper;
-                var updateData =  {
-                    customerFirstName:customer.firstName,
-                    customerLastName : customer.lastName,
-                    customerFullName : customer.firstName + (customer.lastName?' '+ customer.lastName: ''),
-                    shipperName : shipper.name,
-                    pmb:customer.pmb,
-                    pmbString: customer.pmb,
-                    awbIdString: result.awbId?result.awbId : ''                   
-                }    
-                  console.log("updateData>>>>>>>>>>>>>>>>>>>>",updateData) 
-                var update = await Awb.updateOne({_id:awbId},updateData);
-                resolve(update)
-              }
-            }
-            })
-      })
-    }
     async updateAwbStatus(awb, action, userId) {
         return new Promise((resolve, reject) => {
             const awbstatus = {

@@ -208,7 +208,7 @@ exports.downloadAirCargoManifest = async (req, res, next) => {
 			manifest.airportFromId && services.airportService.get(manifest.airportFromId),
 			manifest.airportToId && services.airportService.get(manifest.airportToId),
 		]);
-		let cubePackages = await services.packageService.getPackagesByObject({packageType : "Cube"})
+		let cubePackages = await services.packageService.getPackagesHistoryByObject({packageType : "Cube"})
 		let awbIds = [];
 
 		let packagesByAWB = packages.reduce((acc, pkg) => {
@@ -252,7 +252,7 @@ exports.downloadAirCargoManifest = async (req, res, next) => {
 			return acc;
 		}, {});
 
-		let awbsArray = await Promise.all(awbIds.map((id) => services.printService.getAWBDataForAllRelatedEntities(id)));
+		let awbsArray = await Promise.all(awbIds.map((id) => services.printService.getAWBHistoryDataForAllRelatedEntities(id)));
 
 		let invoicesArray = await services.invoiceService.getInvoiceFilesByAWBs(awbIds);
 		//let invoicesArray = []
@@ -400,7 +400,7 @@ exports.downloadFlightManifest = async (req, res, next) => {
 	try {
 		let manifest = await services.manifestService.getManifest(req.params.id);
 		let packages = await services.packageService.cloneManifestAndOriginal(req.params.id);
-		let cubePackages = await services.packageService.getPackagesByObject({packageType : "Cube"})
+		let cubePackages = await services.packageService.getPackagesHistoryByObject({packageType : "Cube"})
 		let rows = packages.map((pkg) => {
 			let consignee = {
 				name: String(
@@ -542,7 +542,7 @@ exports.downloadUSCustoms = async (req, res, next) => {
 			.map((i) => i.awbId)
 			.filter(Boolean);
 
-		let awbs = await Promise.all(awbIds.map((id) => services.awbService.getFullAwb(id)));
+		let awbs = await Promise.all(awbIds.map((id) => services.awbService.getFullAwbHistory(id)));
 
 		let packagesByAWB = packages.reduce((acc, pkg) => {
 			acc[pkg.awbId] = acc[pkg.awbId] || [];

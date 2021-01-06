@@ -1825,6 +1825,18 @@ class PackageService {
         });
     }
 
+    getPackagesHistoryByObject(object){
+        return new Promise((resolve, reject) => {
+            PackageHistory.find(object, (err, result) => {
+                if (err) {
+                    resolve([]);
+                } else {
+                    resolve(result);
+                }
+            });
+        });
+    }
+
     // Only show 7 trackingNo on the list;
     getPackages(awbId) {
         return new Promise((resolve, reject) => {
@@ -2565,7 +2577,7 @@ class PackageService {
 
     getPackageOnManifest(manifestId) {
         return new Promise((resolve, reject) => {
-            Package.find({ manifestId: manifestId })
+            PackageHistory.find({ manifestId: manifestId })
                 .populate(['awbId', 'compartmentId', 'shipperId', 'carrierId', 'customerId', 'hazmatId'])
                 .exec((err, packages) => {
                     if (err) {
