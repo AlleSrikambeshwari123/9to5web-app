@@ -12,6 +12,7 @@ var uniqId = require('uniqid');
 const Cube = require('../models/cube');
 const Package = require('../models/package');
 const Awb = require('../models/awb');
+const AwbHistory = require('../models/awbHistory');
 const CubeAwb = require('../models/cubeawb');
 const Cube2Type = require('../models/cube2Type');
 
@@ -72,7 +73,7 @@ class CubeService {
           for(let i=0;i<result.length;i++){
             var cube = result[i];
             const awbId = (cube.cubepackageId && cube.cubepackageId.awbId)?cube.cubepackageId.awbId:null;
-            const awbData = await Awb.findOne({_id:awbId});
+            const awbData = await AwbHistory.findOne({_id:awbId});
             result[i]['awbId'] = (awbData && awbData.awbId)?awbData.awbId:'';
             // let cubeAwbNo = result[i].cubeAwbId ? result[i].cubeAwbId.cubeAwbNo: ''
             // result[i]['awbId'] = 'C'+cubeAwbNo
@@ -393,7 +394,7 @@ class CubeService {
       },  
       {
         $lookup:{
-          from:"packages",
+          from:"packagehistories",
           localField:"packages",
           foreignField:"_id",
           as:"packages"
@@ -401,7 +402,7 @@ class CubeService {
       },
       {
         $lookup:{
-            from:"packages",
+            from:"packagehistories",
             localField:"cubepackageId",
             foreignField:"_id",
             as:"cubeDetail"
@@ -437,7 +438,9 @@ class CubeService {
     return new Promise((resolve, reject) => {   
       Cube.findOne({_id:id}).populate('userId').populate('cubepackageId').exec(async (err, cube) => {        
         const awbId = (cube.cubepackageId && cube.cubepackageId.awbId)?cube.cubepackageId.awbId:null;
-        const awbData = await Awb.findOne({_id:awbId});
+        let awbData = await Awb.findOne({_id:awbId});
+        if(!awbData)
+          awbData = await AwbHistory.findOne({_id:awbId});
         cube = JSON.parse(JSON.stringify(cube));
         cube.awbId = (awbData && awbData.awbId)?awbData.awbId:'';
         resolve(cube); 
@@ -515,7 +518,7 @@ class CubeService {
       },  
       {
         $lookup:{
-          from:"packages",
+          from:"packagehistories",
           localField:"packages",
           foreignField:"_id",
           as:"packageList"
@@ -523,7 +526,7 @@ class CubeService {
       },
       {
         $lookup:{
-            from:"packages",
+            from:"packagehistories",
             localField:"cubepackageId",
             foreignField:"_id",
             as:"cubeDetail"

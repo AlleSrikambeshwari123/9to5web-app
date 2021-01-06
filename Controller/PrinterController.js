@@ -175,7 +175,7 @@ exports.generate_pkg_label_pdf = (req, res, next) => {
 exports.generate_cube_pdf = (req, res, next) => {
 	services.cubeService.getCube(req.params.id).then(cube => {
 		cube.trackingNo = cube.cubeDetail ? cube.cubeDetail.trackingNo : null;
-		services.printService.getAWBDataForAllRelatedEntities(cube.cubeDetail.awbId).then((awb) => {
+		services.printService.getAWBHistoryDataForAllRelatedEntities(cube.cubeDetail.awbId).then((awb) => {
 			awb['cubePkg'] = true;
 			awb.customer.pmb = 9000
 			cubPdfGen.generateSinglePackageLabel(awb, cube).then(result => {
@@ -292,7 +292,7 @@ exports.downloadAirCargoManifest = async (req, res, next) => {
 exports.downloadCubePdf = async (req, res, next) => {
 	try {
 		let cubeDataObject = await services.cubeService.getCubeCompleteData(req.params.id);
-		let cubePackage = await services.packageService.getPackagesById([cubeDataObject.cubeDetail._id])
+		let cubePackage = await services.packageService.getPackagesHistoryById([cubeDataObject.cubeDetail._id])
 		let packages = [];
 		let manifest = {};
 

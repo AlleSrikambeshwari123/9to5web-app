@@ -2603,6 +2603,20 @@ class PackageService {
         });
     }
 
+    getPackagesHistoryById(ids) {
+        return new Promise((resolve, reject) => {
+            PackageHistory.find({ _id: { $in: ids } })
+                .populate(['awbId', 'compartmentId', 'shipperId', 'carrierId', 'customerId', 'hazmatId'])
+                .exec((err, packages) => {
+                    if (err) {
+                        resolve([]);
+                    } else {
+                        resolve(packages);
+                    }
+                })
+        });
+    }
+
     getPackageOnManifestFlight(manifestId) {
         return new Promise((resolve, reject) => {
             Package.find({ manifestId: manifestId })
@@ -3623,7 +3637,7 @@ class PackageService {
 
     getAllPackagesOfCube(cond) {
         return new Promise((resolve, reject) => {
-            Package.find(cond)
+            PackageHistory.find(cond)
                 .populate('awbId')
                 .populate('originBarcode')
                 .populate('customerId')
