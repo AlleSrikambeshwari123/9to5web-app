@@ -52,10 +52,12 @@ class AwbService {
                     resolve({ success: false, message: strings.string_response_error });
                 } else {
                   let resp = result.toJSON()
+                    resp.awbIdString = result.awbId?result.awbId : '';
+                    await Awb.updateOne({_id : result._id},{awbIdString: result.awbId?result.awbId : ''})
                     const newAwbHistory = new AwbHistory(resp);
                     await newAwbHistory.save()
                     await this.updateAwbStatus(result, 1, awb['createdBy']);
-                    await this.updateAwbOtherDetail(result['_id']);
+                    // await this.updateAwbOtherDetail(result['_id']);
                     awb['id'] = result['_id'];
                     resolve({ success: true, message: strings.string_response_created, awb: awb, awbData:result });
                 }
