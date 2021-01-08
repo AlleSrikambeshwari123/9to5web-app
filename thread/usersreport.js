@@ -25,7 +25,7 @@ endate.setDate(endate.getDate());
 
 stdate = new Date(stdate.setUTCHours(0,0,0,1));
 endate = new Date(endate.setUTCHours(23,59,59,0));
-var searchData = { createdAt : {"$gte":stdate, "$lte": endate}};
+//var searchData = { createdAt : {"$gte":stdate, "$lte": endate}};
 var d = new Date();
 var time = d.getTime();
 var filename = time+'_users.csv'
