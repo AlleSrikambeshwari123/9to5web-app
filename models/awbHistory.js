@@ -105,6 +105,10 @@ const awbHistorySchema = new mongoose.Schema({
     type: String
   },
   //end searching
+  po_number:{
+    type: Number,
+    unique: true
+  },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',

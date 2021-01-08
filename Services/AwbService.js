@@ -53,7 +53,7 @@ class AwbService {
                 } else {
                   let resp = result.toJSON()
                     resp.awbIdString = result.awbId?result.awbId : '';
-                    await Awb.updateOne({_id : result._id},{awbIdString: result.awbId?result.awbId : ''})
+                    await Awb.updateOne({_id : result._id},{awbIdString: result.awbId?result.awbId : ''}).read("primary")
                     const newAwbHistory = new AwbHistory(resp);
                     await newAwbHistory.save()
                     await this.updateAwbStatus(result, 1, awb['createdBy']);
@@ -67,6 +67,7 @@ class AwbService {
   async updateAwbOtherDetail(awbId){
     return new Promise((resolve, reject) => {
       Awb.findById(awbId)
+          .read("primary")
           .populate('customerId')
           .populate('shipper')
           .populate('carrier')
