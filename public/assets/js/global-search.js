@@ -163,11 +163,17 @@ $(function () {
     $('#daterange-user').daterangepicker({});
 
     //report
-    $('#daterange-awbStatus').daterangepicker({});
-    $('#daterange-package-detail').daterangepicker({});    
-    $('#daterange-dekivery-detail').daterangepicker({});    
+    $('#daterange-allAwb').daterangepicker({autoApply:true});
+    $('#daterange-package-detail').daterangepicker({autoApply:true});
+    $('#daterange-delivery-detail').daterangepicker({autoApply:true});
+    $('#daterange-postbox-detail').daterangepicker({autoApply:true});
+    $('#daterange-ninetofive-detail').daterangepicker({autoApply:true});
+    $('#daterange-nodocs-package-detail').daterangepicker({autoApply:true});
+    $('#daterange-users-dashboard-detail').daterangepicker({autoApply:true});
+    
+   
+    $('#daterange-awbStatus').daterangepicker({});       
     $('#daterange-package-status').daterangepicker({});
-
     $('input[name="daterange"]').daterangepicker({
       //autoUpdateInput: false,
       locale: { cancelLabel: 'Clear' },

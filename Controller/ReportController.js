@@ -5,7 +5,7 @@ const AwbStatus = require('../models/awbStatus');
 exports.all_awb_status = async(req, res, next)=>{    
     services.awbService.getAwbStatuses(req.query).then(allawb => {
         res.render('pages/reports/all-awb', {
-          title: 'All Awb Status',
+          title: 'All AWB Status',
           page: req.originalUrl,
           user: res.user,
           allawb: allawb,
@@ -21,6 +21,90 @@ exports.all_awb_status_report = async(req, res, next)=>{
     }else{
         res.json({status: false})
     }
+}
+
+exports.delivery_detail_report = async(req, res, next)=>{
+  if(req.body.daterange && res.user._id){
+      const result = await runService({daterange:req.body.daterange, userId:res.user._id, email: res.user.email}, './thread/delivery.js'); 
+      res.json(result)
+  }else{
+      res.json({status: false})
+  }
+}
+
+exports.package_detail_report = async(req, res, next)=>{
+  if(req.body.daterange && res.user._id){
+    const result = await runService({
+      daterange:req.body.daterange,
+      userId:res.user._id,
+      email: res.user.email,
+      users:req.body.user,
+      package_status:req.body.status
+    }, './thread/packagedetail.js'); 
+    res.json(result)
+  }else{
+      res.json({status: false})
+  }
+}
+
+//dashooard
+exports.postbox_etc_package_report = async(req, res, next)=>{
+  if(req.body.daterange && res.user._id){
+    const result = await runService({
+      daterange:req.body.daterange,
+      userId:res.user._id,
+      email: res.user.email,
+      users:req.body.user,
+      package_status:req.body.status
+    }, './thread/postbox.js'); 
+    res.json(result)
+  }else{
+      res.json({status: false})
+  }
+}
+
+exports.ninetofive_package_report = async(req, res, next)=>{
+  if(req.body.daterange && res.user._id){
+    const result = await runService({
+      daterange:req.body.daterange,
+      userId:res.user._id,
+      email: res.user.email,
+      users:req.body.user,
+      package_status:req.body.status
+    }, './thread/ninetofivepackage.js'); 
+    res.json(result)
+  }else{
+      res.json({status: false})
+  }
+}
+
+exports.nodocs_package_report = async(req, res, next)=>{
+  if(req.body.daterange && res.user._id){
+    const result = await runService({
+      daterange:req.body.daterange,
+      userId:res.user._id,
+      email: res.user.email,
+      users:req.body.user,
+      package_status:req.body.status
+    }, './thread/nodocspackage.js'); 
+    res.json(result)
+  }else{
+      res.json({status: false})
+  }
+}
+
+exports.users_report = async(req, res, next)=>{
+  console.log('hello')
+  if(req.body.daterange && res.user._id){
+    const result = await runService({
+      daterange:req.body.daterange,
+      userId:res.user._id,
+      email: res.user.email      
+    }, './thread/usersreport.js'); 
+    res.json(result)
+  }else{
+      res.json({status: false})
+  }
 }
 
 exports.all_dowload_report = async(req,res)=>{

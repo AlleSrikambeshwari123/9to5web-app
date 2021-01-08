@@ -435,7 +435,7 @@ class PackageService {
               var endate = new Date();      
               endate.setDate(endate.getDate());
               var stdate = new Date();
-              stdate.setDate(stdate.getDate() - parseInt(strings.default_days_table)); 
+              stdate.setDate(stdate.getDate() - parseInt(0)); 
               
               stdate = new Date(stdate.setUTCHours(0,0,0,0));
               stdate = stdate.toISOString();
@@ -1062,7 +1062,7 @@ class PackageService {
                 var endate = new Date();      
                 endate.setDate(endate.getDate());
                 var stdate = new Date();
-                stdate.setDate(stdate.getDate() - parseInt(strings.default_days_table));
+                stdate.setDate(stdate.getDate() - parseInt(0));
                 
                 stdate = new Date(stdate.setUTCHours(0,0,0,0));
                // stdate = stdate.toISOString();
@@ -1091,9 +1091,9 @@ class PackageService {
             }else{
                 let dbQuery = {};
                 if (query.users && query.users != "all") {
-                    dbQuery['createdBy'] = query.users;
+                    dbQuery['createdBy'] = ObjectId(query.users);
                 }
-                if(query.package_status){
+                if(query.package_status && query.package_status!='all'){
                     dbQuery['lastStatusText'] = query.package_status;
                 }
 
@@ -1149,6 +1149,7 @@ class PackageService {
 
     async getNineToPackages(searchData){
         searchData.pmb = 9000
+       console.log(searchData)
         return new Promise((resolve, reject) => {
             Package.aggregate([
                 {$match:searchData},
@@ -3507,7 +3508,7 @@ class PackageService {
                 var endate = new Date();      
                 endate.setDate(endate.getDate());
                 var stdate = new Date();
-                stdate.setDate(stdate.getDate() - parseInt(strings.default_days_table)); 
+                stdate.setDate(stdate.getDate() - parseInt(0)); 
                 
                 stdate = new Date(stdate.setUTCHours(0,0,0,0));
                 stdate = stdate.toISOString();
@@ -3581,7 +3582,7 @@ class PackageService {
               var endate = new Date();      
               endate.setDate(endate.getDate());
               var stdate = new Date();
-              stdate.setDate(stdate.getDate() - parseInt(strings.default_days_table));  
+              stdate.setDate(stdate.getDate() - parseInt(0));  
               
               stdate = new Date(stdate.setUTCHours(0,0,0,0));
               //stdate = stdate.toISOString();
@@ -3590,7 +3591,7 @@ class PackageService {
                    
               dbQuery.createdAt = {"$gte":stdate, "$lte": endate};
             }
-            console.log(dbQuery)
+            console.log("packagedetail>>>>>>>>>>>",dbQuery)
             PackageStatus
                 .aggregate([
                     { $match: dbQuery },
