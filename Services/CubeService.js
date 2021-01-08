@@ -219,9 +219,9 @@ class CubeService {
         if (err) {
           resolve({ success: false, message: strings.string_response_error });
         } else {
-          let cubeResult = await Cube.findOne({cubeAwbId : cube.id});
-          if(cubeResult && cubeResult.cubepackageId)
-            await Package.findOneAndUpdate({_id : cubeResult.cubepackageId},updatedCubeData)
+          // let cubeResult = await Cube.findOne({cubeAwbId : cube.id});
+          // if(cubeResult && cubeResult.cubepackageId)
+          //   await Package.findOneAndUpdate({_id : cubeResult.cubepackageId},updatedCubeData)
           resolve({ success: true, message: strings.string_response_updated });
         }
       });
