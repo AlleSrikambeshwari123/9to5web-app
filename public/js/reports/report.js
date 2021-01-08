@@ -150,3 +150,24 @@ function generate_users_report(){
     }
   });
 }
+
+function generate_package_status_report(){
+  $.ajax({
+    url: "/reports/package-status-detail/report",
+    type: "post",
+    data: {
+        daterange:$("#daterange-package-status-detail").val()        
+    },
+    success: function (response) {
+      if(response && response.status){
+        swal("Report!", "Please wait while your report is generated.!", "success");
+      }else{
+        swal("Report!", "Something went wrong Please try again after 5 min.!", "error");
+      }
+       
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+       console.log(textStatus, errorThrown);
+    }
+  });
+}

@@ -91,17 +91,23 @@ var endate = new Date();
       </div>
       <div class="card-body">
         <div class="row">
-          <div class="col-xs-12 col-sm-12 col-md-12">        
-            <input type="text" class="form-control form-control-sm" name="" id="daterange-postbox-detail" class="form-control" style="width: 30%; float: left;margin-left: 1%; height: 40px !important;" value=""  placeholder="Select dates" style="width: 30%; float: left;margin-left: 1%;">        
-            <input type="button" value="Create Csv" class="btn btn-primary" style="float: left;margin-left: 1%"  onclick="generate_postbox_report()">
-          </div>
+          
         </div>
         <div class="card-tools  pd-18 col-md-12">
-          <form method="post" onsubmit="filterData(event)">
+          <!--<form method="post" onsubmit="filterData(event)">-->
+            
             <div class="row">
+              <div class="col-md-4"> 
+                <div class="row"> 
+                  <span class="col-md-5 pt-7" style="margin-top: 8px;">Select Date</span>  
+                  <div class="col-md-7"> 
+                    <input type="text" class="form-control form-control-sm" name="" id="daterange-postbox-detail" class="form-control" style="float: left;margin-left: 1%; height: 40px !important;" value=""  placeholder="Select dates">        
+                  </div>
+                </div>  
+              </div>
               <div class="col-md-3">
                 <div class="row">
-                  <span class="col-md-5 pt-10" style="margin-top: 8px;">By User</span>
+                  <span class="col-md-4 pt-7" style="margin-top: 8px;">By User</span>
                   <div class="col-md-7">
                     <select class="form-control" name="users" id="postbox_detail_user">
                       <option value='all'>All</option>
@@ -112,10 +118,9 @@ var endate = new Date();
                   </div>
                 </div>
               </div>
-              <div class="col-md-4">
+              <div class="col-md-3">
                 <div class="row">
-
-                  <span class="col-md-5 pt-10" style="margin-top: 8px;">Package Status</span>
+                  <span class="col-md-4 pt-10" style="margin-top: 8px;">Package Status</span>
                   <div class="col-md-7">
                     <select class="form-control" name="package_status" id="post_detail_status">
                       <option value='all'>All</option>
@@ -129,13 +134,14 @@ var endate = new Date();
               <input type="hidden" name="filter_for" value="postBox" />
               
               <div class="col-md-2 pl-10">
-                <input type="submit" value="Filter" class="btn btn-primary" />
+                <input type="button" value="Create CSV" class="btn btn-primary" style="float: left;margin-left: 1%"  onclick="generate_postbox_report()">
+                <!-- <input type="submit" value="Filter" class="btn btn-primary" /> -->
               </div>
             </div>
-          </form>
+          
         </div>
        
-        <div class="table-responsive">
+        <div class="table-responsive" style="margin-top: 10px;">
           <table id="post_packages" class="display table table-striped table-hover dataTable manifest-table">
             <thead>
             <tr>
@@ -163,16 +169,20 @@ var endate = new Date();
           <div class="card-title pd-18 col-md-12 ">9to5 Packages</div>          
       </div>
     </div>
-    <div class="card-body daterangepickerbody-1">
-      <div class="row">
-        <div class="col-xs-12 col-sm-12 col-md-12">        
-          <input type="text" class="form-control form-control-sm" name="" id="daterange-ninetofive-detail" class="form-control" style="width: 30%; float: left;margin-left: 1%; height: 40px !important;" value=""  placeholder="Select dates" style="width: 30%; float: left;margin-left: 1%;">        
-          <input type="button" value="Create Csv" class="btn btn-primary" style="float: left;margin-left: 1%"  onclick="generate_ninetofive_package_report()">
-        </div>
-      </div>
+    <div class="card-body daterangepickerbody-1">      
       <div class="card-tools  pd-18 col-md-12">
         <form method="post" onsubmit="filterData(event)">
           <div class="row">
+            <div class="col-md-4"> 
+              <div class="row"> 
+                <span class="col-md-5 pt-7" style="margin-top: 8px;">Select Date</span>  
+                <div class="col-md-7"> 
+                  <input type="text" class="form-control form-control-sm" name="" id="daterange-ninetofive-detail" class="form-control" style="float: left; height: 40px !important;" value=""  placeholder="Select dates" style="width: 30%; float: left;margin-left: 1%;">        
+                    
+                </div>
+              </div>  
+            </div>
+  
             <div class="col-md-3">
               <div class="row">
                 <span class="col-md-5 pt-10" style="margin-top: 8px;">By User</span>
@@ -186,7 +196,7 @@ var endate = new Date();
                 </div>
               </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
               <div class="row">
                 <span class="col-md-5 pt-10" style="margin-top: 8px;">Package Status</span>
                 <div class="col-md-7">
@@ -201,12 +211,13 @@ var endate = new Date();
             </div>
             <input type="hidden" name="filter_for" value="9to5" />            
           <div class="col-md-2 pl-10">
-            <input type="submit" value="Filter" class="btn btn-primary" />
+            <!-- <input type="submit" value="Filter" class="btn btn-primary" /> -->
+            <input type="button" value="Create CSV" class="btn btn-primary" style="float: left;margin-left: 1%"  onclick="generate_ninetofive_package_report()">
           </div>
       </div>
       </form>
     </div>
-      <div class="table-responsive">        
+      <div class="table-responsive" style="margin-top: 10px;">        
         <table id="9to5packages" class="display table table-striped table-hover dataTable manifest-table">
           <thead>
           <tr>
@@ -236,15 +247,19 @@ var endate = new Date();
         </div>
       </div>
       <div class="card-body daterangepickerbody-1">
-        <div class="row">
-          <div class="col-xs-12 col-sm-12 col-md-12">        
-            <input type="text" class="form-control form-control-sm" name="" id="daterange-nodocs-package-detail" class="form-control" style="width: 30%; float: left;margin-left: 1%; height: 40px !important;" value=""  placeholder="Select dates" style="width: 30%; float: left;margin-left: 1%;">        
-            <input type="button" value="Create Csv" class="btn btn-primary" style="float: left;margin-left: 1%"  onclick="generate_nodocs_package_report()">
-          </div>
-        </div>
+        
         <div class="card-tools  pd-18 col-md-12">
-          <form method="post" onsubmit="filterData(event)">
-            <div class="row">
+          <!-- <form method="post" onsubmit="filterData(event)"> -->           
+              <div class="row">
+                <div class="col-md-4"> 
+                  <div class="row"> 
+                    <span class="col-md-5 pt-7" style="margin-top: 8px;">Select Date</span>  
+                    <div class="col-md-7"> 
+                      <input type="text" class="form-control form-control-sm" name="" id="daterange-nodocs-package-detail" class="form-control" style="float: left; height: 40px !important;" value=""  placeholder="Select dates" style="width: 30%; float: left;margin-left: 1%;">        
+              
+                    </div>
+                  </div>  
+                </div>
               <div class="col-md-3">
                 <div class="row">
                   <span class="col-md-5 pt-10" style="margin-top: 8px;">By User</span>
@@ -258,7 +273,7 @@ var endate = new Date();
                   </div>
                 </div>
               </div>
-              <div class="col-md-4">
+              <div class="col-md-3">
                 <div class="row">
                   <span class="col-md-5 pt-10" style="margin-top: 8px;">Package Status</span>
                   <div class="col-md-7">
@@ -271,15 +286,16 @@ var endate = new Date();
                   </div>
                 </div>
               </div>
-              <input type="hidden" name="filter_for" value="noDocs" />
-              
+              <input type="hidden" name="filter_for" value="noDocs" />              
               <div class="col-md-2 pl-10">
-                <input type="submit" value="Filter" class="btn btn-primary" />
+                <input type="button" value="Create CSV" class="btn btn-primary" style="float: left;"  onclick="generate_nodocs_package_report()">
+                <!-- <input type="submit" value="Filter" class="btn btn-primary" /> -->
               </div>
             </div>
-          </form>
+          <!-- </form> -->
         </div>
-        <div class="table-responsive">
+        
+        <div class="table-responsive" style="margin-top: 10px;">
           <table id="no_docs_packages" class="display table table-striped table-hover dataTable manifest-table">
             <thead>
             <tr>
@@ -309,9 +325,17 @@ var endate = new Date();
       </div>
       <div class="card-body">
         <div class="row">
-          <div class="col-xs-12 col-sm-12 col-md-12">        
-            <input type="text" class="form-control form-control-sm" name="" id="daterange-users-dashboard-detail" class="form-control" style="width: 30%; float: left;margin-left: 1%; height: 40px !important;" value=""  placeholder="Select dates" style="width: 30%; float: left;margin-left: 1%;">        
-            <input type="button" value="Create Csv" class="btn btn-primary" style="float: left;margin-left: 1%"  onclick="generate_users_report()">
+          <div class="col-md-4"> 
+            <div class="row"> 
+              <span class="col-md-5 " style="margin-top: 8px;">Select Date</span>  
+              <div class="col-md-7"> 
+                <input type="text" class="form-control form-control-sm" name="" id="daterange-users-dashboard-detail" class="form-control" style="float: left; height: 40px !important;" value=""  placeholder="Select dates" >       
+            
+              </div>
+            </div>  
+          </div>
+          <div class="col-xs-12 col-sm-4 col-md-4">        
+            <input type="button" value="Create CSV" class="btn btn-primary" style="float: left;margin-left: 1%"  onclick="generate_users_report()">
           </div>
         </div>
       <div class="table-responsive ">
@@ -493,7 +517,7 @@ function get_data_dataTable(dataTable, daterange){
    
     $("#9to5packages tbody").append(result)
     if (!($.fn.dataTable.isDataTable('#9to5packages'))) {
-      $("#9to5packages").DataTable({ searching: false, "bLengthChange": false, "order": [[ 2, "desc" ]] });
+      $("#9to5packages").DataTable({ "order": [[ 2, "desc" ]] });
     }
   }
 
@@ -511,7 +535,7 @@ function get_data_dataTable(dataTable, daterange){
     $("#no_docs_packages").DataTable().destroy();
     $("#no_docs_packages tbody").append(result)
     if (!($.fn.dataTable.isDataTable('#no_docs_packages'))) {
-      $("#no_docs_packages").DataTable({ searching: false, "bLengthChange": false, "order": [[ 2, "desc" ]] });
+      $("#no_docs_packages").DataTable({  "order": [[ 2, "desc" ]] });
     }
   }
 
@@ -529,7 +553,7 @@ function get_data_dataTable(dataTable, daterange){
     $("#post_packages tbody").html(result)
     //
    if (!($.fn.dataTable.isDataTable('#post_packages'))) {
-      $("#post_packages").DataTable({ searching: false, "bLengthChange": false, "order": [[ 2, "desc" ]] });
+      $("#post_packages").DataTable({  "order": [[ 2, "desc" ]] });
     }
   }
 
@@ -550,7 +574,7 @@ function get_data_dataTable(dataTable, daterange){
 
     $("#user_table tbody").append(result)
     if (!($.fn.dataTable.isDataTable('#user_table'))) {
-      $("#user_table").DataTable({ searching: false, "bLengthChange": false });
+      $("#user_table").DataTable();
     }
   }
 

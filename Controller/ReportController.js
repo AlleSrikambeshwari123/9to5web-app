@@ -94,13 +94,25 @@ exports.nodocs_package_report = async(req, res, next)=>{
 }
 
 exports.users_report = async(req, res, next)=>{
-  console.log('hello')
   if(req.body.daterange && res.user._id){
     const result = await runService({
       daterange:req.body.daterange,
       userId:res.user._id,
       email: res.user.email      
     }, './thread/usersreport.js'); 
+    res.json(result)
+  }else{
+      res.json({status: false})
+  }
+}
+
+exports.package_status_report = async(req, res, next)=>{
+  if(req.body.daterange && res.user._id){
+    const result = await runService({
+      daterange:req.body.daterange,
+      userId:res.user._id,
+      email: res.user.email      
+    }, './thread/packagestatus.js'); 
     res.json(result)
   }else{
       res.json({status: false})

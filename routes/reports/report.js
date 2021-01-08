@@ -12,6 +12,8 @@ router.post('/postbox-etc-package-detail/report', middleware().checkSession, rep
 router.post('/ninetofive-package-detail/report', middleware().checkSession, reportCtrl.ninetofive_package_report);
 router.post('/nodocs-detail/report', middleware().checkSession, reportCtrl.nodocs_package_report);
 router.post('/users-detail/report', middleware().checkSession, reportCtrl.users_report);
+router.post('/package-status-detail/report', middleware().checkSession, reportCtrl.package_status_report);
+
 //allreport
 router.get('/all-report/download', middleware().checkSession, reportCtrl.all_dowload_report);
 module.exports = router;

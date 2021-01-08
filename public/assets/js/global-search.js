@@ -170,7 +170,7 @@ $(function () {
     $('#daterange-ninetofive-detail').daterangepicker({autoApply:true});
     $('#daterange-nodocs-package-detail').daterangepicker({autoApply:true});
     $('#daterange-users-dashboard-detail').daterangepicker({autoApply:true});
-    
+    $('#daterange-package-status-detail').daterangepicker({autoApply:true});
    
     $('#daterange-awbStatus').daterangepicker({});       
     $('#daterange-package-status').daterangepicker({});
