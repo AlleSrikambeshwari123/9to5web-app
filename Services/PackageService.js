@@ -1808,6 +1808,7 @@ class PackageService {
     async updatePackageOtherDetail(packageId){
         return new Promise((resolve, reject) => {
          Package.findById(packageId)
+                .read("primary")
                 .populate('awbId')
                 .populate('customerId')
                 .populate('shipperId')

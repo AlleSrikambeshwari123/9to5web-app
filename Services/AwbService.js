@@ -44,13 +44,16 @@ class AwbService {
                 delete awb.driver;
             }
             const newAwb = new Awb(awb);
-            newAwb.save((err, result) => {
+            newAwb.save(async (err, result) => {
                 if (err) {
                     console.log("<==== Error While Creating Awb ====> ", err);
                     resolve({ success: false, message: strings.string_response_error });
                 } else {
-                    this.updateAwbStatus(result, 1, awb['createdBy']);
-                    this.updateAwbOtherDetail(result['_id']);
+                  let resp = result.toJSON()
+                    resp.awbIdString = result.awbId?result.awbId : '';
+                    await Awb.updateOne({_id : result._id},{awbIdString: result.awbId?result.awbId : ''}).read("primary")
+                    await this.updateAwbStatus(result, 1, awb['createdBy']);
+                    // this.updateAwbOtherDetail(result['_id']);
                     awb['id'] = result['_id'];
                     resolve({ success: true, message: strings.string_response_created, awb: awb, awbData:result });
                 }
@@ -109,6 +112,7 @@ class AwbService {
   async updateAwbOtherDetail(awbId){
     return new Promise((resolve, reject) => {
       Awb.findById(awbId)
+          .read("primary")
           .populate('customerId')
           .populate('shipper')
           .populate('carrier')
@@ -224,8 +228,8 @@ class AwbService {
                     resolve({ success: false });
                 } else {
                     var awbData = await Awb.findOne({_id:id});
-                    this.updateAwbStatus(result, 2, userId);
-                    this.updateAwbOtherDetail(result['_id']);
+                    await this.updateAwbStatus(result, 2, userId);
+                    await this.updateAwbOtherDetail(result['_id']);
                     resolve({ success: true ,id:id, awbData: awbData });
                 }
             });
