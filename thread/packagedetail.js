@@ -17,11 +17,11 @@ var daterange = workerData.daterange;
 var date_arr  = daterange.split('-');
 var startDate = (date_arr[0]).trim();      
 var stdate = new Date(startDate);
-stdate.setDate(stdate.getDate()+1 );
+stdate.setDate(stdate.getDate() );
 
 var endDate = (date_arr[1]).trim();
 var endate = new Date(endDate);
-endate.setDate(endate.getDate() +1);
+endate.setDate(endate.getDate() );
 
 stdate = new Date(stdate.setUTCHours(0,0,0,1));
 endate = new Date(endate.setUTCHours(23,59,59,0));
