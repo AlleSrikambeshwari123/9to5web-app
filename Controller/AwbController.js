@@ -241,6 +241,17 @@ exports.add_new_awb = async (req, res, next) => {
   awb['createdBy'] = req['userId'];
   awb['updatedBy'] = req['userId'];
 
+  let customerResult = await services.customerService.getCustomer({_id : awb.customerId})
+  let shipperResult = await services.shipperService.getShipper(awb.shipper)
+  let carrierResult = await services.carrierService.getCarrier(awb.carrier)
+  awb.customerFirstName = (customerResult && customerResult.firstName) ? customerResult.firstName : '' 
+  awb.customerLastName  =  (customerResult && customerResult.lastName) ? customerResult.lastName : '' 
+  awb.customerFullName  =  customerResult ? (customerResult.firstName + (customerResult.lastName?' '+ customerResult.lastName: '')) : ''
+  awb.pmb =  (customerResult && customerResult.pmb) ? customerResult.pmb : ''
+  awb.pmbString = (customerResult && customerResult.pmb) ? customerResult.pmb : '' 
+  awb.shipperName  = (shipperResult && shipperResult.name) ? shipperResult.name : ''
+  awb.carrierName = (carrierResult && carrierResult.name)? carrierResult.name : ''
+
   services.awbService.createAwb(awb).then(async result => {
     var pack = result.awbData.packages;
     for(var i=0; i< pack.length;i++){
