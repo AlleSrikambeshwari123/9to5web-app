@@ -44,7 +44,7 @@ createConnection()
         {$match:searchData},                              
         {
             $lookup:{
-                from:"awbs",
+                from:"awbhistories",
                 localField:"awbId",
                 foreignField:"_id",
                 as:"awbId"
