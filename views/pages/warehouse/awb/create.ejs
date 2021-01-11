@@ -141,17 +141,17 @@
                   <input type="hidden" name="invoice.id" value="{ID}" />
                   <div class="col-md-6 col-sm-12">
                     <label>Invoice #</label>
-                    <input type="text" class="form-control" name="invoice.number" />
+                    <input type="text" class="form-control invoice_number-{CID}" name="invoice.number"  />
                   </div>
                   <div class="col-md-6 col-sm-12">
                     <label>Value</label>
-                    <input type="text" class="form-control" name="invoice.value" />
+                    <input type="text" class="form-control invoice_value-{CID}" name="invoice.value"  />
                   </div>
                   <div class="col-md-12">
                     <div class="custom-file-container" data-upload-id="invoice-upload-field-{CID}">
                       <label class="custom-file-container__custom-file">
                         <input type="file" class="custom-file-container__custom-file__custom-file-input" 
-                          name="invoice.file"  aria-label="Choose invoice to upload">
+                          name="invoice.file"  aria-label="Choose invoice to upload" onchange="file_input('{CID}');">
                         <span class="custom-file-container__custom-file__custom-file-control"></span>
                       </label>
                       <div class="custom-file-container__image-preview my-2"

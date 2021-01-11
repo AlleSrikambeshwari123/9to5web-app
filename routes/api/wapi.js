@@ -143,7 +143,8 @@ router.get("/get_packages_filter/:filter", middleware().checkSession, (req, res,
   Promise.all([
     //services.packageService.getPackageWithFilter(req.params.filter, req.query),
     services.packageService.getPackageWithFilterHistory(req.params.filter, req.query),
-    services.userService.getAllUsers(req)
+    //services.userService.getAllUsers(req)
+    services.userService.getAllUsersWithAwbCount(req)
   ]).then(result => {
     result[0]['users'] = result[1]; 
     res.send(result[0])

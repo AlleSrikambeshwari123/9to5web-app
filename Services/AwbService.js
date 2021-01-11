@@ -99,6 +99,7 @@ class AwbService {
     })
   }
     async updateAwbStatus(awb, action, userId) {
+      console.log("awb>>>>>>>>>>>>>>>>>>>>>>>",awb)
         return new Promise((resolve, reject) => {
             const awbstatus = {
                 awbId: awb['_id'],
@@ -112,6 +113,7 @@ class AwbService {
                     console.log("<==== Error While Updating status of Awb ====> ", err);
                     resolve([]);
                 } else {
+                  console.log("AwbStatus>>>>>>>>>>>>>>>>>>>>>>>",result)
                     resolve(result);
                 }
             })
@@ -128,7 +130,7 @@ class AwbService {
                 var startDate = (date_arr[0]).trim(); 
                      
                 var stdate = new Date(startDate);
-                stdate.setDate(stdate.getDate() +1);
+                stdate.setDate(stdate.getDate() );
                 
                 var endDate = (date_arr[1]).trim();
                 var endate = new Date(endDate);
@@ -144,7 +146,7 @@ class AwbService {
               var endate = new Date();      
               endate.setDate(endate.getDate());
               var stdate = new Date();
-              stdate.setDate(stdate.getDate() - parseInt(strings.default_days_table));  
+              stdate.setDate(stdate.getDate() - parseInt(0));  
               
               stdate = new Date(stdate.setUTCHours(0,0,0,0));
               stdate = stdate.toISOString();
@@ -152,7 +154,8 @@ class AwbService {
               endate = endate.toISOString(); 
                    
               searchData.createdAt = {"$gte":stdate, "$lte": endate};
-            }         
+            }    
+            console.log("AwbStatus>>>>>>>>>>>>>>>>>>",searchData)     
             AwbStatus.find(searchData, (err, result) => {
                 if (err) {
                     resolve([]);

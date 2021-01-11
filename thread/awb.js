@@ -8,6 +8,7 @@ const STRINGS = require('../Res/strings');
 const fs = require('fs');
 const AwbStatus = require('../models/awbStatus');
 const Awb = require('../models/awb');
+const awbHistory = require('../models/awbHistory');
 const ReportCsv = require('../models/reportcsv');
 var helpers = require('../views/helpers');
 var Mail = require('../Util/EmailService');
@@ -32,6 +33,7 @@ var searchData = { action:'Created', createdAt : {"$gte":stdate, "$lte": endate}
 var d = new Date();
 var time = d.getTime();
 var filename = time+'_allawbstatus.csv'
+console.log(searchData)
 createConnection()
   .then(() => {
     AwbStatus.aggregate([
@@ -56,10 +58,11 @@ createConnection()
             {id:'date', title: 'Date'}
         ]
       });
+      console.log(data);
       const records = [];
       for(var i=0;i<data.length; i++){
         var item = data[i];
-        var awbData = await Awb.findOne({_id:item.awbId});        
+        var awbData = await awbHistory.findOne({_id:item.awbId});        
         records.push(
               {
                awbid: awbData.awbId?awbData.awbId:'-',
@@ -69,6 +72,7 @@ createConnection()
               }
             )   
       }
+      console.log(records,">>>>>>>>>>>>>>>>>>>>>>res")
       csvWriter.writeRecords(records)       // returns a promise
         .then(async() => {  
           var html = `Hi,<br/><br/>

@@ -34,7 +34,7 @@ if (workerData.users && workerData.users != "all") {
 if(workerData.package_status && workerData.package_status!='all'){
     searchData['lastStatusText'] = workerData.package_status;
 }
-
+console.log(searchData);
 var d = new Date();
 var time = d.getTime();
 var filename = time+'_nodocspackage.csv'
