@@ -6,7 +6,7 @@ const createConnection = require('../Util/mongo');
 const STRINGS = require('../Res/strings');
 const fs = require('fs');
 var abc =1;
-const Roles = require('../models/role');
+const Awb = require('../models/awb');
 const ReportCsv = require('../models/reportcsv');
 var helpers = require('../views/helpers');
 var Mail = require('../Util/EmailService');
@@ -21,11 +21,11 @@ stdate.setDate(stdate.getDate());
 
 var endDate = (date_arr[1]).trim();
 var endate = new Date(endDate);
-endate.setDate(endate.getDate());
+endate.setDate(endate.getDate()+1);
 
 stdate = new Date(stdate.setUTCHours(0,0,0,1));
 endate = new Date(endate.setUTCHours(23,59,59,0));
-var searchData = {}//{ createdAt : {"$gte":stdate, "$lte": endate}};
+var searchData = { createdAt : {"$gte":stdate, "$lte": endate}};
 var d = new Date();
 var time = d.getTime();
 var filename = time+'_users.csv'
@@ -33,35 +33,23 @@ createConnection()
   .then(() => {
     const mongoose = require('mongoose');
     var db = mongoose.connection;
-    Roles.aggregate([
+    Awb.aggregate([
+      {$match:searchData},
+      {
+        $group:{
+          _id:"$createdBy",
+          awbCount:{$sum:1}
+        }
+      },
       {
         $lookup:{
           from:"users",
-          localField:'_id',
-          foreignField:"roles",
-          as:"user"}
-        },
-        {$unwind:"$user"},
-        { $replaceRoot: { newRoot: "$user" } },
-        {$group:{_id:"$_id",first: {$first : "$$ROOT"}}},
-        { $replaceRoot: { newRoot: "$first" } },
-        {$match:searchData},
-        {
-          $lookup:{
-            from:"awbhistories",
-            localField:"_id",
-            foreignField:"createdBy",
-            as:"awb"
-          }
-        },
-        {
-          $project:{
-            username:1,  
-            name:{$concat:['$firstName',' ', '$lastName']},
-            awbCount:{$size:"$awb"},
-            email:1   
-          }
+          localField: "_id",
+          foreignField:"_id",
+          as:"user"
         }
+      },
+      {$unwind:"$user"}
     ]).exec(async function(err,data){
     
       if(err){
@@ -78,13 +66,14 @@ createConnection()
       });
       const records = [];
       for(var i=0;i<data.length; i++){
-        var item = data[i]; 
-        
-        var dat = helpers.formatDate(item.createdAt)           
+        var item = data[i].user; 
+        var name = item.firstName +(item.lastName?' '+item.lastName:'')
+        var dat = helpers.formatDate(item.createdAt)  ;
+
         records.push({
             userName: item.username?item.username:'',
-            name:item.name,
-            toalawb: item.awbCount,
+            name:name,
+            toalawb: data[i].awbCount,
             userEmail:item.email              
             })   
         }      

@@ -190,6 +190,50 @@ class UserService {
         });
     });
   }
+
+  getAllUsersWithAwbCount(req){
+    return new Promise((resolve, reject) => {
+      var searchData = {}
+      var endate = new Date();      
+      endate.setDate(endate.getDate());
+      var stdate = new Date();
+      stdate.setDate(stdate.getDate() - parseInt(1));  
+
+      stdate = new Date(stdate.setUTCHours(0,0,0,0));
+      //stdate = stdate.toISOString();
+      endate = new Date(endate.setUTCHours(23,59,59,0));
+      //endate = endate.toISOString();
+          
+      searchData.createdAt = {"$gte":stdate, "$lte": endate};
+      Awb.aggregate([
+        {$match:searchData},
+        {
+          $group:{
+            _id:"$createdBy",
+            awbCount:{$sum:1}
+          }
+        },
+        {
+          $lookup:{
+            from:"users",
+            localField: "_id",
+            foreignField:"_id",
+            as:"user"
+          }
+        },
+        {$unwind:"$user"}
+      ]).exec((err,data)=>{
+        console.log("result>>>>>>>>>>>>>>>",searchData,data)
+        if (err) {
+          console.log(err)
+          resolve([]);
+        }else{
+          resolve(data)
+        }
+      })
+    })
+  }
+
   getAllUsersData(req) {
     return new Promise((resolve, reject) => {
       var searchData = {};

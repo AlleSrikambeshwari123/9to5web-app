@@ -558,11 +558,12 @@ function get_data_dataTable(dataTable, daterange){
   }
 
   function usersData(data) {
-    let result = data.map((user) => {
+    let result = data.map((detail) => {
+      var user = detail.user;
       if (user !== null) {
         return `<tr><td>` + user.username + `</td>
           <td>` + user.firstName + " " + user.lastName + `</td>
-          <td>` + user.awbCount + `</td>
+          <td>` + detail.awbCount + `</td>
           <td>` + user.email +
           `</td></tr>`;
       }

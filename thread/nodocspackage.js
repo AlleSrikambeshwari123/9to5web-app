@@ -22,7 +22,7 @@ stdate.setDate(stdate.getDate() );
 
 var endDate = (date_arr[1]).trim();
 var endate = new Date(endDate);
-endate.setDate(endate.getDate() );
+endate.setDate(endate.getDate() +1);
 
 stdate = new Date(stdate.setUTCHours(0,0,0,1));
 endate = new Date(endate.setUTCHours(23,59,59,0));
@@ -34,7 +34,7 @@ if (workerData.users && workerData.users != "all") {
 if(workerData.package_status && workerData.package_status!='all'){
     searchData['lastStatusText'] = workerData.package_status;
 }
-
+console.log(searchData);
 var d = new Date();
 var time = d.getTime();
 var filename = time+'_nodocspackage.csv'

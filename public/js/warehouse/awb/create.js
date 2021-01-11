@@ -8,6 +8,10 @@ Number.prototype.formatMoney = function (c, d, t) {
     j = (j = i.length) > 3 ? j % 3 : 0;
   return "$" + s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
 };
+function file_input(cid){
+  $(".invoice_number-"+cid).attr("required", true);
+  $(".invoice_value-"+cid).attr("required", true);
+}
 
 function openAddPackage(){
   $('.mfp-fade').css({'display':'block'});
@@ -365,7 +369,7 @@ $(function () {
   })
   $("#add-awb-form").submit(function (event) {
     document.querySelector("#myLoader").style.display = "block"; 
-    // $('#createAwb').prop('disabled',true)
+    // $('#createAwb').prop('disabled',true)    
     event.preventDefault();
     var awbInfo = $(this)
       .serializeArray()

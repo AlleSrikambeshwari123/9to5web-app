@@ -55,6 +55,7 @@ window.AWBInvoices = (() => {
   $('#awb-form-remove-invoice').click(function() {
     removeLastInvoiceRow();
   });
+  
 
   return {
     addInvoceRow,
@@ -62,3 +63,9 @@ window.AWBInvoices = (() => {
     getInvoices,
   };
 })();
+$(function(){
+  $('.custom-file-container__custom-file__custom-file-control').change(function(){
+   alert(1)
+  });
+
+});
