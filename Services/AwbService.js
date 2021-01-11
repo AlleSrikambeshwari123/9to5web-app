@@ -99,6 +99,7 @@ class AwbService {
     })
   }
     async updateAwbStatus(awb, action, userId) {
+      console.log("awb>>>>>>>>>>>>>>>>>>>>>>>",awb)
         return new Promise((resolve, reject) => {
             const awbstatus = {
                 awbId: awb['_id'],
