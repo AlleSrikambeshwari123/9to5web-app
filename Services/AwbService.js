@@ -113,6 +113,7 @@ class AwbService {
                     console.log("<==== Error While Updating status of Awb ====> ", err);
                     resolve([]);
                 } else {
+                  console.log("AwbStatus>>>>>>>>>>>>>>>>>>>>>>>",result)
                     resolve(result);
                 }
             })
