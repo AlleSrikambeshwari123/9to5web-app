@@ -1967,7 +1967,7 @@ class PackageService {
 
     getPackages_updated(awbId) {
         return new Promise((resolve, reject) => {
-            Package.find({ awbId: awbId },null, {sort: {trackingNo: 1}}, (err, result) => {
+            Package.find({ awbId: awbId },null, {sort: {trackingNo: 1}}).read("primary").exec((err, result) => {
                 if (err) {
                     resolve([]);
                 } else {
@@ -3124,8 +3124,8 @@ class PackageService {
     getPackage_updated(packageId, pkgStatus) {
         return new Promise(async(resolve, reject) => {
             let lastDate =  new Date()
-            let pkg = await Package.findOneAndUpdate({ _id: packageId }, { lastStatusText: pkgStatus , lastStatusDate :  lastDate}, { new: true })
-            let pkgHistoryUpdated = await PackageHistory.findOneAndUpdate({ _id: packageId }, { lastStatusText: pkgStatus , lastStatusDate :  lastDate}, { new: true })
+            let pkg = await Package.findOneAndUpdate({ _id: packageId }, { lastStatusText: pkgStatus , lastStatusDate :  lastDate}, { new: true }).read("primary")
+            let pkgHistoryUpdated = await PackageHistory.findOneAndUpdate({ _id: packageId }, { lastStatusText: pkgStatus , lastStatusDate :  lastDate}, { new: true }).read("primary")
             if (!pkg) resolve({})
             else resolve(pkg)
         })
@@ -3186,7 +3186,7 @@ class PackageService {
             if (!packageStatus.updatedBy) {
                 delete packageStatus.updatedBy;
             }
-            Package.findById(packageId, (err, res) => {
+            Package.findById(packageId).read("primary").exec((err, res) => {
                 if (err || res === null) {
                     resolve({ success: false, message: `PackageId ${packageId} Doesn't Exist. Please scan one of the system generated labels.` })
                 } else {

@@ -402,6 +402,14 @@ class CubeService {
       },
       {
         $lookup:{
+          from:"cubeawbs",
+          localField:"cubeAwbId",
+          foreignField:"_id",
+          as:"cubeAwbDetail"
+        }
+      },
+      {
+        $lookup:{
             from:"packagehistories",
             localField:"cubepackageId",
             foreignField:"_id",
@@ -410,7 +418,7 @@ class CubeService {
       },
       {$unwind:"$cubeDetail"},
       {
-        $project:{_id:1, packages:1,name:1,cubepackageId: 1, cubeDetail:1}
+        $project:{_id:1, packages:1,name:1,cubepackageId: 1, cubeDetail:1, cubeAwbDetail: 1}
       }
       ]).exec((err, result) => {
         if(result && result.length>0){
