@@ -83,8 +83,10 @@ exports.get_package_list_snapshot = async (req, res, next) => {
     services.packageService.getAllSnapshotPackagesUpdated(req,{}).then((packages) => {
         return Promise.all(
             packages.map(async(pkg, i) => {
-                let check = 1
-                pkg.dimensions.split('x').forEach(data =>{
+                let check = 1,dimen = pkg.dimensions
+                if(pkg.packageType == 'Cube' && pkg.masterDimensions)
+                    dimen = pkg.masterDimensions 
+                dimen.split('x').forEach(data =>{
                   check = check * data
                 })
                 pkg.volumetricWeight = (check/166);

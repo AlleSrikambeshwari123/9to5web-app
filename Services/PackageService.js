@@ -2073,6 +2073,10 @@ class PackageService {
                 statusObject = {status : "unused"}
             }
             await Barcode.updateOne({_id : newPackage.originBarcode},statusObject)
+            newPackage.masterDescription = newPackage.description
+            newPackage.masterWeight =  newPackage.weight
+            newPackage.masterDimensions = newPackage.dimensions
+
             const newPackageData = new Package(newPackage);
             newPackageData.save(async (err, result) => {
                 if (err) {

@@ -530,11 +530,11 @@ var fonts = {
                             margin: [1, 1],
                             stack: [
                               { margin: [0, 1], text: 'WEIGHT', fontSize: 6, bold: true },
-                              { margin: [0, 2], text: `${pkg.cubeAwbDetail.length >0 ? pkg.cubeAwbDetail[0].weight : ''} lbs.`, fontSize: 8, bold: true },
+                              { margin: [0, 2], text: `${(pkg.cubeAwbDetail && pkg.cubeAwbDetail.length >0 && pkg.cubeAwbDetail[0].weight) ? pkg.cubeAwbDetail[0].weight : 0} lbs.`, fontSize: 8, bold: true },
                               { margin: [0, 1], text: 'DIMENSIONS', fontSize: 6, bold: true },
-                              { margin: [0, 1], text: `${pkg.cubeAwbDetail.length >0 ? pkg.cubeAwbDetail[0].dimensions : ''} ins.`, fontSize: 8, bold: true },
+                              { margin: [0, 1], text: `${(pkg.cubeAwbDetail && pkg.cubeAwbDetail.length >0 && pkg.cubeAwbDetail[0].dimensions) ? pkg.cubeAwbDetail[0].dimensions : ''} ins.`, fontSize: 8, bold: true },
                               { margin: [0, 1], text: 'VOL. WEIGHT', fontSize: 6, bold: true },
-                              { margin: [0, 2], text: `${this.calculateDimensionalWeight(pkg.cubeDetail.dimensions)} Vlbs`, fontSize: 5, bold: true },
+                              { margin: [0, 2], text: `${this.calculateDimensionalWeight((pkg.cubeAwbDetail && pkg.cubeAwbDetail.length >0 && pkg.cubeAwbDetail[0].dimensions) ? pkg.cubeAwbDetail[0].dimensions : '')} Vlbs`, fontSize: 5, bold: true },
                               //table here
                             ],
                             border: [true, false, false, true],

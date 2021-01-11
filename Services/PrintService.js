@@ -63,6 +63,7 @@ class PrintService {
 	getAWBDataForAllRelatedEntities(id) {
 		return new Promise((resolve, reject) => {
 			Awb.findOne({ _id: id })
+				.read("primary")
 				.populate('customerId')
 				.populate('shipper')
 				.populate('carrier')
