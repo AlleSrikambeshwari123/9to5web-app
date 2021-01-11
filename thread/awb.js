@@ -59,7 +59,7 @@ createConnection()
       const records = [];
       for(var i=0;i<data.length; i++){
         var item = data[i];
-        var awbData = await Awb.findOne({_id:item.awbId});        
+        var awbData = await awbHistory.findOne({_id:item.awbId});        
         records.push(
               {
                awbid: awbData.awbId?awbData.awbId:'-',
