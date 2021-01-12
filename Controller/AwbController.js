@@ -185,12 +185,14 @@ exports.add_new_awb = async (req, res, next) => {
   const invoiceIds = [];
   // Creating Invoices
   await Promise.all((invoices || []).map(invoice => {
-    invoice['_id'] = mongoose.Types.ObjectId();
-    invoice.awbId = awbId;
-    invoice['createdBy'] = req['userId'];
-    invoiceIds.push(invoice['_id']);
-    invoice.name = invoice.name 
-    return services.invoiceService.create(invoice);
+    if(invoice.filename && invoice.number ){
+      invoice['_id'] = mongoose.Types.ObjectId();
+      invoice.awbId = awbId;
+      invoice['createdBy'] = req['userId'];
+      invoiceIds.push(invoice['_id']);
+      invoice.name = invoice.name    
+      return services.invoiceService.create(invoice);
+    }
   }));
 
   const packagesIds = [];
@@ -298,11 +300,13 @@ exports.update_awb = async (req, res, next) => {
         invoiceIds.push(invoice['id']);
         promises.push(() => services.invoiceService.updateInvoice(invoice.id, invoice));
       } else {
-        invoice.awbId = awbId;
-        invoice['_id'] = mongoose.Types.ObjectId();
-        invoice['createdBy'] = req['userId'];
-        invoiceIds.push(invoice['_id']);
-        promises.push(() => services.invoiceService.create(invoice));
+        if(invoice.number && invoice.filename){
+          invoice.awbId = awbId;
+          invoice['_id'] = mongoose.Types.ObjectId();
+          invoice['createdBy'] = req['userId'];
+          invoiceIds.push(invoice['_id']);
+          promises.push(() => services.invoiceService.create(invoice));
+        }
       }  
     });
   }

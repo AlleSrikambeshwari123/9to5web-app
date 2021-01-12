@@ -452,6 +452,19 @@ class AWBGeneration {
             notes = this.awb.note;
         if (this.awb.express)
             express = this.awb.express
+        
+        var purchaseOrders = this.awb.purchaseOrders ? this.awb.purchaseOrders : [];
+        var totalPO = 0;
+        var po_number = ''
+        if(purchaseOrders && purchaseOrders.length>0){
+            for(var i=0; i< purchaseOrders.length; i++){
+                totalPO = totalPO+ parseFloat(purchaseOrders[i].amount);
+            }
+        }
+        if(totalPO>0){
+            po_number = this.awb.po_number;
+        }
+
         let pdfObject = {
             layout: 'lightHorizontallines',
             margin: [0, 10],
@@ -460,7 +473,7 @@ class AWBGeneration {
                 widths: ['*', '*', '*', '*'],
                 body: [
                     [{ margin: [1, 1], text: "Inland Carrier and Shipper Information", colSpan: 4, alignment: 'center', fillColor: '#cccccc', bold: true }, '', '', ''],
-                    [{ text: 'Carrier Name:' }, { text: this.awb.carrier.name }, { text: 'P.O. Number (Nine to Five)' }, { text: po }],
+                    [{ text: 'Carrier Name:' }, { text: this.awb.carrier.name }, { text: 'P.O. Number (Nine to Five)' }, { text: po_number }],
                     [{ text: 'Notes:',  bold: true }, { text: notes }, { text: 'External Invoice No', bold: true }, { text: 'External PO', bold: true }],
                     [{ text: this.awb.no, colSpan: 2 }, { text: '' }, { text: (this.awb.invoices || []).map(i => i.number).join(', '), fontSize: 9, bold: true }, { text: '' }]
                 ]
