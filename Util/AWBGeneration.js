@@ -535,10 +535,10 @@ class AWBGeneration {
                 totalPO = totalPO+ parseFloat(purchaseOrders[i].amount);
             }
         }
-        if(totalPO > 0){
-         header[1].stack[2].columns[0].stack.splice(1,0,{ margin: [0, 3], text: 'Purchase Order:', bold: true, fontSize: 9 });
-         header[1].stack[2].columns[1].stack.splice(1,0,{ margin: [-1, 2], text: (this.awb.po_number?this.awb.po_number:''), bold: true, fontSize: 9 })
-        }
+        // if(totalPO > 0){
+        //  header[1].stack[2].columns[0].stack.splice(1,0,{ margin: [0, 3], text: 'Purchase Order:', bold: true, fontSize: 9 });
+        //  header[1].stack[2].columns[1].stack.splice(1,0,{ margin: [-1, 2], text: (this.awb.po_number?this.awb.po_number:''), bold: true, fontSize: 9 })
+        // }
         return header;
     }
     
