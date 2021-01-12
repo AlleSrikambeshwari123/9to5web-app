@@ -303,19 +303,19 @@ class AwbPriceLabelService {
   }
 
 
-  editPriceLabel(priceLabel,id) {
+  editPriceLabel(priceResult,id) {
     return new Promise(async (resolve, reject) => {
     //   const PriceLabelData = await this.getPriceLabel(priceLabel.id);
     //   if (!(PriceLabelData && PriceLabelData._id)) {
     //     return resolve({success: false, message: strings.string_not_found_location});
     //   }
 
-      let priceResult = await PriceLabel.findOne({awbId: id});
-      priceResult.Express = priceLabel.Express
-      priceResult.TotalInvoiceValue = priceLabel.TotalInvoiceValue
-      priceResult.NoOfInvoice = priceLabel.NoOfInvoice
-      priceResult.TotalWeightValue = priceLabel.TotalWeightValue
-      priceResult.TotalVolumetricWeight = pricelLabel.TotalVolumetricWeight
+      let priceLabel = await PriceLabel.findOne({awbId: id});
+      priceLabel.Express = priceResult.Express
+      priceLabel.TotalInvoiceValue = priceResult.TotalInvoiceValue
+      priceLabel.NoOfInvoice = priceResult.NoOfInvoice
+      priceLabel.TotalWeightValue = priceResult.TotalWeightValue
+      priceLabel.TotalVolumetricWeight = priceResult.TotalVolumetricWeight
 
       if(priceLabel.Express >0){
         priceLabel.Express = 35

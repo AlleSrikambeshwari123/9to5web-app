@@ -741,7 +741,7 @@ $(function () {
           type: response.success ? 'success' : 'error',
           text: response.message,
         });
-        location.reload()
+        // location.reload()
       },
       error: function () {
         swal({
