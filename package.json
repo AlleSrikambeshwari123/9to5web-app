@@ -25,6 +25,8 @@
     "create-default-barcodes": "node db-scripts/add-default-barcodes.js",
     "add-location-packages": "node db-scripts/add-location-packages.js",
     "add-packagesHistory": "node db-scripts/add-packagesHistory.js",
+    "add-package-zone-name": "node db-scripts/add-package-zone-name.js",
+    "add-package-status": "node db-scripts/add-package-status.js",
     "add-awbHistory": "node db-scripts/add-awbHistory.js",
     "remove-checkout-pkgs-awbs": "node db-scripts/remove-checkout-pkgs-awbs.js",
     "db-seed": "npm run create-default-roles && npm run create-default-companies && npm run create-default-user && npm run create-default-location && npm run create-default-barcodes",

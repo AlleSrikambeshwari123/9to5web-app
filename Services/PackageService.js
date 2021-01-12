@@ -311,9 +311,12 @@ class PackageService {
             let error = []
              await Promise.all(
                 packageIds.map(async packageId => {
+                        let zoneResult = await Zone.findById(data.zoneId)
+                        let zoneName = (zoneResult && zoneResult.name) ? zoneResult.name : '' 
                         this.updatePackage(packageId, {
                             location: data.location,
                             zoneId: data.zoneId,
+                            zoneName: zoneName,
                             aging:1
                         });
                         const status = await this.updatePackageStatus(packageId, 7, data.userId);
@@ -345,10 +348,13 @@ class PackageService {
             Promise.all(
                 packageIds.map(async(packageId) => {
                         let locationResult = await Location.findById(data.location)
+                        let zoneResult = await Zone.findById(data.zoneId)
+                        let zoneName = (zoneResult && zoneResult.name) ? zoneResult.name : '' 
                         this.updatePackage(packageId, {
                             location: locationResult.name,
                             companyId: data.companyId,
                             zoneId: data.zoneId,
+                            zoneName : zoneName,
                             agingStore:1
                         });
                         const validateStore = await this.validateStorePackage(data.location,packageId)
@@ -2161,9 +2167,12 @@ class PackageService {
 
     updatePackage(id, pkg) {
         return new Promise((resolve, reject) => {
-            Package.updateOne({ _id: id }, pkg, (err, result) => {
+            Package.updateOne({ _id: id }, pkg,async (err, result) => {
                 if (err) resolve({ success: false, message: strings.string_response_error });
-                else resolve({ success: true });
+                else{
+                    await PackageHistory.updateOne({ _id: id }, pkg)
+                    resolve({ success: true });
+                } 
 
             })
 
@@ -3144,8 +3153,8 @@ class PackageService {
             if(packageResult && packageResult.zoneId){
                 let zoneResult = await Zone.findById(packageResult.zoneId)
                 if(zoneResult && zoneResult.location){
-                    await Package.findOneAndUpdate({_id : packageId},{$unset: {zoneId: 1 }})
-                    await PackageHistory.findOneAndUpdate({_id : packageId},{$unset: {zoneId: 1 }})
+                    await Package.findOneAndUpdate({_id : packageId},{$unset: {zoneId: 1, zoneName : 1}})
+                    await PackageHistory.findOneAndUpdate({_id : packageId},{$unset: {zoneId: 1, zoneName : 1 }})
                     await Location.findByIdAndUpdate({_id : zoneResult.location},{ $pull: { packages: packageId }})
                 }else{
                     return
@@ -4146,11 +4155,11 @@ class PackageService {
             var packages = await Package.aggregate([
                 {$match:{customerId:mongoose.mongo.ObjectId(customerId), awbId:{$ne:null}}},
                 {$group:{_id:"$customerId",package:{$push:"$_id"}}}
-              ]);
+              ]).read('primary');
             var awbs = await Awb.aggregate([
                 {$match:{customerId:mongoose.mongo.ObjectId(customerId)}},
                 {$group:{_id:"$customerId",awb:{$push:"$_id"}}}
-              ]);
+              ]).read('primary');
               if(packages && packages.length && packages[0].package){
                 let uniquePackage = [...new Set(packages[0].package)];
                 await Customer.findByIdAndUpdate({_id:customerId}, {package:uniquePackage});
