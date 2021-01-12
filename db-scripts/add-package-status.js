@@ -10,7 +10,7 @@ const PackageStatus = require('../models/packageStatus');
 
 createConnection()
   .then(() => {
-    return Package.find({lastStatusText :{$exists : false}},async (err, response) => {
+    return Package.find({$or :[{lastStatusText :{$exists : false}},{lastStatusText : ''},{lastStatusText : null}]},async (err, response) => {
         if (err) {
           console.error('Error while finding packages ', err);
           process.exit();
