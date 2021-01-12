@@ -65,6 +65,15 @@ const packageHistorySchema = new mongoose.Schema({
   dimensions: {
     type: String
   },
+  masterDescription: {
+    type: String,
+  },
+  masterDimensions: {
+    type: String
+  },
+  masterWeight: {
+    type: Number,
+  },
   companyId:{
     type: mongoose.Schema.Types.ObjectId, 
     ref: 'Company', 

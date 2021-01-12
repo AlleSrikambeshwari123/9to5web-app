@@ -11,6 +11,7 @@ var uniqId = require('uniqid');
 
 const Cube = require('../models/cube');
 const Package = require('../models/package');
+const PackageHistory = require('../models/packageHistory');
 const Awb = require('../models/awb');
 const AwbHistory = require('../models/awbHistory');
 const CubeAwb = require('../models/cubeawb');
@@ -220,9 +221,11 @@ class CubeService {
         if (err) {
           resolve({ success: false, message: strings.string_response_error });
         } else {
-          // let cubeResult = await Cube.findOne({cubeAwbId : cube.id});
-          // if(cubeResult && cubeResult.cubepackageId)
-            // await Package.findOneAndUpdate({_id : cubeResult.cubepackageId},updatedCubeData)
+          let cubeResult = await Cube.findOne({cubeAwbId : cube.id});
+          if(cubeResult && cubeResult.cubepackageId){
+            await Package.findOneAndUpdate({_id : cubeResult.cubepackageId},updatedCubeData)
+            await PackageHistory.findOneAndUpdate({_id : cubeResult.cubepackageId},updatedCubeData)
+          }
           resolve({ success: true, message: strings.string_response_updated });
         }
       });
@@ -402,6 +405,14 @@ class CubeService {
       },
       {
         $lookup:{
+          from:"cubeawbs",
+          localField:"cubeAwbId",
+          foreignField:"_id",
+          as:"cubeAwbDetail"
+        }
+      },
+      {
+        $lookup:{
             from:"packagehistories",
             localField:"cubepackageId",
             foreignField:"_id",
@@ -410,7 +421,7 @@ class CubeService {
       },
       {$unwind:"$cubeDetail"},
       {
-        $project:{_id:1, packages:1,name:1,cubepackageId: 1, cubeDetail:1}
+        $project:{_id:1, packages:1,name:1,cubepackageId: 1, cubeDetail:1, cubeAwbDetail: 1}
       }
       ]).exec((err, result) => {
         if(result && result.length>0){
