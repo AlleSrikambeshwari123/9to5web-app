@@ -758,7 +758,7 @@ class ManifestService {
 
   deletePackage(manifestId, packageId){
     return new Promise((resolve, reject) => {
-      Manifest.updateOne({_id: manifestId}, {$pull: { packages:  packageId}}, (err, result) => {
+      Manifest.updateOne({_id: manifestId}, {$pull: { packages:  packageId,clonePackages: packageId}}, (err, result) => {
         Package.updateOne({_id: packageId}, {manifestId: null},async (err, result) => {
         if (err) {
           console.log(err)

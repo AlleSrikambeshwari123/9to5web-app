@@ -53,7 +53,7 @@ $('.receive-manifest').click(function () {
   })
 })
 
-$('.btn-rm-pkg').click(function () {
+$('#packageTable').on('click','.btn-rm-pkg',function () {
   var id = $(this).data('id');
   
   $('.close-del').trigger('click');
