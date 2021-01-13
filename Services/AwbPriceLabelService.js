@@ -16,7 +16,7 @@ class AwbPriceLabelService {
 
   getPriceLabel(id) {
     return new Promise((resolve, reject) => {
-      PriceLabel.findOne({awbId: id})
+      PriceLabel.findOne({awbId: id}).read('primary')
       .populate({
         path:'awbId',            
         populate:[{

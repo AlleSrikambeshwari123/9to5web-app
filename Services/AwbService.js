@@ -222,7 +222,7 @@ class AwbService {
 
     getAwb(id) {
         return new Promise((resolve, reject) => {
-            Awb.findOne({ _id: id })
+            Awb.findOne({ _id: id }).read("primary")
                 .exec((err, result) => {
                     if (err) {
                         resolve({});
