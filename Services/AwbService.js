@@ -372,11 +372,8 @@ class AwbService {
                         }
                       }
 
-                      if(awbPriceLabel.OverrideFreight){
-                        if(awbPriceLabel.OverrideFreight > 0)
-                          awbPriceLabel.OverrideFreight = awbPriceLabel.OverrideFreight 
-                        else
-                          awbPriceLabel.OverrideFreight = awbPriceLabel.Freight 
+                      if(awbPriceLabel.OverrideFreight != undefined && awbPriceLabel.OverrideFreight != null){
+                        awbPriceLabel.OverrideFreight = awbPriceLabel.OverrideFreight 
                       }else{
                         awbPriceLabel.OverrideFreight = awbPriceLabel.Freight 
                       }
@@ -408,11 +405,8 @@ class AwbService {
                       if(awbPriceLabel.OverrideInvoiceValue >= 100)
                         awbPriceLabel.Insurance = awbPriceLabel.OverrideInvoiceValue * 0.015
 
-                      if(awbPriceLabel.OverrideInsurance){
-                        if(awbPriceLabel.OverrideInsurance > 0)
-                          awbPriceLabel.OverrideInsurance = awbPriceLabel.OverrideInsurance 
-                        else
-                          awbPriceLabel.OverrideInsurance = awbPriceLabel.Insurance 
+                      if(awbPriceLabel.OverrideInsurance != undefined && awbPriceLabel.OverrideInsurance != null){
+                        awbPriceLabel.OverrideInsurance = awbPriceLabel.OverrideInsurance 
                       }else{
                         awbPriceLabel.OverrideInsurance = awbPriceLabel.Insurance 
                       }
@@ -1687,14 +1681,11 @@ class AwbService {
               }
             }
 
-            if(result.OverrideFreight){
-              if(result.OverrideFreight > 0)
-                result.OverrideFreight = result.OverrideFreight 
-              else
-                result.OverrideFreight = result.Freight 
+            if(result.OverrideFreight != undefined && result.OverrideFreight != null){
+              result.OverrideFreight = result.OverrideFreight 
             }else{
               result.OverrideFreight = result.Freight 
-            }        
+            }     
 
             result.totalPrice = totalInvoice;
             result.NoOfInvoice = invoices.length
@@ -1737,11 +1728,8 @@ class AwbService {
             if(result.OverrideInvoiceValue >= 100)
               result.Insurance = result.OverrideInvoiceValue * 0.015
 
-            if(result.OverrideInsurance){
-              if(result.OverrideInsurance > 0)
-                result.OverrideInsurance = result.OverrideInsurance 
-              else
-                result.OverrideInsurance = result.Insurance 
+            if(result.OverrideInsurance != undefined && result.OverrideInsurance != null){
+              result.OverrideInsurance = result.OverrideInsurance 
             }else{
               result.OverrideInsurance = result.Insurance 
             }
@@ -1903,14 +1891,11 @@ class AwbService {
               }
             }
 
-            if(result.OverrideFreight){
-              if(result.OverrideFreight > 0)
-                result.OverrideFreight = result.OverrideFreight 
-              else
-                result.OverrideFreight = result.Freight 
+            if(result.OverrideFreight != undefined && result.OverrideFreight != null){
+              result.OverrideFreight = result.OverrideFreight 
             }else{
               result.OverrideFreight = result.Freight 
-            }        
+            }            
 
             result.totalPrice = totalInvoice;
             result.NoOfInvoice = invoices.length
@@ -1953,11 +1938,8 @@ class AwbService {
             if(result.OverrideInvoiceValue >= 100)
               result.Insurance = result.OverrideInvoiceValue * 0.015
 
-            if(result.OverrideInsurance){
-              if(result.OverrideInsurance > 0)
-                result.OverrideInsurance = result.OverrideInsurance 
-              else
-                result.OverrideInsurance = result.Insurance 
+            if(result.OverrideInsurance != undefined && result.OverrideInsurance != null){
+              result.OverrideInsurance = result.OverrideInsurance 
             }else{
               result.OverrideInsurance = result.Insurance 
             }

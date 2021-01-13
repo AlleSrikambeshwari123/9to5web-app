@@ -87,11 +87,8 @@ class AwbPriceLabelService {
       }
     }
 
-    if(result.OverrideFreight){
-      if(result.OverrideFreight > 0)
-        result.OverrideFreight = result.OverrideFreight 
-      else
-        result.OverrideFreight = result.Freight 
+    if(result.OverrideFreight != undefined && result.OverrideFreight != null){
+      result.OverrideFreight = result.OverrideFreight 
     }else{
       result.OverrideFreight = result.Freight 
     }
@@ -136,11 +133,8 @@ class AwbPriceLabelService {
     if(result.OverrideInvoiceValue >= 100)
       result.Insurance = result.OverrideInvoiceValue * 0.015
 
-    if(result.OverrideInsurance){
-      if(result.OverrideInsurance > 0)
-        result.OverrideInsurance = result.OverrideInsurance 
-      else
-        result.OverrideInsurance = result.Insurance 
+    if(result.OverrideInsurance != undefined && result.OverrideInsurance != null){
+      result.OverrideInsurance = result.OverrideInsurance 
     }else{
       result.OverrideInsurance = result.Insurance 
     }
@@ -236,14 +230,8 @@ class AwbPriceLabelService {
           priceLabel.Freight =  3.10
         }
       }
-
-      if(priceLabel.OverrideFreight){
-        if(priceLabel.OverrideFreight > 0)
-          priceLabel.OverrideFreight = priceLabel.OverrideFreight 
-        else
-          priceLabel.OverrideFreight = priceLabel.Freight 
-      }else{
-        priceLabel.OverrideFreight = priceLabel.Freight 
+      if(priceLabel.OverrideFreight == undefined || priceLabel.OverrideFreight == null){ 
+        priceLabel.OverrideFreight = priceLabel.Freight
       }
 
       priceLabel.Insurance = 0
@@ -251,12 +239,7 @@ class AwbPriceLabelService {
         priceLabel.Insurance = priceLabel.OverrideInvoiceValue * 0.015
 
          
-      if(priceLabel.OverrideInsurance){
-        if(priceLabel.OverrideInsurance > 0)
-          priceLabel.OverrideInsurance = priceLabel.OverrideInsurance 
-        else
-          priceLabel.OverrideInsurance = priceLabel.Insurance 
-      }else{
+      if(priceLabel.OverrideInsurance == undefined || priceLabel.OverrideInsurance == null){ 
         priceLabel.OverrideInsurance = priceLabel.Insurance 
       }
 
@@ -341,12 +324,7 @@ class AwbPriceLabelService {
         }
       }
 
-      if(priceLabel.OverrideFreight){
-        if(priceLabel.OverrideFreight > 0)
-          priceLabel.OverrideFreight = priceLabel.OverrideFreight 
-        else
-          priceLabel.OverrideFreight = priceLabel.Freight 
-      }else{
+      if(priceLabel.OverrideFreight == undefined || priceLabel.OverrideFreight == null){ 
         priceLabel.OverrideFreight = priceLabel.Freight 
       }
 
@@ -355,12 +333,7 @@ class AwbPriceLabelService {
         priceLabel.Insurance = priceLabel.OverrideInvoiceValue * 0.015
 
          
-      if(priceLabel.OverrideInsurance){
-        if(priceLabel.OverrideInsurance > 0)
-          priceLabel.OverrideInsurance = priceLabel.OverrideInsurance 
-        else
-          priceLabel.OverrideInsurance = priceLabel.Insurance 
-      }else{
+      if(priceLabel.OverrideInsurance == undefined || priceLabel.OverrideInsurance == null){ 
         priceLabel.OverrideInsurance = priceLabel.Insurance 
       }
 
