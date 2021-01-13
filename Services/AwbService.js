@@ -306,6 +306,9 @@ class AwbService {
           searchData.packages = {$gt : []}
         }
       }
+      if(req.status && req.status == 'Pricelabel')
+        searchData = {createdAt : searchData.createdAt}
+
         return new Promise((resolve, reject) => {
             Awb.find(searchData)
                 .populate('customerId')

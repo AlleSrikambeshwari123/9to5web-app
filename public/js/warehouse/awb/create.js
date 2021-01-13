@@ -483,6 +483,7 @@ $(function () {
                     Express:  priceExpress,
                     OverrideInvoiceValue:  0,
                     TotalInvoiceValue: totalInvoice,
+                    OverrideInvoiceValue : totalInvoice,
                     NoOfInvoice: awbInfo.invoices.length,
                     TotalWeightValue: totalweightVal,
                     TotalVolumetricWeight : totalVolumetricWeight,

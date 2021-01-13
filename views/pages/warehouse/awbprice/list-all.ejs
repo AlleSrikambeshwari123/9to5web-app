@@ -68,7 +68,7 @@
                 <td> - </td>
                 <% } %>
                 <td><%= (awb.carrier && awb.carrier.name)?awb.carrier.name:'' %></td>
-                <td><%= awb.awbPriceLabel || ''%></td>
+                <td><%= awb.awbPriceLabel || 0%></td>
 
                 <td><a class="btn btn-link btn-primary btn-edit-pricelabel" data-backdrop="static" data-toggle="modal" data-id="<%=awb._id%>"
                     data-original-title="Add Price" data-target="#pricelabel-popup"><i class="fa fa-edit"></i></a>
