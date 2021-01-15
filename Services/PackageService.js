@@ -3199,7 +3199,8 @@ class PackageService {
             if (!packageStatus.updatedBy) {
                 delete packageStatus.updatedBy;
             }
-            Package.findById(packageId).read("primary").exec((err, res) => {
+            Package.findById(packageId).read("primary").exec(async(err, res) => {
+                await this.getPackage_updated(packageId, packageStatus['status'])
                 if (err || res === null) {
                     resolve({ success: false, message: `PackageId ${packageId} Doesn't Exist. Please scan one of the system generated labels.` })
                 } else {
