@@ -46,7 +46,7 @@ class AwbService {
                 delete awb.driver;
             }
             const newAwb = new Awb(awb);
-            newAwb.save(async(err, result) => {
+            newAwb.save(async (err, result) => {
                 if (err) {
                     console.log("<==== Error While Creating Awb ====> ", err);
                     resolve({ success: false, message: strings.string_response_error });

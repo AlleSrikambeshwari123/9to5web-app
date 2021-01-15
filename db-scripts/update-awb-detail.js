@@ -7,6 +7,7 @@ const createConnection = require('../Util/mongo');
 const Package = require('../models/package');
 const Awb = require('../models/awb');
 const AwbHistory = require('../models/awbHistory');
+
 const Customer = require('../models/customer');
 const Shipper = require('../models/shipper');
 const Carrier = require('../models/carrier');
