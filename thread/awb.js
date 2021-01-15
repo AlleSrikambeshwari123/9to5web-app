@@ -58,7 +58,6 @@ createConnection()
             {id:'date', title: 'Date'}
         ]
       });
-      console.log(data);
       const records = [];
       for(var i=0;i<data.length; i++){
         var item = data[i];
