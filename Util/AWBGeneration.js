@@ -479,7 +479,6 @@ class AWBGeneration {
                 ]
             }
         }
-        express=5;
         if(express > 0)
             pdfObject.table.body.splice(2,0,[{ text: 'Express', bold: true ,colSpan: 4 }])
         else{
