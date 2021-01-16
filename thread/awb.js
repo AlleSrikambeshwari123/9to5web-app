@@ -58,14 +58,13 @@ createConnection()
             {id:'date', title: 'Date'}
         ]
       });
-      console.log(data);
       const records = [];
       for(var i=0;i<data.length; i++){
         var item = data[i];
         var awbData = await awbHistory.findOne({_id:item.awbId});        
         records.push(
               {
-               awbid: awbData.awbId?awbData.awbId:'-',
+               awbid: (awbData && awbData.awbId)?awbData.awbId:'-',
                employeeName: data[i].User[0].username,
                status:data[i].action,
                date:helpers.formatDate(data[i].createdAt)

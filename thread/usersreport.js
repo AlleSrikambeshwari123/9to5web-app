@@ -6,7 +6,7 @@ const createConnection = require('../Util/mongo');
 const STRINGS = require('../Res/strings');
 const fs = require('fs');
 var abc =1;
-const Awb = require('../models/awb');
+const AwbHistory = require('../models/awbHistory');
 const ReportCsv = require('../models/reportcsv');
 var helpers = require('../views/helpers');
 var Mail = require('../Util/EmailService');
@@ -33,7 +33,7 @@ createConnection()
   .then(() => {
     const mongoose = require('mongoose');
     var db = mongoose.connection;
-    Awb.aggregate([
+    AwbHistory.aggregate([
       {$match:searchData},
       {
         $group:{
