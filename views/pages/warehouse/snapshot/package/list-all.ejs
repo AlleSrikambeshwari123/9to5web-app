@@ -136,6 +136,7 @@ var endate = new Date();
                 <th>Original Barcode</th>
                 <th>Description</th>
                 <th>Status</th>
+                <th>Status Date</th>
                 <!-- <th>Location</th> -->
                 <th>Package Type</th>
                 <th>Zone</th>
@@ -172,6 +173,7 @@ var endate = new Date();
 
                 <td><%= (pkg.packageType == 'Cube' && pkg.masterDescription) ? pkg.masterDescription : pkg.description %></td>
                 <td><%= pkg.lastStatusText %></td>
+                <td><%= helpers.formatDate(pkg.lastStatusDate) %></td>
                 <!-- <td><%= pkg.location %></td> -->
                 <td><%= pkg.packageType %></td>
                 <td><%=pkg.zoneName?pkg.zoneName:'' %></td>
