@@ -23,6 +23,7 @@
                                 <th>Package Count</th>
                                 <th>Driver</th>
                                 <th>Vehicle</th>
+                                <th>Status</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -50,10 +51,15 @@
                                     <td>
                                         <%= delivery.vehicle.vehicleMake + '-' + delivery.vehicle.model + '-' + delivery.vehicle.registration %>
                                     </td>
+                                    <td>
+                                        <%= delivery.status == 0 ? 'Open' : 'Close'%>
+                                    </td>
                                     <td class="text-center">
+                                        <% if(delivery.status == 0){%>
                                         <a href='manage/<%=delivery.id%>/get' class="btn btn-link btn-primary px-2" data-toggle="tooltip" data-original-title="Delivery Packages"> <i class="fa fa-box-open"></i> </a>
                                         <a class="btn btn-link btn-primary btn-close-delivery px-2 close-deliveryy" data-backdrop="static" data-toggle="modal" data-id="<%=delivery.id%>"> <i class="fa fa-check-circle"></i>
                                         </a>
+                                        <% }%>
                                     </td>
                                 </tr>
                                 <% }) %>

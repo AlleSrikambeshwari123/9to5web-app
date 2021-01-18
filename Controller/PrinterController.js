@@ -717,6 +717,7 @@ function getFullAwb(id) {
 				services.hazmatService.getHazmat(awb.hazmat),
 			]).then(otherInfos => {
 				// console.log(otherInfos)
+				awb = awb.toJSON()
 				awb.packages = packages;
 				awb.invoices = invoices;
 				awb.customer = otherInfos[0];

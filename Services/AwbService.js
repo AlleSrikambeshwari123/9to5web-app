@@ -65,8 +65,12 @@ class AwbService {
         });
     }
   async updateAwbOtherDetail(awbId){
-    return new Promise((resolve, reject) => {
-      Awb.findById(awbId)
+    return new Promise(async(resolve, reject) => {
+      var awbResult = await Awb.findOne({_id:awbId}).read("primary");
+      let modelCheck = Awb
+      if(awbResult == null)
+        modelCheck = AwbHistory
+      modelCheck.findById(awbId)
           .read("primary")
           .populate('customerId')
           .populate('shipper')
@@ -179,16 +183,21 @@ class AwbService {
     }
 
     updateAwb(id, awb, userId) {
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             if (awb.hasOwnProperty && awb.hasOwnProperty('hazmat') && !awb['hazmat']) {
                 delete awb.hazmat;
             }
-            Awb.findOneAndUpdate({ _id: id }, {...awb }, async(err, result) => {
+            var awbResult = await Awb.findOne({_id:id}).read("primary");
+            let modelCheck = Awb
+            if(awbResult == null)
+              modelCheck = AwbHistory
+
+            modelCheck.findOneAndUpdate({ _id: id }, {...awb }, async(err, result) => {
                 if (err) {
                     resolve({ success: false });
                 } else {
                     await AwbHistory.findOneAndUpdate({ _id: id },{...awb })
-                    var awbData = await Awb.findOne({_id:id});
+                    var awbData = await modelCheck.findOne({_id:id});
                     await this.updateAwbStatus(result, 2, userId);
                     await this.updateAwbOtherDetail(result['_id']);
                     resolve({ success: true ,id:id, awbData: awbData });
@@ -221,8 +230,12 @@ class AwbService {
     }
 
     getAwb(id) {
-        return new Promise((resolve, reject) => {
-            Awb.findOne({ _id: id }).read("primary")
+        return new Promise(async (resolve, reject) => {
+            let checkAwb = await Awb.findOne({ _id: id }).read('primary')
+            let modelCheck = Awb
+            if(checkAwb == null)
+              modelCheck = AwbHistory
+            modelCheck.findOne({ _id: id }).read("primary")
                 .exec((err, result) => {
                     if (err) {
                         resolve({});
@@ -520,7 +533,7 @@ class AwbService {
           }
       }
       console.log("sear",searchData)
-        return new Promise((resolve, reject) => {
+        return new Promise(async(resolve, reject) => {
           var collec = "Awb";
           if(req.query.search_collection == "HISTORY"){
             collec = "AwbHistory";
@@ -559,7 +572,11 @@ class AwbService {
                     })).then(()=> resolve(result))
                   })
             }else{
-              Awb.find(searchData)
+              let checkAwb = await Awb.find(searchData).read('primary')
+              let modelCheck = Awb
+              if(checkAwb == null || checkAwb.length == 0)
+                modelCheck = AwbHistory
+              modelCheck.find(searchData)
               .populate('customerId')
               .populate('shipper')
               .populate('carrier')
@@ -946,8 +963,13 @@ class AwbService {
     }
 
     getAwbPreviewDetails(id) {
-        return new Promise((resolve, reject) => {
-            Awb.findOne({ _id: id })
+        return new Promise(async (resolve, reject) => {
+          let checkAwb = await Awb.findOne({ _id: id }).read('primary')
+          let modelCheck = Awb
+          if(checkAwb == null)
+            modelCheck = AwbHistory
+          
+            modelCheck.findOne({ _id: id })
                 .populate('customerId')
                 .populate('shipper')
                 .populate('carrier')
@@ -958,7 +980,7 @@ class AwbService {
                 .populate('driver')
                 .populate('createdBy')
                 .exec(async(err, result) => {
-                    if (result.customerId) {
+                    if (result && result.customerId) {
                         result.customer = result.customerId;
                     }
                     // console.log(result);

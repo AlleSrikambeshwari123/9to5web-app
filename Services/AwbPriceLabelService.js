@@ -3,6 +3,7 @@ const PriceLabel = require('../models/pricelabel');
 const Package = require('../models/package');
 const Awb = require('../models/awb');
 const AwbHistory = require('../models/awbHistory');
+const PackageHistory = require('../models/packageHistory');
 const PurchaseOrder = require('../models/purchaseOrder');
 const services = require('../Services/RedisDataServices')
 class AwbPriceLabelService {
@@ -361,12 +362,16 @@ class AwbPriceLabelService {
             resolve({ success: false, message: strings.string_response_error });
           } else {
             let awb = await Awb.findById(id)
+            if(awb == null)
+              awb = await AwbHistory.findById(id)
             let total_weight = 0
             if(awb.packages.length == 0){
               resolve({ success: true, message: strings.string_response_updated ,totalWeight : 0.00});
             }else{
               awb.packages.forEach(async (data,index)=>{
                 let pack = await Package.findById(data)
+                if(pack == null)
+                  pack = await PackageHistory.findById(data)
                 total_weight = total_weight + pack.weight 
                 if(index == awb.packages.length-1){
                   resolve({ success: true, message: strings.string_response_updated ,totalWeight : total_weight.toFixed(2)});

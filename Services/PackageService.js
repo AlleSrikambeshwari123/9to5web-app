@@ -814,7 +814,11 @@ class PackageService {
                         }
                     });
                 }else{
-                    Package.find(searchData)
+                    let pkgCheck = await Package.find(searchData)
+                    let modelCheck = Package
+                    if(pkgCheck == null || pkgCheck.length == 0)
+                        modelCheck = PackageHistory
+                    modelCheck.find(searchData)
                     .populate({path : 'awbId',populate : 'driver'})
                     .populate('originBarcode')
                     .populate('customerId')
@@ -837,10 +841,13 @@ class PackageService {
                     resolve([])
                 }else{
                     console.log("check all list")
+
                     if(req && req.query && req.query.nodocs){
                         searchData['lastStatusText'] =  "No Invoice Present"
                       }
+                      console.log("re",req.query,searchData)
                     if(req && req.query && req.query.search_collection == "HISTORY"){  
+                        console.log("hist")
                         PackageHistory.find(searchData)
                         .exec((err, result) => {
                             if (err) {
@@ -1972,8 +1979,13 @@ class PackageService {
     }
 
     getPackages_updated(awbId) {
-        return new Promise((resolve, reject) => {
-            Package.find({ awbId: awbId },null, {sort: {trackingNo: 1}}).read("primary").exec((err, result) => {
+        return new Promise(async (resolve, reject) => {
+            let pkgResult = await Package.find({ awbId: awbId },null, {sort: {trackingNo: 1}}).read("primary")
+            let modelCheck = Package
+            if(pkgResult == null || pkgResult.length == 0)
+                modelCheck = PackageHistory
+                
+            modelCheck.find({ awbId: awbId },null, {sort: {trackingNo: 1}}).read("primary").exec((err, result) => {
                 if (err) {
                     resolve([]);
                 } else {
@@ -2101,8 +2113,12 @@ class PackageService {
         });
     }
     async updatePackageOtherDetail(packageId){
-        return new Promise((resolve, reject) => {
-         Package.findById(packageId)
+        return new Promise(async(resolve, reject) => {
+            let pkgResult = await Package.findById(packageId).read("primary")
+            let modelCheck = Package
+            if(pkgResult == null)
+                modelCheck = PackageHistory
+            modelCheck.findById(packageId)
                 .read("primary")
                 .populate('awbId')
                 .populate('customerId')
@@ -3137,8 +3153,22 @@ class PackageService {
     getPackage_updated(packageId, pkgStatus) {
         return new Promise(async(resolve, reject) => {
             let lastDate =  new Date()
-            let pkg = await Package.findOneAndUpdate({ _id: packageId }, { lastStatusText: pkgStatus , lastStatusDate :  lastDate}, { new: true }).read("primary")
+            let pkgCheck = await Package.findOne({ _id: packageId }).read("primary")
+            let modelResult = Package 
+            if(pkgCheck == null)
+                modelResult = PackageHistory 
+            let pkg = await modelResult.findOneAndUpdate({ _id: packageId }, { lastStatusText: pkgStatus , lastStatusDate :  lastDate}, { new: true }).read("primary")
             let pkgHistoryUpdated = await PackageHistory.findOneAndUpdate({ _id: packageId }, { lastStatusText: pkgStatus , lastStatusDate :  lastDate}, { new: true }).read("primary")
+            if (!pkg) resolve({})
+            else resolve(pkg)
+        })
+    }
+
+    getPackage_update_status(packageId, pkgStatus) {
+        return new Promise(async(resolve, reject) => {
+            let lastDate =  new Date()
+            let pkg = await Package.updateOne({ _id: packageId }, { lastStatusText: pkgStatus , lastStatusDate :  lastDate})
+            let pkgHistoryUpdated = await PackageHistory.updateOne({ _id: packageId }, { lastStatusText: pkgStatus , lastStatusDate :  lastDate})
             if (!pkg) resolve({})
             else resolve(pkg)
         })
@@ -3200,7 +3230,7 @@ class PackageService {
                 delete packageStatus.updatedBy;
             }
             Package.findById(packageId).read("primary").exec(async(err, res) => {
-                await this.getPackage_updated(packageId, packageStatus['status'])
+                await this.getPackage_update_status(packageId, packageStatus['status'])
                 if (err || res === null) {
                     resolve({ success: false, message: `PackageId ${packageId} Doesn't Exist. Please scan one of the system generated labels.` })
                 } else {
@@ -3208,7 +3238,7 @@ class PackageService {
                         if (err) {
                             resolve({ success: false, message: strings.string_response_error });
                         } else {
-                            this.getPackage_updated(packageId, packageStatus['status']).then((pkg) => {
+                            this.getPackage_update_status(packageId, packageStatus['status']).then((pkg) => {
                                 let fParam = { trackingNo: pkg.trackingNo, screenName: 'PACKAGE_DETAIL' }
                                 firebase.sendNotification(
                                     pkg && pkg.customerId,

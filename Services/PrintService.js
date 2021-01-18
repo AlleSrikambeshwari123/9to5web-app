@@ -61,8 +61,12 @@ class PrintService {
 // 	}
 
 	getAWBDataForAllRelatedEntities(id) {
-		return new Promise((resolve, reject) => {
-			Awb.findOne({ _id: id })
+		return new Promise(async(resolve, reject) => {
+			let checkAwb = await Awb.findOne({ _id: id }).read('primary')
+			let modelCheck = Awb
+			if(checkAwb == null)
+				modelCheck = AwbHistory
+			modelCheck.findOne({ _id: id })
 				.read("primary")
 				.populate('customerId')
 				.populate('shipper')
@@ -102,8 +106,12 @@ class PrintService {
 	}
 
 	getAWBDataForPackagesRelatedEntitie(id) {
-		return new Promise((resolve, reject) => {
-			Awb.findOne({ _id: id })
+		return new Promise(async(resolve, reject) => {
+			let checkAwb = await Awb.findOne({ _id: id }).read('primary')
+			let modelCheck = Awb
+			if(checkAwb == null)
+				modelCheck = AwbHistory
+			modelCheck.findOne({ _id: id })
 				.populate('packages')
 				.exec((err, result) => {
 					resolve(result);
@@ -122,8 +130,12 @@ class PrintService {
 	}
 
 	getAWBDataForPurchaseOrderRelatedEntitie(id) {
-		return new Promise((resolve, reject) => {
-			Awb.findOne({ _id: id })
+		return new Promise(async(resolve, reject) => {
+			let checkAwb = await Awb.findOne({ _id: id }).read('primary')
+			let modelCheck = Awb
+			if(checkAwb == null)
+				modelCheck = AwbHistory
+			modelCheck.findOne({ _id: id })
 				.populate('packages')
 				.populate('purchaseOrders')
 				.populate('createdBy')
