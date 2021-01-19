@@ -3167,7 +3167,8 @@ class PackageService {
     getPackage_update_status(packageId, pkgStatus) {
         return new Promise(async(resolve, reject) => {
             let lastDate =  new Date()
-            let pkg = await Package.updateOne({ _id: packageId }, { lastStatusText: pkgStatus , lastStatusDate :  lastDate})
+            let pkgUpdated = await Package.updateOne({ _id: packageId }, { lastStatusText: pkgStatus , lastStatusDate :  lastDate})
+            let pkg  = await Package.findOne({ _id: packageId }).read("primary")
             let pkgHistoryUpdated = await PackageHistory.updateOne({ _id: packageId }, { lastStatusText: pkgStatus , lastStatusDate :  lastDate})
             if (!pkg) resolve({})
             else resolve(pkg)
