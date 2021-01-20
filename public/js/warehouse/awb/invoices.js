@@ -9,7 +9,7 @@ window.AWBInvoices = (() => {
     let row = $(template.replace(/{CID}/g, cid).replace(/{ID}/g, data.id || ''));
 
     Object.keys(data).forEach((key) => {
-      row.find(`[name="invoice.${key}"]`).val(data[key] || '');
+      row.find(`[name="invoice.${key}"]`).val(data[key] || '0');
     });
 
     container.append(row);
@@ -55,6 +55,7 @@ window.AWBInvoices = (() => {
   $('#awb-form-remove-invoice').click(function() {
     removeLastInvoiceRow();
   });
+  
 
   return {
     addInvoceRow,
@@ -62,3 +63,9 @@ window.AWBInvoices = (() => {
     getInvoices,
   };
 })();
+$(function(){
+  $('.custom-file-container__custom-file__custom-file-control').change(function(){
+   alert(1)
+  });
+
+});

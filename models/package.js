@@ -65,6 +65,15 @@ const packageSchema = new mongoose.Schema({
   dimensions: {
     type: String
   },
+  masterDescription: {
+    type: String,
+  },
+  masterDimensions: {
+    type: String
+  },
+  masterWeight: {
+    type: Number,
+  },
   companyId:{
     type: mongoose.Schema.Types.ObjectId, 
     ref: 'Company', 
@@ -185,5 +194,6 @@ const packageSchema = new mongoose.Schema({
 }, {
   timestamps: true
 });
+
 
 module.exports = mongoose.model('Package', packageSchema);

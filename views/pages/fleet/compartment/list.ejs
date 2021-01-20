@@ -5,7 +5,7 @@
     <div class="card">
       <div class="card-header d-flex align-items-left align-items-md-center flex-column flex-md-row">
         <div class="card-title">Plane-<%= plane.tail_number %> Compartments</div>
-        <a href='#' id='show-add' data-target="#add-compartment" data-toggle='modal'
+        <a href='#' id='show-add' data-target="#add-compartment" data-toggle='modal' data-backdrop='static'
           class='btn btn-primary btn-round ml-md-auto float-right'>Add Compartment</a>
       </div>
       <div id="myLoader"><img src="/img/preloader.gif"></div>
@@ -30,7 +30,7 @@
               <td><%=compart.volume %></td>
               <td>
                 <!-- temporary commenting the code -->
-                <a class="btn btn-link btn-primary btn-edit-compartment p-1" data-toggle="modal" data-id="<%=compart.id%>"
+                <a class="btn btn-link btn-primary btn-edit-compartment p-1" data-backdrop="static" data-toggle="modal" data-id="<%=compart.id%>"
                   data-original-title="Edit Compartmentasa" data-target="#edit-compartment"><i class="fa fa-pen"></i></a>
 
                 <a class='rm-compartment p-1 btn btn-link btn-danger' data-id='<%=compart.id%>' href="#"><i class='fa fa-trash'></i></a>

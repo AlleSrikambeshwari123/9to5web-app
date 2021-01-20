@@ -68,9 +68,9 @@
                 <td> - </td>
                 <% } %>
                 <td><%= (awb.carrier && awb.carrier.name)?awb.carrier.name:'' %></td>
-                <td><%= awb.awbPriceLabel || ''%></td>
+                <td><%= awb.awbPriceLabel || 0%></td>
 
-                <td><a class="btn btn-link btn-primary btn-edit-pricelabel" data-toggle="modal" data-id="<%=awb._id%>"
+                <td><a class="btn btn-link btn-primary btn-edit-pricelabel" data-backdrop="static" data-toggle="modal" data-id="<%=awb._id%>"
                     data-original-title="Add Price" data-target="#pricelabel-popup"><i class="fa fa-edit"></i></a>
                 </td>
                 <% let ifNotPriceLabel = 'ifNotPriceLabel'+ awb._id %>
@@ -227,13 +227,26 @@
                       <!-- <span id="totalWetSpan"></span> -->
                     </div>
                   </div>
+                  <div class="form-group form-show-validation row">
+                    <label for="Proof-Of-Purchase" class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">Proof Of <br>Purchase </label>
+                    <div class="col-lg-8 col-md-8 col-sm-8">
+                      <input type="number" class="form-control" disabled="true" id="ProofOfPurchase" name="ProofOfPurchase" placeholder="Proof Of Purchase">
+                    </div>
+                  </div>
                 </div>
                 <div class="col-md-6">
                   <div class="form-group form-show-validation row">
                     <label for="Freight" class="col-lg-3 col-md-4 col-sm-4 mt-sm-2 text-right">Freight </label>
                     <div class="col-lg-7 col-md-8 col-sm-8">
-                      <input type="number" class="form-control" id="Freight" name="Freight"
+                      <input type="number" disabled="true" class="form-control" id="Freight" name="Freight"
                         placeholder="Freight">
+                    </div>
+                  </div>
+
+                  <div class="form-group form-show-validation row">
+                    <label class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">Override Freight </label>
+                    <div class="col-lg-6 col-md-6 col-sm-6">
+                      <input type="number" id="override-freight" class="form-control"  placeholder="Override Freight">
                     </div>
                   </div>
                   <div class="form-group form-show-validation row">
@@ -255,8 +268,15 @@
                         <label class="custom-control-label" for="Insurance">Insurance</label>
                       </div>
                       <div class="col-lg-7 col-md-8 col-sm-8">
-                        <input type="number" class="form-control form-control-sm text-right" id="InsuranceVal" />
+                        <input type="number" disabled="true" class="form-control form-control-sm text-right" id="InsuranceVal" />
                       </div>
+                    </div>
+                  </div>
+
+                  <div class="form-group form-show-validation row">
+                    <label class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">Override Insurance </label>
+                    <div class="col-lg-6 col-md-6 col-sm-6">
+                      <input type="number" id="override-insurance" class="form-control"  placeholder="Override Insurance">
                     </div>
                   </div>
                   <div class="form-group form-show-validation row">
@@ -288,11 +308,11 @@
                   <div class="form-group form-show-validation row">
                     <div class="col-lg-7 col-md-8 col-sm-8 d-flex flex-md-row">
                       <div class="custom-control custom-checkbox">
-                        <input type="checkbox" class="custom-control-input" id="Sed">
+                        <input type="checkbox" disabled="true" class="custom-control-input" id="Sed">
                         <label class="custom-control-label" for="Sed">Sed</label>
                       </div>
                       <div class="col-lg-7 col-md-8 col-sm-8">
-                        <input type="number" class="form-control form-control-sm text-right" id="SedVal" />
+                        <input type="number" disabled="true" class="form-control form-control-sm text-right" id="SedVal" />
                       </div>
                     </div>
                   </div>
@@ -316,13 +336,13 @@
                   <div class="form-group form-show-validation row">
                     <label for="Pickup" class="col-lg-3 col-md-4 col-sm-4 mt-sm-2 text-right">Pickup </label>
                     <div class="col-lg-7 col-md-8 col-sm-8">
-                      <input type="number" class="form-control" id="Pickup" name="Pickup" placeholder="Pickup">
+                      <input type="number" class="form-control" disabled="true" id="Pickup" name="Pickup" placeholder="Pickup">
                     </div>
                   </div>
                   <div class="form-group form-show-validation row">
                     <label for="Hazmat" class="col-lg-3 col-md-4 col-sm-4 mt-sm-2 text-right">Hazmat </label>
                     <div class="col-lg-7 col-md-8 col-sm-8">
-                      <input type="number" class="form-control" id="Hazmat" name="Hazmat" placeholder="Hazmat">
+                      <input type="number" class="form-control" disabled="true" id="Hazmat" name="Hazmat" placeholder="Hazmat">
                     </div>
                   </div>
                 </div>

@@ -49,15 +49,18 @@ $(function () {
         }
         
         if(inputField =="Package" || inputField =="Customer" || inputField =="Original" || inputField =="Awb"){
-          $('#global-search-table-data').dataTable().fnAddData([customerFullName , '<span class="font-weight-bold text-right text-primary ml-3">' + barcode + '</span>', trackingNo, awbIdNumber, `<a id="global-search-collection-details" href="javascript: void(0)" data-id=${data._id}>Show Details</a>`])
+          $('#global-search-table-data').dataTable().fnAddData([customerFullName , '<span class="font-weight-bold text-right text-primary ml-3">' + barcode + '</span>', trackingNo,`<a href="/warehouse/fll/awb/manage/${data.awbId}/preview">${awbIdNumber}</a>` , `<a id="global-search-collection-details" href="javascript: void(0)" data-id=${data._id}>Show Details</a>`])
           $("#myLoader").hide();
         } else {
+          $("#myLoader").hide();
           $('#global-search-table-data').dataTable().fnAddData([id, `<a id="global-search-collection-details" href="javascript: void(0)" data-id=${data._id}>Show Details</a>`]);
         }
       })
+    }else{
+      $("#myLoader").hide();
     }
 
-    $('#global-search-data-modal').modal('show');
+    $('#global-search-data-modal').modal({backdrop: 'static', keyboard: false});
   }
 
   $("#global-search-close-button").click(function () {
@@ -156,15 +159,21 @@ $(function () {
   $(document).ready(function () {
     $('#daterange-postbox').daterangepicker({});
     $('#daterange-nineToPackages').daterangepicker({});
-    $('#daterange-noDocs').daterangepicker({});
+    $('#daterange-noDocs').daterangepicker({autoApply:true});
     $('#daterange-user').daterangepicker({});
 
     //report
-    $('#daterange-awbStatus').daterangepicker({});
-    $('#daterange-package-detail').daterangepicker({});    
-    $('#daterange-dekivery-detail').daterangepicker({});    
+    $('#daterange-allAwb').daterangepicker({autoApply:true});
+    $('#daterange-package-detail').daterangepicker({autoApply:true});
+    $('#daterange-delivery-detail').daterangepicker({autoApply:true});
+    $('#daterange-postbox-detail').daterangepicker({autoApply:true});
+    $('#daterange-ninetofive-detail').daterangepicker({autoApply:true});
+    $('#daterange-nodocs-package-detail').daterangepicker({autoApply:true});
+    $('#daterange-users-dashboard-detail').daterangepicker({autoApply:true});
+    $('#daterange-package-status-detail').daterangepicker({autoApply:true});
+   
+    $('#daterange-awbStatus').daterangepicker({});       
     $('#daterange-package-status').daterangepicker({});
-
     $('input[name="daterange"]').daterangepicker({
       //autoUpdateInput: false,
       locale: { cancelLabel: 'Clear' },

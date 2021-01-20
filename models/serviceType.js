@@ -7,6 +7,9 @@ const serviceTypeSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  type: {
+    type: String,
+  },
   amount: {
     type: Number,
     default: 0

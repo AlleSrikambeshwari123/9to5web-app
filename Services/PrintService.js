@@ -7,6 +7,7 @@ const strings = require('../Res/strings');
 // const USER_PRINTER_PREFIX = "wh:printer:";
 
 const Awb = require('../models/awb');
+const AwbHistory = require('../models/awbHistory');
 const User = require('../models/user');
 const Cube = require('../models/cube');
 
@@ -60,8 +61,33 @@ class PrintService {
 // 	}
 
 	getAWBDataForAllRelatedEntities(id) {
+		return new Promise(async(resolve, reject) => {
+			let checkAwb = await Awb.findOne({ _id: id }).read('primary')
+			let modelCheck = Awb
+			if(checkAwb == null)
+				modelCheck = AwbHistory
+			modelCheck.findOne({ _id: id })
+				.read("primary")
+				.populate('customerId')
+				.populate('shipper')
+				.populate('carrier')
+				.populate('hazmat')
+				.populate('packages')
+				.populate('purchaseOrders')
+				.populate('invoices')
+				.populate('createdBy')
+				.exec((err, result) => {
+					if (result && result.customerId) {
+						result.customer = result.customerId;
+					}
+					resolve(result);
+				});
+		});
+	}
+
+	getAWBHistoryDataForAllRelatedEntities(id) {
 		return new Promise((resolve, reject) => {
-			Awb.findOne({ _id: id })
+			AwbHistory.findOne({ _id: id })
 				.populate('customerId')
 				.populate('shipper')
 				.populate('carrier')
@@ -80,17 +106,36 @@ class PrintService {
 	}
 
 	getAWBDataForPackagesRelatedEntitie(id) {
-		return new Promise((resolve, reject) => {
-			Awb.findOne({ _id: id })
+		return new Promise(async(resolve, reject) => {
+			let checkAwb = await Awb.findOne({ _id: id }).read('primary')
+			let modelCheck = Awb
+			if(checkAwb == null)
+				modelCheck = AwbHistory
+			modelCheck.findOne({ _id: id })
 				.populate('packages')
 				.exec((err, result) => {
 					resolve(result);
 				});
 		});
 	}
-	getAWBDataForPurchaseOrderRelatedEntitie(id) {
+
+	getAWBHistoryDataForPackagesRelatedEntitie(id) {
 		return new Promise((resolve, reject) => {
-			Awb.findOne({ _id: id })
+			AwbHistory.findOne({ _id: id })
+				.populate('packages')
+				.exec((err, result) => {
+					resolve(result);
+				});
+		});
+	}
+
+	getAWBDataForPurchaseOrderRelatedEntitie(id) {
+		return new Promise(async(resolve, reject) => {
+			let checkAwb = await Awb.findOne({ _id: id }).read('primary')
+			let modelCheck = Awb
+			if(checkAwb == null)
+				modelCheck = AwbHistory
+			modelCheck.findOne({ _id: id })
 				.populate('packages')
 				.populate('purchaseOrders')
 				.populate('createdBy')

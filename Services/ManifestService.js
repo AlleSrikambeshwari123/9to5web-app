@@ -4,6 +4,7 @@ var moment = require('moment');
 const strings = require('../Res/strings');
 const Manifest = require('../models/manifest');
 const Package = require('../models/package')
+const PackageHistory = require('../models/packageHistory')
 const Coompartment = require('../models/compartment')
 const manifestStages = {
   open: {
@@ -66,6 +67,9 @@ class ManifestService {
       manifest['stageId'] = manifestStages.open.id;
       manifest['stage'] = manifestStages.open.title;
       const pkgs = await Package.find({manifestId:manifest.originalManifestId})
+      if(pkgs == null){
+        pkgs = await PackageHistory.find({manifestId:manifest.originalManifestId})
+      }
       if (pkgs !==  null){
         pkgs.map(pkg=>{
           pkgsClone.push(pkg._id)
@@ -93,10 +97,11 @@ class ManifestService {
   }
   updateCloneManifestIdOnPackages(id,manifestId){
     return new Promise((resolve,reject)=>{
-      Package.findOneAndUpdate({_id:id},{cloneManifestId:manifestId},(err,result)=>{
+      Package.findOneAndUpdate({_id:id},{cloneManifestId:manifestId},async (err,result)=>{
         if (err) {
           resolve({ success: false, message: err});
         } else {
+          await PackageHistory.findOneAndUpdate({_id:id},{cloneManifestId:manifestId})
           resolve({ success: true, message:  strings.string_response_updated});
         }
       })
@@ -549,7 +554,7 @@ class ManifestService {
         } else {
           Promise.all(manifests.map(async (manifest,i) => {
             manifest['plane'] = manifest['planeId'];
-            let pkg = await Package.find({manifestId:manifest.id})
+            let pkg = await PackageHistory.find({manifestId:manifest.id})
             console.log({manifest,pkg})
             if(pkg.length == 0) delete manifests[i]
           })
@@ -749,6 +754,22 @@ class ManifestService {
       return manifestStages.verified;
     }
     return manifestStages.open;
+  }
+
+  deletePackage(manifestId, packageId){
+    return new Promise((resolve, reject) => {
+      Manifest.updateOne({_id: manifestId}, {$pull: { packages:  packageId,clonePackages: packageId}}, (err, result) => {
+        Package.updateOne({_id: packageId}, {manifestId: null},async (err, result) => {
+        if (err) {
+          console.log(err)
+          resolve({ success: false, message: err });
+        } else {
+          await PackageHistory.updateOne({_id: packageId}, {manifestId: null})
+          resolve({ success: true, message: strings.string_response_removed });
+        }
+      })
+      })
+    });
   }
 }
 

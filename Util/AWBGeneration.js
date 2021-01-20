@@ -119,7 +119,7 @@ class AWBGeneration {
 
              let awbArray = []
             for(let pkg of packages){
-                await services.printService.getAWBDataForAllRelatedEntities(pkg.awbId._id).then(async(awb) => {
+                await services.printService.getAWBHistoryDataForAllRelatedEntities(pkg.awbId._id).then(async(awb) => {
                     let priceLabelAwb  =  await services.AwbPriceLabelService.getPriceLabel(awb._id)
                     let flag = 0
                     for(let arr of awbArray){
@@ -171,7 +171,7 @@ class AWBGeneration {
 
              let awbArray = []
             for(let pkg of packages){
-                await services.printService.getAWBDataForAllRelatedEntities(pkg.awbId._id).then(async(awb) => {
+                await services.printService.getAWBHistoryDataForAllRelatedEntities(pkg.awbId._id).then(async(awb) => {
                     let priceLabelAwb  =  await services.AwbPriceLabelService.getPriceLabel(awb._id)
                     let flag = 0
                     for(let arr of awbArray){
@@ -452,6 +452,19 @@ class AWBGeneration {
             notes = this.awb.note;
         if (this.awb.express)
             express = this.awb.express
+        
+        var purchaseOrders = this.awb.purchaseOrders ? this.awb.purchaseOrders : [];
+        var totalPO = 0;
+        var po_number = ''
+        if(purchaseOrders && purchaseOrders.length>0){
+            for(var i=0; i< purchaseOrders.length; i++){
+                totalPO = totalPO+ parseFloat(purchaseOrders[i].amount);
+            }
+        }
+        if(totalPO>0){
+            po_number = this.awb.po_number;
+        }
+
         let pdfObject = {
             layout: 'lightHorizontallines',
             margin: [0, 10],
@@ -460,21 +473,21 @@ class AWBGeneration {
                 widths: ['*', '*', '*', '*'],
                 body: [
                     [{ margin: [1, 1], text: "Inland Carrier and Shipper Information", colSpan: 4, alignment: 'center', fillColor: '#cccccc', bold: true }, '', '', ''],
-                    [{ text: 'Carrier Name:' }, { text: this.awb.carrier.name }, { text: 'P.O. Number (Nine to Five)' }, { text: po }],
-                    [{ text: 'Notes:', colSpan: 2, bold: true }, { text: notes }, { text: 'External Invoice No', bold: true }, { text: 'External PO', bold: true }],
+                    [{ text: 'Carrier Name:' }, { text: this.awb.carrier.name }, { text: 'P.O. Number (Nine to Five)' }, { text: po_number }],
+                    [{ text: 'Notes:',  bold: true }, { text: notes }, { text: 'External Invoice No', bold: true }, { text: 'External PO', bold: true }],
                     [{ text: this.awb.no, colSpan: 2 }, { text: '' }, { text: (this.awb.invoices || []).map(i => i.number).join(', '), fontSize: 9, bold: true }, { text: '' }]
                 ]
             }
         }
         if(express > 0)
-            pdfObject.table.body.splice(2,0,[{ text: 'Express:', bold: true }, { text: express },{ text: 'MAWB#' }, { text: '' }])
+            pdfObject.table.body.splice(2,0,[{ text: 'Express', bold: true ,colSpan: 4 }])
         else{
             pdfObject.table.body.splice(2,0,[{ text: 'MAWB#' ,colSpan: 4}, { text: '' }])
         }
         return pdfObject
     }
     generateHeader(png) {
-        return [{
+         var header= [{
                 width: '*',
                 stack: [
                     { text: 'Nine To Five Import Export \n', fontSize: 15, bold: true },
@@ -495,7 +508,7 @@ class AWBGeneration {
                                 width: '*',
                                 margin: [10, 5],
                                 stack: [
-                                    { text: 'Airway Bill No:', bold: true, fontSize: 9 },
+                                    { text: 'Airway Bill No:', bold: true, fontSize: 9 },                                   
                                     { margin: [0, 5], text: 'Received Date/Time:', bold: false, fontSize: 9 },
                                     { margin: [0, 3], text: 'Received By:', bold: false, fontSize: 9 }
                                 ]
@@ -514,6 +527,18 @@ class AWBGeneration {
                 ],
             }
         ]
+        var purchaseOrders = this.awb.purchaseOrders ? this.awb.purchaseOrders : [];
+        var totalPO = 0;
+        if(purchaseOrders && purchaseOrders.length>0){
+            for(var i=0; i< purchaseOrders.length; i++){
+                totalPO = totalPO+ parseFloat(purchaseOrders[i].amount);
+            }
+        }
+        // if(totalPO > 0){
+        //  header[1].stack[2].columns[0].stack.splice(1,0,{ margin: [0, 3], text: 'Purchase Order:', bold: true, fontSize: 9 });
+        //  header[1].stack[2].columns[1].stack.splice(1,0,{ margin: [-1, 2], text: (this.awb.po_number?this.awb.po_number:''), bold: true, fontSize: 9 })
+        // }
+        return header;
     }
     
     generateShiperCosigneeTable(awb) {
@@ -574,6 +599,14 @@ class AWBGeneration {
 
     generatePurchaseOrder(awb) {
         this.awb = awb;
+        var purchaseOrders = this.awb.purchaseOrders ? this.awb.purchaseOrders : [];
+        var totalPO = 0;
+        if(purchaseOrders && purchaseOrders.length>0){
+            for(var i=0; i< purchaseOrders.length; i++){
+                totalPO = totalPO+ parseFloat(purchaseOrders[i].amount);
+            }
+        }
+
         return new Promise((resolve, reject) => {
             this.generateBarcode(awb._id).then(async png => {
 
@@ -587,9 +620,16 @@ class AWBGeneration {
                             margin: [0, 10],
                             table: {
                                 headerRows: 1,
-                                widths: ["*", "*", "*", "*", "*", '*'],
+                                widths: [65, 100, 80, 50, 90, 60],
                                 body: await this.generatePurchaseOrderTable()
                             }
+                        },
+                        {
+                            
+                            columns:[
+                                { text: 'Total:',bold:true, margin: [ 220, 2, 2, 2 ] },
+                                { text: '$'+totalPO, bold:true, margin: [ 30, 2, 2, 2 ] }
+                            ]
                         }
                     ],
                     styles: {
@@ -641,8 +681,10 @@ class AWBGeneration {
             ],           
         ]
         var purchaseOrders = this.awb.purchaseOrders ? this.awb.purchaseOrders : [];
+        var totalPO = 0;
         if(purchaseOrders && purchaseOrders.length>0){
             for(var i=0; i< purchaseOrders.length; i++){
+                totalPO = totalPO+ parseFloat(purchaseOrders[i].amount);
                 body.push([
                     { text: moment(purchaseOrders[i].createdAt).format("MMM/D/YYYY"),bold: false},
                     { text: purchaseOrders[i].serviceTypeText ,bold: false},
@@ -652,6 +694,7 @@ class AWBGeneration {
                     { text: purchaseOrders[i].source ,bold: false}
                 ]) 
             }
+            
         }        
         return body;
     }
@@ -678,8 +721,10 @@ class AWBGeneration {
                                 margin: [10, 5],
                                 stack: [
                                     { text: 'Airway Bill No:', bold: true, fontSize: 9 },
+                                    { margin: [0, 2], text: 'PO Number:', bold: true, fontSize: 9 },
                                     //{ margin: [0, 5], text: 'Received Date/Time:', bold: false, fontSize: 9 },
                                     { margin: [0, 3], text: 'Created By:', bold: false, fontSize: 9 },
+                                    
                                    
                                 ]
                             },
@@ -688,8 +733,10 @@ class AWBGeneration {
                                 margin: [0, 5],
                                 stack: [
                                     { margin: [-3, 0], text: "AWB" + this.awb.awbId, bold: true, fontSize: 11 },
+                                    { margin: [-1, 2], text: (this.awb.po_number ) || '', bold: true, fontSize: 9 },
                                     //{ margin: [-1, 5], text: moment(this.awb.createdAt).format("MM/DD/YYYY hh:mm A"), bold: false, fontSize: 9 },
-                                    { margin: [-1, 0], text: (this.awb.createdBy && this.awb.createdBy.username) || '', bold: false, fontSize: 9 }
+                                    { margin: [-1, 0], text: (this.awb.createdBy && this.awb.createdBy.username) || '', bold: false, fontSize: 9 },
+                                   
                                 ]
                             }
                         ]

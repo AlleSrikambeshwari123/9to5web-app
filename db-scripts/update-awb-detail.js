@@ -6,6 +6,8 @@ require('dotenv').config();
 const createConnection = require('../Util/mongo');
 const Package = require('../models/package');
 const Awb = require('../models/awb');
+const AwbHistory = require('../models/awbHistory');
+
 const Customer = require('../models/customer');
 const Shipper = require('../models/shipper');
 const Carrier = require('../models/carrier');
@@ -38,6 +40,7 @@ createConnection()
                     carrierName: (carrier && carrier.name)? carrier.name : ''                  
                 }       
                 var update = await Awb.updateOne({_id:awb._id},updateData);
+                var updateHistory = await AwbHistory.updateOne({_id:awb._id},updateData);
             }
         }
     }

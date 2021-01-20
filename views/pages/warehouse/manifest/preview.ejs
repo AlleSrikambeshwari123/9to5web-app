@@ -113,7 +113,7 @@
                 <div class="d-flex">
                     <h3 class="card-title text-muted package-info">Data Entry ( Weight : <span id="lbs-data-entry">10</span> lbs / <span id="vlbs-data-entry"></span> vlbs )</h3>
                 </div>
-                <div class='row mt-3 daterangepickerbody'>
+                <div class='row mt-3'>
                     <div class='col-md-12 table-responsive'>
                         <table id='packageTable' class='display dateRangeFilterTable table table-striped table-hover w-100'>
                             <thead>
@@ -127,6 +127,7 @@
                                     <td><strong>Volumetric Weight</strong></td>
                                     <td><strong>Dimension</strong></td>
                                     <td><strong>Number Of Pieces #</strong></td>
+                                    <td><strong>Action #</strong></td>
                                 </tr>
                             </thead>
                             <tbody>
@@ -167,10 +168,13 @@
                                     <td>
                                         <%= package.pieces %>
                                     </td>
+                                    <td>
+                                        <a class="btn btn-link btn-danger btn-rm-pkg p-1" title="Delete" data-id="<%=package._id%>" data-toggle="modal" data-backdrop="static" data-target="#confirmPkgDel"><i class="fa fa-trash"></i></a>
+                                    </td>
                                 </tr>
                                 <% }) %>
                             </tbody>
-                            <tbody>
+                            <!--<tbody>
                                 <tr>
                                     <td></td>
                                     <td><strong>Total Weight</strong></td>
@@ -178,7 +182,7 @@
                                     <td></td>
                                     <td><strong>Total Volumetric Weight</strong></td>
                                     <td><strong id="vlsweight"><%= volumetricWeight.toFixed(2)%></strong> vlbs</td>
-                                </tr>
+                                </tr>-->
                             </tbody>
                         </table>
                     </div>
@@ -186,10 +190,10 @@
             </div>
             <div class="card-action">
                 <% if (Number(manifest.stageId) == 1) { %>
-                <a data-target="#shipManifest" data-toggle='modal' data-id="<%= manifest.id %>"
+                <a data-target="#shipManifest" data-toggle='modal' data-backdrop='static' data-id="<%= manifest.id %>"
                     class='btn btn-round btn-primary ml-md-auto float-right text-white btn-send'>Send Flight</a>
                 <% } else if (Number(manifest.stageId) == 3) { %>
-                <a data-target="#receiveManifest" data-toggle='modal' data-id="<%= manifest.id %>"
+                <a data-target="#receiveManifest" data-toggle='modal' data-backdrop='static' data-id="<%= manifest.id %>"
                     class='btn btn-round btn-primary ml-md-auto float-right text-white btn-receive'>Receive Flight</a>
                 <% } %>
             </div>

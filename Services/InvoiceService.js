@@ -82,7 +82,8 @@ class InvoiceService {
 
   async getInvoicesByAWB(awbId) {
     return new Promise((resolve, reject) => {
-      Invoice.find({awbId: awbId}, (err, result) => {
+      Invoice.find({awbId: awbId}).read("primary")
+      .exec((err, result) => {
         if (err) {
           resolve([]);
         } else {

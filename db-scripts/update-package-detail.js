@@ -5,6 +5,8 @@ require('dotenv').config();
 
 const createConnection = require('../Util/mongo');
 const Package = require('../models/package');
+const PackageHistory = require('../models/packageHistory');
+
 const Awb = require('../models/awb');
 const Customer = require('../models/customer');
 const Barcode = require('../models/barcode');
@@ -70,6 +72,7 @@ createConnection()
                 updateData.shipperName = shipper.name;
             }
             var update = await Package.updateOne({_id:pack._id},updateData);
+            var updateHistory = await PackageHistory.updateOne({_id:pack._id},updateData);
         }
     }
     return true

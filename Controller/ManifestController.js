@@ -152,7 +152,7 @@ exports.get_manifest_detail = async (req, res, next) => {
   let manifest = await services.manifestService.getManifest(manifestId);
 
   await Promise.all(packages.map(async (pkg, i) => {
-    let awb = await services.printService.getAWBDataForPackagesRelatedEntitie(pkg.awbId);
+    let awb = await services.printService.getAWBHistoryDataForPackagesRelatedEntitie(pkg.awbId);
     packages[i].pieces = awb.packages ? awb.packages.length : 0
     packages[i].compartment = packages[i].compartmentId;
     packages[i].packageNumber = "PK00" + packages[i].id;
@@ -289,5 +289,13 @@ exports.get_all_incoming_manifest = (req, res, next) => {
     }
     dataTable.data = data;
     res.json(dataTable);
+  })
+}
+
+exports.deletePackage = (req, res, next)=>{
+  var manifestId = req.params.id;
+  var packageId = req.params.packageid;
+  services.manifestService.deletePackage(manifestId, packageId).then(result => {
+    res.json(result);
   })
 }

@@ -72,7 +72,8 @@ class DeliveryService {
 
     getDeliveriesFullData(req) {
         return new Promise(async(resolve, reject) => {
-            var searchData = { status: { $ne: 1 } };
+            // var searchData = { status: { $ne: 1 } };
+            var searchData = {};
             if(req && req.query){
                 var daterange = req.query.daterange?req.query.daterange:'';
                 if(daterange){

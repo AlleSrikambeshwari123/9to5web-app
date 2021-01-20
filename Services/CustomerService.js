@@ -192,6 +192,7 @@ class CustomerService {
   getCustomer(fieldData) {
     return new Promise((resolve, reject) => {
       Customer.findOne(fieldData)
+      .read("primary")
       .populate(['company','location'])
       .exec((err, result) => {
         if (err || !result) {

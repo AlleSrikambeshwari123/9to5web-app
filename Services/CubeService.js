@@ -11,7 +11,9 @@ var uniqId = require('uniqid');
 
 const Cube = require('../models/cube');
 const Package = require('../models/package');
+const PackageHistory = require('../models/packageHistory');
 const Awb = require('../models/awb');
+const AwbHistory = require('../models/awbHistory');
 const CubeAwb = require('../models/cubeawb');
 const Cube2Type = require('../models/cube2Type');
 
@@ -72,7 +74,7 @@ class CubeService {
           for(let i=0;i<result.length;i++){
             var cube = result[i];
             const awbId = (cube.cubepackageId && cube.cubepackageId.awbId)?cube.cubepackageId.awbId:null;
-            const awbData = await Awb.findOne({_id:awbId});
+            const awbData = await AwbHistory.findOne({_id:awbId});
             result[i]['awbId'] = (awbData && awbData.awbId)?awbData.awbId:'';
             // let cubeAwbNo = result[i].cubeAwbId ? result[i].cubeAwbId.cubeAwbNo: ''
             // result[i]['awbId'] = 'C'+cubeAwbNo
@@ -219,9 +221,11 @@ class CubeService {
         if (err) {
           resolve({ success: false, message: strings.string_response_error });
         } else {
-          // let cubeResult = await Cube.findOne({cubeAwbId : cube.id});
-          // if(cubeResult && cubeResult.cubepackageId)
-          //   await Package.findOneAndUpdate({_id : cubeResult.cubepackageId},updatedCubeData)
+          let cubeResult = await Cube.findOne({cubeAwbId : cube.id});
+          if(cubeResult && cubeResult.cubepackageId){
+            await Package.findOneAndUpdate({_id : cubeResult.cubepackageId},updatedCubeData)
+            await PackageHistory.findOneAndUpdate({_id : cubeResult.cubepackageId},updatedCubeData)
+          }
           resolve({ success: true, message: strings.string_response_updated });
         }
       });
@@ -393,7 +397,7 @@ class CubeService {
       },  
       {
         $lookup:{
-          from:"packages",
+          from:"packagehistories",
           localField:"packages",
           foreignField:"_id",
           as:"packages"
@@ -401,7 +405,15 @@ class CubeService {
       },
       {
         $lookup:{
-            from:"packages",
+          from:"cubeawbs",
+          localField:"cubeAwbId",
+          foreignField:"_id",
+          as:"cubeAwbDetail"
+        }
+      },
+      {
+        $lookup:{
+            from:"packagehistories",
             localField:"cubepackageId",
             foreignField:"_id",
             as:"cubeDetail"
@@ -409,7 +421,7 @@ class CubeService {
       },
       {$unwind:"$cubeDetail"},
       {
-        $project:{_id:1, packages:1,name:1,cubepackageId: 1, cubeDetail:1}
+        $project:{_id:1, packages:1,name:1,cubepackageId: 1, cubeDetail:1, cubeAwbDetail: 1}
       }
       ]).exec((err, result) => {
         if(result && result.length>0){
@@ -437,7 +449,9 @@ class CubeService {
     return new Promise((resolve, reject) => {   
       Cube.findOne({_id:id}).populate('userId').populate('cubepackageId').exec(async (err, cube) => {        
         const awbId = (cube.cubepackageId && cube.cubepackageId.awbId)?cube.cubepackageId.awbId:null;
-        const awbData = await Awb.findOne({_id:awbId});
+        let awbData = await Awb.findOne({_id:awbId});
+        if(!awbData)
+          awbData = await AwbHistory.findOne({_id:awbId});
         cube = JSON.parse(JSON.stringify(cube));
         cube.awbId = (awbData && awbData.awbId)?awbData.awbId:'';
         resolve(cube); 
@@ -445,7 +459,7 @@ class CubeService {
     })
   }
 
-  async CubeAwbDtail(id){
+  async CubeAwbDetail(id){
     return new Promise((resolve, reject) => {   
       CubeAwb.findOne({_id:id}).populate('createdBy').exec(async (err, cube) => {        
         resolve(cube); 
@@ -515,7 +529,7 @@ class CubeService {
       },  
       {
         $lookup:{
-          from:"packages",
+          from:"packagehistories",
           localField:"packages",
           foreignField:"_id",
           as:"packageList"
@@ -523,7 +537,7 @@ class CubeService {
       },
       {
         $lookup:{
-            from:"packages",
+            from:"packagehistories",
             localField:"cubepackageId",
             foreignField:"_id",
             as:"cubeDetail"
@@ -551,6 +565,21 @@ class CubeService {
         
       })    
     })
+  }
+  deletePackage(cubeId, packageId){
+    console.log(cubeId,packageId)
+    return new Promise((resolve, reject) => {
+      Cube.updateOne({_id: cubeId}, {$pull: { packages:  packageId}}, (err, result) => {
+        Package.updateOne({_id: cubeId}, {cubeId: null}, (err, result) => {
+        if (err) {
+          console.log(err)
+          resolve({ success: false, message: err });
+        } else {
+          resolve({ success: true, message: strings.string_response_removed });
+        }
+      })
+      })
+    });
   }
 
 }

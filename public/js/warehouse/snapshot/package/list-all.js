@@ -1,6 +1,8 @@
 
 let packageTable = $('.package-table').DataTable({
   pageLength: 10,
+ // dom: 'Bfrtip',
+  //buttons: [  'pdf'],
   columnDefs: [
     {
       orderable: false,
@@ -10,7 +12,7 @@ let packageTable = $('.package-table').DataTable({
   select: {
     style: 'multi',
     selector: 'td:first-child input[type="checkbox"]',
-  }
+  },  
 });
 
 $('#package-table').on('draw.dt', function () {
@@ -739,7 +741,7 @@ $(function () {
           type: response.success ? 'success' : 'error',
           text: response.message,
         });
-        location.reload()
+        // location.reload()
       },
       error: function () {
         swal({
@@ -766,10 +768,24 @@ if (urlPage == "/warehouse/snapshot/package/list") {
 if (pageUrl.split('/')[2] == "customer") {
   redirectUrl = window.location.pathname;
 }
+if(nodoc){
+  $(document).on('click', '.applyBtn', function () {
+    var urlLocation = redirectUrl + "?nodocs=load&&daterange=" + $('.daterange').val();
+    if($('#search_collection').val()){
+      urlLocation = urlLocation+'&search_collection='+$('#search_collection').val();
+    }
+    window.location = urlLocation;
+  })
+}else{
 
 $(document).on('click', '.applyBtn', function () {
-  window.location = redirectUrl + "?daterange=" + $('.daterange').val();
+  var urlLocation = redirectUrl + "?daterange=" + $('.daterange').val();
+  if($('#search_collection').val()){
+    urlLocation = urlLocation+'&search_collection='+$('#search_collection').val();
+  }
+  window.location = urlLocation;
 })
+}
 
 $(document).on('click', '.cancelBtn', function () {
   window.location = redirectUrl + "?clear=1";
@@ -798,6 +814,7 @@ function searchDataFilter(){
   var search_text = $("#search_text").val();  
   var customerId = $("#customerId").val();
   var locationId = $("#locationsId").val();
+  
   var pageUrl =$("#page").val();
   var pageArr =  pageUrl.split('?');
   var urlPage = (pageArr && pageArr.length) ? pageArr[0] : '';
@@ -808,8 +825,14 @@ function searchDataFilter(){
   if(customerId){
     urlPage =  urlPage+"&customerId="+customerId;
   }
+  if(nodoc){
+    urlPage =  urlPage+"&nodocs=load";
+  }
   if(locationId){
     urlPage =  urlPage+"&locationId="+locationId;
+  }
+  if($("#search_collection").val()){
+    urlPage = urlPage+'&search_collection='+$("#search_collection").val();
   }
 
    window.location = urlPage;

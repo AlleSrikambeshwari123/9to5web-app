@@ -50,7 +50,7 @@ class CarrierService {
   }
   getCarrier(id) {
     return new Promise((resolve, reject) => {
-      Carrier.findOne({_id: id}).exec((err, result) => {
+      Carrier.findOne({_id: id}).read("primary").exec((err, result) => {
         if (err) {
           resolve({});
         } else {

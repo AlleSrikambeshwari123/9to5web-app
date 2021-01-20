@@ -92,7 +92,7 @@ exports.cube_detail = (req, res, next) => {
 }
 
 exports.cube_awb_detail = (req, res, next) => {
-  services.cubeService.CubeAwbDtail(req.params.id).then(cube => {  
+  services.cubeService.CubeAwbDetail(req.params.id).then(cube => {  
     res.render('pages/warehouse/cube/cubeAwb', {
       page: req.originalUrl,
       title: 'Cube Awb Detail',
@@ -154,5 +154,11 @@ exports.update_awb_cube = (req, res, next) => {
 exports.delete_cube = (req, res, next) => {
   services.cubeService.removeCube(req.params.id).then(result => {
     res.send(result);
+  })
+}
+
+exports.deletePackage = (req, res, next) => {
+  services.cubeService.deletePackage(req.params.id, req.params.packageid).then(result => {
+    res.json(result);
   })
 }

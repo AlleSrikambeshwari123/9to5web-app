@@ -55,7 +55,7 @@ $('.print-awb').click(function () {
   printJS(pdfPath);
 })
 
-var awbTable = $('#awb-table').DataTable({
+var awbTable = $('#awb-table1').DataTable({
   pageLength: 10,
 })
 var nodocsTable = $('#no-docs-table').DataTable({

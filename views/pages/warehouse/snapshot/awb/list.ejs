@@ -45,6 +45,12 @@ var endate = new Date();
         </div>
       </div>
       <div id="myLoader"><img src="/img/preloader.gif"></div>
+      <div style="padding: 15px 0 0 35px;">
+        <select name="search_collection" id="search_collection"  class="form-control" style="width: 33%; float: left;">
+          <option value="ACTIVE" <%if(query.search_collection=="ACTIVE"){%>selected<%}%>>Active</option>
+          <option value="HISTORY" <%if(query.search_collection=="HISTORY"){%>selected<%}%>>History </option>          
+        </select>
+      </div>
       <div class="card-body daterangepickerbody">
           <input type="hidden" name="clear" id="clear" value="<%=clear%>">
           <input type="hidden" id="daterange" value="<%=daterange%>">
@@ -96,7 +102,7 @@ var endate = new Date();
                   <td><%=awb.packages ? awb.packages.length : 'no-pkg' %></td>
                   <td>
                     <button class="btn btn-primary btn-view-more-awb btn-round float-right ml-md-auto"
-                      data-toggle="modal" data-original-title="View More Packages" data-id="<%=awb._id%>"
+                      data-toggle="modal" data-backdrop="static" data-original-title="View More Packages" data-id="<%=awb._id%>"
                       data-target="#more-awb-details">View</button>
                   </td>
                   <!-- <td><% if(awb.invoice) { %>

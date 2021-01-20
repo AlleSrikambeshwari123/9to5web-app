@@ -17,6 +17,6 @@ router.get('/cube/detail/:id', middleware().checkSession, cubeCtrl.cube_detail);
 router.get('/cube/awbDetail/:id', middleware().checkSession, cubeCtrl.cube_awb_detail);
 router.post('/cube/manage/:id/update', middleware().checkSession, cubeCtrl.update_cube);
 router.delete('/cube/manage/:id/delete', middleware().checkSession, cubeCtrl.delete_cube);
-
+router.get('/cube/detail/:id/delete-package/:packageid', middleware().checkSession, cubeCtrl.deletePackage);
 
 module.exports = router;

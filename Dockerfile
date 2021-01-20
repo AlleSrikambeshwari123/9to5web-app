@@ -1,4 +1,4 @@
-FROM node:8
+FROM node:10.20
 # set working directory
 RUN mkdir /usr/src/app
 WORKDIR /usr/src/app

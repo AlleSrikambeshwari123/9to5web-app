@@ -57,6 +57,9 @@ $(document).on('click', '.cancelBtn', function() {
 })
 $(document).ready(function() {
   setTimeout(()=>{
+  $('.daterange').val(daterange);
+  },100)
+  setTimeout(()=>{
 		if($('#clear').val() ){
 		  // $('#daterange').val('')
 		  $('#clear').val('1');

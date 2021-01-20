@@ -48,8 +48,8 @@ router.get('/get-package-detail/:trackingNo', passport.authenticate('jwt', { ses
   .then( result => {
     if(result.success){
       Promise.all([
-        services.packageService.getPackageById(result.package._id),
-        services.awbService.getFullAwb(result.package.awbId),
+        services.packageService.getPackageHistoryById(result.package._id),
+        services.awbService.getFullAwbHistory(result.package.awbId),
       ]).then(results => {
       res.send({
         success:true,
@@ -141,8 +141,10 @@ router.get("/get_packages_7days_status", middleware().checkSession, (req, res, n
 // Dashboard Page
 router.get("/get_packages_filter/:filter", middleware().checkSession, (req, res, next) => {
   Promise.all([
-    services.packageService.getPackageWithFilter(req.params.filter, req.query),
-    services.userService.getAllUsers(req)
+    //services.packageService.getPackageWithFilter(req.params.filter, req.query),
+    services.packageService.getPackageWithFilterHistory(req.params.filter, req.query),
+    //services.userService.getAllUsers(req)
+    services.userService.getAllUsersWithAwbCount(req)
   ]).then(result => {
     result[0]['users'] = result[1]; 
     res.send(result[0])

@@ -52,3 +52,46 @@ $('.receive-manifest').click(function () {
     }
   })
 })
+
+$('#packageTable').on('click','.btn-rm-pkg',function () {
+  var id = $(this).data('id');
+  
+  $('.close-del').trigger('click');
+  $.ajax({
+    url: 'delete-package/'+id,
+    type: 'get',
+    success: response => {
+      swal({
+        title: response.success == true ? 'Received' : 'Failed',
+        text: response.message,
+        type: response.success == true ? 'success' : 'error',
+      }).then(res => {
+        if (response.success == true) {
+          document.location.href = "get";
+        }
+      })
+    }
+  })
+})
+
+$('.btn-rm-pkg-awb').click(function () {
+  var id = $(this).data('id');
+  var awbId = $("#cubeid").val();
+  
+  $('.close-del').trigger('click');
+  $.ajax({
+    url: awbId+'/delete-package/'+id,
+    type: 'get',
+    success: response => {
+      swal({
+        title: response.success == true ? 'Received' : 'Failed',
+        text: response.message,
+        type: response.success == true ? 'success' : 'error',
+      }).then(res => {
+        if (response.success == true) {
+          location.reload();
+        }
+      })
+    }
+  })
+})

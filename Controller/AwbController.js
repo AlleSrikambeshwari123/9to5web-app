@@ -79,7 +79,8 @@ exports.get_awb_detail = (req, res, next) => {
     services.packageService.getProcessOriginBarcode(res.user),
     services.packageService.getAllOriginBarcodes(),
     services.driverService.getDrivers(),
-    services.invoiceService.getAdditionalInvoices()
+    services.invoiceService.getAdditionalInvoices(),
+    services.locationService.getCompanies(),
   ]).then(([
     customers,
     hazmats,
@@ -95,7 +96,8 @@ exports.get_awb_detail = (req, res, next) => {
     processBarcode,
     barcodes,
     drivers,
-    additionalInvoices
+    additionalInvoices,
+    companies
   ]) => {
     awb['customer'] = awb['customerId'];
     res.render('pages/warehouse/awb/edit', {
@@ -117,7 +119,8 @@ exports.get_awb_detail = (req, res, next) => {
       processBarcode,
       barcodes,
       drivers,
-      additionalInvoices
+      additionalInvoices,
+      companies
     });
   })
 };
@@ -182,12 +185,14 @@ exports.add_new_awb = async (req, res, next) => {
   const invoiceIds = [];
   // Creating Invoices
   await Promise.all((invoices || []).map(invoice => {
-    invoice['_id'] = mongoose.Types.ObjectId();
-    invoice.awbId = awbId;
-    invoice['createdBy'] = req['userId'];
-    invoiceIds.push(invoice['_id']);
-    invoice.name = invoice.name 
-    return services.invoiceService.create(invoice);
+    if(invoice.filename && invoice.number ){
+      invoice['_id'] = mongoose.Types.ObjectId();
+      invoice.awbId = awbId;
+      invoice['createdBy'] = req['userId'];
+      invoiceIds.push(invoice['_id']);
+      invoice.name = invoice.name    
+      return services.invoiceService.create(invoice);
+    }
   }));
 
   const packagesIds = [];
@@ -295,11 +300,13 @@ exports.update_awb = async (req, res, next) => {
         invoiceIds.push(invoice['id']);
         promises.push(() => services.invoiceService.updateInvoice(invoice.id, invoice));
       } else {
-        invoice.awbId = awbId;
-        invoice['_id'] = mongoose.Types.ObjectId();
-        invoice['createdBy'] = req['userId'];
-        invoiceIds.push(invoice['_id']);
-        promises.push(() => services.invoiceService.create(invoice));
+        if(invoice.number && invoice.filename){
+          invoice.awbId = awbId;
+          invoice['_id'] = mongoose.Types.ObjectId();
+          invoice['createdBy'] = req['userId'];
+          invoiceIds.push(invoice['_id']);
+          promises.push(() => services.invoiceService.create(invoice));
+        }
       }  
     });
   }
@@ -359,6 +366,7 @@ exports.update_awb = async (req, res, next) => {
   // Updating awb
   services.awbService.updateAwb(awbId, awb, req['userId'])
   .then(async (result) => {
+    
     // Updating or creating invoices, purchaseOrders and packages
     await Promise.all(promises.map((promise) => promise()));
     var pack = result.awbData.packages;

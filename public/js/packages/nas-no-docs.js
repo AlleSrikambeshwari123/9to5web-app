@@ -589,7 +589,7 @@ $(function () {
                 data: null,
                 render: function (data, type, row, meta) {
                     // console.log(data);
-                    return `<a href='javascript:void(0)' data-id='${data.awb.id}' class='view-awb-details' data-toggle='modal' data-target='#awb-details'> ${data.awb.id} </a>`;
+                    return `<a href='javascript:void(0)' data-id='${data.awb.id}' class='view-awb-details' data-toggle='modal' data-backdrop="static" data-target='#awb-details'> ${data.awb.id} </a>`;
                 }
             },
             {

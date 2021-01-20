@@ -91,7 +91,7 @@ class ShipperService {
   }
   getShipper(id) {
     return new Promise((resolve, reject) => {
-      Shipper.findOne({_id: id}).exec((err, result) => {
+      Shipper.findOne({_id: id}).read("primary").exec((err, result) => {
         if (err) {
           resolve({});
         } else {

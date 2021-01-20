@@ -336,6 +336,18 @@ async function sendStorePackageEmail(pkg){
 
     return result; 
 }
+async function sendReportEmail(toEmail,subject, emailBody){
+    console.log("sendReportEmail")
+    
+    message = { 
+        to : toEmail?toEmail:'kim@postboxesetc.com', 
+        from : '9-5 Import <no-reply@95import.com>',
+        subject: subject,
+        html:emailBody
+    }; 
+    var result = toEmail ? await transport.sendMail(message): 'Email Not Found';
+    return result; 
+}
 module.exports = { 
     sendNoDocsEmail : sendNoDocsEmail,
     sendAtStoreEmail: sendAtStoreEmail,
@@ -343,5 +355,6 @@ module.exports = {
     sendNoDocsFL : sendNoDocsFl,
     sendNoDocsPackageEmail:sendNoDocsPackageEmail,
     sendStorePackageEmail:sendStorePackageEmail,
-    sendInvoicesEmail : sendInvoicesEmail
+    sendInvoicesEmail : sendInvoicesEmail,
+    sendReportEmail:sendReportEmail
 }

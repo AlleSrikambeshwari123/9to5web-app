@@ -13,11 +13,11 @@ const manifestSchema = new mongoose.Schema({
   },
   packages:[{
     type:Schema.Types.ObjectId,
-    ref:'Package'
+    ref:'PackageHistory'
   }], 
   clonePackages:[{
     type:Schema.Types.ObjectId,
-    ref:'Package'
+    ref:'PackageHistory'
   }], 
   airportFromId:  {
     type : Schema.Types.ObjectId, 
