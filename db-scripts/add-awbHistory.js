@@ -25,6 +25,9 @@ createConnection()
       console.log("awbs length ",awbs.length)
       for (let awb of awbs) {
         let awbObj = awb.toJSON()
+        if(!awbObj.po_number || !awbObj.po_number == undefined ){
+          awbObj.po_number = Math.floor(100000 + Math.random() * 90000000);
+        }
         const awbResult = new AwbHistory(awbObj);
         await awbResult.save((err)=>{
           if(err){
