@@ -27,6 +27,7 @@ createConnection()
         let awbObj = awb.toJSON()
         if(!awbObj.po_number || !awbObj.po_number == undefined ){
           awbObj.po_number = Math.floor(100000 + Math.random() * 90000000);
+          await Awb.updateOne({_id : awbObj._id},{po_number : awbObj.po_number})
         }
         const awbResult = new AwbHistory(awbObj);
         await awbResult.save((err)=>{
