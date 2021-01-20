@@ -25,6 +25,7 @@
     "create-default-barcodes": "node db-scripts/add-default-barcodes.js",
     "add-location-packages": "node db-scripts/add-location-packages.js",
     "add-packagesHistory": "node db-scripts/add-packagesHistory.js",
+    "add-awbSnapshot": "node db-scripts/add-awbSnapshot.js",
     "add-package-zone-name": "node db-scripts/add-package-zone-name.js",
     "add-package-status": "node db-scripts/add-package-status.js",
     "add-awbHistory": "node db-scripts/add-awbHistory.js",
