@@ -11,8 +11,28 @@ const Zone = require('../models/zone');
 class ZoneService {
   getZones() {
     return new Promise((resolve, reject) => {
-      Zone.find()
-      .populate('location')
+      Zone.aggregate([{
+        $lookup :{
+          from : "locations",
+          localField :"location",
+          foreignField : "_id",
+          as :"location"
+        }
+      },
+      {$unwind : "$location"},
+      {
+        $project: {
+          _id: 1,
+          name: '$name',
+          location: {
+              _id : '$location._id',
+              name: '$location.name',
+              company : '$location.company'
+          },
+        }
+      }])
+      // Zone.find()
+      // .populate('location')
       .exec((err, result) => {
         if (err) {
           resolve([]);

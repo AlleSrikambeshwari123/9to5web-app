@@ -18,6 +18,7 @@
     "add-cube-package": "node db-scripts/add-cube-package.js",
     "update-awb-details":"node db-scripts/update-awb-detail.js",
     "update-package-details": "node db-scripts/update-package-detail.js",
+    "update-pricelabel-details":"node db-scripts/update-pricelabel-details.js",
     "add-customer-package":"node db-scripts/add-customer-package.js",
     "add-customer-awb":"node db-scripts/add-customer-awb.js",
     "add-awb-carrier":"node db-scripts/add-awb-carrier.js",
