@@ -25,7 +25,9 @@ class ZoneService {
           _id: 1,
           name: '$name',
           location: {
+              _id : '$location._id',
               name: '$location.name',
+              company : '$location.company'
           },
         }
       }])
