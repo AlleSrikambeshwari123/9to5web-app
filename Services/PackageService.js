@@ -3257,13 +3257,10 @@ class PackageService {
     }
 
 
-    async getPackageInfo(userId, updatedAt = '') {
-        let query = { updatedBy: userId }
-        if(updatedAt){
-            query['updatedAt']  = {$lt : updatedAt}
-        }
+    async getPackageInfo(userId, pageNo = 1) {
+        let skip = pageNo*10 -10
         try {
-            let packagesList =  await PackageStatus.find(query).populate({ path: "packageId", populate: [{ path: "awbId" },{path : 'cubeId'}] }).limit(10).sort({ updatedAt: -1 })
+            let packagesList =  await PackageStatus.find({ updatedBy: userId }).skip(skip).populate({ path: "packageId", populate: [{ path: "awbId" },{path : 'cubeId'}] }).limit(10).sort({ updatedAt: -1 })
             // let responsePkg = []
             // for(let pkg of packagesList){
             //     pkg = pkg.toJSON()
