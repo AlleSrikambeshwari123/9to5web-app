@@ -452,6 +452,192 @@ class AwbService {
                 });
         });
     }
+    async getAwbsFullWithOutJoin(req) {
+      var searchData = {};
+      if(req && req.query){
+
+          var daterange = req.query.daterange?req.query.daterange:'';      
+          if(daterange){
+          var date_arr = daterange.split('-');
+          var startDate = (date_arr[0]).trim();      
+          var stdate = new Date(startDate);
+          stdate.setDate(stdate.getDate() +1);
+          var endDate = (date_arr[1]).trim();
+          var endate = new Date(endDate);
+          endate.setDate(endate.getDate() +1);  
+          
+          stdate = new Date(stdate.setUTCHours(0,0,0,0));
+          stdate = stdate.toISOString();
+          endate = new Date(endate.setUTCHours(23,59,59,0));
+          endate = endate.toISOString(); 
+              
+          searchData.createdAt = {"$gte":stdate, "$lte": endate};
+        }
+        if(!req.query.daterange && !req.query.clear){
+          var endate = new Date();      
+          endate.setDate(endate.getDate());
+          var stdate = new Date();
+          stdate.setDate(stdate.getDate() - parseInt(strings.default_days_table));
+          
+          stdate = new Date(stdate.setUTCHours(0,0,0,0));
+          stdate = stdate.toISOString();
+          endate = new Date(endate.setUTCHours(23,59,59,0));
+          endate = endate.toISOString(); 
+                 
+          searchData.createdAt = {"$gte":stdate, "$lte": endate};
+        }
+        if(req.query.clear){
+          var endate = new Date();      
+          endate.setDate(endate.getDate()+1);
+          var stdate = new Date();
+          stdate.setDate(stdate.getDate() -14);  
+          
+          stdate = new Date(stdate.setUTCHours(0,0,0,0));
+          stdate = stdate.toISOString();
+          endate = new Date(endate.setUTCHours(23,59,59,0));
+          endate = endate.toISOString(); 
+               
+          searchData.createdAt = {"$gte":stdate, "$lte": endate};
+        }
+        if(req.query.type){
+          if(req.query.type == 'nodocs')
+            searchData.invoices = []
+          else if(req.query.type == 'pendingawb')
+            searchData.packages = []
+          else if(req.query.type == 'awbpackage')
+            searchData.fll_pickup = true
+          else
+            searchData.packages = {$gt : []}         
+        }else{
+          searchData.packages = {$gt : []}
+        }
+      }
+      if(req && req.status && req.status == 'Pricelabel')
+        searchData = {createdAt : searchData.createdAt}
+        return new Promise((resolve, reject) => {
+          Awb.find(searchData)
+          .populate('packages')
+          .populate('purchaseOrders')
+          .populate('invoices')
+          .exec((error,result)=>{
+            Promise.all(result.map(async res =>{
+              let awbPriceLabel = await PriceLabel.findOne({awbId:res._id}) ;
+
+              if(awbPriceLabel != null){
+                const invoices =(res && res.invoices)?res.invoices:[];
+                var totalInvoice = 0;
+                for(let i=0;i<invoices.length;i++){
+                  totalInvoice=totalInvoice+invoices[i].value;
+                }
+                awbPriceLabel.TotalInvoiceValue = totalInvoice
+                awbPriceLabel.NoOfInvoice = invoices.length
+                let totalweightVal = 0,totalVolumetricWeight =0;
+                if(res.packages){
+                  for (var i = 0; i < res.packages.length; i++) {
+                    var weight = res.packages[i].weight;
+                    if (res.packages[i].packageCalculation == 'kg' || res.packages[i].packageCalculation == 'Kg') {
+                      weight = 2.20462 * res.packages[i].weight;
+                    }
+                    totalweightVal = totalweightVal + weight;
+                    let check = 1;
+                    res.packages[i].dimensions.split('x').forEach(data =>{
+                      check = check * data
+                    })
+                    let volumetricWeight = (check/166);
+                    totalVolumetricWeight = totalVolumetricWeight + volumetricWeight;
+                  }
+                  awbPriceLabel.TotalWeightValue = totalweightVal
+                  awbPriceLabel.TotalVolumetricWeight = totalVolumetricWeight
+                  awbPriceLabel.Express = awbPriceLabel.Express ? awbPriceLabel.Express.toFixed(2) : 0
+
+                  if(awbPriceLabel.Express >0){
+                    awbPriceLabel.Express = 35
+                    if(awbPriceLabel.TotalWeightValue >= 2 || awbPriceLabel.TotalVolumetricWeight >= 2 ){
+                      if(awbPriceLabel.TotalWeightValue > awbPriceLabel.TotalVolumetricWeight){
+                        awbPriceLabel.Freight = awbPriceLabel.TotalWeightValue * 3
+                      }
+                      else{
+                        awbPriceLabel.Freight = awbPriceLabel.TotalVolumetricWeight * 3
+                      }
+                    }else{
+                      awbPriceLabel.Freight =  6
+                    }
+                  }else{
+                    awbPriceLabel.Express = 0
+                    if(awbPriceLabel.TotalWeightValue >= 2 || awbPriceLabel.TotalVolumetricWeight >=2 ){
+                      if(awbPriceLabel.TotalWeightValue > awbPriceLabel.TotalVolumetricWeight)
+                        awbPriceLabel.Freight = awbPriceLabel.TotalWeightValue * 1.55
+                      else
+                        awbPriceLabel.Freight = awbPriceLabel.TotalVolumetricWeight * 1.55
+                    }else{
+                      awbPriceLabel.Freight =  3.10
+                    }
+                  }
+                }
+
+                if(awbPriceLabel.OverrideFreight != undefined && awbPriceLabel.OverrideFreight != null){
+                  awbPriceLabel.OverrideFreight = awbPriceLabel.OverrideFreight 
+                }else{
+                  awbPriceLabel.OverrideFreight = awbPriceLabel.Freight 
+                }
+
+                awbPriceLabel.Brokerage = awbPriceLabel.Brokerage ? awbPriceLabel.Brokerage.toFixed(2) : 0
+                awbPriceLabel.CustomsProc = awbPriceLabel.CustomsProc ? awbPriceLabel.CustomsProc.toFixed(2) : 0 
+                awbPriceLabel.VatMultiplier = awbPriceLabel.VatMultiplier ? awbPriceLabel.VatMultiplier.toFixed(2) : 0.12 
+                awbPriceLabel.Delivery =  awbPriceLabel.Delivery ? awbPriceLabel.Delivery.toFixed(2): 0 
+                awbPriceLabel.Duty =  awbPriceLabel.Duty ? awbPriceLabel.Duty.toFixed(2) : 0
+                awbPriceLabel.EnvLevy = awbPriceLabel.EnvLevy ? awbPriceLabel.EnvLevy.toFixed(2) : 0
+                awbPriceLabel.Express = awbPriceLabel.Express ? awbPriceLabel.Express.toFixed(2) : 0
+                awbPriceLabel.Freight = awbPriceLabel.Freight ? awbPriceLabel.Freight.toFixed(2) : 0
+                awbPriceLabel.Hazmat = awbPriceLabel.Hazmat ? awbPriceLabel.Hazmat.toFixed(2) : 0
+                awbPriceLabel.NoDocs = awbPriceLabel.NoDocs ? awbPriceLabel.NoDocs.toFixed(2) : 0
+                awbPriceLabel.Pickup = awbPriceLabel.Pickup ? awbPriceLabel.Pickup.toFixed(2)  : 0
+                awbPriceLabel.Sed = awbPriceLabel.Sed ? awbPriceLabel.Sed.toFixed(2) : 0
+                awbPriceLabel.Storage = awbPriceLabel.Storage ? awbPriceLabel.Storage.toFixed(2) : 0 
+                
+                awbPriceLabel.Insurance = 0
+
+                if(awbPriceLabel.OverrideInvoiceValue){
+                  if(awbPriceLabel.OverrideInvoiceValue > 0)
+                    awbPriceLabel.OverrideInvoiceValue = awbPriceLabel.OverrideInvoiceValue 
+                  else
+                    awbPriceLabel.OverrideInvoiceValue = awbPriceLabel.TotalInvoiceValue 
+                }else{
+                  awbPriceLabel.OverrideInvoiceValue = awbPriceLabel.TotalInvoiceValue 
+                }
+                if(awbPriceLabel.OverrideInvoiceValue >= 100)
+                  awbPriceLabel.Insurance = awbPriceLabel.OverrideInvoiceValue * 0.015
+
+                if(awbPriceLabel.OverrideInsurance != undefined && awbPriceLabel.OverrideInsurance != null){
+                  awbPriceLabel.OverrideInsurance = awbPriceLabel.OverrideInsurance 
+                }else{
+                  awbPriceLabel.OverrideInsurance = awbPriceLabel.Insurance 
+                }
+
+                awbPriceLabel.CustomsVAT = (Number(awbPriceLabel.OverrideInvoiceValue) + Number(awbPriceLabel.Duty)+ Number(awbPriceLabel.CustomsProc)+Number(awbPriceLabel.EnvLevy)) * Number(awbPriceLabel.VatMultiplier)
+                awbPriceLabel.ServiceVat = (Number(awbPriceLabel.OverrideFreight) + Number(awbPriceLabel.NoDocs) + Number(awbPriceLabel.OverrideInsurance) + Number(awbPriceLabel.Storage) + Number(awbPriceLabel.Brokerage) +Number(awbPriceLabel.Express) + Number(awbPriceLabel.Delivery) ) * Number(awbPriceLabel.VatMultiplier)
+
+                awbPriceLabel.ProofOfPurchase = await this.calculateServiceTypeVariable('Proof Of Purchase',res._id)
+                awbPriceLabel.Sed = await this.calculateServiceTypeVariable('Sed',res._id)
+                awbPriceLabel.Pickup = await this.calculateServiceTypeVariable('Pickup',res._id)
+                awbPriceLabel.Hazmat = await this.calculateServiceTypeVariable('Hazmat',res._id)
+
+                awbPriceLabel.SumOfAllCharges = Number(awbPriceLabel.CustomsVAT) + Number(awbPriceLabel.ServiceVat) + Number(awbPriceLabel.OverrideFreight) + Number(awbPriceLabel.Duty)+ Number(awbPriceLabel.CustomsProc)+Number(awbPriceLabel.EnvLevy) +Number(awbPriceLabel.NoDocs) +
+                Number(awbPriceLabel.OverrideInsurance) + Number(awbPriceLabel.Storage) + Number(awbPriceLabel.Brokerage) +Number(awbPriceLabel.Express) + Number(awbPriceLabel.Delivery) + Number(awbPriceLabel.Hazmat) + Number(awbPriceLabel.Pickup)  + Number(awbPriceLabel.Sed) + Number(awbPriceLabel.ProofOfPurchase)
+                console.log("awbPriceLabel.SumOfAllCharges ",awbPriceLabel.SumOfAllCharges )
+                res['awbPriceLabel'] = awbPriceLabel.SumOfAllCharges ? awbPriceLabel.SumOfAllCharges.toFixed(2) : 0;
+                
+                let total =  Number(awbPriceLabel.Brokerage) + Number(awbPriceLabel.CustomsProc) + Number(awbPriceLabel.SumOfAllCharges) + Number(awbPriceLabel.CustomsVAT) + Number(awbPriceLabel.Delivery) + Number(awbPriceLabel.Duty) + Number(awbPriceLabel.EnvLevy) + Number(awbPriceLabel.OverrideFreight) + Number(awbPriceLabel.Hazmat) + Number(awbPriceLabel.Pickup) + Number(awbPriceLabel.NoDocs) + Number(awbPriceLabel.OverrideInsurance) + Number(awbPriceLabel.Sed) + Number(awbPriceLabel.Express) + Number(awbPriceLabel.ServiceVat)+ Number(awbPriceLabel.Storage)
+                awbPriceLabel.TotalWet = total
+
+              }
+              return res;
+            })).then(()=> resolve(result))
+           
+             
+          });
+        })
+    }
 
     async calculateServiceTypeVariable(type,awbId){
       let typeSum = 0

@@ -50,24 +50,13 @@
                   <input class="checkPriceLabelExistPkg" value="<%=awb._id %>" hidden />
                 </td>
                 <td><%= helpers.formatDate(awb.createdAt)%></td>
-                <% if (awb['customerId']) { %>
-                <td><%= (awb['customerId'].lastName ? 
-                  `${awb['customerId'].firstName} ${awb['customerId'].lastName}` : 
-                  `${awb['customerId'].firstName}`); %>
-                </td>
-                <% } else { %>
-                <td> - </td>
-                <% } %>
-                <td><%= awb['customerId']?awb['customerId'].pmb:''%></td>
+                <td><%=(awb.customerFullName)?awb.customerFullName:'-' %></td>
+
+                <td><%= (awb.pmb)?awb.pmb:'' %></td>
                 <td><a class="text-decoration-none"
                     href="../../warehouse/nas/awb/manage/<%=awb._id%>/preview"><%= awb.awbId %></a></td>
-                <% if (awb['shipper'] && awb['shipper'].name) { %>
-                <td><%= awb['shipper'].name %>
-                </td>
-                <% } else { %>
-                <td> - </td>
-                <% } %>
-                <td><%= (awb.carrier && awb.carrier.name)?awb.carrier.name:'' %></td>
+                <td><%=(awb.shipperName)?awb.shipperName:'-' %></td>
+                <td><%= (awb.carrierName)?awb.carrierName:'-' %></td>
                 <td><%= awb.awbPriceLabel || 0%></td>
 
                 <td><a class="btn btn-link btn-primary btn-edit-pricelabel" data-backdrop="static" data-toggle="modal" data-id="<%=awb._id%>"

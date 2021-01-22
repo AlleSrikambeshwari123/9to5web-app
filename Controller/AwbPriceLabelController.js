@@ -8,7 +8,7 @@ exports.get_awb_list = (req, res, next) => {
     req.query.daterange = '';
   }
   req.status = 'Pricelabel'
-  services.awbService.getAwbsFull(req).then((awbs) => {
+  services.awbService.getAwbsFullWithOutJoin(req).then((awbs) => {
     res.render('pages/warehouse/awbprice/list-all', {
       page: req.originalUrl,
       user: res.user,
