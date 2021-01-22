@@ -120,8 +120,8 @@ router.get('/get-package-detail-barcode/:barcode', passport.authenticate('jwt', 
 })
 router.get("/get-package-info",passport.authenticate('jwt', { session: false }), (req, res, next) => {
   let userId = req.headers.username
-  let updatedAt = req.query.updatedAt || moment().endOf('day').toDate()
-  services.packageService.getPackageInfo(userId,updatedAt).then((result) => {
+  let pageNo = req.query.page // should be page number
+  services.packageService.getPackageInfo(userId,pageNo).then((result) => {
     res.send(result)
   })
 })
