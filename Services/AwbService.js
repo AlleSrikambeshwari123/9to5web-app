@@ -517,7 +517,6 @@ class AwbService {
         return new Promise((resolve, reject) => {
           Awb.find(searchData)
           .populate('packages')
-          .populate('purchaseOrders')
           .populate('invoices')
           .exec((error,result)=>{
             Promise.all(result.map(async res =>{
