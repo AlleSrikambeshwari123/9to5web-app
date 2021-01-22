@@ -1,16 +1,16 @@
-// let packageTable = $('.pricelabel-table').DataTable({
-//   pageLength: 10,
-//   columnDefs: [
-//     {
-//       orderable: false,
-//       targets: 0,
-//     },
-//   ],
-//   select: {
-//     style: 'multi',
-//     selector: 'td:first-child input[type="checkbox"]',
-//   },
-// });
+let packageTable = $('.pricelabel-table').DataTable({
+  pageLength: 10,
+  // columnDefs: [
+  //   {
+  //     orderable: false,
+  //     targets: 0,
+  //   },
+  // ],
+  // select: {
+  //   style: 'multi',
+  //   selector: 'td:first-child input[type="checkbox"]',
+  // },
+});
 let TotalVolumetricWeight
 $('.checkPriceLabelExistPkg').map(function (i, dateElement) {
   const id = dateElement.value;
@@ -423,7 +423,8 @@ $(document).ready(function() {
 		  var stdate = new Date();
 		  stdate.setDate(stdate.getDate() -14);      
 		  var dateRange = (stdate.getMonth() + 1)+ '/'+stdate.getDate()+'/'+stdate.getFullYear()+' - '+
-		  (endate.getMonth() + 1)+ '/'+endate.getDate()+'/'+endate.getFullYear()      
+      (endate.getMonth() + 1)+ '/'+endate.getDate()+'/'+endate.getFullYear()      
+      localStorage.clear()
 		  $('.daterange').val(dateRange)
 		}	   
   },100) 

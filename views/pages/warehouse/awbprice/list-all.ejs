@@ -1,4 +1,17 @@
 <% layout('./shared/__template')%>
+
+<%
+var endate = new Date();      
+    endate.setDate(endate.getDate());
+    var stdate = new Date();
+    stdate.setDate(stdate.getDate() -1);      
+    var dateRangeDefault = (stdate.getMonth() + 1)+ '/'+stdate.getDate()+'/'+stdate.getFullYear()+' - '+
+    (endate.getMonth() + 1)+ '/'+endate.getDate()+'/'+endate.getFullYear(); 
+    if(query.clear){
+        dateRangeDefault = '';
+    }
+%>
+
 <style>
   table.dataTable tbody>tr.selected,
   table.dataTable tbody>tr>.selected {
@@ -26,7 +39,7 @@
           <input type="hidden" name="clear" id="clear" value="<%=clear%>">
         <div class="table-responsive">
           <table id="pricelabel-table"
-            class="display table table-striped table-hover dataTable dateRangeFilterTable pricelabel-table">
+            class="display table table-striped table-hover dataTable pricelabel-table">
             <thead>
               <tr>
                 <th></th>
@@ -47,27 +60,16 @@
               <tr data-record="<%= awb._id %>">
                 <td>
                   <input type="checkbox" class="package-select" />
-                  <input class="checkPriceLabelExistPkg" value="<%=awb._id %>" hidden />
+                  <!-- <input class="checkPriceLabelExistPkg" value="<%=awb._id %>" hidden /> -->
                 </td>
                 <td><%= helpers.formatDate(awb.createdAt)%></td>
-                <% if (awb['customerId']) { %>
-                <td><%= (awb['customerId'].lastName ? 
-                  `${awb['customerId'].firstName} ${awb['customerId'].lastName}` : 
-                  `${awb['customerId'].firstName}`); %>
-                </td>
-                <% } else { %>
-                <td> - </td>
-                <% } %>
-                <td><%= awb['customerId']?awb['customerId'].pmb:''%></td>
+                <td><%=(awb.customerFullName)?awb.customerFullName:'-' %></td>
+
+                <td><%= (awb.pmb)?awb.pmb:'' %></td>
                 <td><a class="text-decoration-none"
                     href="../../warehouse/nas/awb/manage/<%=awb._id%>/preview"><%= awb.awbId %></a></td>
-                <% if (awb['shipper'] && awb['shipper'].name) { %>
-                <td><%= awb['shipper'].name %>
-                </td>
-                <% } else { %>
-                <td> - </td>
-                <% } %>
-                <td><%= (awb.carrier && awb.carrier.name)?awb.carrier.name:'' %></td>
+                <td><%=(awb.shipperName)?awb.shipperName:'-' %></td>
+                <td><%= (awb.carrierName)?awb.carrierName:'-' %></td>
                 <td><%= awb.awbPriceLabel || 0%></td>
 
                 <td><a class="btn btn-link btn-primary btn-edit-pricelabel" data-backdrop="static" data-toggle="modal" data-id="<%=awb._id%>"
