@@ -16,6 +16,7 @@ exports.get_awb_list = (req, res, next) => {
       filterURL: '',
       awbs: awbs,
       clear:req.query.clear,
+      page : req.originalUrl,
       query: req.query
     });
   });

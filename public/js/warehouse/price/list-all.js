@@ -16,6 +16,18 @@ $('.checkPriceLabelExistPkg').map(function (i, dateElement) {
   const id = dateElement.value;
   checkPriceLabelExist(id)
 });
+
+function searchDataFilter(){
+  var pageUrl =$("#page").val();
+  var pageArr =  pageUrl.split('?');
+  var urlPage = (pageArr && pageArr.length) ? pageArr[0] : '';
+  urlPage = urlPage+'?1=1'
+  if($("#search_collection").val()){
+    urlPage = urlPage+'&search_collection='+$("#search_collection").val();
+  }
+   window.location = urlPage;
+}
+
 function checkPriceLabelExist(id) {
   $.ajax({
     url: '/warehouse/pricelabels/' + id,

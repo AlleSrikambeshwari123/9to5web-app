@@ -104,6 +104,10 @@ const awbHistorySchema = new mongoose.Schema({
   carrierName:{
     type: String
   },
+  finalPrice :{ 
+    type: Number,
+    default:0 
+  },
   //end searching
   po_number:{
     type: Number,

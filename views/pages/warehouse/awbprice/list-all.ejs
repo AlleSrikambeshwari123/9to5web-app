@@ -35,8 +35,19 @@ var endate = new Date();
         <div class="card-title"><%= title %></div>
       </div>
       <div id="myLoader"><img src="/img/preloader.gif"></div>
+      <div class="col-xs-12 col-sm-12 float-right">
+
+      <div style="padding: 15px 0 0 35px;">
+        <select name="search_collection" id="search_collection"  class="form-control" style="width: 33%; float: left;">
+          <option value="ACTIVE" <%if(query.search_collection=="ACTIVE"){%>selected<%}%>>Active</option>
+          <option value="HISTORY" <%if(query.search_collection=="HISTORY"){%>selected<%}%>>History </option>          
+        </select>
+      </div>
+      <input type="submit" value="Filter" class="btn btn-primary" style="margin-left: 1%;" onclick="searchDataFilter()">
+      </div>
       <div class="card-body daterangepickerbody">
           <input type="hidden" name="clear" id="clear" value="<%=clear%>">
+          <input type="hidden" id="page" value="<%=page%>">
         <div class="table-responsive">
           <table id="pricelabel-table"
             class="display table table-striped table-hover dataTable pricelabel-table">
@@ -70,7 +81,7 @@ var endate = new Date();
                     href="../../warehouse/nas/awb/manage/<%=awb._id%>/preview"><%= awb.awbId %></a></td>
                 <td><%=(awb.shipperName)?awb.shipperName:'-' %></td>
                 <td><%= (awb.carrierName)?awb.carrierName:'-' %></td>
-                <td><%= awb.awbPriceLabel || 0%></td>
+                <td><%= awb.finalPrice || 0%></td>
 
                 <td><a class="btn btn-link btn-primary btn-edit-pricelabel" data-backdrop="static" data-toggle="modal" data-id="<%=awb._id%>"
                     data-original-title="Add Price" data-target="#pricelabel-popup"><i class="fa fa-edit"></i></a>
