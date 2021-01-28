@@ -18,10 +18,16 @@ $('.checkPriceLabelExistPkg').map(function (i, dateElement) {
 });
 
 function searchDataFilter(){
+  var search_type = $("#search_type").val();
+  var search_text = $("#search_text").val();   
   var pageUrl =$("#page").val();
   var pageArr =  pageUrl.split('?');
   var urlPage = (pageArr && pageArr.length) ? pageArr[0] : '';
   urlPage = urlPage+'?1=1'
+  console.log("check",search_text,search_type)
+  if(search_type && search_text){
+    urlPage =  urlPage+"&search_type="+search_type+'&search_text='+search_text;
+  }
   if($("#search_collection").val()){
     urlPage = urlPage+'&search_collection='+$("#search_collection").val();
   }

@@ -454,7 +454,12 @@ class AwbService {
     }
     async getAwbsFullWithOutJoin(req) {
       var searchData = {};
-      if(req && req.query){
+        if(req && req.query && req.query.search_type && req.query.search_text){
+          var searchcolmn = {AWBNUMBER:"awbIdString", CONSIGNEE : "customerFullName",SHIPPER : "shipperName"}
+          var sColumn = searchcolmn[req.query.search_type];
+          searchData[sColumn] = {'$regex' : req.query.search_text , '$options' : 'i'};
+          console.log("seac",searchData)
+        }else if(req && req.query){
 
           var daterange = req.query.daterange?req.query.daterange:'';      
           if(daterange){
@@ -499,21 +504,7 @@ class AwbService {
                
           searchData.createdAt = {"$gte":stdate, "$lte": endate};
         }
-        if(req.query.type){
-          if(req.query.type == 'nodocs')
-            searchData.invoices = []
-          else if(req.query.type == 'pendingawb')
-            searchData.packages = []
-          else if(req.query.type == 'awbpackage')
-            searchData.fll_pickup = true
-          else
-            searchData.packages = {$gt : []}         
-        }else{
-          searchData.packages = {$gt : []}
-        }
       }
-      if(req && req.status && req.status == 'Pricelabel')
-        searchData = {createdAt : searchData.createdAt}
       return new Promise((resolve, reject) => {
           let modelCheck = Awb
           if(req.query.search_collection == "HISTORY")

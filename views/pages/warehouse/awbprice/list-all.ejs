@@ -43,11 +43,22 @@ var endate = new Date();
           <option value="HISTORY" <%if(query.search_collection=="HISTORY"){%>selected<%}%>>History </option>          
         </select>
       </div>
-      <input type="submit" value="Filter" class="btn btn-primary" style="margin-left: 1%;" onclick="searchDataFilter()">
+      <!-- <input type="submit" value="Filter" class="btn btn-primary" style="margin-left: 1%;" onclick="searchDataFilter()"> -->
       </div>
       <div class="card-body daterangepickerbody">
           <input type="hidden" name="clear" id="clear" value="<%=clear%>">
           <input type="hidden" id="page" value="<%=page%>">
+          <div class="col-xs-12 col-sm-12 float-right">
+            <select name="search_type" id="search_type"  class="form-control" style="width: 30%; float: left;">
+                <option value="">Select </option>
+                <option value="AWBNUMBER" <%if(query.search_type=='AWBNUMBER'){%>selected<%}%>>AWB # </option>
+                <option value="CONSIGNEE" <%if(query.search_type=='CONSIGNEE'){%>selected<%}%>>Consignee </option>
+                <option value="SHIPPER" <%if(query.search_type=='SHIPPER'){%>selected<%}%>>Shipper </option>
+            </select>
+            <input type="text" name="search_text" id="search_text" class="form-control" value="<%=query.search_text%>" style="width: 30%; float: left;margin-left: 1%;"">
+            <input type="submit" value="Filter" class="btn btn-primary" style="margin-left: 1%;" onclick="searchDataFilter()">
+      <!-- <input type="submit" value="Filter" class="btn btn-primary" style="margin-left: 1%;" onclick="searchDataFilter()"> -->
+          </div>
         <div class="table-responsive">
           <table id="pricelabel-table"
             class="display table table-striped table-hover dataTable pricelabel-table">
@@ -81,7 +92,7 @@ var endate = new Date();
                     href="../../warehouse/nas/awb/manage/<%=awb._id%>/preview"><%= awb.awbId %></a></td>
                 <td><%=(awb.shipperName)?awb.shipperName:'-' %></td>
                 <td><%= (awb.carrierName)?awb.carrierName:'-' %></td>
-                <td><%= awb.finalPrice || 0%></td>
+                <td><%= awb.finalPrice.toFixed(2) || 0%></td>
 
                 <td><a class="btn btn-link btn-primary btn-edit-pricelabel" data-backdrop="static" data-toggle="modal" data-id="<%=awb._id%>"
                     data-original-title="Add Price" data-target="#pricelabel-popup"><i class="fa fa-edit"></i></a>

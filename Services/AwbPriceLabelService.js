@@ -204,6 +204,10 @@ class AwbPriceLabelService {
 
   updatePriceLabel(priceLabel,id) {
     return new Promise(async (resolve, reject) => {
+      let flag = 0;
+      if(priceLabel.Freight && priceLabel.OverrideFreight && priceLabel.OverrideFreight == priceLabel.Freight){
+        flag = 1
+      }
     //   const PriceLabelData = await this.getPriceLabel(priceLabel.id);
     //   if (!(PriceLabelData && PriceLabelData._id)) {
     //     return resolve({success: false, message: strings.string_not_found_location});
@@ -231,7 +235,7 @@ class AwbPriceLabelService {
           priceLabel.Freight =  3.10
         }
       }
-      if(priceLabel.OverrideFreight == undefined || priceLabel.OverrideFreight == null){ 
+      if(flag == 1 || priceLabel.OverrideFreight == undefined || priceLabel.OverrideFreight == null){ 
         priceLabel.OverrideFreight = priceLabel.Freight
       }
 
@@ -303,6 +307,11 @@ class AwbPriceLabelService {
       priceLabel.TotalWeightValue = priceResult.TotalWeightValue
       priceLabel.TotalVolumetricWeight = priceResult.TotalVolumetricWeight
 
+      let flag = 0;
+      if(priceLabel.Freight && priceLabel.OverrideFreight && priceLabel.OverrideFreight == priceLabel.Freight){
+        flag = 1
+      }
+
       if(priceLabel.Express >0){
         priceLabel.Express = 35
         if(priceLabel.TotalWeightValue >= 2 || priceLabel.TotalVolumetricWeight >= 2 ){
@@ -327,7 +336,7 @@ class AwbPriceLabelService {
         }
       }
 
-      if(priceLabel.OverrideFreight == undefined || priceLabel.OverrideFreight == null){ 
+      if(flag == 1 || priceLabel.OverrideFreight == undefined || priceLabel.OverrideFreight == null){ 
         priceLabel.OverrideFreight = priceLabel.Freight 
       }
 
