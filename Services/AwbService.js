@@ -1852,10 +1852,10 @@ class AwbService {
   }
   async getAwbHistoryPriceLabel(awbId) {    
     return new Promise((resolve, reject) => { 
-      PriceLabel.findOne({awbId:awbId}).exec((err, result) => {
+      PriceLabel.findOne({awbId:awbId}).read('primary').exec((err, result) => {
         if(result){
           result = JSON.parse(JSON.stringify(result))
-          AwbHistory.findOne({_id:awbId})
+          AwbHistory.findOne({_id:awbId}).read('primary')
         //.populate('customerId')
         //.populate('shipper')
         //.populate('carrier')
