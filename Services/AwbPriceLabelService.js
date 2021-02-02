@@ -34,7 +34,7 @@ class AwbPriceLabelService {
         } else {
           let pkg = result.awbId
           if(!pkg){
-            pkg = await AwbHistory.findById(id).populate('invoices').populate('packages')
+            pkg = await AwbHistory.findById(id).read('primary').populate('invoices').populate('packages')
           }
           result = this.calculations(result,pkg)
           resolve(result);
@@ -301,7 +301,7 @@ class AwbPriceLabelService {
     //     return resolve({success: false, message: strings.string_not_found_location});
     //   }
 
-      let priceLabel = await PriceLabel.findOne({awbId: id});
+      let priceLabel = await PriceLabel.findOne({awbId: id}).read('primary');
       let flagInvoice = 0,flagInsurance = 0;
     
       if(priceLabel.TotalInvoiceValue && priceLabel.OverrideInvoiceValue && priceLabel.OverrideInvoiceValue == priceLabel.TotalInvoiceValue){
