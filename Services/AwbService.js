@@ -323,7 +323,7 @@ class AwbService {
         searchData = {createdAt : searchData.createdAt}
 
         return new Promise((resolve, reject) => {
-            Awb.find(searchData)
+            Awb.find(searchData).read('primary')
                 .populate('customerId')
                 .populate('shipper')
                 .populate('carrier')
@@ -1642,10 +1642,10 @@ class AwbService {
 
   async getAwbPriceLabel(awbId) {    
     return new Promise((resolve, reject) => { 
-      PriceLabel.findOne({awbId:awbId}).exec((err, result) => {
+      PriceLabel.findOne({awbId:awbId}).read('primary').exec((err, result) => {
         if(result){
           result = JSON.parse(JSON.stringify(result))
-          Awb.findOne({_id:awbId})
+          Awb.findOne({_id:awbId}).read('primary')
         //.populate('customerId')
         //.populate('shipper')
         //.populate('carrier')
