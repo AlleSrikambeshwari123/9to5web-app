@@ -1,21 +1,39 @@
-// let packageTable = $('.pricelabel-table').DataTable({
-//   pageLength: 10,
-//   columnDefs: [
-//     {
-//       orderable: false,
-//       targets: 0,
-//     },
-//   ],
-//   select: {
-//     style: 'multi',
-//     selector: 'td:first-child input[type="checkbox"]',
-//   },
-// });
+let packageTable = $('.pricelabel-table').DataTable({
+  pageLength: 10,
+  // columnDefs: [
+  //   {
+  //     orderable: false,
+  //     targets: 0,
+  //   },
+  // ],
+  // select: {
+  //   style: 'multi',
+  //   selector: 'td:first-child input[type="checkbox"]',
+  // },
+});
 let TotalVolumetricWeight
 $('.checkPriceLabelExistPkg').map(function (i, dateElement) {
   const id = dateElement.value;
   checkPriceLabelExist(id)
 });
+
+function searchDataFilter(){
+  var search_type = $("#search_type").val();
+  var search_text = $("#search_text").val();   
+  var pageUrl =$("#page").val();
+  var pageArr =  pageUrl.split('?');
+  var urlPage = (pageArr && pageArr.length) ? pageArr[0] : '';
+  urlPage = urlPage+'?1=1'
+  console.log("check",search_text,search_type)
+  if(search_type && search_text){
+    urlPage =  urlPage+"&search_type="+search_type+'&search_text='+search_text;
+  }
+  if($("#search_collection").val()){
+    urlPage = urlPage+'&search_collection='+$("#search_collection").val();
+  }
+   window.location = urlPage;
+}
+
 function checkPriceLabelExist(id) {
   $.ajax({
     url: '/warehouse/pricelabels/' + id,
@@ -423,7 +441,8 @@ $(document).ready(function() {
 		  var stdate = new Date();
 		  stdate.setDate(stdate.getDate() -14);      
 		  var dateRange = (stdate.getMonth() + 1)+ '/'+stdate.getDate()+'/'+stdate.getFullYear()+' - '+
-		  (endate.getMonth() + 1)+ '/'+endate.getDate()+'/'+endate.getFullYear()      
+      (endate.getMonth() + 1)+ '/'+endate.getDate()+'/'+endate.getFullYear()      
+      localStorage.clear()
 		  $('.daterange').val(dateRange)
 		}	   
   },100) 
