@@ -34,7 +34,7 @@ class AwbPriceLabelService {
         } else {
           let pkg = result.awbId
           if(!pkg){
-            pkg = await AwbHistory.findById(id).populate('invoices').populate('packages')
+            pkg = await AwbHistory.findById(id).read('primary').populate('invoices').populate('packages')
           }
           result = this.calculations(result,pkg)
           resolve(result);
@@ -181,7 +181,7 @@ class AwbPriceLabelService {
 
   getAwbPriceLabel(id) {
     return new Promise((resolve, reject) => {
-      Awb.findOne({_id: id})
+      Awb.findOne({_id: id}).read('primary')
       .populate({
         path:'invoices'        
      }).populate({
@@ -204,6 +204,13 @@ class AwbPriceLabelService {
 
   updatePriceLabel(priceLabel,id) {
     return new Promise(async (resolve, reject) => {
+      let flag = 0,flagInsurance = 0;
+      if(priceLabel.Freight && priceLabel.OverrideFreight && priceLabel.OverrideFreight == priceLabel.Freight){
+        flag = 1
+      }
+      if(priceLabel.Insurance && priceLabel.OverrideInsurance && priceLabel.OverrideInsurance == priceLabel.Insurance){
+        flagInsurance = 1
+      }
     //   const PriceLabelData = await this.getPriceLabel(priceLabel.id);
     //   if (!(PriceLabelData && PriceLabelData._id)) {
     //     return resolve({success: false, message: strings.string_not_found_location});
@@ -231,7 +238,7 @@ class AwbPriceLabelService {
           priceLabel.Freight =  3.10
         }
       }
-      if(priceLabel.OverrideFreight == undefined || priceLabel.OverrideFreight == null){ 
+      if(flag == 1 || priceLabel.OverrideFreight == undefined || priceLabel.OverrideFreight == null){ 
         priceLabel.OverrideFreight = priceLabel.Freight
       }
 
@@ -240,7 +247,7 @@ class AwbPriceLabelService {
         priceLabel.Insurance = priceLabel.OverrideInvoiceValue * 0.015
 
          
-      if(priceLabel.OverrideInsurance == undefined || priceLabel.OverrideInsurance == null){ 
+      if(flagInsurance == 1 || priceLabel.OverrideInsurance == undefined || priceLabel.OverrideInsurance == null){ 
         priceLabel.OverrideInsurance = priceLabel.Insurance 
       }
 
@@ -294,12 +301,31 @@ class AwbPriceLabelService {
     //     return resolve({success: false, message: strings.string_not_found_location});
     //   }
 
-      let priceLabel = await PriceLabel.findOne({awbId: id});
+      let priceLabel = await PriceLabel.findOne({awbId: id}).read('primary');
+      let flagInvoice = 0,flagInsurance = 0;
+    
+      if(priceLabel.TotalInvoiceValue && priceLabel.OverrideInvoiceValue && priceLabel.OverrideInvoiceValue == priceLabel.TotalInvoiceValue){
+        flagInvoice = 1
+      }
+
+      if(priceLabel.Insurance && priceLabel.OverrideInsurance && priceLabel.OverrideInsurance == priceLabel.Insurance){
+        flagInsurance = 1
+      }
+
       priceLabel.Express = priceResult.Express
       priceLabel.TotalInvoiceValue = priceResult.TotalInvoiceValue
       priceLabel.NoOfInvoice = priceResult.NoOfInvoice
       priceLabel.TotalWeightValue = priceResult.TotalWeightValue
       priceLabel.TotalVolumetricWeight = priceResult.TotalVolumetricWeight
+
+      if(flagInvoice){
+        priceLabel.OverrideInvoiceValue = priceLabel.TotalInvoiceValue
+      }
+
+      let flag = 0;
+      if(priceLabel.Freight && priceLabel.OverrideFreight && priceLabel.OverrideFreight == priceLabel.Freight){
+        flag = 1
+      }
 
       if(priceLabel.Express >0){
         priceLabel.Express = 35
@@ -325,7 +351,7 @@ class AwbPriceLabelService {
         }
       }
 
-      if(priceLabel.OverrideFreight == undefined || priceLabel.OverrideFreight == null){ 
+      if(flag == 1 || priceLabel.OverrideFreight == undefined || priceLabel.OverrideFreight == null){ 
         priceLabel.OverrideFreight = priceLabel.Freight 
       }
 
@@ -333,6 +359,9 @@ class AwbPriceLabelService {
       if(priceLabel.OverrideInvoiceValue >= 100)
         priceLabel.Insurance = priceLabel.OverrideInvoiceValue * 0.015
 
+      if(flagInsurance){
+        priceLabel.OverrideInsurance = priceLabel.Insurance
+      }
          
       if(priceLabel.OverrideInsurance == undefined || priceLabel.OverrideInsurance == null){ 
         priceLabel.OverrideInsurance = priceLabel.Insurance 
