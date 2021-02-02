@@ -181,7 +181,7 @@ class AwbPriceLabelService {
 
   getAwbPriceLabel(id) {
     return new Promise((resolve, reject) => {
-      Awb.findOne({_id: id})
+      Awb.findOne({_id: id}).read('primary')
       .populate({
         path:'invoices'        
      }).populate({
@@ -204,9 +204,12 @@ class AwbPriceLabelService {
 
   updatePriceLabel(priceLabel,id) {
     return new Promise(async (resolve, reject) => {
-      let flag = 0;
+      let flag = 0,flagInsurance = 0;
       if(priceLabel.Freight && priceLabel.OverrideFreight && priceLabel.OverrideFreight == priceLabel.Freight){
         flag = 1
+      }
+      if(priceLabel.Insurance && priceLabel.OverrideInsurance && priceLabel.OverrideInsurance == priceLabel.Insurance){
+        flagInsurance = 1
       }
     //   const PriceLabelData = await this.getPriceLabel(priceLabel.id);
     //   if (!(PriceLabelData && PriceLabelData._id)) {
@@ -244,7 +247,7 @@ class AwbPriceLabelService {
         priceLabel.Insurance = priceLabel.OverrideInvoiceValue * 0.015
 
          
-      if(priceLabel.OverrideInsurance == undefined || priceLabel.OverrideInsurance == null){ 
+      if(flagInsurance == 1 || priceLabel.OverrideInsurance == undefined || priceLabel.OverrideInsurance == null){ 
         priceLabel.OverrideInsurance = priceLabel.Insurance 
       }
 
@@ -301,11 +304,25 @@ class AwbPriceLabelService {
     //   }
 
       let priceLabel = await PriceLabel.findOne({awbId: id});
+      let flagInvoice = 0,flagInsurance = 0;
+    
+      if(priceLabel.TotalInvoiceValue && priceLabel.OverrideInvoiceValue && priceLabel.OverrideInvoiceValue == priceLabel.TotalInvoiceValue){
+        flagInvoice = 1
+      }
+
+      if(priceLabel.Insurance && priceLabel.OverrideInsurance && priceLabel.OverrideInsurance == priceLabel.Insurance){
+        flagInsurance = 1
+      }
+
       priceLabel.Express = priceResult.Express
       priceLabel.TotalInvoiceValue = priceResult.TotalInvoiceValue
       priceLabel.NoOfInvoice = priceResult.NoOfInvoice
       priceLabel.TotalWeightValue = priceResult.TotalWeightValue
       priceLabel.TotalVolumetricWeight = priceResult.TotalVolumetricWeight
+
+      if(flagInvoice){
+        priceLabel.OverrideInvoiceValue = priceLabel.TotalInvoiceValue
+      }
 
       let flag = 0;
       if(priceLabel.Freight && priceLabel.OverrideFreight && priceLabel.OverrideFreight == priceLabel.Freight){
@@ -344,6 +361,9 @@ class AwbPriceLabelService {
       if(priceLabel.OverrideInvoiceValue >= 100)
         priceLabel.Insurance = priceLabel.OverrideInvoiceValue * 0.015
 
+      if(flagInsurance){
+        priceLabel.OverrideInsurance = priceLabel.Insurance
+      }
          
       if(priceLabel.OverrideInsurance == undefined || priceLabel.OverrideInsurance == null){ 
         priceLabel.OverrideInsurance = priceLabel.Insurance 

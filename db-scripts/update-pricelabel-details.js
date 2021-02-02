@@ -10,7 +10,7 @@ const Pricelabel = require('../models/pricelabel');
 createConnection()
   .then(() => {
     console.log('******finding all pricelables******');
-    return Pricelabel.find({"createdAt" : {$lte:new Date("2021-01-19")} }, async (err, result) => {
+    return Pricelabel.find({"createdAt" : {$lte:new Date("2021-01-20"),$gte:new Date("2021-01-18")} }, async (err, result) => {
       if (err) {
         console.error('Error while finding pricelabels ', err);
         process.exit();
