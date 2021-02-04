@@ -205,10 +205,10 @@ class AwbPriceLabelService {
   updatePriceLabel(priceLabel,id) {
     return new Promise(async (resolve, reject) => {
       let flag = 0,flagInsurance = 0;
-      if(priceLabel.Freight && priceLabel.OverrideFreight && priceLabel.OverrideFreight == priceLabel.Freight){
+      if(priceLabel.OverrideFreight == priceLabel.Freight){
         flag = 1
       }
-      if(priceLabel.Insurance && priceLabel.OverrideInsurance && priceLabel.OverrideInsurance == priceLabel.Insurance){
+      if(priceLabel.OverrideInsurance == priceLabel.Insurance){
         flagInsurance = 1
       }
     //   const PriceLabelData = await this.getPriceLabel(priceLabel.id);
@@ -304,11 +304,11 @@ class AwbPriceLabelService {
       let priceLabel = await PriceLabel.findOne({awbId: id}).read('primary');
       let flagInvoice = 0,flagInsurance = 0;
     
-      if(priceLabel.TotalInvoiceValue && priceLabel.OverrideInvoiceValue && priceLabel.OverrideInvoiceValue == priceLabel.TotalInvoiceValue){
+      if(priceLabel.OverrideInvoiceValue == priceLabel.TotalInvoiceValue){
         flagInvoice = 1
       }
 
-      if(priceLabel.Insurance && priceLabel.OverrideInsurance && priceLabel.OverrideInsurance == priceLabel.Insurance){
+      if(priceLabel.OverrideInsurance == priceLabel.Insurance){
         flagInsurance = 1
       }
 
@@ -323,7 +323,7 @@ class AwbPriceLabelService {
       }
 
       let flag = 0;
-      if(priceLabel.Freight && priceLabel.OverrideFreight && priceLabel.OverrideFreight == priceLabel.Freight){
+      if(priceLabel.OverrideFreight == priceLabel.Freight){
         flag = 1
       }
 
