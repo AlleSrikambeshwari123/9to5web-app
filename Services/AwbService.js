@@ -1740,13 +1740,18 @@ class AwbService {
 
             result.Insurance = 0
             result.TotalInvoiceValue = totalInvoice
-            if(result.OverrideInvoiceValue){
-              if(result.OverrideInvoiceValue > 0)
-                result.TotalInvoiceValue = result.OverrideInvoiceValue 
-              else{
-                result.TotalInvoiceValue = totalInvoice 
-                result.OverrideInvoiceValue = result.TotalInvoiceValue
-              }
+            // if(result.OverrideInvoiceValue){
+            //   if(result.OverrideInvoiceValue > 0)
+            //     result.TotalInvoiceValue = result.OverrideInvoiceValue 
+            //   else{
+            //     result.TotalInvoiceValue = totalInvoice 
+            //     result.OverrideInvoiceValue = result.TotalInvoiceValue
+            //   }
+            // }else{
+            //   result.OverrideInvoiceValue = result.TotalInvoiceValue 
+            // }
+            if(result.OverrideInvoiceValue != undefined && result.OverrideInvoiceValue != null){
+              result.OverrideInvoiceValue = result.OverrideInvoiceValue 
             }else{
               result.OverrideInvoiceValue = result.TotalInvoiceValue 
             }
@@ -1950,13 +1955,19 @@ class AwbService {
 
             result.Insurance = 0
             result.TotalInvoiceValue = totalInvoice
-            if(result.OverrideInvoiceValue){
-              if(result.OverrideInvoiceValue > 0)
-                result.TotalInvoiceValue = result.OverrideInvoiceValue 
-              else{
-                result.TotalInvoiceValue = totalInvoice 
-                result.OverrideInvoiceValue = result.TotalInvoiceValue
-              }
+            // if(result.OverrideInvoiceValue){
+            //   if(result.OverrideInvoiceValue > 0)
+            //     result.TotalInvoiceValue = result.OverrideInvoiceValue 
+            //   else{
+            //     result.TotalInvoiceValue = totalInvoice 
+            //     result.OverrideInvoiceValue = result.TotalInvoiceValue
+            //   }
+            // }else{
+            //   result.OverrideInvoiceValue = result.TotalInvoiceValue 
+            // }
+
+            if(result.OverrideInvoiceValue != undefined && result.OverrideInvoiceValue != null){
+              result.OverrideInvoiceValue = result.OverrideInvoiceValue 
             }else{
               result.OverrideInvoiceValue = result.TotalInvoiceValue 
             }
