@@ -276,6 +276,8 @@ class AwbPriceLabelService {
           } else {
             let awb = await Awb.findById(id)
             let total_weight = 0
+            await Awb.updateOne({_id : id},{finalPrice : priceLabel.SumOfAllCharges })
+            await AwbHistory.updateOne({_id : id},{finalPrice : priceLabel.SumOfAllCharges })
             if(awb.packages.length == 0){
               resolve({ success: true, message: strings.string_response_updated ,totalWeight : 0.00});
             }else{
@@ -393,6 +395,9 @@ class AwbPriceLabelService {
             let awb = await Awb.findById(id)
             if(awb == null)
               awb = await AwbHistory.findById(id)
+
+            await Awb.updateOne({_id : id},{finalPrice : priceLabel.SumOfAllCharges })
+            await AwbHistory.updateOne({_id : id},{finalPrice : priceLabel.SumOfAllCharges })
             let total_weight = 0
             if(awb.packages.length == 0){
               resolve({ success: true, message: strings.string_response_updated ,totalWeight : 0.00});
