@@ -252,7 +252,7 @@ class AllPackagesOnAwb {
                   margin: [0, 0],
                   stack: [
                     { margin: [0, 5], text: 'DESCRIPTION', fontSize: 7, bold: true },
-                    { margin: [0, 5], text: pkg.description, fontSize: 7, bold: true },
+                    { margin: [0, 5], text: pkg.packageType == 'Cube' && pkg.masterDescription ? pkg.masterDescription : pkg.description, fontSize: 7, bold: true },
                     { margin: [0, 2], text: this.noDocs, fontSize: 11, bold: true },
                     //table here
                     {
@@ -282,9 +282,9 @@ class AllPackagesOnAwb {
                   margin: [1, 1],
                   stack: [
                     { margin: [0, 1], text: 'WEIGHT', fontSize: 6, bold: true },
-                    { margin: [0, 2], text: `${pkg.weight} lbs.`, fontSize: 8, bold: true },
+                    { margin: [0, 2], text: `${pkg.packageType == 'Cube' && pkg.masterWeight ? pkg.masterWeight : pkg.weight} lbs.`, fontSize: 8, bold: true },
                     { margin: [0, 1], text: 'DIMENSIONS', fontSize: 6, bold: true },
-                    { margin: [0, 1], text: `${pkg.dimensions} ins.`, fontSize: 8, bold: true },
+                    { margin: [0, 1], text: `${pkg.packageType == 'Cube' && pkg.masterDimensions ? pkg.masterDimensions : pkg.dimensions} ins.`, fontSize: 8, bold: true },
                     { margin: [0, 1], text: 'VOL. WEIGHT', fontSize: 6, bold: true },
                     { margin: [0, 2], text: `${pkg.calculateDimensionalWeight} Vlbs`, fontSize: 5, bold: true },
                     //table here

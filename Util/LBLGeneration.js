@@ -520,7 +520,7 @@ class LBLGeneration {
                           margin: [0, 0],
                           stack: [
                             { margin: [0, 5], text: 'DESCRIPTION', fontSize: 7, bold: true },
-                            { margin: [0, 5], text: pkg.description, fontSize: 7, bold: true },
+                            { margin: [0, 5], text: pkg.packageType == 'Cube' && pkg.masterDescription ? pkg.masterDescription : pkg.description, fontSize: 7, bold: true },
                             { margin: [0, 2], text: noDocs, fontSize: 11, bold: true },
                             //table here
                             {
@@ -550,9 +550,9 @@ class LBLGeneration {
                           margin: [1, 1],
                           stack: [
                             { margin: [0, 1], text: 'WEIGHT', fontSize: 6, bold: true },
-                            { margin: [0, 2], text: `${pkg.weight} lbs.`, fontSize: 8, bold: true },
+                            { margin: [0, 2], text: `${pkg.packageType == 'Cube' && pkg.masterWeight ? pkg.masterWeight : pkg.weight} lbs.`, fontSize: 8, bold: true },
                             { margin: [0, 1], text: 'DIMENSIONS', fontSize: 6, bold: true },
-                            { margin: [0, 1], text: `${pkg.dimensions} ins.`, fontSize: 8, bold: true },
+                            { margin: [0, 1], text: `${pkg.packageType == 'Cube' && pkg.masterDimensions ? pkg.masterDimensions : pkg.dimensions} ins.`, fontSize: 8, bold: true },
                             { margin: [0, 1], text: 'VOL. WEIGHT', fontSize: 6, bold: true },
                             { margin: [0, 2], text: `${this.calculateDimensionalWeight(pkg.dimensions)} Vlbs`, fontSize: 5, bold: true },
                             //table here
