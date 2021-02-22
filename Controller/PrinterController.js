@@ -133,7 +133,7 @@ exports.print_all_pkg_labels = async (req, res, next) => {
 			const pkgs = await Promise.all(awb.packages.map(async ab => {
 				const image = await lblPdfGen.generateBarcode(ab.trackingNo);
 				ab._doc['png'] = image.toString('base64')
-				ab._doc['calculateDimensionalWeight'] = lblPdfGen.calculateDimensionalWeight(ab.dimensions)
+				ab._doc['calculateDimensionalWeight'] = lblPdfGen.calculateDimensionalWeight(ab.packageType == 'Cube' && ab.masterDimensions ? ab.masterDimensions : ab.dimensions)
 				return ab
 			}))
 			awb.packages = pkgs

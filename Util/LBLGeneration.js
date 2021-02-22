@@ -554,7 +554,7 @@ class LBLGeneration {
                             { margin: [0, 1], text: 'DIMENSIONS', fontSize: 6, bold: true },
                             { margin: [0, 1], text: `${pkg.packageType == 'Cube' && pkg.masterDimensions ? pkg.masterDimensions : pkg.dimensions} ins.`, fontSize: 8, bold: true },
                             { margin: [0, 1], text: 'VOL. WEIGHT', fontSize: 6, bold: true },
-                            { margin: [0, 2], text: `${this.calculateDimensionalWeight(pkg.dimensions)} Vlbs`, fontSize: 5, bold: true },
+                            { margin: [0, 2], text: `${this.calculateDimensionalWeight(pkg.packageType == 'Cube' && pkg.masterDimensions ? pkg.masterDimensions : pkg.dimensions)} Vlbs`, fontSize: 5, bold: true },
                             //table here
                           ],
                           border: [true, false, false, true],
