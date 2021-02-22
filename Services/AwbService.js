@@ -1810,15 +1810,14 @@ class AwbService {
             result.TotalInvoiceValue = totalInvoice
             // if(result.OverrideInvoiceValue){
             //   if(result.OverrideInvoiceValue > 0)
-            //   //   result.TotalInvoiceValue = result.OverrideInvoiceValue 
-            //   // else{
+            //     result.TotalInvoiceValue = result.OverrideInvoiceValue 
+            //   else{
             //     result.TotalInvoiceValue = totalInvoice 
             //     result.OverrideInvoiceValue = result.TotalInvoiceValue
             //   }
             // }else{
             //   result.OverrideInvoiceValue = result.TotalInvoiceValue 
             // }
-
             if(result.OverrideInvoiceValue != undefined && result.OverrideInvoiceValue != null){
               result.OverrideInvoiceValue = result.OverrideInvoiceValue 
             }else{
@@ -2034,7 +2033,7 @@ class AwbService {
             // }else{
             //   result.OverrideInvoiceValue = result.TotalInvoiceValue 
             // }
-            
+
             if(result.OverrideInvoiceValue != undefined && result.OverrideInvoiceValue != null){
               result.OverrideInvoiceValue = result.OverrideInvoiceValue 
             }else{
