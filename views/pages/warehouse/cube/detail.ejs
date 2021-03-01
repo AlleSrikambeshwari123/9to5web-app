@@ -63,6 +63,8 @@
               <tbody>
                 <% const pkgdetail = cube.pkgdetail; pkgdetail.forEach(package => {
                   let check = 1
+                  if(package.packageType == 'Cube' && package.masterDimensions)
+                    package.dimensions = package.masterDimensions
                   package.dimensions.split('x').forEach(data =>{
                     check = check * data
                   })
@@ -73,10 +75,10 @@
                   <td><%= package.customerId && (package.customerId.firstName +" "+ package.customerId.lastName)%></td>
                   <td><%= package.shipperId && package.shipperId.name %></td>
                   <td><%= package.originBarcode ? package.originBarcode.barcode : '' %></td>
-                  <td><%= package.description %></td>
-                  <td><%= package.weight %> lbs</td>
+                  <td><%= (package.packageType == 'Cube' && package.masterDescription) ? package.masterDescription : package.description %></td>
+                  <td><%= Number((package.packageType == 'Cube' && package.masterWeight) ? package.masterWeight : package.weight).toFixed(2) %> lbs</td>
                   <td><%= package.volumetricWeight.toFixed(2) %> vlbs</td>
-                  <td><%= package.dimensions %></td>
+                  <td><%= (package.packageType == 'Cube' && package.masterDimensions) ? package.masterDimensions : package.dimensions %></td>
                   <td>
                     <a class="btn btn-link btn-danger btn-rm-pkg-awb p-1" title="Delete" data-id="<%=package._id%>" data-toggle="modal" data-backdrop="static" data-target="#confirmPkgDel"><i class="fa fa-trash"></i></a>
                   </td>
