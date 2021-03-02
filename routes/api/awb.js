@@ -28,15 +28,24 @@ router.get('/list-awb/:id',passport.authenticate('jwt', { session: false }), asy
     try{
         const customerId = mongoose.Types.ObjectId(req.params.id);
         let awbData = await services.awbService.getAwbsFullCustomer(customerId);
+        console.log("Awb data",awbData)
+
         let queryStatus = req.query.status,flag;
+        console.log("query Status",queryStatus)
+
         if(awbData.length > 0){
+            console.log("list flag")
             flag = 1
         }else{
+            console.log("list else")
             const result = await services.customerChildService.getCustomer({_id: customerId})
+            console.log("list result",result)
             if(result && result.parentCustomer && result.parentCustomer.id )
                 awbData = await services.awbService.getAwbsFullCustomer(result.parentCustomer.id);
         }
         let awbResponse = await services.awbService.getAwbPriceAndStatus(awbData,queryStatus)
+        console.log("Awb Response",awbResponse)
+
         return res.send(awbResponse);
     }catch(err){  
         res.send({ success: false, message: strings.string_response_error ,err : err});

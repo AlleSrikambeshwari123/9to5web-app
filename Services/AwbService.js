@@ -1419,6 +1419,7 @@ class AwbService {
             .populate('invoices')
             .populate('driver')
             .exec((err, result) => {
+              console.log("full customer err resilt",err,result)
               resolve(result);
             });
         });
@@ -1609,12 +1610,15 @@ class AwbService {
   async getAwbPriceAndStatus(awbData,queryStatus){
     let awbResponse = []
     for(let awb of awbData){
+      console.log("check")
       awb = awb.toJSON()
+      console.log("check 1")
       let statusObject = await this.services.packageService.checkPackageStatus(awb)
       awb.status = statusObject.status
       awb.totalPrice = "Not Priced"
       let priceLabel = await this.getAwbPriceLabel(awb._id)
       awb.pricing = priceLabel
+      console.log("check 2")
       if(priceLabel && !priceLabel.TotalWeightValue){
         let totalweightVal =0
         if(awb.packages){
@@ -1628,13 +1632,14 @@ class AwbService {
           }
           awb.pricing.TotalWeightValue = totalweightVal
       }
-      if(priceLabel.SumOfAllCharges)
+      console.log("check 3",priceLabel,statusObject,queryStatus)
+      if(priceLabel && priceLabel.SumOfAllCharges)
           awb.totalPrice = priceLabel.SumOfAllCharges
       if(!queryStatus || queryStatus == "All")
           awbResponse.push(awb)
-      else if(String(statusObject.id) == String(queryStatus))
+      else if(statusObject && (String(statusObject.id) == String(queryStatus)))
         awbResponse.push(awb)
-      else if(awb.totalPrice != "Not Priced" && queryStatus == 11)
+      else if(awb && (awb.totalPrice != "Not Priced") && queryStatus == 11)
         awbResponse.push(awb)
     }
     return awbResponse
