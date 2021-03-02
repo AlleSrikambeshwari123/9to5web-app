@@ -1696,13 +1696,13 @@ class AwbService {
           }
           awb.pricing.TotalWeightValue = totalweightVal
       }
-      if(priceLabel.SumOfAllCharges)
+      if(priceLabel && priceLabel.SumOfAllCharges)
           awb.totalPrice = priceLabel.SumOfAllCharges
       if(!queryStatus || queryStatus == "All")
           awbResponse.push(awb)
-      else if(String(statusObject.id) == String(queryStatus))
+      else if(statusObject && (String(statusObject.id) == String(queryStatus)))
         awbResponse.push(awb)
-      else if(awb.totalPrice != "Not Priced" && queryStatus == 11)
+      else if(awb && (awb.totalPrice != "Not Priced") && queryStatus == 11)
         awbResponse.push(awb)
     }
     return awbResponse

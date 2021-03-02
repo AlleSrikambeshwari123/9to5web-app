@@ -315,7 +315,8 @@ class CubeService {
     })
   }
 
-  updatePackageCubeId(packageIds, cubeId){
+  async updatePackageCubeId(packageIds, cubeId){
+    await PackageHistory.updateMany({_id: {$in:packageIds}}, {"$set":{cubeId: cubeId}});
     return Package.updateMany({_id: {$in:packageIds}}, {"$set":{cubeId: cubeId}});
   }
 
@@ -570,9 +571,10 @@ class CubeService {
     console.log(cubeId,packageId)
     return new Promise((resolve, reject) => {
       Cube.updateOne({_id: cubeId}, {$pull: { packages:  packageId}}, (err, result) => {
-        Package.updateOne({_id: cubeId}, {cubeId: null}, (err, result) => {
+        Package.updateOne({_id: cubeId}, {cubeId: null},async (err, result) => {
         if (err) {
           console.log(err)
+          await PackageHistory.updateOne({_id: cubeId}, {cubeId: null})
           resolve({ success: false, message: err });
         } else {
           resolve({ success: true, message: strings.string_response_removed });

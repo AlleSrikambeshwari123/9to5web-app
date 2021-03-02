@@ -1251,9 +1251,11 @@ class PackageService {
         if(status == PKG_STATUS[6]) index = 6
         if(status == PKG_STATUS[7]) index = 7
         if(status == PKG_STATUS[8]){
-            let cubePackage = awb.packages[0].cubeId.cubepackageId
-            let cubeStatuses = await PackageStatus.find({ packageId: cubePackage }).sort({ updatedAt: -1 })
-            status = cubeStatuses[0].status
+            let cubePackage = (awb.packages && awb.packages[0] && awb.packages[0].cubeId && awb.packages[0].cubeId.cubepackageId) ? awb.packages[0].cubeId.cubepackageId : null
+            if(cubePackage){
+                let cubeStatuses = await PackageStatus.find({ packageId: cubePackage }).sort({ updatedAt: -1 })
+                status = cubeStatuses[0].status
+            }
             index = 8
         }
         if(status == PKG_STATUS[9]) index = 9
