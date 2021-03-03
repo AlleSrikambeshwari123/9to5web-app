@@ -448,7 +448,7 @@ class CubeService {
   //used by detail page of admin
   async CubeDtail(id){
     return new Promise((resolve, reject) => {   
-      Cube.findOne({_id:id}).populate('userId').populate('cubepackageId').exec(async (err, cube) => {        
+      Cube.findOne({_id:id}).populate('userId').populate('cubepackageId').populate('cubeAwbId').exec(async (err, cube) => {        
         const awbId = (cube.cubepackageId && cube.cubepackageId.awbId)?cube.cubepackageId.awbId:null;
         let awbData = await Awb.findOne({_id:awbId});
         if(!awbData)
