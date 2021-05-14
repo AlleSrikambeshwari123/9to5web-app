@@ -63,10 +63,7 @@ class AirportService {
     });
   }
   all() {
-    return new Promise(async(resolve, reject) => {
-      let airports = await Airport.find({})
-      resolve(airports)
-    })
+    return Airport.find({}).exec()
   }
   allAirport(req) {
     var start = req.body.start ? parseInt(req.body.start) : 0;
