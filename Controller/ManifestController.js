@@ -113,7 +113,7 @@ exports.get_all_manifest_list = (req,res,next) =>{
 exports.create_manifest = (req, res, next) => {
   Promise.all([
     services.planeService.getPlanes(),
-    services.awbService.getAwbsFull(),
+//     services.awbService.getAwbsFull(),
     services.airportService.all(),
   ]).then(results => {
     res.render('pages/warehouse/manifest/create', {
@@ -121,7 +121,7 @@ exports.create_manifest = (req, res, next) => {
       user: res.user,
       title: 'Create New Manifest',
       planes: results[0],
-      awbs: results[1],
+//       awbs: results[1],
       airports: results[2],
     })
   })
