@@ -388,7 +388,13 @@ class AWBGeneration {
             if (pkg.packageType) {
                 ptype = pkg.packageType;
             }
-            var dimWeight = calculateDimensionalWeight(pkg.dimensions.toLowerCase())
+            if(pkg.packageType == 'Cube' && pkg.masterWeight && pkg.masterDimensions && pkg.masterDescription){
+                pkg.weight = pkg.masterWeight
+                pkg.dimensions = pkg.masterDimensions
+                pkg.description = pkg.masterDescription
+            }
+
+            var dimWeight = calculateDimensionalWeight(pkg.packageType == 'Cube' && pkg.masterDimensions ? pkg.masterDimensions : pkg.dimensions)
             totalWeight += Number(pkg.weight)
             dimWeight = dimWeight.replace(",","")
             totaldimWeight += parseFloat(dimWeight);

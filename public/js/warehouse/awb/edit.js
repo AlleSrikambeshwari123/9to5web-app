@@ -636,6 +636,8 @@ $(function () {
       // some reason
       // console.error('pkg', pkg);
       let check = 1
+      if(pkg.packageType == 'Cube' )
+        pkg.dimensions = pkg.masterDimensions
       pkg.dimensions.split('x').forEach(data =>{
         check = check * data
       })
@@ -645,9 +647,9 @@ $(function () {
       let rowNode = packageTable.row
         .add([
           pkg.trackingNo,
-          pkg.description,
-          pkg.dimensions,
-          Number(pkg.weight).toFixed(2) + ` ${pkg.packageCalculation || 'kg'}`,
+          pkg.packageType == 'Cube' ? pkg.masterDescription : pkg.description,
+          pkg.packageType == 'Cube' ? pkg.masterDimensions :  pkg.dimensions,
+          pkg.packageType == 'Cube' ? Number(pkg.masterWeight).toFixed(2) + ` ${pkg.packageCalculation || 'kg'}` : Number(pkg.weight).toFixed(2) + ` ${pkg.packageCalculation || 'kg'}`,
           Number(pkg.volumetricWeight).toFixed(2) + ` 'vlbs'`,
           pkg.lastStatusText ? pkg.lastStatusText : '',
           [

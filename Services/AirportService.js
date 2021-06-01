@@ -63,14 +63,11 @@ class AirportService {
     });
   }
   all() {
-    return new Promise(async(resolve, reject) => {
-      let airports = await Airport.find({})
-      resolve(airports)
-    })
+    return Airport.find({}).exec()
   }
   allAirport(req) {
     var start = req.body.start ? parseInt(req.body.start) : 0;
-    var length = req.body.length ? parseInt(req.body.length) : 10;      
+    var length = req.body.length ? parseInt(req.body.length) : 10;
     var field = req.body['order[0][column]'] ?parseInt(req.body['order[0][column]']) : 0;
     var columns = {0:'name', 1: 'createdAt', 2: 'shortCode', 3: 'country'} 
     
