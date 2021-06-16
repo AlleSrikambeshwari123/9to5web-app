@@ -67,13 +67,61 @@
 				</li> -->
 				<% } %>
 				<% if (user.roles[0].type == "Customers") { %>
-				<li class="nav-item <% if (page.includes('/dashboard')) { %> active <% } %>">
+				<!-- <li class="nav-item <% if (page.includes('/dashboard')) { %> active <% } %>">
 					<a href="/customer/dashboard">
 						<i class="fa fa-home"></i>
 						<p>Home </p>
 					</a>
+				</li> -->
+				<li class="nav-section">
+					<span class="sidebar-mini-icon">
+						<i class="fa fa-ellipsis-h"></i>
+					</span>
+					<h4 class="text-section">Customer</h4>
 				</li>
-				<% } %>
+				<li class="nav-item <% if (page.includes('/awb')) { %> active <% } %>">
+					<a href="/customer/awb">
+						<i class="fa fa-cubes"></i>
+						<p>Airway Bills </p>
+					</a>
+				</li>
+				<li class="nav-item <% if (page.includes('/billing')) { %> active <% } %>">
+					<a href="/customer/billing">
+						<i class="fa fa-dollar-sign"></i>
+						<p>Billing </p>
+					</a>
+				</li>
+				<li class="nav-item <% if (page.includes('/upload/invoices')) { %> active <% } %>">
+					<a href="/customer/upload/invoices">
+						<i class="fa fa-dollar-sign"></i>
+						<p>Upload Invoice </p>
+					</a>
+				</li>
+				<!-- <li class="nav-item <% if (page.includes('/upload')) { %> active <% } %>">
+					<a href="/customer/billing">
+						<i class="fa fa-file-invoice-dollar"></i>
+						<p>Upload Invoices</p>
+					</a>
+				</li> -->
+				<!-- <li class="nav-item <% if (page.includes('/customerchild/list')) { %> active <% } %>">
+					<a href="/customer/customerchild/list/<%= user._id %>">
+						<i class="fa fa-user-tie"></i>
+						<p>Sub Consignee</p>
+					</a>
+				</li> -->
+				<!-- <li class="nav-item <% if (page.includes('/package/')) { %> active <% } %>">
+					<a href="/warehouse/customer/package/list/<%= user._id %>">
+						<i class="fa fa-cubes"></i>
+						<p>Packages </p>
+					</a>
+				</li> -->
+				<!-- <li class="nav-item <% if (page.includes('/no-docs/')) { %> active <% } %>">
+					<a href="/customer/customerchild/no-docs/<%= user._id %>">
+						<i class="fas fa-warehouse"></i>
+						<p>No Docs</p>
+					</a>
+				</li> -->
+				<% } else {%>
 
 				<li class="nav-section">
 					<span class="sidebar-mini-icon">
@@ -436,26 +484,9 @@
 				<%}%>
 
 				<!-- Customer -->
-				<% if (user.roles[0].type == "Customers") { %>
-				<li class="nav-item <% if (page.includes('/customerchild/list')) { %> active <% } %>">
-					<a href="/customer/customerchild/list/<%= user._id %>">
-						<i class="fa fa-user-tie"></i>
-						<p>Sub Consignee</p>
-					</a>
-				</li>
-				<li class="nav-item <% if (page.includes('/package/')) { %> active <% } %>">
-					<a href="/warehouse/customer/package/list/<%= user._id %>">
-						<i class="fa fa-cubes"></i>
-						<p>Packages </p>
-					</a>
-				</li>
-				<li class="nav-item <% if (page.includes('/no-docs/')) { %> active <% } %>">
-					<a href="/customer/customerchild/no-docs/<%= user._id %>">
-						<i class="fas fa-warehouse"></i>
-						<p>No Docs</p>
-					</a>
-				</li>
-				<% } %>
+				
+				
+				<%  } %>
 
 				<!-- Account Options -->
 				<li class="nav-section">
@@ -472,6 +503,13 @@
 					</a>
 					<div class="collapse <% if (page.includes('/account/')) { %> show <% } %>" id="myaccount">
 						<ul class="nav nav-collapse">
+							<% if (user.roles[0].type == "Customers") { %>
+							<li <% if (page.includes('/profile')) { %> class="active" <% } %>>
+								<a href="/customer/account/profile">
+									<span class="sub-item">Profile</span>
+								</a>
+							</li>
+							<% } %>
 							<li <% if (page.includes('/account/change-pass')) { %> class="active" <% } %>>
 								<% if (user.roles[0].type != "Customers") { %>
 								<a href="/account/change-pass">

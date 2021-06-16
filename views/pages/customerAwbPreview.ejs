@@ -4,15 +4,9 @@
   <div class="col-12 col-lg-10 col-xl-10">
     <div class="row align-items-center">
       <div class="ml-auto mr-3 mb-3 mt--4">
-        <a class="btn btn-danger btn-round text-white ml-2 btn-print-po" data-id="<%=awb._id%>"> Print P.O </a>
-        <a class="btn btn-danger btn-round text-white" href="/warehouse/fll/awb/create"> Create AWB</a>
-        <a class="btn btn-danger btn-round text-white" href="/warehouse/download-pdf/pkg/<%=awb._id%>"> Download Pkgs</a>
-        <a class="btn btn-danger btn-round text-white ml-2 btn-print-pkgs" data-id="<%=awb._id%>"> Print Pkgs </a>
-        <a class="btn btn-danger btn-round text-white" href="/warehouse/download-pdf/awb/<%=awb._id%>"> Download PDF</a>
-        <a class="btn btn-danger btn-round text-white ml-2 btn-print-awb" data-id="<%=awb._id%>"
-          data-target="#print-popup"> Print AWB </a>
+       
       </div>
-    </div>
+    </div> 
     <div class="row">
       <div class="col-md-12">
         <div class="card card-invoice">
@@ -41,14 +35,14 @@
                 <h5 class="sub">Date Created</h5>
                 <p><%= awb.dateCreated%></p>
               </div>
-              <div class="col-md-3 info-invoice">
+              <!-- <div class="col-md-3 info-invoice">
                 <h5 class="sub">Created By</h5>
                 <p><%= "AWB #"+awb.createdBy %></p>
               </div>
               <div class="col-md-3 info-invoice">
                 <h5 class="sub">Customer</h5>
                 <p><%=helpers.getFullName(awb.customer)%></p>
-              </div>
+              </div> -->
               <div class="col-md-3 info-invoice">
                 <h5 class="sub">PMB #</h5>
                 <p><%=awb.customerId.pmb%></p>
@@ -109,6 +103,7 @@
                             <td><strong>S.No</strong></td>
                             <td><strong>Tracking No</strong></td>
                             <td><strong>Status</strong></td>
+                            <td><strong>Location</strong></td>
                             <td class="text-center"><strong>Description</strong></td>
                             <td class="text-center"><strong>Type</strong></td>
                             <td class="text-center"><strong>Dimensions</strong></td>
@@ -120,10 +115,6 @@
                         <tbody>
                           <% var totalWeight = 0,volumetricWeight =0;
                           awb.packages.forEach((package,pick) => {
-                            if(package.packageType == 'Cube' && package.masterWeight){
-                              package.weight = package.masterWeight
-                              package.dimensions = package.masterDimensions ? package.masterDimensions : package.dimensions
-                            }
                             totalWeight += Number(package.weight);
                             let check = 1
                             package.dimensions.split('x').forEach(data =>{
@@ -136,10 +127,11 @@
                             <td>Piece#<%= pick + 1%></td>
                             <td><%= package.trackingNo%></td>
                             <td><%= package.lastStatusText%></td>
-                            <td class="text-center"><%=(package.packageType == 'Cube' && package.masterDescription) ? package.masterDescription : package.description%></td>
+                            <td><%= package.location%></td>
+                            <td class="text-center"><%= package.description%></td>
                             <td class="text-center"><%= package.packageType%></td>
-                            <td class="text-center"><%= (package.packageType == 'Cube' && package.masterDimensions) ? package.masterDimensions : package.dimensions%></td>
-                            <td class="text-right"><%= Number((package.packageType == 'Cube' && package.masterWeight) ? package.masterWeight : package.weight).toFixed(2)%>
+                            <td class="text-center"><%= package.dimensions%></td>
+                            <td class="text-right"><%= Number(package.weight).toFixed(2)%>
                               <%= package.packageCalculation||'kg' %></td>
                               <td class="text-right"><%= Number(package.volumetricWeight).toFixed(2)%> vlbs</td>
                               <td class="text-center">
@@ -216,7 +208,6 @@
             </div>
             <div class="separator-solid"></div>
             <p>
-              <strong>Creator of AWB</strong>: <%= awb.createdBy %> </br>
               <strong>Date/Time of Creation</strong>: <%= awb.dateCreated %>
             </p>
           </div>

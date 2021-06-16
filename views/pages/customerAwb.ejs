@@ -1,0 +1,247 @@
+<% layout('./shared/__template')%>
+<style>
+  table.dataTable tbody>tr.selected,
+  table.dataTable tbody>tr>.selected {
+    background-color: #0275d8;
+  }
+
+  table.dataTable tbody tr.selected,
+  table.dataTable tbody th.selected,
+  table.dataTable tbody td.selected {
+    color: white;
+  }
+
+  table.dataTable .dataTables_info .select-info {
+    display: block;
+  }
+</style>
+<div class="gutters">
+  <div class="col-xl-12 col-lg-6 col-md-12 col-sm-12">
+    <div class="card">
+      <div class="card-header d-flex align-items-left align-items-md-center flex-column flex-md-row">
+        <div class="card-title"><%= title %></div>
+      </div>
+      <div id="myLoader"><img src="/img/preloader.gif"></div>
+      <div class="card-body ">
+          <input type="hidden" name="clear" id="clear" value="<%=clear%>">
+          
+              <div class="col-md-12 float-right">
+                <form method="get"> 
+                  <select name="status" id="status" class="form-control" style="width: 30%; float: left;">
+                      <option value="9" <%= query.status==9?'selected':'' %>>At Store </option>
+                      <option value="1" <%= query.status==1?'selected':'' %>>In Fll </option>
+                      <option value="7" <%= query.status==7?'selected':'' %>>No-Invoice </option>
+                      <option value="" <%= !query.status?'selected':'' %>>All </option>
+                      <option value="5" <%= query.status==5?'selected':'' %>>Received </option>
+                      <option value="10" <%= query.status==10?'selected':'' %>>Mixed </option>
+                  </select>
+                  <input type="submit" value="Filter" class="btn btn-primary" style="margin-left: 1%;" onclick="searchDataFilter()">
+              </form>
+              </div>
+          
+        <div class="table-responsive p-4">
+          <table id="package-table"
+            class="display dateRangeFilterTable table table-striped table-hover dataTable package-table">
+            <thead>
+              <tr>
+               <th>Date Received</th>
+                <th>AWB</th>
+                <th>Fee</th>
+                <th>
+                  Total Packages
+                </th>
+                <th>
+                  Shipper
+                </th>
+                <th>
+                  Status
+                </th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% awbs.forEach(function(pkg){ %>
+              <tr data-record="<%= pkg._id %>">
+                
+                <td><%= helpers.formatDate(pkg.createdAt) %></td>
+                <td>
+                  <%= pkg.awbId %>
+                </td>
+
+                <td><%= pkg.totalPrice%></td>
+                <td><%= pkg.packages.length %></td>
+                <td>
+                  <%= pkg.shipperName %>
+                </td>
+                <td>
+                    <%- pkg.status %>
+                </td>
+                <td>
+                  <a href="/customer/awb/<%=pkg.awbId ? pkg._id: '#'%>/preview" class="btn btn-link btn-primary px-3" data-toggle="tooltip"
+                    data-original-title="View Details"> <i class="fa fa-eye"></i> </a>
+              </td>
+
+              </tr>
+              <%})%>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="add-to-manifest-modal" tabindex="-1" role="dialog" aria-labelledby="print-popup"
+  aria-hidden="true" style="display: none;">
+  <div class="modal-dialog" role="document">
+    <form id="add-to-manifest-form" method="post">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title">Add packages to Manifest</h2>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <input type="text" hidden name="packageIds" />
+          <div class="form-group">
+            <label for="manifestId">Manifest</label>
+            <select id="manifestId" name="manifestId" class="form-control" required>
+              <option></option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="compartmentId">Compartment</label>
+            <select id="compartmentId" name="compartmentId" class="form-control" required disabled>
+              <option></option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Add</button>
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+<!-- Add Packages To nodoc -->
+<div class="modal fade" id="add-to-nodoc-modal" tabindex="-1" role="dialog" aria-labelledby="print-popup"
+  aria-hidden="true" style="display: none;">
+  <div class="modal-dialog" role="document">
+    <form id="add-to-nodoc-form" method="post">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title">Add Packages to NoDoc</h2>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <input type="text" hidden name="packageIds" />
+          <div class="form-group">
+            <label for="location">Location</label>
+            <select id="location" name="location" class="form-control" required>
+              <option></option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="zoneId">Zone</label>
+            <select id="zoneId" name="zoneId" class="form-control" required>
+              <option></option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Save</button>
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+<!-- Add Packages To Cube -->
+<div class="modal fade" id="add-to-cube-modal" tabindex="-1" role="dialog" aria-labelledby="print-popup"
+  aria-hidden="true" style="display: none;">
+  <div class="modal-dialog" role="document">
+    <form id="add-to-cube-form" method="post">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title">Add packages to Cube</h2>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <input type="text" hidden name="packageIds" />
+          <div class="form-group">
+            <label for="CubeId">Cube</label>
+            <select id="CubeId" name="CubeId" class="form-control" required>
+              <option></option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Add</button>
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal fade" id="add-to-delivery-modal" tabindex="-1" role="dialog" aria-labelledby="print-popup"
+  aria-hidden="true" style="display: none;">
+  <div class="modal-dialog" role="document">
+    <form id="add-to-delivery-form" method="post">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title">Add packages to Delivery</h2>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <input type="text" hidden name="packageIds" />
+          <div class="form-group">
+            <label for="deliveryId">Delivery</label>
+            <select id="deliveryId" name="deliveryId" class="form-control" required>
+              <option></option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Add</button>
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal fade" id="print-popup" tabindex="-1" role="dialog" aria-labelledby="print-popup" aria-hidden="true"
+  style="display: none;">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="exampleModalLabel2">Print Package Label</h2>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group text-center">
+          <canvas id="pdf-preview" class="border border-dark"></canvas>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger close-del" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary print-package" id="print-package">
+          Print
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<% block('scripts').append('<script src="/js/utils.js"></script>')%>
+<% block('scripts').append('<script src="/js/customer/home/list.js"></script>')%>

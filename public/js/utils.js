@@ -92,3 +92,39 @@ function HideDownloadMessage(){
     window.removeEventListener('focus', HideDownloadMessage, false);                   
     document.getElementById('myLoader').style.display='none';
 }
+
+
+async function postJson(url,data){
+  return new Promise((resolve,reject)=>{
+    $.ajax({
+      url,
+      type: 'post',
+      data,
+      success: function (response) {
+        resolve(response);
+      },
+      error: function (response) {
+        reject(response);
+      },
+    })
+  });
+}
+
+async function postFormData(url,data){
+  return new Promise((resolve,reject)=>{
+    $.ajax({
+      url,
+      type: 'post',
+      cache: false,
+      contentType: false,
+      processData: false,
+      data,
+      success: function (response) {
+        resolve(response);
+      },
+      error: function (response) {
+        reject(response);
+      },
+    })
+  });
+}

@@ -9,6 +9,7 @@ var middleware = require('../../middleware');
 var packageUtil = new PackageUtil();
 var manifestCtrl = require('../../Controller/ManifestController');
 var priceCtrl = require('../../Controller/PriceLabelController');
+const moment = require('moment')
 
 router.post('/authenticate', (req, res, next) => {
   var body = req.body;
@@ -119,7 +120,8 @@ router.get('/get-package-detail-barcode/:barcode', passport.authenticate('jwt', 
 })
 router.get("/get-package-info",passport.authenticate('jwt', { session: false }), (req, res, next) => {
   let userId = req.headers.username
-  services.packageService.getPackageInfo(userId).then((result) => {
+  let pageNo = req.query.page // should be page number
+  services.packageService.getPackageInfo(userId,pageNo).then((result) => {
     res.send(result)
   })
 })
