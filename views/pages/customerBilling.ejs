@@ -36,7 +36,7 @@
               <tr>
                 <th>Date Received</th>
                 <th>AWB</th>
-                <th>Fee</th>
+                <th>Total Fees</th>
                 <th>
                   Total Packages
                 </th>
@@ -71,8 +71,10 @@
                     <%- pkg.pricing.TotalInvoiceValue %>
                 </td>
                 <td>
-                  <a href="javascript:void(0)" onclick="showPriceBreakupModal('<%-pkg._id%>')" class="btn btn-round btn-primary px-3" data-toggle="tooltip"
-                    data-original-title="View Details"> View </a>
+                  <!-- <a href="javascript:void(0)" onclick="showPriceBreakupModal('<%-pkg._id%>')" class="btn btn-round btn-primary px-3" data-toggle="tooltip"
+                    data-original-title="View Details"> View </a> -->
+                    <a href="javascript:void(0)" onclick="showPriceBreakupModal('<%-pkg._id%>')" class="btn btn-link btn-primary px-3" data-toggle="tooltip"
+                      data-original-title="View Details"> <i class="fa fa-eye"></i> </a>
               </td>
 
               </tr>

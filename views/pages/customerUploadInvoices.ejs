@@ -64,8 +64,8 @@
                 <td><%= pkg.invoices.length%></td>
                 <td><%-pkg.invoice_attach?"Invoice alrady uploaded":"Invoice Needed" %></td>
                 <td>
-                  <a href="javascript:void(0)" onclick="showUploadInvoiceModal('<%-pkg._id%>')" class="btn btn-round btn-primary px-3" data-toggle="tooltip"
-                    data-original-title="View Details"> Upload Invoice </a>
+                  <a href="javascript:void(0)" onclick="showUploadInvoiceModal('<%-pkg._id%>')" class="btn btn-link btn-primary px-3" data-toggle="tooltip"
+                    data-original-title="View Details"> <i class="fas fa-upload"></i></a>
               </td> 
 
               </tr>
