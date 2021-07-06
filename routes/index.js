@@ -10,8 +10,11 @@ router.get('/', function (req, res, next) {
   else
     res.render('index');
 });
+const adminMiddleware = (req,res,next)=>{
+  req.session.isAdmin ? next() : res.redirect("/customer/awb")   
+}
 
-router.get('/report', middleware(services.userService).checkSession, function (req, res, next) {
+router.get('/report',adminMiddleware, middleware(services.userService).checkSession, function (req, res, next) {
   services.userService.getAllUsers().then( users =>
     res.render('pages/report', {
       page: req.originalUrl,

@@ -8,6 +8,7 @@ require('./authHelper')
 router.post('/login', (req, res, next) => {
   services.customerService.login(req.body.email, req.body.password).then(loginResult => {
     if(loginResult.success || loginResult.authenticated){
+      req.session.isAdmin = false;
       return res.send(loginResult);
     }else{
       services.customerChildService.login(req.body.email, req.body.password).then(loginResultchild => {

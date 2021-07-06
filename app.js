@@ -108,6 +108,7 @@ app.use(session({
   cookieName: 'session',
   secret: 'Silver123.',
   duration: sessionExpireDuration,
+  isAdmin:false,
   activeDuration: sessionExpireDuration,
   cookie: {
     path: '/', 
@@ -125,16 +126,20 @@ app.use(function (req, res, next) {
   next();
 });
 
+const adminMiddleware = (req,res,next)=>{
+  req.session.isAdmin ? next() : res.redirect('/customer/awb') 
 
-app.use('/', adminIndexRouter, authRouter);
+}
+
+app.use('/' ,adminIndexRouter, authRouter);
 app.use('/account', accountPasswordRouter, accountPrintRouter);
-app.use('/admin', adminUserRouter, adminCustRouter,adminCustomerchildRouter, adminLocaRouter, adminZonesRouter, adminInvoicessRouter);
-app.use('/warehouse', warehouse, warehouseAwbRouter, warehouseManifestRouter, warehouseServiceTypeRouter, warehouseShipperRouter, warehousePaidTypeRouter, warehouseAirlineRouter, warehouseContainerRouter, warehouseCarrierRouter, warehousePackageRouter, warehousePrinterRouter, warehouseDeliveryRouter, warehouseHazmatRouter,warehouseCubeRouter,warehousePriceLabelRouter);
-app.use('/fleet', fleetVehicleRouter, fleetDriverRouter, fleetPilotRouter, fleetPlaneRouter, fleetCompartmentRouter, fleetAirportsRouter);
-app.use('/store', storeRouter);
+app.use('/admin',adminMiddleware, adminUserRouter, adminCustRouter,adminCustomerchildRouter, adminLocaRouter, adminZonesRouter, adminInvoicessRouter);
+app.use('/warehouse',adminMiddleware , warehouse, warehouseAwbRouter, warehouseManifestRouter, warehouseServiceTypeRouter, warehouseShipperRouter, warehousePaidTypeRouter, warehouseAirlineRouter, warehouseContainerRouter, warehouseCarrierRouter, warehousePackageRouter, warehousePrinterRouter, warehouseDeliveryRouter, warehouseHazmatRouter,warehouseCubeRouter,warehousePriceLabelRouter);
+app.use('/fleet', adminMiddleware, fleetVehicleRouter, fleetDriverRouter, fleetPilotRouter, fleetPlaneRouter, fleetCompartmentRouter, fleetAirportsRouter);
+app.use('/store',adminMiddleware, storeRouter);
 app.use('/util', util);
 app.use('/customer', customerLoginRouter,customerSignupRouter,customerchildRouter);
-app.use('/reports', reportRouter)
+app.use('/reports',adminMiddleware, reportRouter)
 
 app.use('/api/printer', apiPrinterRouter);
 app.use('/api/warehouse', apiWarehouseRouter);
