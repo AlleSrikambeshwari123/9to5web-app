@@ -115,7 +115,7 @@ const rows = [
 
 <div class="modal fade" id="priceBreakupModal" tabindex="-1" role="dialog" aria-labelledby="print-popup" aria-hidden="true"
   >
-  <div class="modal-dialog" role="document">
+  <div class="modal-dialog" style="max-width : 700px" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h2 class="modal-title" id="exampleModalLabel2">Pricing</h2>
@@ -143,18 +143,64 @@ const rows = [
                 <div class="col-md-12">
                     <p>No. of Invoices: <%-pricing.NoOfInvoice%></p>
                 </div>
-                <div class="col-md-12">
+                <div class="col-md-4">
                     <table class="table">
                         <tbody>
-                            <%rows.forEach(row=>{%>
-                                <tr>
-                                    <td><%-row.title%></td>
-                                    <td>$ <%-pricing[row.key]%></td>
-                                </tr>
-                            <%})%>   
+                          <div class="row">
+                            <%rows.forEach((row,index)=>{%>
+                              <% if (index <= 6){%>
+                                <div class="col-md-12">
+                                  <tr>
+                                      <td><%-row.title%></td>
+                                      <td>$ <%-pricing[row.key]%></td>
+                                  </tr>
+                                </div>
+                                  <%}%>
+                              <%})%>   
+
+                          </div>
+                          
                         </tbody>
                     </table>
                 </div>
+                <div class="col-md-4">
+                  <table class="table">
+                      <tbody>
+                        <div class="row">
+                          <%rows.forEach((row,index)=>{%>
+                                <% if (index > 6 && index < 14){%>
+                                  <div class="row">
+                                    <tr>
+                                        <td><%-row.title%></td>
+                                        <td>$ <%-pricing[row.key]%></td>
+                                    </tr>
+                                  </div>
+                                    <%}%>
+                              <%})%>   
+                        </div>
+                        
+                      </tbody>
+                  </table>
+              </div>
+              <div class="col-md-4">
+                <table class="table">
+                    <tbody>
+                      <div class="row">
+                        <%rows.forEach((row,index)=>{%>
+                                  <% if (index >= 14){%>
+                                    <div class="row">
+                                      <tr>
+                                          <td><%-row.title%></td>
+                                          <td>$ <%-pricing[row.key]%></td>
+                                      </tr>
+                                    </div>
+                                      <%}%>
+                            <%})%>   
+                      </div>
+                      
+                    </tbody>
+                </table>
+            </div>
             </div>
       </div>
     <%}) %>
