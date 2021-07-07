@@ -39,9 +39,27 @@
 					<h4 class="text-section">Reports</h4>
 				</li>
 				<li class="nav-item <% if (page.includes('/report/')) { %> active <% } %>">
-					<a href="/report">
+					<a href="/reports/all-awb/status">
 						<i class="fa fa-file"></i>
-						<p>Reports </p>
+						<p>ALL AWB Report </p>
+					</a>
+				</li>
+				<li class="nav-item <% if (page.includes('/report/')) { %> active <% } %>">
+					<a href="/reports/package-detail/reports">
+						<i class="fa fa-file"></i>
+						<p>Package Detail </p>
+					</a>
+				</li>
+				<li class="nav-item <% if (page.includes('/report/')) { %> active <% } %>">
+					<a href="/reports/package/status">
+						<i class="fa fa-file"></i>
+						<p>Package Status </p>
+					</a>
+				</li>
+				<li class="nav-item <% if (page.includes('/report/')) { %> active <% } %>">
+					<a href="/reports/delivery-detail/reports">
+						<i class="fa fa-file"></i>
+						<p>Delivery Detail </p>
 					</a>
 				</li>
 				<li class="nav-item <% if (page.includes('/reports/all-report/download')) { %> active <% } %>">

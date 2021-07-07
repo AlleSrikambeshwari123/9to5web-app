@@ -79,10 +79,7 @@ createConnection()
         }      
       csvWriter.writeRecords(records)       // returns a promise
         .then(async() => {  
-          var html = `Hi,<br/><br/>
-          Your report has been generated.  Please check the dashboard for the download link.`
-          await Mail.sendReportEmail(workerData.email,"users Report", html);
-          console.log(workerData.email);
+            console.log(workerData.email);
           var detail = {
             reportType: 'USERS',
             dateFrom:stdate,
@@ -92,9 +89,16 @@ createConnection()
             fileName:filename
           }
           var newReport = new ReportCsv(detail)
-          await newReport.save();
-          console.log('...Done USERS detail');
-        });
+              const newreportsave =    await newReport.save();
+                 console.log('...Done package detail');
+       
+                 var html = `Hi,<br/><br/>
+                 Your report has been generated.  Please check the dashboard for the download link. Or Download from this link <a href = "${process.env.BASE_URL_WEB}/reportcsv/${newreportsave.fileName}">Download Now</a>`
+              
+       
+                 let emailres =  await Mail.sendReportEmail(workerData.email,"Package Detail Report", html);
+                 console.log(emailres)
+            });
     })
   })
   

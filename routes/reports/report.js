@@ -4,6 +4,11 @@ var middleware = require('../../middleware');
 var reportCtrl = require('../../Controller/ReportController');
 
 router.get('/all-awb/status', middleware().checkSession, reportCtrl.all_awb_status);
+router.get('/package/status', middleware().checkSession, reportCtrl.packagestatus);
+
+router.get('/package-detail/reports',middleware().checkSession,reportCtrl.packagedetail)
+router.get('/delivery-detail/reports',middleware().checkSession,reportCtrl.deliverydetail)
+
 router.post('/all-awb/status_report', middleware().checkSession, reportCtrl.all_awb_status_report);
 router.post('/delivery-detail/report', middleware().checkSession, reportCtrl.delivery_detail_report);
 router.post('/package-detail/report', middleware().checkSession, reportCtrl.package_detail_report);

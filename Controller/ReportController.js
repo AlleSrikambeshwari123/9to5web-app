@@ -3,16 +3,92 @@ const { Worker } = require('worker_threads')
 const AwbStatus = require('../models/awbStatus');
 
 exports.all_awb_status = async(req, res, next)=>{    
-    services.awbService.getAwbStatuses(req.query).then(allawb => {
-        res.render('pages/reports/all-awb', {
-          title: 'All AWB Status',
-          page: req.originalUrl,
-          user: res.user,
-          allawb: allawb,
-          clear: req.query.clear,
-          query:req.query
-        });
-      });
+  services.userService.getAllUsers().then( users =>
+    res.render('pages/reports/awb-status', {
+      page: req.originalUrl,
+      title: "Reports",
+      user: res.user,
+      package_status: {
+        1: 'Received in FLL',
+        2: 'Loaded on AirCraft',
+        3: 'In Transit',
+        4: 'In Warehouse Nassuau',
+        5: 'Ready for Pickup / Delivery',
+        6: 'Delivered',
+        7: 'No Invoice Present',
+        8: 'Assigned to cube',
+        9: 'Delivered to Store'
+      },
+      users: users
+    })
+  ) 
+
+}
+exports.packagedetail = async(req, res, next)=>{   
+  services.userService.getAllUsers().then( users =>
+    res.render('pages/reports/package-detail', {
+      page: req.originalUrl,
+      title: "Reports",
+      user: res.user,
+      package_status: {
+        1: 'Received in FLL',
+        2: 'Loaded on AirCraft',
+        3: 'In Transit',
+        4: 'In Warehouse Nassuau',
+        5: 'Ready for Pickup / Delivery',
+        6: 'Delivered',
+        7: 'No Invoice Present',
+        8: 'Assigned to cube',
+        9: 'Delivered to Store'
+      },
+      users: users
+    })
+  ) 
+  
+}
+
+exports.packagestatus = async(req, res, next)=>{    
+  services.userService.getAllUsers().then( users =>
+    res.render('pages/reports/package-status', {
+      page: req.originalUrl,
+      title: "Reports",
+      user: res.user,
+      package_status: {
+        1: 'Received in FLL',
+        2: 'Loaded on AirCraft',
+        3: 'In Transit',
+        4: 'In Warehouse Nassuau',
+        5: 'Ready for Pickup / Delivery',
+        6: 'Delivered',
+        7: 'No Invoice Present',
+        8: 'Assigned to cube',
+        9: 'Delivered to Store'
+      },
+      users: users
+    })
+  ) 
+}
+
+exports.deliverydetail = async(req, res, next)=>{    
+  services.userService.getAllUsers().then( users =>
+    res.render('pages/reports/delivery-detail', {
+      page: req.originalUrl,
+      title: "Reports",
+      user: res.user,
+      package_status: {
+        1: 'Received in FLL',
+        2: 'Loaded on AirCraft',
+        3: 'In Transit',
+        4: 'In Warehouse Nassuau',
+        5: 'Ready for Pickup / Delivery',
+        6: 'Delivered',
+        7: 'No Invoice Present',
+        8: 'Assigned to cube',
+        9: 'Delivered to Store'
+      },
+      users: users
+    })
+  ) 
 }
 exports.all_awb_status_report = async(req, res, next)=>{
     if(req.body.daterange && res.user._id){
