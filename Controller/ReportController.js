@@ -1,6 +1,9 @@
 var services = require('../Services/RedisDataServices');
 const { Worker } = require('worker_threads')
 const AwbStatus = require('../models/awbStatus');
+var helpers = require('../views/helpers');
+var services = require('../Services/RedisDataServices');
+var utils = require('../Util/utils');
 
 exports.all_awb_status = async(req, res, next)=>{    
   services.userService.getAllUsers().then( users =>
@@ -90,6 +93,127 @@ exports.deliverydetail = async(req, res, next)=>{
     })
   ) 
 }
+
+
+exports.deliveryReport = (req, res, next) => {
+  services.deliveryService.getDeliveriesFullData(req).then((deliveries) => {
+    
+    Promise.all([
+      services.locationService.getLocations(),
+      services.driverService.getLocationDrivers('nas'),
+      services.vehicleService.getVehiclesByLocation('nas'),
+      services.packageService.getAllDeliveryPackagesData()
+    ]).then((results) => {
+      const deliveryPackages = results[3];
+      const packageDataByDeliveryId = {};
+      
+      deliveryPackages.forEach((deliveryPackage) => {
+        if (!packageDataByDeliveryId[deliveryPackage['deliveryId']]) {
+          packageDataByDeliveryId[deliveryPackage['deliveryId']] = [];
+        }
+        packageDataByDeliveryId[deliveryPackage['deliveryId']].push(deliveryPackage)
+      });
+
+      deliveries.forEach((delivery) => {
+        delivery.packages = packageDataByDeliveryId[delivery._id];
+      });
+
+      res.render('pages/reports/deliveryreport', {
+        page: req.originalUrl,
+        user: res.user,
+        title: 'Deliveries',
+        deliveries: deliveries.map(utils.formattedRecord),
+        locations: results[0],
+        drivers: results[1],
+        vehicles: results[2],
+        clear: req.query.clear
+      })
+    })
+  })
+}
+
+
+exports.agingReport = async (req, res, next) => {
+  let title = 'All Packages'
+  if(req.query.type == 'customer')
+      title = 'Customer Package List'
+  let customers = await services.customerService.getCustomers()
+  let locations = await services.locationService.getLocations()
+  services.packageService.getAllSnapshotPackagesUpdated(req,{}).then((packages) => {
+      return Promise.all(
+          packages.map(async(pkg, i) => {
+              let check = 1,dimen = pkg.dimensions
+              if(pkg.packageType == 'Cube' && pkg.masterDimensions)
+                  dimen = pkg.masterDimensions 
+              dimen.split('x').forEach(data =>{
+                check = check * data
+              })
+              pkg.volumetricWeight = (check/166);
+              return pkg
+          })
+      ).then(pkgs => {            
+        res.render('pages/reports/agingreport', {
+         
+        // res.render('pages/warehouse/snapshot/package/list-all', {
+              page: req.originalUrl,
+              user: res.user,
+              title: title,
+              filterURL: '',
+              buttonName: 'Add to Manifest',
+              packages: pkgs,
+              customers : customers,
+              locations : locations,
+              clear: req.query.clear,
+              daterange:req.query.daterange?req.query.daterange:'',
+              query:req.query
+          });
+      })
+
+  });
+};
+
+
+
+
+
+exports.packageReport = async(req, res, next)=>{    
+  
+  let title = 'All Packages'
+  if(req.query.type == 'customer')
+      title = 'Customer Package List'
+  let customers = await services.customerService.getCustomers()
+  let locations = await services.locationService.getLocations()
+  services.packageService.getAllSnapshotPackagesUpdated(req,{}).then((packages) => {
+      return Promise.all(
+          packages.map(async(pkg, i) => {
+              let check = 1,dimen = pkg.dimensions
+              if(pkg.packageType == 'Cube' && pkg.masterDimensions)
+                  dimen = pkg.masterDimensions 
+              dimen.split('x').forEach(data =>{
+                check = check * data
+              })
+              pkg.volumetricWeight = (check/166);
+              return pkg
+          })
+      ).then(pkgs => {            
+          res.render('pages/reports/package-report', {
+              page: req.originalUrl,
+              user: res.user,
+              title: title,
+              filterURL: '',
+              buttonName: 'Add to Manifest',
+              packages: pkgs,
+              customers : customers,
+              locations : locations,
+              clear: req.query.clear,
+              daterange:req.query.daterange?req.query.daterange:'',
+              query:req.query
+          });
+      })
+
+  });
+}
+
 exports.all_awb_status_report = async(req, res, next)=>{
     if(req.body.daterange && res.user._id){
         const result = await runService({daterange:req.body.daterange, userId:res.user._id, email: res.user.email}, './thread/awb.js'); 
