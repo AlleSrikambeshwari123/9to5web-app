@@ -8,6 +8,22 @@ router.get('/package/status', middleware().checkSession, reportCtrl.packagestatu
 
 router.get('/package-detail/reports',middleware().checkSession,reportCtrl.packagedetail)
 router.get('/delivery-detail/reports',middleware().checkSession,reportCtrl.deliverydetail)
+
+// router.get('/nodocsreport',middleware().checkSession,reportCtrl.nodocsreport)
+// router.get('/agingreport',middleware().checkSession,reportCtrl.agingreport)
+// router.get('/locationreport',middleware().checkSession,reportCtrl.locationreport)
+// router.get('/awbreport',middleware().checkSession,reportCtrl.awbreport)
+// router.get('/deliveryreport',middleware().checkSession,reportCtrl.deliveryreport)
+
+router.get('/nodocsreport',middleware().checkSession,reportCtrl.packageReport)
+router.get('/agingreport',middleware().checkSession,reportCtrl.agingReport)
+router.get('/locationreport',middleware().checkSession,reportCtrl.packageReport)
+router.get('/awbreport',middleware().checkSession,reportCtrl.packageReport)
+router.get('/deliveryreport',middleware().checkSession,reportCtrl.deliveryReport)
+
+
+
+
 router.get('/package-report',middleware().checkSession,reportCtrl.packageReport)
 
 router.post('/all-awb/status_report', middleware().checkSession, reportCtrl.all_awb_status_report);

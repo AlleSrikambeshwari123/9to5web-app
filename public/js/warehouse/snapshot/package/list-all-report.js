@@ -419,7 +419,7 @@ let packageTable = $('.package-table').DataTable({
     // });
   
     $.ajax({
-      url: '/api/warehouse/get-manifests/report',
+      url: '/api/warehouse/get-manifests',
       type: 'get',
       dataType: 'json',
       success(data) {
@@ -451,7 +451,7 @@ let packageTable = $('.package-table').DataTable({
     });
   
     $.ajax({
-      url: '/api/warehouse/get-deliverys/report',
+      url: '/api/warehouse/get-deliverys',
       type: 'get',
       dataType: 'json',
       success(data) {
@@ -472,7 +472,7 @@ let packageTable = $('.package-table').DataTable({
   
     // Get Cubes in DropDown
     $.ajax({
-      url: '/warehouse/cube/getall/report',
+      url: '/warehouse/cube/getall',
       type: 'get',
       dataType: 'json',
       success(data) {
@@ -494,7 +494,7 @@ let packageTable = $('.package-table').DataTable({
     /*  Get Location and ZOne IN Nodoc Dropdown */
     // Location
     $.ajax({
-      url: '/warehouse/package/locations/report',
+      url: '/warehouse/package/locations',
       type: 'get',
       dataType: 'json',
       success(data) {
@@ -514,7 +514,7 @@ let packageTable = $('.package-table').DataTable({
     });
   
     $.ajax({
-      url: '/warehouse/package/locations/report',
+      url: '/warehouse/package/locations',
       type: 'get',
       dataType: 'json',
       success(data) {
@@ -534,7 +534,7 @@ let packageTable = $('.package-table').DataTable({
     });
     // Zone
     $.ajax({
-      url: '/warehouse/package/zones/report',
+      url: '/warehouse/package/zones',
       type: 'get',
       dataType: 'json',
       success(data) {
@@ -758,7 +758,25 @@ let packageTable = $('.package-table').DataTable({
   var pageArr = pageUrl.split('?');
   var urlPage = (pageArr && pageArr.length) ? pageArr[0] : '';
   var urlPage = (pageArr && pageArr.length) ? pageArr[0] : '';
+  console.log(pageUrl,pageArr)
   var redirectUrl = "package-report";
+
+  console.log(this)
+  console.log()
+  if(pageUrl == "/reports/agingreport"){
+    redirectUrl = "agingreport";
+
+  }
+  if(pageUrl == "/reports/nodocsreport"){
+    redirectUrl = "nodocsreport";
+
+  }
+  if(pageUrl == "/reports/awbreport"){
+    redirectUrl = "awbreport";
+
+  }
+  
+  
   if (urlPage == "package-report") {
     redirectUrl = "package-report";
   }
