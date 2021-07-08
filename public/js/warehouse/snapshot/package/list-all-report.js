@@ -129,6 +129,9 @@ exports.packageReport = async(req, res, next)=>{
   });
 }
 
+
+
+
 exports.all_awb_status_report = async(req, res, next)=>{
     if(req.body.daterange && res.user._id){
         const result = await runService({daterange:req.body.daterange, userId:res.user._id, email: res.user.email}, './thread/awb.js'); 

@@ -8,6 +8,7 @@ router.get('/package/status', middleware().checkSession, reportCtrl.packagestatu
 
 router.get('/package-detail/reports',middleware().checkSession,reportCtrl.packagedetail)
 router.get('/delivery-detail/reports',middleware().checkSession,reportCtrl.deliverydetail)
+router.get('/package-report',middleware().checkSession,reportCtrl.packageReport)
 
 router.post('/all-awb/status_report', middleware().checkSession, reportCtrl.all_awb_status_report);
 router.post('/delivery-detail/report', middleware().checkSession, reportCtrl.delivery_detail_report);

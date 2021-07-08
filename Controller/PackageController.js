@@ -73,6 +73,21 @@ exports.get_package_snapshot = (req, res, next) => {
 
     });
 };
+exports.get_package_snapshotReport = (req, res, next) => {
+    services.packageService.getAwbSnapshotPackageWithLastStatus(req).then((packages) => {
+        return Promise.all(
+            packages.map(async(pkg, i) => {
+                let awb = await services.printService.getAWBDataForPackagesRelatedEntitie(pkg.awbId._id);
+                packages[i].pieces = awb.packages ? awb.packages.length : 0
+                packages[i].packageNumber = "PK00" + packages[i].id;
+                return pkg
+            })
+        ).then(pkgs => {                    
+            res.send(pkgs)
+        })
+
+    });
+};
 
 exports.get_package_list_snapshot = async (req, res, next) => {
     let title = 'All Packages'
@@ -110,6 +125,47 @@ exports.get_package_list_snapshot = async (req, res, next) => {
 
     });
 };
+
+
+exports.get_package_list_snapshotReport = async (req, res, next) => {
+    console.log("req.url",req)
+
+    let title = 'All Packages'
+    if(req.query.type == 'customer')
+        title = 'Customer Package List'
+    let customers = await services.customerService.getCustomers()
+    let locations = await services.locationService.getLocations()
+    services.packageService.getAllSnapshotPackagesUpdated(req,{}).then((packages) => {
+        return Promise.all(
+            packages.map(async(pkg, i) => {
+                let check = 1,dimen = pkg.dimensions
+                if(pkg.packageType == 'Cube' && pkg.masterDimensions)
+                    dimen = pkg.masterDimensions 
+                dimen.split('x').forEach(data =>{
+                  check = check * data
+                })
+                pkg.volumetricWeight = (check/166);
+                return pkg
+            })
+        ).then(pkgs => {            
+            res.render('pages/reports/package-report', {
+                page: req.originalUrl,
+                user: res.user,
+                title: title,
+                filterURL: '',
+                buttonName: 'Add to Manifest',
+                packages: pkgs,
+                customers : customers,
+                locations : locations,
+                clear: req.query.clear,
+                daterange:req.query.daterange?req.query.daterange:'',
+                query:req.query
+            });
+        })
+
+    });
+};
+
 
 exports.get_all_package_list = (req, res, next) => {
     services.packageService.getAllFullPackagesWithLastStatus(req).then(async (packagesResult) => {
@@ -216,7 +272,18 @@ exports.get_package_locations = (req, res, next) => {
         res.send(locations);
     });
 };
+exports.get_package_locationsReport = (req, res, next) => {
+    services.locationService.getLocations().then((locations) => {
+        res.send(locations);
+    });
+};
+
 exports.get_package_zones = (req, res, next) => {
+    services.zoneService.getZones().then(zones => {
+        res.send(zones);
+    })
+};
+exports.get_package_zonesReport = (req, res, next) => {
     services.zoneService.getZones().then(zones => {
         res.send(zones);
     })
