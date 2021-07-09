@@ -7,7 +7,10 @@
                     <h3 class="card-title">
                         <%=title%>
                     </h3>
-                    <a href='create' class='btn btn-primary btn-round float-right ml-md-auto text-white' data-toggle='modal' data-backdrop='static' data-target='#addDelivery'>Create Delivery</a>
+                    <button 
+                    class="btn btn-primary btn-round float-right mr-2 ml-md-auto" onclick="download_table_as_csv('package-table');">
+                    Generate CSV
+                  </button>
                 </div>
                 <div id="myLoader"><img src="/img/preloader.gif"></div>
                 <div class="card-body daterangepickerbody">

@@ -20,7 +20,7 @@ var endate = new Date();
         
       <div class="col-xs-12 col-sm-12 float-right">        
         <input type="text" class="form-control form-control-sm" name="" id="daterange-noDocs" class="form-control" style="width: 30%; float: left;margin-left: 1%; height: 40px !important;" value="<%=(query.daterange && query.type=='noDocs')? query.daterange: dateRangeDefault%>"  placeholder="Select dates" style="width: 30%; float: left;margin-left: 1%;"">        
-        <input type="button" value="Create Csv" class="btn btn-primary" style="float: left;margin-left: 1%"  onclick="generate_report()">
+        <input type="button" value="Generate CSV" class="btn btn-primary" style="float: left;margin-left: 1%"  onclick="generate_report()">
     </div>
         <div class="table-responsive">
         <table class="display table table-striped allawb table-hover dataTable ">

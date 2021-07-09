@@ -18,7 +18,7 @@ router.get('/delivery-detail/reports',middleware().checkSession,reportCtrl.deliv
 router.get('/nodocsreport',middleware().checkSession,reportCtrl.packageReport)
 router.get('/agingreport',middleware().checkSession,reportCtrl.agingReport)
 router.get('/locationreport',middleware().checkSession,reportCtrl.packageReport)
-router.get('/awbreport',middleware().checkSession,reportCtrl.packageReport)
+router.get('/awbreport',middleware().checkSession,reportCtrl.awbReport)
 router.get('/deliveryreport',middleware().checkSession,reportCtrl.deliveryReport)
 
 

@@ -754,6 +754,30 @@ let packageTable = $('.package-table').DataTable({
     });
   });
   
+  
+function generate_package_detail_report(){
+  $.ajax({
+      url: "/reports/package-detail/report",
+      type: "post",
+      data: {
+          daterange:$("#daterange-package-detail").val(),
+          user:$("#package_detail_user").val(),
+          status:$("#package_detail_status").val()
+      } ,
+      success: function (response) {
+        if(response && response.status){
+          swal("Report!", "Please wait while your report is generated.!", "success");
+        }else{
+          swal("Report!", "Something went wrong Please try again after 5 min.!", "error");
+        }
+         
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+         console.log(textStatus, errorThrown);
+      }
+  });
+}
+
   var pageUrl = pageUrl ? pageUrl : '';
   var pageArr = pageUrl.split('?');
   var urlPage = (pageArr && pageArr.length) ? pageArr[0] : '';
@@ -763,6 +787,19 @@ let packageTable = $('.package-table').DataTable({
 
   console.log(this)
   console.log()
+  if(pageUrl == "/reports/agingreport"){
+    redirectUrl = "agingreport";
+
+  }
+  if(pageUrl == "/reports/nodocsreport"){
+    redirectUrl = "nodocsreport";
+
+  }
+  if(pageUrl == "/reports/awbreport"){
+    redirectUrl = "awbreport";
+
+  }
+
   if(pageUrl == "/reports/agingreport"){
     redirectUrl = "agingreport";
 

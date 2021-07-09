@@ -214,6 +214,47 @@ exports.packageReport = async(req, res, next)=>{
   });
 }
 
+
+exports.awbReport = async(req, res, next)=>{    
+  
+  let title = 'All Packages'
+  if(req.query.type == 'customer')
+      title = 'Customer Package List'
+  let customers = await services.customerService.getCustomers()
+  let locations = await services.locationService.getLocations()
+  services.packageService.getAllSnapshotPackagesUpdated(req,{}).then((packages) => {
+      return Promise.all(
+          packages.map(async(pkg, i) => {
+              let check = 1,dimen = pkg.dimensions
+              if(pkg.packageType == 'Cube' && pkg.masterDimensions)
+                  dimen = pkg.masterDimensions 
+              dimen.split('x').forEach(data =>{
+                check = check * data
+              })
+              pkg.volumetricWeight = (check/166);
+              return pkg
+          })
+      ).then(pkgs => {            
+          res.render('pages/reports/awbreport', {
+              page: req.originalUrl,
+              user: res.user,
+              title: title,
+              filterURL: '',
+              buttonName: 'Add to Manifest',
+              packages: pkgs,
+              customers : customers,
+              locations : locations,
+              clear: req.query.clear,
+              daterange:req.query.daterange?req.query.daterange:'',
+              query:req.query
+          });
+      })
+
+  });
+}
+
+
+
 exports.all_awb_status_report = async(req, res, next)=>{
     if(req.body.daterange && res.user._id){
         const result = await runService({daterange:req.body.daterange, userId:res.user._id, email: res.user.email}, './thread/awb.js'); 

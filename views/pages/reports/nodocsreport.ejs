@@ -31,18 +31,33 @@ var endate = new Date();
 <div class="gutters">
   <div class="col-xl-12 col-lg-6 col-md-12 col-sm-12">
     <div class="card">
-      <!-- <a href="#" onclick="download_table_as_csv('package-table');">Download as CSV</a> -->
-
       <div class="card-header d-flex align-items-left align-items-md-center flex-column flex-md-row">
         <div class="card-title"><%= title %></div>
-      
+        <% if(!query.customerId && !query.locationId) {%>
+        
         <div class="d-flex align-items-right float-right ml-md-auto">
-          <button 
-            class="btn btn-primary btn-round float-right mr-2 ml-md-auto" onclick="download_table_as_csv('package-table');">
-            Download As CSV
+          <button id="add-to-cube-button" data-toggle="modal" data-backdrop="static" data-target="#add-to-cube-modal"
+            class="btn btn-primary btn-round float-right mr-2 ml-md-auto">
+            Add to Cube
           </button>
-      
+          <button id="add-to-nodoc-button" data-toggle="modal" data-backdrop="static" data-target="#add-to-nodoc-modal"
+            class="btn btn-primary btn-round float-right mr-2 ml-md-auto">
+            Add to NoDoc
+          </button>
+          <% if (buttonName === 'Add to Delivery') { %>
+          <button id="add-to-delivery-button" data-toggle="modal" data-backdrop="static" data-target="#add-to-delivery-modal"
+            class="btn btn-primary btn-round float-right ml-md-auto">
+            Add to Delivery
+          </button>
+          <% } %>
+          <% if (buttonName === 'Add to Manifest') { %>
+          <button id="add-to-manifest-button" data-toggle="modal" data-backdrop="static" data-target="#add-to-manifest-modal"
+            class="btn btn-primary btn-round float-right ml-md-auto">
+            Add to Manifest
+          </button>
+          <% } %>
         </div>
+        <% } %>              
       </div>
       <div id="myLoader"><img src="/img/preloader.gif"></div>
       <div style="padding: 15px 0 0 35px;">
@@ -107,9 +122,9 @@ var endate = new Date();
           <table id="package-table" class="display  table table-striped table-hover dataTable package-table">
             <thead>
               <tr>
-                <!-- <% if(!query.customerId && !query.locationId){ %>              
+                <% if(!query.customerId && !query.locationId){ %>              
                 <th><input id="checkall" type="checkbox" class="package-select-all" /></th>
-                <% } %>               -->
+                <% } %>              
 
                 <th>Created Date</th>
                 <th>Tracking No</th>
@@ -131,9 +146,9 @@ var endate = new Date();
                 <th>Express</th>
                 <th>Aging</th>
                 <th>Aging Dollar</th>
-                <!-- <th>View</th>
+                <th>View</th>
                 <th></th>
-                <th></th> -->
+                <th></th>
                 <!-- <th></th> -->
               </tr>
             </thead>
@@ -142,11 +157,11 @@ var endate = new Date();
               <% packages.forEach(function(pkg){ %>
                 
               <tr data-record="<%= pkg._id %>">
-                <!-- <% if(!query.customerId && !query.locationId) {%>              
+                <% if(!query.customerId && !query.locationId) {%>              
                 <td>
                   <input type="checkbox" name="package-select" class="package-select" />
                 </td>
-                <% } %>               -->
+                <% } %>              
                 <td><%= helpers.formatDate(pkg.createdAt) %></td>
                 <td><%=(pkg.trackingNo)?pkg.trackingNo:''%></td>
                 <td><%= pkg.pmb %></td>
@@ -168,7 +183,7 @@ var endate = new Date();
                 <td><%= pkg.express %></td>
                 <td><%= pkg.aging %></td>
                 <td><%= pkg.agingdollar %></td>
-                <!-- <td>
+                <td>
                   <button class="btn btn-primary btn-view-more-package btn-round float-right ml-md-auto"
                     data-toggle="modal" data-backdrop="static" data-original-title="View More Packages" data-id="<%=pkg._id%>"
                     data-target="#more-package-details">View</button>
@@ -180,7 +195,7 @@ var endate = new Date();
                   <a class="btn btn-link btn-primary btn-print-pkg" data-id="<%=pkg._id%>"
                     data-original-title="Print Label" data-target="#print-popup"><i class="fa fa-print"></i>
                   </a>
-                </td> -->
+                </td>
               </tr>
               <%})%>
             </tbody>
@@ -380,8 +395,7 @@ var endate = new Date();
   var nodoc = "<%=query.nodocs?query.nodocs:''%>";
 </script>
 <% block('scripts').append('<script src="/js/utils.js"></script>')%>
-<% block('scripts').append('<script src="/js/warehouse/snapshot/package/list-all-report.js"></script>')%></div>
-
+<% block('scripts').append('<script src="/js/warehouse/snapshot/package/list-all.js"></script>')%>
 
 <script>
   function download_table_as_csv(table_id, separator = ',') {
