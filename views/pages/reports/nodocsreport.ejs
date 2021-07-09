@@ -124,9 +124,9 @@ var endate = new Date();
           <table id="package-table" class="display  table table-striped table-hover dataTable package-table">
             <thead>
               <tr>
-                <% if(!query.customerId && !query.locationId){ %>              
+                <!-- <% if(!query.customerId && !query.locationId){ %>              
                 <th><input id="checkall" type="checkbox" class="package-select-all" /></th>
-                <% } %>              
+                <% } %>               -->
 
                 <th>Created Date</th>
                 <th>Tracking No</th>
@@ -148,9 +148,9 @@ var endate = new Date();
                 <th>Express</th>
                 <th>Aging</th>
                 <th>Aging Dollar</th>
-                <th>View</th>
+                <!-- <th>View</th>
                 <th></th>
-                <th></th>
+                <th></th> -->
                 <!-- <th></th> -->
               </tr>
             </thead>
@@ -159,11 +159,11 @@ var endate = new Date();
               <% packages.forEach(function(pkg){ %>
                 
               <tr data-record="<%= pkg._id %>">
-                <% if(!query.customerId && !query.locationId) {%>              
+                <!-- <% if(!query.customerId && !query.locationId) {%>              
                 <td>
                   <input type="checkbox" name="package-select" class="package-select" />
                 </td>
-                <% } %>              
+                <% } %>               -->
                 <td><%= helpers.formatDate(pkg.createdAt) %></td>
                 <td><%=(pkg.trackingNo)?pkg.trackingNo:''%></td>
                 <td><%= pkg.pmb %></td>
@@ -185,7 +185,7 @@ var endate = new Date();
                 <td><%= pkg.express %></td>
                 <td><%= pkg.aging %></td>
                 <td><%= pkg.agingdollar %></td>
-                <td>
+                <!-- <td>
                   <button class="btn btn-primary btn-view-more-package btn-round float-right ml-md-auto"
                     data-toggle="modal" data-backdrop="static" data-original-title="View More Packages" data-id="<%=pkg._id%>"
                     data-target="#more-package-details">View</button>
@@ -197,7 +197,7 @@ var endate = new Date();
                   <a class="btn btn-link btn-primary btn-print-pkg" data-id="<%=pkg._id%>"
                     data-original-title="Print Label" data-target="#print-popup"><i class="fa fa-print"></i>
                   </a>
-                </td>
+                </td> -->
               </tr>
               <%})%>
             </tbody>

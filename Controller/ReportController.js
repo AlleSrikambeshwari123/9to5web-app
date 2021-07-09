@@ -356,7 +356,7 @@ exports.gendocsReport = async(req, res, next)=>{
 
 exports.genagingReport = async(req, res, next)=>{
   if(req.body.daterange && res.user._id){
-      const result = await runService({daterange:req.body.daterange, userId:res.user._id, email: res.user.email}, './thread/delivery.js'); 
+      const result = await runService({daterange:req.body.daterange, userId:res.user._id, email: res.user.email}, './thread/Agingreport.js'); 
       res.json(result)
   }else{
       res.json({status: false})
@@ -364,7 +364,7 @@ exports.genagingReport = async(req, res, next)=>{
 }
 exports.gennodocsReport = async(req, res, next)=>{
   if(req.body.daterange && res.user._id){
-      const result = await runService({daterange:req.body.daterange, userId:res.user._id, email: res.user.email}, './thread/delivery.js'); 
+      const result = await runService({daterange:req.body.daterange, userId:res.user._id, email: res.user.email}, './thread/nodocreport.js'); 
       res.json(result)
   }else{
       res.json({status: false})
@@ -375,7 +375,7 @@ exports.gennodocsReport = async(req, res, next)=>{
 
 exports.genlocationReport = async(req, res, next)=>{
   if(req.body.daterange && res.user._id){
-      const result = await runService({daterange:req.body.daterange, userId:res.user._id, email: res.user.email}, './thread/delivery.js'); 
+      const result = await runService({daterange:req.body.daterange, userId:res.user._id, email: res.user.email}, './thread/location_report.js'); 
       res.json(result)
   }else{
       res.json({status: false})
@@ -386,7 +386,7 @@ exports.genlocationReport = async(req, res, next)=>{
 
 exports.genawbReport = async(req, res, next)=>{
   if(req.body.daterange && res.user._id){
-      const result = await runService({daterange:req.body.daterange, userId:res.user._id, email: res.user.email}, './thread/delivery.js'); 
+      const result = await runService({daterange:req.body.daterange, userId:res.user._id, email: res.user.email}, './thread/awb_report.js'); 
       res.json(result)
   }else{
       res.json({status: false})
