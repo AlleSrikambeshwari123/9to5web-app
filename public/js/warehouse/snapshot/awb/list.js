@@ -91,6 +91,9 @@ var nodocsTable = $('#no-docs-table').DataTable({
 var pendingtable = $('#pending-awb-table').DataTable({
   pageLength: 10,
 })
+var pendingtable = $('#awb-report-table').DataTable({
+  pageLength: 10,
+})
 // var pickuptable = $('#pickup-awb-table').DataTable({
 //   pageLength: 10,
 // })
@@ -226,6 +229,10 @@ if(urlPage == "/warehouse/nas/awb/no-docs"){
 }
 if(urlPage == "/warehouse/fll/awb/no-docs"){
   redirectUrl = "/warehouse/fll/awb/no-docs";
+}
+
+if(urlPage.indexOf("/reports/awbreport")){
+  redirectUrl = "/reports/awbreport";
 }
 
 $(document).on('click', '.applyBtn', function() {
