@@ -1,5 +1,7 @@
 <% layout('./shared/__template')%>
-
+<script src="/js/jquery.js"></script>
+<script src="/assets/js/plugin/datatables/datatables.min.js"></script>
+<script src="/assets/js/plugin/moment/moment.min.js"></script>
     <div class='gutters'>
         <div class='col-xl-12 col-lg-6 col-md-12 col-sm-12'>
             <div class='card'>
@@ -7,14 +9,17 @@
                     <h3 class="card-title">
                         <%=title%>
                     </h3>
-                    <button 
+                <input type="button" value="Generate CSV delivery report" class="btn btn-primary" style="float: left;margin-left: 1%"  onclick="gen_delivery_report()">
+
+                    <!-- <button 
                     class="btn btn-primary btn-round float-right mr-2 ml-md-auto" onclick="download_table_as_csv('package-table');">
                     Generate CSV
-                  </button>
+                  </button> -->
                 </div>
                 <div id="myLoader"><img src="/img/preloader.gif"></div>
                 <div class="card-body daterangepickerbody">
-                    <input type="hidden" name="clear" id="clear" value="<%=clear%>">
+                    <input type="hidden" id="daterange-delivery-new-detail" name="clear" id="clear" value="<%=clear%>" >
+                    
                     <div class="table-responsive">
                     <table class="display table table-striped table-hover dateRangeFilterTable dataTable delivery-table">
                         <thead>
@@ -129,4 +134,7 @@
     </div>
 
     <% block('scripts').append('<script src="/js/utils.js"></script>')%>
+    <% block('scripts').append('<script src="/js/reports/report.js"></script>')%>
+    <!-- C:\Users\vaibh\Desktop\ongraph\9to5dev\9to5-web\public\js\reports\report.js -->
+
         <% block('scripts').append('<script src="/js/reports/list-delivery.js"></script>')%>

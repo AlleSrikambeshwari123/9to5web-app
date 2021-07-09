@@ -1,130 +1,414 @@
-'use strict';
-
-// Importing Environment Variables
-require('dotenv').config();
-
-const createConnection = require('../Util/mongo');
-const mongoose = require('mongoose');
-const STRINGS = require('../Res/strings');
-const fs = require('fs');
-const PackageStatus = require('../models/packageStatus');
-const ReportCsv = require('../models/reportcsv');
+var services = require('../Services/RedisDataServices');
+const { Worker } = require('worker_threads')
+const AwbStatus = require('../models/awbStatus');
 var helpers = require('../views/helpers');
-var Mail = require('../Util/EmailService');
-const createCsvWriter = require('csv-writer').createObjectCsvWriter;
-const { workerData, parentPort }  = require('worker_threads');
-var daterange = workerData.daterange;
-var date_arr  = daterange.split('-');
-var startDate = (date_arr[0]).trim();      
-var stdate = new Date(startDate);
-stdate.setDate(stdate.getDate() );
+var services = require('../Services/RedisDataServices');
+var utils = require('../Util/utils');
 
-var endDate = (date_arr[1]).trim();
-var endate = new Date(endDate);
-endate.setDate(endate.getDate() );
+exports.all_awb_status = async(req, res, next)=>{    
+  services.userService.getAllUsers().then( users =>
+    res.render('pages/reports/awb-status', {
+      page: req.originalUrl,
+      title: "Reports",
+      user: res.user,
+      package_status: {
+        1: 'Received in FLL',
+        2: 'Loaded on AirCraft',
+        3: 'In Transit',
+        4: 'In Warehouse Nassuau',
+        5: 'Ready for Pickup / Delivery',
+        6: 'Delivered',
+        7: 'No Invoice Present',
+        8: 'Assigned to cube',
+        9: 'Delivered to Store'
+      },
+      users: users
+    })
+  ) 
 
-stdate = new Date(stdate.setUTCHours(0,0,0,1));
-endate = new Date(endate.setUTCHours(23,59,59,0));
-var searchData = {createdAt : {"$gte":stdate, "$lte": endate}};
-
-if (workerData.users && workerData.users != 'all') {
-    searchData['updatedBy'] = mongoose.Types.ObjectId(workerData.users);
 }
-if (workerData.package_status && workerData.package_status != 'all') {
-    searchData['status'] = workerData.package_status;
+exports.packagedetail = async(req, res, next)=>{   
+  services.userService.getAllUsers().then( users =>
+    res.render('pages/reports/package-detail', {
+      page: req.originalUrl,
+      title: "Reports",
+      user: res.user,
+      package_status: {
+        1: 'Received in FLL',
+        2: 'Loaded on AirCraft',
+        3: 'In Transit',
+        4: 'In Warehouse Nassuau',
+        5: 'Ready for Pickup / Delivery',
+        6: 'Delivered',
+        7: 'No Invoice Present',
+        8: 'Assigned to cube',
+        9: 'Delivered to Store'
+      },
+      users: users
+    })
+  ) 
+  
 }
 
-var d = new Date();
-var time = d.getTime();
-var filename = time+'_packagedetail.csv'
-createConnection()
-  .then(() => {
-    PackageStatus.aggregate([
-        { $match: searchData },
-        {
-            $group: {
-                _id: "$packageId",
-                lastPackageCreatedAt: { $last: "$createdAt" },
-                status: { $last: "$status" },
-                updatedBy: { $last: "$updatedBy" },
-                packageLastId: { $last: "$packageId" }
-            }
-        }, {
-            $lookup: {
-                from: "users",
-                localField: "updatedBy",
-                foreignField: "_id",
-                as: "userId"
-            },
-        }, {
-            $unwind: '$userId'
-        }, {
-            $lookup: {
-                from: "packagehistories",
-                localField: "packageLastId",
-                foreignField: "_id",
-                as: "package"
-            },
-        }, {
-            $unwind: '$package'
-        },
-        {
-            $project: {
-                _id: 0,
-                barcode:"$package.barcode",
-                packageId: '$package.id',
-                user: {
-                    firstName: '$userId.firstName',
-                    lastName: '$userId.lastName'
-                },
-                updatedAt: '$lastPackageCreatedAt',
-                status: 1
-            }
-        }
-    ]).exec(async function(err,data){
+exports.packagestatus = async(req, res, next)=>{    
+  services.userService.getAllUsers().then( users =>
+    res.render('pages/reports/package-status', {
+      page: req.originalUrl,
+      title: "Reports",
+      user: res.user,
+      package_status: {
+        1: 'Received in FLL',
+        2: 'Loaded on AirCraft',
+        3: 'In Transit',
+        4: 'In Warehouse Nassuau',
+        5: 'Ready for Pickup / Delivery',
+        6: 'Delivered',
+        7: 'No Invoice Present',
+        8: 'Assigned to cube',
+        9: 'Delivered to Store'
+      },
+      users: users
+    })
+  ) 
+}
+
+exports.deliverydetail = async(req, res, next)=>{    
+  services.userService.getAllUsers().then( users =>
+    res.render('pages/reports/delivery-detail', {
+      page: req.originalUrl,
+      title: "Reports",
+      user: res.user,
+      package_status: {
+        1: 'Received in FLL',
+        2: 'Loaded on AirCraft',
+        3: 'In Transit',
+        4: 'In Warehouse Nassuau',
+        5: 'Ready for Pickup / Delivery',
+        6: 'Delivered',
+        7: 'No Invoice Present',
+        8: 'Assigned to cube',
+        9: 'Delivered to Store'
+      },
+      users: users
+    })
+  ) 
+}
+
+
+exports.deliveryReport = (req, res, next) => {
+  services.deliveryService.getDeliveriesFullData(req).then((deliveries) => {
     
-      if(err){
-        console.log(err);
-      }
-      const csvWriter = createCsvWriter({
-        path: 'public/reportcsv/'+filename,
-        header: [
-            {id: 'barcode', title: 'Original Barcode'},            
-            {id:'status', title: 'Status'},
-            {id:'user', title: 'User'},
-            {id:'date', title: 'Date'}
-        ]
+    Promise.all([
+      services.locationService.getLocations(),
+      services.driverService.getLocationDrivers('nas'),
+      services.vehicleService.getVehiclesByLocation('nas'),
+      services.packageService.getAllDeliveryPackagesData()
+    ]).then((results) => {
+      const deliveryPackages = results[3];
+      const packageDataByDeliveryId = {};
+      
+      deliveryPackages.forEach((deliveryPackage) => {
+        if (!packageDataByDeliveryId[deliveryPackage['deliveryId']]) {
+          packageDataByDeliveryId[deliveryPackage['deliveryId']] = [];
+        }
+        packageDataByDeliveryId[deliveryPackage['deliveryId']].push(deliveryPackage)
       });
-      const records = [];
-      for(var i=0;i<data.length; i++){
-        var item = data[i]; 
-        records.push({
-            barcode: item.barcode?item.barcode:'',            
-            status:item.status,
-            user:item.user.firstName + " " + item.user.lastName,
-            date:helpers.formatDate(item.updatedAt)
-        })   
-      } 
-      console.log(records)     
-      csvWriter.writeRecords(records)       // returns a promise
-        .then(async() => {  
-          var html = `Hi,<br/><br/>
-          Your report has been generated.  Please check the dashboard for the download link. <a href = "${process.env.BASE_URL_WEB}/reportcsv/${filename}">Download Now</a>.`
-          await Mail.sendReportEmail(workerData.email,"Package Detail Report", html);
-          console.log(workerData.email);
-          var detail = {
-            reportType: 'PACKAGEDETAIL',
-            dateFrom:stdate,
-            dateTo:endate,
-            dateRange: daterange,
-            userId:workerData.userId,
-            fileName:filename
-          }
-          var newReport = new ReportCsv(detail)
-          await newReport.save();
-          console.log('...Done package detail');
-        });
+
+      deliveries.forEach((delivery) => {
+        delivery.packages = packageDataByDeliveryId[delivery._id];
+      });
+
+      res.render('pages/reports/deliveryreport', {
+        page: req.originalUrl,
+        user: res.user,
+        title: 'Deliveries',
+        deliveries: deliveries.map(utils.formattedRecord),
+        locations: results[0],
+        drivers: results[1],
+        vehicles: results[2],
+        clear: req.query.clear
+      })
     })
   })
+}
+
+
+exports.agingReport = async (req, res, next) => {
+  let title = 'All Packages'
+  if(req.query.type == 'customer')
+      title = 'Customer Package List'
+  let customers = await services.customerService.getCustomers()
+  let locations = await services.locationService.getLocations()
+  services.packageService.getAllSnapshotPackagesUpdated(req,{}).then((packages) => {
+      return Promise.all(
+          packages.map(async(pkg, i) => {
+              let check = 1,dimen = pkg.dimensions
+              if(pkg.packageType == 'Cube' && pkg.masterDimensions)
+                  dimen = pkg.masterDimensions 
+              dimen.split('x').forEach(data =>{
+                check = check * data
+              })
+              pkg.volumetricWeight = (check/166);
+              return pkg
+          })
+      ).then(pkgs => {            
+        res.render('pages/reports/agingreport', {
+         
+        // res.render('pages/warehouse/snapshot/package/list-all', {
+              page: req.originalUrl,
+              user: res.user,
+              title: title,
+              filterURL: '',
+              buttonName: 'Add to Manifest',
+              packages: pkgs,
+              customers : customers,
+              locations : locations,
+              clear: req.query.clear,
+              daterange:req.query.daterange?req.query.daterange:'',
+              query:req.query
+          });
+      })
+
+  });
+};
+
+
+
+
+
+exports.nodocsReport = async(req, res, next)=>{    
   
-parentPort.postMessage(  { fileName: workerData, status: 'Done' })
+  let title = 'All Packages'
+  if(req.query.type == 'customer')
+      title = 'Customer Package List'
+  let customers = await services.customerService.getCustomers()
+  let locations = await services.locationService.getLocations()
+  services.packageService.getAllSnapshotPackagesUpdated(req,{}).then((packages) => {
+      return Promise.all(
+          packages.map(async(pkg, i) => {
+              let check = 1,dimen = pkg.dimensions
+              if(pkg.packageType == 'Cube' && pkg.masterDimensions)
+                  dimen = pkg.masterDimensions 
+              dimen.split('x').forEach(data =>{
+                check = check * data
+              })
+              pkg.volumetricWeight = (check/166);
+              return pkg
+          })
+      ).then(pkgs => {            
+          res.render('pages/reports/nodocsreport', {
+              page: req.originalUrl,
+              user: res.user,
+              title: title,
+              filterURL: '',
+              buttonName: 'Add to Manifest',
+              packages: pkgs,
+              customers : customers,
+              locations : locations,
+              clear: req.query.clear,
+              daterange:req.query.daterange?req.query.daterange:'',
+              query:req.query
+          });
+      })
+
+  });
+}
+
+
+
+
+exports.packageReport = async(req, res, next)=>{    
+  
+  let title = 'All Packages'
+  if(req.query.type == 'customer')
+      title = 'Customer Package List'
+  let customers = await services.customerService.getCustomers()
+  let locations = await services.locationService.getLocations()
+  services.packageService.getAllSnapshotPackagesUpdated(req,{}).then((packages) => {
+      return Promise.all(
+          packages.map(async(pkg, i) => {
+              let check = 1,dimen = pkg.dimensions
+              if(pkg.packageType == 'Cube' && pkg.masterDimensions)
+                  dimen = pkg.masterDimensions 
+              dimen.split('x').forEach(data =>{
+                check = check * data
+              })
+              pkg.volumetricWeight = (check/166);
+              return pkg
+          })
+      ).then(pkgs => {            
+          res.render('pages/reports/package-report', {
+              page: req.originalUrl,
+              user: res.user,
+              title: title,
+              filterURL: '',
+              buttonName: 'Add to Manifest',
+              packages: pkgs,
+              customers : customers,
+              locations : locations,
+              clear: req.query.clear,
+              daterange:req.query.daterange?req.query.daterange:'',
+              query:req.query
+          });
+      })
+
+  });
+}
+
+
+exports.awbReport = async(req, res, next)=>{    
+  
+  let title = 'All Packages'
+  if(req.query.type == 'customer')
+      title = 'Customer Package List'
+  let customers = await services.customerService.getCustomers()
+  let locations = await services.locationService.getLocations()
+  services.awbService.getAwbsFullSnapshot(req,{}).then((pkgs => {            
+          res.render('pages/reports/awbreport', {
+              page: req.originalUrl,
+              user: res.user,
+              title: title,
+              filterURL: '',
+              buttonName: 'Add to Manifest',
+              awbs: pkgs,
+              customers : customers,
+              locations : locations,
+              clear: req.query.clear,
+              daterange:req.query.daterange?req.query.daterange:'',
+              query:req.query
+          });
+  }));
+}
+
+
+
+exports.all_awb_status_report = async(req, res, next)=>{
+    if(req.body.daterange && res.user._id){
+        const result = await runService({daterange:req.body.daterange, userId:res.user._id, email: res.user.email}, './thread/awb.js'); 
+        res.json(result)
+    }else{
+        res.json({status: false})
+    }
+}
+
+exports.delivery_detail_report = async(req, res, next)=>{
+  if(req.body.daterange && res.user._id){
+      const result = await runService({daterange:req.body.daterange, userId:res.user._id, email: res.user.email}, './thread/delivery.js'); 
+      res.json(result)
+  }else{
+      res.json({status: false})
+  }
+}
+
+exports.package_detail_report = async(req, res, next)=>{
+  if(req.body.daterange && res.user._id){
+    const result = await runService({
+      daterange:req.body.daterange,
+      userId:res.user._id,
+      email: res.user.email,
+      users:req.body.user,
+      package_status:req.body.status
+    }, './thread/packagedetail.js'); 
+    res.json(result)
+  }else{
+      res.json({status: false})
+  }
+}
+
+//dashooard
+exports.postbox_etc_package_report = async(req, res, next)=>{
+  if(req.body.daterange && res.user._id){
+    const result = await runService({
+      daterange:req.body.daterange,
+      userId:res.user._id,
+      email: res.user.email,
+      users:req.body.user,
+      package_status:req.body.status
+    }, './thread/postbox.js'); 
+    res.json(result)
+  }else{
+      res.json({status: false})
+  }
+}
+
+exports.ninetofive_package_report = async(req, res, next)=>{
+  if(req.body.daterange && res.user._id){
+    const result = await runService({
+      daterange:req.body.daterange,
+      userId:res.user._id,
+      email: res.user.email,
+      users:req.body.user,
+      package_status:req.body.status
+    }, './thread/ninetofivepackage.js'); 
+    res.json(result)
+  }else{
+      res.json({status: false})
+  }
+}
+
+exports.nodocs_package_report = async(req, res, next)=>{
+  if(req.body.daterange && res.user._id){
+    const result = await runService({
+      daterange:req.body.daterange,
+      userId:res.user._id,
+      email: res.user.email,
+      users:req.body.user,
+      package_status:req.body.status
+    }, './thread/nodocspackage.js'); 
+    res.json(result)
+  }else{
+      res.json({status: false})
+  }
+}
+
+exports.users_report = async(req, res, next)=>{
+  if(req.body.daterange && res.user._id){
+    const result = await runService({
+      daterange:req.body.daterange,
+      userId:res.user._id,
+      email: res.user.email      
+    }, './thread/usersreport.js'); 
+    res.json(result)
+  }else{
+      res.json({status: false})
+  }
+}
+
+exports.package_status_report = async(req, res, next)=>{
+  if(req.body.daterange && res.user._id){
+    const result = await runService({
+      daterange:req.body.daterange,
+      userId:res.user._id,
+      email: res.user.email      
+    }, './thread/packagestatus.js'); 
+    res.json(result)
+  }else{
+      res.json({status: false})
+  }
+}
+
+exports.all_dowload_report = async(req,res)=>{
+    services.awbService.getAllReport(req.query).then(allreport => {
+        res.render('pages/reports/all-report', {
+          title: 'All Report',
+          page: req.originalUrl,
+          user: res.user,
+          allreport: allreport,
+          clear: req.query.clear,
+          query:req.query
+        });
+    });
+}
+
+function runService(workerData, threadPage) {
+    return new Promise((resolve, reject) => {
+      const worker = new Worker(threadPage, { workerData });
+      worker.on('message', resolve);
+      worker.on('error', reject);
+      worker.on('exit', (code) => {
+        if (code !== 0)
+          reject(new Error(`Worker stopped with exit code ${code}`));
+      })
+    })
+  }
+
