@@ -786,38 +786,39 @@ function generate_package_detail_report(){
   var redirectUrl = "package-report";
 
   console.log(this)
-  console.log()
-  if(pageUrl == "/reports/agingreport"){
+  console.log("redir",redirectUrl,pageUrl,pageUrl.indexOf("/reports/awbreport"))
+  if(pageUrl.indexOf("/reports/agingreport") >= 0){
     redirectUrl = "agingreport";
 
   }
-  if(pageUrl == "/reports/nodocsreport"){
+  if(pageUrl.indexOf("/reports/nodocsreport") >= 0){
     redirectUrl = "nodocsreport";
 
   }
-  if(pageUrl == "/reports/awbreport"){
+  if(pageUrl.indexOf("/reports/awbreport") >= 0){
     redirectUrl = "awbreport";
 
   }
 
-  if(pageUrl == "/reports/agingreport"){
+  if(pageUrl.indexOf("/reports/agingreport") >= 0){
     redirectUrl = "agingreport";
 
   }
-  if(pageUrl == "/reports/nodocsreport"){
+  if(pageUrl.indexOf("/reports/nodocsreport") >= 0){
     redirectUrl = "nodocsreport";
 
   }
-  if(pageUrl == "/reports/awbreport"){
+  if(pageUrl.indexOf("/reports/awbreport") >= 0){
     redirectUrl = "awbreport";
 
   }
   
   
-  if (urlPage == "package-report") {
+  if (pageUrl.indexOf("package-report") >= 0) {
     redirectUrl = "package-report";
   }
-  if (urlPage == "/warehouse/snapshot/package/list") {
+  console.log("redirect cj",pageUrl,redirectUrl)
+  if (pageUrl.indexOf("/warehouse/snapshot/package/list") >= 0) {
     redirectUrl = "/warehouse/snapshot/package/list/report";
   }
   if (pageUrl.split('/')[2] == "customer") {
@@ -834,6 +835,7 @@ function generate_package_detail_report(){
   }else{
   
   $(document).on('click', '.applyBtn', function () {
+    console.log("redirectUrl",redirectUrl)
     var urlLocation = redirectUrl + "?daterange=" + $('.daterange').val();
     if($('#search_collection').val()){
       urlLocation = urlLocation+'&search_collection='+$('#search_collection').val();
@@ -847,6 +849,7 @@ function generate_package_detail_report(){
   })
   $(document).ready(function () {
     setTimeout(() => {
+      console.log("page ",pageUrl)
       if ($('#clear').val()) {
         // $('#daterange').val('')
         $('#clear').val('1');
