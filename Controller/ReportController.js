@@ -152,7 +152,7 @@ exports.agingReport = async (req, res, next) => {
               return pkg
           })
       ).then(pkgs => {            
-          console.log(req.body,req.query , "kaldjflk")
+          console.log(req.body,req.query , "reqbodyreqquery")
         res.render('pages/reports/agingreport', {
           
         // res.render('pages/warehouse/snapshot/package/list-all', {

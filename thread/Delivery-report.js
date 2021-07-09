@@ -36,7 +36,7 @@ if (workerData.package_status && workerData.package_status != 'all') {
 
 var d = new Date();
 var time = d.getTime();
-var filename = time+'_packagedetail.csv'
+var filename = time+'_delivery_report.csv'
 createConnection()
   .then(() => {
     PackageStatus.aggregate([
@@ -110,10 +110,10 @@ createConnection()
         .then(async() => {  
           var html = `Hi,<br/><br/>
           Your report has been generated.  Please check the dashboard for the download link. <a href = "${process.env.BASE_URL_WEB}/reportcsv/${filename}">Download Now</a>.`
-          await Mail.sendReportEmail(workerData.email,"Package Detail Report", html);
+          await Mail.sendReportEmail(workerData.email,"Delivery Report", html);
           console.log(workerData.email);
           var detail = {
-            reportType: 'PACKAGEDETAIL',
+            reportType: 'DELIVERY REPORT',
             dateFrom:stdate,
             dateTo:endate,
             dateRange: daterange,

@@ -36,7 +36,10 @@ if (workerData.package_status && workerData.package_status != 'all') {
 
 var d = new Date();
 var time = d.getTime();
-var filename = time+'_packagedetail.csv'
+var filename = time+'_agingreport.csv'
+
+
+
 createConnection()
   .then(() => {
     PackageStatus.aggregate([
@@ -130,10 +133,10 @@ createConnection()
         .then(async() => {  
           var html = `Hi,<br/><br/>
           Your report has been generated.  Please check the dashboard for the download link. <a href = "${process.env.BASE_URL_WEB}/reportcsv/${filename}">Download Now</a>.`
-          await Mail.sendReportEmail(workerData.email,"Package Detail Report", html);
+          await Mail.sendReportEmail(workerData.email,"Aging Report", html);
           console.log(workerData.email);
           var detail = {
-            reportType: 'PACKAGEDETAIL',
+            reportType: 'AgingReport',
             dateFrom:stdate,
             dateTo:endate,
             dateRange: daterange,
@@ -141,6 +144,7 @@ createConnection()
             fileName:filename
           }
           var newReport = new ReportCsv(detail)
+          console.log(newReport,'newreportt')
           await newReport.save();
           console.log('...Done package detail');
         });
