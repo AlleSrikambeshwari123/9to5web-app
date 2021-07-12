@@ -18,7 +18,11 @@ var endate = new Date();
       <div class="card-header">
         <div class="row row-nav-line">
           <ul class="nav nav-tabs nav-line nav-color-primary" id="awb-list-tab" role="tablist">
-            <input type="button" value="Generate CSV Awb report" class="btn btn-primary" style="float: left;margin-left: 1%"  onclick="gen_awb_report()">
+            <button onclick="download_table_as_csv('awb-report-table-download')" 
+            class="btn btn-primary btn-round float-right mr-2 ml-md-auto">
+                  Generate csv
+            </button>
+            <!-- <button value="" class="btn btn-primary" style="float: right;margin-left: 1%"  onclick="download_table_as_csv('awb-report-table-download')">Generate CSV Awb report </button> -->
 
           </ul>
         </div>
@@ -59,9 +63,9 @@ var endate = new Date();
                     <th>Carrier</th>
                     <th>Invoice Count</th>
                     <th>Package Count</th>
-                    <th>View more</th>
+                    <!-- <th>View more</th>
                     <th></th>
-                    <th></th>
+                    <th></th> -->
                   </tr>
                 </thead>
                 <tbody>
@@ -78,27 +82,27 @@ var endate = new Date();
                   <td><%=awb.carrierName?awb.carrierName:'' %></td>
                   <td><%=awb.invoices && awb.invoices.length > 0 ? 'yes-doc' : 'no-doc' %></td>
                   <td><%=awb.packages ? awb.packages.length : 'no-pkg' %></td>
-                  <td>
+                  <!-- <td>
                     <button class="btn btn-primary btn-view-more-awb btn-round float-right ml-md-auto"
                       data-toggle="modal" data-backdrop="static" data-original-title="View More Packages" data-id="<%=awb._id%>"
                       data-target="#more-awb-details">View</button>
-                  </td>
+                  </td> -->
                   <!-- <td><% if(awb.invoice) { %>
                       <a class="btn btn-link btn-primary btn-invoice" data-id="<%=awb.invoice%>" data-toggle="tooltip"
                         data-original-title="Invoice Attached"> <i class="fa fa-paperclip"></i> </a>
                       <% } %>
                     </td> -->
-                  <td class="text-center">
+                  <!-- <td class="text-center">
                     <a href='/warehouse/fll/awb/manage/<%=awb._id%>/get' class="btn btn-link btn-primary px-1"
-                      data-toggle="tooltip" data-original-title="Edit"> <i class="fa fa-pen"></i> </a>
+                      data-toggle="tooltip" data-original-title="Edit"> <i class="fa fa-pen"></i> </a> -->
                     <!-- temporary commenting the code -->
                     <!-- <a class="btn btn-link btn-danger btn-rm-awb p-1" data-toggle="modal" data-id="<%=awb._id%>"
                         data-target="#confirm-delete-awb"> <i class="fa fa-trash"></i> </a> -->
-                  </td>
+                  <!-- </td>
                   <td>
                     <a class="btn btn-link btn-primary btn-print-awb p-1" data-id="<%=awb._id%>"
                       data-target="#print-popup"> <i class="fa fa-print"></i> </a>
-                  </td>
+                  </td> -->
                   </tr>
                   <%})%>
                   </tbody>
@@ -205,3 +209,108 @@ var endate = new Date();
 <% block('scripts').append('<script src="/js/utils.js"></script>')%>
 <% block('scripts').append('<script src="/js/warehouse/snapshot/awb/list.js"></script>')%>
 <% block('scripts').append('<script src="/js/reports/report.js"></script>')%>
+
+
+
+
+
+
+<script>
+  function download_table_as_csv(table_id, separator = ',') {
+    // Select rows from table_id
+    var rows = document.querySelectorAll('table#' + table_id + ' tr');
+    // Construct csv
+    var csv = [];
+    for (var i = 0; i < rows.length; i++) {
+        var row = [], cols = rows[i].querySelectorAll('td, th');
+        for (var j = 0; j < cols.length; j++) {
+            // Clean innertext to remove multiple spaces and jumpline (break csv)
+            var data = cols[j].innerText.replace(/(\r\n|\n|\r)/gm, '').replace(/(\s\s)/gm, ' ')
+            // Escape double-quote with double-double-quote (see https://stackoverflow.com/questions/17808511/properly-escape-a-double-quote-in-csv)
+            data = data.replace(/"/g, '""');
+            // Push escaped string
+            row.push('"' + data + '"');
+        }
+        csv.push(row.join(separator));
+    }
+    var csv_string = csv.join('\n');
+    // Download it
+    var filename = 'export_' + table_id + '_' + new Date().toLocaleDateString() + '.csv';
+    var link = document.createElement('a');
+    link.style.display = 'none';
+    link.setAttribute('target', '_blank');
+    link.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv_string));
+    link.setAttribute('download', filename);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+</script>
+
+
+
+
+
+
+
+
+<div style="display: none;">
+  <table id='awb-report-table-download' class='display table table-striped table-hover  dataTable'>
+    <thead>
+      <tr>
+        <th>Date Received</th>
+        <th>AWB Number</th>
+        <th>PMB</th>
+        <th>Consignee</th>
+        <th>Shipper</th>
+        <th>Fll Pickup</th>
+        <th>Carrier</th>
+        <th>Invoice Count</th>
+        <th>Package Count</th>
+        <th>View more</th>
+        <th></th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% 
+      awbs.forEach(function(awb){
+      %>
+      <tr data-record=" <%= awb._id %>">
+      <td><%=helpers.formatDate(awb.createdAt)%></td>
+      <td><a href="/warehouse/fll/awb/manage/<%=awb._id%>/preview"><%=awb.awbId%></a></td>
+      <td><%=awb.pmb %></td>
+      <td><%=awb.customerFullName %></td>
+      <td><%=awb.shipperName %></td>
+      <td><%=(awb.fll_pickup && awb.fll_pickup) ? awb.fll_pickup : '' %></td>
+      <td><%=awb.carrierName?awb.carrierName:'' %></td>
+      <td><%=awb.invoices && awb.invoices.length > 0 ? 'yes-doc' : 'no-doc' %></td>
+      <td><%=awb.packages ? awb.packages.length : 'no-pkg' %></td>
+      <td>
+        <button class="btn btn-primary btn-view-more-awb btn-round float-right ml-md-auto"
+          data-toggle="modal" data-backdrop="static" data-original-title="View More Packages" data-id="<%=awb._id%>"
+          data-target="#more-awb-details">View</button>
+      </td>
+      <!-- <td><% if(awb.invoice) { %>
+          <a class="btn btn-link btn-primary btn-invoice" data-id="<%=awb.invoice%>" data-toggle="tooltip"
+            data-original-title="Invoice Attached"> <i class="fa fa-paperclip"></i> </a>
+          <% } %>
+        </td> -->
+      <td class="text-center">
+        <a href='/warehouse/fll/awb/manage/<%=awb._id%>/get' class="btn btn-link btn-primary px-1"
+          data-toggle="tooltip" data-original-title="Edit"> <i class="fa fa-pen"></i> </a>
+        <!-- temporary commenting the code -->
+        <!-- <a class="btn btn-link btn-danger btn-rm-awb p-1" data-toggle="modal" data-id="<%=awb._id%>"
+            data-target="#confirm-delete-awb"> <i class="fa fa-trash"></i> </a> -->
+      </td>
+      <td>
+        <a class="btn btn-link btn-primary btn-print-awb p-1" data-id="<%=awb._id%>"
+          data-target="#print-popup"> <i class="fa fa-print"></i> </a>
+      </td>
+      </tr>
+      <%})%>
+      </tbody>
+      </table>
+    <!-- </div>
+</div> -->
+</div>
