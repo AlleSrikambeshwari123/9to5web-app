@@ -314,3 +314,63 @@ exports.updateProfile = async(req,res)=>{
     res.status(500).json({ success: false, message: strings.string_response_error });
   }  
 }
+
+
+// exports.packageReports = async(req,res)=>{
+//   const body ={
+//     firstName:req.body.firstName,
+//     lastName:req.body.lastName,
+//     telephone:req.body.telephone,
+//   }
+//   try{
+//     await services.customerService.updateCustomer(res.user._id,body);
+//     return res.status(200).json({message:"Proflie updated successfully !"});
+//   }catch(err){
+//     res.status(500).json({ success: false, message: strings.string_response_error });
+//   }  
+// }
+
+
+exports.packageReport = async(req, res, next)=>{    
+  
+  let title = 'All Packages'
+  if(req.query.type == 'customer')
+      title = 'Customer Package List'
+  let customers = await services.customerService.getCustomers()
+  let locations = await services.locationService.getLocations()
+  services.packageService.getPackageDetailByCustomerId(req,{}).then((packages) => {
+    // packages = packages.filter(data=>data.customerId == req.session.customerId)
+    packages = packages.filter(data=>data.customerId == req.session.customerId)
+
+    
+      return Promise.all(
+          packages.map(async(pkg, i) => {
+              let check = 1,dimen = pkg.dimensions
+              if(pkg.packageType == 'Cube' && pkg.masterDimensions)
+                  dimen = pkg.masterDimensions 
+              dimen.split('x').forEach(data =>{
+                check = check * data
+              })
+              pkg.volumetricWeight = (check/166);
+              return pkg
+          })
+      ).then(pkgs => {            
+        
+          res.render('pages/reports/customerpackagereport', {
+              page: req.originalUrl,
+              user: res.user,
+              title: title,
+              filterURL: '',
+              buttonName: 'Add to Manifest',
+              packages: pkgs,
+              customerId:req.session.customerId,
+              customers : customers,
+              locations : locations,
+              clear: req.query.clear,
+              daterange:req.query.daterange?req.query.daterange:'',
+              query:req.query
+          });
+      })
+
+  });
+}
