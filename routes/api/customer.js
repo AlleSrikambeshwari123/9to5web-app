@@ -102,7 +102,7 @@ router.get('/get-packages-history', passport.authenticate('jwt', { session: fals
   })
 });
 
-router.get('/get-version', passport.authenticate('jwt', { session: false }),function (req, res, next) {
+router.get('/get-version', function (req, res, next) {
   res.send({
     android: 4,
     IOS: 4
