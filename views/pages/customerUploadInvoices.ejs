@@ -42,13 +42,13 @@
                 <th>
                   Shipper
                 </th>
-                <th>Invoices</th>
                 <th>
                   Invoice Status
                 </th>
+                <th>Invoices Accepted by 9to5</th>
                
-                <th>Actions</th>
-                <th>  Additional Invoices Count
+                <th>Invoices Uploaded by Customer
+                  <th>Actions</th>
                 </th>
               </tr>
             </thead>
@@ -66,12 +66,9 @@
 
                 <td><%= pkg.packages.length%></td>
                 <td><%= pkg.shipperName%></td>
-                <td><%= pkg.invoices.length%></td>
                 <td><%-pkg.invoice_attach?"Invoice Uplaoded":"Invoice Needed" %></td>
-                <td>
-                  <a href="javascript:void(0)" onclick="showUploadInvoiceModal('<%-pkg._id%>')" class="btn btn-link btn-primary px-3" data-toggle="tooltip"
-                    data-original-title="View Details"> <i class="fas fa-upload"></i></a>
-              </td> 
+                <td><%= pkg.invoices.length%></td>
+               
             </td>
             
 
@@ -86,7 +83,10 @@
     
 
       <% }  %>
-          
+      <td>
+        <a href="javascript:void(0)" onclick="showUploadInvoiceModal('<%-pkg._id%>')" class="btn btn-link btn-primary px-3" data-toggle="tooltip"
+          data-original-title="View Details"> <i class="fas fa-upload"></i></a>
+    </td> 
           </tr>
 <% i++; %>
               </tr>
