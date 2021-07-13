@@ -713,6 +713,190 @@ class PackageService {
         }) 
     }
 
+    
+    // getPackageDetailByCustomerId(id){
+    //     return new Promise((resolve, reject) => {
+    //         Package.find({_id:id})
+    //         .populate({path : 'awbId',populate : 'driver'})
+    //         .populate('originBarcode')
+    //         .populate('customerId')
+    //         .populate('zoneId')
+    //         .populate('shipperId')
+    //         .populate('carrierId')
+    //         .populate('cubeId')
+    //         .populate('manifestId')
+    //         .exec((err, result) => {
+    //             if (err) {
+    //                 resolve([]);
+    //             } else {                   
+    //                 resolve(result);
+    //             }
+    //         }); 
+    //     }) 
+    // }
+
+    
+
+    getPackageDetailByCustomerId(req,searchData){      
+        return new Promise(async(resolve, reject) => {
+            // var searchData = {};
+            if(req && req.query && req.query.locationId){
+                if(ObjectId.isValid(req.query.locationId)){
+                    let zoneResult = await Zone.find({location : req.query.locationId}) 
+                    let zoneArray = []
+                    for(let zone of zoneResult){
+                        if(zone && zone._id){
+                            zoneArray.push(zone._id)
+                        }
+                    }
+                    searchData['zoneId'] = {$in : zoneArray}
+                }
+            }
+            else if(req && req.query && req.query.customerId){
+                if(ObjectId.isValid(req.query.customerId)){
+                    let customerResult = await Customer.findById(req.query.customerId) 
+                    if(customerResult && customerResult.package){
+                        searchData['_id'] =  { $in : customerResult.package}
+                    }
+                }
+            }
+            else if(req && req.query && req.query.search_type && req.query.search_text){
+                var searchcolmn = {AWBNUMBER:"awbIdString", CONSIGNEE : "customerFullName",SHIPPER : "shipperName",BARCODE : "barcode"}
+                var sColumn = searchcolmn[req.query.search_type];
+                searchData[sColumn] = {'$regex' : req.query.search_text , '$options' : 'i'};
+              } 
+            else if(req && req.query && !searchData._id){
+                var daterange = req.query.daterange?req.query.daterange:'';
+                if(daterange){
+                  var date_arr = daterange.split('-');
+                  var startDate = (date_arr[0]).trim();      
+                  var stdate = new Date(startDate);
+                  stdate.setDate(stdate.getDate() );
+          
+                  var endDate = (date_arr[1]).trim();
+                  var endate = new Date(endDate);
+                  endate.setDate(endate.getDate() +1); 
+                  
+                stdate = new Date(stdate.setUTCHours(0,0,0,0));
+                stdate = stdate.toISOString();
+                endate = new Date(endate.setUTCHours(23,59,59,0));
+                endate = endate.toISOString(); 
+                     
+                  searchData.createdAt = {"$gte":stdate, "$lte": endate};
+                }
+          
+                if(!req.query.daterange && !req.query.clear){
+
+                  var endate = new Date();      
+                  endate.setDate(endate.getDate());
+                  var stdate = new Date();
+                  stdate.setDate(stdate.getDate() - parseInt(strings.default_days_table));
+                  
+                stdate = new Date(stdate.setUTCHours(0,0,0,0));
+                stdate = stdate.toISOString();
+                endate = new Date(endate.setUTCHours(23,59,59,0));
+                endate = endate.toISOString(); 
+                       
+                  searchData.createdAt = {"$gte":stdate, "$lte": endate};
+
+                }
+                if(req.query.clear){
+                  var endate = new Date();      
+                  endate.setDate(endate.getDate()+1);
+                  var stdate = new Date();
+                  stdate.setDate(stdate.getDate() -14); 
+                  
+                stdate = new Date(stdate.setUTCHours(0,0,0,0));
+                stdate = stdate.toISOString();
+                endate = new Date(endate.setUTCHours(23,59,59,0));
+                endate = endate.toISOString(); 
+                      
+                  searchData.createdAt = {"$gte":stdate, "$lte": endate};
+                }
+              }  
+              if(req && req.query && req.query.nodocs){
+                searchData['lastStatusText'] =  "No Invoice Present"
+              } 
+              
+            if(searchData._id && !req.query.customerId && !req.query.locationId){
+                if(req && req.query && req.query.search_collection == "HISTORY"){
+                    PackageHistory.find(searchData)
+                    .populate({path : 'awbId',populate : 'driver'})
+                    .populate('originBarcode')
+                    .populate('customerId')
+                    .populate({path : 'zoneId',populate : {path : 'location',populate : 'company'}})
+                    .populate('shipperId')
+                    .populate('carrierId')
+                    .populate('cubeId')
+                    .populate('manifestId')
+                    .exec((err, result) => {
+                        if (err) {
+                            resolve([]);
+                        } else {
+                            console.log("packg",result)
+                            resolve(result);
+                        }
+                    });
+                }else{
+                    let pkgCheck = await Package.find(searchData)
+                    let modelCheck = Package
+                    if(pkgCheck == null || pkgCheck.length == 0)
+                        modelCheck = PackageHistory
+                    modelCheck.find(searchData)
+                    .populate({path : 'awbId',populate : 'driver'})
+                    .populate('originBarcode')
+                    .populate('customerId')
+                    .populate({path : 'zoneId',populate : {path : 'location',populate : 'company'}})
+                    .populate('shipperId')
+                    .populate('carrierId')
+                    .populate('cubeId')
+                    .populate('manifestId')
+                    .exec((err, result) => {
+                        if (err) {
+                            resolve([]);
+                        } else {
+                            console.log("packg",result)
+                            resolve(result);
+                        }
+                    });
+                }
+            }else{
+                if(req && req.query && (req.query.customerId == 'load' || req.query.locationId == 'load')){
+                    resolve([])
+                }else{
+                    console.log("check all list")
+
+                    if(req && req.query && req.query.nodocs){
+                        searchData['lastStatusText'] =  "No Invoice Present"
+                      }
+                      console.log("re",req.query,searchData)
+                    if(req && req.query && req.query.search_collection == "HISTORY"){  
+                        console.log("hist")
+                        PackageHistory.find(searchData)
+                        .exec((err, result) => {
+                            if (err) {
+                                resolve([]);
+                            } else {
+                                resolve(result);
+                            }
+                        });
+                    }else{
+                        Package.find(searchData)
+                        .exec((err, result) => {
+                            if (err) {
+                                resolve([]);
+                            } else {
+                                resolve(result);
+                            }
+                        });
+                    }
+                }
+            }
+        });
+    }
+
+    
+
     getAllSnapshotPackagesUpdated(req,searchData){      
         return new Promise(async(resolve, reject) => {
             // var searchData = {};

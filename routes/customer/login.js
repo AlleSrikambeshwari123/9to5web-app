@@ -85,4 +85,5 @@ router.get("/account/profile",middleware().checkSession,customerCtrl.profile);
 router.post("/update/profile",middleware().checkSession,customerCtrl.updateProfile);
 
 
+router.get("/report/package-report",middleware().checkSession,customerCtrl.packageReport);
 module.exports = router;

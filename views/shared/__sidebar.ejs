@@ -7,6 +7,8 @@
 				<div class="info">
 					<a data-toggle="collapse" href="#userCollapse" aria-expanded="true">
 						<span>
+	
+
 							<span class="user-level"><%=user.firstName + ' ' + user.lastName%></span>
 							<span class="user-level">
 								<% if (user.roles[0].type != "Customers") { %>
@@ -15,6 +17,7 @@
 								<% if (user.roles[0].type == "Customers") { %>
 								Customer
 								<% } %> 
+								<%= user.roles[0].type %>
 							</span>
 						</span>
 					</a>
@@ -42,13 +45,13 @@
 				</li>
 
 				<!-- Reports -->
-				<li class="nav-item <% if (page.includes('/reports/all-awb') || page.includes('/reports/package-detail') || page.includes('/reports/package') || page.includes('/reports/delivery-detail') )  { %> active <% } %>">
+				<li class="nav-item ">
 					<a data-toggle="collapse" href="#report">
 						<i class="fas fa-building"></i>
 						<p>Reports</p>
 						<span class="caret"></span>
 					</a>
-					<div class="collapse <% if (page.includes('/reports/')) { %> active <% } %>" id="report">
+					<div class="collapse " id="report">
 						<ul class="nav nav-collapse">
 							<!-- <li>
 										<a href="/warehouse/incoming-shiptment">
@@ -91,27 +94,28 @@
 						<span class="sub-item">Packages by Employee</span>
 					</a>
 				</li>
-				<li class="nav-item <% if (page.includes('/reports/package-report')) { %> active <% } %>">
+		
+				<li class="nav-item <% if (page.includes('/reports/nodocsreport')) { %> active <% } %>">
 					<a href="/reports/nodocsreport">
 						<!-- <i class="fa fa-file"></i> -->
 						<span class="sub-item">No Docs Package Report </span>
 					</a>
 				</li>
 		
-				<li class="nav-item <% if (page.includes('/reports/package-report')) { %> active <% } %>">
+				<li class="nav-item <% if (page.includes('/reports/agingreport')) { %> active <% } %>">
 					<a href="/reports/agingreport">
 						<!-- <i class="fa fa-file"></i> -->
 						<span class="sub-item">Aging Report </span>
 					</a>
 				</li>
-				<li class="nav-item <% if (page.includes('/reports/package-report')) { %> active <% } %>">
+				<li class="nav-item <% if (page.includes('/reports/locationreport')) { %> active <% } %>">
 					<a href="/reports/locationreport?locationId=load">
 						<!-- <i class="fa fa-file"></i> -->
 						<span class="sub-item">Location Report </span>
 					</a>
 				</li>
 
-				<li class="nav-item <% if (page.includes('/reports/package-report')) { %> active <% } %>">
+				<li class="nav-item <% if (page.includes('/reports/awbreport')) { %> active <% } %>">
 					<a href="/reports/awbreport?type=airwaybill">
 						
 						<span class="sub-item">AWB Report </span>
@@ -122,7 +126,7 @@
 						<span class="sub-item">AWBs by Employee</span>
 					</a>
 				</li>
-				<li class="nav-item <% if (page.includes('/reports/package-report')) { %> active <% } %>">
+				<li class="nav-item <% if (page.includes('/reports/deliveryreport')) { %> active <% } %>">
 					<a href="/reports/deliveryreport">
 						<!-- <i class="fa fa-file"></i> -->
 						<span class="sub-item">Delivery Report </span>
@@ -243,6 +247,35 @@
 						<p>Upload Invoice </p>
 					</a>
 				</li>
+				<li class="nav-item <% if (page.includes('/reports/')) { %> active <% } %>">
+					<!-- <a data-toggle="collapse" href="#myreport">
+						<p>Reports</p>
+						<span class="caret"></span>
+					</a>
+					<div class="collapse <% if (page.includes('/customer/report/package-report')) { %> show <% } %>" id="myreport">
+						<ul class="nav nav-collapse">
+							<% if (user.roles[0].type == "Customers") { %>
+							<li <% if (page.includes('/profile')) { %> class="active" <% } %>> -->
+								<a href="/customer/report/package-report">
+									<i class="fas fa-list"></i>
+									<p>Package Report</p>
+								</a>
+							<!-- </li>
+							
+							<% } %> -->
+						
+							<!-- Temporary hide the print section -->
+							<!-- <li <% if (page.includes('/account/change-printer')) { %> class="active" <% } %>>
+								<a href="/account/change-printer">
+									<span class="sub-item">Printer</span>
+								</a>
+							</li> -->
+						<!-- </ul>
+					</div> -->
+					
+				</li>
+				
+
 				<!-- <li class="nav-item <% if (page.includes('/upload')) { %> active <% } %>">
 					<a href="/customer/billing">
 						<i class="fa fa-file-invoice-dollar"></i>

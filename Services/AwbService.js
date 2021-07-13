@@ -15,7 +15,7 @@ const Plane = require('../models/plane');
 const User = require('../models/user');
 const PriceLabel = require('../models/pricelabel');
 const ReportCsv = require('../models/reportcsv');
-
+const additionalInvoices = require('../models/additionalInvoice')
 const DELIVERY_METHODS = {
     DELIVERY: 1,
     PICKUP: 2,
