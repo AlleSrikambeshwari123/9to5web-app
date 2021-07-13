@@ -789,8 +789,14 @@ function generate_package_detail_report(){
   console.log("redir",redirectUrl,pageUrl,pageUrl.indexOf("/reports/awbreport"))
   if(pageUrl.indexOf("/reports/agingreport") >= 0){
     redirectUrl = "agingreport";
-
+  }else if(pageUrl.indexOf("reports/package-report/by/employees") >= 0){
+    redirectUrl = "package-report/by/employees";
   }
+
+  if(pageUrl.indexOf("/reports/package-status") >= 0){
+      redirectUrl = "/reports/package-status";
+  }
+
   if(pageUrl.indexOf("/reports/nodocsreport") >= 0){
     redirectUrl = "nodocsreport";
 
@@ -812,9 +818,11 @@ function generate_package_detail_report(){
     redirectUrl = "awbreport";
 
   }
-  
-  
-  if (pageUrl.indexOf("package-report") >= 0) {
+  console.log(pageUrl.indexOf("reports/package-report/by/employees"));
+  if(pageUrl.indexOf("reports/package-report/by/employees") >= 0){
+    redirectUrl = "/reports/package-report/by/employees";
+  }
+  else if (pageUrl.indexOf("package-report") >= 0) {
     redirectUrl = "package-report";
   }
   console.log("redirect cj",pageUrl,redirectUrl)
@@ -824,6 +832,7 @@ function generate_package_detail_report(){
   if (pageUrl.split('/')[2] == "customer") {
     redirectUrl = window.location.pathname;
   }
+  // console.log(redirectUrl);
   if(nodoc){
     $(document).on('click', '.applyBtn', function () {
       var urlLocation = redirectUrl + "?nodocs=load&&daterange=" + $('.daterange').val();
@@ -840,7 +849,7 @@ function generate_package_detail_report(){
     if($('#search_collection').val()){
       urlLocation = urlLocation+'&search_collection='+$('#search_collection').val();
     }
-    window.location = urlLocation;
+     window.location = urlLocation;
   })
   }
   

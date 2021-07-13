@@ -56,36 +56,39 @@
 										</a>
 									</li> -->
 									
-				<li class="nav-item <% if (page.includes('/reports/all-awb')) { %> active <% } %>">
+				<!-- <li class="nav-item <% if (page.includes('/reports/all-awb')) { %> active <% } %>">
 					<a href="/reports/all-awb/status">
-						<!-- <i class="fa fa-file"></i> -->
 						<span class="sub-item">ALL AWB Report </span>
 					</a>
-				</li>
-				<li class="nav-item <% if (page.includes('/reports/package-detail')) { %> active <% } %>">
+				</li> -->
+				<!-- <li class="nav-item <% if (page.includes('/reports/package-detail')) { %> active <% } %>">
 					<a href="/reports/package-detail/reports">
-						<!-- <i class="fa fa-file"></i> -->
-						<!-- <p>Package Detail </p> -->
 						<span class="sub-item">Package Detail </span>
-
+					</a>
+				</li> -->
+				<!-- <li class="nav-item <% if (page.includes('/reports/package/status')) { %> active <% } %>">
+					<a href="/reports/package/status">
+						<span class="sub-item">Package Status </span>
+					</a>
+				</li> -->
+				<!-- <li class="nav-item <% if (page.includes('/reports/delivery-detail')) { %> active <% } %>">
+					<a href="/reports/delivery-detail/reports">
+						<span class="sub-item">Delivery Detail </span>
+					</a>
+				</li> -->
+				<li class="nav-item <% if (page.includes('/reports/package-report')) { %> active <% } %>">
+					<a href="/reports/package-report">
+						<span class="sub-item">Package Report </span>
 					</a>
 				</li>
-				<li class="nav-item <% if (page.includes('/reports/package/status')) { %> active <% } %>">
-					<a href="/reports/package/status">
-						<!-- <i class="fa fa-file"></i> -->
+				<li class="nav-item <% if (page.includes('/reports/package-status')) { %> active <% } %>">
+					<a href="/reports/package-status">
 						<span class="sub-item">Package Status </span>
 					</a>
 				</li>
-				<li class="nav-item <% if (page.includes('/reports/delivery-detail')) { %> active <% } %>">
-					<a href="/reports/delivery-detail/reports">
-						<!-- <i class="fa fa-file"></i> -->
-						<span class="sub-item">Delivery Detail </span>
-					</a>
-				</li>
-				<li class="nav-item <% if (page.includes('/reports/package-report')) { %> active <% } %>">
-					<a href="/reports/package-report">
-						<!-- <i class="fa fa-file"></i> -->
-						<span class="sub-item">Package Report </span>
+				<li class="nav-item <% if (page.includes('/reports/package-report/by/employees')) { %> active <% } %>">
+					<a href="/reports/package-report/by/employees">
+						<span class="sub-item">Packages by Employee</span>
 					</a>
 				</li>
 				<li class="nav-item <% if (page.includes('/reports/package-report')) { %> active <% } %>">
@@ -110,8 +113,13 @@
 
 				<li class="nav-item <% if (page.includes('/reports/package-report')) { %> active <% } %>">
 					<a href="/reports/awbreport?type=airwaybill">
-						<!-- <i class="fa fa-file"></i> -->
+						
 						<span class="sub-item">AWB Report </span>
+					</a>
+				</li>
+				<li class="nav-item <% if (page.includes('reports/awbreport/by/employees')) { %> active <% } %>">
+					<a href="/reports/awbreport/by/employees?type=airwaybill">	
+						<span class="sub-item">AWBs by Employee</span>
 					</a>
 				</li>
 				<li class="nav-item <% if (page.includes('/reports/package-report')) { %> active <% } %>">

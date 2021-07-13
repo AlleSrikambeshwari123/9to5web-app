@@ -5,7 +5,7 @@
   "main": "./bin/9-5-web",
   "scripts": {
     "start": "node --experimental-worker ./bin/9-5-web",
-    "dev": "nodemon ./bin/9-5-web",
+    "dev": "nodemon --experimental-worker ./bin/9-5-web",
     "create-default-roles": "node db-scripts/add-default-roles.js",
     "create-default-companies": "node db-scripts/add-default-companies.js",
     "create-default-user": "node db-scripts/add-default-user.js",

@@ -295,6 +295,44 @@ exports.packageReport = async(req, res, next)=>{
   });
 }
 
+exports.packageReportByEmployees = async(req, res, next)=>{    
+  
+  let title = 'Packages by Employee'
+  if(req.query.type == 'customer')
+      title = 'Packages by Employee'
+  let customers = await services.customerService.getCustomers()
+  let locations = await services.locationService.getLocations()
+  services.packageService.getAllSnapshotPackagesUpdatedV2(req,{}).then((packages) => {
+      return Promise.all(
+          packages.map(async(pkg, i) => {
+              let check = 1,dimen = pkg.dimensions
+              if(pkg.packageType == 'Cube' && pkg.masterDimensions)
+                  dimen = pkg.masterDimensions 
+              dimen.split('x').forEach(data =>{
+                check = check * data
+              })
+              pkg.volumetricWeight = (check/166);
+              return pkg
+          })
+      ).then(pkgs => {            
+          res.render('pages/reports/package-report-employees', {
+              page: req.originalUrl,
+              user: res.user,
+              title: title,
+              filterURL: '',
+              buttonName: 'Add to Manifest',
+              packages: pkgs,
+              customers : customers,
+              locations : locations,
+              clear: req.query.clear,
+              daterange:req.query.daterange?req.query.daterange:'',
+              query:req.query
+          });
+      })
+
+  });
+}
+
 
 exports.awbReport = async(req, res, next)=>{    
   
@@ -305,6 +343,36 @@ exports.awbReport = async(req, res, next)=>{
   let locations = await services.locationService.getLocations()
   services.awbService.getAwbsFullSnapshot(req,{}).then((pkgs => {            
           res.render('pages/reports/awbreport', {
+              page: req.originalUrl,
+              user: res.user,
+              title: title,
+              filterURL: '',
+              buttonName: 'Add to Manifest',
+              awbs: pkgs,
+              customers : customers,
+              locations : locations,
+              clear: req.query.daterange,
+              daterange:req.query.daterange?req.query.daterange:'',
+              query:req.query
+          });
+  }));
+}
+
+exports.awbReportByEmployees = async(req, res, next)=>{    
+  
+  let title = 'AWBs by Employee'
+  if(req.query.type == 'customer')
+      title = 'Customer Package List'
+  let customers = await services.customerService.getCustomers()
+  let locations = await services.locationService.getLocations()
+  
+  services.awbService.getAwbsFullSnapshotV2(req,{}).then((pkgs => {            
+        // return res.json({pkgs});
+        //   pkgs = pkgs.map(pkg=>{
+        //     console.log(pkg.customerId._id);
+        //     return pkg;
+        //   });
+          res.render('pages/reports/awbreport-by-employees', {
               page: req.originalUrl,
               user: res.user,
               title: title,
@@ -523,3 +591,29 @@ function runService(workerData, threadPage) {
     })
   }
 
+  exports.packageStatus = async(req, res, next)=>{    
+  
+    let title = 'Package Status'
+    if(req.query.type == 'customer')
+        title = 'Customer Package Status'
+    let customers = await services.customerService.getCustomers()
+    let locations = await services.locationService.getLocations()
+    services.packageService.getPackageStatusFilterDateV2(req.query).then((data) => {    
+            res.render('pages/reports/package-status-v2', {
+                page: req.originalUrl,
+                user: res.user,
+                title: title,
+                filterURL: '',
+                buttonName: 'Add to Manifest',
+                data: data[0],
+                statuses:data[1],
+                customers : customers,
+                locations : locations,
+                clear: req.query.clear,
+                daterange:req.query.daterange?req.query.daterange:'',
+                query:req.query
+            });
+        
+  
+    });
+  }
