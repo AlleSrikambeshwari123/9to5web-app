@@ -228,18 +228,40 @@ exports.billing = async(req,res)=>{
 }
 
 exports.upload_invoices = async(req,res)=>{
+  // let additionalInvoice = await services.awbService.getAdditionalInvoices(mongoose.Types.ObjectId('5f3117fb13a8302d84aa6ae8'));
+  let storeInvoicedata = await services.invoiceService.getStoreInvoicesByCustId(mongoose.Types.ObjectId(req.session.customerId));
+  // let additionalInvoice = await services.invoiceService.getAdditionalInvoicesByCustId(mongoose.Types.ObjectId(req.session.customerId));
   const customerId = mongoose.Types.ObjectId(res.user._id);
   const awbData = await services.awbService.getAwbsNoInvoiceCustomer(customerId);
+  var countdata = []
+  var count = 0;
+  const storeinvoiceid = storeInvoicedata.map(d=>d.awbId)
+  const awbdata = awbData[0].customerId.awb.map(data=>(data))
+  
+console.log(awbdata , "awbs" , storeinvoiceid ,"sdddddddddds")
+
+for(let i = 0;i<awbdata.length;i++){
+    for(let j =0 ; j<storeinvoiceid.length ; j++){
+       if(awbdata[i].toString() == storeinvoiceid[j].toString()){
+         count++;
+       }
+    }
+    countdata.push({awbid:awbdata[i],count:count})
+    count = 0;
+}
   return res.render('pages/customerUploadInvoices', {
     page: req.originalUrl,
     query:req.query,
     title: "Upload Invoices in Advance",
+    adInvoice:storeInvoicedata[0],
     user: res.user,
     awbs: awbData,
+    awbscountdata:countdata,
     clear: req.query.clear
   });
 }
 
+ 
 exports.upload_invoice = async(req,res)=>{
  
   try{ 

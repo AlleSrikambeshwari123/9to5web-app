@@ -182,6 +182,20 @@ class InvoiceService {
     })
 }
 
+  
+    async  getStoreInvoicesByCustId(custId){
+    // console.log("custId",custId)
+        return new Promise((resolve, reject) => {
+          StoreInvoice.find({customerId: custId})
+          .then(results => {
+            // console.log(results)
+            console.log(results + "results")
+            if (results.length == 0) resolve({});
+            else resolve(results);
+          })
+        });
+      }
+
   async getInvoices(req) {
     var searchData = {};
     if(req && req.query){
