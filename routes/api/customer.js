@@ -104,8 +104,8 @@ router.get('/get-packages-history', passport.authenticate('jwt', { session: fals
 
 router.get('/get-version', function (req, res, next) {
   res.send({
-    android: 4,
-    IOS: 4
+    android: 6.5,
+    IOS: 3
   })
 });
 module.exports = router;
