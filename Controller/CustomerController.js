@@ -228,18 +228,40 @@ exports.billing = async(req,res)=>{
 }
 
 exports.upload_invoices = async(req,res)=>{
+  // let additionalInvoice = await services.awbService.getAdditionalInvoices(mongoose.Types.ObjectId('5f3117fb13a8302d84aa6ae8'));
+  let storeInvoicedata = await services.invoiceService.getStoreInvoicesByCustId(mongoose.Types.ObjectId(req.session.customerId));
+  // let additionalInvoice = await services.invoiceService.getAdditionalInvoicesByCustId(mongoose.Types.ObjectId(req.session.customerId));
   const customerId = mongoose.Types.ObjectId(res.user._id);
   const awbData = await services.awbService.getAwbsNoInvoiceCustomer(customerId);
+  var countdata = []
+  var count = 0;
+  const storeinvoiceid = storeInvoicedata.map(d=>d.awbId)
+  const awbdata = awbData[0].customerId.awb.map(data=>(data))
+  
+console.log(awbdata , "awbs" , storeinvoiceid ,"sdddddddddds")
+
+for(let i = 0;i<awbdata.length;i++){
+    for(let j =0 ; j<storeinvoiceid.length ; j++){
+       if(awbdata[i].toString() == storeinvoiceid[j].toString()){
+         count++;
+       }
+    }
+    countdata.push({awbid:awbdata[i],count:count})
+    count = 0;
+}
   return res.render('pages/customerUploadInvoices', {
     page: req.originalUrl,
     query:req.query,
     title: "Upload Invoices in Advance",
+    adInvoice:storeInvoicedata[0],
     user: res.user,
     awbs: awbData,
+    awbscountdata:countdata,
     clear: req.query.clear
   });
 }
 
+ 
 exports.upload_invoice = async(req,res)=>{
  
   try{ 
@@ -313,4 +335,64 @@ exports.updateProfile = async(req,res)=>{
   }catch(err){
     res.status(500).json({ success: false, message: strings.string_response_error });
   }  
+}
+
+
+// exports.packageReports = async(req,res)=>{
+//   const body ={
+//     firstName:req.body.firstName,
+//     lastName:req.body.lastName,
+//     telephone:req.body.telephone,
+//   }
+//   try{
+//     await services.customerService.updateCustomer(res.user._id,body);
+//     return res.status(200).json({message:"Proflie updated successfully !"});
+//   }catch(err){
+//     res.status(500).json({ success: false, message: strings.string_response_error });
+//   }  
+// }
+
+
+exports.packageReport = async(req, res, next)=>{    
+  
+  let title = 'All Packages'
+  if(req.query.type == 'customer')
+      title = 'Customer Package List'
+  let customers = await services.customerService.getCustomers()
+  let locations = await services.locationService.getLocations()
+  services.packageService.getPackageDetailByCustomerId(req,{}).then((packages) => {
+    // packages = packages.filter(data=>data.customerId == req.session.customerId)
+    packages = packages.filter(data=>data.customerId == req.session.customerId)
+
+    
+      return Promise.all(
+          packages.map(async(pkg, i) => {
+              let check = 1,dimen = pkg.dimensions
+              if(pkg.packageType == 'Cube' && pkg.masterDimensions)
+                  dimen = pkg.masterDimensions 
+              dimen.split('x').forEach(data =>{
+                check = check * data
+              })
+              pkg.volumetricWeight = (check/166);
+              return pkg
+          })
+      ).then(pkgs => {            
+        
+          res.render('pages/reports/customerpackagereport', {
+              page: req.originalUrl,
+              user: res.user,
+              title: title,
+              filterURL: '',
+              buttonName: 'Add to Manifest',
+              packages: pkgs,
+              customerId:req.session.customerId,
+              customers : customers,
+              locations : locations,
+              clear: req.query.clear,
+              daterange:req.query.daterange?req.query.daterange:'',
+              query:req.query
+          });
+      })
+
+  });
 }
