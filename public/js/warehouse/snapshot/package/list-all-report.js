@@ -821,6 +821,9 @@ function generate_package_detail_report(){
   if (pageUrl.indexOf("/warehouse/snapshot/package/list") >= 0) {
     redirectUrl = "/warehouse/snapshot/package/list/report";
   }
+  if (pageUrl.indexOf("/package/list?nodocs=load") >= 0) {
+    redirectUrl = "/reports/package/list";
+  }
   if (pageUrl.split('/')[2] == "customer") {
     redirectUrl = window.location.pathname;
   }

@@ -35,6 +35,7 @@ router.post('/deliveryreport',middleware().checkSession,reportCtrl.gendeliveryRe
 
 
 
+router.get('/package/list',middleware().checkSession,reportCtrl.nodocsReport)
 
 
 
