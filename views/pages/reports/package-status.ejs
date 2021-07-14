@@ -37,7 +37,7 @@ var endate = new Date();
             </div>  
           </div>
           <div class="col-xs-12 col-sm-4 col-md-4">        
-            <input type="button" value="Create CSV" class="btn btn-primary" style="float: left;margin-left: 1%"  onclick="generate_allawb_report()">
+            <input type="button" value="Generate CSV" class="btn btn-primary" style="float: left;margin-left: 1%"  onclick="generate_allawb_report()">
           </div>
         </div>
         
@@ -80,7 +80,7 @@ var endate = new Date();
             </div>  
           </div>
           <div class="col-xs-12 col-sm-4 col-md-4">        
-            <input type="button" value="Create CSV" class="btn btn-primary" style="float: left;margin-left: 1%"  onclick="generate_package_status_report()">
+            <input type="button" value="Generate CSV" class="btn btn-primary" style="float: left;margin-left: 1%"  onclick="generate_package_status_report()">
           </div>
         </div>
         <div class="table-responsive ">
@@ -155,7 +155,7 @@ var endate = new Date();
             <input type="hidden" name="filter_for" value="all_package_table" />
             
           <div class="col-md-2 pl-10">
-            <input type="button" value="Create CSV" class="btn btn-primary" style="float: left;margin-left: 1%"  onclick="generate_package_detail_report()">
+            <input type="button" value="Generate CSV" class="btn btn-primary" style="float: left;margin-left: 1%"  onclick="generate_package_detail_report()">
           </div>
       </div>
        </form> 
@@ -204,7 +204,7 @@ var endate = new Date();
             </div>  
           </div>
           <div class="col-xs-12 col-sm-4 col-md-4">        
-            <input type="button" value="Create CSV" class="btn btn-primary" style="float: left;margin-left: 1%"  onclick="generate_delivery_report()">
+            <input type="button" value="Generate CSV" class="btn btn-primary" style="float: left;margin-left: 1%"  onclick="generate_delivery_report()">
           </div>
         </div>
         
@@ -384,6 +384,7 @@ var endate = new Date();
       'ready_pd', 'delivered', 'no_invoice', 'assigned_to_cube', 'delivered_to_store'];
     let newObj = [];
     for (let i = 0; i < 10; i++) {
+      console.log(data , "data from package-status")
       newObj.push({ status: PKG_STATUS[i], count: data[obj[i]] })
     }
     let result = newObj.map((row) => {

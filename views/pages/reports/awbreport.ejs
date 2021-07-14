@@ -12,36 +12,19 @@ var endate = new Date();
     }
 %>
 
-<style>
-  table.dataTable tbody>tr.selected,
-  table.dataTable tbody>tr>.selected {
-    background-color: #0275d8;
-  }
+<div class='gutters'>
+  <div class='col-xl-12 col-lg-6 col-md-12 col-sm-12'>
+    <div class='card card-with-nav'>
+      <div class="card-header">
+        <div class="row row-nav-line">
+          <ul class="nav nav-tabs nav-line nav-color-primary" id="awb-list-tab" role="tablist">
+            <button onclick="download_table_as_csv('awb-report-table-download')" 
+            class="btn btn-primary btn-round float-right mt-2 mr-2 ml-md-auto">
+            <i class="fa fa-download"></i>  Generate csv
+            </button>
+            <!-- <button value="" class="btn btn-primary" style="float: right;margin-left: 1%"  onclick="download_table_as_csv('awb-report-table-download')">Generate CSV Awb report </button> -->
 
-  table.dataTable tbody tr.selected,
-  table.dataTable tbody th.selected,
-  table.dataTable tbody td.selected {
-    color: white;
-  }
-
-  table.dataTable .dataTables_info .select-info {
-    display: block;
-  }
-</style>
-<div class="gutters">
-  <div class="col-xl-12 col-lg-6 col-md-12 col-sm-12">
-    <div class="card">
-      <!-- <a href="#" onclick="download_table_as_csv('package-table');">Download as CSV</a> -->
-
-      <div class="card-header d-flex align-items-left align-items-md-center flex-column flex-md-row">
-        <div class="card-title"><%= title %></div>
-      
-        <div class="d-flex align-items-right float-right ml-md-auto">
-          <button 
-            class="btn btn-primary btn-round float-right mr-2 ml-md-auto" onclick="download_table_as_csv('package-table');">
-            Download As CSV
-          </button>
-      
+          </ul>
         </div>
       </div>
       <div id="myLoader"><img src="/img/preloader.gif"></div>
@@ -51,148 +34,88 @@ var endate = new Date();
           <option value="HISTORY" <%if(query.search_collection=="HISTORY"){%>selected<%}%>>History </option>          
         </select>
       </div>
-      <div class="card-body    <% if (!query.customerId && !query.locationId) { %> daterangepickerbody <% } %>">
-        <input type="hidden" name="clear" id="clear" value="<%=clear%>">
-        <input type="hidden" id="daterange" value="<%=daterange%>">
-        <input type="hidden" id="page" value="<%=page%>">
-        <input type="hidden" id="customer" value="<%=query.customerId%>">
-        <input type="hidden" id="location" value="<%=query.locationId%>">
-
-         <div class="col-xs-12 col-sm-12 float-right">
-     
-          <% if(query.customerId) {%>
-            <div class="col-lg-8 col-md-8 col-sm-8 row">
-
-            <select id="customerId" name="customerId" class='form-control' value="<%=query.customerId && query.customerId != 'load' ? query.customerId  : ''%>" style="width: 30%; float: left;">
-              <option></option>
-              <% customers.forEach(customer => { %>
-              <option value="<%=customer.id%>">
-                <%= customer.pmb + ' / ' + customer.firstName + ' ' + customer.lastName%>
-              </option>
-              <% }) %>
-            </select>
-            <div class="input-group-append">
-                <input type="submit" value="Filter" class="btn btn-primary" style="margin-left: 10%;" onclick="searchDataFilter()">
-            </div>
-            </div>
-            <% } else if(query.locationId) {%>
-              <div class="col-lg-8 col-md-8 col-sm-8 row">
-  
-              <select id="locationsId" name="locationId" class='form-control' value="<%=query.locationId && query.locationId != 'load' ? query.locationId  : ''%>" style="width: 30%; float: left;">
-                <option></option>
-                <% locations.forEach(location => { %>
-                <option value="<%=location.id%>">
-                  <%= location.name%>
-                </option>
-                <% }) %>
-              </select>
-              <div class="input-group-append">
-                  <input type="submit" value="Filter" class="btn btn-primary" style="margin-left: 10%;" onclick="searchDataFilter()">
-              </div>
-              </div>
-            <% } else { %>
+      <div class="card-body daterangepickerbody">
+          <input type="hidden" name="clear" id="daterange_awbreport" id="clear" value="<%=clear%>">
+          <input type="hidden" id="daterange" value="<%=daterange%>">
+          <input type="hidden" id="page" value="<%=page%>">
+           <div class="col-xs-12 col-sm-12 float-right">
               <select name="search_type" id="search_type"  class="form-control" style="width: 30%; float: left;">
                   <option value="">Select </option>
                   <option value="AWBNUMBER" <%if(query.search_type=='AWBNUMBER'){%>selected<%}%>>AWB # </option>
                   <option value="CONSIGNEE" <%if(query.search_type=='CONSIGNEE'){%>selected<%}%>>Consignee </option>
                   <option value="SHIPPER" <%if(query.search_type=='SHIPPER'){%>selected<%}%>>Shipper </option>
-                  <option value="BARCODE" <%if(query.search_type=='BARCODE'){%>selected<%}%>>Original Barcode </option>
               </select>
               <input type="text" name="search_text" id="search_text" class="form-control" value="<%=query.search_text%>" style="width: 30%; float: left;margin-left: 1%;"">
               <input type="submit" value="Filter" class="btn btn-primary" style="margin-left: 1%;" onclick="searchDataFilter()">
-            <% } %>              
-
-        </div>
-        <div class="table-responsive p-4">
-          <table id="package-table" class="display  table table-striped table-hover dataTable package-table">
-            <thead>
-              <tr>
-                <!-- <% if(!query.customerId && !query.locationId){ %>              
-                <th><input id="checkall" type="checkbox" class="package-select-all" /></th>
-                <% } %>               -->
-
-                <th>Created Date</th>
-                <th>Tracking No</th>
-                <th>PMB</th>
-                <th>Consignee</th>
-                <th>AWB #</th>
-                <th>Shipper</th>
-                <th>Store</th>
-                <th>Original Barcode</th>
-                <th>Description</th>
-                <th>Status</th>
-                <th>Status Date</th>
-                <!-- <th>Location</th> -->
-                <th>Package Type</th>
-                <th>Zone</th>
-                <th>Carrier</th>
-                <th>Weight</th>
-                <th>Volumetric Weight</th>
-                <th>Express</th>
-                <th>Aging</th>
-                <th>Aging Dollar</th>
-                <!-- <th>View</th>
-                <th></th>
-                <th></th> -->
-                <!-- <th></th> -->
-              </tr>
-            </thead>
-            <tbody>
-             
-              <% packages.forEach(function(pkg){ %>
-                
-              <tr data-record="<%= pkg._id %>">
-                <!-- <% if(!query.customerId && !query.locationId) {%>              
-                <td>
-                  <input type="checkbox" name="package-select" class="package-select" />
-                </td>
-                <% } %>               -->
-                <td><%= helpers.formatDate(pkg.createdAt) %></td>
-                <td><%=(pkg.trackingNo)?pkg.trackingNo:''%></td>
-                <td><%= pkg.pmb %></td>
-                <td><%= pkg.customerFullName %></td>
-                <td><a href="/warehouse/fll/awb/manage/<%=pkg.awbId%>/preview"><%=pkg.awbIdNumber%></a></td>
-                <td><%= pkg.shipperName %></td>
-                <td><%= pkg.storeLocation ?pkg.storeLocation : '9to5' %></td>
-                <td><%= pkg.barcode %></td>
-
-                <td><%= (pkg.packageType == 'Cube' && pkg.masterDescription) ? pkg.masterDescription : pkg.description %></td>
-                <td><%= pkg.lastStatusText %></td>
-                <td><%= helpers.formatDate(pkg.lastStatusDate) %></td>
-                <!-- <td><%= pkg.location %></td> -->
-                <td><%= pkg.packageType %></td>
-                <td><%=pkg.zoneName?pkg.zoneName:'' %></td>
-                <td><%=pkg.carrierName?pkg.carrierName:'' %></td>
-                <td><%= (pkg.packageType == 'Cube' && pkg.masterWeight) ? pkg.masterWeight : pkg.weight %></td>
-                <td><%= pkg.volumetricWeight.toFixed(2) %></td>
-                <td><%= pkg.express %></td>
-                <td><%= pkg.aging %></td>
-                <td><%= pkg.agingdollar %></td>
-                <!-- <td>
-                  <button class="btn btn-primary btn-view-more-package btn-round float-right ml-md-auto"
-                    data-toggle="modal" data-backdrop="static" data-original-title="View More Packages" data-id="<%=pkg._id%>"
-                    data-target="#more-package-details">View</button>
-                </td>
-                <td class="text-center">
-                  <a href="/warehouse/pkg-label/download/<%=pkg._id%>"><i class="fa fa-download"></i></a>
-                </td>
-                <td>
-                  <a class="btn btn-link btn-primary btn-print-pkg" data-id="<%=pkg._id%>"
-                    data-original-title="Print Label" data-target="#print-popup"><i class="fa fa-print"></i>
-                  </a>
-                </td> -->
-              </tr>
-              <%})%>
-            </tbody>
-          </table>
-        </div>
+          </div>
+        <!-- <div class="tab-content m-4" id="awb-list-tabContent">
+                <div class="tab-pane fade"  id="awb-list" role="tabpanel" aria-labelledby="awb-list-tab"> -->
+            <div class="table-responsive p-4">
+              <table id='awb-report-table' class='display table table-striped table-hover  dataTable'>
+                <thead>
+                  <tr>
+                    <th>Date Received</th>
+                    <th>AWB Number</th>
+                    <th>PMB</th>
+                    <th>Consignee</th>
+                    <th>Shipper</th>
+                    <th>Fll Pickup</th>
+                    <th>Carrier</th>
+                    <th>Invoice Count</th>
+                    <th>Package Count</th>
+                    <!-- <th>View more</th>
+                    <th></th>
+                    <th></th> -->
+                  </tr>
+                </thead>
+                <tbody>
+                  <% 
+                  awbs.forEach(function(awb){
+                  %>
+                  <tr data-record=" <%= awb._id %>">
+                  <td><%=helpers.formatDate(awb.createdAt)%></td>
+                  <td><a href="/warehouse/fll/awb/manage/<%=awb._id%>/preview"><%=awb.awbId%></a></td>
+                  <td><%=awb.pmb %></td>
+                  <td><%=awb.customerFullName %></td>
+                  <td><%=awb.shipperName %></td>
+                  <td><%=(awb.fll_pickup && awb.fll_pickup) ? awb.fll_pickup : '' %></td>
+                  <td><%=awb.carrierName?awb.carrierName:'' %></td>
+                  <td><%=awb.invoices && awb.invoices.length > 0 ? 'yes-doc' : 'no-doc' %></td>
+                  <td><%=awb.packages ? awb.packages.length : 'no-pkg' %></td>
+                  <!-- <td>
+                    <button class="btn btn-primary btn-view-more-awb btn-round float-right ml-md-auto"
+                      data-toggle="modal" data-backdrop="static" data-original-title="View More Packages" data-id="<%=awb._id%>"
+                      data-target="#more-awb-details">View</button>
+                  </td> -->
+                  <!-- <td><% if(awb.invoice) { %>
+                      <a class="btn btn-link btn-primary btn-invoice" data-id="<%=awb.invoice%>" data-toggle="tooltip"
+                        data-original-title="Invoice Attached"> <i class="fa fa-paperclip"></i> </a>
+                      <% } %>
+                    </td> -->
+                  <!-- <td class="text-center">
+                    <a href='/warehouse/fll/awb/manage/<%=awb._id%>/get' class="btn btn-link btn-primary px-1"
+                      data-toggle="tooltip" data-original-title="Edit"> <i class="fa fa-pen"></i> </a> -->
+                    <!-- temporary commenting the code -->
+                    <!-- <a class="btn btn-link btn-danger btn-rm-awb p-1" data-toggle="modal" data-id="<%=awb._id%>"
+                        data-target="#confirm-delete-awb"> <i class="fa fa-trash"></i> </a> -->
+                  <!-- </td>
+                  <td>
+                    <a class="btn btn-link btn-primary btn-print-awb p-1" data-id="<%=awb._id%>"
+                      data-target="#print-popup"> <i class="fa fa-print"></i> </a>
+                  </td> -->
+                  </tr>
+                  <%})%>
+                  </tbody>
+                  </table>
+                <!-- </div>
+        </div> -->
       </div>
     </div>
   </div>
 </div>
+</div>
 
-
-<div class="modal fade" id="more-package-details" role="dialog" aria-hidden="true" style="display: none;">
+<div class="modal fade" id="more-awb-details" role="dialog" aria-hidden="true" style="display: none;">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -203,8 +126,8 @@ var endate = new Date();
       </div>
       <div class="modal-body">
         <div class="row gutters">
-          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12" id="details-package">
-           
+          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12" id="details-awb">
+
           </div>
         </div>
       </div>
@@ -216,146 +139,54 @@ var endate = new Date();
 </div>
 
 
-<div class="modal fade" id="add-to-manifest-modal" tabindex="-1" role="dialog" aria-labelledby="print-popup"
+<div class="modal fade" id="confirm-delete-awb" tabindex="-1" role="dialog" aria-labelledby="confirm-del-title"
   aria-hidden="true" style="display: none;">
   <div class="modal-dialog" role="document">
-    <form id="add-to-manifest-form" method="post">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h2 class="modal-title">Add packages to Manifest</h2>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">×</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <input type="text" hidden name="packageIds" />
-          <div class="form-group">
-            <label for="manifestId">Manifest</label>
-            <select id="manifestId" name="manifestId" class="form-control" required>
-              <option></option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="compartmentId">Compartment</label>
-            <select id="compartmentId" name="compartmentId" class="form-control" required disabled>
-              <option></option>
-            </select>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="submit" class="btn btn-primary">Add</button>
-          <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
-        </div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="confirm-del-title">Confirmation Required</h2>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
       </div>
-    </form>
+      <div class="modal-body">
+        <input type='hidden' id='pkg-tracking' />
+        Are you sure you want to delete this AirWay Bill?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-danger rm-awb" id='rm-awb'>Delete</button>
+      </div>
+    </div>
   </div>
 </div>
-<!-- Add Packages To nodoc -->
-<div class="modal fade" id="add-to-nodoc-modal" tabindex="-1" role="dialog" aria-labelledby="print-popup"
+<div class="modal fade" id="shipManifest" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2"
   aria-hidden="true" style="display: none;">
   <div class="modal-dialog" role="document">
-    <form id="add-to-nodoc-form" method="post">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h2 class="modal-title">Add Packages to NoDoc</h2>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">×</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <input type="text" hidden name="packageIds" />
-          <div class="form-group">
-            <label for="location">Location</label>
-            <select id="location" name="location" class="form-control" required>
-              <option></option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="zoneId">Zone</label>
-            <select id="zoneId" name="zoneId" class="form-control" required>
-              <option></option>
-            </select>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="submit" class="btn btn-primary">Save</button>
-          <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
-        </div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="exampleModalLabel2">Ship Manifest</h2>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
       </div>
-    </form>
+      <div class="modal-body">
+        <label>Enter AWB #</label>
+        <input type='text' class='form-control awb'>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary close-del" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-success ship-manifest" id='ship-manifest'>Ship Manifest</button>
+      </div>
+    </div>
   </div>
 </div>
-<!-- Add Packages To Cube -->
-<div class="modal fade" id="add-to-cube-modal" tabindex="-1" role="dialog" aria-labelledby="print-popup"
-  aria-hidden="true" style="display: none;">
-  <div class="modal-dialog" role="document">
-    <form id="add-to-cube-form" method="post">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h2 class="modal-title">Add packages to Cube</h2>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">×</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <input type="text" hidden name="packageIds" />
-          <div class="form-group">
-            <label for="CubeId">Cube</label>
-            <select id="CubeId" name="CubeId" class="form-control" required>
-              <option></option>
-            </select>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="submit" class="btn btn-primary">Add</button>
-          <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
-        </div>
-      </div>
-    </form>
-  </div>
-</div>
-
-<div class="modal fade" id="add-to-delivery-modal" tabindex="-1" role="dialog" aria-labelledby="print-popup"
-  aria-hidden="true" style="display: none;">
-  <div class="modal-dialog" role="document">
-    <form id="add-to-delivery-form" method="post">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h2 class="modal-title">Add packages to Delivery</h2>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">×</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <input type="text" hidden name="packageIds" />
-          <div class="form-group">
-            <label for="location">Location</label>
-            <select id="locationId" name="locationId" class="form-control" required>
-              <option></option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="deliveryId">Delivery</label>
-            <select id="deliveryId" name="deliveryId" class="form-control" required>
-              <option></option>
-            </select>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="submit" class="btn btn-primary">Add</button>
-          <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
-        </div>
-      </div>
-    </form>
-  </div>
-</div>
-
 <div class="modal fade" id="print-popup" tabindex="-1" role="dialog" aria-labelledby="print-popup" aria-hidden="true"
   style="display: none;">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h2 class="modal-title" id="exampleModalLabel2">Print Package Label</h2>
+        <h2 class="modal-title" id="exampleModalLabel2">Print AirWay Bill</h2>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">×</span>
         </button>
@@ -367,20 +198,21 @@ var endate = new Date();
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-danger close-del" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary print-package" id="print-package">
-          Print
-        </button>
+        <button type="button" class="btn btn-primary print-awb" id='print-awb'>Print</button>
       </div>
     </div>
   </div>
 </div>
 <script>
-  var pageUrl = "<%=page ? page :''%>";
   var daterange = "<%=query.daterange ? query.daterange :dateRangeDefault%>";
-  var nodoc = "<%=query.nodocs?query.nodocs:''%>";
 </script>
 <% block('scripts').append('<script src="/js/utils.js"></script>')%>
-<% block('scripts').append('<script src="/js/warehouse/snapshot/package/list-all-report.js"></script>')%></div>
+<% block('scripts').append('<script src="/js/warehouse/snapshot/awb/list.js"></script>')%>
+<% block('scripts').append('<script src="/js/reports/report.js"></script>')%>
+
+
+
+
 
 
 <script>
@@ -414,3 +246,71 @@ var endate = new Date();
     document.body.removeChild(link);
 }
 </script>
+
+
+
+
+
+
+
+
+<div style="display: none;">
+  <table id='awb-report-table-download' class='display table table-striped table-hover  dataTable'>
+    <thead>
+      <tr>
+        <th>Date Received</th>
+        <th>AWB Number</th>
+        <th>PMB</th>
+        <th>Consignee</th>
+        <th>Shipper</th>
+        <th>Fll Pickup</th>
+        <th>Carrier</th>
+        <th>Invoice Count</th>
+        <th>Package Count</th>
+        <!-- <th>View more</th>
+        <th></th>
+        <th></th> -->
+      </tr>
+    </thead>
+    <tbody>
+      <% 
+      awbs.forEach(function(awb){
+      %>
+      <tr data-record=" <%= awb._id %>">
+      <td><%=helpers.formatDate(awb.createdAt)%></td>
+      <td><a href="/warehouse/fll/awb/manage/<%=awb._id%>/preview"><%=awb.awbId%></a></td>
+      <td><%=awb.pmb %></td>
+      <td><%=awb.customerFullName %></td>
+      <td><%=awb.shipperName %></td>
+      <td><%=(awb.fll_pickup && awb.fll_pickup) ? awb.fll_pickup : '' %></td>
+      <td><%=awb.carrierName?awb.carrierName:'' %></td>
+      <td><%=awb.invoices && awb.invoices.length > 0 ? 'yes-doc' : 'no-doc' %></td>
+      <td><%=awb.packages ? awb.packages.length : 'no-pkg' %></td>
+      <!-- <td>
+        <button class="btn btn-primary btn-view-more-awb btn-round float-right ml-md-auto"
+          data-toggle="modal" data-backdrop="static" data-original-title="View More Packages" data-id="<%=awb._id%>"
+          data-target="#more-awb-details">View</button>
+      </td> -->
+      <!-- <td><% if(awb.invoice) { %>
+          <a class="btn btn-link btn-primary btn-invoice" data-id="<%=awb.invoice%>" data-toggle="tooltip"
+            data-original-title="Invoice Attached"> <i class="fa fa-paperclip"></i> </a>
+          <% } %>
+        </td> -->
+      <!-- <td class="text-center">
+        <a href='/warehouse/fll/awb/manage/<%=awb._id%>/get' class="btn btn-link btn-primary px-1"
+          data-toggle="tooltip" data-original-title="Edit"> <i class="fa fa-pen"></i> </a> -->
+        <!-- temporary commenting the code -->
+        <!-- <a class="btn btn-link btn-danger btn-rm-awb p-1" data-toggle="modal" data-id="<%=awb._id%>"
+            data-target="#confirm-delete-awb"> <i class="fa fa-trash"></i> </a> -->
+      <!-- </td>
+      <td>
+        <a class="btn btn-link btn-primary btn-print-awb p-1" data-id="<%=awb._id%>"
+          data-target="#print-popup"> <i class="fa fa-print"></i> </a>
+      </td> -->
+      </tr>
+      <%})%>
+      </tbody>
+      </table>
+    <!-- </div>
+</div> -->
+</div>

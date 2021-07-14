@@ -754,6 +754,30 @@ let packageTable = $('.package-table').DataTable({
     });
   });
   
+  
+function generate_package_detail_report(){
+  $.ajax({
+      url: "/reports/package-detail/report",
+      type: "post",
+      data: {
+          daterange:$("#daterange-package-detail").val(),
+          user:$("#package_detail_user").val(),
+          status:$("#package_detail_status").val()
+      } ,
+      success: function (response) {
+        if(response && response.status){
+          swal("Report!", "Please wait while your report is generated.!", "success");
+        }else{
+          swal("Report!", "Something went wrong Please try again after 5 min.!", "error");
+        }
+         
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+         console.log(textStatus, errorThrown);
+      }
+  });
+}
+
   var pageUrl = pageUrl ? pageUrl : '';
   var pageArr = pageUrl.split('?');
   var urlPage = (pageArr && pageArr.length) ? pageArr[0] : '';
@@ -762,30 +786,56 @@ let packageTable = $('.package-table').DataTable({
   var redirectUrl = "package-report";
 
   console.log(this)
-  console.log()
-  if(pageUrl == "/reports/agingreport"){
+  console.log("redir",redirectUrl,pageUrl,pageUrl.indexOf("/reports/awbreport"))
+  if(pageUrl.indexOf("/reports/agingreport") >= 0){
     redirectUrl = "agingreport";
-
+  }else if(pageUrl.indexOf("reports/package-report/by/employees") >= 0){
+    redirectUrl = "package-report/by/employees";
   }
-  if(pageUrl == "/reports/nodocsreport"){
+
+  if(pageUrl.indexOf("/reports/package-status") >= 0){
+      redirectUrl = "/reports/package-status";
+  }
+
+  if(pageUrl.indexOf("/reports/nodocsreport") >= 0){
     redirectUrl = "nodocsreport";
 
   }
-  if(pageUrl == "/reports/awbreport"){
+  if(pageUrl.indexOf("/reports/awbreport") >= 0){
     redirectUrl = "awbreport";
 
   }
-  
-  
-  if (urlPage == "package-report") {
+
+  if(pageUrl.indexOf("/reports/agingreport") >= 0){
+    redirectUrl = "agingreport";
+
+  }
+  if(pageUrl.indexOf("/reports/nodocsreport") >= 0){
+    redirectUrl = "nodocsreport";
+
+  }
+  if(pageUrl.indexOf("/reports/awbreport") >= 0){
+    redirectUrl = "awbreport";
+
+  }
+  console.log(pageUrl.indexOf("reports/package-report/by/employees"));
+  if(pageUrl.indexOf("reports/package-report/by/employees") >= 0){
+    redirectUrl = "/reports/package-report/by/employees";
+  }
+  else if (pageUrl.indexOf("package-report") >= 0) {
     redirectUrl = "package-report";
   }
-  if (urlPage == "/warehouse/snapshot/package/list") {
+  console.log("redirect cj",pageUrl,redirectUrl)
+  if (pageUrl.indexOf("/warehouse/snapshot/package/list") >= 0) {
     redirectUrl = "/warehouse/snapshot/package/list/report";
+  }
+  if (pageUrl.indexOf("/package/list") >= 0  ) {
+    redirectUrl = "/reports/package/list";
   }
   if (pageUrl.split('/')[2] == "customer") {
     redirectUrl = window.location.pathname;
   }
+  // console.log(redirectUrl);
   if(nodoc){
     $(document).on('click', '.applyBtn', function () {
       var urlLocation = redirectUrl + "?nodocs=load&&daterange=" + $('.daterange').val();
@@ -797,11 +847,12 @@ let packageTable = $('.package-table').DataTable({
   }else{
   
   $(document).on('click', '.applyBtn', function () {
+    console.log("redirectUrl",redirectUrl)
     var urlLocation = redirectUrl + "?daterange=" + $('.daterange').val();
     if($('#search_collection').val()){
       urlLocation = urlLocation+'&search_collection='+$('#search_collection').val();
     }
-    window.location = urlLocation;
+     window.location = urlLocation;
   })
   }
   
@@ -810,6 +861,7 @@ let packageTable = $('.package-table').DataTable({
   })
   $(document).ready(function () {
     setTimeout(() => {
+      console.log("page ",pageUrl)
       if ($('#clear').val()) {
         // $('#daterange').val('')
         $('#clear').val('1');

@@ -1,5 +1,7 @@
 <% layout('./shared/__template')%>
-
+<script src="/js/jquery.js"></script>
+<script src="/assets/js/plugin/datatables/datatables.min.js"></script>
+<script src="/assets/js/plugin/moment/moment.min.js"></script>
     <div class='gutters'>
         <div class='col-xl-12 col-lg-6 col-md-12 col-sm-12'>
             <div class='card'>
@@ -7,11 +9,17 @@
                     <h3 class="card-title">
                         <%=title%>
                     </h3>
-                    <a href='create' class='btn btn-primary btn-round float-right ml-md-auto text-white' data-toggle='modal' data-backdrop='static' data-target='#addDelivery'>Create Delivery</a>
+                <!-- <input type="button" value="Generate CSV delivery report" class="btn btn-primary" style="float: left;margin-left: 1%"  onclick=" download_table_as_csv('location-download') "> -->
+
+                    <button 
+                    class="btn btn-primary btn-round float-right mr-2 ml-md-auto" onclick=" download_table_as_csv('location-download') ">
+                    <i class="fa fa-download"></i>  Generate CSV
+                  </button>
                 </div>
                 <div id="myLoader"><img src="/img/preloader.gif"></div>
                 <div class="card-body daterangepickerbody">
-                    <input type="hidden" name="clear" id="clear" value="<%=clear%>">
+                    <input type="hidden" id="daterange-delivery-new-detail" name="clear" id="clear" value="<%=clear%>" >
+                    
                     <div class="table-responsive">
                     <table class="display table table-striped table-hover dateRangeFilterTable dataTable delivery-table">
                         <thead>
@@ -55,7 +63,9 @@
                                         <%= delivery.status == 0 ? 'Open' : 'Close'%>
                                     </td>
                                     <td class="text-center">
-                                        <a href='manage/<%=delivery.id%>/get' class="btn btn-link btn-primary px-2" data-toggle="tooltip" data-original-title="Delivery Packages"> <i class="fa fa-box-open"></i> </a>
+                                        
+                                        <a href="<%= process.env.BASE_URL_WEB %>/warehouse/nas/delivery/manage/<%=delivery.id%>/get" class="btn btn-link btn-primary px-2" data-toggle="tooltip" data-original-title="Delivery Packages"> <i class="fa fa-box-open"></i> </a>
+                                        <!-- http://localhost:3100/warehouse/nas/delivery/manage/5ec67bf32e3dbe00179cc187/get -->
                                         <% if(delivery.status == 0){%>
                                         <a class="btn btn-link btn-primary btn-close-delivery px-2 close-deliveryy" data-backdrop="static" data-toggle="modal" data-id="<%=delivery.id%>"> <i class="fa fa-check-circle"></i>
                                         </a>
@@ -126,4 +136,106 @@
     </div>
 
     <% block('scripts').append('<script src="/js/utils.js"></script>')%>
-        <% block('scripts').append('<script src="/js/reports/list-delivery.js"></script>')%>
+    <% block('scripts').append('<script src="/js/reports/report.js"></script>')%>
+    <!-- C:\Users\vaibh\Desktop\ongraph\9to5dev\9to5-web\public\js\reports\report.js -->
+
+    <% block('scripts').append('<script src="/js/reports/list-delivery.js"></script>')%>
+
+
+
+
+
+
+    <script>
+        function download_table_as_csv(table_id, separator = ',') {
+          // Select rows from table_id
+          var rows = document.querySelectorAll('table#' + table_id + ' tr');
+          // Construct csv
+          var csv = [];
+          for (var i = 0; i < rows.length; i++) {
+              var row = [], cols = rows[i].querySelectorAll('td, th');
+              for (var j = 0; j < cols.length; j++) {
+                  // Clean innertext to remove multiple spaces and jumpline (break csv)
+                  var data = cols[j].innerText.replace(/(\r\n|\n|\r)/gm, '').replace(/(\s\s)/gm, ' ')
+                  // Escape double-quote with double-double-quote (see https://stackoverflow.com/questions/17808511/properly-escape-a-double-quote-in-csv)
+                  data = data.replace(/"/g, '""');
+                  // Push escaped string
+                  row.push('"' + data + '"');
+              }
+              csv.push(row.join(separator));
+          }
+          var csv_string = csv.join('\n');
+          // Download it
+          var filename = 'export_' + table_id + '_' + new Date().toLocaleDateString() + '.csv';
+          var link = document.createElement('a');
+          link.style.display = 'none';
+          link.setAttribute('target', '_blank');
+          link.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv_string));
+          link.setAttribute('download', filename);
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+      }
+      </script>
+      
+      
+
+
+
+    
+            <div style="display: none;">
+            <table id="location-download" >
+                <thead>
+                    <tr>
+                        <th>Delivery #</th>
+                        <th>Delivery Date</th>
+                        <th>Created By</th>
+                        <th>Destination</th>
+                        <th>Package Count</th>
+                        <th>Driver</th>
+                        <th>Vehicle</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% deliveries.forEach(delivery => { %>
+                        <tr data-record="<%= delivery.id %>">
+                            <td>
+                                <%=delivery.deliveryNum %>
+                            </td>
+                            <td>
+                                <%= helpers.formatDate(delivery.delivery_date) %>
+                            </td>
+                            <td>
+                                <%= delivery.createdBy && delivery.createdBy.username %>
+                            </td>
+                            <td>
+                                <%= delivery.location.name %>
+                            </td>
+                            <td>
+                                <%= delivery.packages && delivery.packages.length %>
+                            </td>
+                            <td>
+                                <%= helpers.getFullName(delivery.driver) %>
+                            </td>
+                            <td>
+                                <%= delivery.vehicle.vehicleMake + '-' + delivery.vehicle.model + '-' + delivery.vehicle.registration %>
+                            </td>
+                            <td>
+                                <%= delivery.status == 0 ? 'Open' : 'Close'%>
+                            </td>
+                            <td class="text-center">
+                                <a href='manage/<%=delivery.id%>/get' class="btn btn-link btn-primary px-2" data-toggle="tooltip" data-original-title="Delivery Packages"> <i class="fa fa-box-open"></i> </a>
+                                <% if(delivery.status == 0){%>
+                                <a class="btn btn-link btn-primary btn-close-delivery px-2 close-deliveryy" data-backdrop="static" data-toggle="modal" data-id="<%=delivery.id%>"> <i class="fa fa-check-circle"></i>
+                                </a>
+                                <% }%>
+                            </td>
+                        </tr>
+                        <% }) %>
+                </tbody>
+            </table>
+       
+            </div>
+ 

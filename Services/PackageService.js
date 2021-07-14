@@ -463,7 +463,7 @@ class PackageService {
                 assigned_to_cube: 0,
                 delivered_to_store: 0
             };
-
+            
             packages.map((item) => {
                 if (!item.lastStatusText) obj.created += 1;
                 if (item.lastStatusText == PKG_STATUS[1]) obj.received_fill += 1;
@@ -1040,7 +1040,7 @@ class PackageService {
                                 resolve(result);
                             }
                         });
-                    }else{
+                    }else{ 
                         Package.find(searchData)
                         .exec((err, result) => {
                             if (err) {
@@ -4391,6 +4391,243 @@ class PackageService {
         })
     }
    /* End Sending EMail for Nodocs and Delivered */
+
+   getAllSnapshotPackagesUpdatedV2(req,searchData){      
+    return new Promise(async(resolve, reject) => {
+        // var searchData = {};
+        if(req && req.query && req.query.locationId){
+            if(ObjectId.isValid(req.query.locationId)){
+                let zoneResult = await Zone.find({location : req.query.locationId}) 
+                let zoneArray = []
+                for(let zone of zoneResult){
+                    if(zone && zone._id){
+                        zoneArray.push(zone._id)
+                    }
+                }
+                searchData['zoneId'] = {$in : zoneArray}
+            }
+        }
+        else if(req && req.query && req.query.customerId){
+            if(ObjectId.isValid(req.query.customerId)){
+                let customerResult = await Customer.findById(req.query.customerId) 
+                if(customerResult && customerResult.package){
+                    searchData['_id'] =  { $in : customerResult.package}
+                }
+            }
+        }
+        else if(req && req.query && req.query.search_type && req.query.search_text){
+            var searchcolmn = {AWBNUMBER:"awbIdString", CONSIGNEE : "customerFullName",SHIPPER : "shipperName",BARCODE : "barcode"}
+            var sColumn = searchcolmn[req.query.search_type];
+            searchData[sColumn] = {'$regex' : req.query.search_text , '$options' : 'i'};
+          } 
+        else if(req && req.query && !searchData._id){
+            var daterange = req.query.daterange?req.query.daterange:'';
+            if(daterange){
+              var date_arr = daterange.split('-');
+              var startDate = (date_arr[0]).trim();      
+              var stdate = new Date(startDate);
+              stdate.setDate(stdate.getDate() );
+      
+              var endDate = (date_arr[1]).trim();
+              var endate = new Date(endDate);
+              endate.setDate(endate.getDate() +1); 
+              
+            stdate = new Date(stdate.setUTCHours(0,0,0,0));
+            stdate = stdate.toISOString();
+            endate = new Date(endate.setUTCHours(23,59,59,0));
+            endate = endate.toISOString(); 
+                 
+              searchData.createdAt = {"$gte":stdate, "$lte": endate};
+            }
+      
+            if(!req.query.daterange && !req.query.clear){
+
+              var endate = new Date();      
+              endate.setDate(endate.getDate());
+              var stdate = new Date();
+              stdate.setDate(stdate.getDate() - parseInt(strings.default_days_table));
+              
+            stdate = new Date(stdate.setUTCHours(0,0,0,0));
+            stdate = stdate.toISOString();
+            endate = new Date(endate.setUTCHours(23,59,59,0));
+            endate = endate.toISOString(); 
+                   
+              searchData.createdAt = {"$gte":stdate, "$lte": endate};
+
+            }
+            if(req.query.clear){
+              var endate = new Date();      
+              endate.setDate(endate.getDate()+1);
+              var stdate = new Date();
+              stdate.setDate(stdate.getDate() -14); 
+              
+            stdate = new Date(stdate.setUTCHours(0,0,0,0));
+            stdate = stdate.toISOString();
+            endate = new Date(endate.setUTCHours(23,59,59,0));
+            endate = endate.toISOString(); 
+                  
+              searchData.createdAt = {"$gte":stdate, "$lte": endate};
+            }
+          }  
+          if(req && req.query && req.query.nodocs){
+            searchData['lastStatusText'] =  "No Invoice Present"
+          } 
+          
+        if(searchData._id && !req.query.customerId && !req.query.locationId){
+            if(req && req.query && req.query.search_collection == "HISTORY"){
+                PackageHistory.find(searchData)
+                .populate({path : 'awbId',populate : 'driver'})
+                .populate('originBarcode')
+                .populate('customerId')
+                .populate({path : 'zoneId',populate : {path : 'location',populate : 'company'}})
+                .populate('shipperId')
+                .populate('carrierId')
+                .populate('cubeId')
+                .populate('manifestId')
+                .exec((err, result) => {
+                    if (err) {
+                        resolve([]);
+                    } else {
+                        console.log("packg",result)
+                        resolve(result);
+                    }
+                });
+            }else{
+                let pkgCheck = await Package.find(searchData)
+                let modelCheck = Package
+                if(pkgCheck == null || pkgCheck.length == 0)
+                    modelCheck = PackageHistory
+                modelCheck.find(searchData)
+                .populate({path : 'awbId',populate : 'driver'})
+                .populate('originBarcode')
+                .populate('customerId')
+                .populate({path : 'zoneId',populate : {path : 'location',populate : 'company'}})
+                .populate('shipperId')
+                .populate('carrierId')
+                .populate('cubeId')
+                .populate('manifestId')
+                .exec((err, result) => {
+                    if (err) {
+                        resolve([]);
+                    } else {
+                        console.log("packg",result)
+                        resolve(result);
+                    }
+                });
+            }
+        }else{
+            if(req && req.query && (req.query.customerId == 'load' || req.query.locationId == 'load')){
+                resolve([])
+            }else{
+                console.log("check all list")
+
+                if(req && req.query && req.query.nodocs){
+                    searchData['lastStatusText'] =  "No Invoice Present"
+                  }
+                  console.log("re",req.query,searchData)
+                if(req && req.query && req.query.search_collection == "HISTORY"){  
+                    console.log("hist")
+                    PackageHistory.find(searchData)
+                    .populate("customerId")
+                    .exec((err, result) => {
+                        if (err) {
+                            resolve([]);
+                        } else {
+                            resolve(result);
+                        }
+                    });
+                }else{
+                    
+                    Package.find(searchData)
+                    .populate("customerId")
+                    .exec((err, result) => {
+                        if (err) {
+                            resolve([]);
+                        } else {
+                            resolve(result);
+                        }
+                    });
+                }
+            }
+        }
+    });
+}
+
+getPackageStatusFilterDateV2(query){
+    return new Promise(async(resolve, reject) => {
+        var searchData = {};
+        if(query && query.daterange && query.type == "packageStatus"){
+            var daterange = query.daterange;
+            var date_arr = daterange.split('-');
+            var startDate = (date_arr[0]).trim();      
+            var stdate = new Date(startDate);
+            stdate.setDate(stdate.getDate() );
+        
+            var endDate = (date_arr[1]).trim();
+            var endate = new Date(endDate);
+            endate.setDate(endate.getDate() +1); 
+            
+            stdate = new Date(stdate.setUTCHours(0,0,0,0));
+            stdate = stdate.toISOString();
+            endate = new Date(endate.setUTCHours(23,59,59,0));
+            endate = endate.toISOString(); 
+                 
+            searchData.createdAt = {"$gte":stdate, "$lte": endate};             
+        }else if(query && query.daterange && !query.type ){
+          var endate = new Date();      
+          endate.setDate(endate.getDate());
+          var stdate = new Date();
+          stdate.setDate(stdate.getDate() - parseInt(0)); 
+          
+          stdate = new Date(stdate.setUTCHours(0,0,0,0));
+          stdate = stdate.toISOString();
+          endate = new Date(endate.setUTCHours(23,59,59,0));
+          endate = endate.toISOString(); 
+                
+          searchData.createdAt = {"$gte":stdate, "$lte": endate};
+        }
+        let packages = await Package.find(searchData)
+        let obj = {
+            created: 0,
+            received_fill: 0,
+            loaded_craft: 0,
+            in_transit: 0,
+            received_nas: 0,
+            ready_pd: 0,
+            delivered: 0,
+            no_invoice: 0,
+            assigned_to_cube: 0,
+            delivered_to_store: 0
+        };
+        const statuses = {
+            created: PKG_STATUS[0],
+            received_fill: PKG_STATUS[1],
+            loaded_craft: PKG_STATUS[2],
+            in_transit: PKG_STATUS[3],
+            received_nas: PKG_STATUS[4],
+            ready_pd: PKG_STATUS[5],
+            delivered: PKG_STATUS[6],
+            no_invoice: PKG_STATUS[7],
+            assigned_to_cube: PKG_STATUS[8],
+            delivered_to_store: PKG_STATUS[9]
+        }
+        packages.map((item) => {
+            if (!item.lastStatusText) obj.created += 1;
+            if (item.lastStatusText == PKG_STATUS[1]) obj.received_fill += 1;
+            if (item.lastStatusText == PKG_STATUS[2]) obj.loaded_craft += 1;
+            if (item.lastStatusText == PKG_STATUS[3]) obj.in_transit += 1;
+            if (item.lastStatusText == PKG_STATUS[4] || item.lastStatusText == 'Recieved in NAS') obj.received_nas += 1;
+            if (item.lastStatusText == PKG_STATUS[5]) obj.ready_pd += 1;
+            if (item.lastStatusText == PKG_STATUS[6]) obj.delivered += 1;
+            if (item.lastStatusText == PKG_STATUS[7]) obj.no_invoice += 1;
+            if (item.lastStatusText == PKG_STATUS[8]) obj.assigned_to_cube += 1;
+            if (item.lastStatusText == PKG_STATUS[9]) obj.delivered_to_store += 1;
+        })
+
+        resolve([obj,statuses]);
+    })
+}
+
 }
 
 function getPackageIdFromBarCode(barCodeValue) {

@@ -75,7 +75,8 @@ $(document).on('click', '.close-deliveryy', function() {
   }).then(response => {
     if (response.value) {
       $.ajax({
-        url: 'manage/' + id + '/close',
+        // url: 'manage/' + id + '/close',
+        url: `http://localhost:3100/warehouse/nas/delivery/manage/${id}/close`,
         type: 'post',
         success: function (response) {
           swal({

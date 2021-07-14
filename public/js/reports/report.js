@@ -17,6 +17,152 @@ function generate_allawb_report(){
  });
 }
 
+
+
+function gen_aging_report(){
+  console.log($('#gen_aging_daterange').val())
+  console.log("genagingreport")
+  console.log("fromme",$("#gen_aging_daterange").val()      )
+    $.ajax({
+        url: "/reports/agingreport",
+        type: "post",
+        data: {
+            daterange:$("#gen_aging_daterange").val()                
+        } ,
+        success: function (response) {
+          if(response && response.status){
+            swal("Report!", "Please wait while your report is generated.!", "success");
+          }else{
+            swal("Report!", "Something went wrong Please try again after 5 min.!", "error");
+          }
+           
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+           console.log(textStatus, errorThrown);
+        }
+    });
+  }
+
+
+  function gen_awb_report(){
+  console.log("genawbreport")
+
+    console.log("fromme",$("#daterange_awbreport").val()      )
+      $.ajax({
+          url: "/reports/awbreport",
+          type: "post",
+          data: {
+              daterange:$("#daterange_awbreport").val()                
+          } ,
+          success: function (response) {
+            if(response && response.status){
+              swal("Report!", "Please wait while your report is generated.!", "success");
+            }else{
+              swal("Report!", "Something went wrong Please try again after 5 min.!", "error");
+            }
+             
+          },
+          error: function(jqXHR, textStatus, errorThrown) {
+             console.log(textStatus, errorThrown);
+          }
+      });
+    }
+    function gen_delivery_report(){
+  console.log("gendeliveryreport")
+
+      console.log("fromme",$("#daterange-delivery-new-detail").val()      )
+        $.ajax({
+            url: "/reports/deliveryreport",
+            type: "post",
+            data: {
+                daterange:$("#daterange-delivery-new-detail").val()                
+            } ,
+            success: function (response) {
+              if(response && response.status){
+                swal("Report!", "Please wait while your report is generated.!", "success");
+              }else{
+                swal("Report!", "Something went wrong Please try again after 5 min.!", "error");
+              }
+               
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+               console.log(textStatus, errorThrown);
+            }
+        });
+      }
+    
+      function gen_location_report(){
+  console.log("genlocationreport")
+
+        console.log("fromme",$("#daterange-delivery-new-detail").val()      )
+          $.ajax({
+              url: "/reports/locationreport",
+              type: "post",
+              data: {
+                  daterange:$("#daterange-delivery-new-detail").val()                
+              } ,
+              success: function (response) {
+                if(response && response.status){
+                  swal("Report!", "Please wait while your report is generated.!", "success");
+                }else{
+                  swal("Report!", "Something went wrong Please try again after 5 min.!", "error");
+                }
+                 
+              },
+              error: function(jqXHR, textStatus, errorThrown) {
+                 console.log(textStatus, errorThrown);
+              }
+          });
+        }
+
+        function gen_nodocs_report(){
+          console.log("genlocationreport")
+        
+                console.log("fromme",$("#daterange_nodocs").val()      )
+                  $.ajax({
+                      url: "/reports/nodocsreport",
+                      type: "post",
+                      data: {
+                          daterange:$("#daterange_nodocs").val()                
+                      } ,
+                      success: function (response) {
+                        if(response && response.status){
+                          swal("Report!", "Please wait while your report is generated.!", "success");
+                        }else{
+                          swal("Report!", "Something went wrong Please try again after 5 min.!", "error");
+                        }
+                         
+                      },
+                      error: function(jqXHR, textStatus, errorThrown) {
+                         console.log(textStatus, errorThrown);
+                      }
+                  });
+                }
+      
+        
+
+function generate_delivery_new_report(){
+  console.log("fromme",$("#daterange-delivery-new-detail").val()      )
+    $.ajax({
+        url: "/reports/deliveryreport",
+        type: "post",
+        data: {
+            daterange:$("#daterange-delivery-new-detail").val()                
+        } ,
+        success: function (response) {
+          if(response && response.status){
+            swal("Report!", "Please wait while your report is generated.!", "success");
+          }else{
+            swal("Report!", "Something went wrong Please try again after 5 min.!", "error");
+          }
+           
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+           console.log(textStatus, errorThrown);
+        }
+    });
+  }
+  
 function generate_delivery_report(){
 console.log("fromme",$("#daterange-delivery-detail").val()      )
   $.ajax({
