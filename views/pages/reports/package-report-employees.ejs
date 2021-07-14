@@ -38,8 +38,8 @@ var endate = new Date();
       
         <div class="d-flex align-items-right float-right ml-md-auto">
           <button 
-            class="btn btn-primary btn-round float-right mr-2 ml-md-auto" onclick="download_table_as_csv('package-table');">
-            Generate CSV
+            class="btn btn-primary btn-round float-right mr-2 ml-md-auto" onclick="download_table_as_csv('package-table-download');">
+            <i class="fa fa-download"></i>   Generate CSV
           </button>
       
         </div>
@@ -94,8 +94,8 @@ var endate = new Date();
               <select name="search_type" id="search_type"  class="form-control" style="width: 30%; float: left;">
                   <option value="">Select </option>
                   <option value="AWBNUMBER" <%if(query.search_type=='AWBNUMBER'){%>selected<%}%>>AWB # </option>
-                  <option value="CONSIGNEE" <%if(query.search_type=='CONSIGNEE'){%>selected<%}%>>Consignee </option>
-                  <option value="SHIPPER" <%if(query.search_type=='SHIPPER'){%>selected<%}%>>Shipper </option>
+                  <!-- <option value="CONSIGNEE" <%if(query.search_type=='CONSIGNEE'){%>selected<%}%>>Consignee </option>
+                  <option value="SHIPPER" <%if(query.search_type=='SHIPPER'){%>selected<%}%>>Shipper </option> -->
                   <option value="BARCODE" <%if(query.search_type=='BARCODE'){%>selected<%}%>>Original Barcode </option>
               </select>
               <input type="text" name="search_text" id="search_text" class="form-control" value="<%=query.search_text%>" style="width: 30%; float: left;margin-left: 1%;"">
@@ -371,3 +371,46 @@ var endate = new Date();
     document.body.removeChild(link);
 }
 </script>
+
+
+
+
+<div style="display: none;">
+  <table id="package-table-download">
+    <thead>
+      <tr>
+        <!-- <% if(!query.customerId && !query.locationId){ %>              
+        <th><input id="checkall" type="checkbox" class="package-select-all" /></th>
+        <% } %>               -->
+
+        <th>Created Date</th>
+        <th>Tracking No</th>
+        <th>AWB #</th>
+        <th>Original Barcode</th>
+        <th>Status</th>
+        <th>Name</th> 
+        <th>Email</th>
+      </tr>
+    </thead>
+    <tbody>
+     
+      <% packages.forEach(function(pkg){ %>
+        
+      <tr data-record="<%= pkg._id %>">
+        <!-- <% if(!query.customerId && !query.locationId) {%>              
+        <td>
+          <input type="checkbox" name="package-select" class="package-select" />
+        </td>
+        <% } %>               -->
+        <td><%= helpers.formatDate(pkg.createdAt) %></td>
+        <td><%=(pkg.trackingNo)?pkg.trackingNo:''%></td>
+        <td><a href="/warehouse/fll/awb/manage/<%=pkg.awbId%>/preview"><%=pkg.awbIdNumber%></a></td>
+        <td><%= pkg.barcode %></td>
+        <td><%= pkg.lastStatusText %></td>
+        <td><%= pkg.customerFullName %></td>
+        <td><%=pkg.customerId?pkg.customerId.email:null  %></td>
+      </tr>
+      <%})%>
+    </tbody>
+  </table>
+</div>

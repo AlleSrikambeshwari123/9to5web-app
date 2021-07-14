@@ -13,7 +13,7 @@
 
                     <button 
                     class="btn btn-primary btn-round float-right mr-2 ml-md-auto" onclick=" download_table_as_csv('location-download') ">
-                    Generate CSV
+                    <i class="fa fa-download"></i>  Generate CSV
                   </button>
                 </div>
                 <div id="myLoader"><img src="/img/preloader.gif"></div>
@@ -63,7 +63,9 @@
                                         <%= delivery.status == 0 ? 'Open' : 'Close'%>
                                     </td>
                                     <td class="text-center">
-                                        <a href='manage/<%=delivery.id%>/get' class="btn btn-link btn-primary px-2" data-toggle="tooltip" data-original-title="Delivery Packages"> <i class="fa fa-box-open"></i> </a>
+                                        
+                                        <a href="<%= process.env.BASE_URL_WEB %>/warehouse/nas/delivery/manage/<%=delivery.id%>/get" class="btn btn-link btn-primary px-2" data-toggle="tooltip" data-original-title="Delivery Packages"> <i class="fa fa-box-open"></i> </a>
+                                        <!-- http://localhost:3100/warehouse/nas/delivery/manage/5ec67bf32e3dbe00179cc187/get -->
                                         <% if(delivery.status == 0){%>
                                         <a class="btn btn-link btn-primary btn-close-delivery px-2 close-deliveryy" data-backdrop="static" data-toggle="modal" data-id="<%=delivery.id%>"> <i class="fa fa-check-circle"></i>
                                         </a>

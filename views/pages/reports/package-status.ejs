@@ -384,6 +384,7 @@ var endate = new Date();
       'ready_pd', 'delivered', 'no_invoice', 'assigned_to_cube', 'delivered_to_store'];
     let newObj = [];
     for (let i = 0; i < 10; i++) {
+      console.log(data , "data from package-status")
       newObj.push({ status: PKG_STATUS[i], count: data[obj[i]] })
     }
     let result = newObj.map((row) => {

@@ -37,8 +37,12 @@ var endate = new Date();
         <div class="card-title"><%= title %></div>
       
         <div class="d-flex align-items-right float-right ml-md-auto">
-          <input type="button" value="Generate CSV" class="btn btn-primary" style="float: left;margin-left: 1%"  onclick="download_table_as_csv('package-table-download')">
-         
+        
+          <button 
+          class="btn btn-primary btn-round float-right mr-2 ml-md-auto" onclick="download_table_as_csv('package-table-download')">
+          <i class="fa fa-download"></i>  Generate CSV
+        </button>
+      
         </div>
       </div>
       <div id="myLoader"><img src="/img/preloader.gif"></div>
