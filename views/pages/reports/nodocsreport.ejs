@@ -31,18 +31,19 @@ var endate = new Date();
 <div class="gutters">
   <div class="col-xl-12 col-lg-6 col-md-12 col-sm-12">
     <div class="card">
-      <!-- <input type="button" value="Generate CSV Nodocs report" class="btn btn-primary" style="float: left;margin-left: 1%"  onclick="gen_nodocs_report()"> -->
+      <!-- <input type="button" value="Generate CSV Nodocs report" class="btn btn-primary" style="float: left;margin-left: 1%"  onclick="download_table_as_csv('package-table-download')"> -->
 
       <!-- <div class="card-header d-flex align-items-left align-items-md-center flex-column flex-md-row">
         <div class="card-title"><%= title %></div>
         <% if(!query.customerId && !query.locationId) {%>
         
         <div class="d-flex align-items-right float-right ml-md-auto">
-          <button id="add-to-cube-button" data-toggle="modal" data-backdrop="static" data-target="#add-to-cube-modal"
+        -->
+          <button  onclick="download_table_as_csv('package-table-download')"
             class="btn btn-primary btn-round float-right mr-2 ml-md-auto">
-            Add to Cube
+            Generate CSV
           </button>
-          <button id="add-to-nodoc-button" data-toggle="modal" data-backdrop="static" data-target="#add-to-nodoc-modal"
+         <!-- <button id="add-to-nodoc-button" data-toggle="modal" data-backdrop="static" data-target="#add-to-nodoc-modal"
             class="btn btn-primary btn-round float-right mr-2 ml-md-auto">
             Add to NoDoc
           </button>
@@ -431,3 +432,92 @@ var endate = new Date();
     document.body.removeChild(link);
 }
 </script>
+
+
+
+
+
+
+<div style="display: none;">
+  <table id="package-table-download" >
+    <thead>
+      <tr>
+        <!-- <% if(!query.customerId && !query.locationId){ %>              
+        <th><input id="checkall" type="checkbox" class="package-select-all" /></th>
+        <% } %>               -->
+
+        <th>Created Date</th>
+        <th>Tracking No</th>
+        <th>PMB</th>
+        <th>Consignee</th>
+        <th>AWB #</th>
+        <th>Shipper</th>
+        <th>Store</th>
+        <th>Original Barcode</th>
+        <th>Description</th>
+        <th>Status</th>
+        <th>Status Date</th>
+        <!-- <th>Location</th> -->
+        <th>Package Type</th>
+        <th>Zone</th>
+        <th>Carrier</th>
+        <th>Weight</th>
+        <th>Volumetric Weight</th>
+        <th>Express</th>
+        <th>Aging</th>
+        <th>Aging Dollar</th>
+        <!-- <th>View</th>
+        <th></th>
+        <th></th> -->
+        <!-- <th></th> -->
+      </tr>
+    </thead>
+    <tbody>
+     
+      <% packages.forEach(function(pkg){ %>
+        
+      <tr data-record="<%= pkg._id %>">
+        <!-- <% if(!query.customerId && !query.locationId) {%>              
+        <td>
+          <input type="checkbox" name="package-select" class="package-select" />
+        </td>
+        <% } %>               -->
+        <td><%= helpers.formatDate(pkg.createdAt) %></td>
+        <td><%=(pkg.trackingNo)?pkg.trackingNo:''%></td>
+        <td><%= pkg.pmb %></td>
+        <td><%= pkg.customerFullName %></td>
+        <td><a href="/warehouse/fll/awb/manage/<%=pkg.awbId%>/preview"><%=pkg.awbIdNumber%></a></td>
+        <td><%= pkg.shipperName %></td>
+        <td><%= pkg.storeLocation ?pkg.storeLocation : '9to5' %></td>
+        <td><%= pkg.barcode %></td>
+
+        <td><%= (pkg.packageType == 'Cube' && pkg.masterDescription) ? pkg.masterDescription : pkg.description %></td>
+        <td><%= pkg.lastStatusText %></td>
+        <td><%= helpers.formatDate(pkg.lastStatusDate) %></td>
+        <!-- <td><%= pkg.location %></td> -->
+        <td><%= pkg.packageType %></td>
+        <td><%=pkg.zoneName?pkg.zoneName:'' %></td>
+        <td><%=pkg.carrierName?pkg.carrierName:'' %></td>
+        <td><%= (pkg.packageType == 'Cube' && pkg.masterWeight) ? pkg.masterWeight : pkg.weight %></td>
+        <td><%= pkg.volumetricWeight.toFixed(2) %></td>
+        <td><%= pkg.express %></td>
+        <td><%= pkg.aging %></td>
+        <td><%= pkg.agingdollar %></td>
+        <!-- <td>
+          <button class="btn btn-primary btn-view-more-package btn-round float-right ml-md-auto"
+            data-toggle="modal" data-backdrop="static" data-original-title="View More Packages" data-id="<%=pkg._id%>"
+            data-target="#more-package-details">View</button>
+        </td>
+        <td class="text-center">
+          <a href="/warehouse/pkg-label/download/<%=pkg._id%>"><i class="fa fa-download"></i></a>
+        </td>
+        <td>
+          <a class="btn btn-link btn-primary btn-print-pkg" data-id="<%=pkg._id%>"
+            data-original-title="Print Label" data-target="#print-popup"><i class="fa fa-print"></i>
+          </a>
+        </td> -->
+      </tr>
+      <%})%>
+    </tbody>
+  </table>
+</div>
