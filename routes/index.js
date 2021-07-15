@@ -5,6 +5,7 @@ var services = require('../Services/RedisDataServices');
 var momentz = require('moment-timezone')
 
 router.get('/', function (req, res, next) {
+  
   if (req.session.token)
     res.redirect('/dashboard');
   else

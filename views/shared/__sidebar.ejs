@@ -89,6 +89,16 @@
 						<span class="sub-item">Package Status </span>
 					</a>
 				</li>
+				<li class="nav-item <% if (page.includes('/reports/package-status')) { %> active <% } %>">
+					<a href="/reports/awbemp/package-status">
+						<span class="sub-item">AWB Employee Throughput </span>
+					</a>
+				</li>
+				<li class="nav-item <% if (page.includes('/reports/package-status')) { %> active <% } %>">
+					<a href="/reports/packemp/package-status">
+						<span class="sub-item">Package Employee Throughput</span>
+					</a>
+				</li>
 				<li class="nav-item <% if (page.includes('/reports/package-report/by/employees')) { %> active <% } %>">
 					<a href="/reports/package-report/by/employees">
 						<span class="sub-item">Packages by Employee</span>
@@ -236,7 +246,7 @@
 						<p>Packages</p>
 					</a>
 		
-	</li>
+				</li>
 				<li class="nav-item <% if (page.includes('/awb')) { %> active <% } %>">
 					<a href="/customer/awb">
 						<i class="fa fa-cubes"></i>

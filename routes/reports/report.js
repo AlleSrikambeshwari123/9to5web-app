@@ -45,6 +45,9 @@ router.get('/package-report/by/employees',middleware().checkSession,reportCtrl.p
 
 router.get('/package-status',middleware().checkSession,reportCtrl.packagestatus)
 
+router.get('/awbemp/package-status',middleware().checkSession,reportCtrl.awbpackagestatus)
+router.get('/packemp/package-status',middleware().checkSession,reportCtrl.packemppackagestatus)
+
 
 router.post('/all-awb/status_report', middleware().checkSession, reportCtrl.all_awb_status_report);
 router.post('/delivery-detail/report', middleware().checkSession, reportCtrl.delivery_detail_report);

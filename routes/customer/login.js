@@ -22,6 +22,7 @@ var upload = multer({ storage: storage});
 
 
 router.get('/login', function (req, res, next) {
+  
   if (req.session.token)
     res.redirect('/dashboard');
   else  
