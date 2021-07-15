@@ -10,6 +10,7 @@ const User = require('../models/user');
 const Role = require('../models/role');
 const Awb = require('../models/awb');
 const mail = require('../Util/mail');
+const { Mongoose } = require('mongoose');
 
 class UserService {
   changePassword(username, newpassword, oldpassword) {
@@ -84,6 +85,18 @@ class UserService {
     return new Promise(function (resolve, reject) {
       User.findOne({ username: username })
         .populate('roles', 'type')
+        .exec((err, result) => {
+          if (err) {
+            resolve({});
+          } else {
+            resolve(result);
+          }
+        })
+    });
+  }
+  getUserbyId(username) {
+    return new Promise(function (resolve, reject) {
+      User.findOne({ _id: username })
         .exec((err, result) => {
           if (err) {
             resolve({});

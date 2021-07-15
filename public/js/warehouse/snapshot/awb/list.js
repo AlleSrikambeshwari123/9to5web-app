@@ -234,6 +234,10 @@ if(urlPage == "/warehouse/fll/awb/no-docs"){
 if(urlPage.indexOf("/reports/awbreport")){
   redirectUrl = "/reports/awbreport";
 }
+if(urlPage.indexOf("/reports/awbemp/package-status")){
+  redirectUrl = "/reports/awbemp/package-status";
+}
+
 
 $(document).on('click', '.applyBtn', function() {
   window.location = redirectUrl+"?daterange="+$('.daterange').val();
