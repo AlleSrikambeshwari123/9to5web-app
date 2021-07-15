@@ -52,6 +52,7 @@ exports.packagedetail = async(req, res, next)=>{
 
 exports.packagestatus = async(req, res, next)=>{    
   services.userService.getAllUsers().then( users =>
+    
     res.render('pages/reports/package-status', {
       page: req.originalUrl,
       title: "Reports",

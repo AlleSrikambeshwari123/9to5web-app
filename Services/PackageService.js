@@ -451,6 +451,8 @@ class PackageService {
               searchData.createdAt = {"$gte":stdate, "$lte": endate};
             }
             let packages = await Package.find(searchData)
+console.log(packages , "packages 454")
+
             let obj = {
                 created: 0,
                 received_fill: 0,
@@ -4586,7 +4588,11 @@ getPackageStatusFilterDateV2(query){
                 
           searchData.createdAt = {"$gte":stdate, "$lte": endate};
         }
+        console.log(searchData , "search dates")
+        console.log(searchData.createdAt , "search dates created at")
+
         let packages = await Package.find(searchData)
+        console.log(packages.length , "packagess")
         let obj = {
             created: 0,
             received_fill: 0,

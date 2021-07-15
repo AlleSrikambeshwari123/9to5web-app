@@ -43,7 +43,7 @@ router.get('/package-report',middleware().checkSession,reportCtrl.packageReport)
 
 router.get('/package-report/by/employees',middleware().checkSession,reportCtrl.packageReportByEmployees)
 
-router.get('/package-status',middleware().checkSession,reportCtrl.packageStatus)
+router.get('/package-status',middleware().checkSession,reportCtrl.packagestatus)
 
 
 router.post('/all-awb/status_report', middleware().checkSession, reportCtrl.all_awb_status_report);
