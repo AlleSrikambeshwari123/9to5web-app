@@ -123,7 +123,7 @@ var endate = new Date();
             <tbody>
              
               <% packages.forEach(function(pkg){ %>
-                
+                <% if(pkg.createdBy == sessionuserId){ %>
               <tr data-record="<%= pkg._id %>">
                 <!-- <% if(!query.customerId && !query.locationId) {%>              
                 <td>
@@ -138,6 +138,7 @@ var endate = new Date();
                 <td><%= pkg.customerFullName %></td>
                 <td><%=pkg.customerId?pkg.customerId.email:null  %></td>
               </tr>
+              <% } %>
               <%})%>
             </tbody>
           </table>
@@ -395,7 +396,7 @@ var endate = new Date();
     <tbody>
      
       <% packages.forEach(function(pkg){ %>
-        
+        <% if(pkg.createdBy == sessionuserId){ %>
       <tr data-record="<%= pkg._id %>">
         <!-- <% if(!query.customerId && !query.locationId) {%>              
         <td>
@@ -410,6 +411,7 @@ var endate = new Date();
         <td><%= pkg.customerFullName %></td>
         <td><%=pkg.customerId?pkg.customerId.email:null  %></td>
       </tr>
+      <% } %>
       <%})%>
     </tbody>
   </table>

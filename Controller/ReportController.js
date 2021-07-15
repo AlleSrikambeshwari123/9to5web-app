@@ -327,7 +327,8 @@ exports.packageReportByEmployees = async(req, res, next)=>{
               locations : locations,
               clear: req.query.clear,
               daterange:req.query.daterange?req.query.daterange:'',
-              query:req.query
+              query:req.query,
+              sessionuserId:req.session.userId
           });
       })
 
@@ -373,6 +374,7 @@ exports.awbReportByEmployees = async(req, res, next)=>{
         //     console.log(pkg.customerId._id);
         //     return pkg;
         //   });
+        
           res.render('pages/reports/awbreport-by-employees', {
               page: req.originalUrl,
               user: res.user,
@@ -384,7 +386,8 @@ exports.awbReportByEmployees = async(req, res, next)=>{
               locations : locations,
               clear: req.query.daterange,
               daterange:req.query.daterange?req.query.daterange:'',
-              query:req.query
+              query:req.query,
+              sessionuserId:req.session.userId
           });
   }));
 }

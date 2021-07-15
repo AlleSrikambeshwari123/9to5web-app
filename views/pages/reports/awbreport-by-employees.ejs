@@ -54,7 +54,7 @@ var endate = new Date();
               <table id='awb-report-table' class='display table table-striped table-hover  dataTable'>
                 <thead>
                   <tr>
-                    <th>Date Received</th>
+                    <th>Created Date</th>
                     <th>AWB Number</th>
                     <th>Status</th>
                     <th>Name</th>
@@ -63,9 +63,12 @@ var endate = new Date();
                   </tr>
                 </thead>
                 <tbody>
+                  <%= console.log(sessionuserId ,"sessionuserId") %>
                   <% 
                   awbs.forEach(function(awb){
                   %>
+                  <%= console.log(awb) %>
+                  <% if(awb.createdBy == sessionuserId) { %>
                   <tr data-record=" <%= awb._id %>">
                   <td><%=helpers.formatDate(awb.createdAt)%></td>
                   <td><a href="/warehouse/fll/awb/manage/<%=awb._id%>/preview"><%=awb.awbId%></a></td>
@@ -75,6 +78,7 @@ var endate = new Date();
                  
                  
                   </tr>
+                  <% } %>
                   <%})%>
                   </tbody>
                   </table>
@@ -233,6 +237,7 @@ var endate = new Date();
       <% 
       awbs.forEach(function(awb){
       %>
+      <% if(awb.createdBy == sessionuserId) { %>
       <tr data-record=" <%= awb._id %>">
       <td><%=helpers.formatDate(awb.createdAt)%></td>
       <td><a href="/warehouse/fll/awb/manage/<%=awb._id%>/preview"><%=awb.awbId%></a></td>
@@ -242,6 +247,7 @@ var endate = new Date();
      
      
       </tr>
+      <% } %>
       <%})%>
       </tbody>
       </table>
