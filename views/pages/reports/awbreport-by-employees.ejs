@@ -63,11 +63,11 @@ var endate = new Date();
                   </tr>
                 </thead>
                 <tbody>
-                  <%= console.log(sessionuserId ,"sessionuserId") %>
+                  
                   <% 
                   awbs.forEach(function(awb){
                   %>
-                  <%= console.log(awb) %>
+                  
                   <% if(awb.createdBy == sessionuserId) { %>
                   <tr data-record=" <%= awb._id %>">
                   <td><%=helpers.formatDate(awb.createdAt)%></td>

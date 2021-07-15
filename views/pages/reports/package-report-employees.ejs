@@ -112,7 +112,7 @@ var endate = new Date();
                 <% } %>               -->
 
                 <th>Created Date</th>
-                <th>Tracking No</th>
+                <!-- <th>Tracking No</th> -->
                 <th>AWB #</th>
                 <th>Original Barcode</th>
                 <th>Status</th>
@@ -131,7 +131,7 @@ var endate = new Date();
                 </td>
                 <% } %>               -->
                 <td><%= helpers.formatDate(pkg.createdAt) %></td>
-                <td><%=(pkg.trackingNo)?pkg.trackingNo:''%></td>
+                <!-- <td><%=(pkg.trackingNo)?pkg.trackingNo:''%></td> -->
                 <td><a href="/warehouse/fll/awb/manage/<%=pkg.awbId%>/preview"><%=pkg.awbIdNumber%></a></td>
                 <td><%= pkg.barcode %></td>
                 <td><%= pkg.lastStatusText %></td>
@@ -385,7 +385,7 @@ var endate = new Date();
         <% } %>               -->
 
         <th>Created Date</th>
-        <th>Tracking No</th>
+        <!-- <th>Tracking No</th> -->
         <th>AWB #</th>
         <th>Original Barcode</th>
         <th>Status</th>
@@ -404,11 +404,11 @@ var endate = new Date();
         </td>
         <% } %>               -->
         <td><%= helpers.formatDate(pkg.createdAt) %></td>
-        <td><%=(pkg.trackingNo)?pkg.trackingNo:''%></td>
+        <!-- <td><%=(pkg.trackingNo)?pkg.trackingNo:''%></td> -->
         <td><a href="/warehouse/fll/awb/manage/<%=pkg.awbId%>/preview"><%=pkg.awbIdNumber%></a></td>
         <td><%= pkg.barcode %></td>
         <td><%= pkg.lastStatusText %></td>
-        <td><%= pkg.customerFullName %></td>
+        <td><%= pkg.customerFullName %>s</td>
         <td><%=pkg.customerId?pkg.customerId.email:null  %></td>
       </tr>
       <% } %>
