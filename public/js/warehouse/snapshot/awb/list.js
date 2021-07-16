@@ -251,7 +251,18 @@ if(window.location.pathname.indexOf("/reports/awbemp/package-status") >= 0 || wi
 
 console.log(redirectUrl , "redirecturl")
 $(document).on('click', '.applyBtn', function() {
+
+  if(window.location.pathname.indexOf("/reports/awbemp/package-status") >= 0 || window.location.pathname.includes("/reports/awbemp/package-status")){
+    window.location = redirectUrl+"?daterange="+$('.daterange').val()+"&search_collection="+$('#search_collection').val();
+
+  }
+  else if(window.location.pathname.indexOf("/reports/packemp/package-status") >= 0 || window.location.pathname.includes("/reports/packemp/package-status")){
+    window.location = redirectUrl+"?daterange="+$('.daterange').val()+"&search_collection="+$('#search_collection').val();
+
+  }
+else{
   window.location = redirectUrl+"?daterange="+$('.daterange').val();
+}
 })
 
 $(document).on('click', '.cancelBtn', function() {

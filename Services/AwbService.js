@@ -602,6 +602,7 @@ class AwbService {
           }
       }
       // console.log("sear",searchData)
+      console.log(req.query.search_collection , "searchColection")
         return new Promise(async(resolve, reject) => {
           var collec = "Awb";
           if(req.query.search_collection == "HISTORY"){
@@ -611,6 +612,7 @@ class AwbService {
             if(req.query.search_collection == "HISTORY"){
               AwbHistory.find(searchData)
                   .exec(async (err, result) => {
+                    console.log("awbhistorycalled")
                     Promise.all(result.map(async res =>{
                       return res;
                     })).then(()=> resolve(result))

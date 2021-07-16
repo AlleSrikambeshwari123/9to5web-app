@@ -80,6 +80,8 @@ if(req.query.type == 'customer')
     title = 'Customer Package List'
 let customers = await services.customerService.getCustomers()
 let locations = await services.locationService.getLocations()
+
+// if(req.query.search_type == 'ACTIVE' || req.query.search_type == undefined){
 services.awbService.getAwbsFullSnapshot(req,{}).then(( async (pkgs) => {     
   let createdbydata = [];
    await pkgs.map((data)=>createdbydata.push(data.createdBy))
@@ -103,9 +105,10 @@ console.log(keys , "allkeys")
     } 
   }
   // services.userService.getUserbyId()
-  console.log(awbpackagestatus,"awbpackagestatus")
-    console.log(occurrences , "occurences")
-    console.log(createdbydata , "createdbydata")       
+  // console.log(awbpackagestatus,"awbpackagestatus")
+  //   console.log(occurrences , "occurences")
+  //   console.log(createdbydata , "createdbydata")       
+    console.log(req.query , "reqquery")
         res.render('pages/reports/awbpackagestatus', {
             page: req.originalUrl,
             user: res.user,
@@ -120,7 +123,15 @@ console.log(keys , "allkeys")
             daterange:req.query.daterange?req.query.daterange:'',
             query:req.query
         });
-}));
+}
+
+
+));
+
+// }
+// else{
+//   console.log("histroycaleld")
+// }
 }
 
 
@@ -157,6 +168,10 @@ exports.packemppackagestatus = async(req, res, next)=>{
       title = 'Customer Package List'
   let customers = await services.customerService.getCustomers()
   let locations = await services.locationService.getLocations()
+
+  // if(req.query.search_type == 'ACTIVE' || req.query.search_type == undefined){
+
+
 services.packageService.getAllPackages().then(async(pkgs)=>{
   let createdbydata = [];
   await pkgs.map((data)=>createdbydata.push(data.createdBy))
@@ -198,6 +213,10 @@ console.log(keys , "allkeys")
            query:req.query
        });
 })
+  // }
+  // else{
+  //   console.log('packageHistoryCalled')
+  // }
 
   // services.awbService.getAwbsFullSnapshot(req,{}).then(( async (pkgs) => {     
   //   let createdbydata = [];
@@ -472,6 +491,7 @@ exports.packageReport = async(req, res, next)=>{
               return pkg
           })
       ).then(pkgs => {            
+        
           res.render('pages/reports/package-report', {
               page: req.originalUrl,
               user: res.user,
