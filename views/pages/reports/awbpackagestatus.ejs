@@ -230,3 +230,44 @@ var endate = new Date();
 
 
 
+
+<div style="display: none;">
+  <table id='awb-report-table-download' >
+    <thead>
+      <tr>
+        <th>Created By</th>
+        <th>AWB Count</th>
+
+        <!-- <th>Date Received</th>
+        <th>AWB Number</th>
+        <th>PMB</th>
+        <th>Consignee</th>
+        <th>Shipper</th>
+        <th>Fll Pickup</th>
+        <th>Carrier</th>
+        <th>Invoice Count</th>
+        <th>Package Count</th> -->
+        <!-- <th>View more</th>
+        <th></th>
+        <th></th> -->
+      </tr>
+    </thead>
+    <tbody>
+
+      <%  if(awbpackagestatus.length>0){
+      awbpackagestatus.forEach(d=>{
+      %>
+      <!--  -->
+      
+<tr>
+      <td><%= d.email %></td>
+      <td><%= d.count %></td>
+
+    
+      </tr>
+      <%}) }%>
+      </tbody>
+      </table>
+    <!-- </div>
+</div> -->
+</div>
