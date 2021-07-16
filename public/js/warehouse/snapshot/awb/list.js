@@ -223,6 +223,8 @@ var pickuptable = $('#pickup-awb-table').DataTable({
 var pageUrl = pageUrl ? pageUrl : '';
 var pageArr =  pageUrl.split('?');
 var urlPage = (pageArr && pageArr.length) ? pageArr[0] : '';
+console.log(urlPage , pageUrl , pageArr , window.location , "urlPage")
+
 var redirectUrl = "/warehouse/snapshot/awb/list";
 if(urlPage == "/warehouse/nas/awb/no-docs"){
   redirectUrl = "/warehouse/nas/awb/no-docs";
@@ -234,11 +236,20 @@ if(urlPage == "/warehouse/fll/awb/no-docs"){
 if(urlPage.indexOf("/reports/awbreport")){
   redirectUrl = "/reports/awbreport";
 }
+
+
 if(urlPage.indexOf("/reports/awbemp/package-status")){
   redirectUrl = "/reports/awbemp/package-status";
 }
+if(urlPage.indexOf("/reports/packemp/package-status")){
+  redirectUrl = "/reports/packemp/package-status";
+}
+if(window.location.pathname.indexOf("/reports/awbemp/package-status") >= 0 || window.location.pathname.includes("/reports/awbemp/package-status")){
+  redirectUrl = "/reports/awbemp/package-status";
+}
+// /reports/awbemp/package-status
 
-
+console.log(redirectUrl , "redirecturl")
 $(document).on('click', '.applyBtn', function() {
   window.location = redirectUrl+"?daterange="+$('.daterange').val();
 })

@@ -1,471 +1,195 @@
 <% layout('./shared/__template')%>
-<script src="/js/jquery.js"></script>
-<script src="/assets/js/plugin/datatables/datatables.min.js"></script>
-<script src="/assets/js/plugin/moment/moment.min.js"></script>
+
 <%
 var endate = new Date();      
-        endate.setDate(endate.getDate());
-        var stdate = new Date();
-        stdate.setDate(stdate.getDate());      
-        var dateRangeDefault = (stdate.getMonth() + 1)+ '/'+stdate.getDate()+'/'+stdate.getFullYear()+' - '+
-        (endate.getMonth() + 1)+ '/'+endate.getDate()+'/'+endate.getFullYear(); 
+    endate.setDate(endate.getDate());
+    var stdate = new Date();
+    stdate.setDate(stdate.getDate() -1);      
+    var dateRangeDefault = (stdate.getMonth() + 1)+ '/'+stdate.getDate()+'/'+stdate.getFullYear()+' - '+
+    (endate.getMonth() + 1)+ '/'+endate.getDate()+'/'+endate.getFullYear(); 
+    if(query.clear){
+        dateRangeDefault = '';
+    }
 %>
-<!--
 
-<div class="row">
-  <div class="col-md-12">
-    <div class="card full-height">
+<div class='gutters'>
+  <div class='col-xl-12 col-lg-6 col-md-12 col-sm-12'>
+    <div class='card card-with-nav'>
       <div class="card-header">
-        <div class="row">
-          <div class="card-title pd-18 col-md-2">All AWB Status</div>
+        <div class="row row-nav-line">
+          <ul class="nav nav-tabs nav-line nav-color-primary" id="awb-list-tab" role="tablist">
+            <button onclick="download_table_as_csv('awb-report-table-download')" 
+            class="btn btn-primary btn-round float-right mt-2 mr-2 ml-md-auto">
+            <i class="fa fa-download"></i>  Generate csv
+            </button>
+            <!-- <button value="" class="btn btn-primary" style="float: right;margin-left: 1%"  onclick="download_table_as_csv('awb-report-table-download')">Generate CSV Awb report </button> -->
+
+          </ul>
         </div>
       </div>
       <div id="myLoader"><img src="/img/preloader.gif"></div>
-      <div class="card-body daterangepickerbody-1">
-     <div class="d-flex w-100 d-inline-block py-4 col-xs-10 col-sm-4 float-left ">
-          <label class="w-10-rem align-text-bottom">Select Dates : </label>
-          <input type="text" class="form-control form-control-sm" name="" id="daterange-awbStatus" value="<%=dateRangeDefault%>"  placeholder="Select dates"/>
-        </div> 
-        <div class="row">
-          <div class="col-md-4"> 
-            <div class="row"> 
-              <span class="col-md-5 " style="margin-top: 8px;">Select Date</span>  
-              <div class="col-md-7"> 
-                <input type="text" class="form-control form-control-sm" name="" id="daterange-allAwb" class="form-control" style=" float: left;height: 40px !important;" value=""  placeholder="Select dates" >        
-          
-              </div>
-            </div>  
-          </div>
-          <div class="col-xs-12 col-sm-4 col-md-4">        
-            <input type="button" value="Generate CSV" class="btn btn-primary" style="float: left;margin-left: 1%"  onclick="generate_allawb_report()">
-          </div>
-        </div>
-        
-        <div class="table-responsive" style="margin-top: 10px;">
-        <table id="awbStatus" class=" display table table-striped table-hover dataTable ">
-          <thead>
-            <tr>
-              <th>AWB ID</th>
-              <th>Employee Name</th>
-              <th>Action</th>
-              <th>Date</th>
-            </tr>
-          </thead>
-          <tbody>
-          </tbody>
-        </table>
-        </div>
+      <div style="padding: 15px 0 0 35px;">
+        <select name="search_collection" id="search_collection"  class="form-control" style="width: 33%; float: left;">
+          <option value="ACTIVE" <%if(query.search_collection=="ACTIVE"){%>selected<%}%>>Active</option>
+          <option value="HISTORY" <%if(query.search_collection=="HISTORY"){%>selected<%}%>>History </option>          
+        </select>
       </div>
-    </div>
-  </div>
-</div>
--->
-<div class="row">
-  <div class="col-md-12">
-    <div class="card full-height">
-      <button 
-      class="btn btn-primary btn-round float-right mt-2 mr-2 ml-md-auto"  onclick="download_table_as_csv('package_status')">
-      <i class="fa fa-download"></i>     Generate CSV
-    </button>
-      <div class="card-header">
-        <div class="row">
-          <div class="card-title pd-18 col-md-2">Package Status</div>
-        </div>
-      </div>
-      <div class="card-body daterangepickerbody-1">
-        
-        <div class="row">
-          <div class="col-md-4"> 
-            <div class="row"> 
-              <span class="col-md-5 " style="margin-top: 8px;">Select Date</span>  
-              <div class="col-md-7"> 
-                <input type="text" class="form-control form-control-sm" name="" id="daterange-package-status-detail" class="form-control" style="float: left; height: 40px !important;" value="<%=dateRangeDefault%>"  placeholder="Select dates" > 
-              </div>
-            </div>  
-          </div>
-          <div class="col-xs-12 col-sm-4 col-md-4">   
-                 
-            <!-- <input type="button" value="Generate CSV" class="btn btn-primary" style="float: left;margin-left: 1%"  onclick="generate_package_status_report()"> -->
-          </div>
-        </div>
-        <div class="table-responsive ">
-        <table id="package_status" class=" display table table-striped table-hover dataTable ">
-          <thead>
-            <tr>
-              <th>Status </th>
-              <th>Number of Packages </th>
-            </tr>
-          </thead>
-          <tbody>
-          </tbody>
-        </table>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-<!--<div class="row">
-  <div class="col-md-12">
-    <div class="card full-height">
-      <div class="card-header">
-        <div class="row">
-          <div class="card-title pd-18 col-md-2">Package Detail</div>
-          
-      </div>
-    </div>
-    <div class="card-body daterangepickerbody-1">
-       <div class="d-flex w-100 d-inline-block py-4 col-xs-10 col-sm-4">
-        <label class="w-10-rem align-text-bottom">Select Dates : </label>
-        <input type="text" class="form-control form-control-sm" name="" id="daterange-package-status-detail" value="<%=dateRangeDefault%>"  placeholder="Select dates"/>
-      </div> 
-      
-      <div class="col-xs-12 col-sm-12 col-md-12">
-     <form method="post" onsubmit="filterData(event)"> 
-          <div class="row">
-            <div class="col-md-4">
-            <div class="row"> 
-              <span class="col-md-5 pt-7" style="margin-top: 8px;">Select Date</span>  
-              <div class="col-md-7"> 
-                <input type="text" class="form-control form-control-sm" name="" id="daterange-package-status-detail" class="form-control" style="float: left; height: 40px !important;" value=""  placeholder="Select dates" >        
-          
-              </div>
-            </div>  
-          </div>
-            <div class="col-md-3">
-              <div class="row">
-                <span class="col-md-5 pt-10" style="margin-top: 8px;">By User</span>
-                <div class="col-md-7">
-                  <select class="form-control" name="users" id="package_detail_user">
-                    <option value='all'>All</option>
-                    <%users.forEach(function(user){ %>
-                    <option value="<%=user._id%>"><%=user.username%></option>
-                    <%})%>
-                  </select>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-3">
-              <div class="row">
-                <span class="col-md-5 pt-10" style="margin-top: 8px;">Package Status</span>
-                <div class="col-md-7">
-                  <select class="form-control" name="package_status" id="package_detail_status">
-                    <option value='all'>All</option>
-                    <%Object.keys(package_status).map(function(st){ %>
-                    <option value="<%=package_status[st]%>"><%=package_status[st]%></option>
-                    <%})%>
-                  </select>
-                </div>
-              </div>
-            </div>
-            <input type="hidden" name="filter_for" value="all_package_table" />
-            
-          <div class="col-md-2 pl-10">
-            <input type="button" value="Generate CSV" class="btn btn-primary" style="float: left;margin-left: 1%"  onclick="generate_package_detail_report()">
-          </div>
-      </div>
-       </form> 
-    </div>
-      <div class="table-responsive " style="margin-top: 10px;">
-      <table id="all_package_table" class=" display table table-striped table-hover dataTable ">
-        <thead>
-          <tr>
-            <th>Original Barcode </th>
-            <th>Status</th>
-            <th>User</th>
-            <th>Date</th>
-          </tr>
-        </thead>
-        <tbody>
-        </tbody>
-      </table>
+      <div class="card-body daterangepickerbody">
+          <input type="hidden" name="clear" id="daterange_awbreport" id="clear" value="<%=clear%>">
+          <input type="hidden" id="daterange" value="<%=daterange%>">
+          <input type="hidden" id="page" value="<%=page%>">
+           <!-- <div class="col-xs-12 col-sm-12 float-right">
+              <select name="search_type" id="search_type"  class="form-control" style="width: 30%; float: left;">
+                  <option value="">Select </option>
+                  <option value="AWBNUMBER" <%if(query.search_type=='AWBNUMBER'){%>selected<%}%>>AWB # </option>
+                  <option value="CONSIGNEE" <%if(query.search_type=='CONSIGNEE'){%>selected<%}%>>Consignee </option>
+                  <option value="SHIPPER" <%if(query.search_type=='SHIPPER'){%>selected<%}%>>Shipper </option>
+              </select>
+              <input type="text" name="search_text" id="search_text" class="form-control" value="<%=query.search_text%>" style="width: 30%; float: left;margin-left: 1%;"">
+              <input type="submit" value="Filter" class="btn btn-primary" style="margin-left: 1%;" onclick="searchDataFilter()">
+          </div> -->
+        <!-- <div class="tab-content m-4" id="awb-list-tabContent">
+                <div class="tab-pane fade"  id="awb-list" role="tabpanel" aria-labelledby="awb-list-tab"> -->
+            <div class="table-responsive p-4">
+              <table id='awb-report-table' class='display table table-striped table-hover  dataTable'>
+                <thead>
+                  <tr>
+                    <th>Created By</th>
+                    <th>Package Count</th>
+
+                    <!-- <th>Date Received</th>
+                    <th>AWB Number</th>
+                    <th>PMB</th>
+                    <th>Consignee</th>
+                    <th>Shipper</th>
+                    <th>Fll Pickup</th>
+                    <th>Carrier</th>
+                    <th>Invoice Count</th>
+                    <th>Package Count</th> -->
+                    <!-- <th>View more</th>
+                    <th></th>
+                    <th></th> -->
+                  </tr>
+                </thead>
+                <tbody>
+
+                  <%  if(awbpackagestatus.length>0){
+                  awbpackagestatus.forEach(d=>{
+                  %>
+                  <!--  -->
+                  
+<tr>
+                  <td><%= d.email %></td>
+                  <td><%= d.count %></td>
+
+                
+                  </tr>
+                  <%}) }%>
+                  </tbody>
+                  </table>
+                <!-- </div>
+        </div> -->
       </div>
     </div>
   </div>
 </div>
 </div>
--->
-<!--
-<div class="row">
-  <div class="col-md-12">
-    <div class="card full-height">
-      <div class="card-header">
-        <div class="row">
-          <div class="card-title pd-18 col-md-2">Delivery Detail</div>
+
+<div class="modal fade" id="more-awb-details" role="dialog" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">More details</h2>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row gutters">
+          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12" id="details-awb">
+
+          </div>
         </div>
       </div>
-      <div class="card-body daterangepickerbody-1">
-         <div class="d-flex w-100 d-inline-block py-4 col-xs-10 col-sm-4 float-left ">
-          <label class="w-10-rem align-text-bottom">Select Dates : </label>
-          <input type="text" class="form-control form-control-sm" name="" id="daterange-dekivery-detail" value="<%=dateRangeDefault%>"  placeholder="Select dates"/>
-        </div> 
-        <div class="row">
-          <div class="col-md-4"> 
-            <div class="row"> 
-              <span class="col-md-5 " style="margin-top: 8px;">Select Date</span>  
-              <div class="col-md-7"> 
-                <input type="text" class="form-control form-control-sm" name="" id="daterange-delivery-detail" class="form-control" style="float: left; height: 40px !important;" value=""  placeholder="Select dates">        
-            
-              </div>
-            </div>  
-          </div>
-          <div class="col-xs-12 col-sm-4 col-md-4">        
-            <input type="button" value="Generate CSV" class="btn btn-primary" style="float: left;margin-left: 1%"  onclick="generate_delivery_report()">
-          </div>
-        </div>
-        
-        <div class="table-responsive " style="margin-top: 10px;">
-        <table id="delivery_table" class=" display table table-striped table-hover dataTable ">
-          <thead>
-            <tr>
-              <th>Original Barcode </th>
-              <th>Driver Name</th>
-              <th>Date</th>
-              <th>Status</th>
-              <th>Location</th>
-            </tr>
-          </thead>
-          <tbody>
-          </tbody>
-        </table>
-        </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger close-del" data-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
 </div>
--->
-<script type="text/javascript">
 
 
-  function filterData(event) {
-    event.preventDefault()
-    const data = $(event.currentTarget).serializeArray();
-    const obj = {}
-    data.map((i) => { obj[i.name] = i.value })
-    $.ajax({
-      url: "/api/warehouse/get_packages_data/" + obj.filter_for,
-      dataType: "json",
-      data: obj,
-      type: "GET",
-      success: function (data) {
-        if(obj.filter_for === "all_package_table")  allPackages(data[2]);
-      }
-    })
-  }
-  setTimeout(function(){
-  $.ajax({
-    url: '/api/warehouse/get_packages_data/all?daterange=<%=dateRangeDefault%>',
-    dataType: "json",
-    type: "GET",
-    success: function (data) {
-      console.log(data[1])
-      awbsStatus(data[0]);
-      packageStatus(data[1]);
-      allPackages(data[2])
-      deliveryData(data[3])
-    }
-  })
-},1000);
-  //date range picker
-  $(document).ready(function() {
-    $('#daterange-awbStatus').on('apply.daterangepicker', function (ev, picker) {
-    var daterange = picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY');  
-    getAwbdata(daterange,'awbStatus');
-    });
-    $('#daterange-awbStatus').on('cancel.daterangepicker', function (ev, picker) {
-        var endate = new Date();      
-        endate.setDate(endate.getDate());
-        var stdate = new Date();
-        stdate.setDate(stdate.getDate() -14);      
-        var dateRange = (stdate.getMonth() + 1)+ '/'+stdate.getDate()+'/'+stdate.getFullYear()+' - '+
-        (endate.getMonth() + 1)+ '/'+endate.getDate()+'/'+endate.getFullYear();  
-        $("#daterange-awbStatus").val(dateRange)
-        getAwbdata(dateRange,'awbStatus');
-    });
-    
-    $('#daterange-package-status-detail').on('apply.daterangepicker', function (ev, picker) {
-    var daterange = picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY');  
-    console.log(daterange , "drange")
-    getAwbdata(daterange,'packageStatus');
-    });
-    $('#daterange-package-status-detail').on('cancel.daterangepicker', function (ev, picker) {
-        var endate = new Date();      
-        endate.setDate(endate.getDate());
-        var stdate = new Date();
-        stdate.setDate(stdate.getDate() -14);      
-        var dateRange = (stdate.getMonth() + 1)+ '/'+stdate.getDate()+'/'+stdate.getFullYear()+' - '+
-        (endate.getMonth() + 1)+ '/'+endate.getDate()+'/'+endate.getFullYear();  
-        $("#daterange-package-status-detail").val(dateRange)
-        getAwbdata(dateRange,'packageStatus');
-    });
-
-    $('#daterange-dekivery-detail').on('apply.daterangepicker', function (ev, picker) {
-      var daterange = picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY');  
-      getAwbdata(daterange,'deliveryDetail');
-    });
-    $('#daterange-dekivery-detail').on('cancel.daterangepicker', function (ev, picker) {
-        var endate = new Date();      
-        endate.setDate(endate.getDate());
-        var stdate = new Date();
-        stdate.setDate(stdate.getDate() -14);      
-        var dateRange = (stdate.getMonth() + 1)+ '/'+stdate.getDate()+'/'+stdate.getFullYear()+' - '+
-        (endate.getMonth() + 1)+ '/'+endate.getDate()+'/'+endate.getFullYear();  
-        $("#daterange-dekivery-detail").val(dateRange)
-        getAwbdata(dateRange,'deliveryDetail');
-    });
-
-    $('#daterange-package-status').on('apply.daterangepicker', function (ev, picker) {
-      var daterange = picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY');  
-      getAwbdata(daterange,'packageStatus');
-    });
-    $('#daterange-package-status').on('cancel.daterangepicker', function (ev, picker) {
-        var endate = new Date();      
-        endate.setDate(endate.getDate());
-        var stdate = new Date();
-        stdate.setDate(stdate.getDate() -14);      
-        var dateRange = (stdate.getMonth() + 1)+ '/'+stdate.getDate()+'/'+stdate.getFullYear()+' - '+
-        (endate.getMonth() + 1)+ '/'+endate.getDate()+'/'+endate.getFullYear();  
-        $("#daterange-package-status").val(dateRange)
-        getAwbdata(dateRange,'packageStatus');
-    });
-  }) 
-  
-
-  function getAwbdata(daterange, type){
-    console.log(daterange,type , "daterangetype")
-    $.ajax({
-      url: '/api/warehouse/get_packages_data/all?type='+type+'&daterange='+daterange,
-      dataType: "json",
-      type: "GET",
-      success: function (data) {
-        if(type == 'awbStatus'){
-          awbsStatus(data[0]);
-        }
-        if(type == "packageDetail"){
-          allPackages(data[2])
-        }
-        if(type == "deliveryDetail"){
-          deliveryData(data[3])
-        }
-        if(type == "packageStatus"){
-          packageStatus(data[1])
-        }       
-      }
-    })
-  }
-
-  function awbsStatus(data) {
-    let result = data.map((row) => {
-      if (row !== null) {
-        return `<tr><td>` + row.awbGeneratedId + `</td>
-          <td>` + row.User['firstName'] + " " + row.User['lastName'] + `</td>
-          <td>` + row.action + `</td>
-          <td>` + moment(row.createdAt).format("hh:mm - MMM DD, YYYY") +
-          `</td></tr>`;
-      }
-    })
-
-    if ($("#awbStatus > tbody > tr").length) {
-      $("#awbStatus > tbody > tr").empty();
-    }
-    $("#awbStatus").DataTable().destroy();
-    $("#awbStatus tbody").html("")
-    $("#awbStatus tbody").append(result)
-    if (!($.fn.dataTable.isDataTable('#awbStatus'))) {
-      $("#awbStatus").DataTable({ searching: true, "bLengthChange": true });
-    }
-  }
-
-  function packageStatus(data) {
-    console.log(data);
-    const PKG_STATUS = {
-      0: 'Package Created',
-      1: 'Received in FLL',
-      2: 'Loaded on AirCraft',
-      3: 'In Transit',
-      4: 'In Warehouse Nassuau',
-      5: 'Ready for Pickup / Delivery',
-      6: 'Delivered',
-      7: 'No Invoice Present',
-      8: 'Assigned to cube',
-      9: 'Delivered to Store'
-    };
-    let obj = ['created', 'received_fill', 'loaded_craft', 'in_transit', 'received_nas',
-      'ready_pd', 'delivered', 'no_invoice', 'assigned_to_cube', 'delivered_to_store'];
-    let newObj = [];
-    for (let i = 0; i < 10; i++) {
-      console.log(data , "data from package-status")
-      newObj.push({ status: PKG_STATUS[i], count: data[obj[i]] })
-    }
-    let result = newObj.map((row) => {
-      if (row !== null) {
-        return `<tr><td>` + row.status + `</td>
-          <td>` + row.count + `</td></tr>`;
-      }
-    })
-
-    if ($("#package_status > tbody > tr").length) {
-      $("#package_status > tbody > tr").empty();
-    }
-    $("#package_status tbody").empty()
-    $("#package_status tbody").append(result)
-    if (!($.fn.dataTable.isDataTable('#package_status'))) {
-      $("#package_status").DataTable({ searching: false, "bLengthChange": false });
-    }
-  }
-
-  function allPackages(data) {
-    let result = data.map((row) => {
-      if (row !== null) {
-        return `<tr><td>` + row.barcode  + `</td>
-          <td>` + row.status + `</td>
-          <td>` + row.user.firstName + " " + row.user.lastName + `</td>
-          <td>` + moment(row.updatedAt).format('MMM DD, YYYY') +
-          `</td></tr>`;
-      }
-    })
-
-    if ($("#all_package_table > tbody > tr").length) {
-      $("#all_package_table > tbody > tr").empty();
-    }
-    $("#all_package_table").DataTable().destroy();
-    $("#all_package_table tbody").html("");
-    $("#all_package_table tbody").append(result)
-    if (!($.fn.dataTable.isDataTable('#all_package_table'))) {
-      $("#all_package_table").DataTable({  });
-    }
-  }
-
-  function deliveryData(data) {
-    let result = data.map((row) => {
-      if (row !== null) {
-        var driverName = '';
-        if(row.deliveryId && row.deliveryId.driverId ){
-          var driverData = row.deliveryId.driverId;
-          driverName = (driverData.firstName?driverData.firstName:'') + (driverData.lastName?' '+driverData.lastName:'')
-        }
-        var dat = moment(row.delivery_date).format("DD MMM, YYYY | hh:mm")
-        return `<tr><td>` + row.barcode + `</td>
-          <td>` + driverName + `</td>
-          <td>` + dat + `</td>
-          <td>` + row.lastStatusText + `</td>
-          <td>` + (row.storeLocation?row.storeLocation:'-') +
-          `</td></tr>`;
-      }
-    })
-    
-    if ($("#delivery_table > tbody > tr").length) {
-      $("#delivery_table > tbody > tr").empty();
-    }
-    $("#delivery_table").DataTable().destroy();
-    $("#delivery_table tbody").html("");
-    
-    $("#delivery_table tbody").append(result)
-    if (!($.fn.dataTable.isDataTable('#delivery_table'))) {
-      $("#delivery_table").DataTable({ searching: true, "bLengthChange": true });
-    }
-  }
-
+<div class="modal fade" id="confirm-delete-awb" tabindex="-1" role="dialog" aria-labelledby="confirm-del-title"
+  aria-hidden="true" style="display: none;">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="confirm-del-title">Confirmation Required</h2>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <input type='hidden' id='pkg-tracking' />
+        Are you sure you want to delete this AirWay Bill?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-danger rm-awb" id='rm-awb'>Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="shipManifest" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2"
+  aria-hidden="true" style="display: none;">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="exampleModalLabel2">Ship Manifest</h2>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <label>Enter AWB #</label>
+        <input type='text' class='form-control awb'>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary close-del" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-success ship-manifest" id='ship-manifest'>Ship Manifest</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="print-popup" tabindex="-1" role="dialog" aria-labelledby="print-popup" aria-hidden="true"
+  style="display: none;">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="exampleModalLabel2">Print AirWay Bill</h2>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group text-center">
+          <canvas id="pdf-preview" class="border border-dark"></canvas>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger close-del" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary print-awb" id='print-awb'>Print</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  var daterange = "<%=query.daterange ? query.daterange :dateRangeDefault%>";
 </script>
+<% block('scripts').append('<script src="/js/utils.js"></script>')%>
+<% block('scripts').append('<script src="/js/warehouse/snapshot/awb/list.js"></script>')%>
+<% block('scripts').append('<script src="/js/reports/report.js"></script>')%>
+
 
 
 
@@ -506,6 +230,3 @@ var endate = new Date();
 
 
 
-
-<% block('scripts').append('<script src="/js/utils.js"></script>')%>
-<% block('scripts').append('<script src="/js/reports/report.js"></script>')%>
