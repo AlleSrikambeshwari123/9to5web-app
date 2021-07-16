@@ -167,6 +167,9 @@ router.get("/get_packages_data/:filter", middleware().checkSession, (req, res, n
   })
 })
 
+
+
+
 router.post('/save-origin-barcode', passport.authenticate('jwt', { session: false }), (req, res, next) => {
   req.body.barcode;
   const barcode = {

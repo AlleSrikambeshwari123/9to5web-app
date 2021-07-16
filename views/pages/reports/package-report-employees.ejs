@@ -38,7 +38,7 @@ var endate = new Date();
       
         <div class="d-flex align-items-right float-right ml-md-auto">
           <button 
-            class="btn btn-primary btn-round float-right mr-2 ml-md-auto" onclick="download_table_as_csv('package-table-download');">
+            class="btn btn-primary btn-round float-right mr-2 ml-md-auto mb-2" onclick="download_table_as_csv('package-table-download');">
             <i class="fa fa-download"></i>   Generate CSV
           </button>
       
@@ -112,7 +112,7 @@ var endate = new Date();
                 <% } %>               -->
 
                 <th>Created Date</th>
-                <th>Tracking No</th>
+                <!-- <th>Tracking No</th> -->
                 <th>AWB #</th>
                 <th>Original Barcode</th>
                 <th>Status</th>
@@ -123,7 +123,7 @@ var endate = new Date();
             <tbody>
              
               <% packages.forEach(function(pkg){ %>
-                
+                <% if(pkg.createdBy == sessionuserId){ %>
               <tr data-record="<%= pkg._id %>">
                 <!-- <% if(!query.customerId && !query.locationId) {%>              
                 <td>
@@ -131,13 +131,14 @@ var endate = new Date();
                 </td>
                 <% } %>               -->
                 <td><%= helpers.formatDate(pkg.createdAt) %></td>
-                <td><%=(pkg.trackingNo)?pkg.trackingNo:''%></td>
+                <!-- <td><%=(pkg.trackingNo)?pkg.trackingNo:''%></td> -->
                 <td><a href="/warehouse/fll/awb/manage/<%=pkg.awbId%>/preview"><%=pkg.awbIdNumber%></a></td>
                 <td><%= pkg.barcode %></td>
                 <td><%= pkg.lastStatusText %></td>
                 <td><%= pkg.customerFullName %></td>
                 <td><%=pkg.customerId?pkg.customerId.email:null  %></td>
               </tr>
+              <% } %>
               <%})%>
             </tbody>
           </table>
@@ -384,7 +385,7 @@ var endate = new Date();
         <% } %>               -->
 
         <th>Created Date</th>
-        <th>Tracking No</th>
+        <!-- <th>Tracking No</th> -->
         <th>AWB #</th>
         <th>Original Barcode</th>
         <th>Status</th>
@@ -395,7 +396,7 @@ var endate = new Date();
     <tbody>
      
       <% packages.forEach(function(pkg){ %>
-        
+        <% if(pkg.createdBy == sessionuserId){ %>
       <tr data-record="<%= pkg._id %>">
         <!-- <% if(!query.customerId && !query.locationId) {%>              
         <td>
@@ -403,13 +404,14 @@ var endate = new Date();
         </td>
         <% } %>               -->
         <td><%= helpers.formatDate(pkg.createdAt) %></td>
-        <td><%=(pkg.trackingNo)?pkg.trackingNo:''%></td>
+        <!-- <td><%=(pkg.trackingNo)?pkg.trackingNo:''%></td> -->
         <td><a href="/warehouse/fll/awb/manage/<%=pkg.awbId%>/preview"><%=pkg.awbIdNumber%></a></td>
         <td><%= pkg.barcode %></td>
         <td><%= pkg.lastStatusText %></td>
-        <td><%= pkg.customerFullName %></td>
+        <td><%= pkg.customerFullName %>s</td>
         <td><%=pkg.customerId?pkg.customerId.email:null  %></td>
       </tr>
+      <% } %>
       <%})%>
     </tbody>
   </table>

@@ -22,6 +22,7 @@ var upload = multer({ storage: storage});
 
 
 router.get('/login', function (req, res, next) {
+  
   if (req.session.token)
     res.redirect('/dashboard');
   else  
@@ -34,7 +35,7 @@ router.post('/login', (req, res, next) => {
       req.session.token = loginResult.token;
       req.session.customerId = loginResult.user._id
   const webUrl = req.protocol + '://' + req.get('host'); 
-  res.send({success : true ,role : loginResult,url : webUrl + '/customer/awb'});
+  res.send({success : true ,role : loginResult,url : webUrl + '/customer/report/package-report'});
     }else{
       services.customerChildService.login(req.body.email, req.body.password).then(loginResultchild => {
         return res.send(loginResultchild)

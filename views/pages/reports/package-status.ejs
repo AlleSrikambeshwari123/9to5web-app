@@ -63,9 +63,14 @@ var endate = new Date();
 <div class="row">
   <div class="col-md-12">
     <div class="card full-height">
+    
       <div class="card-header">
         <div class="row">
           <div class="card-title pd-18 col-md-2">Package Status</div>
+          <button 
+          class="btn btn-primary btn-round float-right mt-2 mr-2 ml-md-auto"  onclick="download_table_as_csv('package_status')">
+          <i class="fa fa-download"></i>     Generate CSV
+        </button>
         </div>
       </div>
       <div class="card-body daterangepickerbody-1">
@@ -75,12 +80,13 @@ var endate = new Date();
             <div class="row"> 
               <span class="col-md-5 " style="margin-top: 8px;">Select Date</span>  
               <div class="col-md-7"> 
-                <input type="text" class="form-control form-control-sm" name="" id="daterange-package-status-detail" class="form-control" style="float: left; height: 40px !important;" value=""  placeholder="Select dates" > 
+                <input type="text" class="form-control form-control-sm" name="" id="daterange-package-status-detail" class="form-control" style="float: left; height: 40px !important;" value="<%=dateRangeDefault%>"  placeholder="Select dates" > 
               </div>
             </div>  
           </div>
-          <div class="col-xs-12 col-sm-4 col-md-4">        
-            <input type="button" value="Generate CSV" class="btn btn-primary" style="float: left;margin-left: 1%"  onclick="generate_package_status_report()">
+          <div class="col-xs-12 col-sm-4 col-md-4">   
+                 
+            <!-- <input type="button" value="Generate CSV" class="btn btn-primary" style="float: left;margin-left: 1%"  onclick="generate_package_status_report()"> -->
           </div>
         </div>
         <div class="table-responsive ">
@@ -252,6 +258,7 @@ var endate = new Date();
     dataType: "json",
     type: "GET",
     success: function (data) {
+      console.log(data[1])
       awbsStatus(data[0]);
       packageStatus(data[1]);
       allPackages(data[2])
@@ -278,6 +285,7 @@ var endate = new Date();
     
     $('#daterange-package-status-detail').on('apply.daterangepicker', function (ev, picker) {
     var daterange = picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY');  
+    console.log(daterange , "drange")
     getAwbdata(daterange,'packageStatus');
     });
     $('#daterange-package-status-detail').on('cancel.daterangepicker', function (ev, picker) {
@@ -324,6 +332,7 @@ var endate = new Date();
   
 
   function getAwbdata(daterange, type){
+    console.log(daterange,type , "daterangetype")
     $.ajax({
       url: '/api/warehouse/get_packages_data/all?type='+type+'&daterange='+daterange,
       dataType: "json",
@@ -368,6 +377,7 @@ var endate = new Date();
   }
 
   function packageStatus(data) {
+    console.log(data);
     const PKG_STATUS = {
       0: 'Package Created',
       1: 'Received in FLL',
@@ -457,5 +467,46 @@ var endate = new Date();
   }
 
 </script>
+
+
+
+
+
+<script>
+  function download_table_as_csv(table_id, separator = ',') {
+    // Select rows from table_id
+    var rows = document.querySelectorAll('table#' + table_id + ' tr');
+    // Construct csv
+    var csv = [];
+    for (var i = 0; i < rows.length; i++) {
+        var row = [], cols = rows[i].querySelectorAll('td, th');
+        for (var j = 0; j < cols.length; j++) {
+            // Clean innertext to remove multiple spaces and jumpline (break csv)
+            var data = cols[j].innerText.replace(/(\r\n|\n|\r)/gm, '').replace(/(\s\s)/gm, ' ')
+            // Escape double-quote with double-double-quote (see https://stackoverflow.com/questions/17808511/properly-escape-a-double-quote-in-csv)
+            data = data.replace(/"/g, '""');
+            // Push escaped string
+            row.push('"' + data + '"');
+        }
+        csv.push(row.join(separator));
+    }
+    var csv_string = csv.join('\n');
+    // Download it
+    var filename = 'export_' + table_id + '_' + new Date().toLocaleDateString() + '.csv';
+    var link = document.createElement('a');
+    link.style.display = 'none';
+    link.setAttribute('target', '_blank');
+    link.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv_string));
+    link.setAttribute('download', filename);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+</script>
+
+
+
+
+
 <% block('scripts').append('<script src="/js/utils.js"></script>')%>
 <% block('scripts').append('<script src="/js/reports/report.js"></script>')%>

@@ -16,15 +16,17 @@ var endate = new Date();
   <div class='col-xl-12 col-lg-6 col-md-12 col-sm-12'>
     <div class='card card-with-nav'>
       <div class="card-header">
-        <div class="m-2 row row-nav-line">
-        <div class="card-title"> &nbsp;&nbsp;&nbsp;AWB Report By Employee</div>
 
-          <button 
-          class="btn btn-primary btn-round float-right m-2 ml-md-auto"  onclick="download_table_as_csv('awb-report-table-download')">
-          <i class="fa fa-download"></i>     Generate CSV
-        </button>
+        <div class="card-header row row-nav-line">
+          
           <ul class="nav nav-tabs nav-line nav-color-primary" id="awb-list-tab" role="tablist">
-            <!-- <input type="button" value="Generate CSV" class="btn btn-primary" style="float: left;margin-left: 1%"  onclick="download_table_as_csv('awb-report-table-download')"> -->
+        <div class="card-title"> &nbsp;AWB Employee Throughput</div>
+
+            <button onclick="download_table_as_csv('awb-report-table-download')" 
+            class="btn btn-primary btn-round float-right m-2 ml-md-auto">
+            <i class="fa fa-download"></i>  Generate CSV
+            </button>
+            <!-- <button value="" class="btn btn-primary" style="float: right;margin-left: 1%"  onclick="download_table_as_csv('awb-report-table-download')">Generate CSV Awb report </button> -->
 
           </ul>
         </div>
@@ -40,48 +42,53 @@ var endate = new Date();
           <input type="hidden" name="clear" id="daterange_awbreport" id="clear" value="<%=clear%>">
           <input type="hidden" id="daterange" value="<%=daterange%>">
           <input type="hidden" id="page" value="<%=page%>">
-           <div class="col-xs-12 col-sm-12 float-right">
+           <!-- <div class="col-xs-12 col-sm-12 float-right">
               <select name="search_type" id="search_type"  class="form-control" style="width: 30%; float: left;">
                   <option value="">Select </option>
                   <option value="AWBNUMBER" <%if(query.search_type=='AWBNUMBER'){%>selected<%}%>>AWB # </option>
-                  <!-- <option value="CONSIGNEE" <%if(query.search_type=='CONSIGNEE'){%>selected<%}%>>Consignee </option>
-                  <option value="SHIPPER" <%if(query.search_type=='SHIPPER'){%>selected<%}%>>Shipper </option> -->
+                  <option value="CONSIGNEE" <%if(query.search_type=='CONSIGNEE'){%>selected<%}%>>Consignee </option>
+                  <option value="SHIPPER" <%if(query.search_type=='SHIPPER'){%>selected<%}%>>Shipper </option>
               </select>
               <input type="text" name="search_text" id="search_text" class="form-control" value="<%=query.search_text%>" style="width: 30%; float: left;margin-left: 1%;"">
               <input type="submit" value="Filter" class="btn btn-primary" style="margin-left: 1%;" onclick="searchDataFilter()">
-          </div>
+          </div> -->
         <!-- <div class="tab-content m-4" id="awb-list-tabContent">
                 <div class="tab-pane fade"  id="awb-list" role="tabpanel" aria-labelledby="awb-list-tab"> -->
             <div class="table-responsive p-4">
               <table id='awb-report-table' class='display table table-striped table-hover  dataTable'>
                 <thead>
                   <tr>
-                    <th>Created Date</th>
+                    <th>Created By</th>
+                    <th>AWB Count</th>
+
+                    <!-- <th>Date Received</th>
                     <th>AWB Number</th>
-                    <th>Status</th>
-                    <th>Name</th>
-                    <th>Email</th>
-                   
+                    <th>PMB</th>
+                    <th>Consignee</th>
+                    <th>Shipper</th>
+                    <th>Fll Pickup</th>
+                    <th>Carrier</th>
+                    <th>Invoice Count</th>
+                    <th>Package Count</th> -->
+                    <!-- <th>View more</th>
+                    <th></th>
+                    <th></th> -->
                   </tr>
                 </thead>
                 <tbody>
-                  
-                  <% 
-                  awbs.forEach(function(awb){
+
+                  <%  if(awbpackagestatus.length>0){
+                  awbpackagestatus.forEach(d=>{
                   %>
+                  <!--  -->
                   
-                  <% if(awb.createdBy == sessionuserId) { %>
-                  <tr data-record=" <%= awb._id %>">
-                  <td><%=helpers.formatDate(awb.createdAt)%></td>
-                  <td><a href="/warehouse/fll/awb/manage/<%=awb._id%>/preview"><%=awb.awbId%></a></td>
-                  <td><%=awb.status %></td>
-                  <td><%=awb.customerFullName %></td>
-                  <td><%=awb.customerId?awb.customerId.email:null  %></td>
-                 
-                 
+<tr>
+                  <td><%= d.email %></td>
+                  <td><%= d.count %></td>
+
+                
                   </tr>
-                  <% } %>
-                  <%})%>
+                  <%}) }%>
                   </tbody>
                   </table>
                 <!-- </div>
@@ -184,9 +191,13 @@ var endate = new Date();
   var daterange = "<%=query.daterange ? query.daterange :dateRangeDefault%>";
 </script>
 <% block('scripts').append('<script src="/js/utils.js"></script>')%>
-<% block('scripts').append('<script src="/js/warehouse/snapshot/awb/list-employees.js"></script>')%>
+<% block('scripts').append('<script src="/js/warehouse/snapshot/awb/list.js"></script>')%>
 <% block('scripts').append('<script src="/js/reports/report.js"></script>')%>
- 
+
+
+
+
+
 
 <script>
   function download_table_as_csv(table_id, separator = ',') {
@@ -223,34 +234,42 @@ var endate = new Date();
 
 
 
+
 <div style="display: none;">
   <table id='awb-report-table-download' >
     <thead>
       <tr>
-        <th>Date Received</th>
+        <th>Created By</th>
+        <th>AWB Count</th>
+
+        <!-- <th>Date Received</th>
         <th>AWB Number</th>
-        <th>Status</th>
-        <th>Name</th>
-        <th>Email</th>
-       
+        <th>PMB</th>
+        <th>Consignee</th>
+        <th>Shipper</th>
+        <th>Fll Pickup</th>
+        <th>Carrier</th>
+        <th>Invoice Count</th>
+        <th>Package Count</th> -->
+        <!-- <th>View more</th>
+        <th></th>
+        <th></th> -->
       </tr>
     </thead>
     <tbody>
-      <% 
-      awbs.forEach(function(awb){
+
+      <%  if(awbpackagestatus.length>0){
+      awbpackagestatus.forEach(d=>{
       %>
-      <% if(awb.createdBy == sessionuserId) { %>
-      <tr data-record=" <%= awb._id %>">
-      <td><%=helpers.formatDate(awb.createdAt)%></td>
-      <td><a href="/warehouse/fll/awb/manage/<%=awb._id%>/preview"><%=awb.awbId%></a></td>
-      <td><%=awb.status %></td>
-      <td><%=awb.customerFullName %></td>
-      <td><%=awb.customerId?awb.customerId.email:null  %></td>
-     
-     
+      <!--  -->
+      
+<tr>
+      <td><%= d.email %></td>
+      <td><%= d.count %></td>
+
+    
       </tr>
-      <% } %>
-      <%})%>
+      <%}) }%>
       </tbody>
       </table>
     <!-- </div>
