@@ -79,7 +79,8 @@
 						<span class="sub-item">Delivery Detail </span>
 					</a>
 				</li> -->
-				<li class="nav-item <% if (page.includes('/reports/package-report')) { %> active <% } %>">
+				<li class="nav-item <% if (page.includes('/reports/package-report') && !page.includes('/reports/package-report/by/employees') ) { %> active <% } %>">
+				<!-- <li class="nav-item <% if (page.includes('/reports/package-report')) { %> active <% } %>"> -->
 					<a href="/reports/package-report">
 						<span class="sub-item">Package Report </span>
 					</a>
@@ -89,12 +90,12 @@
 						<span class="sub-item">Package Status </span>
 					</a>
 				</li>
-				<li class="nav-item <% if (page.includes('/reports/package-status')) { %> active <% } %>">
+				<li class="nav-item <% if (page.includes('/reports/awbemp/package-status')) { %> active <% } %>">
 					<a href="/reports/awbemp/package-status">
 						<span class="sub-item">AWB Employee Throughput </span>
 					</a>
 				</li>
-				<li class="nav-item <% if (page.includes('/reports/package-status')) { %> active <% } %>">
+				<li class="nav-item <% if (page.includes('/reports/packemp/package-status')) { %> active <% } %>">
 					<a href="/reports/packemp/package-status">
 						<span class="sub-item">Package Employee Throughput</span>
 					</a>
@@ -105,7 +106,7 @@
 					</a>
 				</li>
 		
-				<li class="nav-item <% if (page.includes('/reports/nodocsreport')) { %> active <% } %>">
+				<li class="nav-item <% if (page.includes('/reports/package/list?nodocs=load')) { %> active <% } %>">
 					<a href="/reports/package/list?nodocs=load">
 						<!-- <i class="fa fa-file"></i> -->
 						<span class="sub-item">No Docs Package Report </span>
@@ -125,7 +126,7 @@
 					</a>
 				</li>
 
-				<li class="nav-item <% if (page.includes('/reports/awbreport')) { %> active <% } %>">
+				<li class="nav-item <% if (page.includes('/reports/awbreport?type')) { %> active <% } %>">
 					<a href="/reports/awbreport?type=airwaybill">
 						
 						<span class="sub-item">AWB Report </span>
