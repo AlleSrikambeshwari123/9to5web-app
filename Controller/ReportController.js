@@ -172,7 +172,9 @@ exports.packemppackagestatus = async(req, res, next)=>{
   // if(req.query.search_type == 'ACTIVE' || req.query.search_type == undefined){
 
 
-services.packageService.getAllPackages().then(async(pkgs)=>{
+// services.packageService.getAllPackages().then(async(pkgs)=>{c
+services.packageService.getPackageDetailByCustomerId(req,{}).then(async(pkgs)=>{
+  
   let createdbydata = [];
   await pkgs.map((data)=>createdbydata.push(data.createdBy))
    occurrences = await createdbydata.reduce(function(occ, item) {
