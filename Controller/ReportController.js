@@ -614,12 +614,6 @@ exports.awbReportByEmployees = async(req, res, next)=>{
     
     
 
-
-
-
-
-
-
     let createdbydata = []
     createdbydata = pkgs.map(d=>d.createdBy);
      occurrences = await createdbydata.reduce(function(occ, item) {
