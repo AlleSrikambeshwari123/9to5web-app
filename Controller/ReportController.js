@@ -639,11 +639,6 @@ exports.awbReportByEmployees = async(req, res, next)=>{
         console.log(awbpackagestatus ,"keyss")
 
 
-
-
-
-
-        
           res.render('pages/reports/awbreport-by-employees', {
               page: req.originalUrl,
               user: res.user,
