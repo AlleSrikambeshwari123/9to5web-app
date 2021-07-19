@@ -19,7 +19,7 @@ var endate = new Date();
 
         <div class="card-header row row-nav-line">
           
-          <ul class="nav nav-tabs nav-line nav-color-primary" id="awb-list-tab" role="tablist">
+          <ul class="nav nav-tabs nav-line nav-color-primary mt-4" id="awb-list-tab" role="tablist">
         <div class="card-title"> &nbsp;AWB Employee Throughput</div>
 
             <button onclick="download_table_as_csv('awb-report-table-download')" 
@@ -39,6 +39,7 @@ var endate = new Date();
         </select>
       </div>
       <div class="card-body daterangepickerbody">
+        
           <input type="hidden" name="clear" id="daterange_awbreport" id="clear" value="<%=clear%>">
           <input type="hidden" id="daterange" value="<%=daterange%>">
           <input type="hidden" id="page" value="<%=page%>">

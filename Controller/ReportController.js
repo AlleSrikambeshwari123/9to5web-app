@@ -519,7 +519,32 @@ exports.packageReportByEmployees = async(req, res, next)=>{
       title = 'Packages by Employee'
   let customers = await services.customerService.getCustomers()
   let locations = await services.locationService.getLocations()
-  services.packageService.getAllSnapshotPackagesUpdatedV2(req,{}).then((packages) => {
+  services.packageService.getAllSnapshotPackagesUpdatedV2(req,{}).then(async (packages) => {
+    let createdbydata = []
+    createdbydata = packages.map(d=>d.createdBy);
+     occurrences = await createdbydata.reduce(function(occ, item) {
+      occ[item] = (occ[item] || 0) + 1;
+      return occ;
+    }, {});
+    var keys = [];
+
+    for (var k in occurrences) await keys.push(k);
+    let awbpackagestatus = []
+
+    if(keys.length > 0){
+      console.log(keys , "allkeys")
+          for(let i = 0;i<keys.length ; i++){
+           const data =  await  services.userService.getUserbyId(keys[i])
+           data ?
+            
+            awbpackagestatus.push({email:data.email , count:occurrences[keys[i]],name:`${data.firstName} ${data.lastName}`, key:keys[i]})
+            :      awbpackagestatus.push({email:"Email Not Given by User" , count:occurrences[keys[i]]})
+      
+          } 
+        }
+        console.log(awbpackagestatus ,"keyss")
+
+
       return Promise.all(
           packages.map(async(pkg, i) => {
               let check = 1,dimen = pkg.dimensions
@@ -542,6 +567,7 @@ exports.packageReportByEmployees = async(req, res, next)=>{
               customers : customers,
               locations : locations,
               clear: req.query.clear,
+              awbpackagestatus:awbpackagestatus,
               daterange:req.query.daterange?req.query.daterange:'',
               query:req.query,
               sessionuserId:req.session.userId
@@ -584,13 +610,35 @@ exports.awbReportByEmployees = async(req, res, next)=>{
   let customers = await services.customerService.getCustomers()
   let locations = await services.locationService.getLocations()
   
-  services.awbService.getAwbsFullSnapshotV2(req,{}).then((pkgs => {            
-        // return res.json({pkgs});
-        //   pkgs = pkgs.map(pkg=>{
-        //     console.log(pkg.customerId._id);
-        //     return pkg;
-        //   });
-        
+  services.awbService.getAwbsFullSnapshotV2(req,{}).then(( async pkgs => {      
+    
+    
+
+    let createdbydata = []
+    createdbydata = pkgs.map(d=>d.createdBy);
+     occurrences = await createdbydata.reduce(function(occ, item) {
+      occ[item] = (occ[item] || 0) + 1;
+      return occ;
+    }, {});
+    var keys = [];
+
+    for (var k in occurrences) await keys.push(k);
+    let awbpackagestatus = []
+
+    if(keys.length > 0){
+      console.log(keys , "allkeys")
+          for(let i = 0;i<keys.length ; i++){
+           const data =  await  services.userService.getUserbyId(keys[i])
+           data ?
+            
+            awbpackagestatus.push({email:data.email , count:occurrences[keys[i]],name:`${data.firstName} ${data.lastName}`, key:keys[i]})
+            :      awbpackagestatus.push({email:"Email Not Given by User" , count:occurrences[keys[i]]})
+      
+          } 
+        }
+        console.log(awbpackagestatus ,"keyss")
+
+
           res.render('pages/reports/awbreport-by-employees', {
               page: req.originalUrl,
               user: res.user,
@@ -600,6 +648,7 @@ exports.awbReportByEmployees = async(req, res, next)=>{
               awbs: pkgs,
               customers : customers,
               locations : locations,
+              awbpackagestatus:awbpackagestatus,
               clear: req.query.daterange,
               daterange:req.query.daterange?req.query.daterange:'',
               query:req.query,

@@ -130,15 +130,20 @@ const adminMiddleware = (req,res,next)=>{
   req.session.isAdmin ? next() : res.redirect('/customer/awb') 
 
 }
+const CustomerMiddleware = (req,res,next)=>{
+  req.session.isAdmin ? res.redirect('/dashboard') :next();
+
+}
 
 app.use('/' ,adminIndexRouter, authRouter);
-app.use('/account', accountPasswordRouter, accountPrintRouter);
+app.use('/account',accountPasswordRouter, accountPrintRouter);
 app.use('/admin',adminMiddleware, adminUserRouter, adminCustRouter,adminCustomerchildRouter, adminLocaRouter, adminZonesRouter, adminInvoicessRouter);
 app.use('/warehouse',adminMiddleware , warehouse, warehouseAwbRouter, warehouseManifestRouter, warehouseServiceTypeRouter, warehouseShipperRouter, warehousePaidTypeRouter, warehouseAirlineRouter, warehouseContainerRouter, warehouseCarrierRouter, warehousePackageRouter, warehousePrinterRouter, warehouseDeliveryRouter, warehouseHazmatRouter,warehouseCubeRouter,warehousePriceLabelRouter);
 app.use('/fleet', adminMiddleware, fleetVehicleRouter, fleetDriverRouter, fleetPilotRouter, fleetPlaneRouter, fleetCompartmentRouter, fleetAirportsRouter);
+
 app.use('/store',adminMiddleware, storeRouter);
 app.use('/util', util);
-app.use('/customer', customerLoginRouter,customerSignupRouter,customerchildRouter);
+app.use('/customer', CustomerMiddleware,customerLoginRouter,customerSignupRouter,customerchildRouter);
 app.use('/reports',adminMiddleware, reportRouter)
 
 app.use('/api/printer', apiPrinterRouter);
