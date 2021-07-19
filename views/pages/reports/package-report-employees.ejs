@@ -135,8 +135,22 @@ var endate = new Date();
                 <td><a href="/warehouse/fll/awb/manage/<%=pkg.awbId%>/preview"><%=pkg.awbIdNumber%></a></td>
                 <td><%= pkg.barcode %></td>
                 <td><%= pkg.lastStatusText %></td>
-                <td><%= pkg.customerFullName %></td>
-                <td><%=pkg.customerId?pkg.customerId.email:null  %></td>
+
+             
+                <% awbpackagestatus.forEach((d)=>{ %>
+               <% if(d.key == pkg.createdBy){  %>
+                  <td><%= d.name %></td>
+               <%  }} )   %>
+             
+             
+                <% awbpackagestatus.forEach((d)=>{
+                if(d.key == pkg.createdBy){  %>
+                  <td><%= d.email %></td>
+               <%  } })   %>
+                
+
+                <!-- <td><%= pkg.customerFullName %></td>
+                <td><%=pkg.customerId?pkg.customerId.email:null  %></td> -->
               </tr>
               <% } %>
               <%})%>

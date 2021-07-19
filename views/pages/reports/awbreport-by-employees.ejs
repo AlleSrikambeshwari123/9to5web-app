@@ -75,9 +75,25 @@ var endate = new Date();
                   <td><%=helpers.formatDate(awb.createdAt)%></td>
                   <td><a href="/warehouse/fll/awb/manage/<%=awb._id%>/preview"><%=awb.awbId%></a></td>
                   <td><%=awb.status %></td>
+
+                  
+
+
+                   
+                <% awbpackagestatus.forEach((d)=>{ %>
+                  <% if(d.key == awb.createdBy){  %>
+                     <td><%= d.name %></td>
+                  <%  }} )   %>
+                
+                
+                   <% awbpackagestatus.forEach((d)=>{
+                   if(d.key == awb.createdBy){  %>
+                     <td><%= d.email %></td>
+                  <%  } })   %>
+<!-- 
                   <td><%=awb.customerFullName %></td>
                   <td><%=awb.customerId?awb.customerId.email:null  %></td>
-                 
+                  -->
                  
                   </tr>
                   <% } %>
