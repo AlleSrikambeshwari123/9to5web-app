@@ -2,11 +2,13 @@
 	<div class="sidebar-wrapper scrollbar scrollbar-inner">
 		<div class="sidebar-content">
 			<div class="user">
-				<div class="avatar-sm float-left mr-2">
-				</div>
+				<!-- <div class="avatar-sm float-left mr-2">
+				</div> -->
 				<div class="info">
 					<a data-toggle="collapse" href="#userCollapse" aria-expanded="true">
 						<span>
+	
+
 							<span class="user-level"><%=user.firstName + ' ' + user.lastName%></span>
 							<span class="user-level">
 								<% if (user.roles[0].type != "Customers") { %>
@@ -15,6 +17,7 @@
 								<% if (user.roles[0].type == "Customers") { %>
 								Customer
 								<% } %> 
+								<%= user.roles[0].type %>
 							</span>
 						</span>
 					</a>
@@ -31,18 +34,176 @@
 						<p>Dashboard </p>
 					</a>
 				</li>
-				<li class="nav-item <% if (page.includes('/report/')) { %> active <% } %>">
-					<a href="/report">
-						<i class="fa fa-file"></i>
-						<p>Reports </p>
+
+			
+
+				<li class="nav-section">
+					<span class="sidebar-mini-icon">
+						<i class="fa fa-ellipsis-h"></i>
+					</span>
+					<h4 class="text-section">Reports</h4>
+				</li>
+
+				<!-- Reports -->
+				<li class="nav-item ">
+					<a data-toggle="collapse" href="#report">
+						<i class="fas fa-building"></i>
+						<p>Reports</p>
+						<span class="caret"></span>
+					</a>
+					<div class="collapse " id="report">
+						<ul class="nav nav-collapse">
+							<!-- <li>
+										<a href="/warehouse/incoming-shiptment">
+											<span class="sub-item">Incoming Shipment</span>
+										</a>
+									</li> -->
+									
+				<!-- <li class="nav-item <% if (page.includes('/reports/all-awb')) { %> active <% } %>">
+					<a href="/reports/all-awb/status">
+						<span class="sub-item">ALL AWB Report </span>
+					</a>
+				</li> -->
+				<!-- <li class="nav-item <% if (page.includes('/reports/package-detail')) { %> active <% } %>">
+					<a href="/reports/package-detail/reports">
+						<span class="sub-item">Package Detail </span>
+					</a>
+				</li> -->
+				<!-- <li class="nav-item <% if (page.includes('/reports/package/status')) { %> active <% } %>">
+					<a href="/reports/package/status">
+						<span class="sub-item">Package Status </span>
+					</a>
+				</li> -->
+				<!-- <li class="nav-item <% if (page.includes('/reports/delivery-detail')) { %> active <% } %>">
+					<a href="/reports/delivery-detail/reports">
+						<span class="sub-item">Delivery Detail </span>
+					</a>
+				</li> -->
+				<li class="nav-item <% if (page.includes('/reports/package-report') && !page.includes('/reports/package-report/by/employees') ) { %> active <% } %>">
+				<!-- <li class="nav-item <% if (page.includes('/reports/package-report')) { %> active <% } %>"> -->
+					<a href="/reports/package-report">
+						<span class="sub-item">Package Report </span>
 					</a>
 				</li>
-				<li class="nav-item <% if (page.includes('/reports/all-report/download')) { %> active <% } %>">
+				<li class="nav-item <% if (page.includes('/reports/package-status')) { %> active <% } %>">
+					<a href="/reports/package-status">
+						<span class="sub-item">Package Status </span>
+					</a>
+				</li>
+				<li class="nav-item <% if (page.includes('/reports/awbemp/package-status')) { %> active <% } %>">
+					<a href="/reports/awbemp/package-status">
+						<span class="sub-item">AWB Employee Throughput </span>
+					</a>
+				</li>
+				<li class="nav-item <% if (page.includes('/reports/packemp/package-status')) { %> active <% } %>">
+					<a href="/reports/packemp/package-status">
+						<span class="sub-item">Package Employee Throughput</span>
+					</a>
+				</li>
+				<li class="nav-item <% if (page.includes('/reports/package-report/by/employees')) { %> active <% } %>">
+					<a href="/reports/package-report/by/employees">
+						<span class="sub-item">Packages by Employee</span>
+					</a>
+				</li>
+		
+				<li class="nav-item <% if (page.includes('/reports/package/list?nodocs=load')) { %> active <% } %>">
+					<a href="/reports/package/list?nodocs=load">
+						<!-- <i class="fa fa-file"></i> -->
+						<span class="sub-item">No Docs Package Report </span>
+					</a>
+				</li>
+		
+				<li class="nav-item <% if (page.includes('/reports/agingreport')) { %> active <% } %>">
+					<a href="/reports/agingreport">
+						<!-- <i class="fa fa-file"></i> -->
+						<span class="sub-item">Aging Report </span>
+					</a>
+				</li>
+				<li class="nav-item <% if (page.includes('/reports/locationreport')) { %> active <% } %>">
+					<a href="/reports/locationreport?locationId=load">
+						<!-- <i class="fa fa-file"></i> -->
+						<span class="sub-item">Location Report </span>
+					</a>
+				</li>
+
+				<li class="nav-item <% if (page.includes('/reports/awbreport?type')) { %> active <% } %>">
+					<a href="/reports/awbreport?type=airwaybill">
+						
+						<span class="sub-item">AWB Report </span>
+					</a>
+				</li>
+				<li class="nav-item <% if (page.includes('reports/awbreport/by/employees')) { %> active <% } %>">
+					<a href="/reports/awbreport/by/employees?type=airwaybill">	
+						<span class="sub-item">AWBs by Employee</span>
+					</a>
+				</li>
+				<li class="nav-item <% if (page.includes('/reports/deliveryreport')) { %> active <% } %>">
+					<a href="/reports/deliveryreport">
+						<!-- <i class="fa fa-file"></i> -->
+						<span class="sub-item">Delivery Report </span>
+					</a>
+				</li>
+			
+				
+							<!--<li <% if (page.includes('/fll/awb/no-docs')) { %> class="active" <% } %>>
+								<a href="/warehouse/fll/awb/no-docs">
+									<span class="sub-item">No Docs</span>
+								</a>
+							</li>
+							<li <% if (page.includes('/fll/awb/list')) { %> class="active" <% } %>>
+								<a href="/warehouse/fll/awb/list">
+									<span class="sub-item">AirWay Bills</span>
+								</a>
+							</li>
+							<li <% if (page.includes('/fll/package/list')) { %> class="active" <% } %>>
+								<a href="/warehouse/fll/package/list">
+									<span class="sub-item">Packages on Hands</span>
+								</a>
+							</li>--->
+						
+							<!--<li <% if (page.includes('/fll/package/overviewfll/list')) { %> class="active" <% } %>>
+								<a href="/warehouse/fll/package/overviewfll/list">
+									<span class="sub-item">Overview FLL</span>
+								</a>
+							</li>-->
+						</ul>
+					</div>
+				</li>
+
+
+
+
+
+
+
+
+
+
+				<!-- Reports -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+				<!-- <li class="nav-item <% if (page.includes('/reports/all-report/download')) { %> active <% } %>">
 					<a href="/reports/all-report/download">
-						<i class="fa fa-user"></i>
+						<i class="fa fa-download"></i>
 						<p>My Reports </p>
 					</a>
-				</li>
+				</li> -->
 				<!-- <li class="nav-item <% if (page.includes('/fleet/')) { %> active <% } %>">
 					<a data-toggle="collapse" href="#reports">
 						<i class="fa fa-user"></i>
@@ -67,13 +228,72 @@
 				</li> -->
 				<% } %>
 				<% if (user.roles[0].type == "Customers") { %>
-				<li class="nav-item <% if (page.includes('/dashboard')) { %> active <% } %>">
+				<!-- <li class="nav-item <% if (page.includes('/dashboard')) { %> active <% } %>">
 					<a href="/customer/dashboard">
 						<i class="fa fa-home"></i>
 						<p>Home </p>
 					</a>
+				</li> -->
+				<li class="nav-section">
+					<span class="sidebar-mini-icon">
+						<i class="fa fa-ellipsis-h"></i>
+					</span>
+					<h4 class="text-section">Customer</h4>
 				</li>
-				<% } %>
+				<li class="nav-item <% if (page.includes('/reports/')) { %> active <% } %>">
+				
+					<a href="/customer/report/package-report">
+						<i class="fas fa-list"></i>
+						<p>Packages</p>
+					</a>
+		
+				</li>
+				<li class="nav-item <% if (page.includes('/awb')) { %> active <% } %>">
+					<a href="/customer/awb">
+						<i class="fa fa-cubes"></i>
+						<p>Airway Bills </p>
+					</a>
+				</li>
+				<li class="nav-item <% if (page.includes('/billing')) { %> active <% } %>">
+					<a href="/customer/billing">
+						<i class="fa fa-dollar-sign"></i>
+						<p>Billing </p>
+					</a>
+				</li>
+				<li class="nav-item <% if (page.includes('/upload/invoices')) { %> active <% } %>">
+					<a href="/customer/upload/invoices">
+						<i class="fa fa-upload"></i>
+						<p>Upload Invoice </p>
+					</a>
+				</li>
+				
+				
+
+				<!-- <li class="nav-item <% if (page.includes('/upload')) { %> active <% } %>">
+					<a href="/customer/billing">
+						<i class="fa fa-file-invoice-dollar"></i>
+						<p>Upload Invoices</p>
+					</a>
+				</li> -->
+				<!-- <li class="nav-item <% if (page.includes('/customerchild/list')) { %> active <% } %>">
+					<a href="/customer/customerchild/list/<%= user._id %>">
+						<i class="fa fa-user-tie"></i>
+						<p>Sub Consignee</p>
+					</a>
+				</li> -->
+				<!-- <li class="nav-item <% if (page.includes('/package/')) { %> active <% } %>">
+					<a href="/warehouse/customer/package/list/<%= user._id %>">
+						<i class="fa fa-cubes"></i>
+						<p>Packages </p>
+					</a>
+				</li> -->
+				<!-- <li class="nav-item <% if (page.includes('/no-docs/')) { %> active <% } %>">
+					<a href="/customer/customerchild/no-docs/<%= user._id %>">
+						<i class="fas fa-warehouse"></i>
+						<p>No Docs</p>
+					</a>
+				</li> -->
+				<% } else {%>
 
 				<li class="nav-section">
 					<span class="sidebar-mini-icon">
@@ -436,26 +656,9 @@
 				<%}%>
 
 				<!-- Customer -->
-				<% if (user.roles[0].type == "Customers") { %>
-				<li class="nav-item <% if (page.includes('/customerchild/list')) { %> active <% } %>">
-					<a href="/customer/customerchild/list/<%= user._id %>">
-						<i class="fa fa-user-tie"></i>
-						<p>Sub Consignee</p>
-					</a>
-				</li>
-				<li class="nav-item <% if (page.includes('/package/')) { %> active <% } %>">
-					<a href="/warehouse/customer/package/list/<%= user._id %>">
-						<i class="fa fa-cubes"></i>
-						<p>Packages </p>
-					</a>
-				</li>
-				<li class="nav-item <% if (page.includes('/no-docs/')) { %> active <% } %>">
-					<a href="/customer/customerchild/no-docs/<%= user._id %>">
-						<i class="fas fa-warehouse"></i>
-						<p>No Docs</p>
-					</a>
-				</li>
-				<% } %>
+				
+				
+				<%  } %>
 
 				<!-- Account Options -->
 				<li class="nav-section">
@@ -472,6 +675,13 @@
 					</a>
 					<div class="collapse <% if (page.includes('/account/')) { %> show <% } %>" id="myaccount">
 						<ul class="nav nav-collapse">
+							<% if (user.roles[0].type == "Customers") { %>
+							<li <% if (page.includes('/profile')) { %> class="active" <% } %>>
+								<a href="/customer/account/profile">
+									<span class="sub-item">Profile</span>
+								</a>
+							</li>
+							<% } %>
 							<li <% if (page.includes('/account/change-pass')) { %> class="active" <% } %>>
 								<% if (user.roles[0].type != "Customers") { %>
 								<a href="/account/change-pass">
@@ -493,12 +703,14 @@
 						</ul>
 					</div>
 				</li>
-				<li class="nav-item">
-					<a id="logout" href="/logout<% if (user.roles[0].type == "Customers") { %>?type=customer<%}%>">
-						<i class="fa fa-sign-out-alt"></i>
-						<p>Logout </p>
-					</a>
-				</li>
+				<% if (user.roles[0].type != "Customers"){ %>
+					<li class="nav-item">
+						<a id="logout" href="/logout<% if (user.roles[0].type == "Customers") { %>?type=customer<%}%>">
+							<i class="fa fa-sign-out-alt"></i>
+							<p>Logout </p>
+						</a>
+					</li>
+				<%}%>
 			</ul>
 		</div>
 	</div>

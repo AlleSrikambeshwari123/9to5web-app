@@ -15,7 +15,7 @@ const Plane = require('../models/plane');
 const User = require('../models/user');
 const PriceLabel = require('../models/pricelabel');
 const ReportCsv = require('../models/reportcsv');
-
+const additionalInvoices = require('../models/additionalInvoice')
 const DELIVERY_METHODS = {
     DELIVERY: 1,
     PICKUP: 2,
@@ -452,6 +452,74 @@ class AwbService {
                 });
         });
     }
+    async getAwbsFullWithOutJoin(req) {
+      var searchData = {};
+        if(req && req.query && req.query.search_type && req.query.search_text){
+          var searchcolmn = {AWBNUMBER:"awbIdString", CONSIGNEE : "customerFullName",SHIPPER : "shipperName"}
+          var sColumn = searchcolmn[req.query.search_type];
+          searchData[sColumn] = {'$regex' : req.query.search_text , '$options' : 'i'};
+          console.log("seac",searchData)
+        }else if(req && req.query){
+
+          var daterange = req.query.daterange?req.query.daterange:'';      
+          if(daterange){
+          var date_arr = daterange.split('-');
+          var startDate = (date_arr[0]).trim();      
+          var stdate = new Date(startDate);
+          stdate.setDate(stdate.getDate() +1);
+          var endDate = (date_arr[1]).trim();
+          var endate = new Date(endDate);
+          endate.setDate(endate.getDate() +1);  
+          
+          stdate = new Date(stdate.setUTCHours(0,0,0,0));
+          stdate = stdate.toISOString();
+          endate = new Date(endate.setUTCHours(23,59,59,0));
+          endate = endate.toISOString(); 
+              
+          searchData.createdAt = {"$gte":stdate, "$lte": endate};
+        }
+        if(!req.query.daterange && !req.query.clear){
+          var endate = new Date();      
+          endate.setDate(endate.getDate());
+          var stdate = new Date();
+          stdate.setDate(stdate.getDate() - parseInt(strings.default_days_table));
+          
+          stdate = new Date(stdate.setUTCHours(0,0,0,0));
+          stdate = stdate.toISOString();
+          endate = new Date(endate.setUTCHours(23,59,59,0));
+          endate = endate.toISOString(); 
+                 
+          searchData.createdAt = {"$gte":stdate, "$lte": endate};
+        }
+        if(req.query.clear){
+          var endate = new Date();      
+          endate.setDate(endate.getDate()+1);
+          var stdate = new Date();
+          stdate.setDate(stdate.getDate() -14);  
+          
+          stdate = new Date(stdate.setUTCHours(0,0,0,0));
+          stdate = stdate.toISOString();
+          endate = new Date(endate.setUTCHours(23,59,59,0));
+          endate = endate.toISOString(); 
+               
+          searchData.createdAt = {"$gte":stdate, "$lte": endate};
+        }
+      }
+      return new Promise((resolve, reject) => {
+          let modelCheck = Awb
+          if(req.query.search_collection == "HISTORY")
+            modelCheck = AwbHistory
+
+          modelCheck.find(searchData)
+          .exec((error,result)=>{
+            Promise.all(result.map(async res =>{
+              return res;
+            })).then(()=> resolve(result))
+           
+             
+          });
+        })
+    }
 
     async calculateServiceTypeVariable(type,awbId){
       let typeSum = 0
@@ -465,12 +533,13 @@ class AwbService {
     }
 
     getAwbsFullSnapshot(req,searchData) {
+
       // var searchData = {};
       if(req && req.query && req.query.search_type && req.query.search_text){
         var searchcolmn = {AWBNUMBER:"awbIdString", CONSIGNEE : "customerFullName",SHIPPER : "shipperName"}
         var sColumn = searchcolmn[req.query.search_type];
         searchData[sColumn] = {'$regex' : req.query.search_text , '$options' : 'i'};
-        console.log("seac",searchData)
+        // console.log("seac",searchData)
       } 
       else if(req && req.query && !searchData._id){
 
@@ -532,7 +601,8 @@ class AwbService {
             searchData.packages = {$gt : []}
           }
       }
-      console.log("sear",searchData)
+      // console.log("sear",searchData)
+      console.log(req.query.search_collection , "searchColection")
         return new Promise(async(resolve, reject) => {
           var collec = "Awb";
           if(req.query.search_collection == "HISTORY"){
@@ -542,11 +612,12 @@ class AwbService {
             if(req.query.search_collection == "HISTORY"){
               AwbHistory.find(searchData)
                   .exec(async (err, result) => {
+                    console.log("awbhistorycalled")
                     Promise.all(result.map(async res =>{
                       return res;
                     })).then(()=> resolve(result))
               });
-            }else{           
+            }else{            
               Awb.find(searchData)
                   .exec(async (err, result) => {
                     Promise.all(result.map(async res =>{
@@ -1608,6 +1679,7 @@ class AwbService {
 
   async getAwbPriceAndStatus(awbData,queryStatus){
     let awbResponse = []
+    // return awbData;
     for(let awb of awbData){
       awb = awb.toJSON()
       let statusObject = await this.services.packageService.checkPackageStatus(awb)
@@ -2013,7 +2085,179 @@ class AwbService {
     })    
 
   }
+
+  getAwbsFullSnapshotV2(req,searchData) {
+
+    // var searchData = {};
+    if(req && req.query && req.query.search_type && req.query.search_text){
+      var searchcolmn = {AWBNUMBER:"awbIdString", CONSIGNEE : "customerFullName",SHIPPER : "shipperName"}
+      var sColumn = searchcolmn[req.query.search_type];
+      searchData[sColumn] = {'$regex' : req.query.search_text , '$options' : 'i'};
+      // console.log("seac",searchData)
+    } 
+    else if(req && req.query && !searchData._id){
+
+        var daterange = req.query.daterange?req.query.daterange:'';      
+        if(daterange){
+        var date_arr = daterange.split('-');
+        var startDate = (date_arr[0]).trim();      
+        var stdate = new Date(startDate);
+        stdate.setDate(stdate.getDate() +1);
+        var endDate = (date_arr[1]).trim();
+        var endate = new Date(endDate);
+        endate.setDate(endate.getDate() +1);  
+        
+        stdate = new Date(stdate.setUTCHours(0,0,0,0));
+        stdate = stdate.toISOString();
+        endate = new Date(endate.setUTCHours(23,59,59,0));
+        endate = endate.toISOString(); 
+            
+        searchData.createdAt = {"$gte":stdate, "$lte": endate};
+      }
+      if(!req.query.daterange && !req.query.clear){
+        var endate = new Date();      
+        endate.setDate(endate.getDate());
+        var stdate = new Date();
+        stdate.setDate(stdate.getDate() - parseInt(strings.default_days_table));
+        
+        stdate = new Date(stdate.setUTCHours(0,0,0,0));
+        stdate = stdate.toISOString();
+        endate = new Date(endate.setUTCHours(23,59,59,0));
+        endate = endate.toISOString(); 
+               
+        searchData.createdAt = {"$gte":stdate, "$lte": endate};
+      }
+      if(req.query.clear){
+        var endate = new Date();      
+        endate.setDate(endate.getDate()+1);
+        var stdate = new Date();
+        stdate.setDate(stdate.getDate() -14);  
+        
+        stdate = new Date(stdate.setUTCHours(0,0,0,0));
+        stdate = stdate.toISOString();
+        endate = new Date(endate.setUTCHours(23,59,59,0));
+        endate = endate.toISOString(); 
+             
+        searchData.createdAt = {"$gte":stdate, "$lte": endate};
+      }
+    }
+    if(!searchData._id){
+        if(req.query.type){
+          if(req.query.type == 'nodocs')
+            searchData.invoices = []
+          else if(req.query.type == 'pendingawb')
+            searchData.packages = []
+          else if(req.query.type == 'awbpackage')
+            searchData.fll_pickup = true
+          else
+            searchData.packages = {$gt : []}         
+        }else{
+          searchData.packages = {$gt : []}
+        }
+    }
+    // console.log("sear",searchData)
+      const awbData =  new Promise(async(resolve, reject) => {
+        var collec = "Awb";
+        if(req.query.search_collection == "HISTORY"){
+          collec = "AwbHistory";
+        }
+        if(!searchData._id){
+          
+          if(req.query.search_collection == "HISTORY"){
+            AwbHistory.find(searchData)
+            .populate('customerId')
+            .populate('shipper')
+            .populate('carrier')
+            .populate('hazmat')
+            .populate('packages')
+            .populate('purchaseOrders')
+            .populate('invoices')
+            .populate('driver')
+                .exec(async (err, result) => {
+                  Promise.all(result.map(async res =>{
+                    return res;
+                  })).then(()=> resolve(result))
+            });
+          }else{      
+                
+            Awb.find(searchData)
+            .populate('customerId')
+                .populate('shipper')
+                .populate('carrier')
+                .populate('hazmat')
+                .populate('packages')
+                .populate('purchaseOrders')
+                .populate('invoices')
+                .populate('driver')
+                .exec(async (err, result) => {
+                  Promise.all(result.map(async res =>{
+                    // console.log(res);
+                    // res.pkgs = await this.getAwbPriceAndStatus(res.pkgs,{});
+                    // console.log(res);
+                    return res;
+                  })).then(()=> resolve(result))
+            });
+          }            
+        }else{
+          if(req.query.search_collection == "HISTORY"){
+            AwbHistory.find(searchData)
+                .populate('customerId')
+                .populate('shipper')
+                .populate('carrier')
+                .populate('hazmat')
+                .populate('packages')
+                .populate('purchaseOrders')
+                .populate('invoices')
+                .populate('driver')
+                .exec(async (err, result) => {
+                  Promise.all(result.map(async res =>{
+                    res['customer'] = res['customerId'];
+                    return res;
+                  })).then(()=> resolve(result))
+                })
+          }else{
+            let checkAwb = await Awb.find(searchData).read('primary')
+            let modelCheck = Awb
+            if(checkAwb == null || checkAwb.length == 0)
+              modelCheck = AwbHistory
+            modelCheck.find(searchData)
+            .populate('customerId')
+            .populate('shipper')
+            .populate('carrier')
+            .populate('hazmat')
+            .populate('packages')
+            .populate('purchaseOrders')
+            .populate('invoices')
+            .populate('driver')
+            .exec(async (err, result) => {
+              Promise.all(result.map(async res =>{
+                res['customer'] = res['customerId'];
+                return res;
+              })).then(()=> resolve(result))
+            })
+          }
+        }
+
+      });
+
+     
+
+      return new Promise((resolve,reject)=>{
+        awbData.then(async awbData=>{
+         const awbResponse = [];
+         for(let awb of awbData){
+            awb = awb.toJSON();  
+            let statusObject =  await this.services.packageService.checkPackageStatus(awb)
+            awb.status = statusObject.status
+            awbResponse.push(awb);
+         }
+          resolve(awbResponse);
+        })
+      })
+  }
 }
+
+
 
 
 

@@ -8,6 +8,7 @@ require('./authHelper')
 router.post('/login', (req, res, next) => {
   services.customerService.login(req.body.email, req.body.password).then(loginResult => {
     if(loginResult.success || loginResult.authenticated){
+      req.session.isAdmin = false;
       return res.send(loginResult);
     }else{
       services.customerChildService.login(req.body.email, req.body.password).then(loginResultchild => {
@@ -98,6 +99,13 @@ router.get('/get-packages-history', passport.authenticate('jwt', { session: fals
       { packageId: 35, trackingNumber: "114-2440197-3408215", description: "Bose Quiet Comfort ", dateRec: "2019-07-2", dateDelivered: "2019-07-07", cost: 389.00, status: "Delivered", statusId: 5 },
       { packageId: 36, trackingNumber: "114-0354742-6210612", description: "USB C adapter", dateRec: "2019-07-2", dateDelivered: "2019-07-07", cost: 25.00, status: "Delivered", statusId: 5 },
     ]
+  })
+});
+
+router.get('/get-version', function (req, res, next) {
+  res.send({
+    android: 6.5,
+    IOS: 4.1
   })
 });
 module.exports = router;

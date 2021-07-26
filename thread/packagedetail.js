@@ -109,7 +109,7 @@ createConnection()
       csvWriter.writeRecords(records)       // returns a promise
         .then(async() => {  
           var html = `Hi,<br/><br/>
-          Your report has been generated.  Please check the dashboard for the download link.`
+          Your report has been generated.  Please check the dashboard for the download link. <a href = "${process.env.BASE_URL_WEB}/reportcsv/${filename}">Download Now</a>.`
           await Mail.sendReportEmail(workerData.email,"Package Detail Report", html);
           console.log(workerData.email);
           var detail = {

@@ -1,0 +1,150 @@
+<% layout('./shared/__template')%>
+<style>
+  table.dataTable tbody>tr.selected,
+  table.dataTable tbody>tr>.selected {
+    background-color: #0275d8;
+  }
+
+  table.dataTable tbody tr.selected,
+  table.dataTable tbody th.selected,
+  table.dataTable tbody td.selected {
+    color: white;
+  }
+
+  table.dataTable .dataTables_info .select-info {
+    display: block;
+  }
+</style>
+<div class="gutters">
+  <div class="col-xl-12 col-lg-6 col-md-12 col-sm-12">
+    <div class="card">
+      <div class="card-header d-flex align-items-left align-items-md-center flex-column flex-md-row">
+        <div class="card-title"><%= title %></div>
+      </div>
+      <div id="myLoader"><img src="/img/preloader.gif"></div>
+      <div class="card-body ">
+          <input type="hidden" name="clear" id="clear" value="<%=clear%>">
+          
+              <div class="col-md-12 float-right">
+                    <button onclick="showUploadInvoiceModal()" class="btn btn-info btn-round">Upload Invoice in Advance</button>
+              </div>
+          
+        <div class="table-responsive p-4">
+          <table id="package-table"
+            class="display dateRangeFilterTable table table-striped table-hover dataTable package-table">
+            <thead>
+              <tr>
+                <th>Date Received</th>
+                <th>Invoices</th>
+                <th>
+                  Total Packages
+                </th>
+                <th>
+                  Shipper
+                </th>
+                <th>
+                  Invoice Status
+                </th>
+                <th>Invoices Accepted by 9to5</th>
+               
+                <th>Invoices Uploaded by Customer
+                  <th>Actions</th>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <% var i = 0 %>
+              <!-- <% console.log(adInvoice,  "                end                  " ,awbs[0]) %> -->
+              <% awbs.forEach(function(pkg){ %>
+              <tr data-record="<%= pkg._id %>">
+      
+               
+                <td><%= helpers.formatDate(pkg.createdAt) %></td>
+                <td>
+                  <%= pkg.awbId %>
+                </td>
+
+                <td><%= pkg.packages.length%></td>
+                <td><%= pkg.shipperName%></td>
+                <td><%-pkg.invoice_attach?"Invoice Uplaoded":"Invoice Needed" %></td>
+                <td><%= pkg.invoices.length%></td>
+               
+            </td>
+            
+
+  <%   
+    for(var j =0;j<pkg.customerId.awb.length;j++){
+    console.log(awbscountdata[i].awbid.toString() ,"----", pkg.customerId.awb[j].toString() ,"hellllss" )
+    if(awbscountdata[i].awbid.toString() == pkg.customerId.awb[j].toString()  ){ %>
+
+      <td><%= awbscountdata[i].count %></td>
+       
+      <%  }  %>
+    
+
+      <% }  %>
+      <td>
+        <a href="javascript:void(0)" onclick="showUploadInvoiceModal('<%-pkg._id%>')" class="btn btn-link btn-primary px-3" data-toggle="tooltip"
+          data-original-title="View Details"> <i class="fas fa-upload"></i></a>
+    </td> 
+          </tr>
+<% i++; %>
+              </tr>
+              <%})%>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+<div class="modal fade" id="uploadInvoiceModal" tabindex="-1" role="dialog" aria-labelledby="print-popup" aria-hidden="true"
+  >
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="exampleModalLabel2">Upload Invoices in Advance</h2>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form action="">
+            <div class="row">
+                <div class="col-md-12">
+                    <%-user.pmb%>
+                </div>
+                <div class="col-md-12 form-group">
+                    <label for="">Tracking No.</label>
+                    <input type="text" required class="form-control" name="courierNo">
+                </div>
+                <div class="col-md-12 form-group">
+                    <label for="">Invoice</label>
+                    <input type="file" required class="form-control" name="invoice">
+                </div>
+                <div class="col-md-12 form-group">  
+                    <input type="hidden" name="awbId">
+                </div>
+                <div class="col-md-12">
+                    <button type="submit" class="btn btn-info float-right ">Submit</button>
+                </div>
+            </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger close-del" data-dismiss="modal">Close</button>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<% block('scripts').append('<script src="/js/utils.js"></script>')%>
+<% block('scripts').append('<script src="/js/customer/home/list.js"></script>')%>
+<% block('scripts').append('<script src="/js/customer/upload_invoice.js"></script>')%>

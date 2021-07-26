@@ -6,11 +6,13 @@ const strings = require('../Res/strings');
 
 exports.generateToken = (user) => {
   return new Promise(function (resolve, reject) {
+    delete user.package;
+    delete user.awb;
     var stringData = JSON.stringify(user);
     var encryptedData = cryptojs.AES.encrypt(stringData, strings.user_auth_key).toString();
     var token = jwt.sign({
       token: encryptedData
-    }, strings.user_auth_key,{ expiresIn: "10h" });
+    }, strings.user_auth_key, { expiresIn: "10h" });
     resolve(token);
   });
 }

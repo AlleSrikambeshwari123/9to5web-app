@@ -4,6 +4,51 @@ var middleware = require('../../middleware');
 var reportCtrl = require('../../Controller/ReportController');
 
 router.get('/all-awb/status', middleware().checkSession, reportCtrl.all_awb_status);
+router.get('/package/status', middleware().checkSession, reportCtrl.packagestatus);
+
+router.get('/package-detail/reports',middleware().checkSession,reportCtrl.packagedetail)
+router.get('/delivery-detail/reports',middleware().checkSession,reportCtrl.deliverydetail)
+
+// router.get('/nodocsreport',middleware().checkSession,reportCtrl.nodocsreport)
+// router.get('/agingreport',middleware().checkSession,reportCtrl.agingreport)
+// router.get('/locationreport',middleware().checkSession,reportCtrl.locationreport)
+// router.get('/awbreport',middleware().checkSession,reportCtrl.awbreport)
+// router.get('/deliveryreport',middleware().checkSession,reportCtrl.deliveryreport)
+
+
+
+router.get('/nodocsreport',middleware().checkSession,reportCtrl.nodocsReport)
+router.get('/agingreport',middleware().checkSession,reportCtrl.agingReport)
+router.get('/locationreport',middleware().checkSession,reportCtrl.locationReport)
+router.get('/awbreport',middleware().checkSession,reportCtrl.awbReport)
+router.get('/awbreport/by/employees',middleware().checkSession,reportCtrl.awbReportByEmployees)
+router.get('/deliveryreport',middleware().checkSession,reportCtrl.deliveryReport)
+
+
+router.post('/nodocsreport',middleware().checkSession,reportCtrl.gennodocsReport)
+router.post('/agingreport',middleware().checkSession,reportCtrl.genagingReport)
+router.post('/locationreport',middleware().checkSession,reportCtrl.genlocationReport)
+router.post('/awbreport',middleware().checkSession,reportCtrl.genawbReport)
+router.post('/deliveryreport',middleware().checkSession,reportCtrl.gendeliveryReport)
+
+
+
+
+
+router.get('/package/list',middleware().checkSession,reportCtrl.nodocsReport)
+
+
+
+router.get('/package-report',middleware().checkSession,reportCtrl.packageReport)
+
+router.get('/package-report/by/employees',middleware().checkSession,reportCtrl.packageReportByEmployees)
+
+router.get('/package-status',middleware().checkSession,reportCtrl.packagestatus)
+
+router.get('/awbemp/package-status',middleware().checkSession,reportCtrl.awbpackagestatus)
+router.get('/packemp/package-status',middleware().checkSession,reportCtrl.packemppackagestatus)
+
+
 router.post('/all-awb/status_report', middleware().checkSession, reportCtrl.all_awb_status_report);
 router.post('/delivery-detail/report', middleware().checkSession, reportCtrl.delivery_detail_report);
 router.post('/package-detail/report', middleware().checkSession, reportCtrl.package_detail_report);

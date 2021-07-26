@@ -21,7 +21,7 @@ class CustomerService {
         const customerData = await this.getCustomerWithEmail(customer.email);
         if (customerData && customerData['_id']) {
           return resolve({ success: false, message: 'Account already exists' });
-        } 
+        }
       }
       // if (customer.pmb) {
       //   const customerData = await this.getCustomer({pmb : customer.pmb});
@@ -32,7 +32,7 @@ class CustomerService {
       const customerData = new Customer(customer);
       customerData.save((err, customer) => {
         if (err) {
-          console.log("Create-customer error:",err)
+          console.log("Create-customer error:", err)
           return resolve({ success: false, message: strings.string_response_error });
         } else {
           delete customer.password;
@@ -41,20 +41,20 @@ class CustomerService {
             message: strings.string_response_created,
             customer: customer,
           });
-        }  
+        }
       })
     });
   }
   signUp(customer) {
     return new Promise(async (resolve, reject) => {
       const customerData = await this.getCustomerWithEmail(customer.email);
-        
-      if (!customerData['_id'] ) {
+
+      if (!customerData['_id']) {
         return resolve({ success: false, message: strings.string_customer_not_exists });
-      } 
-                  
+      }
+
       const password = bcrypt.hashSync(customer.password, 10);
-      Customer.updateOne({_id: customerData['_id']}, {password:password}).exec(async(err, updateCustomer) => {
+      Customer.updateOne({ _id: customerData['_id'] }, { password: password }).exec(async (err, updateCustomer) => {
         if (err) {
           return resolve({ success: false, message: strings.string_response_error });
         } else {
@@ -66,14 +66,14 @@ class CustomerService {
             message: strings.string_response_created,
             customer: customerDetail,
           });
-        }  
+        }
       })
     });
   }
   login(email, password) {
     return new Promise(async (resolve, reject) => {
       const customer = await this.getCustomerWithEmail(email);
-      
+
       if (!(customer && customer['_id'])) {
         resolve({ authenticated: false, message: strings.string_not_found_customer });
       } else {
@@ -86,15 +86,15 @@ class CustomerService {
             resolve({ authenticated: false, message: strings.string_password_incorrect });
           } else {
             delete customer.password;
-            let customer2  = JSON.parse(JSON.stringify(customer))
-            customer2.roles =  [{  type: 'Customers' } ]
+            let customer2 = JSON.parse(JSON.stringify(customer))
+            customer2.roles = [{ type: 'Customers' }]
             utils.generateToken(customer2)
-            .then((token) => {
-              return resolve({ authenticated: true, token: token, user: customer2 });
-            })
-            .catch(() => {
-              return resolve({ success: false, message: strings.string_response_error });
-            })
+              .then((token) => {
+                return resolve({ authenticated: true, token: token, user: customer2 });
+              })
+              .catch(() => {
+                return resolve({ success: false, message: strings.string_response_error });
+              })
           }
         });
       }
@@ -116,7 +116,7 @@ class CustomerService {
             resolve({ authenticated: false, message: strings.string_password_incorrect });
           } else {
             password = bcrypt.hashSync(password, 10);
-            Customer.findOneAndUpdate({_id: customer['_id']}, {password: password}, (err, result) => {
+            Customer.findOneAndUpdate({ _id: customer['_id'] }, { password: password }, (err, result) => {
               if (err) {
                 resolve({ success: false, message: strings.string_response_error });
               } else {
@@ -128,89 +128,89 @@ class CustomerService {
       }
     })
   }
-  getCustomers(req) {    
+  getCustomers(req) {
     return new Promise((resolve, reject) => {
       var searchData = {};
-      if(req && req.query){
-        var daterange = req.query.daterange?req.query.daterange:'';  
-        if(daterange){
+      if (req && req.query) {
+        var daterange = req.query.daterange ? req.query.daterange : '';
+        if (daterange) {
           var date_arr = daterange.split('-');
-          var startDate = (date_arr[0]).trim();      
+          var startDate = (date_arr[0]).trim();
           var stdate = new Date(startDate);
-          stdate.setDate(stdate.getDate() +1);
-  
+          stdate.setDate(stdate.getDate() + 1);
+
           var endDate = (date_arr[1]).trim();
           var endate = new Date(endDate);
-          endate.setDate(endate.getDate() +1);    
-          
-          stdate = new Date(stdate.setUTCHours(0,0,0,0));
+          endate.setDate(endate.getDate() + 1);
+
+          stdate = new Date(stdate.setUTCHours(0, 0, 0, 0));
           stdate = stdate.toISOString();
-          endate = new Date(endate.setUTCHours(23,59,59,0));
-          endate = endate.toISOString(); 
-            
-          searchData.createdAt = {"$gte":stdate, "$lte": endate};
+          endate = new Date(endate.setUTCHours(23, 59, 59, 0));
+          endate = endate.toISOString();
+
+          searchData.createdAt = { "$gte": stdate, "$lte": endate };
         }
-  
-        if(!req.query.daterange && !req.query.clear){
-          var endate = new Date();      
+
+        if (!req.query.daterange && !req.query.clear) {
+          var endate = new Date();
           endate.setDate(endate.getDate());
           var stdate = new Date();
-          stdate.setDate(stdate.getDate() -parseInt(strings.default_days_table));
-          
-          stdate = new Date(stdate.setUTCHours(0,0,0,0));
+          stdate.setDate(stdate.getDate() - parseInt(strings.default_days_table));
+
+          stdate = new Date(stdate.setUTCHours(0, 0, 0, 0));
           stdate = stdate.toISOString();
-          endate = new Date(endate.setUTCHours(23,59,59,0));
-          endate = endate.toISOString(); 
-                 
-          searchData.createdAt = {"$gte":stdate, "$lte": endate};
+          endate = new Date(endate.setUTCHours(23, 59, 59, 0));
+          endate = endate.toISOString();
+
+          searchData.createdAt = { "$gte": stdate, "$lte": endate };
         }
-        if(req.query.clear){
-          var endate = new Date();      
-          endate.setDate(endate.getDate()+1);
+        if (req.query.clear) {
+          var endate = new Date();
+          endate.setDate(endate.getDate() + 1);
           var stdate = new Date();
-          stdate.setDate(stdate.getDate() -14);  
-          
-          stdate = new Date(stdate.setUTCHours(0,0,0,0));
+          stdate.setDate(stdate.getDate() - 14);
+
+          stdate = new Date(stdate.setUTCHours(0, 0, 0, 0));
           stdate = stdate.toISOString();
-          endate = new Date(endate.setUTCHours(23,59,59,0));
-          endate = endate.toISOString(); 
-               
-          searchData.createdAt = {"$gte":stdate, "$lte": endate};
+          endate = new Date(endate.setUTCHours(23, 59, 59, 0));
+          endate = endate.toISOString();
+
+          searchData.createdAt = { "$gte": stdate, "$lte": endate };
         }
-      }    
+      }
       Customer.find(searchData)
-      .populate(['company','location'])
-      .exec((err, customers) => {
-        if (err) {
-          resolve([]);
-        } else {
-          resolve(customers);
-        }
-      })
+        .populate(['company', 'location'])
+        .exec((err, customers) => {
+          if (err) {
+            resolve([]);
+          } else {
+            resolve(customers);
+          }
+        })
     })
   }
   getCustomer(fieldData) {
     return new Promise((resolve, reject) => {
       Customer.findOne(fieldData)
-      .read("primary")
-      .populate(['company','location'])
-      .exec((err, result) => {
-        if (err || !result) {
-          resolve({});
-        } else {
-          delete result._doc.password
-          resolve(result);
-        }
-      });
+        .read("primary")
+        .populate(['company', 'location'])
+        .exec((err, result) => {
+          if (err || !result) {
+            resolve({});
+          } else {
+            delete result._doc.password
+            resolve(result);
+          }
+        });
     });
   }
   getCustomerWithEmail(email) {
     return new Promise((resolve, reject) => {
-      Customer.find({email: new RegExp('^' + email + '$', 'i')})
-      .then(results => {
-        if (results.length == 0) resolve({});
-        else resolve(results[0]);
-      })
+      Customer.find({ email: new RegExp('^' + email + '$', 'i') })
+        .then(results => {
+          if (results.length == 0) resolve({});
+          else resolve(results[0]);
+        })
     });
   }
   saveProfile(body) {
@@ -219,7 +219,7 @@ class CustomerService {
       if (!(customer && customer['_id'])) {
         resolve({ authenticated: false, message: strings.string_not_found_customer });
       } else {
-        Customer.findOneAndUpdate({_id: customer['_id']}, {...body}, (err, result) => {
+        Customer.findOneAndUpdate({ _id: customer['_id'] }, { ...body }, (err, result) => {
           if (err) {
             resolve({ success: false, message: strings.string_response_error });
           } else {
@@ -231,13 +231,13 @@ class CustomerService {
   }
   updateCustomer(id, body) {
     return new Promise(async (resolve, reject) => {
-      const customer = await this.getCustomer({_id: id});
+      const customer = await this.getCustomer({ _id: id });
       if (!(customer && customer['_id'])) {
         return resolve({ success: false, message: strings.string_not_found_customer });
-      } 
-      if(body.password){
+      }
+      if (body.password) {
         const password = bcrypt.hashSync(body.password, 10);
-        body.password  = password 
+        body.password = password
       }
       // if (body.pmb) {
       //   const customerData = await this.getCustomer({pmb : body.pmb});
@@ -245,7 +245,7 @@ class CustomerService {
       //     return resolve({ success: false, message: 'This PMB already exists.' });
       //   } 
       // }
-      Customer.findOneAndUpdate({_id: id}, {...body}, (err, result) => {
+      Customer.findOneAndUpdate({ _id: id }, { ...body }, (err, result) => {
         if (err) {
           resolve({ success: false, message: strings.string_response_error });
         } else {
@@ -256,7 +256,7 @@ class CustomerService {
   }
   removeCustomer(id) {
     return new Promise((resolve, reject) => {
-      Customer.deleteOne({_id: id}, (err, result) => {
+      Customer.deleteOne({ _id: id }, (err, result) => {
         if (err) {
           resolve({ success: false, message: strings.string_response_error });
         } else {
@@ -282,8 +282,8 @@ class CustomerService {
         if (customer.id == undefined) {
           resolve({ success: false, message: strings.string_not_found_customer });
         } else {
-          Customer.updateOne({email:email},{ fcmToken: fcmToken }).exec((err,updateData)=>{
-            resolve({ success:  true, message: strings.string_response_updated });
+          Customer.updateOne({ email: email }, { fcmToken: fcmToken }).exec((err, updateData) => {
+            resolve({ success: true, message: strings.string_response_updated });
           })
         }
       })
@@ -296,8 +296,8 @@ class CustomerService {
         if (customer.id == undefined) {
           resolve({ success: false, message: strings.string_not_found_customer });
         } else {
-          Customer.updateOne({email:email},{ notificationStatus: status }).exec((err,updateData)=>{
-            resolve({ success:  true, message: strings.string_response_updated });
+          Customer.updateOne({ email: email }, { notificationStatus: status }).exec((err, updateData) => {
+            resolve({ success: true, message: strings.string_response_updated });
           })
         }
       })
@@ -309,8 +309,8 @@ class CustomerService {
         if (customer.id == undefined) {
           resolve({ success: false, message: strings.string_not_found_customer });
         } else {
-          Customer.updateOne({email:email},{ deviceId: id }).exec((err,updateData)=>{
-            resolve({ success:  true, message: strings.string_response_updated });
+          Customer.updateOne({ email: email }, { deviceId: id }).exec((err, updateData) => {
+            resolve({ success: true, message: strings.string_response_updated });
           })
         }
       })
@@ -354,24 +354,24 @@ class CustomerService {
     });
   }
 
-  requestResetPassword(email, webUrl){
+  requestResetPassword(email, webUrl) {
     return new Promise(async (resolve, reject) => {
-      try {       
-        let customer = await Customer.findOne({ email: email });              
+      try {
+        let customer = await Customer.findOne({ email: email });
         if (!customer) {
           return resolve({ success: false, message: strings.string_not_found_customer });
-        } 
+        }
         this.sendEmail('reset_password', customer, webUrl);
         resolve({ success: true, message: strings.string_password_reseted });
-      }catch(error){
+      } catch (error) {
         console.log(error);
         resolve({ success: false, message: strings.string_response_error });
       }
     })
   }
-  
-  sendEmail(emailType, user, webUrl){
-    if(emailType == "reset_password"){
+
+  sendEmail(emailType, user, webUrl) {
+    if (emailType == "reset_password") {
       mail.send('reset_password/user.html', {
         email: user.email,
         subject: "Password Reset Request",
@@ -380,13 +380,13 @@ class CustomerService {
       });
     }
   }
-  
+
   getUserByResetPasswordToken(id) {
     return new Promise(async (resolve, reject) => {
       try {
         let customer = await Customer.findById(id);
         if (!customer) return resolve({ success: false, message: string.string_password_token_invalid });
-        
+
         resolve({ success: true, customer: customer, token: id });
       } catch (error) {
         console.log(error.message);
@@ -394,13 +394,13 @@ class CustomerService {
       }
     });
   }
-  
-  resetPassword(id, password){
+
+  resetPassword(id, password) {
     return new Promise(async (resolve, reject) => {
       try {
         let customer = await Customer.findById(id);
         if (!customer) return resolve({ success: false, message: strings.string_not_found_customer });
-        customer.password = password;        
+        customer.password = password;
         await customer.save();
         resolve({ success: true, message: strings.string_response_updated });
       } catch (error) {
@@ -408,7 +408,7 @@ class CustomerService {
         resolve({ success: false, message: strings.string_response_error });
       }
     });
-  }  
+  }
 }
 
 module.exports = CustomerService;

@@ -2,7 +2,10 @@ var services = require('../Services/RedisDataServices');
 var utils = require('../Util/utils');
 var momentz = require('moment-timezone')
 var helpers = require('../views/helpers')
+const aws = require('../Util/aws');
+var emailService = require('../Util/EmailService');
 
+const mongoose = require('mongoose');
 
 exports.get_customer_awb_list = (req, res, next) => {
     services.awbService.getAwbCustomer(res.user._id,req).then(async (awbs) => {
@@ -26,6 +29,8 @@ exports.get_customer_awb_list = (req, res, next) => {
     })
   })
 }
+
+
 
 exports.get_customer_package_list = (req, res, next) => {
   services.packageService.getPopulatedCustomerPackages(res.user._id).then((packages) => {
@@ -143,4 +148,252 @@ exports.delete_customer = (req, res, next) => {
   services.customerService.removeCustomer(req.params.id).then(result => {
     res.send(result);
   })
+}
+
+exports.get_customer_awbs = async (req, res) => {
+  const customerId = mongoose.Types.ObjectId(res.user._id);
+  let awbData = await services.awbService.getAwbsFullCustomer(customerId);
+  let queryStatus = req.query.status,flag;
+  
+  if(awbData.length > 0){
+      flag = 1
+  }else{
+      const result = await services.customerChildService.getCustomer({_id: customerId})
+      if(result && result.parentCustomer && result.parentCustomer.id )
+          awbData = await services.awbService.getAwbsFullCustomer(result.parentCustomer.id);
+  }
+  const awbResponse = await services.awbService.getAwbPriceAndStatus(awbData,queryStatus) 
+ 
+  return res.render('pages/customerAwb', {
+    page: req.originalUrl,
+    query:req.query,
+    title: "AirWay Bills",
+    user: res.user,
+    awbs: awbResponse,
+    clear: req.query.clear
+  });
+  
+}
+
+exports.preview_awb = async(req,res)=>{
+  const id = req.params.id;
+  services.awbService.getAwbPreviewDetails(id).then((awb) => {
+    awb['dateCreated'] = momentz(awb.createdAt).tz("America/New_York").format('dddd, MMMM Do YYYY, h:mm A');
+    awb._doc.createdBy = awb.createdBy ? (awb.createdBy.firstName || '')  + (awb.createdBy.lastName || ''): ''
+    if (awb.invoices && awb.invoices.length) {
+      awb.invoices = awb.invoices.map(invoice => {
+        if (invoice.filename) {
+          invoice.link = aws.getSignedUrl(invoice.filename);
+        }
+        return invoice;
+      });
+    }
+    
+    res.render('pages/customerAwbPreview', {
+      page: req.originalUrl,
+      title: "AWB #" + awb.awbId,
+      user: res.user,
+      awb: awb,
+      shipper: awb.shipper,
+      carrier: awb.carrier,
+      hazmat: awb.hazmat
+    });
+  });
+}
+
+
+exports.billing = async(req,res)=>{
+  const customerId = mongoose.Types.ObjectId(res.user._id);
+  let awbData = await services.awbService.getAwbsFullCustomer(customerId);
+  let queryStatus = req.query.status,flag;
+  
+  if(awbData.length > 0){
+      flag = 1
+  }else{
+      const result = await services.customerChildService.getCustomer({_id: customerId})
+      if(result && result.parentCustomer && result.parentCustomer.id )
+          awbData = await services.awbService.getAwbsFullCustomer(result.parentCustomer.id);
+  }
+  const awbResponse = await services.awbService.getAwbPriceAndStatus(awbData,queryStatus) 
+  // return res.json(awbResponse);
+  return res.render('pages/customerBilling', {
+    page: req.originalUrl,
+    query:req.query,
+    title: "Billing",
+    user: res.user,
+    awbs: awbResponse,
+    clear: req.query.clear
+  });
+  return res.send("Hello there!");
+}
+
+exports.upload_invoices = async(req,res)=>{
+  // let additionalInvoice = await services.awbService.getAdditionalInvoices(mongoose.Types.ObjectId('5f3117fb13a8302d84aa6ae8'));
+  let storeInvoicedata = await services.invoiceService.getStoreInvoicesByCustId(mongoose.Types.ObjectId(req.session.customerId));
+  // let additionalInvoice = await services.invoiceService.getAdditionalInvoicesByCustId(mongoose.Types.ObjectId(req.session.customerId));
+  const customerId = mongoose.Types.ObjectId(res.user._id);
+  const awbData = await services.awbService.getAwbsNoInvoiceCustomer(customerId);
+  var countdata = []
+  var count = 0;
+  console.log(storeInvoicedata , "storeinvoicedata")
+  const storeinvoiceid = storeInvoicedata.length > 0 ? storeInvoicedata.map(d=>d.awbId) : ''
+  const awbdata = awbData[0] == undefined > 0  ? awbData[0].customerId.awb.map(data=>(data)) :''
+  
+console.log(awbdata , "awbs" , storeinvoiceid ,"sdddddddddds")
+
+for(let i = 0;i<awbdata.length;i++){
+    for(let j =0 ; j<storeinvoiceid.length ; j++){
+       if(awbdata[i].toString() == storeinvoiceid[j].toString()){
+         count++;
+       }
+    }
+    countdata.push({awbid:awbdata[i],count:count})
+    count = 0;
+}
+  return res.render('pages/customerUploadInvoices', {
+    page: req.originalUrl,
+    query:req.query,
+    title: "Upload Invoices in Advance",
+    adInvoice:storeInvoicedata[0],
+    user: res.user,
+    awbs: awbData,
+    awbscountdata:countdata,
+    clear: req.query.clear
+  });
+}
+
+ 
+exports.upload_invoice = async(req,res)=>{
+ 
+  try{ 
+    const files = req.file;
+    const filePath = files.path?files.path:'';        
+    var fileName = files.filename;
+    
+    if(req.body.fileType)
+        fileName = fileName.split('.')[0] + '.' + req.body.fileType
+        aws.uploadFile(filePath, fileName).then(async data => {
+        console.log(`File Uploaded successfully. ${data.Location}`);            
+        let invoiceObject ={
+            fileName: fileName,
+            filePath: data.Location,
+            courierNo : req.body.courierNo,
+            pmb : res.user.pmb,
+            customerId : res.user._id
+        }
+        if(files.originalname)
+            invoiceObject.name = files.originalname;
+        let awbData
+        if(req.body.awbId){
+            invoiceObject.awbId = req.body.awbId;
+            let customer = await services.customerService.getCustomer({_id : invoiceObject.customerId})
+            let awb = await services.awbService.getAwb(req.body.awbId)
+             emailService.sendInvoicesEmail(invoiceObject,customer,awb.awbId);
+            awbData = await services.awbService.storeInvoiceFile(invoiceObject);
+        }else{
+            awbData = await services.awbService.storeAdditionalInvoceFile(invoiceObject);
+        }
+        res.send(awbData);
+
+      }).catch(err => {
+        throw err;
+      })
+   
+}catch(err){
+    console.log(err)
+    res.status(500).json({ success: false, message: strings.string_response_error });
+}
+}
+
+exports.profile = async(req,res)=>{
+  let profile = {};
+  try{
+     profile = await services.customerService.getCustomerWithEmail(res.user.email);
+  }catch(err){
+
+  }
+  
+  return res.render('pages/customerProfile', {
+    page: req.originalUrl,
+    query:req.query,
+    title: "Manage Your Profile",
+    user: res.user,
+    profile,
+    clear: req.query.clear
+  });
+  
+}
+
+exports.updateProfile = async(req,res)=>{
+  const body ={
+    firstName:req.body.firstName,
+    lastName:req.body.lastName,
+    telephone:req.body.telephone,
+  }
+  try{
+    await services.customerService.updateCustomer(res.user._id,body);
+    return res.status(200).json({message:"Proflie updated successfully !"});
+  }catch(err){
+    res.status(500).json({ success: false, message: strings.string_response_error });
+  }  
+}
+
+
+// exports.packageReports = async(req,res)=>{
+//   const body ={
+//     firstName:req.body.firstName,
+//     lastName:req.body.lastName,
+//     telephone:req.body.telephone,
+//   }
+//   try{
+//     await services.customerService.updateCustomer(res.user._id,body);
+//     return res.status(200).json({message:"Proflie updated successfully !"});
+//   }catch(err){
+//     res.status(500).json({ success: false, message: strings.string_response_error });
+//   }  
+// }
+
+
+exports.packageReport = async(req, res, next)=>{    
+  
+  let title = 'All Packages'
+  if(req.query.type == 'customer')
+      title = 'Customer Package List'
+  let customers = await services.customerService.getCustomers()
+  let locations = await services.locationService.getLocations()
+  services.packageService.getPackageDetailByCustomerId(req,{}).then((packages) => {
+    // packages = packages.filter(data=>data.customerId == req.session.customerId)
+    packages = packages.filter(data=>data.customerId == req.session.customerId)
+
+    
+      return Promise.all(
+          packages.map(async(pkg, i) => {
+              let check = 1,dimen = pkg.dimensions
+              if(pkg.packageType == 'Cube' && pkg.masterDimensions)
+                  dimen = pkg.masterDimensions 
+              dimen.split('x').forEach(data =>{
+                check = check * data
+              })
+              pkg.volumetricWeight = (check/166);
+              return pkg
+          })
+      ).then(pkgs => {            
+        
+          res.render('pages/reports/customerpackagereport', {
+              page: req.originalUrl,
+              user: res.user,
+              title: title,
+              filterURL: '',
+              buttonName: 'Add to Manifest',
+              packages: pkgs,
+              customerId:req.session.customerId,
+              customers : customers,
+              locations : locations,
+              clear: req.query.clear,
+              daterange:req.query.daterange?req.query.daterange:'',
+              query:req.query
+          });
+      })
+
+  });
 }

@@ -303,7 +303,7 @@ var fonts = {
     GernerateAWBLabel(key,pkg, company) {
       return new Promise((resolve, reject) => {
         var noDocs = '';
-  
+        console.log("pkg",pkg)
         // if (this.awb.invoiceNumber == "" && (this.awb.invoices || []).length === 0) {
         //   noDocs = "***"
         // }
@@ -404,7 +404,7 @@ var fonts = {
                             margin: [1, 1],
                             stack: [
                               { text: 'AWB No', fontSize: 4, bold: true },
-                              { margin: [0, 5], text: 'AWB-' + this.awb.awbId, fontSize: 16, bold: true },
+                              { margin: [0, 5], text:(pkg.cubeAwbDetail && pkg.cubeAwbDetail.length >0 && pkg.cubeAwbDetail[0].cubeAwbNo) ? 'C' + pkg.cubeAwbDetail[0].cubeAwbNo : '', fontSize: 16, bold: true },
                             ],
                             border: [false, false, false, true],
                           }, //logo for lbl

@@ -24,7 +24,7 @@
 
 	<!-- Navbar Header -->
 	<nav class="navbar navbar-header navbar-expand-lg" data-background-color="blue2">
-
+		<%if(user.roles[0].type != "Customers"){%>
 		<div class="container-fluid">
 			<div class="collapse" id="search-nav" style="max-width: 480px !important;">
 				<form id="global-search-form" class="navbar-left navbar-form nav-search mr-md-3">
@@ -247,6 +247,14 @@
 				</li> -->
 			</ul>
 		</div>
+		<%}else{%>
+			<div style="position: absolute;right: 0; margin-right:10px; font-size: 16px;">
+				<a id="logout" style="color:white" href="/logout<% if (user.roles[0].type == "Customers") { %>?type=customer<%}%>">
+					<i class="fa fa-sign-out-alt"></i> 
+					<!-- <p></p> -->
+				</a>
+			</div>
+		<%}%>
 	</nav>
 	<!-- End Navbar -->
 	<!-- <div class="row gutters">

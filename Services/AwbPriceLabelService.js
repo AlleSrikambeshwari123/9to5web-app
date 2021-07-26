@@ -211,6 +211,8 @@ class AwbPriceLabelService {
       if(priceLabel.OverrideInsurance == priceLabel.Insurance){
         flagInsurance = 1
       }
+      priceLabel.TotalWeightValue = Number(priceLabel.TotalWeightValue)
+      priceLabel.TotalVolumetricWeight = Number(priceLabel.TotalVolumetricWeight)
     //   const PriceLabelData = await this.getPriceLabel(priceLabel.id);
     //   if (!(PriceLabelData && PriceLabelData._id)) {
     //     return resolve({success: false, message: strings.string_not_found_location});
@@ -276,6 +278,8 @@ class AwbPriceLabelService {
           } else {
             let awb = await Awb.findById(id)
             let total_weight = 0
+            await Awb.updateOne({_id : id},{finalPrice : priceLabel.SumOfAllCharges })
+            await AwbHistory.updateOne({_id : id},{finalPrice : priceLabel.SumOfAllCharges })
             if(awb.packages.length == 0){
               resolve({ success: true, message: strings.string_response_updated ,totalWeight : 0.00});
             }else{
@@ -312,11 +316,11 @@ class AwbPriceLabelService {
         flagInsurance = 1
       }
 
-      priceLabel.Express = priceResult.Express
-      priceLabel.TotalInvoiceValue = priceResult.TotalInvoiceValue
-      priceLabel.NoOfInvoice = priceResult.NoOfInvoice
-      priceLabel.TotalWeightValue = priceResult.TotalWeightValue
-      priceLabel.TotalVolumetricWeight = priceResult.TotalVolumetricWeight
+      priceLabel.Express = Number(priceResult.Express)
+      priceLabel.TotalInvoiceValue = Number(priceResult.TotalInvoiceValue)
+      priceLabel.NoOfInvoice = Number(priceResult.NoOfInvoice)
+      priceLabel.TotalWeightValue = Number(priceResult.TotalWeightValue)
+      priceLabel.TotalVolumetricWeight = Number(priceResult.TotalVolumetricWeight)
 
       if(flagInvoice){
         priceLabel.OverrideInvoiceValue = priceLabel.TotalInvoiceValue
@@ -393,6 +397,9 @@ class AwbPriceLabelService {
             let awb = await Awb.findById(id)
             if(awb == null)
               awb = await AwbHistory.findById(id)
+
+            await Awb.updateOne({_id : id},{finalPrice : priceLabel.SumOfAllCharges })
+            await AwbHistory.updateOne({_id : id},{finalPrice : priceLabel.SumOfAllCharges })
             let total_weight = 0
             if(awb.packages.length == 0){
               resolve({ success: true, message: strings.string_response_updated ,totalWeight : 0.00});

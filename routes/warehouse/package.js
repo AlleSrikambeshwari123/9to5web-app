@@ -9,10 +9,14 @@ router.get('/package/list', middleware().checkSession, packageCtrl.get_package_l
 router.get('/package/package-detail/:id', middleware().checkSession, packageCtrl.get_package_detail);
 router.post('/package/all-list', middleware().checkSession, packageCtrl.get_all_package_list);
 router.get('/snapshot/package/list', middleware().checkSession, packageCtrl.get_package_list_snapshot);
+router.get('/snapshot/package/list/report', middleware().checkSession, packageCtrl.get_package_list_snapshotReport);
 router.get('/snapshot/package/:id', middleware().checkSession, packageCtrl.get_package_snapshot);
+router.get('/snapshot/package/report/:id', middleware().checkSession, packageCtrl.get_package_snapshotReport);
 router.get('/customer/package/list/:id', middleware().checkSession, packageCtrl.get_customer_package_list);
 router.get('/package/locations', middleware().checkSession, packageCtrl.get_package_locations);
+router.get('/package/locations/report', middleware().checkSession, packageCtrl.get_package_locationsReport);
 router.get('/package/zones', middleware().checkSession, packageCtrl.get_package_zones);
+router.get('/package/zones/report', middleware().checkSession, packageCtrl.get_package_zonesReport);
 router.get('/package/list/:filter', middleware().checkSession, packageCtrl.get_filtered_package_list);
 router.post('/package/all-deliver-list', middleware().checkSession, packageCtrl.get_all_delivered_package_list);
 router.post('/package/all-list/:filter', middleware().checkSession, packageCtrl.get_all_filtered_package_list);

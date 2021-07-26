@@ -5,13 +5,17 @@ var services = require('../Services/RedisDataServices');
 var momentz = require('moment-timezone')
 
 router.get('/', function (req, res, next) {
+  
   if (req.session.token)
     res.redirect('/dashboard');
   else
     res.render('index');
 });
+const adminMiddleware = (req,res,next)=>{
+  req.session.isAdmin ? next() : res.redirect("/customer/awb")   
+}
 
-router.get('/report', middleware(services.userService).checkSession, function (req, res, next) {
+router.get('/report',adminMiddleware, middleware(services.userService).checkSession, function (req, res, next) {
   services.userService.getAllUsers().then( users =>
     res.render('pages/report', {
       page: req.originalUrl,

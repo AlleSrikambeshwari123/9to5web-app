@@ -120,6 +120,10 @@
                         <tbody>
                           <% var totalWeight = 0,volumetricWeight =0;
                           awb.packages.forEach((package,pick) => {
+                            if(package.packageType == 'Cube' && package.masterWeight){
+                              package.weight = package.masterWeight
+                              package.dimensions = package.masterDimensions ? package.masterDimensions : package.dimensions
+                            }
                             totalWeight += Number(package.weight);
                             let check = 1
                             package.dimensions.split('x').forEach(data =>{
@@ -132,10 +136,10 @@
                             <td>Piece#<%= pick + 1%></td>
                             <td><%= package.trackingNo%></td>
                             <td><%= package.lastStatusText%></td>
-                            <td class="text-center"><%= package.description%></td>
+                            <td class="text-center"><%=(package.packageType == 'Cube' && package.masterDescription) ? package.masterDescription : package.description%></td>
                             <td class="text-center"><%= package.packageType%></td>
-                            <td class="text-center"><%= package.dimensions%></td>
-                            <td class="text-right"><%= Number(package.weight).toFixed(2)%>
+                            <td class="text-center"><%= (package.packageType == 'Cube' && package.masterDimensions) ? package.masterDimensions : package.dimensions%></td>
+                            <td class="text-right"><%= Number((package.packageType == 'Cube' && package.masterWeight) ? package.masterWeight : package.weight).toFixed(2)%>
                               <%= package.packageCalculation||'kg' %></td>
                               <td class="text-right"><%= Number(package.volumetricWeight).toFixed(2)%> vlbs</td>
                               <td class="text-center">
