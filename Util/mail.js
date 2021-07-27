@@ -35,6 +35,7 @@ exports.sendEmail = (toEmail, subject, html) => {
 
 
 exports.send = (filePath, mailData) => {
+  try{
   filePath = path.join(`${appRoot}/public/emails/`, filePath);
   console.log(filePath);
   fs.readFile(filePath, "UTF8", (err, html) => {
@@ -112,6 +113,10 @@ exports.send = (filePath, mailData) => {
       //})
     }
   })
+}
+catch(e){
+  console.log("error " , e)
+}
 }
 
 const setAuthToken = token => {
