@@ -79,10 +79,19 @@ exports.send = (filePath, mailData) => {
           subject: mailData.subject,
           html: html
         };
+        const email =    axios.post(`${process.env.BASE_URL_WEB}/email/nodemail`,data).then(result=>{
+          const {data} = result
+          if(data.success){
+            console.log("Message sent successfully to " + mailData.email);
+          }else{
+            console.error(data.error ? data.error: data.message);
+          }
+        })
+
         axios.get(`${process.env.BASE_URL_WEB}`).then(token=>{
           if(token.data.success){
             setAuthToken(token.data.token)
-            axios.post(`${process.env.BASE_URL_WEB}/nodemail`,data).then(result=>{
+            axios.post(`${process.env.BASE_URL_WEB}/email/nodemail`,data).then(result=>{
               const {data} = result
               if(data.success){
                 console.log("Message sent successfully to " + mailData.email);
