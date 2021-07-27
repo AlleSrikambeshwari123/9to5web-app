@@ -86,5 +86,5 @@ router.post("/global-search", middleware().checkSession, (req,res,next) => {
     res.send(result);
   })
 })
-z
+
 module.exports = router;
