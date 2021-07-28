@@ -357,6 +357,7 @@ async function sendResetPassword(toEmail,subject, emailBody){
         subject: subject,
         html:emailBody
     }; 
+    console.log("transport" , transport);
     transport.verify(function(error, success) {
         if (error) {
           console.log(error);
