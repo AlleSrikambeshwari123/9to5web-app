@@ -41,6 +41,8 @@ var moment = require('moment');
             epath = "public/emails/store_package/index.html"        
         else if (emailType == "invoice")
             epath = "public/emails/invoices/index.html"
+        else if (emailType == "invoice")
+            epath = "public/emails/reset_password/user1.html"
         console.log('using email:',epath)
         fs.readFile(path.join(__dirname.replace("Util",""),epath), "UTF8", function(err, data) {
             if (err)
@@ -363,13 +365,13 @@ async function sendReportEmail(toEmail,subject, emailBody){
 async function sendResetPassword(toEmail,subject, emailBody){
     console.log("send Reset Password")
     console.log("HOST" , process.env.SMTP_HOST  , "SMTP PORT" , process.env.SMTP_PORT ,"user" , process.env.SMTP_USER , "pass" ,process.env.SMTP_PASSWORD );
-
+    var emailBody1 = await readEmailTemplate("resetpass"); 
     
     message = { 
         to : toEmail?toEmail:'kim@postboxesetc.com', 
         from : '9-5 Import <no-reply@95import.com>',
         subject: subject,
-        html:emailBody
+        html:emailBody1
     }; 
     console.log("transport" , transport);
     transport.verify(function(error, success) {
