@@ -11,8 +11,8 @@ var nodemailer = require('nodemailer');
 //     });
 
     const transport = nodemailer.createTransport({
-        host: "smtp.mailgun.org",
-        port: 587,
+        host: process.env.SMTP_HOST,
+        port: process.env.SMTP_PORT,
         tls: { ciphers: 'SSLv3' },
         auth: {
             user: process.env.SMTP_USER,
