@@ -25,7 +25,7 @@ var nodemailer = require('nodemailer');
 var path = require('path'); 
 var fs = require('fs');
 var moment = require('moment'); 
-var customer = require('../models/customer')
+var Customer = require('../models/customer')
 
  function readEmailTemplate(emailType){
     return  new Promise((resolve,reject)=>{
