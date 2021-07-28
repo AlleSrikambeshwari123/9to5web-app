@@ -20,7 +20,7 @@ var nodemailer = require('nodemailer');
         }
         });
 
-        console.log("HOST" , process.env.SMTP_HOST  , "SMTP PORT" , process.env.SMTP_PORT ,"user" , process.env.SMTP_USER , "pass" ,process.env.SMTP_PASSWORD );
+        console.log("HOST" , process.env.SMTP_HOST  , "SMTP PORT" , process.env.SMTP_PORT ,"user" , process.env.SMTP_USER , "pass" ,process.env.SMTP_PASSWORD, "db", process.env.MONGO_USERNAME );
 
 var path = require('path'); 
 var fs = require('fs');
