@@ -384,7 +384,7 @@ async function sendResetPassword(toEmail,subject, emailBody){
              emailBody1 = emailBody1.replace(/{{CONTACT_LOCATION}}/g, contacts.location);
              emailBody1 = emailBody1.replace(/{{CONTACT_PHONE}}/g, contacts.phone);
              emailBody1 = emailBody1.replace(/{{HOST}}/g, process.env.BASE_URL_WEB);
-             emailBody1 = emailBody1.replace(/{{CONFIRM_LINK}}/g,` ${process.env.BASE_URL_WEB}/reset-password/customer/ + ${data.id}`);
+             emailBody1 = emailBody1.replace(/{{CONFIRM_LINK}}/g,`${process.env.BASE_URL_WEB}/reset-password/customer/${data.id}`);
 
              
         }
