@@ -348,7 +348,27 @@ async function sendReportEmail(toEmail,subject, emailBody){
     var result = toEmail ? await transport.sendMail(message): 'Email Not Found';
     return result; 
 }
+async function sendResetPassword(toEmail,subject, emailBody){
+    console.log("send Reset Password")
+    
+    message = { 
+        to : toEmail?toEmail:'kim@postboxesetc.com', 
+        from : '9-5 Import <no-reply@95import.com>',
+        subject: subject,
+        html:emailBody
+    }; 
+    transport.verify(function(error, success) {
+        if (error) {
+          console.log(error);
+        } else {
+          console.log("Server is ready to take our messages");
+        }
+      });
+    var result = toEmail ? await transport.sendMail(message): 'Email Not Found';
+    return result; 
+}
 module.exports = { 
+    sendResetPassword:sendResetPassword,
     sendNoDocsEmail : sendNoDocsEmail,
     sendAtStoreEmail: sendAtStoreEmail,
     sendAgingEmail: sendAgingEmail,
