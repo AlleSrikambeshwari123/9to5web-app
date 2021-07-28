@@ -38,7 +38,7 @@ exports.send = async (filePath, mailData) => {
   try{
   filePath = path.join(`${appRoot}/public/emails/`, filePath);
   console.log(filePath);
- await fs.readFile(filePath, "UTF8", (err, html) => {
+ await fs.readFile(filePath, "UTF8",async (err, html) => {
     if (err) {
       console.error(err);
     } else {
