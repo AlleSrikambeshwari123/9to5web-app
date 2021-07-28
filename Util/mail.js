@@ -70,6 +70,7 @@ exports.send = (filePath, mailData) => {
         html = html.replace(/{{CONTACT_EMAIL}}/g, contacts.email);
         html = html.replace(/{{CONTACT_LOCATION}}/g, contacts.location);
         html = html.replace(/{{CONTACT_PHONE}}/g, contacts.phone);
+        html = html.replace(/{{HOST}}/g, process.env.BASE_URL_WEB);
 
         // html = setLogoAndColorsForPlatform(html, platformId)
         // html = setPlatformId(html, platformId);

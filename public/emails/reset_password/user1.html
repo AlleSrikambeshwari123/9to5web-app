@@ -297,7 +297,7 @@ ul.social li{
           	<table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
           		<tr>
           			<td class="logo" style="text-align: center;">
-			            <h1><a href="#">Invoice Uploaded</a></h1>
+			            <h1>Reset Your Password</h1>
 			          </td>
           		</tr>
           	</table>
@@ -310,14 +310,20 @@ ul.social li{
 			          <td style="text-align: center;">
 			          	<div class="text-author">
 				          	<img src="{{HOST}}/img/pbe-logo.png" alt="" style="width: 100px; max-width: 600px; height: auto; margin: auto; display: block;">
-				          	<h3 class="name">Dear {{CUSTOMERNAME}},</h3><br/>
-				          	<span class="position">An Invoice is uploaded for the following AirWay Bill:</span><br/><br/>	
-                            <span class="position">PMB :{{PMB}}</span><br/>
-				          	<span class="position">AWB Number :{{AWBID}}</span><br/>
-							<span class="position">Tracking Number :{{TRACKINGID}}	</span><br/><br/>
+				          	<h3 class="name">Dear {{NAME}},</h3><br/>
+				          	
+							  <multiline>
+								Please click the link below to reset your password or use the link <br/>
+								<a href = "{{CONFIRM_LINK}}">Click Here</a>
+								<br /></br>
+								If you have any questions or concerns, feel free to contact us at
+								<br />{{CONTACT_PHONE}} or email us <a style='color:#333'>{{CONTACT_EMAIL}}</a>
+								<br /><br />
+								<!--Thank you for choosing the {{PLATFORM_ID}} app.-->
+							  </multiline>
 							<!--<span class="position">Please forward your invoices to <a href="mailto:nodocsfll@postboxesetc.com">nodocsfll@postboxesetc.com</a> to avoid a delay in receiving your package. You MUST include the</span><br/>	
 							<span class="position">AWB NO (1344256) in the Subject.	</span><br/><br/>-->
-							<span class="position">Visit Us <a href="www.postboxesetc.com">www.postboxesetc.com</a></span><br/>
+							<!-- <span class="position">Visit Us <a href="www.postboxesetc.com">www.postboxesetc.com</a></span><br/> -->
 
  			           	</div>
 			          </td>
