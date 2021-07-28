@@ -505,7 +505,7 @@ class UserService {
         if (!user) {
           return resolve({ success: false, message: strings.string_user_not_found });
         }
-        this.sendEmail('reset_password', user, webUrl);
+      await  this.sendEmail('reset_password', user, webUrl);
         resolve({ success: true, message: strings.string_password_reseted });
       } catch (error) {
         console.log(error);
@@ -514,9 +514,9 @@ class UserService {
     })
   }
 
-  sendEmail(emailType, user, webUrl) {
+  async sendEmail(emailType, user, webUrl) {
     if (emailType == "reset_password") {
-      mail.send('reset_password/user.html', {
+    await  mail.send('reset_password/user.html', {
         email: user.email,
         subject: "Password Reset Request",
         NAME: user.firstName,
