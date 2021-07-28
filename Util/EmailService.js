@@ -372,6 +372,17 @@ async function sendResetPassword(toEmail,subject, emailBody){
     let customer = await Customer.findOne({ email: toEmail }).then((data)=>{
         if(data){
             emailBody1 = emailBody1.replace("{{NAME}}",data.firstName);
+            const contacts = {
+                email:'',
+                location:'',
+                phone:''
+              }
+             // contactService.getInfo().then(contacts => {
+             // html = html.replace(/{{HOST}}/g, (mailData.HOST ? mailData.HOST : HOST));
+             emailBody1 = emailBody1.replace(/{{CONTACT_EMAIL}}/g, contacts.email);
+             emailBody1 = emailBody1.replace(/{{CONTACT_LOCATION}}/g, contacts.location);
+             emailBody1 = emailBody1.replace(/{{CONTACT_PHONE}}/g, contacts.phone);
+             emailBody1 = emailBody1.replace(/{{HOST}}/g, process.env.BASE_URL_WEB);
 
         }
     })
