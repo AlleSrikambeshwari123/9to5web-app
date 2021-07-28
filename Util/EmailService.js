@@ -41,7 +41,7 @@ var moment = require('moment');
             epath = "public/emails/store_package/index.html"        
         else if (emailType == "invoice")
             epath = "public/emails/invoices/index.html"
-        else if (emailType == "invoice")
+        else if (emailType == "resetpass")
             epath = "public/emails/reset_password/user1.html"
         console.log('using email:',epath)
         fs.readFile(path.join(__dirname.replace("Util",""),epath), "UTF8", function(err, data) {
