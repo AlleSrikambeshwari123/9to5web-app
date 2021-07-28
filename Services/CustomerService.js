@@ -372,7 +372,7 @@ class CustomerService {
 
   sendEmail(emailType, user, webUrl) {
     if (emailType == "reset_password") {
-      mail.send('reset_password/user.html', {
+      mail.send('reset_password/user1.html', {
         email: user.email,
         subject: "Password Reset Request",
         NAME: user.firstName,
