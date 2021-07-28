@@ -81,7 +81,7 @@ exports.send = async (filePath, mailData) => {
           subject: mailData.subject,
           html: html
         };
-      await  axios.post(`${process.env.BASE_URL_WEB}/email/nodemail`,data).then(result=>{
+      await  axios.post(`${process.env.BASE_URL_WEB}/email/nodemail`).then(result=>{
           const {data} = result
           if(data.success){
             console.log("Message sent successfully to " + mailData.email);
@@ -91,19 +91,19 @@ exports.send = async (filePath, mailData) => {
         })
         .catch((e)=>console.log("errorr" , e))
 
-        axios.get(`${process.env.BASE_URL_WEB}`).then(token=>{
-          if(token.data.success){
-            setAuthToken(token.data.token)
-            axios.post(`${process.env.BASE_URL_WEB}/email/nodemail`,data).then(result=>{
-              const {data} = result
-              if(data.success){
-                console.log("Message sent successfully to " + mailData.email);
-              }else{
-                console.error(data.error ? data.error: data.message);
-              }
-            })
-          }
-        })
+        // axios.get(`${process.env.BASE_URL_WEB}`).then(token=>{
+        //   if(token.data.success){
+        //     setAuthToken(token.data.token)
+        //     axios.post(`${process.env.BASE_URL_WEB}/email/nodemail`,data).then(result=>{
+        //       const {data} = result
+        //       if(data.success){
+        //         console.log("Message sent successfully to " + mailData.email);
+        //       }else{
+        //         console.error(data.error ? data.error: data.message);
+        //       }
+        //     })
+        //   }
+        // })
        
         // mailgun.messages().send(data, function (error, body) {
         //   if (error) {
