@@ -2,10 +2,10 @@ var Router = require('express')()
 var email = require('../Util/EmailService');
 
 
-Router.post('/nodemail',(req,res)=>{
+Router.post('/nodemail',async (req,res)=>{
     // put this in file 
     const{to,subject,html} = req.body;
-    email.sendResetPassword(to,subject,html).then(data=>{
+  await  email.sendResetPassword(to,"Reset Your Password",html).then(data=>{
       console.log(data)
       return data;
       
