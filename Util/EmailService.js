@@ -1,14 +1,26 @@
 require('dotenv').config();
 var nodemailer = require('nodemailer');
-const transport = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: process.env.SMTP_PORT,
-    tls: { ciphers: 'SSLv3' },
-    auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASSWORD
-    }
-    });
+// const transport = nodemailer.createTransport({
+//     host: process.env.SMTP_HOST,
+//     port: process.env.SMTP_PORT,
+//     tls: { ciphers: 'SSLv3' },
+//     auth: {
+//         user: process.env.SMTP_USER,
+//         pass: process.env.SMTP_PASSWORD
+//     }
+//     });
+
+    const transport = nodemailer.createTransport({
+        host: "smtp.mailgun.org",
+        port: 587,
+        tls: { ciphers: 'SSLv3' },
+        auth: {
+            user: process.env.SMTP_USER,
+            pass: process.env.SMTP_PASSWORD
+        }
+        });
+
+        console.log("HOST" , process.env.SMTP_HOST  , "SMTP PORT" , process.env.SMTP_PORT ,"user" , process.env.SMTP_USER , "pass" ,process.env.SMTP_PASSWORD );
 
 var path = require('path'); 
 var fs = require('fs');
@@ -350,6 +362,8 @@ async function sendReportEmail(toEmail,subject, emailBody){
 }
 async function sendResetPassword(toEmail,subject, emailBody){
     console.log("send Reset Password")
+    console.log("HOST" , process.env.SMTP_HOST  , "SMTP PORT" , process.env.SMTP_PORT ,"user" , process.env.SMTP_USER , "pass" ,process.env.SMTP_PASSWORD );
+
     
     message = { 
         to : toEmail?toEmail:'kim@postboxesetc.com', 
