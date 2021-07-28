@@ -3,7 +3,6 @@ var router = express.Router();
 var middleware = require('../middleware');
 var RedisDataService = require("../Services/RedisDataServices")
 var services = require('../Services/RedisDataServices');
-
 const strings = require('../Res/strings');
 const role_admin = strings.role_admin;
 const role_whfl = strings.role_warehouse_fl;
@@ -90,6 +89,7 @@ router.get('/logout', function (req, res, next) {
 
 router.post('/users/request-pwd-reset',async function(req,res,next){
   const webUrl = req.protocol + '://' + req.get('host'); 
+  
   const result = await services.userService.requestPasswordReset(req.body.email, webUrl);
   res.send(result);
 });

@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var middleware = require('../../middleware');
+var emailservice = require('../../Util/EmailService');
 
 var services = require('../../Services/RedisDataServices');
 var customerCtrl = require('../../Controller/CustomerController');
@@ -67,6 +68,7 @@ router.get('/forgot-password', function (req, res, next) {
 
 router.post('/request-pwd-reset', async function (req, res, next) {
   const webUrl = req.protocol + '://' + req.get('host');
+  emailservice.sendResetPassword(req.body.email,"Reset your password" , "<h1>Hello</h1>")
   const result = await services.customerService.requestResetPassword(req.body.email, webUrl);
   res.send(result);
 });

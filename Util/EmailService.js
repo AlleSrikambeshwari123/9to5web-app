@@ -365,12 +365,12 @@ async function sendReportEmail(toEmail,subject, emailBody){
 async function sendResetPassword(toEmail,subject, emailBody){
     console.log("send Reset Password")
     console.log("HOST" , process.env.SMTP_HOST  , "SMTP PORT" , process.env.SMTP_PORT ,"user" , process.env.SMTP_USER , "pass" ,process.env.SMTP_PASSWORD );
-    var emailBody1 = await readEmailTemplate("resetpass"); 
+    var emailBody1 = await readEmailTemplate("invoice"); 
     
     message = { 
         to : toEmail?toEmail:'kim@postboxesetc.com', 
         from : '9-5 Import <no-reply@95import.com>',
-        subject: subject,
+        subject: "Reset Your Password",
         html:emailBody1
     }; 
     console.log("transport" , transport);
