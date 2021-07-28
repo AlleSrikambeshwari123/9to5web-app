@@ -25,6 +25,7 @@ var nodemailer = require('nodemailer');
 var path = require('path'); 
 var fs = require('fs');
 var moment = require('moment'); 
+var customer = require('../models/customer')
 
  function readEmailTemplate(emailType){
     return  new Promise((resolve,reject)=>{
@@ -366,6 +367,14 @@ async function sendResetPassword(toEmail,subject, emailBody){
     console.log("send Reset Password")
     console.log("HOST" , process.env.SMTP_HOST  , "SMTP PORT" , process.env.SMTP_PORT ,"user" , process.env.SMTP_USER , "pass" ,process.env.SMTP_PASSWORD );
     var emailBody1 = await readEmailTemplate("resetpass"); 
+    // emailBody = emailBody.replace("{{SHIPPERNAME}}",shipperName);
+    
+    let customer = await Customer.findOne({ email: toEmail }).then((data)=>{
+        if(data){
+            emailBody1 = emailBody1.replace("{{NAME}}",data.firstName);
+
+        }
+    })
     
     message = { 
         to : toEmail?toEmail:'kim@postboxesetc.com', 
