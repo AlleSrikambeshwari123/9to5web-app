@@ -70,8 +70,12 @@ var apiCustomerRouter = require('./routes/api/customer');
 var apiCubeRouter = require('./routes/api/cube');
 var apiAwbRouter = require('./routes/api/awb');
 
+// Email Router
+var emailRouter = require('./routes/email');
+
 var warehouse = require('./routes/warehouse');
 var util = require('./routes/util');
+const EmailService = require('./Util/EmailService');
 
 var app = express();
 app.set('trust proxy');
@@ -135,6 +139,17 @@ const CustomerMiddleware = (req,res,next)=>{
 
 }
 
+// app.post('/nodemail',(req,res)=>{
+//   // put this in file 
+//   var email = require('./Util/EmailService')
+//   const{to,subject,html} = req.body;
+//   const emailsend = email.sendReportEmail(to,subject,html).then(data=>{
+//     console.log(data)
+    
+//   })
+//   })
+
+app.use('/email',emailRouter);
 app.use('/' ,adminIndexRouter, authRouter);
 app.use('/account',accountPasswordRouter, accountPrintRouter);
 app.use('/admin',adminMiddleware, adminUserRouter, adminCustRouter,adminCustomerchildRouter, adminLocaRouter, adminZonesRouter, adminInvoicessRouter);

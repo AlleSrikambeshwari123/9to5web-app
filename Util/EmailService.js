@@ -1,18 +1,31 @@
 require('dotenv').config();
 var nodemailer = require('nodemailer');
-const transport = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: process.env.SMTP_PORT,
-    tls: { ciphers: 'SSLv3' },
-    auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASSWORD
-    }
-    });
+// const transport = nodemailer.createTransport({
+//     host: process.env.SMTP_HOST,
+//     port: process.env.SMTP_PORT,
+//     tls: { ciphers: 'SSLv3' },
+//     auth: {
+//         user: process.env.SMTP_USER,
+//         pass: process.env.SMTP_PASSWORD
+//     }
+//     });
+
+    const transport = nodemailer.createTransport({
+        host: process.env.SMTP_HOST,
+        port: process.env.SMTP_PORT,
+        tls: { ciphers: 'SSLv3' },
+        auth: {
+            user: process.env.SMTP_USER,
+            pass: process.env.SMTP_PASSWORD
+        }
+        });
+
+        console.log("env",process.env,"HOST" , process.env.SMTP_HOST  , "SMTP PORT" , process.env.SMTP_PORT ,"user" , process.env.SMTP_USER , "pass" ,process.env.SMTP_PASSWORD, "db", process.env.MONGO_USERNAME );
 
 var path = require('path'); 
 var fs = require('fs');
 var moment = require('moment'); 
+var Customer = require('../models/customer')
 
  function readEmailTemplate(emailType){
     return  new Promise((resolve,reject)=>{
@@ -29,6 +42,8 @@ var moment = require('moment');
             epath = "public/emails/store_package/index.html"        
         else if (emailType == "invoice")
             epath = "public/emails/invoices/index.html"
+        else if (emailType == "resetpass")
+            epath = "public/emails/reset_password/user1.html"
         console.log('using email:',epath)
         fs.readFile(path.join(__dirname.replace("Util",""),epath), "UTF8", function(err, data) {
             if (err)
@@ -348,7 +363,52 @@ async function sendReportEmail(toEmail,subject, emailBody){
     var result = toEmail ? await transport.sendMail(message): 'Email Not Found';
     return result; 
 }
+async function sendResetPassword(toEmail,subject, emailBody){
+    console.log("send Reset Password")
+    console.log("HOST" , process.env.SMTP_HOST  , "SMTP PORT" , process.env.SMTP_PORT ,"user" , process.env.SMTP_USER , "pass" ,process.env.SMTP_PASSWORD );
+    var emailBody1 = await readEmailTemplate("resetpass"); 
+    // emailBody = emailBody.replace("{{SHIPPERNAME}}",shipperName);
+    
+    let customer = await Customer.findOne({ email: toEmail }).then((data)=>{
+        if(data){
+            
+            emailBody1 = emailBody1.replace("{{NAME}}",data.firstName);
+            const contacts = {
+                email:'',
+                location:'',
+                phone:''
+              }
+             // contactService.getInfo().then(contacts => {
+             // html = html.replace(/{{HOST}}/g, (mailData.HOST ? mailData.HOST : HOST));
+             emailBody1 = emailBody1.replace(/{{CONTACT_EMAIL}}/g, contacts.email);
+             emailBody1 = emailBody1.replace(/{{CONTACT_LOCATION}}/g, contacts.location);
+             emailBody1 = emailBody1.replace(/{{CONTACT_PHONE}}/g, contacts.phone);
+             emailBody1 = emailBody1.replace(/{{HOST}}/g, process.env.BASE_URL_WEB);
+             emailBody1 = emailBody1.replace(/{{CONFIRM_LINK}}/g,`${process.env.BASE_URL_WEB}/reset-password/customer/${data.id}`);
+
+             
+        }
+    })
+    
+    message = { 
+        to : toEmail?toEmail:'kim@postboxesetc.com', 
+        from : '9-5 Import <no-reply@95import.com>',
+        subject: "Reset Your Password",
+        html:emailBody1
+    }; 
+    console.log("transport" , transport);
+    transport.verify(function(error, success) {
+        if (error) {
+          console.log(error);
+        } else {
+          console.log("Server is ready to take our messages");
+        }
+      });
+    var result = toEmail ? await transport.sendMail(message): 'Email Not Found';
+    return result; 
+}
 module.exports = { 
+    sendResetPassword:sendResetPassword,
     sendNoDocsEmail : sendNoDocsEmail,
     sendAtStoreEmail: sendAtStoreEmail,
     sendAgingEmail: sendAgingEmail,

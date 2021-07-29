@@ -34,10 +34,11 @@ exports.sendEmail = (toEmail, subject, html) => {
 };
 
 
-exports.send = (filePath, mailData) => {
+exports.send = async (filePath, mailData) => {
+  try{
   filePath = path.join(`${appRoot}/public/emails/`, filePath);
   console.log(filePath);
-  fs.readFile(filePath, "UTF8", (err, html) => {
+ await fs.readFile(filePath, "UTF8",async (err, html) => {
     if (err) {
       console.error(err);
     } else {
@@ -69,6 +70,7 @@ exports.send = (filePath, mailData) => {
         html = html.replace(/{{CONTACT_EMAIL}}/g, contacts.email);
         html = html.replace(/{{CONTACT_LOCATION}}/g, contacts.location);
         html = html.replace(/{{CONTACT_PHONE}}/g, contacts.phone);
+        html = html.replace(/{{HOST}}/g, process.env.BASE_URL_WEB);
 
         // html = setLogoAndColorsForPlatform(html, platformId)
         // html = setPlatformId(html, platformId);
@@ -79,19 +81,29 @@ exports.send = (filePath, mailData) => {
           subject: mailData.subject,
           html: html
         };
-        axios.get(`${process.env.BASE_URL_WEB}`).then(token=>{
-          if(token.data.success){
-            setAuthToken(token.data.token)
-            axios.post(`${process.env.BASE_URL_WEB}/nodemail`,data).then(result=>{
-              const {data} = result
-              if(data.success){
-                console.log("Message sent successfully to " + mailData.email);
-              }else{
-                console.error(data.error ? data.error: data.message);
-              }
-            })
+      await  axios.post(`${process.env.BASE_URL_WEB}/email/nodemail`).then(result=>{
+          const {data} = result
+          if(data.success){
+            console.log("Message sent successfully to " + mailData.email);
+          }else{
+            console.error(data.error ? data.error: data.message);
           }
         })
+        .catch((e)=>console.log("errorr" , e))
+
+        // axios.get(`${process.env.BASE_URL_WEB}`).then(token=>{
+        //   if(token.data.success){
+        //     setAuthToken(token.data.token)
+        //     axios.post(`${process.env.BASE_URL_WEB}/email/nodemail`,data).then(result=>{
+        //       const {data} = result
+        //       if(data.success){
+        //         console.log("Message sent successfully to " + mailData.email);
+        //       }else{
+        //         console.error(data.error ? data.error: data.message);
+        //       }
+        //     })
+        //   }
+        // })
        
         // mailgun.messages().send(data, function (error, body) {
         //   if (error) {
@@ -103,6 +115,10 @@ exports.send = (filePath, mailData) => {
       //})
     }
   })
+}
+catch(e){
+  console.log("error " , e)
+}
 }
 
 const setAuthToken = token => {
