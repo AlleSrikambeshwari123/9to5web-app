@@ -73,7 +73,7 @@
                    </td>
             
 
-  <%   
+  <%   if(awbscountdata.length > 0){
     for(var j =0;j<pkg.customerId.awb.length;j++){
     console.log(awbscountdata[i].awbid.toString() ,"----", pkg.customerId.awb[j].toString() ,"hellllss" )
     if(awbscountdata[i].awbid.toString() == pkg.customerId.awb[j].toString()  ){ %>
@@ -83,7 +83,7 @@
       <%  }  %>
     
 
-      <% }  %>
+      <% }}  %>
       <td>
         <a href="javascript:void(0)" onclick="showUploadInvoiceModal('<%-pkg._id%>')" class="btn btn-link btn-primary px-3" data-toggle="tooltip"
           data-original-title="View Details"> <i class="fas fa-upload"></i></a>
