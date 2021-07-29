@@ -55,8 +55,9 @@
             <tbody>
               <% var i = 0 %>
               <!-- <% console.log(adInvoice,  "                end                  " ,awbs[0]) %> -->
-              <% awbs.forEach(function(pkg){ %>
-              <tr data-record="<%= pkg._id %>">
+              
+              <% if(awbs.length > 0){ awbs.forEach(function(pkg){ %>
+            <tr data-record="<%= pkg._id %>">
       
                
                 <td><%= helpers.formatDate(pkg.createdAt) %></td>
@@ -69,7 +70,7 @@
                 <td><%-pkg.invoice_attach?"Invoice Uplaoded":"Invoice Needed" %></td>
                 <td><%= pkg.invoices.length%></td>
                
-            </td>
+                   </td>
             
 
   <%   
@@ -88,7 +89,7 @@
           data-original-title="View Details"> <i class="fas fa-upload"></i></a>
     </td> 
           </tr>
-<% i++; %>
+<%}  i++; %>
               </tr>
               <%})%>
             </tbody>
