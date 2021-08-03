@@ -56,7 +56,7 @@
                 <th>
                   Status
                 </th>
-                <th>Actions</th>
+                <!-- <th>Actions</th> -->
               </tr>
             </thead>
             <tbody>
@@ -68,7 +68,7 @@
                   <%= pkg.awbId %>
                 </td>
 
-                <td><%= pkg.totalPrice%></td>
+                <td>$<%= pkg.totalPrice%></td>
                 <td><%= pkg.packages.length %></td>
                 <td>
                   <%= pkg.shipperName %>
@@ -76,10 +76,10 @@
                 <td>
                     <%- pkg.status %>
                 </td>
-                <td>
+                <!-- <td>
                   <a href="/customer/awb/<%=pkg.awbId ? pkg._id: '#'%>/preview" class="btn btn-link btn-primary px-3" data-toggle="tooltip"
                     data-original-title="View Details"> <i class="fa fa-eye"></i> </a>
-              </td>
+              </td> -->
 
               </tr>
               <%})%>
