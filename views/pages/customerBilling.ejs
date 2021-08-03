@@ -13,7 +13,7 @@
 
   table.dataTable .dataTables_info .select-info {
     display: block;
-  }
+  } 
 </style>
 <div class="gutters">
   <div class="col-xl-12 col-lg-6 col-md-12 col-sm-12">
@@ -52,14 +52,14 @@
             </thead>
             <tbody>
               <% awbs.forEach(function(pkg){ %>
-              <tr data-record="<%= pkg._id %>">
+              <tr data-record="<%= pkg._id %>" >
                
                 <td><%= helpers.formatDate(pkg.createdAt) %></td>
                 <td>
                   <%= pkg.awbId %>
                 </td>
 
-                <td><%= pkg.totalPrice%></td>
+                <td>$<%= pkg.totalPrice%></td>
                 <td><%= pkg.packages.length %></td>
                 <td>
                   <%= pkg.shipperName %>
@@ -68,7 +68,7 @@
                     <%- pkg.pricing.TotalWeightValue %>
                 </td>
                 <td>
-                    <%- pkg.pricing.TotalInvoiceValue %>
+                    <%- pkg.pricing.TotalInvoiceValue.toFixed(2) %>
                 </td>
                 <td>
                   <!-- <a href="javascript:void(0)" onclick="showPriceBreakupModal('<%-pkg._id%>')" class="btn btn-round btn-primary px-3" data-toggle="tooltip"
@@ -145,14 +145,14 @@ const rows = [
                 </div>
                 <div class="col-md-4">
                     <table class="table">
-                        <tbody>
+                        <tbody className="billingdata">
                           <div class="row">
                             <%rows.forEach((row,index)=>{%>
                               <% if (index <= 6){%>
                                 <div class="col-md-12">
                                   <tr>
-                                      <td><%-row.title%></td>
-                                      <td>$ <%-pricing[row.key]%></td>
+                                      <td style="padding: 0 !important;" ><%-row.title%></td>
+                                      <td style="padding: 0 !important;" >$<%-pricing[row.key]%></td>
                                   </tr>
                                 </div>
                                   <%}%>
@@ -171,8 +171,8 @@ const rows = [
                                 <% if (index > 6 && index < 14){%>
                                   <div class="row">
                                     <tr>
-                                        <td><%-row.title%></td>
-                                        <td>$ <%-pricing[row.key]%></td>
+                                      <td style="padding: 0 !important;" ><%-row.title%></td>
+                                      <td style="padding: 0 !important;" >$<%-pricing[row.key]%></td>
                                     </tr>
                                   </div>
                                     <%}%>
@@ -190,8 +190,8 @@ const rows = [
                                   <% if (index >= 14){%>
                                     <div class="row">
                                       <tr>
-                                          <td><%-row.title%></td>
-                                          <td>$ <%-pricing[row.key]%></td>
+                                        <td style="padding: 0 !important;" ><%-row.title%></td>
+                                        <td style="padding: 0 !important;" >$<%-pricing[row.key].toFixed(2)%></td>
                                       </tr>
                                     </div>
                                       <%}%>
