@@ -265,7 +265,7 @@ router.post('/add-packages-to-flight', middleware().checkSession, (req, res, nex
   let compartmentId = req.body.compartment || req.body.compartmentId;
   var userId = req['userId'];
   const {valid,errors} = checkEmpty({packageIds:packageIds,manifestId :manifestId,userId:userId,compartmentId:compartmentId})
-  if(!valid) return res.send({success:false,message:errors})
+  if(!valid) return res.send({success:false,message:"Please Select Compartment"})
   services.packageService.addToFlight(packageIds, manifestId, compartmentId, userId).then((result) => {
     res.send(result)
   })
