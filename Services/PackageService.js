@@ -2882,6 +2882,9 @@ class PackageService {
             if (!packages || packages.length === 0) {
                 return resolve({ success: false, message: 'Please select packages.' });
             }
+            if (!compartmentId || compartmentId.length === 0) {
+                return resolve({ success: false, message: 'Please select Compartment.' });
+            }
             let compartmentResult = await this.services.planeService.getCompartment(compartmentId)
             let compartmentPackages = await this.getPackagesByObject({manifestId : manifestId,compartmentId : compartmentId})
             let totalPkgWeight=0,totalCompWeight=0,flag = false;
