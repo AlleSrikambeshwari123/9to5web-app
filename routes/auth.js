@@ -81,7 +81,9 @@ router.get('/reset-password/postbox/customer/:id',async function(req, res, next)
 });
 router.post('/reset-password/postbox/customer/:id', function (req, res, next) {
   services.customerService.resetPassword(req.params.id, req.body.password).then(pwdResult => {
-    res.send(pwdResult);
+    // res.send(pwdResult);
+    res.send(pwdResult)
+
   })
 });
 
