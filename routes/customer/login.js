@@ -27,7 +27,7 @@ router.get('/login', function (req, res, next) {
   if (req.session.token)
     res.redirect('/dashboard');
   else
-    res.render('login')
+    res.render('login',{process:process.env})
 });
 
 router.post('/login', (req, res, next) => {
@@ -63,7 +63,7 @@ router.post('/change-pass', middleware().checkSession, function (req, res, next)
 });
 
 router.get('/forgot-password', function (req, res, next) {
-  res.render('customer_forgot_password');
+  res.render('customer_forgot_password',{process:process.env});
 });
 
 router.post('/request-pwd-reset', async function (req, res, next) {

@@ -39,13 +39,13 @@ router.post('/login', (req, res, next) => {
 });
 
 router.get('/forgot-password', function (req, res, next) {  
-  res.render('forgot_password');
+  res.render('forgot_password',{process:process.env});
 });
 
 router.get('/reset-password/user/:id',async function(req, res, next){
   const result = await services.userService.getUserByResetPasswordToken(req.params.id);    
   result.reset_link = '/reset-password/user/' + req.params.id;
-  res.render('password-set-new',result); 
+  res.render('password-set-new',{result:result,process:process.env}); 
 });
 
 router.post('/reset-password/user/:id', async function(req, res, next){
@@ -56,19 +56,21 @@ router.post('/reset-password/user/:id', async function(req, res, next){
 
 router.get('/reset-password/success', function(req,res, next){
   res.render('password-set-success', {
+    process:process.env,
     loginUrl: req.query.login
   })
 })
 
 router.get('/reset-password/customer/success', function(req,res, next){
   res.render('password-set-customer-success', {
+    process:process.env,
     loginUrl: req.query.login
   })
 })
 router.get('/reset-password/customer/:id',async function(req, res, next){
   const result = await services.customerService.getUserByResetPasswordToken(req.params.id);
   result.reset_link = '/reset-password/customer/' + req.params.id;
-  res.render('password-set-new-customer',result);     
+  res.render('password-set-new-customer',{result:result,process:process.env});     
 });
 
 router.post('/reset-password/customer/:id', function (req, res, next) {

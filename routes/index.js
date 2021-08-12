@@ -9,7 +9,7 @@ router.get('/', function (req, res, next) {
   if (req.session.token)
     res.redirect('/dashboard');
   else
-    res.render('index');
+    res.render('index',{process:process.env});
 });
 const adminMiddleware = (req,res,next)=>{
   req.session.isAdmin ? next() : res.redirect("/customer/awb")   
