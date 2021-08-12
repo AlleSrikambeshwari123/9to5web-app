@@ -22,6 +22,14 @@ var storage = multer.diskStorage({
 var upload = multer({ storage: storage });
 
 
+
+router.get('/postbox/login', function (req, res, next) {
+
+  if (req.session.token)
+    res.redirect('/dashboard');
+  else
+    res.render('login',{process:process.env})
+});
 router.get('/login', function (req, res, next) {
 
   if (req.session.token)
@@ -62,8 +70,14 @@ router.post('/change-pass', middleware().checkSession, function (req, res, next)
   })
 });
 
+router.get('/postbox/forgot-password', function (req, res, next) {
+  console.log("i am called")
+  res.render('customer_forgot_password',{process:process.env , isPostbox:true});
+});
+
+
 router.get('/forgot-password', function (req, res, next) {
-  res.render('customer_forgot_password',{process:process.env});
+  res.render('customer_forgot_password',{process:process.env,isPostbox:false});
 });
 
 router.post('/request-pwd-reset', async function (req, res, next) {
