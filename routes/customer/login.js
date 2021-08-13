@@ -31,9 +31,9 @@ router.get('/postbox/login', function (req, res, next) {
     res.render('login',{process:process.env})
 });
 
-console.log(`${process.env.LOGIN_URL}`)
 
-router.get(`${process.env.LOGIN_URL}`, function (req, res, next) {
+
+router.get(`${process.env.LOGIN_URL.replace('/customer','')}`, function (req, res, next) {
 
   if (req.session.token)
     res.redirect('/dashboard');
@@ -93,7 +93,7 @@ router.get('/postbox/forgot-password', function (req, res, next) {
 // router.get('/forgot-password', function (req, res, next) {
 //   res.render('customer_forgot_password',{process:process.env,isPostbox:false});
 // });
-router.get(`${process.env.FORGOT_PASS_URL}`, function (req, res, next) {
+router.get(`${process.env.FORGOT_PASS_URLc}`, function (req, res, next) {
   res.render('customer_forgot_password',{process:process.env,isPostbox:false});
 });
 
