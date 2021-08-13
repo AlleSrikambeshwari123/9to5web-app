@@ -67,12 +67,21 @@ router.get('/reset-password/customer/success', function(req,res, next){
     loginUrl: req.query.login
   })
 })
-router.get('/reset-password/customer/:id',async function(req, res, next){
+// router.get('/reset-password/customer/:id',async function(req, res, next){
+//   const result = await services.customerService.getUserByResetPasswordToken(req.params.id);
+//   result.reset_link = '/reset-password/customer/' + req.params.id;
+//   result.postbox = false;
+//   res.render('password-set-new-customer',result);     
+// });
+
+router.get(`${process.env.RESETMAIL_URL}`,async function(req, res, next){
   const result = await services.customerService.getUserByResetPasswordToken(req.params.id);
   result.reset_link = '/reset-password/customer/' + req.params.id;
   result.postbox = false;
   res.render('password-set-new-customer',result);     
 });
+
+
 router.get('/reset-password/postbox/customer/:id',async function(req, res, next){
   const result = await services.customerService.getUserByResetPasswordToken(req.params.id);
   result.reset_link = '/reset-password/customer/' + req.params.id;

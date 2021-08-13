@@ -30,13 +30,26 @@ router.get('/postbox/login', function (req, res, next) {
   else
     res.render('login',{process:process.env})
 });
-router.get('/login', function (req, res, next) {
+
+console.log(`${process.env.LOGIN_URL}`)
+
+router.get(`${process.env.LOGIN_URL}`, function (req, res, next) {
 
   if (req.session.token)
     res.redirect('/dashboard');
   else
     res.render('login',{process:process.env})
 });
+
+// router.get('/login', function (req, res, next) {
+
+//   if (req.session.token)
+//     res.redirect('/dashboard');
+//   else
+//     res.render('login',{process:process.env})
+// });
+
+
 
 router.post('/login', (req, res, next) => {
   services.customerService.login(req.body.email.replace("%40", "@"), req.body.password).then(loginResult => {
@@ -76,9 +89,14 @@ router.get('/postbox/forgot-password', function (req, res, next) {
 });
 
 
-router.get('/forgot-password', function (req, res, next) {
+
+// router.get('/forgot-password', function (req, res, next) {
+//   res.render('customer_forgot_password',{process:process.env,isPostbox:false});
+// });
+router.get(`${process.env.FORGOT_PASS_URL}`, function (req, res, next) {
   res.render('customer_forgot_password',{process:process.env,isPostbox:false});
 });
+
 
 router.post('/request-pwd-reset', async function (req, res, next) {
   const webUrl = req.protocol + '://' + req.get('host');
