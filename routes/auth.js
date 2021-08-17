@@ -39,7 +39,7 @@ router.post('/login', (req, res, next) => {
 });
 
 router.get('/forgot-password', function (req, res, next) {  
-  res.render('forgot_password');
+  res.render('forgot_password',{process:process.env});
 });
 
 router.get('/reset-password/user/:id',async function(req, res, next){
@@ -56,19 +56,44 @@ router.post('/reset-password/user/:id', async function(req, res, next){
 
 router.get('/reset-password/success', function(req,res, next){
   res.render('password-set-success', {
+    process:process.env,
     loginUrl: req.query.login
   })
 })
 
 router.get('/reset-password/customer/success', function(req,res, next){
   res.render('password-set-customer-success', {
+    process:process.env,
     loginUrl: req.query.login
   })
 })
-router.get('/reset-password/customer/:id',async function(req, res, next){
+// router.get('/reset-password/customer/:id',async function(req, res, next){
+//   const result = await services.customerService.getUserByResetPasswordToken(req.params.id);
+//   result.reset_link = '/reset-password/customer/' + req.params.id;
+//   result.postbox = false;
+//   res.render('password-set-new-customer',result);     
+// });
+
+router.get(`${process.env.RESETMAIL_URL}`,async function(req, res, next){
   const result = await services.customerService.getUserByResetPasswordToken(req.params.id);
   result.reset_link = '/reset-password/customer/' + req.params.id;
+  result.postbox = false;
   res.render('password-set-new-customer',result);     
+});
+
+
+router.get('/reset-password/postbox/customer/:id',async function(req, res, next){
+  const result = await services.customerService.getUserByResetPasswordToken(req.params.id);
+  result.reset_link = '/reset-password/customer/' + req.params.id;
+  result.postbox = true ; 
+  res.render('password-set-new-customer',result);     
+});
+router.post('/reset-password/postbox/customer/:id', function (req, res, next) {
+  services.customerService.resetPassword(req.params.id, req.body.password).then(pwdResult => {
+    // res.send(pwdResult);
+    res.send(pwdResult)
+
+  })
 });
 
 router.post('/reset-password/customer/:id', function (req, res, next) {

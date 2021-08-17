@@ -101,6 +101,7 @@ exports.signup_customer = (req, res, next) => {
       services.locationService.getCompanies()
     ]).then((results) => {
       res.render('signup', {
+        process:process.env,
         page: req.originalUrl,
         title: "Sign Up",
         user: res.user,

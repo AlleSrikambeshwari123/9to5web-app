@@ -1,191 +1,451 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title><%= process.CLIENT_URL == "postboxesetc" ? "Post Boxes ETC" : "9-5 Import Portal" %></title>
+    <meta
+      content="width=device-width, initial-scale=1.0, shrink-to-fit=no"
+      name="viewport"
+    />
+    <link rel="icon" href="../img/favicon.png" type="image/x-icon" />
+    <script src="/js/utils.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.2.0/sweetalert2.min.css"
+    />
 
-<head>
-	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-	<title>9-5 Admin Portal</title>
-	<meta content='width=device-width, initial-scale=1.0, shrink-to-fit=no' name='viewport' />
-	<link rel="icon" href="../img/favicon.png" type="image/x-icon" />
-  <script src="/js/utils.js"></script>
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.2.0/sweetalert2.min.css">
+    <!-- Fonts and icons -->
+    <script src="/assets/js/plugin/webfont/webfont.min.js"></script>
+    <!-- <script src="/views/shared/__template.ejs"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.2.0/sweetalert2.all.min.js"></script>
 
-	<!-- Fonts and icons -->
-  <script src="/assets/js/plugin/webfont/webfont.min.js"></script>
-<!-- <script src="/views/shared/__template.ejs"></script> -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.2.0/sweetalert2.all.min.js"></script>
+    <script>
+      WebFont.load({
+        google: { families: ["Lato:300,400,700,900"] },
+        custom: {
+          families: [
+            "Flaticon",
+            "Font Awesome 5 Solid",
+            "Font Awesome 5 Regular",
+            "Font Awesome 5 Brands",
+            "simple-line-icons",
+          ],
+          urls: ["../assets/css/fonts.min.css"],
+        },
+        active: function () {
+          sessionStorage.fonts = true;
+        },
+      });
+    </script>
 
-	<script>
-		WebFont.load({
-			google: { "families": ["Lato:300,400,700,900"] },
-			custom: { "families": ["Flaticon", "Font Awesome 5 Solid", "Font Awesome 5 Regular", "Font Awesome 5 Brands", "simple-line-icons"], urls: ['../assets/css/fonts.min.css'] },
-			active: function () {
-				sessionStorage.fonts = true;
-			}
-		});
-	</script>
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/assets/css/atlantis.min.css" />
+  </head>
 
-	<!-- CSS Files -->
-	<link rel="stylesheet" href="/assets/css/bootstrap.min.css">
-	<link rel="stylesheet" href="/assets/css/atlantis.min.css">
-</head>
-
-<body class="login">
-	<div class="wrapper wrapper-login wrapper-login-full p-0">
-		<div
-			class="login-aside w-50 d-flex flex-column align-items-center justify-content-center text-center bg-primary-gradient">
-			<h1 class="title fw-bold text-white mb-3">9-5 Admin Portal</h1>
-			<p class="subtitle text-white op-7">9-5 Import</p>
-		</div>
-		<div class="login-aside w-75 d-flex align-items-center justify-content-center bg-white">
-			<div class="container container-transparent animated fadeIn">
-				<img src="../img/logo.jpg">
-				<h3 class="text-center mt-3">Sign up as Customer</h3>
-                <form id="signup-customer-form" method='POST' action='create'>
-                        <div class="row gutters">
-                          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-                            <div class="card">
-                              <div class="card-header">
-                                <h4 class="card-title"><%=title%></h4>
-                              </div>
-                              <div class="card-body">
-                                <div class="row">
-                                  <div class="col-md-6">
-                                    <div class="form-group form-show-validation row">
-                                      <label for="company" class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">Company </label>
-                                      <div class="col-lg-8 col-md-8 col-sm-8">
-                                        <select id="company" name="company" class="form-control" required>
-                                          <% companies.forEach(company => { %>
-                                            <option value="<%= company._id%>"> <%= company.name %>
-                                            </option>
-                                            <% }) %>
-                                        </select>
-                                      </div>
-                                    </div>
-                                    <div class="form-group form-show-validation row">
-                                      <label for="pmb" class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">PMB </label>
-                                      <div class="col-lg-8 col-md-8 col-sm-8">
-                                        <input type="number" class="form-control" id="pmb" name="pmb" placeholder="PMB" value="9000">
-                                      </div>
-                                    </div>
-                                    <div class="form-group form-show-validation row">
-                                      <label for="placeOfWork" class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">Place Of Work </label>
-                                      <div class="col-lg-8 col-md-8 col-sm-8">
-                                        <input type="text" class="form-control" id="placeOfWork" name="placeOfWork" placeholder="Place Of Work">
-                                      </div>
-                                    </div>
-                                    <div class="form-group form-show-validation row">
-                                      <label for="firstName" class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">First Name </label>
-                                      <div class="col-lg-8 col-md-8 col-sm-8">
-                                        <input type="text" class="form-control" id="firstName" name="firstName" placeholder="First Name"
-                                          required>
-                                      </div>
-                                    </div>
-                                    <div class="form-group form-show-validation row">
-                                      <label for="lastName" class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">Last Name </label>
-                                      <div class="col-lg-8 col-md-8 col-sm-8">
-                                        <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Last Name">
-                                      </div>
-                                    </div>
-                                    <div class="form-group form-show-validation row">
-                                      <label for="telephone" class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">Telephone</label>
-                                      <div class="col-lg-8 col-md-8 col-sm-8">
-                                        <input type="tel" class="form-control" id="telephone" name="telephone" placeholder="(242)-123-4567">
-                                      </div>
-                                    </div>
-                                    <div class="form-group form-show-validation row">
-                                      <label for="email" class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">Email address </label>
-                                      <div class="col-lg-8 col-md-8 col-sm-8">
-                                        <input type="email" class="form-control" id="email" name="email" placeholder="name@example.com">
-                                      </div>
-                                    </div>
-                                    <div class="form-group form-show-validation row">
-                                      <label for="password" class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">Password </label>
-                                      <div class="col-lg-8 col-md-8 col-sm-8">
-                                        <input type="password" class="form-control" id="password" name="password" placeholder="New Password">
-                                      </div>
-                                    </div>
-                                    <div class="form-group form-show-validation row">
-                                      <label for="confirmPassword" class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">Confirm Password
-                                      </label>
-                                      <div class="col-lg-8 col-md-8 col-sm-8">
-                                        <input type="password" class="form-control" id='confirmPassword' name="confirmPassword"
-                                          placeholder="Confirm New Password">
-                                      </div>
-                                    </div>
-                                    <div class="form-group form-show-validation row">
-                                      <label for="location" class="col-lg-4 col-md-4 col-sm-4 mt-sm-2 text-right">Select Location </label>
-                                      <div class="col-lg-8 col-md-8 col-sm-8">
-                                        <select id="location" name="location" class=" form-control ">
-                                          <% locations.forEach(location => { %>
-                                          <option value='<%=location._id%>'><%=location.name%></option>
-                                          <% }) %>
-                                        </select>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div class="col-md-6">
-                                    <div class="form-group form-show-validation row">
-                                      <label for="address" class="col-lg-3 col-md-4 col-sm-4 mt-sm-2 text-right">Address </label>
-                                      <div class="col-lg-7 col-md-8 col-sm-8">
-                                        <input type="text" class="form-control" id="address" name="address" placeholder="Address">
-                                      </div>
-                                    </div>
-                                    <div class="form-group form-show-validation row">
-                                      <label for="city" class="col-lg-3 col-md-4 col-sm-4 mt-sm-2 text-right">City </label>
-                                      <div class="col-lg-7 col-md-8 col-sm-8">
-                                        <input type="text" class="form-control" id="city" name="city" placeholder="City">
-                                      </div>
-                                    </div>
-                                    <div class="form-group form-show-validation row">
-                                      <label for="state" class="col-lg-3 col-md-4 col-sm-4 mt-sm-2 text-right">State </label>
-                                      <div class="col-lg-7 col-md-8 col-sm-8">
-                                        <input type="text" class="form-control" id="state" name="state" placeholder="State">
-                                      </div>
-                                    </div>
-                                    <div class="form-group form-show-validation row">
-                                      <label for="country" class="col-lg-3 col-md-4 col-sm-4 mt-sm-2 text-right">Country </label>
-                                      <div class="col-lg-7 col-md-8 col-sm-8">
-                                        <input type="text" class="form-control" id="country" name="country" placeholder="Country">
-                                      </div>
-                                    </div>
-                                    <div class="form-group form-show-validation row">
-                                      <label for="zipcode" class="col-lg-3 col-md-4 col-sm-4 mt-sm-2 text-right">Zipcode </label>
-                                      <div class="col-lg-7 col-md-8 col-sm-8">
-                                        <input type="text" class="form-control" id="zipcode" name="zipcode" placeholder="Zipcode">
-                                      </div>
-                                    </div>
-                                    <div class="form-group form-show-validation row">
-                                      <label for="note" class="col-lg-3 col-md-4 col-sm-4 mt-sm-2 text-right">Note </label>
-                                      <div class="col-lg-7 col-md-8 col-sm-8">
-                                        <textarea id="note" class="form-control" name="note"></textarea>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                              <div class="card-action">
-                                <button type="submit" class="btn btn-primary">Create</button>
-                                <button type="button" id="cancelForm" class="btn btn-danger">Cancel</button>
-                              </div>
-                            </div>
+  <body class="login">
+    <div class="wrapper wrapper-login wrapper-login-full p-0">
+      <div
+        class="
+          login-aside
+          w-50
+          d-flex
+          flex-column
+          align-items-center
+          justify-content-center
+          text-center
+          bg-primary-gradient
+        "
+      >
+        <h1 class="title fw-bold text-white mb-3"><%= process.CLIENT_URL == "postboxesetc" ? "Post Boxes ETC" : "9-5 Import Portal" %></h1>
+        <p class="subtitle text-white op-7"><%= process.CLIENT_URL == "postboxesetc" ? "More Than A Post Box" : "Always On Time" %></p>
+      </div>
+      <div
+        class="
+          login-aside
+          w-75
+          d-flex
+          align-items-center
+          justify-content-center
+          bg-white
+        "
+      >
+        <div class="container container-transparent animated fadeIn">
+          <img src="../img/logo.jpg" />
+          <h3 class="text-center mt-3">Sign up as Customer</h3>
+          <form id="signup-customer-form" method="POST" action="create">
+            <div class="row gutters">
+              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                <div class="card">
+                  <div class="card-header">
+                    <h4 class="card-title"><%=title%></h4>
+                  </div>
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group form-show-validation row">
+                          <label
+                            for="company"
+                            class="
+                              col-lg-4 col-md-4 col-sm-4
+                              mt-sm-2
+                              text-right
+                            "
+                            >Company
+                          </label>
+                          <div class="col-lg-8 col-md-8 col-sm-8">
+                            <select
+                              id="company"
+                              name="company"
+                              class="form-control"
+                              required
+                            >
+                              <% companies.forEach(company => { %>
+                              <option value="<%= company._id%>">
+                                <%= company.name %>
+                              </option>
+                              <% }) %>
+                            </select>
                           </div>
                         </div>
-                      </form>
-			</div>
-		</div>
-  </div>
+                        <div class="form-group form-show-validation row">
+                          <label
+                            for="pmb"
+                            class="
+                              col-lg-4 col-md-4 col-sm-4
+                              mt-sm-2
+                              text-right
+                            "
+                            >PMB
+                          </label>
+                          <div class="col-lg-8 col-md-8 col-sm-8">
+                            <input
+                              type="number"
+                              class="form-control"
+                              id="pmb"
+                              name="pmb"
+                              placeholder="PMB"
+                              value="9000"
+                            />
+                          </div>
+                        </div>
+                        <div class="form-group form-show-validation row">
+                          <label
+                            for="placeOfWork"
+                            class="
+                              col-lg-4 col-md-4 col-sm-4
+                              mt-sm-2
+                              text-right
+                            "
+                            >Place Of Work
+                          </label>
+                          <div class="col-lg-8 col-md-8 col-sm-8">
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="placeOfWork"
+                              name="placeOfWork"
+                              placeholder="Place Of Work"
+                            />
+                          </div>
+                        </div>
+                        <div class="form-group form-show-validation row">
+                          <label
+                            for="firstName"
+                            class="
+                              col-lg-4 col-md-4 col-sm-4
+                              mt-sm-2
+                              text-right
+                            "
+                            >First Name
+                          </label>
+                          <div class="col-lg-8 col-md-8 col-sm-8">
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="firstName"
+                              name="firstName"
+                              placeholder="First Name"
+                              required
+                            />
+                          </div>
+                        </div>
+                        <div class="form-group form-show-validation row">
+                          <label
+                            for="lastName"
+                            class="
+                              col-lg-4 col-md-4 col-sm-4
+                              mt-sm-2
+                              text-right
+                            "
+                            >Last Name
+                          </label>
+                          <div class="col-lg-8 col-md-8 col-sm-8">
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="lastName"
+                              name="lastName"
+                              placeholder="Last Name"
+                            />
+                          </div>
+                        </div>
+                        <div class="form-group form-show-validation row">
+                          <label
+                            for="telephone"
+                            class="
+                              col-lg-4 col-md-4 col-sm-4
+                              mt-sm-2
+                              text-right
+                            "
+                            >Telephone</label
+                          >
+                          <div class="col-lg-8 col-md-8 col-sm-8">
+                            <input
+                              type="tel"
+                              class="form-control"
+                              id="telephone"
+                              name="telephone"
+                              placeholder="(242)-123-4567"
+                            />
+                          </div>
+                        </div>
+                        <div class="form-group form-show-validation row">
+                          <label
+                            for="email"
+                            class="
+                              col-lg-4 col-md-4 col-sm-4
+                              mt-sm-2
+                              text-right
+                            "
+                            >Email address
+                          </label>
+                          <div class="col-lg-8 col-md-8 col-sm-8">
+                            <input
+                              type="email"
+                              class="form-control"
+                              id="email"
+                              name="email"
+                              placeholder="name@example.com"
+                            />
+                          </div>
+                        </div>
+                        <div class="form-group form-show-validation row">
+                          <label
+                            for="password"
+                            class="
+                              col-lg-4 col-md-4 col-sm-4
+                              mt-sm-2
+                              text-right
+                            "
+                            >Password
+                          </label>
+                          <div class="col-lg-8 col-md-8 col-sm-8">
+                            <input
+                              type="password"
+                              class="form-control"
+                              id="password"
+                              name="password"
+                              placeholder="New Password"
+                            />
+                          </div>
+                        </div>
+                        <div class="form-group form-show-validation row">
+                          <label
+                            for="confirmPassword"
+                            class="
+                              col-lg-4 col-md-4 col-sm-4
+                              mt-sm-2
+                              text-right
+                            "
+                            >Confirm Password
+                          </label>
+                          <div class="col-lg-8 col-md-8 col-sm-8">
+                            <input
+                              type="password"
+                              class="form-control"
+                              id="confirmPassword"
+                              name="confirmPassword"
+                              placeholder="Confirm New Password"
+                            />
+                          </div>
+                        </div>
+                        <div class="form-group form-show-validation row">
+                          <label
+                            for="location"
+                            class="
+                              col-lg-4 col-md-4 col-sm-4
+                              mt-sm-2
+                              text-right
+                            "
+                            >Select Location
+                          </label>
+                          <div class="col-lg-8 col-md-8 col-sm-8">
+                            <select
+                              id="location"
+                              name="location"
+                              class="form-control"
+                            >
+                              <% locations.forEach(location => { %>
+                              <option value="<%=location._id%>">
+                                <%=location.name%>
+                              </option>
+                              <% }) %>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group form-show-validation row">
+                          <label
+                            for="address"
+                            class="
+                              col-lg-3 col-md-4 col-sm-4
+                              mt-sm-2
+                              text-right
+                            "
+                            >Address
+                          </label>
+                          <div class="col-lg-7 col-md-8 col-sm-8">
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="address"
+                              name="address"
+                              placeholder="Address"
+                            />
+                          </div>
+                        </div>
+                        <div class="form-group form-show-validation row">
+                          <label
+                            for="city"
+                            class="
+                              col-lg-3 col-md-4 col-sm-4
+                              mt-sm-2
+                              text-right
+                            "
+                            >City
+                          </label>
+                          <div class="col-lg-7 col-md-8 col-sm-8">
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="city"
+                              name="city"
+                              placeholder="City"
+                            />
+                          </div>
+                        </div>
+                        <div class="form-group form-show-validation row">
+                          <label
+                            for="state"
+                            class="
+                              col-lg-3 col-md-4 col-sm-4
+                              mt-sm-2
+                              text-right
+                            "
+                            >State
+                          </label>
+                          <div class="col-lg-7 col-md-8 col-sm-8">
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="state"
+                              name="state"
+                              placeholder="State"
+                            />
+                          </div>
+                        </div>
+                        <div class="form-group form-show-validation row">
+                          <label
+                            for="country"
+                            class="
+                              col-lg-3 col-md-4 col-sm-4
+                              mt-sm-2
+                              text-right
+                            "
+                            >Country
+                          </label>
+                          <div class="col-lg-7 col-md-8 col-sm-8">
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="country"
+                              name="country"
+                              placeholder="Country"
+                            />
+                          </div>
+                        </div>
+                        <div class="form-group form-show-validation row">
+                          <label
+                            for="zipcode"
+                            class="
+                              col-lg-3 col-md-4 col-sm-4
+                              mt-sm-2
+                              text-right
+                            "
+                            >Zipcode
+                          </label>
+                          <div class="col-lg-7 col-md-8 col-sm-8">
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="zipcode"
+                              name="zipcode"
+                              placeholder="Zipcode"
+                            />
+                          </div>
+                        </div>
+                        <div class="form-group form-show-validation row">
+                          <label
+                            for="note"
+                            class="
+                              col-lg-3 col-md-4 col-sm-4
+                              mt-sm-2
+                              text-right
+                            "
+                            >Note
+                          </label>
+                          <div class="col-lg-7 col-md-8 col-sm-8">
+                            <textarea
+                              id="note"
+                              class="form-control"
+                              name="note"
+                            ></textarea>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="card-action">
+                    <button type="submit" class="btn btn-primary">
+                      Create
+                    </button>
+                    <button
+                      type="button"
+                      id="cancelForm"
+                      class="btn btn-danger"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
 
-  <script src="../assets/js/core/jquery.3.2.1.min.js"></script>
-	<script src="../assets/js/plugin/jquery-ui-1.12.1.custom/jquery-ui.min.js"></script>
-	<script src="../assets/js/core/popper.min.js"></script>
-	<script src="../assets/js/core/bootstrap.min.js"></script>
-	<script src="../assets/js/atlantis.min.js"></script>
-	<script src="../assets/js/plugin/bootstrap-notify/bootstrap-notify.min.js"></script>
-	<script src="../assets/js/global-search.js"></script>
+    <script src="../assets/js/core/jquery.3.2.1.min.js"></script>
+    <script src="../assets/js/plugin/jquery-ui-1.12.1.custom/jquery-ui.min.js"></script>
+    <script src="../assets/js/core/popper.min.js"></script>
+    <script src="../assets/js/core/bootstrap.min.js"></script>
+    <script src="../assets/js/atlantis.min.js"></script>
+    <script src="../assets/js/plugin/bootstrap-notify/bootstrap-notify.min.js"></script>
+    <script src="../assets/js/global-search.js"></script>
 
-  <script src="/js/utils.js"></script>
-  <script src="/js/customer/signup.js"></script>
-
-</body>
-
+    <script src="/js/utils.js"></script>
+    <script src="/js/customer/signup.js"></script>
+  </body>
 </html>

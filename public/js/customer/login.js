@@ -25,9 +25,15 @@ $(function () {
     });
   });
 
+
   $('.forgot-password').click(function() {
     console.log("customer forgot")
+    let postbox = document.querySelector('.postbox').value;
+    console.log(postbox , "postbox")
+    postbox == "postboxesetc" ?
+    window.location.replace('/customer/postbox/forgot-password'):
     window.location.replace('/customer/forgot-password');
+
   });
 
   function showNotify(title, message, icon, type) {
