@@ -32,6 +32,10 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: true
   },
+  reminder_email_sent:{
+    type: Boolean,
+    default: true
+  },
   roles: [{ 
     type: mongoose.Schema.Types.ObjectId, 
     ref: 'Role', 

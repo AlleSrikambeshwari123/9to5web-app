@@ -87,13 +87,13 @@ var custemail = [];
        
     
             }
-            // console.log(custemail ,"cusdfasd")
+            
             uniqueArray = custemail.filter(function(item, pos) {
                 return custemail.indexOf(item) == pos;
             })
             // console.log(uniqueArray  , "uniquearay")
             // console.log(uniqueArray , "uniqueArray")
-            // uniqueArray = ["jh@ajkc.ci"]
+            uniqueArray = ["jh@ajkc.ci"]
             // uniqueArray = uniqueArray[];
             var uSet = new Set(custemail);
             uSet = [...uSet]
@@ -108,11 +108,10 @@ var custemail = [];
                         if(d.response=="250 Great success"){
                             
 
-                    // Users.findOneAndUpdate ({email:demail},(err,result)=>console.log(result , "resultt"));
-
+        
                    
                           await Users.updateOne({"email" : demail}, {"$set": {"reminder_email_sent": true}}, (err, writeResult) => {
-                         console.log(err, "err", writeResult , "writeResult")
+                         console.log(err,writeResult)
                     // Users.find({email:demail},(err,result)=>console.log(result , "resultt"));
 
                      })
