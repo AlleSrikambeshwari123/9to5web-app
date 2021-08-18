@@ -586,7 +586,7 @@ console.log("aaaaa",awb , "awbs")
 		address: String(awb.shipper && awb.shipper.address),
 	},
 	carrier:{
-			name: String(awb.carrier && [awb.carrier.firstName && awb.carrier.lastName].filter(Boolean).join(' '),),
+			name: String(awb.carrier && awb.carrier.name),
 			address:  String(awb.carrier && awb.carrier.address),
 	}
 }
