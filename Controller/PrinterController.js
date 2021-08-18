@@ -526,7 +526,7 @@ exports.downloadFlightLoadSheet = async (req, res, next) => {
 		next(error);
 	}
 };
-
+var datapdf ;
 exports.downloadUSCustoms = async (req, res, next) => {
 	try {
 		let manifest = await services.manifestService.getManifest(req.params.id);
@@ -549,12 +549,14 @@ exports.downloadUSCustoms = async (req, res, next) => {
 			acc[pkg.awbId].push(pkg);
 			return acc;
 		}, {});
-
 		let natureOfGoods = { awbCount: 0, isSed: 0, hazmat: 0 };
 		let totalWeight = 0;
 		let totalPieces = 0;
+
 		let items = Object.values(packagesByAWB).map((packages) => {
 			let awb = awbs.find((i) => String(i._id) == String(packages[0].awbId.id)) || {};
+			console.log("aaa",awb , "awbb")
+		
 			let weight = packages.reduce(
 				(acc, pkg) => acc + services.packageService.getPackageWeightInLBS(pkg),
 				0,
@@ -562,6 +564,7 @@ exports.downloadUSCustoms = async (req, res, next) => {
 			totalWeight += weight;
 			totalPieces += packages.length;
 			if (awb) {
+
 				natureOfGoods.awbCount += 1;
 				if (awb.isSed) natureOfGoods.isSed += 1;
 				if (awb.hazmat) natureOfGoods.hazmat += 1;
@@ -570,7 +573,24 @@ exports.downloadUSCustoms = async (req, res, next) => {
 			awb.invoices.forEach(invoice => {
 				declaredValueForCustoms += parseInt(invoice.value);
 			});
-
+console.log("aaaaa",awb , "awbs")
+ datapdf = {
+	consignee: {
+		name: String(
+			awb.customer && [awb.customer.firstName, awb.customer.lastName].filter(Boolean).join(' '),
+		),
+		address: String(awb.customer && awb.customer.address)
+	},
+	shipper: {
+		name: String(awb.shipper && awb.shipper.name),
+		address: String(awb.shipper && awb.shipper.address),
+	},
+	carrier:{
+			name: String(awb.carrier && [awb.carrier.firstName && awb.carrier.lastName].filter(Boolean).join(' '),),
+			address:  String(awb.carrier && awb.carrier.address),
+	}
+}
+console.log(datapdf , "datapdf")
 			return {
 				declaredValueForCustoms,
 				declaredValueForCharge: 'NVD',
@@ -596,6 +616,7 @@ exports.downloadUSCustoms = async (req, res, next) => {
 				natureOfAwb: awb.hazmat ? awb.hazmat.description : "",
 				packageAWBNumber: packages[0].awbId ? packages[0].awbId.awbId : ""
 			};
+
 		});
 
 		items.unshift({
@@ -633,7 +654,8 @@ exports.downloadUSCustoms = async (req, res, next) => {
 			totalWeight,
 			totalPieces
 		});
-		let stream = await usCustoms.generate();
+
+		let stream = await usCustoms.generate(datapdf);
 		res.type('pdf');
 		res.attachment(`${manifest.id}-USC.pdf`);
 		stream.pipe(res);

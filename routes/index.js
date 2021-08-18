@@ -6,15 +6,18 @@ var momentz = require('moment-timezone')
 
 router.get('/', function (req, res, next) {
   
-  if (req.session.token)
-    res.redirect('/dashboard');
-  else
+  if (req.session.token){
+    res.redirect('/dashboard')
+  }
+  else{
     // res.render('index',{process:process.env});
-    if(process.env.LOGIN_REDIRECT)
-    res.redirect('/customer/login');
-    else
+    if(process.env.LOGIN_REDIRECT == "true"){
+    res.redirect('/customer/login')
+    }
+    else{
     res.render('index',{process:process.env});
-
+    }
+  }
 
 });
 const adminMiddleware = (req,res,next)=>{
