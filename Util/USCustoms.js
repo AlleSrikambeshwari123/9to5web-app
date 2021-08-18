@@ -584,24 +584,24 @@ class USCustoms {
           let natureOfGood = {text: String(item.natureOfAwb.toUpperCase()), margin:[0,10,0,5], fontSize: 11, alignment: "center" };
           let addressblock1 = {
             stack: [
-              `${datapdf && datapdf.consignee && datapdf.consignee.name ?datapdf.consignee.name :"None" }`,
-              `${datapdf && datapdf.consignee && datapdf.consignee.address?datapdf.consignee.address:"None"}`,
+              `${datapdf && datapdf.consignee && datapdf.consignee.name ?datapdf.consignee.name :"" }`,
+              `${datapdf && datapdf.consignee && datapdf.consignee.address?datapdf.consignee.address:""}`,
 
             ],
             fontSize: 10,
           };
           let addressblock2 = {
             stack: [
-              `${datapdf && datapdf.shipper && datapdf.shipper.name ? datapdf.shipper.name :"None"}`,
-              `${datapdf && datapdf.shipper && datapdf.shipper.address?datapdf.shipper.address:"None"}`,
+              `${datapdf && datapdf.shipper && datapdf.shipper.name ? datapdf.shipper.name :""}`,
+              `${datapdf && datapdf.shipper && datapdf.shipper.address?datapdf.shipper.address:""}`,
 
             ],
             fontSize: 10,
           };
           let addressblock3 = {
             stack: [
-              `${datapdf && datapdf.carrier && datapdf.carrier.name ? datapdf.carrier.name : "None"}`,
-              `${datapdf && datapdf.carrier && datapdf.carrier.address ? datapdf.carrier.address : "None"}`,
+              `${datapdf && datapdf.carrier && datapdf.carrier.name ? datapdf.carrier.name : ""}`,
+              `${datapdf && datapdf.carrier && datapdf.carrier.address ? datapdf.carrier.address : ""}`,
 
             ],
             fontSize: 10,
