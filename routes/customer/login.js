@@ -111,7 +111,7 @@ router.get('/postbox/forgot-password', function (req, res, next) {
 // router.get('/forgot-password', function (req, res, next) {
 //   res.render('customer_forgot_password',{process:process.env,isPostbox:false});
 // });
-router.get(`${process.env.FORGOT_PASS_URL}`, function (req, res, next) {
+router.get(`${process.env.FORGOT_PASS_URL.replace('/customer','')}`, function (req, res, next) {
   res.render('customer_forgot_password',{process:process.env,isPostbox:process.env.CLIENT_URL  == "postboxesetc" ? true : false});
 });
 
