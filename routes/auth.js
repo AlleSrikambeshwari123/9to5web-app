@@ -74,7 +74,7 @@ router.get('/reset-password/customer/success', function(req,res, next){
 //   res.render('password-set-new-customer',result);     
 // });
 // let resetmail = process.env.RESETMAIL_URL.replace('/customer','');
-let resetmail = resetmail.replace('\n','') ;
+let resetmail = process.env.RESETMAIL_URL.replace('\n','') ;
 router.get(`${resetmail}`,async function(req, res, next){
   const result = await services.customerService.getUserByResetPasswordToken(req.params.id);
   result.reset_link = '/reset-password/customer/' + req.params.id;
