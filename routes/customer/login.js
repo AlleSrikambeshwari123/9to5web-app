@@ -20,9 +20,7 @@ var storage = multer.diskStorage({
   }
 });
 var upload = multer({ storage: storage });
-console.log(process.env.LOGIN_URL , "A");
-console.log(process.env.LOGIN_URL.replace('/customer/login',''))
-console.log(process.env.LOGIN_URL , "h");
+
 let loginurl = process.env.LOGIN_URL.replace('/customer','');
  loginurl = loginurl.replace('\n','');
 
