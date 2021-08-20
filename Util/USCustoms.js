@@ -55,7 +55,7 @@ class USCustoms {
     this.data = data;
   }
 
-  generateItem(item, natureOfGood, addressblock1, addressblock2, i) {
+  generateItem(item, natureOfGood, addressblock1, addressblock2, i, addressblock3) {
     //console.log("@@@@@@", i, address)
     return [
       {
@@ -141,10 +141,8 @@ class USCustoms {
                       { text: "Issuing Carrier's Agent Name and City", margin: [0, 0, 0, 5] },
                       {
                         stack: [
-                          'Nine To Five Import Export',
-                          '2801 NW 55th Court',
-                          'Building 6W',
-                          'Ft Lauderdale, FL 33309'
+                          // { text: 'Consignee Name and Address', margin: [0, 0, 0, 5] },
+                          addressblock3,
                         ],
                         fontSize: 10,
                       },
@@ -577,7 +575,7 @@ class USCustoms {
     ];
   }
 
-  async generate() {
+  async generate(datapdf) {
     let definition = {
       pageSize: 'A4',
       pageMargins: 30,
@@ -586,19 +584,25 @@ class USCustoms {
           let natureOfGood = {text: String(item.natureOfAwb.toUpperCase()), margin:[0,10,0,5], fontSize: 11, alignment: "center" };
           let addressblock1 = {
             stack: [
-              'Nine To Five Import Export',
-              '2801 NW 55th Court',
-              'Building 6W',
-              'Ft Lauderdale, FL 33309'
+              `${datapdf && datapdf.consignee && datapdf.consignee.name ?datapdf.consignee.name :"" }`,
+              `${datapdf && datapdf.consignee && datapdf.consignee.address?datapdf.consignee.address:""}`,
+
             ],
             fontSize: 10,
           };
           let addressblock2 = {
             stack: [
-              'Nine To Five Import Export',
-              '2801 NW 55th Court',
-              'Building 6W',
-              'Ft Lauderdale, FL 33309'
+              `${datapdf && datapdf.shipper && datapdf.shipper.name ? datapdf.shipper.name :""}`,
+              `${datapdf && datapdf.shipper && datapdf.shipper.address?datapdf.shipper.address:""}`,
+
+            ],
+            fontSize: 10,
+          };
+          let addressblock3 = {
+            stack: [
+              `${datapdf && datapdf.carrier && datapdf.carrier.name ? datapdf.carrier.name : ""}`,
+              `${datapdf && datapdf.carrier && datapdf.carrier.address ? datapdf.carrier.address : ""}`,
+
             ],
             fontSize: 10,
           };
@@ -629,7 +633,7 @@ class USCustoms {
           return this.generateItem({
             ...item,
             isLast: i === array.length - 1,
-          }, natureOfGood, addressblock1, addressblock2, i)}
+          }, natureOfGood, addressblock1, addressblock2, i,addressblock3)}
         ),
       ],
       styles: {},

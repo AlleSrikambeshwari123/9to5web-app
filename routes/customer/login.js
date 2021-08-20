@@ -20,25 +20,51 @@ var storage = multer.diskStorage({
   }
 });
 var upload = multer({ storage: storage });
+console.log(process.env.LOGIN_URL , "A");
+console.log(process.env.LOGIN_URL.replace('/customer/login',''))
+console.log(process.env.LOGIN_URL , "h");
+let loginurl = process.env.LOGIN_URL.replace('/customer','');
+ loginurl = loginurl.replace('\n','');
+
+console.log(loginurl , "loginurl")
 
 
 
-router.get('/postbox/login', function (req, res, next) {
+// router.get(`${process.env.LOGIN_URL.replace('/customer','')}`, function (req, res, next) {
+  router.get(`${loginurl}`, function (req, res, next) {
 
   if (req.session.token)
     res.redirect('/dashboard');
-  else
-    res.render('login',{process:process.env})
+  else{
+    var result ;
+    
+    if(process.env.CLIENT_URL == "postboxesetc"){
+      result = true;
+    }else{
+      result = false;
+    }
+
+    res.render('login',{process:process.env ,result:result })
+  }
 });
 
 
 
-router.get(`${process.env.LOGIN_URL.replace('/customer','')}`, function (req, res, next) {
+// router.get(`${process.env.LOGIN_URL.replace('/customer','')}`, function (req, res, next) {
+router.get(`${loginurl}`, function (req, res, next) {
+
 
   if (req.session.token)
     res.redirect('/dashboard');
-  else
-    res.render('login',{process:process.env})
+  else{
+  var result ; 
+  if(process.env.CLIENT_URL == "postboxesetc"){
+    result = true;
+  }else{
+    result = false;
+  }
+    res.render('login',{process:process.env,result:result})
+}
 });
 
 // router.get('/login', function (req, res, next) {
@@ -85,7 +111,9 @@ router.post('/change-pass', middleware().checkSession, function (req, res, next)
 
 router.get('/postbox/forgot-password', function (req, res, next) {
   console.log("i am called")
-  res.render('customer_forgot_password',{process:process.env , isPostbox:true});
+  // res.render('customer_forgot_password',{process:process.env , isPostbox:true});
+  res.render('customer_forgot_password',{process:process.env,isPostbox:process.env.CLIENT_URL  == "postboxesetc" ? true : false});
+
 });
 
 
@@ -93,8 +121,13 @@ router.get('/postbox/forgot-password', function (req, res, next) {
 // router.get('/forgot-password', function (req, res, next) {
 //   res.render('customer_forgot_password',{process:process.env,isPostbox:false});
 // });
-router.get(`${process.env.FORGOT_PASS_URLc}`, function (req, res, next) {
-  res.render('customer_forgot_password',{process:process.env,isPostbox:false});
+let forgetpassurl = process.env.FORGOT_PASS_URL.replace('/customer','');
+console.log(forgetpassurl)
+forgetpassurl = forgetpassurl.replace('\n','')
+
+console.log(forgetpassurl)
+router.get(`${forgetpassurl}`, function (req, res, next) {
+  res.render('customer_forgot_password',{process:process.env,isPostbox:process.env.CLIENT_URL  == "postboxesetc" ? true : false});
 });
 
 

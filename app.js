@@ -148,7 +148,7 @@ const CustomerMiddleware = (req,res,next)=>{
     
 //   })
 //   })
-
+console.log(process.env);
 app.use('/email',emailRouter);
 app.use('/' ,adminIndexRouter, authRouter);
 app.use('/account',accountPasswordRouter, accountPrintRouter);

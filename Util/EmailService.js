@@ -20,7 +20,7 @@ var nodemailer = require('nodemailer');
         }
         });
 
-        console.log("env",process.env,"HOST" , process.env.SMTP_HOST  , "SMTP PORT" , process.env.SMTP_PORT ,"user" , process.env.SMTP_USER , "pass" ,process.env.SMTP_PASSWORD, "db", process.env.MONGO_USERNAME );
+        
 
 var path = require('path'); 
 var fs = require('fs');
@@ -35,7 +35,7 @@ var Customer = require('../models/customer')
         else if (emailType == "noDocsFl")
             epath = "public/emails/no_docs/fl.html"
         else if (emailType == "store")
-            epath = "public/emails/no_docs/store.html"            
+        epath = "public/emails/no_docs/store.html"            
         else if (emailType == "nodocspackage")
             epath = "public/emails/no_docs_package/index.html"
         else if (emailType == "storepackage")
@@ -363,6 +363,29 @@ async function sendReportEmail(toEmail,subject, emailBody){
     var result = toEmail ? await transport.sendMail(message): 'Email Not Found';
     return result; 
 }
+
+
+async function sendReminderMail(toEmail,subject, emailBody){
+    console.log("sendReminderEmail")
+    
+    
+    emailBody = emailBody.replace("Package is at Postboxes Etc. {{LOCNAME}}","<center>Check your package please</center>");
+    emailBody = emailBody.replace("Dear {{NAME}}","Dear User");
+    emailBody = emailBody.replace("Your package below is at Postboxes Etc. {{LOCATION}}  and ready for pickup.","Please check your package its been 7 days");
+
+    
+
+    message = { 
+        to : toEmail?toEmail:'kim@postboxesetc.com', 
+        from : '9-5 Import <no-reply@95import.com>',
+        subject: subject,
+        html:`${emailBody}`
+    }; 
+    var result = toEmail ? await transport.sendMail(message): 'Email Not Found';
+    return result; 
+}
+
+
 async function sendResetPassword(toEmail,subject, emailBody){
     console.log("send Reset Password")
     console.log("HOST" , process.env.SMTP_HOST  , "SMTP PORT" , process.env.SMTP_PORT ,"user" , process.env.SMTP_USER , "pass" ,process.env.SMTP_PASSWORD );
@@ -422,5 +445,6 @@ module.exports = {
     sendNoDocsPackageEmail:sendNoDocsPackageEmail,
     sendStorePackageEmail:sendStorePackageEmail,
     sendInvoicesEmail : sendInvoicesEmail,
-    sendReportEmail:sendReportEmail
+    sendReportEmail:sendReportEmail,
+    sendReminderMail:sendReminderMail
 }

@@ -516,9 +516,11 @@ $(function () {
           text: response.message,
           type: response.success == true ? 'success' : 'error',
         }).then(() => {
+          
           if (response.success) {
+            
             $("#link-add-package-popup").trigger('click');
-            var barCode = response.data;
+            var barCode = response.originBarcode;
             console.log(barCode);
             $('#originBarcode').append(`<option value="${barCode.barcode},${barCode._id}">${barCode.barcode}</option>`)
           }
