@@ -410,11 +410,14 @@ async function sendResetPassword(toEmail,subject, emailBody){
 
              if(process.env.CLIENT_URL == "postboxesetc"){
                 emailBody1 = emailBody1.replace(/{{CONFIRM_LINK}}/g,`${process.env.BASE_URL_WEB}/reset-password/postbox/customer/${data.id}`);
+                emailBody1 = emailBody1.replace(/{{FILENAMEIMG}}/g,'pbe-logo.png');
              
             }
              else{
              emailBody1 = emailBody1.replace(/{{CONFIRM_LINK}}/g,`${process.env.BASE_URL_WEB}/reset-password/customer/${data.id}`);
-             }
+             emailBody1 = emailBody1.replace(/{{}}/g,'logo.jpg');
+            
+            }
              
         }
     })
