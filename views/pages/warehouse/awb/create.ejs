@@ -844,6 +844,18 @@
     </form>
   </div>
 </div>
+<script>
+  
+    var cancel = document.querySelector('#btn-cancel-add');
+
+  function refreshBarcode(){
+    console.log("i am called ")
+    
+    cancel.click();
+    console.log("clicked")
+    window.location.reload();
+  }
+</script>
 
 <% block('scripts').append('<script src="/js/utils.js"></script>')%>
 <% block('scripts').append('<script src="/js/warehouse/awb/common.js"></script>')%>

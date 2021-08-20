@@ -590,6 +590,7 @@ $(function () {
           text: response.message,
           type: response.success == true ? 'success' : 'error',
         }).then(() => {
+          console.log("alkdsjflkfasj")
           if (response.success) {
             // $("#link-add-package-popup").trigger('click');
           $('.mfp-fade').css({'display':'block'});
