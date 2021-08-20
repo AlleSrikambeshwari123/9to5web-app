@@ -14,6 +14,7 @@ router.get('/', function (req, res, next) {
     if(process.env.LOGIN_REDIRECT == "true" ){
       let loginurl = process.env.LOGIN_URL.replace('\n','');
       if(loginurl.includes('postbox')){
+        console.log(process.env.LOGIN_URL , "Login Url" )
         res.redirect(loginurl)
       }
     res.redirect(loginurl)
