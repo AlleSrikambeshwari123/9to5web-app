@@ -11,8 +11,8 @@ router.get('/', function (req, res, next) {
   }
   else{
     // res.render('index',{process:process.env});
-    if(process.env.LOGIN_REDIRECT == "true"){
-    res.redirect('/customer/login')
+    if(process.env.LOGIN_REDIRECT == "true" ){
+    res.redirect(`${process.env.LOGIN_URL}`)
     }
     else{
     res.render('index',{process:process.env});
