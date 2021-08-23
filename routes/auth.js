@@ -118,7 +118,7 @@ router.get('/logout', function (req, res, next) {
   if(req.query.type){
     let loginurl = process.env.LOGIN_URL.replace('/customer','');
  loginurl = loginurl.replace('\n','');
- if(loginurl.includes('/postbox') || loginurl.includes('postbox')  || loginurl.includes('/postbox/login') || window.location.includes('tracking.postboxesetc.com') || window.location.includes('https://tracking.postboxesetc.com') ){
+ if(loginurl.includes('/postbox') || loginurl.includes('postbox')  || loginurl.includes('/postbox/login') || window.location.includes('tracking.postboxesetc.com') || window.location.includes('https://tracking.postboxesetc.com') || process.env.CLIENT_URL == "postboxesetc" ){
    res.redirect('/customer/postbox/login')
  }
  else {
