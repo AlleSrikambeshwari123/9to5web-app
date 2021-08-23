@@ -116,7 +116,20 @@ router.get('/logout', function (req, res, next) {
   // req.session.destroy();
   req.session.token = null;
   if(req.query.type){
-    res.redirect('/customer/login');
+    let loginurl = process.env.LOGIN_URL.replace('/customer','');
+ loginurl = loginurl.replace('\n','');
+ if(loginurl.includes('postbox')){
+   res.redirect('/customer/postbox/login')
+ }
+ else{
+   res.redirect('/customer/login')
+ }
+    // let loginurl = process.env.LOGIN_URL.replace('','');
+    // let loginurl = process.env.LOGIN_URL;
+
+    // console.log(loginurl)
+    // loginurl = loginurl.replace('\n','');
+    // res.redirect(loginurl);
   }else{
    res.redirect('/');
   }
