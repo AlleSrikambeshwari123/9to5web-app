@@ -118,12 +118,13 @@ router.get('/logout', function (req, res, next) {
   if(req.query.type){
     let loginurl = process.env.LOGIN_URL.replace('/customer','');
  loginurl = loginurl.replace('\n','');
- if(loginurl.includes('postbox')){
+ if(loginurl.includes('/postbox') || loginurl.includes('postbox')  || loginurl.includes('/postbox/login')){
    res.redirect('/customer/postbox/login')
  }
- else{
+ else if{
    res.redirect('/customer/login')
  }
+
     // let loginurl = process.env.LOGIN_URL.replace('','');
     // let loginurl = process.env.LOGIN_URL;
 
