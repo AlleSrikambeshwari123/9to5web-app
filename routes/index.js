@@ -11,8 +11,13 @@ router.get('/', function (req, res, next) {
   }
   else{
     // res.render('index',{process:process.env});
-    if(process.env.LOGIN_REDIRECT == "true"){
-    res.redirect('/customer/login')
+    if(process.env.LOGIN_REDIRECT.replace('\n','') == "true" ){
+      let loginurl = process.env.LOGIN_URL.replace('\n','');
+      if(loginurl.includes('postbox')){
+        console.log(process.env.LOGIN_URL , "Login Url" )
+        res.redirect(loginurl)
+      }
+    res.redirect(loginurl)
     }
     else{
     res.render('index',{process:process.env});
