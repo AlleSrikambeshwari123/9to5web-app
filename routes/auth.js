@@ -121,7 +121,7 @@ router.get('/logout', function (req, res, next) {
  if(loginurl.includes('/postbox') || loginurl.includes('postbox')  || loginurl.includes('/postbox/login')){
    res.redirect('/customer/postbox/login')
  }
- else if{
+ else {
    res.redirect('/customer/login')
  }
 
