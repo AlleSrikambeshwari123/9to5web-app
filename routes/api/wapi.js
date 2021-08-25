@@ -351,7 +351,13 @@ router.post('/add-packages-to-manifests', passport.authenticate('jwt', { session
   let compartmentId = req.body.compartmentId;
   var userId =  req.body.userId;
   const {valid,errors} = checkEmpty({packageIds:packageIds,manifestId :manifestId,userId:userId,compartmentId:compartmentId})
-  if(!valid) return res.send({success:false,message:errors})
+  // if(!valid) return res.send({success:false,message:errors})
+  // remove below
+  if(valid) {return res.send({success:false,message:errors})}
+  else{
+    return res.send({success:false,message:errors})
+  }
+  // remove above
   services.packageService.addPackagesToManifests(packageIds,manifestId, userId,compartmentId).then((result) => {
     res.send(result)
   })
