@@ -23,6 +23,16 @@
 				sessionStorage.fonts = true;
 			}
 		});
+
+		function setTitle(){
+	if(window.location.href.includes('postboxetc.com') || window.location.href.includes('https://tracking.postboxesetc.com/') || window.location.href.includes('postbox')  ){
+		document.title = "Post Boxes ETC"
+	  	
+	}else{
+		document.title = "9-5 Imports"
+
+	}}
+	setTitle();
 	</script>
 	<link rel="stylesheet" href="/assets/css/bootstrap.min.css">
 	<link rel="stylesheet" href="/assets/css/atlantis.min.css">
