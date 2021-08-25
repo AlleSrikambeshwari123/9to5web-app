@@ -1,4 +1,7 @@
 <% layout('./shared/__template')%>
+
+
+
 <script src="/js/jquery.js"></script>
 <script src="/assets/js/plugin/datatables/datatables.min.js"></script>
 <%
@@ -44,8 +47,12 @@ var endate = new Date();
             <div id="circles-6"></div>
             <h6 class="fw-bold mt-3 mb-0">Delivered</h6>
           </div>
+
         </div>
+
+
       </div>
+      
 
     </div>
   </div>
@@ -77,7 +84,9 @@ var endate = new Date();
         <div id="myChartLegend"></div>
       </div>
     </div>
+
   </div>
+  <% include ../footer.ejs %>
 
 </div>
 
@@ -587,5 +596,6 @@ function get_data_dataTable(dataTable, daterange){
     return "<tr><td>" + row.barcode + "</td><td>" + row.lastStatusText + "</td><td>" + row.awb + "</td><td>" + row.customerFullName + "</td><td>" + row.storeLocation + "</td></tr>"
   }
 </script>
+
 <% block('scripts').append('<script src="/js/utils.js"></script>')%>
 <% block('scripts').append('<script src="/js/reports/report.js"></script>')%>
