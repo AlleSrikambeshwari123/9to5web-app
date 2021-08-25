@@ -5,7 +5,7 @@
 
 	<div class="logo-header" data-background-color="white">
 		<a href="/dashboard" class="logo">
-			<img src="/img/logo.jpg" id="imageid" width="108" alt="navbar brand" class="navbar-brand">
+			<img src="/img/logo.jpg" id="imageid" width="150" alt="navbar brand" class="navbar-brand">
 		</a>
 		<button class="navbar-toggler sidenav-toggler ml-auto" type="button" data-toggle="collapse" data-target="collapse"
 			aria-expanded="false" aria-label="Toggle navigation">
@@ -293,10 +293,13 @@
 	function setImage(){
 	if(window.location.href.includes('postboxetc.com') || window.location.href.includes('https://tracking.postboxesetc.com/') || window.location.href.includes('postbox')  ){
 	  
-		document.getElementById("imageid").src="/img/postboxlogo.jpg";
+		
+		document.getElementById("imageid").src="/img/logo.jpg";
+
 	
 	}else{
-		document.getElementById("imageid").src="/img/logo.jpg";
+		document.getElementById("imageid").src="/img/postboxlogo.jpg";
+
 	
 	
 		
