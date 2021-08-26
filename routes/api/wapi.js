@@ -345,7 +345,7 @@ router.post('/add-packages-to-compartment', passport.authenticate('jwt', { sessi
 })
 
 //Loaded on AirCraft - [2]
-router.post('/add-packages-to-manifests', passport.authenticate('jwt', { session: false }), (req, res, next) => {
+router.post('/add-packages-to-manifeststest', passport.authenticate('jwt', { session: false }), (req, res, next) => {
   let packageIds = req.body.packageIds;
   let manifestId = req.body.manifestId;
   let compartmentId = req.body.compartmentId;
@@ -362,6 +362,20 @@ router.post('/add-packages-to-manifests', passport.authenticate('jwt', { session
     res.send(result)
   })
 })
+
+router.post('/add-packages-to-manifests', passport.authenticate('jwt', { session: false }), (req, res, next) => {
+  let packageIds = req.body.packageIds;
+  let manifestId = req.body.manifestId;
+  let compartmentId = req.body.compartmentId;
+  var userId =  req.body.userId;
+  const {valid,errors} = checkEmpty({packageIds:packageIds,manifestId :manifestId,userId:userId,compartmentId:compartmentId})
+  if(!valid) return res.send({success:false,message:errors})
+
+  services.packageService.addPackagesToManifests(packageIds,manifestId, userId,compartmentId).then((result) => {
+    res.send(result)
+  })
+})
+
 
 //In Transit - [3]
 router.post('/add-packages-to-delivery', passport.authenticate('jwt', { session: false }), (req, res, next) => {
