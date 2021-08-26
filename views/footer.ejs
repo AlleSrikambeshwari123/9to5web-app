@@ -11,7 +11,7 @@
   
       <!-- Copyright -->
       <div class="text-right " style="color: #57597B;">
-        <span style= "font-size: 18px;"><b>2021 9-5 Import</b></span>
+        <span style= "font-size: 18px;"><b>2021 <span id="footertext">9-5 Import</span></b></span>
      
       </div>
       <!-- Copyright -->
@@ -20,6 +20,23 @@
   </section>
     
   </div>
+  <script>
+
+    	function setFooter(){
+      
+	if(window.location.href.includes('postboxetc.com') || window.location.href.includes('https://tracking.postboxesetc.com/') || window.location.href.includes('postbox')  ){
+		
+		document.getElementById('footertext').value = "Post Boxes ETC"
+	  	
+	}else{
+		
+		document.getElementById('footertext').value = "9-5 Imports"
+
+
+	}}
+	setFooter();
+
+  </script>
   <!-- End of .container -->
 
 
