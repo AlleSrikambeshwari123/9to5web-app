@@ -68,7 +68,7 @@
                     <%- pkg.pricing.TotalWeightValue %>
                 </td>
                 <td>
-                    <%- pkg.pricing.TotalInvoiceValue.toFixed(2) %>
+                    <%- pkg.pricing.TotalInvoiceValue ? pkg.pricing.TotalInvoiceValue.toFixed(2) : '' %>
                 </td>
                 <td>
                   <!-- <a href="javascript:void(0)" onclick="showPriceBreakupModal('<%-pkg._id%>')" class="btn btn-round btn-primary px-3" data-toggle="tooltip"

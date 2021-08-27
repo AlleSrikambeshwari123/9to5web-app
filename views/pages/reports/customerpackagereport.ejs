@@ -46,13 +46,15 @@ var endate = new Date();
         </div>
       </div>
       <div id="myLoader"><img src="/img/preloader.gif"></div>
-      <div style="padding: 15px 0 0 35px;">
+      <!-- <div style="padding: 15px 0 0 35px;">
         <select name="search_collection" id="search_collection"  class="form-control" style="width: 33%; float: left;">
           <option value="ACTIVE" <%if(query.search_collection=="ACTIVE"){%>selected<%}%>>Active</option>
           <option value="HISTORY" <%if(query.search_collection=="HISTORY"){%>selected<%}%>>History </option>          
         </select>
-      </div>
-      <div class="card-body    <% if (!query.customerId && !query.locationId) { %> daterangepickerbody <% } %>">
+      </div> -->
+      <!-- <div class="card-body    <% if (!query.customerId && !query.locationId) { %> daterangepickerbody <% } %>"> -->
+      <div class="card-body    <% if (!query.customerId && !query.locationId) { %>  <% } %>">
+
         <input type="hidden" name="clear" id="clear" value="<%=clear%>">
         <input type="hidden" id="daterange" value="<%=daterange%>">
         <input type="hidden" id="page" value="<%=page%>">
@@ -94,12 +96,18 @@ var endate = new Date();
             <% } else { %>
               <select name="search_type" id="search_type"  class="form-control" style="width: 30%; float: left;">
                   <option value="">Select </option>
-                  <option value="AWBNUMBER" <%if(query.search_type=='AWBNUMBER'){%>selected<%}%>>AWB # </option>
+                  <option value="9" <%= query.status==9?'selected':'' %>>At Store </option>
+                  <option value="1" <%= query.status==1?'selected':'' %>>In Fll </option>
+                  <option value="7" <%= query.status==7?'selected':'' %>>No-Invoice </option>
+                  <option value="" <%= !query.status?'selected':'' %>>All </option>
+                  <option value="5" <%= query.status==5?'selected':'' %>>Received </option>
+                  <option value="10" <%= query.status==10?'selected':'' %>>Mixed </option>
+                  <!-- <option value="AWBNUMBER" <%if(query.search_type=='AWBNUMBER'){%>selected<%}%>>AWB # </option> -->
                   <!-- <option value="CONSIGNEE" <%if(query.search_type=='CONSIGNEE'){%>selected<%}%>>Consignee </option> -->
-                  <option value="SHIPPER" <%if(query.search_type=='SHIPPER'){%>selected<%}%>>Shipper </option>
+                  <!-- <option value="SHIPPER" <%if(query.search_type=='SHIPPER'){%>selected<%}%>>Shipper </option> -->
                   <!-- <option value="BARCODE" <%if(query.search_type=='BARCODE'){%>selected<%}%>>Original Barcode </option> -->
               </select>
-              <input type="text" name="search_text" id="search_text" class="form-control" value="<%=query.search_text%>" style="width: 30%; float: left;margin-left: 1%;"">
+              <!-- <input type="text" name="search_text" id="search_text" class="form-control" value="<%=query.search_text%>" style="width: 30%; float: left;margin-left: 1%;""> -->
               <input type="submit" value="Filter" class="btn btn-primary" style="margin-left: 1%;" onclick="searchDataFilter()">
             <% } %>              
 
@@ -114,12 +122,13 @@ var endate = new Date();
 
                 <th>Date Recieved</th>
                 <th>Tracking No</th>
+                <th>Original Barcode</th>
+
                 <!-- <th>PMB</th> -->
                 <!-- <th>Consignee</th> -->
                 <th>AWB #</th>
                 <th>Shipper</th>
                 <!-- <th>Store</th> -->
-                <!-- <th>Original Barcode</th> -->
                 <th>Description</th>
                 <th>Status</th>
                 <!-- <th>Status Date</th> -->
@@ -150,12 +159,13 @@ var endate = new Date();
                 <% } %>               -->
                 <td><%= helpers.formatDate(pkg.createdAt) %></td>
                 <td><%=(pkg.trackingNo)?pkg.trackingNo:''%></td>
+                <td><%= pkg.barcode %></td>
+
                 <!-- <td><%= pkg.pmb %></td> -->
                 <!-- <td><%= pkg.customerFullName %></td> -->
                 <td><a href="/customer/awb/<%=pkg.awbId%>/preview"><%=pkg.awbIdNumber%></a></td>
                 <td><%= pkg.shipperName %></td>
                 <!-- <td><%= pkg.storeLocation ?pkg.storeLocation : '9to5' %></td> -->
-                <!-- <td><%= pkg.barcode %></td> -->
 
                 <td><%= (pkg.packageType == 'Cube' && pkg.masterDescription) ? pkg.masterDescription : pkg.description %></td>
                 <td><%= pkg.lastStatusText %></td>
