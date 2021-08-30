@@ -68,7 +68,7 @@
                     <%- pkg.pricing.TotalWeightValue %>
                 </td>
                 <td>
-                    <%- pkg.pricing.TotalInvoiceValue.toFixed(2) %>
+                    <%- pkg.pricing.TotalInvoiceValue  %>
                 </td>
                 <td>
                   <!-- <a href="javascript:void(0)" onclick="showPriceBreakupModal('<%-pkg._id%>')" class="btn btn-round btn-primary px-3" data-toggle="tooltip"
@@ -191,7 +191,7 @@ const rows = [
                                     <div class="row">
                                       <tr>
                                         <td style="padding: 0 !important;" ><%-row.title%></td>
-                                        <td style="padding: 0 !important;" >$<%-pricing[row.key].toFixed(2)%></td>
+                                        <td style="padding: 0 !important;" >$<%- pricing[row.key] %></td>
                                       </tr>
                                     </div>
                                       <%}%>

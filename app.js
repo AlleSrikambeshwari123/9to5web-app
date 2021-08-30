@@ -131,6 +131,7 @@ app.use(function (req, res, next) {
 });
 
 const adminMiddleware = (req,res,next)=>{
+  console.log("customerawb123s")
   req.session.isAdmin ? next() : res.redirect('/customer/awb') 
 
 }
