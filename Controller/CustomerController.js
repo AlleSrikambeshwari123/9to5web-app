@@ -383,7 +383,9 @@ exports.packageReport = async(req, res, next)=>{
     // packages = packages.filter(data=>data.customerId == req.session.customerId)
     packages = packages.filter(data=>data.customerId == req.session.customerId)
     console.log(packages[0])
-    packages = packages.filter(data=>data.lastStatusText == PKG_STATUS[req.query.search_type])
+    if(req.query.search_type != 100){
+    packages =  packages.filter(data=>data.lastStatusText == PKG_STATUS[req.query.search_type])
+    }
     console.log(req.query.search_type , "Searchhtypee")
       return Promise.all(
           packages.map(async(pkg, i) => {

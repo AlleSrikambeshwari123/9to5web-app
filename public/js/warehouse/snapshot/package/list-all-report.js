@@ -881,7 +881,7 @@ function generate_package_detail_report(){
   
   function searchDataFilter(){
     
-    var search_type = $("#search_type").val() || "All";
+    var search_type = $("#search_type").val() || "100";
     console.log()
     var search_text = $("#search_text").val() || "All1";  
     var customerId = $("#customerId").val();

@@ -103,7 +103,7 @@ var endate = new Date();
 
                   <option value="1" <%= query.search_type==1?'selected':'' %>>In Fll </option>
                   <option value="7" <%= query.search_type==7?'selected':'' %>>No-Invoice </option>
-                  <option value="" <%= !query.search_type?'selected':'' %>>All </option>
+                  <option value="100" <%= query.search_type== 100?'selected':'' %>>All </option>
                   <option value="5" <%= query.search_type==5?'selected':'' %>>Received </option>
                   <!-- <option value="10" <%= query.status==10?'selected':'' %>>Mixed </option> -->
                   <!-- <option value="AWBNUMBER" <%if(query.search_type=='AWBNUMBER'){%>selected<%}%>>AWB # </option> -->
