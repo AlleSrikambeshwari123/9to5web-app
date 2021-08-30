@@ -96,18 +96,22 @@ var endate = new Date();
             <% } else { %>
               <select name="search_type" id="search_type"  class="form-control" style="width: 30%; float: left;">
                   <option value="">Select </option>
-                  <option value="9" <%= query.status==9?'selected':'' %>>At Store </option>
-                  <option value="1" <%= query.status==1?'selected':'' %>>In Fll </option>
-                  <option value="7" <%= query.status==7?'selected':'' %>>No-Invoice </option>
-                  <option value="" <%= !query.status?'selected':'' %>>All </option>
-                  <option value="5" <%= query.status==5?'selected':'' %>>Received </option>
-                  <option value="10" <%= query.status==10?'selected':'' %>>Mixed </option>
+                  <option value="9" <%= query.search_type==9?'selected':'' %>>At Store </option>
+                  <option value="2" <%= query.search_type==2?'selected':'' %>>Loaded On Aircraft </option>
+                  <option value="3" <%= query.search_type==3?'selected':'' %>>In Transit </option>
+
+
+                  <option value="1" <%= query.search_type==1?'selected':'' %>>In Fll </option>
+                  <option value="7" <%= query.search_type==7?'selected':'' %>>No-Invoice </option>
+                  <option value="" <%= !query.search_type?'selected':'' %>>All </option>
+                  <option value="5" <%= query.search_type==5?'selected':'' %>>Received </option>
+                  <!-- <option value="10" <%= query.status==10?'selected':'' %>>Mixed </option> -->
                   <!-- <option value="AWBNUMBER" <%if(query.search_type=='AWBNUMBER'){%>selected<%}%>>AWB # </option> -->
                   <!-- <option value="CONSIGNEE" <%if(query.search_type=='CONSIGNEE'){%>selected<%}%>>Consignee </option> -->
                   <!-- <option value="SHIPPER" <%if(query.search_type=='SHIPPER'){%>selected<%}%>>Shipper </option> -->
                   <!-- <option value="BARCODE" <%if(query.search_type=='BARCODE'){%>selected<%}%>>Original Barcode </option> -->
               </select>
-              <!-- <input type="text" name="search_text" id="search_text" class="form-control" value="<%=query.search_text%>" style="width: 30%; float: left;margin-left: 1%;""> -->
+              <input type="hidden" name="search_text" id="search_text" class="form-control" value="<%=query.search_text%>" style="width: 30%; float: left;margin-left: 1%;"">
               <input type="submit" value="Filter" class="btn btn-primary" style="margin-left: 1%;" onclick="searchDataFilter()">
             <% } %>              
 
@@ -148,9 +152,13 @@ var endate = new Date();
               </tr>
             </thead>
             <tbody>
+              <script>
+                console.log(window.location.href  , "hreff")
+              </script>
+           <%   console.log(packages[0] , "packagess") %>
+
               <% packages.forEach(function(pkg){ %>
              <% if(customerId == pkg.customerId) { %>
-                
               <tr data-record="<%= pkg._id %>">
                 <!-- <% if(!query.customerId && !query.locationId) {%>              
                 <td>
@@ -391,6 +399,9 @@ var endate = new Date();
   var daterange = "<%=query.daterange ? query.daterange :dateRangeDefault%>";
   var nodoc = "<%=query.nodocs?query.nodocs:''%>";
 </script>
+<% block('scripts').append('<script src="/js/utils.js"></script>')%>
+<% block('scripts').append('<script src="/js/customer/home/list.js"></script>')%>
+
 <% block('scripts').append('<script src="/js/utils.js"></script>')%>
 <% block('scripts').append('<script src="/js/warehouse/snapshot/package/list-all-report.js"></script>')%></div>
 

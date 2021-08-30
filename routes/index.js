@@ -26,6 +26,7 @@ router.get('/', function (req, res, next) {
 
 });
 const adminMiddleware = (req,res,next)=>{
+  console.log("customerawb32423")
   req.session.isAdmin ? next() : res.redirect("/customer/awb")   
 }
 

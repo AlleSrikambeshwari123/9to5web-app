@@ -152,6 +152,7 @@ exports.delete_customer = (req, res, next) => {
 }
 
 exports.get_customer_awbs = async (req, res) => {
+
   const customerId = mongoose.Types.ObjectId(res.user._id);
   let awbData = await services.awbService.getAwbsFullCustomer(customerId);
   let queryStatus = req.query.status,flag;
@@ -164,7 +165,7 @@ exports.get_customer_awbs = async (req, res) => {
           awbData = await services.awbService.getAwbsFullCustomer(result.parentCustomer.id);
   }
   const awbResponse = await services.awbService.getAwbPriceAndStatus(awbData,queryStatus) 
- 
+//  console.log(awbResponse[0] , 'awbResponse')
   return res.render('pages/customerAwb', {
     page: req.originalUrl,
     query:req.query,
@@ -357,17 +358,33 @@ exports.updateProfile = async(req,res)=>{
 
 
 exports.packageReport = async(req, res, next)=>{    
+
+  const PKG_STATUS = {
+    0: 'Package Created',
+    1: 'Received in FLL',
+    2: 'Loaded on AirCraft',
+    3: 'In Transit',
+    4: 'In Warehouse Nassuau',
+    5: 'Ready for Pickup / Delivery',
+    6: 'Delivered',
+    7: 'No Invoice Present',
+    8: 'Assigned to cube',
+    9: 'Delivered to Store'
+  };
   
   let title = 'All Packages'
   if(req.query.type == 'customer')
       title = 'Customer Package List'
   let customers = await services.customerService.getCustomers()
   let locations = await services.locationService.getLocations()
-  services.packageService.getPackageDetailByCustomerId(req,{}).then((packages) => {
+  // services.packageService.getPackageDetailByCustomerId({},{}).then((packages) => {
+  services.packageService.getPackageDetailByCustomerId({},{}).then((packages) => {
+
     // packages = packages.filter(data=>data.customerId == req.session.customerId)
     packages = packages.filter(data=>data.customerId == req.session.customerId)
-
-    
+    console.log(packages[0])
+    packages = packages.filter(data=>data.lastStatusText == PKG_STATUS[req.query.search_type])
+    console.log(req.query.search_type , "Searchhtypee")
       return Promise.all(
           packages.map(async(pkg, i) => {
               let check = 1,dimen = pkg.dimensions

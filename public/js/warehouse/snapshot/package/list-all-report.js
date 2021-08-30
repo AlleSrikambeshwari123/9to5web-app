@@ -880,8 +880,10 @@ function generate_package_detail_report(){
   })
   
   function searchDataFilter(){
-    var search_type = $("#search_type").val();
-    var search_text = $("#search_text").val();  
+    
+    var search_type = $("#search_type").val() || "All";
+    console.log()
+    var search_text = $("#search_text").val() || "All1";  
     var customerId = $("#customerId").val();
     var locationId = $("#locationsId").val();
     
@@ -890,6 +892,7 @@ function generate_package_detail_report(){
     var urlPage = (pageArr && pageArr.length) ? pageArr[0] : '';
     urlPage = urlPage+'?1=1'
     if(search_type && search_text){
+
       urlPage =  urlPage+"&search_type="+search_type+'&search_text='+search_text;
     }
     if(customerId){
