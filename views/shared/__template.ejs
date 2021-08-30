@@ -12,7 +12,7 @@
 		content="Admin, Dashboard, Bootstrap4, Sass, CSS3, HTML5, Responsive Dashboard, Responsive Admin Template, Admin Template, Best Admin Template, Bootstrap Template, Themeforest" />
 	<meta name="author" content="Bootstrap Gallery" />
 	<link rel="icon" href="/img/favicon.png" type="image/x-icon" />
-	<title>9-5 Imports </title>
+	<title>9-5 Import </title>
 
 	<script src="/assets/js/plugin/webfont/webfont.min.js"></script>
 	<script>
@@ -27,11 +27,11 @@
 		function setTitle(){
 	if(window.location.href.includes('postboxetc.com') || window.location.href.includes('https://tracking.postboxesetc.com/') || window.location.href.includes('postbox')  ){
 		document.title = "Post Boxes ETC"
-		document.getElementById('templatetext').value = "Post Boxes ETC"
+		document.getElementById('templatetext').innerHTML = "Post Boxes ETC"
 	  	
 	}else{
-		document.title = "9-5 Imports"
-		document.getElementById('templatetext').value = "9-5 Imports"
+		document.title = "9-5 Import"
+		document.getElementById('templatetext').innerHTML = "9-5 Import"
 
 
 	}}
@@ -524,6 +524,22 @@
 			});
 		}
 
+	</script>
+	<script>
+				function setTitle1(){
+	if(window.location.href.includes('postboxetc.com') || window.location.href.includes('https://tracking.postboxesetc.com/') || window.location.href.includes('postbox')  ){
+		document.title = "Post Boxes ETC"
+		document.getElementById('templatetext').innerHTML = "Post Boxes ETC"
+	  	
+	}else{
+		document.title = "9-5 Import"
+		document.getElementById('templatetext').innerHTML = "9-5 Import"
+
+
+
+
+	}}
+	setTitle1();
 	</script>
 </body>
 
