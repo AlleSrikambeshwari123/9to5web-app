@@ -69,7 +69,7 @@
                   <!-- <a href="javascript:void(0)" onclick="showPriceBreakupModal('<%-pkg._id%>')" data-toggle="tooltip"
                     data-original-title="View Details"> <%= pkg.awbId %> </a> -->
                     <a href="javascript:void(0)" onclick="showAwbModal('<%-pkg._id%>')" data-toggle="tooltip"
-                      data-original-title="View Details"> <%= pkg.awbId %> </a>
+                      data-original-title="View Details"> <%= pkg.awbId %></a>
 
                   <!-- <a href = "/customer/awb/<%= pkg._id %>/preview"><%= pkg.awbId %></a> -->
                   <!-- <a href="/warehouse/fll/awb/manage/<%=pkg.awbId%>/preview"><%=pkg.awbIdNumber%></a></td> -->
@@ -132,7 +132,9 @@ const rows = [
 
 <div class="modal fade" id="priceBreakupModal" tabindex="-1" role="dialog" aria-labelledby="print-popup" aria-hidden="true"
   >
+  <!-- <div class="modal-dialog" style="max-width : 700px" role="document"> -->
   <div class="modal-dialog" style="max-width : 700px" role="document">
+
     <div class="modal-content">
       <div class="modal-header">
         <h2 class="modal-title" id="exampleModalLabel2">Packages</h2>
@@ -141,7 +143,14 @@ const rows = [
         </button>
       </div>
       <div class="modal-body">
+        <table class="table" >
+          <thead>Description</thead>
         
+          <tbody id="tablearea" class="table">
+            
+          </tbody>
+        </table>
+
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-danger close-del" data-dismiss="modal">Close</button>
@@ -237,7 +246,7 @@ const rows = [
               </div>
               <div class="col-md-4">
                   <table class="table">
-                      <tbody className="billingdata">
+                      <tbody className="billingdata" id="billingdata">
                         <div class="row">
                           <%rows.forEach((row,index)=>{%>
                             <% if (index <= 6){%>
