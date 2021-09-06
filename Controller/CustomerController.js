@@ -6,6 +6,7 @@ const aws = require('../Util/aws');
 var emailService = require('../Util/EmailService');
 
 const mongoose = require('mongoose');
+const customer = require('../models/customer');
 
 exports.get_customer_awb_list = (req, res, next) => {
     services.awbService.getAwbCustomer(res.user._id,req).then(async (awbs) => {
@@ -208,6 +209,25 @@ exports.billing = async(req,res)=>{
   const customerId = mongoose.Types.ObjectId(res.user._id);
   let awbData = await services.awbService.getAwbsFullCustomer(customerId);
   let queryStatus = req.query.status,flag;
+  // services.packageService.getPackageDetailByCustomerId(req,{}).then((packages) => {
+
+// 
+
+
+  console.log(customerId , "customeridaa") 
+  let customerAwb = await services.awbService.getawbbycustomerId(customerId)
+  // db.customers.find({"_id": ObjectId("5f30fc34ae01901cf16290b0")})
+  // Customer
+  console.log(customerAwb[0].awb)
+  let allawb = await services.awbService.getallawb()
+  console.log(allawb[0]._id , "allllllllllll")
+  console.log("customerAWB" , customerAwb)
+
+
+  
+
+
+  // 
   
   if(awbData.length > 0){
       flag = 1
@@ -358,7 +378,8 @@ exports.updateProfile = async(req,res)=>{
 
 
 exports.packageReport = async(req, res, next)=>{    
-
+  console.log("aaaaa361")
+req.query.customerId = req.session.customerId;
   const PKG_STATUS = {
     0: 'Package Created',
     1: 'Received in FLL',
@@ -378,7 +399,7 @@ exports.packageReport = async(req, res, next)=>{
   let customers = await services.customerService.getCustomers()
   let locations = await services.locationService.getLocations()
   // services.packageService.getPackageDetailByCustomerId({},{}).then((packages) => {
-  services.packageService.getPackageDetailByCustomerId({},{}).then((packages) => {
+  services.packageService.getPackageDetailByCustomerId(req,{}).then((packages) => {
 
     // packages = packages.filter(data=>data.customerId == req.session.customerId)
     packages = packages.filter(data=>data.customerId == req.session.customerId)
@@ -398,7 +419,8 @@ exports.packageReport = async(req, res, next)=>{
               pkg.volumetricWeight = (check/166);
               return pkg
           })
-      ).then(pkgs => {            
+      ).then(pkgs => {        
+        delete req.query.customerId;    
         
           res.render('pages/reports/customerpackagereport', {
               page: req.originalUrl,

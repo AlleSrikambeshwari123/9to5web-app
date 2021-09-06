@@ -24,10 +24,19 @@
       <div id="myLoader"><img src="/img/preloader.gif"></div>
       <div class="card-body ">
           <input type="hidden" name="clear" id="clear" value="<%=clear%>">
-          
-              <div class="col-md-12 float-right">
-                
-              </div>
+          <div class="col-md-12 float-right">
+            <form method="get"> 
+              <select name="status" id="status" class="form-control" style="width: 30%; float: left;">
+                  <option value="9" <%= query.status==9?'selected':'' %>>At Store </option>
+                  <option value="1" <%= query.status==1?'selected':'' %>>In Fll </option>
+                  <option value="7" <%= query.status==7?'selected':'' %>>No-Invoice </option>
+                  <option value="" <%= !query.status?'selected':'' %>>All </option>
+                  <option value="5" <%= query.status==5?'selected':'' %>>Received </option>
+                  <option value="10" <%= query.status==10?'selected':'' %>>Mixed </option>
+              </select>
+              <input type="submit" value="Filter" class="btn btn-primary" style="margin-left: 1%;" onclick="searchDataFilter()">
+          </form>
+          </div>
           
         <div class="table-responsive p-4">
           <table id="package-table"
@@ -47,7 +56,7 @@
                   Total Weight
                 </th>
                 <th>Invoice</th>
-                <th>View</th>
+                <!-- <th>View</th> -->
               </tr>
             </thead>
             <tbody>
@@ -56,7 +65,15 @@
                
                 <td><%= helpers.formatDate(pkg.createdAt) %></td>
                 <td>
-                  <%= pkg.awbId %>
+                  <%= console.log(pkg , "pkgk") %>
+                  <!-- <a href="javascript:void(0)" onclick="showPriceBreakupModal('<%-pkg._id%>')" data-toggle="tooltip"
+                    data-original-title="View Details"> <%= pkg.awbId %> </a> -->
+                    <a href="javascript:void(0)" onclick="showAwbModal('<%-pkg._id%>')" data-toggle="tooltip"
+                      data-original-title="View Details"> <%= pkg.awbId %> </a>
+
+                  <!-- <a href = "/customer/awb/<%= pkg._id %>/preview"><%= pkg.awbId %></a> -->
+                  <!-- <a href="/warehouse/fll/awb/manage/<%=pkg.awbId%>/preview"><%=pkg.awbIdNumber%></a></td> -->
+
                 </td>
 
                 <td>$<%= pkg.totalPrice%></td>
@@ -70,12 +87,12 @@
                 <td>
                     <%- pkg.pricing.TotalInvoiceValue  %>
                 </td>
-                <td>
+                 <!-- <td>  -->
                   <!-- <a href="javascript:void(0)" onclick="showPriceBreakupModal('<%-pkg._id%>')" class="btn btn-round btn-primary px-3" data-toggle="tooltip"
                     data-original-title="View Details"> View </a> -->
-                    <a href="javascript:void(0)" onclick="showPriceBreakupModal('<%-pkg._id%>')" class="btn btn-link btn-primary px-3" data-toggle="tooltip"
-                      data-original-title="View Details"> <i class="fa fa-eye"></i> </a>
-              </td>
+                    <!-- <a href="javascript:void(0)" onclick="showPriceBreakupModal('<%-pkg._id%>')" class="btn btn-link btn-primary px-3" data-toggle="tooltip"
+                      data-original-title="View Details"> <i class="fa fa-eye"></i> </a> -->
+              <!-- </td>  -->
 
               </tr>
               <%})%>
@@ -118,7 +135,7 @@ const rows = [
   <div class="modal-dialog" style="max-width : 700px" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h2 class="modal-title" id="exampleModalLabel2">Pricing</h2>
+        <h2 class="modal-title" id="exampleModalLabel2">Packages</h2>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">×</span>
         </button>
@@ -205,6 +222,89 @@ const rows = [
       </div>
     <%}) %>
 </div>
+
+
+
+
+<div style="display:none;">
+  <% awbs.forEach((awb)=>{ 
+      const pricing = awb.pricing;
+  %>
+      <div id="awb_<%-awb._id%>">
+          <div class="row">
+              <div class="col-md-12">
+                  <p>No. of Invoices: <%-pricing.NoOfInvoice%></p>
+              </div>
+              <div class="col-md-4">
+                  <table class="table">
+                      <tbody className="billingdata">
+                        <div class="row">
+                          <%rows.forEach((row,index)=>{%>
+                            <% if (index <= 6){%>
+                              <div class="col-md-12">
+                                <tr>
+                                    <td style="padding: 0 !important;" ><%-row.title%></td>
+                                    <td style="padding: 0 !important;" >$<%-pricing[row.key]%></td>
+                                </tr>
+                              </div>
+                                <%}%>
+                            <%})%>   
+
+                        </div>
+                        
+                      </tbody>
+                  </table>
+              </div>
+              <div class="col-md-4">
+                <table class="table">
+                    <tbody>
+                      <div class="row">
+                        <%rows.forEach((row,index)=>{%>
+                              <% if (index > 6 && index < 14){%>
+                                <div class="row">
+                                  <tr>
+                                    <td style="padding: 0 !important;" ><%-row.title%></td>
+                                    <td style="padding: 0 !important;" >$<%-pricing[row.key]%></td>
+                                  </tr>
+                                </div>
+                                  <%}%>
+                            <%})%>   
+                      </div>
+                      
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-4">
+              <table class="table">
+                  <tbody>
+                    <div class="row">
+                      <%rows.forEach((row,index)=>{%>
+                                <% if (index >= 14){%>
+                                  <div class="row">
+                                    <tr>
+                                      <td style="padding: 0 !important;" ><%-row.title%></td>
+                                      <td style="padding: 0 !important;" >$<%- pricing[row.key] %></td>
+                                    </tr>
+                                  </div>
+                                    <%}%>
+                          <%})%>   
+                    </div>
+                    
+                  </tbody>
+              </table>
+          </div>
+          </div>
+    </div>
+  <%}) %>
+</div>
+
+
+
+
+
+
+
+
 <% block('scripts').append('<script src="/js/utils.js"></script>')%>
 <% block('scripts').append('<script src="/js/customer/home/list.js"></script>')%>
 <% block('scripts').append('<script src="/js/customer/billing.js"></script>')%>

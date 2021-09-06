@@ -742,6 +742,7 @@ class PackageService {
     getPackageDetailByCustomerId(req,searchData){      
         return new Promise(async(resolve, reject) => {
             // var searchData = {};
+            console.log(req.query , "reqquery")
             if(req && req.query && req.query.locationId){
                 if(ObjectId.isValid(req.query.locationId)){
                     let zoneResult = await Zone.find({location : req.query.locationId}) 
@@ -755,6 +756,7 @@ class PackageService {
                 }
             }
             else if(req && req.query && req.query.customerId){
+                console.log("customerId called")
                 if(ObjectId.isValid(req.query.customerId)){
                     let customerResult = await Customer.findById(req.query.customerId) 
                     if(customerResult && customerResult.package){
@@ -871,7 +873,7 @@ class PackageService {
                     if(req && req.query && req.query.nodocs){
                         searchData['lastStatusText'] =  "No Invoice Present"
                       }
-                      console.log("re",req.query,searchData)
+                    //   console.log("re",req.query,searchData)
                     if(req && req.query && req.query.search_collection == "HISTORY"){  
                         console.log("hist")
                         PackageHistory.find(searchData)
@@ -1031,7 +1033,7 @@ class PackageService {
                     if(req && req.query && req.query.nodocs){
                         searchData['lastStatusText'] =  "No Invoice Present"
                       }
-                      console.log("re",req.query,searchData)
+                    //   console.log("re",req.query,searchData)
                     if(req && req.query && req.query.search_collection == "HISTORY"){  
                         console.log("hist")
                         PackageHistory.find(searchData)
@@ -4529,7 +4531,7 @@ class PackageService {
                 if(req && req.query && req.query.nodocs){
                     searchData['lastStatusText'] =  "No Invoice Present"
                   }
-                  console.log("re",req.query,searchData)
+                //   console.log("re",req.query,searchData)
                 if(req && req.query && req.query.search_collection == "HISTORY"){  
                     console.log("hist")
                     PackageHistory.find(searchData)
