@@ -311,8 +311,8 @@ $(function () {
 
         }
 
-        console.log(package)
-        console.log(awbPackages)
+        // console.log(package)
+        // console.log(awbPackages)
         //refres the table 
 
 

@@ -316,7 +316,7 @@ $(function () {
         // } else {
         //     package.skid = $(form).find('.skid').val();
         // }
-        console.log(package)
+        // console.log(package)
         return package;
 
     }

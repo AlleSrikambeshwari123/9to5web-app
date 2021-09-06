@@ -71,12 +71,12 @@ var packages;
     modal.find('.modal-body').html($('.tablearea')).html(packages);
     
 
-console.log(packages)
+// console.log(packages)
     
     }
 
 })
-console.log(packages)
+// console.log(packages)
 return packages ;
   
    

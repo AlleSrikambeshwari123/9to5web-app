@@ -294,12 +294,12 @@ exports.upload_invoices = async(req,res)=>{
   const awbData = await services.awbService.getAwbsNoInvoiceCustomer(customerId);
   var countdata = []
   var count = 0;
-  console.log(storeInvoicedata , "storeinvoicedata")
+  // console.log(storeInvoicedata , "storeinvoicedata")
   const storeinvoiceid = storeInvoicedata.length > 0 ? storeInvoicedata.map(d=>d.awbId) : ''
   // const awbdata = awbData[0] == undefined > 0  ? awbData[0].customerId.awb.map(data=>(data)) :''
   const awbdata = awbData.length > 0 && awbData[0].customerId && awbData[0].customerId.awb ? awbData[0].customerId.awb.map(data=>(data)) :''
   
-console.log(awbdata , "awbs" , storeinvoiceid ,"sdddddddddds")
+// console.log(awbdata , "awbs" , storeinvoiceid ,"sdddddddddds")
 
 for(let i = 0;i<awbdata.length;i++){
     for(let j =0 ; j<storeinvoiceid.length ; j++){

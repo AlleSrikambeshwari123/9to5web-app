@@ -1514,7 +1514,7 @@ class AwbService {
             // .populate('invoices')
             // .populate('awb')
             .exec((err, result) => {
-              console.log(result ,err, "rrrrrrrrr")
+              // console.log(result ,err, "rrrrrrrrr")
               resolve(result);
             });
         });
