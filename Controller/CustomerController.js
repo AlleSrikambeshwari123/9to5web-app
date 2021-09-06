@@ -6,6 +6,7 @@ const aws = require('../Util/aws');
 var emailService = require('../Util/EmailService');
 
 const mongoose = require('mongoose');
+const customer = require('../models/customer');
 
 exports.get_customer_awb_list = (req, res, next) => {
     services.awbService.getAwbCustomer(res.user._id,req).then(async (awbs) => {
@@ -203,11 +204,67 @@ exports.preview_awb = async(req,res)=>{
   });
 }
 
+exports.preview_awbjson = async(req,res)=>{
+  const id = req.params.id;
+  services.awbService.getAwbPreviewDetails(id).then((awb) => {
+    awb['dateCreated'] = momentz(awb.createdAt).tz("America/New_York").format('dddd, MMMM Do YYYY, h:mm A');
+    awb._doc.createdBy = awb.createdBy ? (awb.createdBy.firstName || '')  + (awb.createdBy.lastName || ''): ''
+    if (awb.invoices && awb.invoices.length) {
+      awb.invoices = awb.invoices.map(invoice => {
+        if (invoice.filename) {
+          invoice.link = aws.getSignedUrl(invoice.filename);
+        }
+        return invoice;
+      });
+    }
+    
+    res.json({awb});
+  });
+}
 
 exports.billing = async(req,res)=>{
   const customerId = mongoose.Types.ObjectId(res.user._id);
   let awbData = await services.awbService.getAwbsFullCustomer(customerId);
   let queryStatus = req.query.status,flag;
+  // services.packageService.getPackageDetailByCustomerId(req,{}).then((packages) => {
+
+// 
+
+
+  console.log(customerId , "customeridaa") 
+  let customerAwb = await services.awbService.getawbbycustomerId(customerId)
+  // db.customers.find({"_id": ObjectId("5f30fc34ae01901cf16290b0")})
+  // Customer
+  // console.log(customerAwb[0].awb)
+  let allawb = await services.awbService.getallawb()
+  // console.log(allawb[0]._id )
+  // console.log("customerAWB" , customerAwb)
+
+  let aa = customerAwb[0].awb.map(d=>{
+    var flagd = 0 , datad1 ;
+    allawb.forEach(d1=>{
+      if(d.toString()==d1._id.toString()){
+      // console.log(d , d1._id , "ddid")
+      datad1 = d1;
+        flagd =1;
+      }
+    })
+  if(flagd == 1){
+    flagd = 0;
+    // console.log(datad1 , "Datatt")
+    return datad1;
+
+  }
+
+  })
+  // console.log(aa , "aaaaaaaaaa")
+
+  
+
+  
+
+
+  // 
   
   if(awbData.length > 0){
       flag = 1
@@ -223,7 +280,7 @@ exports.billing = async(req,res)=>{
     query:req.query,
     title: "Billing",
     user: res.user,
-    awbs: awbResponse,
+    awbs: aa ? awbResponse  :aa,
     clear: req.query.clear
   });
   return res.send("Hello there!");
@@ -237,12 +294,12 @@ exports.upload_invoices = async(req,res)=>{
   const awbData = await services.awbService.getAwbsNoInvoiceCustomer(customerId);
   var countdata = []
   var count = 0;
-  console.log(storeInvoicedata , "storeinvoicedata")
+  // console.log(storeInvoicedata , "storeinvoicedata")
   const storeinvoiceid = storeInvoicedata.length > 0 ? storeInvoicedata.map(d=>d.awbId) : ''
   // const awbdata = awbData[0] == undefined > 0  ? awbData[0].customerId.awb.map(data=>(data)) :''
   const awbdata = awbData.length > 0 && awbData[0].customerId && awbData[0].customerId.awb ? awbData[0].customerId.awb.map(data=>(data)) :''
   
-console.log(awbdata , "awbs" , storeinvoiceid ,"sdddddddddds")
+// console.log(awbdata , "awbs" , storeinvoiceid ,"sdddddddddds")
 
 for(let i = 0;i<awbdata.length;i++){
     for(let j =0 ; j<storeinvoiceid.length ; j++){
@@ -358,7 +415,8 @@ exports.updateProfile = async(req,res)=>{
 
 
 exports.packageReport = async(req, res, next)=>{    
-
+  console.log("aaaaa361")
+req.query.customerId = req.session.customerId;
   const PKG_STATUS = {
     0: 'Package Created',
     1: 'Received in FLL',
@@ -378,7 +436,7 @@ exports.packageReport = async(req, res, next)=>{
   let customers = await services.customerService.getCustomers()
   let locations = await services.locationService.getLocations()
   // services.packageService.getPackageDetailByCustomerId({},{}).then((packages) => {
-  services.packageService.getPackageDetailByCustomerId({},{}).then((packages) => {
+  services.packageService.getPackageDetailByCustomerId(req,{}).then((packages) => {
 
     // packages = packages.filter(data=>data.customerId == req.session.customerId)
     packages = packages.filter(data=>data.customerId == req.session.customerId)
@@ -398,7 +456,8 @@ exports.packageReport = async(req, res, next)=>{
               pkg.volumetricWeight = (check/166);
               return pkg
           })
-      ).then(pkgs => {            
+      ).then(pkgs => {        
+        delete req.query.customerId;    
         
           res.render('pages/reports/customerpackagereport', {
               page: req.originalUrl,

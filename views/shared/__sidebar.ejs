@@ -234,6 +234,19 @@
 						<p>Home </p>
 					</a>
 				</li> -->
+				<!-- <div id="loader"><img src="/img/preloader.gif"></div> -->
+								<!-- <div id="loader"><img src="/img/preloader.gif"></div> -->
+
+				<script>
+					$(window).load(function(){ 
+ //PAGE IS FULLY LOADED 
+ //FADE OUT YOUR OVERLAYING DIV
+ $('#loader').fadeOut();
+ $('#loader').css("display", "none");
+
+});
+				</script>
+
 				<li class="nav-section">
 					<span class="sidebar-mini-icon">
 						<i class="fa fa-ellipsis-h"></i>
@@ -244,7 +257,7 @@
 				
 					<a href="/customer/report/package-report?search_type=100">
 						<i class="fas fa-list"></i>
-						<p>Packages</p>
+						<p id="packagesclick">Packages</p>
 					</a>
 		
 				</li>
@@ -254,6 +267,31 @@
 						<p>Airway Bills </p>
 					</a>
 				</li> -->
+
+				<script>
+									
+  
+					document.querySelector("#loader").style.visibility = "none"; 
+					document.querySelector("#loader").style.display = "none"; 
+
+  
+					var packclick = document.querySelector("#packagesclick");
+					packclick.addEventListener('onclick',()=>{
+						setTimeout(()=>{
+							document.querySelector("#loader").style.visibility = "none";
+							document.querySelector("#loader").style.display = "none"; 
+
+
+						},2000)
+					})
+
+					
+  
+  
+
+
+				</script>
+
 				<li class="nav-item <% if (page.includes('/billing')) { %> active <% } %>">
 					<a href="/customer/billing">
 						<i class="fa fa-dollar-sign"></i>

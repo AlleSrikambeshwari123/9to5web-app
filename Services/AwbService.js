@@ -16,6 +16,9 @@ const User = require('../models/user');
 const PriceLabel = require('../models/pricelabel');
 const ReportCsv = require('../models/reportcsv');
 const additionalInvoices = require('../models/additionalInvoice')
+const Customer = require('../models/customer');
+var ObjectId = require('mongodb').ObjectID;
+
 const DELIVERY_METHODS = {
     DELIVERY: 1,
     PICKUP: 2,
@@ -1476,6 +1479,44 @@ class AwbService {
               resolve(awbData);
             }
           });
+        });
+      }
+      
+      getallawb() {
+        return new Promise((resolve, reject) => {
+          AwbHistory.find({})
+            .populate('customerId')
+            .populate('shipper')
+            .populate('carrier')
+            .populate('hazmat')
+            .populate({path :'packages',populate : 'cubeId'})
+            .populate('purchaseOrders')
+            .populate('invoices')
+            .populate('driver')
+            .exec((err, result) => {
+              resolve(result);
+            });
+        });
+      }
+      getawbbycustomerId(id){
+        return new Promise((resolve, reject) => {
+  // db.customers.find({"_id": ObjectId("5f30fc34ae01901cf16290b0")})
+
+          // Customer.find({"_id":ObjectId(`"${id}"`)})
+          Customer.find({"_id":ObjectId(id)})
+
+            // .populate('customerId')
+            // .populate('shipper')
+            // .populate('carrier')
+            // .populate('hazmat')
+            // .populate({path :'packages',populate : 'cubeId'})
+            // .populate('purchaseOrders')
+            // .populate('invoices')
+            // .populate('awb')
+            .exec((err, result) => {
+              // console.log(result ,err, "rrrrrrrrr")
+              resolve(result);
+            });
         });
       }
       getAwbsFullCustomer(id) {
