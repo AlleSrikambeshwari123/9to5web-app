@@ -235,11 +235,31 @@ exports.billing = async(req,res)=>{
   let customerAwb = await services.awbService.getawbbycustomerId(customerId)
   // db.customers.find({"_id": ObjectId("5f30fc34ae01901cf16290b0")})
   // Customer
-  console.log(customerAwb[0].awb)
+  // console.log(customerAwb[0].awb)
   let allawb = await services.awbService.getallawb()
-  console.log(allawb[0]._id , "allllllllllll")
-  console.log("customerAWB" , customerAwb)
+  // console.log(allawb[0]._id )
+  // console.log("customerAWB" , customerAwb)
 
+  let aa = customerAwb[0].awb.map(d=>{
+    var flagd = 0 , datad1 ;
+    allawb.forEach(d1=>{
+      if(d.toString()==d1._id.toString()){
+      // console.log(d , d1._id , "ddid")
+      datad1 = d1;
+        flagd =1;
+      }
+    })
+  if(flagd == 1){
+    flagd = 0;
+    // console.log(datad1 , "Datatt")
+    return datad1;
+
+  }
+
+  })
+  // console.log(aa , "aaaaaaaaaa")
+
+  
 
   
 
@@ -260,7 +280,7 @@ exports.billing = async(req,res)=>{
     query:req.query,
     title: "Billing",
     user: res.user,
-    awbs: awbResponse,
+    awbs: aa ? awbResponse  :aa,
     clear: req.query.clear
   });
   return res.send("Hello there!");
