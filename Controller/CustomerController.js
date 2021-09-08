@@ -223,7 +223,7 @@ exports.preview_awbjson = async(req,res)=>{
 }
 
 
-exports.billing = async(req,res)=>{
+exports.billingold = async(req,res)=>{
   const customerId = mongoose.Types.ObjectId(res.user._id);
   let awbData = await services.awbService.getAwbsFullCustomer(customerId);
   let queryStatus = req.query.status,flag;
@@ -304,13 +304,14 @@ exports.billing = async(req,res)=>{
 
 
 
-exports.billing1 = async(req,res)=>{
+exports.billing = async(req,res)=>{
   req.query.customerId = req.session.customerId;
 
   let awbData = await services.awbService.getAwbDetailByCustomerId(req);
 
   let queryStatus = req.query.status,flag;
   // services.packageService.getPackageDetailByCustomerId(req,{}).then((packages) => {
+console.log(req.query , req.body , "startss")
 
   
   if(awbData.length > 0){

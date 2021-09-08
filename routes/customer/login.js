@@ -143,7 +143,7 @@ router.get('/awb/:id/preview', middleware().checkSession, customerCtrl.preview_a
 router.get('/awb/:id/previewjson', middleware().checkSession, customerCtrl.preview_awbjson);
 
 
-router.get('/billing', middleware().checkSession, customerCtrl.billing1);
+router.get('/billing', middleware().checkSession, customerCtrl.billing);
 
 router.get("/upload/invoices", middleware().checkSession, customerCtrl.upload_invoices);
 
