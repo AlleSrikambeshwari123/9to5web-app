@@ -17,7 +17,8 @@
 								<% if (user.roles[0].type == "Customers") { %>
 								Customer
 								<% } %> 
-								<%= user.roles[0].type %>
+								<!-- <%= user.roles[0].type %> -->
+								<%= user.roles[0].type.replace('Customers' ,'Customer') %>
 							</span>
 						</span>
 					</a>
