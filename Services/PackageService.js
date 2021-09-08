@@ -2063,7 +2063,7 @@ class PackageService {
     }
     getAllOriginBarcodes() {
         return new Promise((resolve, reject) => {
-            Barcode.find({}, (err, barCodes) => {
+            Barcode.find({status:'unused'}, (err, barCodes) => {
                 if (err) {
                     resolve([]);
                 } else {
@@ -3983,7 +3983,7 @@ class PackageService {
         let userId = user._id;
         userId = user._id == undefined ? user : user._id
         return new Promise((resolve, reject) => {
-            ProcessPackage.findOne({}).populate('barcode').exec((err, data) => {
+            ProcessPackage.findOne({status:'unused'}).populate('barcode').exec((err, data) => {
                 if (err) {
                     console.log(err)
                     resolve({});
