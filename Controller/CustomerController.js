@@ -313,7 +313,6 @@ exports.billing = async(req,res)=>{
   // services.packageService.getPackageDetailByCustomerId(req,{}).then((packages) => {
 console.log(req.query , req.body , "startss")
 
-  
   if(awbData.length > 0){
       flag = 1
   }else{
@@ -321,7 +320,22 @@ console.log(req.query , req.body , "startss")
       if(result && result.parentCustomer && result.parentCustomer.id )
           awbData = await services.awbService.getAwbsFullCustomer(result.parentCustomer.id);
   }
-  const awbResponse = await services.awbService.getAwbPriceAndStatus(awbData,queryStatus) 
+  var awbResponse = await services.awbService.getAwbPriceAndStatus(awbData,queryStatus) 
+
+  
+if(req.query.status == "10"){
+      awbResponse.forEach(async pack=>{
+        const packagestatus = await services.packageService.checkPackageStatus(pack)
+       if(packagestatus.status == 'Mixed'){
+          awbResponse.push(pack);
+       }
+       else{
+
+       }
+      })
+      console.log(awbResponse)
+}
+  
   // return res.json(awbResponse);
   return res.render('pages/customerBilling', {
     page: req.originalUrl,
