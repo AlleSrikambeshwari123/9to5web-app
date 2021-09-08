@@ -2296,7 +2296,7 @@ class AwbService {
         })
       })
   }
-}
+
 
 
 
@@ -2327,5 +2327,103 @@ class AwbService {
 // serviceTypeText: "wwww"
 // amount: 0
 // awbId: "5e8f17eafcd7da7152d770ed"
+
+
+
+
+
+getAwbDetailByCustomerId(req){      
+  return new Promise(async(resolve, reject) => {
+      var searchData = {};
+      console.log(req.query , "reqquery")
+    
+    if(req && req.query && req.query.customerId){
+          console.log("customerId called")
+          if(ObjectId.isValid(req.query.customerId)){
+              let customerResult = await Customer.findById(req.query.customerId) 
+              if(customerResult && customerResult.package){
+                  searchData['_id'] =  { $in : customerResult.awb}
+              }
+          }
+      }        
+      if(searchData._id && !req.query.customerId && !req.query.locationId){
+          if(req && req.query && req.query.search_collection == "HISTORY"){
+              PackageHistory.find(searchData)
+              .populate({path : 'awbId',populate : 'driver'})
+              .populate('originBarcode')
+              .populate('customerId')
+              .populate({path : 'zoneId',populate : {path : 'location',populate : 'company'}})
+              .populate('shipperId')
+              .populate('carrierId')
+              .populate('cubeId')
+              .populate('manifestId')
+              .exec((err, result) => {
+                  if (err) {
+                      resolve([]);
+                  } else {
+                      console.log("packg",result)
+                      resolve(result);
+                  }
+              });
+          }else{
+              let pkgCheck = await Package.find(searchData)
+              let modelCheck = Package
+              if(pkgCheck == null || pkgCheck.length == 0)
+                  modelCheck = PackageHistory
+              modelCheck.find(searchData)
+              .populate({path : 'awbId',populate : 'driver'})
+              .populate('originBarcode')
+              .populate('customerId')
+              .populate({path : 'zoneId',populate : {path : 'location',populate : 'company'}})
+              .populate('shipperId')
+              .populate('carrierId')
+              .populate('cubeId')
+              .populate('manifestId')
+              .exec((err, result) => {
+                  if (err) {
+                      resolve([]);
+                  } else {
+                      console.log("packg",result)
+                      resolve(result);
+                  }
+              });
+          }
+      }else{
+          if(req && req.query && (req.query.customerId == 'load' || req.query.locationId == 'load')){
+              resolve([])
+          }else{
+              console.log("check all list")
+
+              if(req && req.query && req.query.nodocs){
+                  searchData['lastStatusText'] =  "No Invoice Present"
+                }
+              //   console.log("re",req.query,searchData)
+              if(req && req.query && req.query.search_collection == "HISTORY"){  
+                  console.log("hist")
+                  PackageHistory.find(searchData)
+                  .exec((err, result) => {
+                      if (err) {
+                          resolve([]);
+                      } else {
+                          resolve(result);
+                      }
+                  });
+              }else{
+                  Awb.find(searchData)
+                  .exec((err, result) => {
+                      if (err) {
+                          resolve([]);
+                      } else {
+                       
+                          resolve(result);
+                      }
+                  });
+              }
+          }
+      }
+  });
+}
+}
+
 
 module.exports = AwbService;

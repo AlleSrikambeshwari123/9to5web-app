@@ -222,7 +222,8 @@ exports.preview_awbjson = async(req,res)=>{
   });
 }
 
-exports.billing = async(req,res)=>{
+
+exports.billingold = async(req,res)=>{
   const customerId = mongoose.Types.ObjectId(res.user._id);
   let awbData = await services.awbService.getAwbsFullCustomer(customerId);
   let queryStatus = req.query.status,flag;
@@ -285,6 +286,77 @@ exports.billing = async(req,res)=>{
   });
   return res.send("Hello there!");
 }
+
+
+
+
+
+// 
+
+
+
+
+
+
+
+
+
+
+
+
+exports.billing = async(req,res)=>{
+  req.query.customerId = req.session.customerId;
+
+  let awbData = await services.awbService.getAwbDetailByCustomerId(req);
+
+  let queryStatus = req.query.status,flag;
+  // services.packageService.getPackageDetailByCustomerId(req,{}).then((packages) => {
+console.log(req.query , req.body , "startss")
+
+  if(awbData.length > 0){
+      flag = 1
+  }else{
+      const result = await services.customerChildService.getCustomer({_id: customerId})
+      if(result && result.parentCustomer && result.parentCustomer.id )
+          awbData = await services.awbService.getAwbsFullCustomer(result.parentCustomer.id);
+  }
+  var awbResponse = await services.awbService.getAwbPriceAndStatus(awbData,queryStatus) 
+
+  
+if(req.query.status == "10"){
+      awbResponse.forEach(async pack=>{
+        const packagestatus = await services.packageService.checkPackageStatus(pack)
+       if(packagestatus.status == 'Mixed'){
+          awbResponse.push(pack);
+       }
+       else{
+
+       }
+      })
+      console.log(awbResponse)
+}
+  
+  // return res.json(awbResponse);
+  return res.render('pages/customerBilling', {
+    page: req.originalUrl,
+    query:req.query,
+    title: "Billing",
+    user: res.user,
+    awbs: awbResponse,
+    clear: req.query.clear
+  });
+  return res.send("Hello there!");
+}
+
+
+
+
+
+
+
+
+
+// 
 
 exports.upload_invoices = async(req,res)=>{
   // let additionalInvoice = await services.awbService.getAdditionalInvoices(mongoose.Types.ObjectId('5f3117fb13a8302d84aa6ae8'));
