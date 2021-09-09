@@ -588,8 +588,8 @@ class USCustoms {
           let natureOfGood = {text: String(item.natureOfAwb.toUpperCase()), margin:[0,10,0,5], fontSize: 11, alignment: "center" };
           let addressblock1 = {
             stack: [
-              `${datapdf && datapdf.consignee && datapdf.consignee.name ?datapdf.consignee.name :"" }`,
-              `${datapdf && datapdf.consignee && datapdf.consignee.address?datapdf.consignee.address:""}`,
+              `${datapdf && datapdf.consignee && datapdf.consignee.name  && datapdf.consignee.name != undefined && datapdf.consignee.name != "undefined" ?datapdf.consignee.name :"" }`,
+              `${datapdf && datapdf.consignee && datapdf.consignee.address && datapdf.consignee.address != undefined && datapdf.consignee.address != "undefined" ?datapdf.consignee.address:""}`,
 
             ],
             fontSize: 10,
