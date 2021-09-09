@@ -8,6 +8,7 @@ const moment = require('moment');
 var momentz = require('moment-timezone')
 var countries = require('../public/js/countries');
 var helpers = require('../views/helpers')
+const Barcode = require('../models/barcode');
 
 exports.preview_awb_invoice = (req, res, next) => {
   let id =res.user._id
@@ -270,10 +271,17 @@ exports.add_new_awb = async (req, res, next) => {
 exports.update_awb = async (req, res, next) => {
   let awbId = req.params.id;
   let {invoices, ...awb} = req.body;
-  console.log('bodydd',req.body)
+  // console.log('bodydd',req.body)
   let packages = JSON.parse(awb.packages);
   let purchaseOrders = JSON.parse(awb.purchaseOrder);
-
+  const barcodes = JSON.parse(req.body.packages);
+  console.log("barcodes" , barcodes )
+  barcodes && barcodes.length != 0 && barcodes.map(async d=>{
+const barcode =  await  Barcode.updateOne({_id : mongoose.Types.ObjectId(d.originBarcode)},{status : "used"})
+    console.log(barcode,d.originBarcode , "barcodes");
+    
+  })
+  
   const invoiceIds = [];
   const packageIds = [];
   const purchaseOrderIds = [];

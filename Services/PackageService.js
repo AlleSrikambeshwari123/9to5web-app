@@ -2063,7 +2063,11 @@ class PackageService {
     }
     getAllOriginBarcodes() {
         return new Promise((resolve, reject) => {
+
+        //    before Barcode.find({}, (err, barCodes) => {  
+            // after below
             Barcode.find({status:'unused'}, (err, barCodes) => {
+
                 if (err) {
                     resolve([]);
                 } else {
