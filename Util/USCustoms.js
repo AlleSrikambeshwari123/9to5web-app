@@ -125,7 +125,7 @@ class USCustoms {
                 margin: 4,
                 stack: [
                   { text: 'Consignee Name and Address', margin: [0, 0, 0, 5] },
-                  addressblock2
+                  addressblock1
                 ],
               },
               {
