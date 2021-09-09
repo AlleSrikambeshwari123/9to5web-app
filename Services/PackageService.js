@@ -1978,8 +1978,11 @@ class PackageService {
             originBarcode.barcode = originBarcode.barcode.trim()
         }
         return new Promise(async(resolve, reject) => {
-            await Barcode.findOne(originBarcode, (err, res) => {
-                if (res === null || res === undefined) {
+            await Barcode.find(originBarcode, (err, res) => {
+                const flag = res.filter(d=>d.status == 'unused')
+                console.log(res , " --- " ,originBarcode);
+                console.log(flag, flag.length)
+                if (res === null || res === undefined || flag.length == 0 ) {
                     console.log(originBarcode);
                     const barcode = new Barcode({barcode: originBarcode.barcode.trim()});
                     barcode.save((err, result) => {

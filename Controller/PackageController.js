@@ -12,7 +12,7 @@ exports.get_package_list = (req, res, next) => {
                 packages[i].packageNumber = "PK00" + packages[i].id;
                 return pkg
             })
-        ).then(pkgs => {            
+        ).then(pkgs => {       
             res.render('pages/warehouse/package/list-all', {
                 page: req.originalUrl,
                 user: res.user,
