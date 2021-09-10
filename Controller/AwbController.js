@@ -278,7 +278,7 @@ exports.update_awb = async (req, res, next) => {
   console.log("barcodes" , barcodes )
   barcodes && barcodes.length != 0 && barcodes.map(async d=>{
     let statusObject = {status : "used"}
-    let checkBarcode = await Barcode.findById(d.originBarcode)
+    let checkBarcode = await Barcode.findById(d.originBarcode).read('primary')
     if(checkBarcode && checkBarcode.barcode == "No tracking"){
         statusObject = {status : "unused"}
     }

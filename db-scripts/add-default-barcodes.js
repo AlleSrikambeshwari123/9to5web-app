@@ -73,7 +73,7 @@ createConnection()
         process.exit();
       }
       return Barcode.deleteMany({});
-    })
+    }).read('primary')
   })
   .then(() => {
     return Barcode.insertMany(barCodes);

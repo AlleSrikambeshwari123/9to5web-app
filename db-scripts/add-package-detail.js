@@ -26,7 +26,7 @@ createConnection()
             let awb = await Awb.findById(pack.awbId)
             let customer = await Customer.findById(pack.customerId);
             let shipper = await Shipper.findById(pack.shipperId);
-            let barcode = await Barcode.findById(pack.originBarcode);
+            let barcode = await Barcode.findById(pack.originBarcode).read('primary');
             var storeLocation = '';
             
             var updateData =  {

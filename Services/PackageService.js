@@ -2002,7 +2002,7 @@ class PackageService {
                 } else {
                     return resolve({ success: false, message: 'Barcode Already Added' });
                 }
-            });
+            }).read('primary');
         });
     }
 
@@ -2026,7 +2026,7 @@ class PackageService {
                 } else {
                     resolve(result);
                 }
-            });
+            }).read('primary');
         });
     }
 
@@ -2038,7 +2038,7 @@ class PackageService {
                 } else {
                     resolve(result);
                 }
-            });
+            }).read('primary');
         })
     }
     getOriginalBarcodeByCodeWildCard(barcode) {
@@ -2049,7 +2049,7 @@ class PackageService {
                 } else {
                     resolve(result);
                 }
-            });
+            }).read('primary');
         })
     }
 
@@ -2061,7 +2061,7 @@ class PackageService {
                 } else {
                     resolve(barCodes);
                 }
-            })
+            }).read('primary');
         })
     }
     getAllOriginBarcodes() {
@@ -2076,7 +2076,7 @@ class PackageService {
                 } else {
                     resolve(barCodes);
                 }
-            })
+            }).read('primary')
         })
     }
     removeAllOriginBarcode() {
@@ -2283,7 +2283,7 @@ class PackageService {
                 newPackage.originBarcode = newPackage.originBarcode.split(',')[1];
             }
             let statusObject = {status : "used"}
-            let checkBarcode = await Barcode.findById(newPackage.originBarcode)
+            let checkBarcode = await Barcode.findById(newPackage.originBarcode).read('primary')
             if(checkBarcode && checkBarcode.barcode == "No tracking"){
                 statusObject = {status : "unused"}
             }
@@ -3309,7 +3309,7 @@ class PackageService {
     // ======== Process Package ==========//
     async processPackage(barcode, userId) {
         try {
-            let bar = await Barcode.findOne({ barcode: barcode });
+            let bar = await Barcode.findOne({ barcode: barcode }).read('primary');
             if (bar === null || bar === undefined) {
                 return { success: false, message: 'Barcode Does not Exist' }
             } else {
