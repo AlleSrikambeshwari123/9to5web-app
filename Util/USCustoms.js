@@ -585,27 +585,28 @@ class USCustoms {
       pageMargins: 30,
       content: [
         ..._.flatMap(this.data.items, (item, i, array) => {
+          
           let natureOfGood = {text: String(item.natureOfAwb.toUpperCase()), margin:[0,10,0,5], fontSize: 11, alignment: "center" };
           let addressblock1 = {
             stack: [
-              `${datapdf && datapdf.consignee && datapdf.consignee.name  && datapdf.consignee.name != undefined && datapdf.consignee.name != "undefined" ?datapdf.consignee.name :"" }`,
-              `${datapdf && datapdf.consignee && datapdf.consignee.address && datapdf.consignee.address != undefined && datapdf.consignee.address != "undefined" ?datapdf.consignee.address:""}`,
+              `${item && item.consignee && item.consignee.name  && item.consignee.name != undefined && item.consignee.name != "undefined" ?item.consignee.name :"" }`,
+              `${item && item.consignee && item.consignee.address && item.consignee.address != undefined && item.consignee.address != "undefined" ?item.consignee.address:""}`,
 
             ],
             fontSize: 10,
           };
           let addressblock2 = {
             stack: [
-              `${datapdf && datapdf.shipper && datapdf.shipper.name ? datapdf.shipper.name :""}`,
-              `${datapdf && datapdf.shipper && datapdf.shipper.address?datapdf.shipper.address:""}`,
+              `${item && item.shipper && item.shipper.name ? item.shipper.name :""}`,
+              `${item && item.shipper && item.shipper.address?item.shipper.address:""}`,
 
             ],
             fontSize: 10,
           };
           let addressblock3 = {
             stack: [
-              `${datapdf && datapdf.carrier && datapdf.carrier.name ? datapdf.carrier.name : ""}`,
-              `${datapdf && datapdf.carrier && datapdf.carrier.address ? datapdf.carrier.address : ""}`,
+              `${item && item.carrier && item.carrier.name ? item.carrier.name : ""}`,
+              `${item && item.carrier && item.carrier.address ? item.carrier.address : ""}`,
 
             ],
             fontSize: 10,
