@@ -277,7 +277,12 @@ exports.update_awb = async (req, res, next) => {
   const barcodes = JSON.parse(req.body.packages);
   console.log("barcodes" , barcodes )
   barcodes && barcodes.length != 0 && barcodes.map(async d=>{
-const barcode =  await  Barcode.updateOne({_id : mongoose.Types.ObjectId(d.originBarcode)},{status : "used"})
+    let statusObject = {status : "used"}
+    let checkBarcode = await Barcode.findById(d.originBarcode)
+    if(checkBarcode && checkBarcode.barcode == "No tracking"){
+        statusObject = {status : "unused"}
+    }
+const barcode =  await  Barcode.updateOne({_id : mongoose.Types.ObjectId(d.originBarcode)},statusObject)
     console.log(barcode,d.originBarcode , "barcodes");
     
   })
