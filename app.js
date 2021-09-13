@@ -10,7 +10,7 @@ var session = require('client-sessions');
 const createConnection = require('./Util/mongo');
 const mongoose = require('mongoose');
 
-
+const Barcode = require('./models/barcode');
 // Account
 var accountPasswordRouter = require('./routes/account/password');
 var accountPrintRouter = require('./routes/account/print');
@@ -168,7 +168,13 @@ app.use('/api/customer', apiCustomerRouter);
 app.use('/api/cube', apiCubeRouter);
 app.use('/api/awb', apiAwbRouter)
 
-
+app.get('/changebarcode/dev',(req,res)=>{
+  Barcode.updateMany({},{$set:{status:'used'}},(err,data)=>{
+    if(err) {res.send(err)}
+    else {res.send(data)}
+  })
+  // res.send("updated Succesfully")
+})
 // Version API
 /**
  * 0: disconnected

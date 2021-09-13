@@ -322,18 +322,19 @@ console.log(req.query , req.body , "startss")
   }
   var awbResponse = await services.awbService.getAwbPriceAndStatus(awbData,queryStatus) 
 
-  
+  var mixedAwbResponse;
 if(req.query.status == "10"){
       awbResponse.forEach(async pack=>{
         const packagestatus = await services.packageService.checkPackageStatus(pack)
        if(packagestatus.status == 'Mixed'){
-          awbResponse.push(pack);
+          mixedAwbResponse.push(pack);
        }
        else{
 
        }
       })
-      console.log(awbResponse)
+
+      awbResponse = mixedAwbResponse;
 }
   
   // return res.json(awbResponse);

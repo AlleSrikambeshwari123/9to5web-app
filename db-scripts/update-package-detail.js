@@ -32,7 +32,7 @@ createConnection()
             let shipper = await Shipper.findById(pack.shipperId);
             let zone = await Zone.findById(pack.zoneId);
             let carrier = await Carrier.findById(pack.carrierId);
-            let barcode = await Barcode.findById(pack.originBarcode);
+            let barcode = await Barcode.findById(pack.originBarcode).read('primary');
             var storeLocation = '';
             
             var updateData =  {

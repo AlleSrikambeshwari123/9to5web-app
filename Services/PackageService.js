@@ -1978,8 +1978,11 @@ class PackageService {
             originBarcode.barcode = originBarcode.barcode.trim()
         }
         return new Promise(async(resolve, reject) => {
-            await Barcode.findOne(originBarcode, (err, res) => {
-                if (res === null || res === undefined) {
+            await Barcode.find(originBarcode, (err, res) => {
+                const flag = res.filter(d=>d.status == 'unused')
+                console.log(res , " --- " ,originBarcode);
+                console.log(flag, flag.length)
+                if (res === null || res === undefined || flag.length == 0 ) {
                     console.log(originBarcode);
                     const barcode = new Barcode({barcode: originBarcode.barcode.trim()});
                     barcode.save((err, result) => {
@@ -1999,7 +2002,7 @@ class PackageService {
                 } else {
                     return resolve({ success: false, message: 'Barcode Already Added' });
                 }
-            });
+            }).read('primary');
         });
     }
 
@@ -2023,7 +2026,7 @@ class PackageService {
                 } else {
                     resolve(result);
                 }
-            });
+            }).read('primary');
         });
     }
 
@@ -2035,7 +2038,7 @@ class PackageService {
                 } else {
                     resolve(result);
                 }
-            });
+            }).read('primary');
         })
     }
     getOriginalBarcodeByCodeWildCard(barcode) {
@@ -2046,7 +2049,7 @@ class PackageService {
                 } else {
                     resolve(result);
                 }
-            });
+            }).read('primary');
         })
     }
 
@@ -2058,18 +2061,22 @@ class PackageService {
                 } else {
                     resolve(barCodes);
                 }
-            })
+            }).read('primary');
         })
     }
     getAllOriginBarcodes() {
         return new Promise((resolve, reject) => {
-            Barcode.find({}, (err, barCodes) => {
+
+        //    before Barcode.find({}, (err, barCodes) => {  
+            // after below
+            Barcode.find({status:'unused'}, (err, barCodes) => {
+
                 if (err) {
                     resolve([]);
                 } else {
                     resolve(barCodes);
                 }
-            })
+            }).read('primary')
         })
     }
     removeAllOriginBarcode() {
@@ -2276,7 +2283,7 @@ class PackageService {
                 newPackage.originBarcode = newPackage.originBarcode.split(',')[1];
             }
             let statusObject = {status : "used"}
-            let checkBarcode = await Barcode.findById(newPackage.originBarcode)
+            let checkBarcode = await Barcode.findById(newPackage.originBarcode).read('primary')
             if(checkBarcode && checkBarcode.barcode == "No tracking"){
                 statusObject = {status : "unused"}
             }
@@ -3302,7 +3309,7 @@ class PackageService {
     // ======== Process Package ==========//
     async processPackage(barcode, userId) {
         try {
-            let bar = await Barcode.findOne({ barcode: barcode });
+            let bar = await Barcode.findOne({ barcode: barcode }).read('primary');
             if (bar === null || bar === undefined) {
                 return { success: false, message: 'Barcode Does not Exist' }
             } else {
@@ -3983,7 +3990,7 @@ class PackageService {
         let userId = user._id;
         userId = user._id == undefined ? user : user._id
         return new Promise((resolve, reject) => {
-            ProcessPackage.findOne({}).populate('barcode').exec((err, data) => {
+            ProcessPackage.findOne({status:'unused'}).populate('barcode').exec((err, data) => {
                 if (err) {
                     console.log(err)
                     resolve({});

@@ -574,23 +574,23 @@ exports.downloadUSCustoms = async (req, res, next) => {
 				declaredValueForCustoms += parseInt(invoice.value);
 			});
 console.log("aaaaa",awb , "awbs")
- datapdf = {
-	consignee: {
-		name: String(
-			awb.customer && [awb.customer.firstName, awb.customer.lastName].filter(Boolean).join(' '),
-		),
-		address: String(awb.customer && awb.customer.address)
-	},
-	shipper: {
-		name: String(awb.shipper && awb.shipper.name),
-		address: String(awb.shipper && awb.shipper.address),
-	},
-	carrier:{
-			name: String(awb.carrier && awb.carrier.name),
-			address:  String(awb.carrier && awb.carrier.address),
-	}
-}
-console.log(datapdf , "datapdf")
+						datapdf = {
+							consignee: {
+								name: String(
+									awb.customer && [awb.customer.firstName, awb.customer.lastName].filter(Boolean).join(' '),
+								),
+								address: String(awb.customer && awb.customer.address)
+							},
+							shipper: {
+								name: String(awb.shipper && awb.shipper.name),
+								address: String(awb.shipper && awb.shipper.address),
+							},
+							carrier:{
+									name: String(awb.carrier && awb.carrier.name),
+									address:  String(awb.carrier && awb.carrier.address),
+							}
+						}
+						console.log(datapdf , "datapdf")
 			return {
 				declaredValueForCustoms,
 				declaredValueForCharge: 'NVD',
@@ -606,6 +606,10 @@ console.log(datapdf , "datapdf")
 				shipper: {
 					name: String(awb.shipper && awb.shipper.name),
 					address: String(awb.shipper && awb.shipper.address),
+				},
+				carrier: {
+					name: String(awb.carrier && awb.carrier.name),
+					address: String(awb.carrier && awb.carrier.address),
 				},
 				accountingInformation: manifest.planeId.tailNumber,
 				pieces: packages.length,
@@ -636,6 +640,8 @@ console.log(datapdf , "datapdf")
 			natureOfAwb: ''
 		})
 
+		// console.log(items , "iteeeeemmmmmm")
+		// process.exit()
 		let usCustoms = new USCustoms({
 			departureDate: new Date(),
 			carrier: "Nine To Five Import Export",
