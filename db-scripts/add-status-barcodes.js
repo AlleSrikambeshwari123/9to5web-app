@@ -4,14 +4,14 @@
 require('dotenv').config();
 
 const createConnection = require('../Util/mongo');
-const Package = require('../models/package');
+const PackageHistory = require('../models/packageHistory');
 const Barcode = require('../models/barcode');
 
 
 createConnection()
   .then(() => {
     console.log('******Finding all packages******');
-    return Package.find({},async (err, response) => {
+    return PackageHistory.find({},async (err, response) => {
       if (err) {
         console.error('Error while finding packages ', err);
         process.exit();
