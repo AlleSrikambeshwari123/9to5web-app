@@ -705,13 +705,20 @@ $(function () {
     });
 
     $("#rmPackage").click(function () {
+      var count = 0;
       var id = $(this).attr('data-id');
       awbPackages = awbPackages.filter((package) => {
         if (package.id != id) {
           return true;
         } else {
+          if(count == 0){
           deletedPackages.push({_id: package._id, deleted: true});
+          count++;
           return false;
+          }
+          else{
+            return true;
+          }
         }
       });
       displayPackages();
