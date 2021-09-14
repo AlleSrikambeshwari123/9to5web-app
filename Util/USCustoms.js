@@ -76,11 +76,11 @@ class USCustoms {
                 margin: 4,
                 stack: [
                   { text: 'Shipper Name and Address', margin: [0, 0, 0, 5] },
-                  // addressblock1
-                  'Nine To Five Import Export',
-                  '2801 NW 55th Court',
-                  'Building 6W',
-                  'Ft Lauderdale, FL 33309',
+                  addressblock2
+                  // 'Nine To Five Import Export',
+                  // '2801 NW 55th Court',
+                  // 'Building 6W',
+                  // 'Ft Lauderdale, FL 33309',
                 ],
                 rowSpan: 2,
               },
@@ -146,7 +146,11 @@ class USCustoms {
                       {
                         stack: [
                           // { text: 'Consignee Name and Address', margin: [0, 0, 0, 5] },
-                          addressblock3,
+                          // addressblock3,
+                              'Nine To Five Import Export',
+                              '2801 NW 55th Court',
+                              'Building 6W',
+                              'Ft Lauderdale, FL 33309',
                         ],
                         fontSize: 10,
                       },
