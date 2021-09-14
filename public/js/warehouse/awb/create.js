@@ -877,6 +877,7 @@ $(function () {
     });
 
     $("#rmPackage").click(function () {
+      var count = 0;
       const deletedPackages = [];
       var id = $(this).attr("data-id");
        console.log(this,);
@@ -885,8 +886,14 @@ $(function () {
         if (package.id != id) {
           return true;
         } else {
+          if(count == 0){
           deletedPackages.push({_id: package._id, deleted: true});
+            count++;
           return false;
+              }
+              else{
+                return true;
+              }
         }
       });
       console.log(awbPackages);
