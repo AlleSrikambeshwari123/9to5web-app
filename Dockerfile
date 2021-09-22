@@ -25,4 +25,4 @@ RUN export JAVA_HOME
 EXPOSE 3100
 COPY . /usr/src/app
 # start app
-CMD ["npm", "start"]
+CMD ["npm", "app.js"]
